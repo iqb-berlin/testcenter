@@ -1,4 +1,8 @@
 <?php
+// www.IQB.hu-berlin.de
+// Bârbulescu, Stroescu, Mechtel
+// 2018
+// license: MIT
 
 require_once('DBConnection.php');
 
@@ -6,20 +10,20 @@ class DBConnectionAdmin extends DBConnection {
     private $idletime = 60 * 30;
 
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+    // sets the valid_until of the token to now + idle
     private function refreshToken($token) {
-        /*
         $sql_update = $this->pdoDBhandle->prepare(
             'UPDATE admintokens
                 SET valid_until =:value
                 WHERE id =:token');
 
         $sql_update->execute(array(
-            ':value' => time() + $this->idletime, PDO::PARAM_STR,
+            ':value' => date('Y/m/d h:i:s a', time() + $this->idletime),
             ':token'=> $token));
-            */
     }
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+    // deletes all tokens of this user if any and creates new token
     public function login($username, $password) {
         $myreturn = '';
 
@@ -36,6 +40,7 @@ class DBConnectionAdmin extends DBConnection {
 
                 $selector = $sql_select->fetch(PDO::FETCH_ASSOC);
                 if ($selector != false) {
+                    // first: delete all tokens of this user if any
                     $sql_delete = $this->pdoDBhandle->prepare(
                         'DELETE FROM admintokens 
                             WHERE admintokens.user_id = :id');
@@ -44,6 +49,7 @@ class DBConnectionAdmin extends DBConnection {
                         ':id' => $selector['id']
                     ));
 
+                    // create new token
                     $myreturn = uniqid('a', true);
                     
                     $sql_insert = $this->pdoDBhandle->prepare(
@@ -64,60 +70,27 @@ class DBConnectionAdmin extends DBConnection {
     }
     
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+    // deletes all tokens of this user
     public function logout($token) {
-        $sql = $this->pdoDBhandle->prepare(
-            'DELETE FROM admintokens 
-                WHERE admintokens.id=:token');
+        if (($this->pdoDBhandle != false) and (strlen($token) > 0)) {
+            $sql = $this->pdoDBhandle->prepare(
+                'DELETE FROM admintokens 
+                    WHERE admintokens.id=:token');
 
-        $sql -> execute(array(
-            ':token'=> $token));
-    }
-
-    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function getBookletList($workspace_id) {
-        $sql = $this->pdoDBhandle->prepare(
-            'SELECT booklets.name, booklets.laststate, booklets.locked 
-                FROM booklets
-                INNER JOIN sessions ON booklets.session_id = sessions.id
-                INNER JOIN logins ON sessions.login_id = logins.id
-                INNER JOIN workspaces ON logins.workspace_id = workspaces.id
-                WHERE workspaces.id=:workspace_id');
-             
-        $sql -> execute(array(
-            ':workspace_id' => $workspace_id));
-
-        
-        return $sql -> fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function getWorkspaces($token) {
-        $myreturn = [];
-        $sql = $this->pdoDBhandle->prepare(
-            'SELECT workspaces.id, workspaces.name FROM workspaces
-                INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
-                INNER JOIN users ON workspace_users.user_id = users.id
-                INNER JOIN admintokens ON  users.id = admintokens.user_id
-                WHERE admintokens.id =:token');
-    
-        $sql -> execute(array(
-            ':token' => $token
-        ));
-        $myreturn = $sql->fetchAll(PDO::FETCH_ASSOC);
-
-        if ($myreturn != false) {
-            $this->refreshToken($token);
+            $sql -> execute(array(
+                ':token'=> $token));
         }
-        return $myreturn;
     }
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+    // returns the name of the user with given (valid) token
+    // returns '' if token not found or not valid
+    // refreshes token
     public function getLoginName($token) {
         $myreturn = '';
-        if ($this->pdoDBhandle != false) {
+        if (($this->pdoDBhandle != false) and (strlen($token) > 0)) {
             $sql = $this->pdoDBhandle->prepare(
-                'SELECT users.name
-                    FROM users
+                'SELECT users.name FROM users
                     INNER JOIN admintokens ON users.id = admintokens.user_id
                     WHERE admintokens.id=:token');
     
@@ -132,6 +105,81 @@ class DBConnectionAdmin extends DBConnection {
                 $myreturn = $first['name'];
             }
         }
+        return $myreturn;
+    }
+
+
+    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+    // returns all booklets stored in the database (i. e. already answered) for the given workspace
+    public function getBookletList($workspace_id) {
+        $myreturn = [];
+        if ($this->pdoDBhandle != false) {
+
+            $sql = $this->pdoDBhandle->prepare(
+                'SELECT booklets.name, booklets.laststate, booklets.locked FROM booklets
+                    INNER JOIN sessions ON booklets.session_id = sessions.id
+                    INNER JOIN logins ON sessions.login_id = logins.id
+                    INNER JOIN workspaces ON logins.workspace_id = workspaces.id
+                    WHERE workspaces.id=:workspace_id');
+                
+            if ($sql -> execute(array(
+                ':workspace_id' => $workspace_id))) {
+                    
+                    $myreturn = $sql -> fetchAll(PDO::FETCH_ASSOC);
+            }
+        }
+            
+        return $myreturn;
+    }
+
+    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+    // returns all workspaces for the user associated with the given token
+    // returns [] if token not valid or no workspaces 
+    public function getWorkspaces($token) {
+        $myreturn = [];
+        if (($this->pdoDBhandle != false) and (strlen($token) > 0)) {
+            $sql = $this->pdoDBhandle->prepare(
+                'SELECT workspaces.id, workspaces.name FROM workspaces
+                    INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
+                    INNER JOIN users ON workspace_users.user_id = users.id
+                    INNER JOIN admintokens ON  users.id = admintokens.user_id
+                    WHERE admintokens.id =:token');
+        
+            if ($sql -> execute(array(
+                ':token' => $token))) {
+
+                $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+                if ($data != false) {
+                    $this->refreshToken($token);
+                    $myreturn = $data;
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+    // returns the name of the workspace given by id
+    // returns '' if not found
+    // token is not refreshed
+    public function getWorkspaceName($workspace_id) {
+        $myreturn = '';
+        if ($this->pdoDBhandle != false) {
+
+            $sql = $this->pdoDBhandle->prepare(
+                'SELECT workspaces.name FROM workspaces
+                    WHERE workspaces.id=:workspace_id');
+                
+            if ($sql -> execute(array(
+                ':workspace_id' => $workspace_id))) {
+                    
+                $data = $sql -> fetch(PDO::FETCH_ASSOC);
+                if ($data != false) {
+                    $myreturn = $data['name'];
+                }
+            }
+        }
+            
         return $myreturn;
     }
 }

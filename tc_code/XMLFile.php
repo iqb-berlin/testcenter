@@ -17,6 +17,8 @@ class XMLFile
         $this->name = '';
         $this->isValid = false;
 
+        $xsdFolderName = __DIR__ . '/';
+
         libxml_use_internal_errors(true);
         libxml_clear_errors();
     
@@ -32,7 +34,7 @@ class XMLFile
                 if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
                     array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->rootTagName . '" unbekannt.');
                 } else {
-                    $mySchemaFilename = $this->schemaFileNames[$this->rootTagName];
+                    $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
 
                     $this->name = $xmlfile->Metadata[0]->Name[0];
 
