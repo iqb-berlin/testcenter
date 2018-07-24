@@ -30,7 +30,8 @@
 						$myreturn = [
 							'admintoken' => $myAToken,
 							'name' => $myName,
-							'workspaces' => $workspaces
+							'workspaces' => $workspaces,
+							'is_superadmin' => $myDBConnection->isSuperAdmin($myAToken)
 						];
 					}
 				}
