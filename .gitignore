@@ -1,2 +1,6 @@
 tc_code/DBConnection.php
 .vscode/ftp-sync.json
+
+# Empty folder must exist to ensure functionality.
+tc_data/*
+!tc_data/.gitkeep
