@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="OpenCBA_Testtakers"
+    elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+  <xs:include schemaLocation="OpenCBA_Common.xsd"/>
+
+ 
+  <!-- ###################################################################-->
+  <!-- ###################################################################-->
+  <xs:element name="Testtakers" >
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="Group" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Login" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Booklet" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="codes" type="xs:string" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required"/>
+                  <xs:attribute name="pw" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="mode" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="hot" />
+                  <xs:enumeration value="trial" />
+                  <xs:enumeration value="review" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="start" type="xs:date"/>
+            <xs:attribute name="end" type="xs:date"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="TesttakerLogin">
+      <xs:selector xpath="Login"/>
+      <xs:field xpath="@name"/>
+    </xs:unique>
+ </xs:element>
+</xs:schema>

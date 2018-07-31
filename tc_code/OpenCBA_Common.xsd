@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="OpenCBA_Common"
+    elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+
+
+  <!-- ###################################################################-->
+  <xs:complexType name="ResourcesType">
+    <xs:sequence>
+      <xs:element name="Resource" minOccurs="1" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string" >
+			  <xs:annotation>
+			    <xs:documentation>
+			      Element value: Filename, same as file beeing uploaded; required!
+			    </xs:documentation>
+			  </xs:annotation>
+			  <xs:attribute name="id" type="xs:string"/>
+              <xs:attribute name="type" use="required">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="content" />
+                    <xs:enumeration value="itemplayer_html" />
+                    <xs:enumeration value="library_js" />
+                    <xs:enumeration value="stylesheet" />
+                    <xs:enumeration value="webfont" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:attribute>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ###################################################################-->
+  <xs:complexType name="MetadataType">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="ID" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Owner" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Status" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Project" type="xs:string" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

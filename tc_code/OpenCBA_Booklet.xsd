@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" id="OpenCBA_Booklet">
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+  <xs:include schemaLocation="OpenCBA_Common.xsd"/>
+
+  <!-- ###################################################################-->
+  <xs:complexType name="UnitType">
+    <xs:sequence>
+      <xs:element name="Restrictions" type="RestrictionsType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="title" type="xs:string" use="required"/>
+    <xs:attribute name="id" type="xs:string"/>
+    <xs:attribute name="parameter" type="xs:string"/>
+    <xs:attribute name="is_navi_spot" type="xs:boolean" default="false" />
+  </xs:complexType>
+
+  <!-- ###################################################################-->
+  <xs:complexType name="RestrictionsType">
+    <xs:sequence>
+      <xs:element name="TimeMin" type="xs:string" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="TimeMax" type="xs:string" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="ConditionToEnter" type="xs:string" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="NaviPrevEnabled" type="xs:string" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="NaviNextEnabled" type="xs:string" minOccurs = "0" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ###################################################################-->
+  <xs:complexType name="BookletElementType">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="1">
+        <xs:sequence>
+          <xs:element name="Testlet" type="BookletElementType" minOccurs = "1" maxOccurs="unbounded"/>
+          <xs:element name="Unit" type="UnitType" minOccurs = "0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:sequence>
+          <xs:element name="Unit" type="UnitType" minOccurs = "1" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:choice>
+      <xs:element name="Restrictions" type="RestrictionsType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <!-- ###################################################################-->
+  <!-- ###################################################################-->
+
+  <xs:element name="Booklet">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="Resources" type="ResourcesType" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Units" type="BookletElementType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
