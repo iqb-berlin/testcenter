@@ -9,34 +9,36 @@
         if (file_exists($TesttakersDirname)) {
 
           $testTakersDirectoryHandle = opendir($TesttakersDirname);
-          // reading file by file
-          while (($filename = readdir($testTakersDirectoryHandle))) {
-            // checking it every time such that each file is processed
-              if ($filename !== false) { 
-                // 
-                $fullfilename = $TesttakersDirname . '/' . $filename;
-                echo '<br>' . $fullfilename;
+
+          // reading file by file, $filename stores the name of the next file in the directory
+          while (($filename = readdir($testTakersDirectoryHandle))) { 
+
+              // checking if files still exist ahead  
+              if ($filename !== false) {             
+
+                $fullfilename = $TesttakersDirname . '/' . $filename; // complete file path
+                
+                  // checking if there is a file at the full file path and if it is an .xml
                   if (is_file($fullfilename) && (strtoupper(substr($filename, -4)) == '.XML')) {
                     $xmlfile = simplexml_load_file($fullfilename);
-
+                    
+                    // if the xml file has loaded successfully into $xmlfile
                     if ($xmlfile != false) {
+
                       $rootTagName = $xmlfile->getName();
                       if ($rootTagName == 'Testtakers') {
-                        foreach($xmlfile->children() as $group) { 
-                          if ($group->getName() == 'Group') {
-                            $notBefore = '';
-                            if (isset($group['notbefore'])) {
-                              $notBefore = (string) $group['notbefore'];
-                            }
-                            $notAfter = '';
-                            if (isset($group['notafter'])) {
-                              $notAfter = (string) $group['notafter'];
-                            }
-                            if (isset($group['mode'])) {
-                              foreach($group->children() as $tt) {
+
+                        // go through each xml tag that is a direct child of <Testtakers>
+                        foreach($xmlfile->children() as $directChildOfTesttakers) { 
+                          if ($directChildOfTesttakers->getName() == 'Group') {
+
+                            // go through each xml tag that is a direct child of <Group>  
+                            // currently test takers are the direct children of <Group>
+                            foreach($directChildOfTesttakers->children() as $tt) {
+                              
+                                // for each test taker increment number of registered users
                                 $numberofRegisteredUsers = $numberofRegisteredUsers + 1;
                               }
-                            }
                           }
                         }
                       }
