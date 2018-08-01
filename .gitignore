@@ -1,5 +1,6 @@
 tc_code/DBConnection.php
 .vscode/ftp-sync.json
+logs/*
 
 # Empty folder must exist to ensure functionality.
 tc_data/*

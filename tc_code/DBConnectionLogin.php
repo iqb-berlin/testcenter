@@ -3,7 +3,6 @@
 require_once('DBConnection.php');
 
 class DBConnectionLogin extends DBConnection {
-    private $idletime = 60 * 30;
 
     // __________________________
     public function login($workspace, $name, $mode, $sessiondef) {
