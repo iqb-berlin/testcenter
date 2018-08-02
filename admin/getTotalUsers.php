@@ -86,7 +86,8 @@
         }        
         if($myDBConnection->hasAdminAccessToWorkspace($token, $workspace)) {
           $myerrorcode = 404;
-          $myreturn = getNumberofRegisteredUsersOnWorkspace($workspace);
+          $myreturn = array();
+          $myreturn["howMany"] = getNumberofRegisteredUsersOnWorkspace($workspace);
           $myerrorcode = 0;          
         }
       }
