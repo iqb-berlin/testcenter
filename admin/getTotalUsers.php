@@ -5,7 +5,8 @@
       if($wsId > 0) {
         $sanitizedwsId = intval($wsId);
 
-        $TesttakersDirname = 'tc_data/ws_' . $sanitizedwsId . '/Testtakers';
+        $TesttakersDirname = __DIR__.'/../tc_data/ws_' . $sanitizedwsId . '/Testtakers';
+        error_log($TesttakersDirname);
         if (file_exists($TesttakersDirname)) {
 
           $testTakersDirectoryHandle = opendir($TesttakersDirname);
@@ -43,10 +44,10 @@
                         }
                       }
                     } else { 
-                      echo ('Error: There was no file found!');
+                      error_log('Error: There was no file found!');
                     }
                   } else { 
-                    echo ('Error: There might not be a file there or it is not of .xml format!');
+                    error_log('Error: There might not be a file there or it is not of .xml format!');
                   }
               } else {
                 break;
@@ -54,31 +55,41 @@
               }
           }
         } else { 
-          echo ('Error: Folder does not exist!');
+          error_log('Error: Folder does not exist!');
         }
       } else {
-        echo('Error: Workspace ID is not valid / Might not be a number!');
+        error_log('Error: Workspace ID is not valid / Might not be a number!');
       }
     } else {
-      echo('Error: Workspace ID is not a number');
+      error_log('Error: Workspace ID is not a number');
     }
     return $numberofRegisteredUsers;
   }
 
   if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
 
-		require_once('tc_code/DBConnectionLogin.php');
-
+    require_once('../tc_code/DBConnectionAdmin.php');
+   // see meeee
 		$myerrorcode = 503;
 
-		$myDBConnection = new DBConnectionLogin();
+		$myDBConnection = new DBConnectionAdmin();
 		if (!$myDBConnection->isError()) {
-			$myerrorcode = 401;
-    
-			// $data = json_decode(file_get_contents('php://input'), true);
-      // $myWorkspace = $data["ws"];
-      $myreturn = getNumberofRegisteredUsersOnWorkspace(19);
-      $myerrorcode = -1;
+
+      $myerrorcode = 401;
+      $receivedVariables = json_decode(file_get_contents('php://input'), true);
+
+      if(isset($receivedVariables['at']) && isset($receivedVariables['ws'])) {
+
+        $token = $receivedVariables['at'];
+        if (is_numeric($receivedVariables['ws'])) {
+          $workspace = intval($receivedVariables['ws']);
+        }        
+        if($myDBConnection->hasAdminAccessToWorkspace($token, $workspace)) {
+          $myerrorcode = 404;
+          $myreturn = getNumberofRegisteredUsersOnWorkspace($workspace);
+          $myerrorcode = 0;          
+        }
+      }
     } 
 
     unset($myDBConnection);

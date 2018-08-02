@@ -181,5 +181,16 @@ class DBConnectionAdmin extends DBConnection {
             
         return $myreturn;
     }
+
+    public function hasAdminAccessToWorkspace($token, $requestedWorkspaceId) {
+        $authorized = false;
+        foreach($this->getWorkspaces($token) as $allowedWorkspace) {
+
+            if ($allowedWorkspace['id'] == $requestedWorkspaceId) {
+                $authorized = true;
+            }
+        }
+        return $authorized;
+    }
 }
 ?>
