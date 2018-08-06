@@ -1,23 +1,23 @@
 <?php
   function getNumberofUnitsOnWorkspace($wsId) {
-    $numberofRegisteredUsers = 0;
+    $numberofUnits = 0;
     if(is_numeric($wsId)) {
       if($wsId > 0) {
         $sanitizedwsId = intval($wsId);
 
-        $TesttakersDirname = __DIR__.'/../tc_data/ws_' . $sanitizedwsId . '/Testtakers';
-        error_log($TesttakersDirname);
-        if (file_exists($TesttakersDirname)) {
+        $unitDirname = __DIR__.'/../tc_data/ws_' . $sanitizedwsId . '/Unit';
+        error_log($unitDirname);
+        if (file_exists($unitDirname)) {
 
-          $testTakersDirectoryHandle = opendir($TesttakersDirname);
+          $unitsDirectoryHandle = opendir($unitDirname);
 
           // reading file by file, $filename stores the name of the next file in the directory
-          while (($filename = readdir($testTakersDirectoryHandle))) { 
+          while (($filename = readdir($unitsDirectoryHandle))) { 
 
               // checking if files still exist ahead  
               if ($filename !== false) {             
 
-                $fullfilename = $TesttakersDirname . '/' . $filename; // complete file path
+                $fullfilename = $unitDirname . '/' . $filename; // complete file path
                 
                   // checking if there is a file at the full file path and if it is an .xml
                   if (is_file($fullfilename) && (strtoupper(substr($filename, -4)) == '.XML')) {
@@ -25,24 +25,8 @@
                     
                     // if the xml file has loaded successfully into $xmlfile
                     if ($xmlfile != false) {
+                      $numberofUnits = $numberofUnits + 1;
 
-                      $rootTagName = $xmlfile->getName();
-                      if ($rootTagName == 'Testtakers') {
-
-                        // go through each xml tag that is a direct child of <Testtakers>
-                        foreach($xmlfile->children() as $directChildOfTesttakers) { 
-                          if ($directChildOfTesttakers->getName() == 'Group') {
-
-                            // go through each xml tag that is a direct child of <Group>  
-                            // currently test takers are the direct children of <Group>
-                            foreach($directChildOfTesttakers->children() as $tt) {
-                              
-                                // for each test taker increment number of registered users
-                                $numberofRegisteredUsers = $numberofRegisteredUsers + 1;
-                              }
-                          }
-                        }
-                      }
                     } else { 
                       error_log('Error: There was no file found!');
                     }
@@ -63,7 +47,7 @@
     } else {
       error_log('Error: Workspace ID is not a number');
     }
-    return $numberofRegisteredUsers;
+    return $numberofUnits;
   }
 
   if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
@@ -87,7 +71,7 @@
         if($myDBConnection->hasAdminAccessToWorkspace($token, $workspace)) {
           $myerrorcode = 404;
           $myreturn = array();
-          $myreturn["howMany"] = getNumberofRegisteredUsersOnWorkspace($workspace);
+          $myreturn["howManyUnits"] = getnumberofUnitsOnWorkspace($workspace);
           $myerrorcode = 0;          
         }
       }
