@@ -69,7 +69,7 @@
           $workspace = intval($receivedVariables['ws']);
         }        
         if($myDBConnection->hasAdminAccessToWorkspace($token, $workspace)) {
-          $myerrorcode = 404;
+
           $myreturn = array();
           $myreturn["howManyUnits"] = getnumberofUnitsOnWorkspace($workspace);
           $myerrorcode = 0;          

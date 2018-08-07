@@ -85,10 +85,9 @@
           $workspace = intval($receivedVariables['ws']);
         }        
         if($myDBConnection->hasAdminAccessToWorkspace($token, $workspace)) {
-          $myerrorcode = 404;
           $myreturn = array();
           $myreturn["howManyUsers"] = getNumberofRegisteredUsersOnWorkspace($workspace);
-          $myerrorcode = 0;          
+          $myerrorcode = 0; 
         }
       }
     } 
