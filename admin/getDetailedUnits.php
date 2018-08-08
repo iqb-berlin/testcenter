@@ -87,7 +87,7 @@
         if($myDBConnection->hasAdminAccessToWorkspace($token, $workspace)) {
 
           $myreturn = array();
-          $myreturn["unitId"] = getDetailedUnits($workspace);
+          $myreturn = getDetailedUnits($workspace);
           $myerrorcode = 0;          
         }
       }
