@@ -17,9 +17,7 @@
               // checking if files still exist ahead  
               if ($filename !== false) {             
 
-                $fullfilename = $BookletsDirName . '/' . $filename; // complete file path
-                
-                  // checking if there is a file at the full file path and if it is an .xml
+                $fullfilename = $BookletsDirName . '/' . $filename; // 
                   if (is_file($fullfilename) && (strtoupper(substr($filename, -4)) == '.XML')) {
                     $xmlfile = simplexml_load_file($fullfilename);
                     
@@ -28,7 +26,7 @@
 
                       $rootTagName = $xmlfile->getName();
                       if ($rootTagName == 'Booklet') {
-                        // go through each xml tag that is a direct child of <Testtakers>
+
                         foreach($xmlfile->children() as $directChildOfBooklets) { 
                           if ($directChildOfBooklets->getName() == 'Metadata') {
                                 array_push($Booklets, $directChildOfBooklets->children());

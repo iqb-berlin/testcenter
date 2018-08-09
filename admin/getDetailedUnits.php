@@ -17,27 +17,18 @@
               // checking if files still exist ahead  
               if ($filename !== false) {             
 
-                $fullfilename = $UnitDirname . '/' . $filename; // complete file path
-                
-                  // checking if there is a file at the full file path and if it is an .xml
+                $fullfilename = $UnitDirname . '/' . $filename; // 
                   if (is_file($fullfilename) && (strtoupper(substr($filename, -4)) == '.XML')) {
                     $xmlfile = simplexml_load_file($fullfilename);
-                    
-                    // if the xml file has loaded successfully into $xmlfile
+
                     if ($xmlfile != false) {
 
                       $rootTagName = $xmlfile->getName();
                       if ($rootTagName == 'Unit') {
 
-                        // go through each xml tag that is a direct child of <Testtakers>
                         foreach($xmlfile->children() as $directChildOfUnit) { 
                           if ($directChildOfUnit->getName() == 'Metadata') {
-
-                            // go through each xml tag that is a direct child of <Group>  
-                            // currently test takers are the direct children of <Group>
                             foreach($directChildOfUnit->children() as $tt) {
-                              
-                                // for each test taker increment number of registered users
                                 if($tt->getName() == 'ID') {
                                   array_push($Units, $directChildOfUnit->children());
                                 }
