@@ -36,10 +36,21 @@
                             // go through each xml tag that is a direct child of <Group>  
                             // currently test takers are the direct children of <Group>
                             foreach($directChildOfTesttakers->children() as $tt) {
-                              
+
                                 // for each test taker increment number of registered users
                                 if($tt->getName() == 'Login') {
-                                  array_push($RegisteredUsers, $tt->attributes()->name->__toString());
+
+                                  if($tt->children()->attributes()->name == 'codes'){
+                                    // get a record for every pair of login name and code
+
+                                  } else {
+                                    // array_push($RegisteredUsers, $tt->attributes()->name->__toString());
+                                  
+                                    foreach ($tt->children()->attributes() as $item) {
+                                      array_push($RegisteredUsers, $item);
+                                    }
+                                    
+                                  }
                                 }
                               }
                           }

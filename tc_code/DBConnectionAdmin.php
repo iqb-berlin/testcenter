@@ -7,7 +7,7 @@
 require_once('DBConnection.php');
 
 class DBConnectionAdmin extends DBConnection {
-
+    protected $idletime =  60 * 30;
     // + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
     // sets the valid_until of the token to now + idle
     private function refreshToken($token) {

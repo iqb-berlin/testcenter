@@ -3,7 +3,7 @@
 require_once('DBConnection.php');
 
 class DBConnectionSession extends DBConnection {
-    private $idletime = 60 * 30;
+    private $idletimeSession = 60 * 30;
 
     // for all functions here: $sessiontoken is the token as stored in the
     // database; the sessiontoken given to other functions and used by the 
@@ -113,14 +113,14 @@ class DBConnectionSession extends DBConnection {
                 if (($query != false) and (count($query) > 0)) {
                     // überschreiben des alten Tokens
                     pg_update($this->dbhandle, 'sessions', 
-                        ['valid_until' => date('Y-m-d G:i:s', time() + $this->idletime),
+                        ['valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
                              'token' => $myreturn, 'laststate' => json_encode($laststate_session)],
                         ['id' => $query[0]['id']]);
                 } else {
                     // Eintragen eines neuen Tokens
                     $insertreturn = pg_insert($this->dbhandle, 'sessions', ['token' => $myreturn, 
                                                         'code' => $code, 'login_id' => $loginquery[0]['id'],
-                                                        'valid_until' => date('Y-m-d G:i:s', time() + $this->idletime),
+                                                        'valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
                                                         'laststate' => json_encode($laststate_session)]);
                 }
 
