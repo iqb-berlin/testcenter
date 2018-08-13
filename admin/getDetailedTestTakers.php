@@ -1,6 +1,6 @@
 <?php
   function getDetailedTestTakers($wsId) {
-    $RegisteredUsers = [];
+    $return = [];
     if(is_numeric($wsId)) {
       if($wsId > 0) {
         $sanitizedwsId = intval($wsId);
@@ -35,22 +35,36 @@
 
                             // go through each xml tag that is a direct child of <Group>  
                             // currently test takers are the direct children of <Group>
-                            foreach($directChildOfTesttakers->children() as $tt) {
+                            foreach($directChildOfTesttakers->children() as $loginName) {
 
                                 // for each test taker increment number of registered users
-                                if($tt->getName() == 'Login') {
+                                if($loginName->getName() == 'Login') {
 
-                                  if($tt->children()->attributes()->name == 'codes'){
-                                    // get a record for every pair of login name and code
+                                    $allCodesBelongingToALogin = array();
+                                    foreach($loginName->children() as $booklet) {
+                                      foreach($booklet->attributes() as $bookletAttributeName => $bookletAttributeValue) {
+                                        // print_r($bookletAttributeName);
 
-                                  } else {
-                                    // array_push($RegisteredUsers, $tt->attributes()->name->__toString());
-                                  
-                                    foreach ($tt->children()->attributes() as $item) {
-                                      array_push($RegisteredUsers, $item);
+                                        if($bookletAttributeName == 'codes') {
+                                          $codesBelongingToBooklet = $bookletAttributeValue->__toString();
+                                          $codesBelongingToBookletAsArray = explode(" ", $codesBelongingToBooklet);
+
+                                          foreach ($codesBelongingToBookletAsArray as $key => $value) {
+                                            if(in_array($value, $allCodesBelongingToALogin)===false) {
+                                              array_push($allCodesBelongingToALogin, $value);
+                                            }  
+                                          }
+                                        }
+                                      }
                                     }
+                                    $loginNameAttributeValue = $loginName->attributes()->name->__toString(); 
+
+                                    $c = array();
+
+                                    $c['name'] = $loginNameAttributeValue;
+                                    $c['codes'] = $allCodesBelongingToALogin;
                                     
-                                  }
+                                    array_push($return, $c);
                                 }
                               }
                           }
@@ -76,7 +90,7 @@
     } else {
       error_log('Error: Workspace ID is not a number');
     }
-    return $RegisteredUsers;
+    return $return;
   }
 
   if ($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') {
