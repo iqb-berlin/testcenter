@@ -191,6 +191,48 @@ class DBConnectionAdmin extends DBConnection {
             }
         }
         return $authorized;
+    }   
+
+    public function showStats($adminToken, $workspaceId) {
+            
+        $obj = [
+            [name => 'Group Rocket', testsTotal => 12, testsStarted => 20, responsesGiven => 30],
+            [name => 'Group Helium', testsTotal => 42, testsStarted =>  20, responsesGiven => 30],
+            [name => 'Group Hydrogen', testsTotal => 12, testsStarted => 20, responsesGiven => 50],
+            [name => 'Group Helium', testsTotal => 42, testsStarted =>  20, responsesGiven => 30],
+            [name => 'Group Hydrogen', testsTotal => 12, testsStarted => 20, responsesGiven => 30],
+            [name => 'Group Helium', testsTotal => 42, testsStarted =>  20, responsesGiven => 30],
+            [name => 'Group Hydrogen', testsTotal => 12, testsStarted => 20, responsesGiven => 30],
+            [name => $adminToken, testsTotal => 42, testsStarted => $workspaceId, responsesGiven => 30]
+        ];
+    
+        return $obj;
+ 
+    }
+
+    public function showStats2($adminToken, $workspaceId) {
+            
+
+        if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
+            $sql = $this->pdoDBhandle->prepare(
+                'SELECT sessions.laststate, logins.name
+                FROM sessions
+                INNER JOIN logins ON sessions.login_id = logins.id
+                WHERE logins.workspace_id=:workspaceId;');
+        
+            if ($sql -> execute(array(
+                ':workspaceId' => $workspaceId))) {
+
+                $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+                if ($data != false) {
+                    $this->refreshToken($token);
+                    $obj = $data;
+                }
+            }
+        }
+    
+        return $obj;
+ 
     }
 }
 ?>
