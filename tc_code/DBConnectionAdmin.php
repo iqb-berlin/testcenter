@@ -210,15 +210,15 @@ class DBConnectionAdmin extends DBConnection {
  
     }
 
-    public function showStats2($adminToken, $workspaceId) {
-            
-
+    public function testsStarted($adminToken, $workspaceId) {
         if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
             $sql = $this->pdoDBhandle->prepare(
-                'SELECT sessions.laststate, logins.name
-                FROM sessions
-                INNER JOIN logins ON sessions.login_id = logins.id
-                WHERE logins.workspace_id=:workspaceId;');
+                'SELECT logins.name, sessions.code, booklets.name as booklet
+                    FROM booklets
+                    INNER JOIN sessions ON sessions.id = booklets.session_id
+                    INNER JOIN logins ON logins.id = sessions.login_id
+                    INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+                    WHERE logins.workspace_id =:workspaceId');
         
             if ($sql -> execute(array(
                 ':workspaceId' => $workspaceId))) {
@@ -230,12 +230,35 @@ class DBConnectionAdmin extends DBConnection {
                 }
             }
         }
-    
         return $obj;
- 
     }
 
-    public function doUsefulXMLChecking($wsId) {
+    public function responsesGiven($workspaceId) {
+        if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
+            $sql = $this->pdoDBhandle->prepare(
+                'SELECT DISTINCT logins.name, sessions.code, booklets.name as booklet, units.name as unit
+                FROM booklets
+                INNER JOIN sessions ON sessions.id = booklets.session_id
+                INNER JOIN logins ON logins.id = sessions.login_id
+                INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+                INNER JOIN units ON units.booklet_id = booklets.id
+                WHERE workspace_id =:workspaceId');
+        
+            if ($sql -> execute(array(
+                ':workspaceId' => $workspaceId))) {
+
+                $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+                if ($data != false) {
+                    $this->refreshToken($token);
+                    $obj = $data;
+                }
+            }
+        }
+        return $obj;
+    }
+
+
+    public function groupName($wsId) {
         if(is_numeric($wsId)) {
           if($wsId > 0) {
             $sanitizedwsId = intval($wsId);
@@ -260,36 +283,114 @@ class DBConnectionAdmin extends DBConnection {
                         
                         // if the xml file has loaded successfully into $xmlfile
                         if ($xmlfile != false) {
-                           return true; 
+    
+                          $rootTagName = $xmlfile->getName();
+                          if ($rootTagName == 'Testtakers') {
+    
+                            // go through each xml tag that is a direct child of <Testtakers>
+                            foreach($xmlfile->children() as $directChildOfTesttakers) { 
+                              if ($directChildOfTesttakers->getName() == 'Group') {
+                                foreach($directChildOfTesttakers->attributes() as $a => $b) {
+                                    if($a === "name") {
+                                        $obj[] = $b;
+                                    }
+                                }
+                                // $obj["name"] = $groupName;
+                                // foreach( as $loginName) {
+    
+                                //     // for each test taker increment number of registered users
+                                //     if($loginName->getName() == 'Login') {
+    
+                                //         $allCodesBelongingToALogin = array();
+                                //         foreach($loginName->children() as $booklet) {
+                                //           foreach($booklet->attributes() as $bookletAttributeName => $bookletAttributeValue) {
+                                //             // print_r($bookletAttributeName);
+    
+                                //             if($bookletAttributeName == 'codes') {
+                                //               $codesBelongingToBooklet = $bookletAttributeValue->__toString();
+                                //               $codesBelongingToBookletAsArray = explode(" ", $codesBelongingToBooklet);
+    
+                                //               foreach ($codesBelongingToBookletAsArray as $key => $value) {
+                                //                 if(in_array($value, $allCodesBelongingToALogin)===false) {
+                                //                   array_push($allCodesBelongingToALogin, $value);
+                                //                 }  
+                                //               }
+                                //             }
+                                //           }
+                                //         }
+                                //         $loginNameAttributeValue = $loginName->attributes()->name->__toString(); 
+    
+                                //         $c = array();
+    
+                                //         $c['name'] = $loginNameAttributeValue;
+                                //         $c['codes'] = $allCodesBelongingToALogin;
+                                        
+                                //         array_push($return, $c);
+                                //     }
+                                //   }
+                              }
+                            }
+                          }
                         } else { 
-                            error_log('Error: There was no file found!');
+                          error_log('Error: There was no file found!');
                         }
-                    } else { 
+                      } else { 
                         error_log('Error: There might not be a file there or it is not of .xml format!');
-                    }
-                } else {
+                      }
+                  } else {
                     break;
                     // if there are no more files in the folder then exit the while loop
-                }
-            }
+                  }
+              }
             } else { 
-            error_log('Error: Folder does not exist!');
+              error_log('Error: Folder does not exist!');
             }
-        } else {
+          } else {
             error_log('Error: Workspace ID is not valid / Might not be a number!');
-        }
+          }
         } else {
-        error_log('Error: Workspace ID is not a number');
+          error_log('Error: Workspace ID is not a number');
         }
-        return false;
-    }
+        return $obj;
+      }
 
-    public function fetchFromXML($wsId) {
-        $return = [];
-        if(doUsefulXMLChecking($wsId)) {
-            
-        }
+    public function fetchStatsfromDB($wsId) {
+
     }
     
+
+
+
+/******************HELPER FUNCTIONS*************/
+
+/* Helpful SQL queries*/
+
+// 1. see name, code, laststate
+
+// SELECT logins.name, sessions.code, booklets.name
+// FROM booklets
+// INNER JOIN sessions ON sessions.id = booklets.session_id
+// INNER JOIN logins ON logins.id = sessions.login_id
+// INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+// WHERE workspace_id =:wsId
+
+// 2. see DISTINCT record of name, code, booklet, unit
+
+// SELECT DISTINCT logins.name, sessions.code, booklets.name, units.name
+// FROM booklets
+// INNER JOIN sessions ON sessions.id = booklets.session_id
+// INNER JOIN logins ON logins.id = sessions.login_id
+// INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+// INNER JOIN units ON units.booklet_id = booklets.id
+// WHERE workspace_id =:wsId
+
+// 3. count booklets started
+
+// SELECT COUNT(*)
+// FROM sessions
+// INNER JOIN logins ON sessions.login_id = logins.id
+// WHERE workspace_id =:wsId
+
+
 }
 ?>

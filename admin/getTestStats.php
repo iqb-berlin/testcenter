@@ -13,7 +13,9 @@
       $admin_token = $data["at"];
       $workspace_id = $data["ws"];
       if (isset($workspace_id) && isset($admin_token)) {
-        $myreturn = $myDBConnection->showStats($admin_token, $workspace_id);
+        array_push($myreturn, $myDBConnection->groupName($workspace_id));
+        array_push($myreturn, $myDBConnection->testsStarted($admin_token, $workspace_id));
+        array_push($myreturn, $myDBConnection->responsesGiven($workspace_id));
         $errorcode = 0;
       }
     }
