@@ -196,14 +196,14 @@ class DBConnectionAdmin extends DBConnection {
 	public function showStats($adminToken, $workspaceId) {
 			
 		$obj = [
-			[name => 'Group Rocket', testsTotal => 12, testsStarted => 20, responsesGiven => 30],
-			[name => 'Group Helium', testsTotal => 42, testsStarted =>  20, responsesGiven => 30],
-			[name => 'Group Hydrogen', testsTotal => 12, testsStarted => 20, responsesGiven => 50],
-			[name => 'Group Helium', testsTotal => 42, testsStarted =>  20, responsesGiven => 30],
-			[name => 'Group Hydrogen', testsTotal => 12, testsStarted => 20, responsesGiven => 30],
-			[name => 'Group Helium', testsTotal => 42, testsStarted =>  20, responsesGiven => 30],
-			[name => 'Group Hydrogen', testsTotal => 12, testsStarted => 20, responsesGiven => 30],
-			[name => $adminToken, testsTotal => 42, testsStarted => $workspaceId, responsesGiven => 30]
+			[name => 'Rocket Schule', testsTotal => 12, testsStarted => 3, responsesGiven => 5],
+			[name => 'Potsdamer Schule', testsTotal => 42, testsStarted =>  36, responsesGiven => 5],
+			[name => 'Mecklenburg Schule', testsTotal => 26, testsStarted => 26, responsesGiven => 5],
+			[name => 'Berliner Schule', testsTotal => 11, testsStarted =>  8, responsesGiven => 5],
+			[name => 'Nollendorfer Schule', testsTotal => 31, testsStarted => 20, responsesGiven => 5],
+			[name => 'Pankower Schule', testsTotal => 23, testsStarted =>  20, responsesGiven => 5],
+			[name => 'West Schule', testsTotal => 16, testsStarted => 12, responsesGiven => 5],
+			[name => 'Ost Schule', testsTotal => 19, testsStarted => 6, responsesGiven => 5]
 		];
 	
 		return $obj;
