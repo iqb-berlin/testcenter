@@ -144,8 +144,8 @@ function getGroupData($wsId) {
       $workspace_id = $data["ws"];
       if (isset($workspace_id) && isset($admin_token)) {
         $myreturn = getGroupData($workspace_id);
-        // array_push($myreturn, $myDBConnection->testsStarted($admin_token, $workspace_id));
-        // array_push($myreturn, $myDBConnection->responsesGiven($workspace_id));
+        array_push($myreturn, $myDBConnection->testsStarted($admin_token, $workspace_id));
+        array_push($myreturn, $myDBConnection->responsesGiven($workspace_id));
         // $myreturn = $myDBConnection->showStats($admin_token, $workspace_id); 
 
         $errorcode = 0;

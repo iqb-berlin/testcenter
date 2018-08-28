@@ -211,6 +211,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 	public function testsStarted($adminToken, $workspaceId) {
+		$return = [];
 		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT logins.name, sessions.code, booklets.name as booklet
@@ -226,14 +227,21 @@ class DBConnectionAdmin extends DBConnection {
 				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
 				if ($data != false) {
 					$this->refreshToken($token);
-					$obj = $data;
+					
+					$myObj = [ "sessions" => [] ];
+					
+					foreach ($data as $object) {
+						array_push($myObj["sessions"], trim((string) $object["name"]) . "##" . trim((string) $object["code"]) . "##" . trim((string) $object["booklet"]));
+					}
+					$return = $myObj;
 				}
 			}
 		}
-		return $obj;
+		return $return;
 	}
 
 	public function responsesGiven($workspaceId) {
+		$return = [];
 		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT DISTINCT logins.name, sessions.code, booklets.name as booklet, units.name as unit
@@ -250,11 +258,17 @@ class DBConnectionAdmin extends DBConnection {
 				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
 				if ($data != false) {
 					$this->refreshToken($token);
-					$obj = $data;
+					
+					$myObj = [ "responses" => [] ];
+					
+					foreach ($data as $object) {
+						array_push($myObj["responses"], trim((string) $object["name"]) . "##" . trim((string) $object["code"]) . "##" . trim((string) $object["booklet"]));
+					}
+					$return = $myObj;
 				}
 			}
 		}
-		return $obj;
+		return $return;
 	}
 
 
