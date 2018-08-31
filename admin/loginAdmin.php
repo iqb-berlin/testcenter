@@ -24,20 +24,22 @@
 				$myerrorcode = 402;
 				$myToken = $myDBConnection->login($myName, $myPassword);
 				
-				if (isset($myToken) and (count($myToken) > 0)) {
-					$myerrorcode = 405;
+				if (isset($myToken) and (strlen($myToken) > 0)) {
+					$myerrorcode = 403;
 					$myName = $myDBConnection->getLoginName($myToken);
 				
 					if (isset($myName) and (strlen($myName) > 0)) {
+						$myerrorcode = 406;
 						$workspaces = $myDBConnection->getWorkspaces($myToken);
-						if (count($workspaces) > 0) {
+						$isSuperAdmin = $myDBConnection->isSuperAdmin($myToken);
+						if ((count($workspaces) > 0) || $isSuperAdmin) {
 							$myerrorcode = 0;
 						
 							$myreturn = [
 								'admintoken' => $myToken,
 								'name' => $myName,
 								'workspaces' => $workspaces,
-								'is_superadmin' => $myDBConnection->isSuperAdmin($myToken)
+								'is_superadmin' => $isSuperAdmin
 							];
 						}
 					}
