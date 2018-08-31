@@ -70,7 +70,7 @@
 																			$notAfter = (string) $tt['notafter'];
 																		}
 																		foreach($tt->children() as $b) { 
-																			$ttcodesList = [];
+                                                                            $ttcodesList = [];
 																			if (isset($b['codes'])) {
 																				$ttcodes = (string) $b['codes'];
 																				if (strlen($ttcodes) > 0) {
