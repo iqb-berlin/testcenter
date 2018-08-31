@@ -1,4 +1,5 @@
 <?php
+
 function getGroupData($wsId) {
   $return = [];
 
@@ -69,29 +70,29 @@ function getGroupData($wsId) {
                     }
                     
                     foreach($login->children() as $booklet) {
+                      $myBookletName = strtoupper((string) $booklet);
                       if(count($myCodes) > 0) {
                         if(isset($booklet['codes'])) {
-                          $myBookletString = (string) $booklet['codes'];
-                          $myBookletCodes = explode(" ", trim($myBookletString));
-                          if(count($myBookletCodes) > 0) {
+                          $myCodesString = trim((string) $booklet['codes']);
+                          if(strlen($myCodesString) > 0) {
+                            $myBookletCodes = explode(" ", $myCodesString);
                             foreach($myBookletCodes as $code) {
                               if(strlen($code) > 0) {
-                                array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . (string) $booklet);
+                                array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
                               }
-
                             }  
                           } else {
                             foreach($myCodes as $code) {
-                              array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . (string) $booklet);
+                              array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
                             }
                           }
                         } else {
                           foreach($myCodes as $code) {
-                            array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . (string) $booklet);
+                            array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
                           }
                         }
                       } else {
-                        array_push($obj["sessions"], (string) $login['name'] . "##" . "" . "##" . (string) $booklet);
+                        array_push($obj["sessions"], (string) $login['name'] . "##" . "" . "##" . $myBookletName);
                       }
 
                     }
@@ -129,6 +130,7 @@ function getGroupData($wsId) {
   }
 
 
+
   if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
   } else {
@@ -138,17 +140,44 @@ function getGroupData($wsId) {
 
     $myDBConnection = new DBConnectionAdmin();
     if (!$myDBConnection->isError()) {
+
       $errorcode = 401;
       $data = json_decode(file_get_contents('php://input'), true);
       $admin_token = $data["at"];
       $workspace_id = $data["ws"];
-      if (isset($workspace_id) && isset($admin_token)) {
-        $myreturn = getGroupData($workspace_id);
-        array_push($myreturn, $myDBConnection->testsStarted($admin_token, $workspace_id));
-        array_push($myreturn, $myDBConnection->responsesGiven($workspace_id));
-        // $myreturn = $myDBConnection->showStats($admin_token, $workspace_id); 
 
-        $errorcode = 0;
+      if (isset($workspace_id) && isset($admin_token)) {
+
+        $groupData = getGroupData($workspace_id);
+        $testsStarted = $myDBConnection->testsStarted($admin_token, $workspace_id);
+        $testsWithResponses = $myDBConnection->responsesGiven($workspace_id);
+
+
+        foreach ($groupData as $data) {
+          $groupname = $data["groupname"];
+          $totalCount = 0;
+          $startedCount = 0;
+          $respGivenCount = 0;
+          $sessions = $data["sessions"];
+
+          foreach ($sessions as $sessionString) {
+            $totalCount+=1;
+            
+            if(in_array($sessionString, $testsStarted)) {
+              $startedCount+=1;
+            }
+            if(in_array($sessionString, $testsWithResponses)) {
+              $respGivenCount+=1;
+            }
+          }
+          array_push($myreturn, ["name" => $groupname,
+                                 "testsTotal" => $totalCount, 
+                                 "testsStarted" => $startedCount,
+                                 "responsesGiven" => $respGivenCount
+                                  ]);
+        }
+
+        $errorcode = 0;  
       }
     }
   }        
