@@ -131,6 +131,27 @@ class DBConnectionAdmin extends DBConnection {
 		return $myreturn;
 	}
 
+	public function toggleLockedState($workspace_id) {
+		$myreturn = [];
+		if ($this->pdoDBhandle != false) {
+
+			$sql = $this->pdoDBhandle->prepare(
+				'SELECT booklets.locked FROM booklets
+					INNER JOIN sessions ON booklets.session_id = sessions.id
+					INNER JOIN logins ON sessions.login_id = logins.id
+					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
+					WHERE workspaces.id=:workspace_id');
+				
+				if ($sql -> execute(array(
+				':workspace_id' => $workspace_id))) {
+					
+					$myreturn = $sql -> fetchAll(PDO::FETCH_ASSOC);
+				}
+				
+		}	
+		return $myreturn;
+	}
+
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// returns all workspaces for the user associated with the given token
 	// returns [] if token not valid or no workspaces 
