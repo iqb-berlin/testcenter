@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('../tc_code/DBConnectionAdmin.php');
+		require_once('../vo_code/DBConnectionAdmin.php');
 
 		// *****************************************************************
 
@@ -31,7 +31,7 @@
 					if ($wsId > 0) {
 						$myerrorcode = 404;
 
-						$workspaceDirName = '../tc_data/ws_' . $wsId;
+						$workspaceDirName = '../vo_data/ws_' . $wsId;
 						$path_parts = pathinfo($_GET['t']);
 						$subFolder = $path_parts['basename'];
 						$path_parts = pathinfo($_GET['fn']);

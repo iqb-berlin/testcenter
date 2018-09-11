@@ -9,7 +9,7 @@ function getGroupData($wsId) {
     $sanitizedwsId = intval($wsId);
     $myGroupCount = 1;
 
-    $TesttakersDirname = __DIR__.'/../tc_data/ws_' . $sanitizedwsId . '/Testtakers';
+    $TesttakersDirname = __DIR__.'/../vo_data/ws_' . $sanitizedwsId . '/Testtakers';
     error_log($TesttakersDirname);
     if (file_exists($TesttakersDirname)) {
 
@@ -140,7 +140,7 @@ function getGroupData($wsId) {
     exit();
   } else {
     $myreturn = [];
-    require_once('../tc_code/DBConnectionAdmin.php');
+    require_once('../vo_code/DBConnectionAdmin.php');
     $errorcode = 503;
 
     $myDBConnection = new DBConnectionAdmin();

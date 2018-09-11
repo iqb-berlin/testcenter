@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('tc_code/DBConnectionLogin.php');
+		require_once('vo_code/DBConnectionLogin.php');
 
 		// *****************************************************************
 
@@ -22,7 +22,7 @@
 			if (isset($myToken)) {
 				$myreturn = $myDBConnection->getSessions($myToken);
 				if (count($myreturn['sessions']) > 0 ) {
-					$bookletfolder = 'tc_data/ws_' . $myreturn['ws'] . '/Booklet';
+					$bookletfolder = 'vo_data/ws_' . $myreturn['ws'] . '/Booklet';
 
 					if (file_exists($bookletfolder)) {
 						$mydir = opendir($bookletfolder);

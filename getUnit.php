@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('tc_code/DBConnectionSession.php');
+		require_once('vo_code/DBConnectionSession.php');
 
 		// *****************************************************************
 		$myreturn = ['xml' => '', 'status' => '', 'restorepoint' => ''];
@@ -27,7 +27,7 @@
 					$wsId = $myDBConnection->getWorkspaceBySessiontoken($sessiontoken);
 					if ($wsId > 0) {
 						$myerrorcode = 404;
-						$myUnitFolder = 'tc_data/ws_' . $wsId . '/Unit';
+						$myUnitFolder = 'vo_data/ws_' . $wsId . '/Unit';
 						if (file_exists($myUnitFolder)) {
 							$mydir = opendir($myUnitFolder);
 							while (($entry = readdir($mydir)) !== false) {

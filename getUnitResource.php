@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('tc_code/DBConnectionSession.php');
+		require_once('vo_code/DBConnectionSession.php');
 
 		// *****************************************************************
 		$myreturn = ['xml' => '', 'status' => ''];
@@ -27,7 +27,7 @@
 					if ($wsId > 0) {
 						$myerrorcode = 404;
 						$path_parts = pathinfo($myResourceId); // extract filename if path is given
-						$myFullfilename = 'tc_data/ws_' . $wsId . '/Resource' . '/' . $path_parts['basename'];
+						$myFullfilename = 'vo_data/ws_' . $wsId . '/Resource' . '/' . $path_parts['basename'];
 						if (file_exists($myFullfilename)) {
 							$myerrorcode = 0;
 							header("Content-disposition: attachment; filename='" . $path_parts['basename'] . "'");

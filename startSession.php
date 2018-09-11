@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('tc_code/DBConnectionSession.php');
+		require_once('vo_code/DBConnectionSession.php');
 
 		// *****************************************************************
 
@@ -24,7 +24,7 @@
 			if (isset($myLoginToken) and isset($myBookletFilename)) {
 				$wsId = $myDBConnection->getWorkspaceByLogintoken($myLoginToken);
 				if ($wsId > 0) {
-					$myBookletFilename = 'tc_data/ws_' . $wsId . '/Booklet' . '/' . $myBookletFilename;
+					$myBookletFilename = 'vo_data/ws_' . $wsId . '/Booklet' . '/' . $myBookletFilename;
 					if (file_exists($myBookletFilename)) {
 
 						$xmlfile = simplexml_load_file($myBookletFilename);

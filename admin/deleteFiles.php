@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('../tc_code/DBConnectionAdmin.php');
+		require_once('../vo_code/DBConnectionAdmin.php');
 
 		// *****************************************************************
 
@@ -22,7 +22,7 @@
 				if ($wsId > 0) {
 					$myerrorcode = 0;
 
-					$workspaceDirName = '../tc_data/ws_' . $wsId;
+					$workspaceDirName = '../vo_data/ws_' . $wsId;
 					if (file_exists($workspaceDirName)) {
 						$errorcount = 0;
 						$successcount = 0;

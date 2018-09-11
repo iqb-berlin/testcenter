@@ -29,6 +29,7 @@ class DBConnectionAdmin extends DBConnection {
 		if (($this->pdoDBhandle != false) and (strlen($username) > 0) and (strlen($username) < 50) 
 						and (strlen($password) > 0) and (strlen($password) < 50)) {
 			$passwort_sha = $this->encryptPassword($password);
+			// $passwort_sha = sha1($password); //the encryptPassword function does not work because of the salt added
 			$sql_select = $this->pdoDBhandle->prepare(
 				'SELECT * FROM users
 					WHERE users.name = :name AND users.password = :password');
@@ -128,6 +129,27 @@ class DBConnectionAdmin extends DBConnection {
 			}
 		}
 			
+		return $myreturn;
+	}
+
+	public function toggleLockedState($workspace_id) {
+		$myreturn = [];
+		if ($this->pdoDBhandle != false) {
+
+			$sql = $this->pdoDBhandle->prepare(
+				'SELECT booklets.locked FROM booklets
+					INNER JOIN sessions ON booklets.session_id = sessions.id
+					INNER JOIN logins ON sessions.login_id = logins.id
+					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
+					WHERE workspaces.id=:workspace_id');
+				
+				if ($sql -> execute(array(
+				':workspace_id' => $workspace_id))) {
+					
+					$myreturn = $sql -> fetchAll(PDO::FETCH_ASSOC);
+				}
+				
+		}	
 		return $myreturn;
 	}
 

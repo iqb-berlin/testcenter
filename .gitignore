@@ -1,7 +1,7 @@
-tc_code/DBConnection.php
+vo_code/DBConnection.php
 .vscode/ftp-sync.json
 logs/*
 
 # Empty folder must exist to ensure functionality.
-tc_data/*
-!tc_data/.gitkeep
+vo_data/*
+!vo_data/.gitkeep

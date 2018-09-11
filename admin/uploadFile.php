@@ -1,13 +1,13 @@
 <?php 
-	// require_once('tc_code/XMLFile.php');
-	// require_once('tc_code/DBConnectionAdmin.php');
+	// require_once('vo_code/XMLFile.php');
+	// require_once('vo_code/DBConnectionAdmin.php');
 
 	// preflight OPTIONS-Request bei CORS
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
 
-		require_once('../tc_code/DBConnectionAdmin.php');
+		require_once('../vo_code/DBConnectionAdmin.php');
 
 
 		// Authorisation
@@ -32,7 +32,7 @@
 					$myreturn = 'ok';
 
 					// check if folder exists -> create
-					$myWorkspaceFolder = '../tc_data/ws_' . $wsId;
+					$myWorkspaceFolder = '../vo_data/ws_' . $wsId;
 					if (!file_exists($myWorkspaceFolder)) {
 						if (!mkdir($myWorkspaceFolder)) {
 							$wsId = 0;
@@ -45,7 +45,7 @@
 						$originalTargetFilename = $_FILES['fileforopencba']['name'];
 						if (isset($originalTargetFilename) and strlen($originalTargetFilename) > 0) {
 							$originalTargetFilename = basename($originalTargetFilename);
-							$tempPrefix = '../tc_data/' . uniqid('t', true) . '_';
+							$tempPrefix = '../vo_data/' . uniqid('t', true) . '_';
 							$tempFilename = $tempPrefix . $originalTargetFilename;
 
 							// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -57,7 +57,7 @@
 								if (strtoupper(substr($tempFilename, -4)) == '.XML') {
 									$myreturn = 'OK (valide)';
 
-									require_once('../tc_code/XMLFile.php'); // // // // ========================
+									require_once('../vo_code/XMLFile.php'); // // // // ========================
 									$xFile = new XMLFile($tempFilename);
 									if ($xFile->isValid()) {
 										$targetFolder = $myWorkspaceFolder . '/' . $xFile->getRoottagName();

@@ -5,7 +5,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('tc_code/DBConnectionLogin.php');
+		require_once('vo_code/DBConnectionLogin.php');
 
 		// *****************************************************************
 		$myreturn = '';

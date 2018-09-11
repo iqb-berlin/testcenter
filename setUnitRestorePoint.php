@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('tc_code/DBConnectionSession.php');
+		require_once('vo_code/DBConnectionSession.php');
 
 		// *****************************************************************
 		$myreturn = '?';

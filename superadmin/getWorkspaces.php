@@ -8,7 +8,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('../tc_code/DBConnectionSuperadmin.php');
+		require_once('../vo_code/DBConnectionSuperadmin.php');
 
 		// *****************************************************************
 

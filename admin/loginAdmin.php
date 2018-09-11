@@ -10,7 +10,7 @@
 			'is_superadmin' => false
 		];
 		$myerrorcode = 503;
-		require_once('../tc_code/DBConnectionAdmin.php');
+		require_once('../vo_code/DBConnectionAdmin.php');
 
 		$myDBConnection = new DBConnectionAdmin();
 		if (!$myDBConnection->isError()) {

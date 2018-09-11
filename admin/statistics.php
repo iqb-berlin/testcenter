@@ -3,7 +3,7 @@
     exit();
   } else {
     $myreturn = [];
-    require_once('../tc_code/DBConnectionAdmin.php');
+    require_once('../vo_code/DBConnectionAdmin.php');
     $errorcode = 503;
 
     $myDBConnection = new DBConnectionAdmin();

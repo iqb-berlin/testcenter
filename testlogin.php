@@ -3,7 +3,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('tc_code/DBConnectionLogin.php');
+		require_once('vo_code/DBConnectionLogin.php');
 
 		// *****************************************************************
 
@@ -25,8 +25,8 @@
             $myWorkspace = '';
             $myMode = '';
 			if (isset($myName) and isset($myPassword)) {
-				$workspaceDir = opendir('tc_data');
-				$testeefiledirprefix = 'tc_data/ws_';
+				$workspaceDir = opendir('vo_data');
+				$testeefiledirprefix = 'vo_data/ws_';
 				while (($subdir = readdir($workspaceDir)) !== false) {
 					$mysplits = explode('_', $subdir);
 
@@ -114,7 +114,7 @@
 					if ($hasfound) {
 						break;
 					}
-				} // lesen subdirs von tc_data
+				} // lesen subdirs von vo_data
 
 
 				if (strlen($myWorkspace) > 0) {

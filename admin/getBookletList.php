@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-    require_once('../tc_code/DBConnectionAdmin.php');
+    require_once('../vo_code/DBConnectionAdmin.php');
     
     $myreturn = [];
 

@@ -3,9 +3,9 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('../tc_code/DBConnectionAdmin.php');
-		require_once('../tc_code/FilesFactory.php');
-		require_once('../tc_code/XMLFile.php');
+		require_once('../vo_code/DBConnectionAdmin.php');
+		require_once('../vo_code/FilesFactory.php');
+		require_once('../vo_code/XMLFile.php');
 
 		// *****************************************************************
 
@@ -39,7 +39,7 @@
 						$allLoginNames = [];
 
 						// get all resource files
-						$myFolder = '../tc_data/ws_' . $wsId . '/Resource';
+						$myFolder = '../vo_data/ws_' . $wsId . '/Resource';
 						if (file_exists($myFolder) && is_dir($myFolder)) {
 							$mydir = opendir($myFolder);
 							while (($entry = readdir($mydir)) !== false) {
@@ -51,7 +51,7 @@
 						array_push($myreturn['infos'], strval(count($allResources)) . ' resource files found');
 
 						// get all units and check resources
-						$myFolder = '../tc_data/ws_' . $wsId . '/Unit';
+						$myFolder = '../vo_data/ws_' . $wsId . '/Unit';
 						if (file_exists($myFolder) && is_dir($myFolder)) {
 							$mydir = opendir($myFolder);
 							while (($entry = readdir($mydir)) !== false) {
@@ -118,7 +118,7 @@
 						array_push($myreturn['infos'], strval(count($allUnits)) . ' valid units found');
 
 						// get all booklets and check units and resources
-						$myFolder = '../tc_data/ws_' . $wsId . '/Booklet';
+						$myFolder = '../vo_data/ws_' . $wsId . '/Booklet';
 						if (file_exists($myFolder) && is_dir($myFolder)) {
 							$mydir = opendir($myFolder);
 							while (($entry = readdir($mydir)) !== false) {
@@ -201,7 +201,7 @@
 						array_push($myreturn['infos'], strval(count($allBooklets)) . ' valid booklets found');
 
 						// get all logins and check booklets
-						$myFolder = '../tc_data/ws_' . $wsId . '/Testtakers';
+						$myFolder = '../vo_data/ws_' . $wsId . '/Testtakers';
 						if (file_exists($myFolder) && is_dir($myFolder)) {
 							$mydir = opendir($myFolder);
 							while (($entry = readdir($mydir)) !== false) {
@@ -252,7 +252,7 @@
 
 						// check wether a login is used in another workspace
 						// get all resource files
-						$myFolder = '../tc_data';
+						$myFolder = '../vo_data';
 						if (file_exists($myFolder) && is_dir($myFolder)) {
 							$mydir = opendir($myFolder);
 							while (($wsdirname = readdir($mydir)) !== false) {
