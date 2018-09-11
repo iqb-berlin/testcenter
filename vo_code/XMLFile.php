@@ -2,9 +2,9 @@
 class XMLFile
 {
     private $allErrors = [];
-    private $schemaFileNames = ['Testtakers' => 'OpenCBA_Testtakers.xsd', 
-                                'Booklet' => 'OpenCBA_Booklet.xsd',
-                                'Unit' => 'OpenCBA_Unit.xsd'];
+    private $schemaFileNames = ['Testtakers' => 'vo_Testtakers.xsd', 
+                                'Booklet' => 'vo_Booklet.xsd',
+                                'Unit' => 'vo_Unit.xsd'];
     private $rootTagName;
     private $isValid;
     private $name;
