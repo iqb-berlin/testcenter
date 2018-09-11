@@ -22,9 +22,12 @@
 			
 			if (isset($myName) and isset($myPassword)) {
 				$myerrorcode = 402;
+
 				$myToken = $myDBConnection->login($myName, $myPassword);
-				
+
+
 				if (isset($myToken) and (strlen($myToken) > 0)) {
+
 					$myerrorcode = 403;
 					$myName = $myDBConnection->getLoginName($myToken);
 				
@@ -42,7 +45,9 @@
 								'is_superadmin' => $isSuperAdmin
 							];
 						}
-					}
+					} 
+				} else {
+						echo 'token not set';
 				}
 			}
 		}

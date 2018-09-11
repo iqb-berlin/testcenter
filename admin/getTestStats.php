@@ -100,7 +100,12 @@ function getGroupData($wsId) {
                   }
                 }
                 // ends here
-                array_push($return, $obj);
+                if($rso){
+
+                } else {
+                  array_push($return, $obj);
+                }
+
               }
             }
 
@@ -145,6 +150,7 @@ function getGroupData($wsId) {
       $data = json_decode(file_get_contents('php://input'), true);
       $admin_token = $data["at"];
       $workspace_id = $data["ws"];
+      $responsesGivenOnly = $data["rso"];
 
       if (isset($workspace_id) && isset($admin_token)) {
 
@@ -170,11 +176,14 @@ function getGroupData($wsId) {
               $respGivenCount+=1;
             }
           }
-          array_push($myreturn, ["name" => $groupname,
-                                 "testsTotal" => $totalCount, 
-                                 "testsStarted" => $startedCount,
-                                 "responsesGiven" => $respGivenCount
-                                  ]);
+
+          if($responsesGivenOnly === false || $respGivenCount > 0) {
+            array_push($myreturn, ["name" => $groupname,
+            "testsTotal" => $totalCount, 
+            "testsStarted" => $startedCount,
+            "responsesGiven" => $respGivenCount
+             ]);
+          }
         }
 
         $errorcode = 0;  
