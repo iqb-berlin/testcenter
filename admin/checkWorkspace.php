@@ -110,7 +110,7 @@
 											array_push($myreturn['warnings'], 'error reading Unit-XML-file "' . $entry . '"');
 										}		
 									} else {
-										array_push($myreturn['warnings'], 'Unit "' . $entry . '" is not valid OpenCBA-XML');
+										array_push($myreturn['warnings'], 'Unit "' . $entry . '" is not valid vo-XML');
 									}
 								}
 							}
@@ -193,7 +193,7 @@
 											array_push($myreturn['warnings'], 'error reading Booklet-XML-file "' . $entry . '"');
 										}		
 									} else {
-										array_push($myreturn['warnings'], 'Booklet "' . $entry . '" is not valid OpenCBA-XML');
+										array_push($myreturn['warnings'], 'Booklet "' . $entry . '" is not valid vo-XML');
 									}
 								}
 							}
@@ -244,7 +244,7 @@
 											array_push($myreturn['warnings'], 'error reading Testtakers-XML-file "' . $entry . '"');
 										}		
 									} else {
-										array_push($myreturn['warnings'], 'Testtakers-XML-File "' . $entry . '" is not valid OpenCBA-XML');
+										array_push($myreturn['warnings'], 'Testtakers-XML-File "' . $entry . '" is not valid vo-XML');
 									}
 								}
 							}

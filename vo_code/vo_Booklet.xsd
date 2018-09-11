@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" id="OpenCBA_Booklet">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" id="vo_Booklet">
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
-  <xs:include schemaLocation="OpenCBA_Common.xsd"/>
+  <xs:include schemaLocation="vo_Common.xsd"/>
 
   <!-- ###################################################################-->
   <xs:complexType name="UnitType">

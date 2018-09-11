@@ -42,7 +42,7 @@
 
 					if ($wsId > 0) {
 						$myreturn = 'e:Interner Fehler: Dateiname oder Formularelement-Name nicht im Request gefunden.';
-						$originalTargetFilename = $_FILES['fileforopencba']['name'];
+						$originalTargetFilename = $_FILES['fileforvo']['name'];
 						if (isset($originalTargetFilename) and strlen($originalTargetFilename) > 0) {
 							$originalTargetFilename = basename($originalTargetFilename);
 							$tempPrefix = '../vo_data/' . uniqid('t', true) . '_';
@@ -50,7 +50,7 @@
 
 							// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 							// move file from php-server-tmp folder to testcenter-tmp-folder
-							if (move_uploaded_file($_FILES['fileforopencba']['tmp_name'], $tempFilename)) {
+							if (move_uploaded_file($_FILES['fileforvo']['tmp_name'], $tempFilename)) {
 								$targetFolder = $myWorkspaceFolder . '/Resource';
 
 								// if XML then validate and change targetfolder
