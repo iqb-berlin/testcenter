@@ -1,4 +1,8 @@
 <?php
+// www.IQB.hu-berlin.de
+// Bărbulescu, Stroescu, Mechtel
+// 2018
+// license: MIT
 
 class ResourceFile {
     private $isXml = false;

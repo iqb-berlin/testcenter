@@ -1,4 +1,8 @@
 <?php
+// www.IQB.hu-berlin.de
+// Bărbulescu, Stroescu, Mechtel
+// 2018
+// license: MIT
 
 require_once('DBConnection.php');
 
@@ -12,12 +16,22 @@ class DBConnectionSession extends DBConnection {
     // __________________________
     public function canWriteBookletData($sessiontoken, $bookletDBId) {
         $myreturn = false;
-        $query = pg_select($this->dbhandle, 'sessions', ['token' => $sessiontoken]);
-        if (($query != false) and (count($query) > 0)) {
-            $bookletquery = pg_select($this->dbhandle, 'booklets', ['session_id' => $query[0]['id'], 'id' => $bookletDBId]);
-            if (($bookletquery != false) and (count($bookletquery) > 0)) {
-                if ($bookletquery[0]['locked'] !== 't') {
-                    $myreturn = true;
+        if ($this->pdoDBhandle != false) {
+            $booklet_select = $this->pdoDBhandle->prepare(
+                'SELECT booklets.locked FROM booklets
+                    INNER JOIN sessions ON sessions.id = booklets.session_id
+                    WHERE sessions.token=:token and booklets.id=:bookletId');
+                
+            if ($booklet_select->execute(array(
+                ':token' => $sessiontoken,
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                if ($bookletdata !== false) {
+                    if ($bookletdata['locked'] !== 't') {
+                        $myreturn = true;
+                    }
                 }
             }
         }
@@ -28,10 +42,19 @@ class DBConnectionSession extends DBConnection {
     // __________________________
     public function getWorkspaceByLogintoken($logintoken) {
         $myreturn = 0;
-        if (($this->dbhandle != false) and (count($logintoken) > 0)) {
-            $loginquery = pg_select($this->dbhandle, 'logins', ['token' => $logintoken]);
-            if (($loginquery != false) and (count($loginquery) > 0)) {
-                $myreturn = 0 + $loginquery[0]['workspace_id'];
+        if ($this->pdoDBhandle != false) {
+            $login_select = $this->pdoDBhandle->prepare(
+                'SELECT logins.workspace_id FROM logins
+                    WHERE logins.token=:token');
+                
+            if ($login_select->execute(array(
+                ':token' => $logintoken
+                ))) {
+
+                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
+                if ($logindata !== false) {
+                    $myreturn = 0 + $logindata['workspace_id'];
+                }
             }
         }
         return $myreturn;
@@ -40,14 +63,19 @@ class DBConnectionSession extends DBConnection {
     // __________________________
     public function getWorkspaceBySessiontoken($sessiontoken) {
         $myreturn = 0;
-        if (($this->dbhandle != false) and (count($sessiontoken) > 0)) {
-            $sessionquery = pg_select($this->dbhandle, 'sessions', ['token' => $sessiontoken]);
-            if (($sessionquery != false) and (count($sessionquery) > 0)) {
-                $loginId = $sessionquery[0]['login_id'];
+        if ($this->pdoDBhandle != false) {
+            $login_select = $this->pdoDBhandle->prepare(
+                'SELECT logins.workspace_id FROM logins
+                    INNER JOIN sessions ON sessions.login_id = logins.id
+                    WHERE sessions.token=:token');
+                
+            if ($login_select->execute(array(
+                ':token' => $sessiontoken
+                ))) {
 
-                $loginquery = pg_select($this->dbhandle, 'logins', ['id' => $loginId]);
-                if (($loginquery != false) and (count($loginquery) > 0)) {
-                    $myreturn = 0 + $loginquery[0]['workspace_id'];
+                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
+                if ($logindata !== false) {
+                    $myreturn = 0 + $logindata['workspace_id'];
                 }
             }
         }
@@ -56,13 +84,22 @@ class DBConnectionSession extends DBConnection {
 
     // __________________________
     public function getBookletStatus($bookletDBId) {
-        $myreturn = 'ccc';
-        if ($this->dbhandle != false) {
-            $bookletquery = pg_select($this->dbhandle, 'booklets', ['id' => $bookletDBId]);
-            if (($bookletquery != false) and (count($bookletquery) > 0)) {
-                $myreturn = json_decode($bookletquery[0]['laststate'], true);
-                if ($bookletquery[0]['locked'] === 't') {
-                    $myreturn['locked'] = true;
+        $myreturn = [];
+        if ($this->pdoDBhandle != false) {
+            $booklet_select = $this->pdoDBhandle->prepare(
+                'SELECT booklets.locked, booklets.laststate FROM booklets
+                    WHERE booklets.id=:bookletId');
+                
+            if ($booklet_select->execute(array(
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                if ($bookletdata !== false) {
+                    $myreturn = json_decode($bookletdata['laststate'], true);
+                    if ($bookletdata['locked'] === 't') {
+                        $myreturn['locked'] = true;
+                    }
                 }
             }
         }
@@ -72,10 +109,19 @@ class DBConnectionSession extends DBConnection {
     // __________________________
     public function getBookletName($bookletDBId) {
         $myreturn = '';
-        if ($this->dbhandle != false) {
-            $bookletquery = pg_select($this->dbhandle, 'booklets', ['id' => $bookletDBId]);
-            if (($bookletquery != false) and (count($bookletquery) > 0)) {
-                $myreturn =  $bookletquery[0]['name'];
+        if ($this->pdoDBhandle != false) {
+            $booklet_select = $this->pdoDBhandle->prepare(
+                'SELECT booklets.name FROM booklets
+                    WHERE booklets.id=:bookletId');
+                
+            if ($booklet_select->execute(array(
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                if ($bookletdata !== false) {
+                    $myreturn =  $bookletdata['name'];
+                }
             }
         }
         return $myreturn;
@@ -85,14 +131,14 @@ class DBConnectionSession extends DBConnection {
     // __________________________
     // check via canWriteBookletData before calling this!
     public function setBookletStatus($bookletDBId, $laststate) {
-        $myreturn = '?';
-        if (($this->dbhandle != false)) {
-            $bookletquery = pg_select($this->dbhandle, 'booklets', ['id' => $bookletDBId]);
-            if (($bookletquery != false) and (count($bookletquery) > 0)) {
-                pg_update($this->dbhandle, 'booklets', 
-                    ['laststate' => json_encode($laststate)],
-                    ['id' => $bookletDBId]);
-                    $myreturn = 'ok';
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $booklet_update = $this->pdoDBhandle->prepare(
+                'UPDATE booklets SET laststate = :laststate WHERE id = :id');
+            if ($booklet_update -> execute(array(
+                ':laststate' => json_encode($laststate),
+                ':id' => $bookletDBId))) {
+                $myreturn = true;
             }
         }
         return $myreturn;
@@ -101,47 +147,118 @@ class DBConnectionSession extends DBConnection {
     // __________________________
     public function start_session($logintoken, $code, $booklet) {
         $myreturn = '';
-        if (($this->dbhandle != false) and 
-                (count($logintoken) > 0) and 
-                (count($booklet) > 0) and (count($booklet) < 50)) {
+        if ($this->pdoDBhandle != false) {
+            $login_select = $this->pdoDBhandle->prepare(
+                'SELECT logins.id FROM logins
+                    WHERE logins.token=:token');
+                
+            if ($login_select->execute(array(
+                ':token' => $logintoken
+                ))) {
 
-            $loginquery = pg_select($this->dbhandle, 'logins', ['token' => $logintoken]);
-            if (($loginquery != false) and (count($loginquery) > 0)) {
-                $myreturn = uniqid('a', true);
-                $query = pg_select($this->dbhandle, 'sessions', ['login_id' => $loginquery[0]['id'], 'code' => $code]);
-                $laststate_session = ['lastbooklet' => $booklet];
-                if (($query != false) and (count($query) > 0)) {
-                    // überschreiben des alten Tokens
-                    pg_update($this->dbhandle, 'sessions', 
-                        ['valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
-                             'token' => $myreturn, 'laststate' => json_encode($laststate_session)],
-                        ['id' => $query[0]['id']]);
-                } else {
-                    // Eintragen eines neuen Tokens
-                    $insertreturn = pg_insert($this->dbhandle, 'sessions', ['token' => $myreturn, 
-                                                        'code' => $code, 'login_id' => $loginquery[0]['id'],
-                                                        'valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
-                                                        'laststate' => json_encode($laststate_session)]);
+                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
+                if ($logindata !== false) {
+                    $sessions_select = $this->pdoDBhandle->prepare(
+                        'SELECT sessions.id FROM sessions
+                            WHERE sessions.login_id=:id and sessions.code=:code');
+                        
+                    if ($sessions_select->execute(array(
+                        ':id' => $logindata['id'],
+                        ':code' => $code
+                        ))) {
+        
+                        $myreturn = uniqid('a', true);
+                        $laststate_session = ['lastbooklet' => $booklet];
+                        $sessiondata = $sessions_select->fetch(PDO::FETCH_ASSOC);
+                        if ($sessiondata !== false) {
+                            // overwrite token
+                            $session_update = $this->pdoDBhandle->prepare(
+                                'UPDATE sessions SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
+                            if (!$session_update -> execute(array(
+                                ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
+                                ':laststate' => json_encode($laststate_session),
+                                ':token' => $myreturn,
+                                ':id' => $sessiondata['id']))) {
+                                $myreturn = '';
+                            }
+                        } else {
+                            $session_insert = $this->pdoDBhandle->prepare(
+                                'INSERT INTO sessions (token, code, login_id, valid_until, laststate) 
+                                    VALUES(:token, :code, :login_id, :valid_until, :laststate)');
+        
+                            if (!$session_insert->execute(array(
+                                ':token' => $myreturn,
+                                ':code' => $code,
+                                ':login_id' => $logindata['id'],
+                                ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
+                                ':laststate' => json_encode($laststate_session)
+                                ))) {
+                                    $myreturn = '';
+                            }
+                        }
+                    }
                 }
 
-                $query = pg_select($this->dbhandle, 'sessions', ['token' => $myreturn]);
-                if (($query != false) and (count($query) > 0)) {
-                    $sessionId = $query[0]['id'];
-                    $laststate_booklet = ['u' => 0];
-                    $bookletquery = pg_select($this->dbhandle, 'booklets', ['session_id' => $sessionId, 'name' => $booklet]);
+                $sessions_select = $this->pdoDBhandle->prepare(
+                    'SELECT sessions.id FROM sessions
+                        WHERE sessions.token=:token');
                     
-                    if (($bookletquery != false) and (count($bookletquery) > 0)) {
-                        if ($bookletquery[0]['locked'] === 't') {
-                            $myreturn = '';
-                        } else {
-                            $myreturn = $myreturn . "##" . $bookletquery[0]['id'];
-                        }
-                    } else {
-                        $insertreturn = pg_insert($this->dbhandle, 'booklets', ['session_id' => $sessionId, 'name' => $booklet, 'laststate' => json_encode($laststate_booklet)]);
-                        $bookletquery = pg_select($this->dbhandle, 'booklets', ['session_id' => $sessionId, 'name' => $booklet]);
+                if ($sessions_select->execute(array(
+                    ':token' => $myreturn
+                    ))) {
+    
+                    $sessiondata = $sessions_select->fetch(PDO::FETCH_ASSOC);
+                    if ($sessiondata !== false) {
+                        $laststate_booklet = ['u' => 0];
+                        $booklet_select = $this->pdoDBhandle->prepare(
+                            'SELECT booklets.locked, booklets.id FROM booklets
+                                WHERE booklets.session_id=:sessionId and booklets.name=:bookletname');
+                            
+                        if ($booklet_select->execute(array(
+                            ':sessionId' => $sessiondata['id'],
+                            ':bookletname' => $booklet
+                            ))) {
+            
+                            $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                            if ($bookletdata !== false) {
+                                if ($bookletdata['locked'] === 't') {
+                                    $myreturn = '';
+                                } else {
+                                    $myreturn = $myreturn . "##" . $bookletdata['id'];
+                                }
+                            } else {
+                                $booklet_insert = $this->pdoDBhandle->prepare(
+                                    'INSERT INTO booklets (session_id, name, laststate) 
+                                        VALUES(:session_id, :name, :laststate)');
+            
+                                if ($booklet_insert->execute(array(
+                                    ':session_id' => $sessiondata['id'],
+                                    ':name' => $booklet,
+                                    ':laststate' => json_encode($laststate_booklet)
+                                    ))) {
 
-                        if (($bookletquery != false) and (count($bookletquery) > 0)) {
-                            $myreturn = $myreturn . "##" . $bookletquery[0]['id'];
+                                    $booklet_select = $this->pdoDBhandle->prepare(
+                                        'SELECT booklets.id FROM booklets
+                                            WHERE booklets.session_id=:sessionId and booklets.name=:bookletname');
+                                        
+                                    if ($booklet_select->execute(array(
+                                        ':sessionId' => $sessiondata['id'],
+                                        ':bookletname' => $booklet
+                                        ))) {
+                        
+                                        $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                                        if ($bookletdata !== false) {
+                                            $myreturn = $myreturn . "##" . $bookletdata['id'];
+                                        } else {
+                                            $myreturn = '';
+                                        }
+                                    } else {
+                                        $myreturn = '';
+                                    }
+                                } else {
+                                    $myreturn = '';
+                                }
+                            }
                         }
                     }
                 }
@@ -155,14 +272,14 @@ class DBConnectionSession extends DBConnection {
     public function stop_session($sessiontoken, $mode) {
         // mode: (by testee) 'cancelled', 'intended', (by test-mc) 'killed'
         $myreturn = '';
-        if (($this->dbhandle != false) and 
+        if (($this::: != false) and 
                 (count($sessiontoken) > 0)) {
 
-            $sessionquery = pg_select($this->dbhandle, 'sessions', ['token' => $sessiontoken]);
+            $sessionquery = :::select($this:::, 'sessions', ['token' => $sessiontoken]);
             if (($sessionquery != false) and (count($sessionquery) > 0)) {
                 // remove token
                 $laststate_booklet = ['lastunit' => '', 'finished' => $mode];
-                pg_update($this->dbhandle, 'sessions', 
+                :::update($this:::, 'sessions', 
                         ['valid_until' => date('Y-m-d G:i:s', time()), 'token' => '', 'laststate' => json_encode($laststate_booklet)],
                         ['id' => $sessionquery[0]['id']]);
             }
@@ -178,10 +295,20 @@ class DBConnectionSession extends DBConnection {
     // __________________________
     public function getUnitStatus($bookletDBId, $unit) {
         $myreturn = ['restorepoint' => ''];
-        if ($this->dbhandle != false) {
-            $unitquery = pg_select($this->dbhandle, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
-            if (($unitquery != false) and (count($unitquery) > 0)) {
-                $myreturn['restorepoint'] = $unitquery[0]['laststate'];
+        if ($this->pdoDBhandle != false) {
+            $unit_select = $this->pdoDBhandle->prepare(
+                'SELECT units.laststate FROM units
+                    WHERE units.name=:name and units.booklet_id=:bookletId');
+                
+            if ($unit_select->execute(array(
+                ':name' => $unit,
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+                if ($unitdata !== false) {
+                    $myreturn['restorepoint'] = $unitdata['laststate'];
+                }
             }
         }
         return $myreturn;
@@ -189,19 +316,39 @@ class DBConnectionSession extends DBConnection {
 
     // __________________________
     public function setUnitStatus_laststate($bookletDBId, $unit, $laststate) {
-        $myreturn = '?';
-        if ($this->dbhandle != false) {
-            $unitquery = pg_select($this->dbhandle, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
-            if (($unitquery != false) and (count($unitquery) > 0)) {
-                pg_update($this->dbhandle, 'units', 
-                    ['laststate' => json_encode($laststate)],
-                    ['id' => $unitquery[0]['id']]);
-                $myreturn = 'ok - u';
-            } else {
-                $insertreturn = pg_insert($this->dbhandle, 'units', 
-                    ['booklet_id' => $bookletDBId, 'name' => $unit, 
-                     'laststate' => json_encode($laststate)]);
-                $myreturn = 'ok - i';
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $unit_select = $this->pdoDBhandle->prepare(
+                'SELECT units.id FROM units
+                    WHERE units.name=:name and units.booklet_id=:bookletId');
+                
+            if ($unit_select->execute(array(
+                ':name' => $unit,
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+                if ($unitdata !== false) {
+                    $unit_update = $this->pdoDBhandle->prepare(
+                        'UPDATE units SET laststate=:laststate WHERE id = :id');
+                    if ($unit_update -> execute(array(
+                        ':laststate' => json_encode($laststate),
+                        ':id' => $unitdata['id']))) {
+                        $myreturn = true;
+                    }
+                } else {
+                    $unit_insert = $this->pdoDBhandle->prepare(
+                        'INSERT INTO units (booklet_id, name, laststate) 
+                            VALUES(:bookletId, :name, :laststate)');
+
+                    if ($unit_insert->execute(array(
+                        ':bookletId' => $bookletDBId,
+                        ':name' => $unit,
+                        ':laststate' => json_encode($laststate)
+                        ))) {
+                            $myreturn = true;
+                    }
+                }
             }
         }
         return $myreturn;
@@ -209,19 +356,39 @@ class DBConnectionSession extends DBConnection {
 
     // __________________________
     public function setUnitStatus_responses($bookletDBId, $unit, $responses) {
-        $myreturn = '?';
-        if ($this->dbhandle != false) {
-            $unitquery = pg_select($this->dbhandle, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
-            if (($unitquery != false) and (count($unitquery) > 0)) {
-                pg_update($this->dbhandle, 'units', 
-                    ['responses' => $responses],
-                    ['id' => $unitquery[0]['id']]);
-                $myreturn = 'ok - u';
-            } else {
-                $insertreturn = pg_insert($this->dbhandle, 'units', 
-                    ['booklet_id' => $bookletDBId, 'name' => $unit, 
-                     'responses' => $responses]);
-                $myreturn = 'ok - i';
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $unit_select = $this->pdoDBhandle->prepare(
+                'SELECT units.id FROM units
+                    WHERE units.name=:name and units.booklet_id=:bookletId');
+                
+            if ($unit_select->execute(array(
+                ':name' => $unit,
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+                if ($unitdata !== false) {
+                    $unit_update = $this->pdoDBhandle->prepare(
+                        'UPDATE units SET responses=:responses WHERE id = :id');
+                    if ($unit_update -> execute(array(
+                        ':responses' => $responses,
+                        ':id' => $unitdata['id']))) {
+                        $myreturn = true;
+                    }
+                } else {
+                    $unit_insert = $this->pdoDBhandle->prepare(
+                        'INSERT INTO units (booklet_id, name, responses) 
+                            VALUES(:bookletId, :name, :responses)');
+
+                    if ($unit_insert->execute(array(
+                        ':bookletId' => $bookletDBId,
+                        ':name' => $unit,
+                        ':responses' => $responses
+                        ))) {
+                            $myreturn = true;
+                    }
+                }
             }
         }
         return $myreturn;
@@ -229,43 +396,64 @@ class DBConnectionSession extends DBConnection {
 
     // __________________________
     public function setUnitStatus_restorepoint($bookletDBId, $unit, $restorepoint) {
-        $myreturn = '?';
-        if ($this->dbhandle != false) {
-            $unitquery = pg_select($this->dbhandle, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
-            if (($unitquery != false) and (count($unitquery) > 0)) {
-                pg_update($this->dbhandle, 'units', 
-                    ['laststate' => $restorepoint],
-                    ['id' => $unitquery[0]['id']]);
-                $myreturn = 'ok - u';
-            } else {
-                $insertreturn = pg_insert($this->dbhandle, 'units', 
-                    ['booklet_id' => $bookletDBId, 'name' => $unit, 
-                     'laststate' => $restorepoint]);
-                $myreturn = 'ok - i';
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $unit_select = $this->pdoDBhandle->prepare(
+                'SELECT units.id FROM units
+                    WHERE units.name=:name and units.booklet_id=:bookletId');
+                
+            if ($unit_select->execute(array(
+                ':name' => $unit,
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+                if ($unitdata !== false) {
+                    $unit_update = $this->pdoDBhandle->prepare(
+                        'UPDATE units SET laststate=:laststate WHERE id = :id');
+                    if ($unit_update -> execute(array(
+                        ':laststate' => $restorepoint,
+                        ':id' => $unitdata['id']))) {
+                        $myreturn = true;
+                    }
+                } else {
+                    $unit_insert = $this->pdoDBhandle->prepare(
+                        'INSERT INTO units (booklet_id, name, laststate) 
+                            VALUES(:bookletId, :name, :laststate)');
+
+                    if ($unit_insert->execute(array(
+                        ':bookletId' => $bookletDBId,
+                        ':name' => $unit,
+                        ':laststate' => $restorepoint
+                        ))) {
+                            $myreturn = true;
+                    }
+                }
             }
         }
         return $myreturn;
     }
 
+    /*
     // __________________________
     public function setUnitStatus_log($bookletDBId, $unit, $log) {
         $myreturn = '?';
-        if ($this->dbhandle != false) {
-            $unitquery = pg_select($this->dbhandle, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
+        if ($this::: != false) {
+            $unitquery = :::select($this:::, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
             if (($unitquery == false) or (count($unitquery) == 0)) {
-                $insertreturn = pg_insert($this->dbhandle, 'units', 
+                $insertreturn = :::insert($this:::, 'units', 
                     ['booklet_id' => $bookletDBId, 'name' => $unit]);
-                $unitquery = pg_select($this->dbhandle, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
+                $unitquery = :::select($this:::, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
             }
             if (($unitquery != false) and (count($unitquery) > 0)) {
-                $insertreturn = pg_insert($this->dbhandle, 'unitlogs', 
+                $insertreturn = :::insert($this:::, 'unitlogs', 
                     ['unit_id' => $unitquery[0]['id'], 'logentry' => $log,
                     'logtime' => date('Y-m-d G:i:s', time())]);
                 $myreturn = 'ok';
             }
         }
         return $myreturn;
-    }
+    } */
 }
 
 ?>
