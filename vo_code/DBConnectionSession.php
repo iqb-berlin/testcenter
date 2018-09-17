@@ -434,26 +434,37 @@ class DBConnectionSession extends DBConnection {
         return $myreturn;
     }
 
-    /*
     // __________________________
     public function setUnitStatus_log($bookletDBId, $unit, $log) {
-        $myreturn = '?';
-        if ($this::: != false) {
-            $unitquery = :::select($this:::, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
-            if (($unitquery == false) or (count($unitquery) == 0)) {
-                $insertreturn = :::insert($this:::, 'units', 
-                    ['booklet_id' => $bookletDBId, 'name' => $unit]);
-                $unitquery = :::select($this:::, 'units', ['booklet_id' => $bookletDBId, 'name' => $unit]);
-            }
-            if (($unitquery != false) and (count($unitquery) > 0)) {
-                $insertreturn = :::insert($this:::, 'unitlogs', 
-                    ['unit_id' => $unitquery[0]['id'], 'logentry' => $log,
-                    'logtime' => date('Y-m-d G:i:s', time())]);
-                $myreturn = 'ok';
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $unit_select = $this->pdoDBhandle->prepare(
+                'SELECT units.id FROM units
+                    WHERE units.name=:name and units.booklet_id=:bookletId');
+                
+            if ($unit_select->execute(array(
+                ':name' => $unit,
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+                if ($unitdata !== false) {
+                    $unitlog_insert = $this->pdoDBhandle->prepare(
+                        'INSERT INTO unitlogs (unit_id, logentry, logtime) 
+                            VALUES(:unitId, :logentry, :logtime)');
+
+                    if ($unitlog_insert->execute(array(
+                        ':unitId' => $unitdata['id'],
+                        ':logentry' => $log,
+                        ':logtime' => date('Y-m-d G:i:s', time())
+                        ))) {
+                            $myreturn = true;
+                    }
+                }
             }
         }
         return $myreturn;
-    } */
+    }
 }
 
 ?>
