@@ -9,21 +9,21 @@ require_once('DBConnection.php');
 class DBConnectionSession extends DBConnection {
     private $idletimeSession = 60 * 30;
 
-    // for all functions here: $sessiontoken is the token as stored in the
+    // for all functions here: $persontoken is the token as stored in the
     // database; the sessiontoken given to other functions and used by the 
     // client is a  combination of sessiontoken (db) + booklet-DB-id
 
     // __________________________
-    public function canWriteBookletData($sessiontoken, $bookletDBId) {
+    public function canWriteBookletData($persontoken, $bookletDBId) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
             $booklet_select = $this->pdoDBhandle->prepare(
                 'SELECT booklets.locked FROM booklets
-                    INNER JOIN sessions ON sessions.id = booklets.session_id
-                    WHERE sessions.token=:token and booklets.id=:bookletId');
+                    INNER JOIN people ON people.id = booklets.person_id
+                    WHERE people.token=:token and booklets.id=:bookletId');
                 
             if ($booklet_select->execute(array(
-                ':token' => $sessiontoken,
+                ':token' => $persontoken,
                 ':bookletId' => $bookletDBId
                 ))) {
 
@@ -61,16 +61,16 @@ class DBConnectionSession extends DBConnection {
     }
 
     // __________________________
-    public function getWorkspaceBySessiontoken($sessiontoken) {
+    public function getWorkspaceByPersonToken($persontoken) {
         $myreturn = 0;
         if ($this->pdoDBhandle != false) {
             $login_select = $this->pdoDBhandle->prepare(
                 'SELECT logins.workspace_id FROM logins
-                    INNER JOIN sessions ON sessions.login_id = logins.id
-                    WHERE sessions.token=:token');
+                    INNER JOIN people ON people.login_id = logins.id
+                    WHERE people.token=:token');
                 
             if ($login_select->execute(array(
-                ':token' => $sessiontoken
+                ':token' => $persontoken
                 ))) {
 
                 $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
@@ -158,22 +158,22 @@ class DBConnectionSession extends DBConnection {
 
                 $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
                 if ($logindata !== false) {
-                    $sessions_select = $this->pdoDBhandle->prepare(
-                        'SELECT sessions.id FROM sessions
-                            WHERE sessions.login_id=:id and sessions.code=:code');
+                    $people_select = $this->pdoDBhandle->prepare(
+                        'SELECT people.id FROM people
+                            WHERE people.login_id=:id and people.code=:code');
                         
-                    if ($sessions_select->execute(array(
+                    if ($people_select->execute(array(
                         ':id' => $logindata['id'],
                         ':code' => $code
                         ))) {
         
                         $myreturn = uniqid('a', true);
                         $laststate_session = ['lastbooklet' => $booklet];
-                        $sessiondata = $sessions_select->fetch(PDO::FETCH_ASSOC);
+                        $sessiondata = $people_select->fetch(PDO::FETCH_ASSOC);
                         if ($sessiondata !== false) {
                             // overwrite token
                             $session_update = $this->pdoDBhandle->prepare(
-                                'UPDATE sessions SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
+                                'UPDATE people SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
                             if (!$session_update -> execute(array(
                                 ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
                                 ':laststate' => json_encode($laststate_session),
@@ -183,7 +183,7 @@ class DBConnectionSession extends DBConnection {
                             }
                         } else {
                             $session_insert = $this->pdoDBhandle->prepare(
-                                'INSERT INTO sessions (token, code, login_id, valid_until, laststate) 
+                                'INSERT INTO people (token, code, login_id, valid_until, laststate) 
                                     VALUES(:token, :code, :login_id, :valid_until, :laststate)');
         
                             if (!$session_insert->execute(array(
@@ -199,23 +199,23 @@ class DBConnectionSession extends DBConnection {
                     }
                 }
 
-                $sessions_select = $this->pdoDBhandle->prepare(
-                    'SELECT sessions.id FROM sessions
-                        WHERE sessions.token=:token');
+                $people_select = $this->pdoDBhandle->prepare(
+                    'SELECT people.id FROM people
+                        WHERE people.token=:token');
                     
-                if ($sessions_select->execute(array(
+                if ($people_select->execute(array(
                     ':token' => $myreturn
                     ))) {
     
-                    $sessiondata = $sessions_select->fetch(PDO::FETCH_ASSOC);
+                    $sessiondata = $people_select->fetch(PDO::FETCH_ASSOC);
                     if ($sessiondata !== false) {
                         $laststate_booklet = ['u' => 0];
                         $booklet_select = $this->pdoDBhandle->prepare(
                             'SELECT booklets.locked, booklets.id FROM booklets
-                                WHERE booklets.session_id=:sessionId and booklets.name=:bookletname');
+                                WHERE booklets.person_id=:personId and booklets.name=:bookletname');
                             
                         if ($booklet_select->execute(array(
-                            ':sessionId' => $sessiondata['id'],
+                            ':personId' => $sessiondata['id'],
                             ':bookletname' => $booklet
                             ))) {
             
@@ -228,21 +228,21 @@ class DBConnectionSession extends DBConnection {
                                 }
                             } else {
                                 $booklet_insert = $this->pdoDBhandle->prepare(
-                                    'INSERT INTO booklets (session_id, name, laststate) 
-                                        VALUES(:session_id, :name, :laststate)');
+                                    'INSERT INTO booklets (person_id, name, laststate) 
+                                        VALUES(:person_id, :name, :laststate)');
             
                                 if ($booklet_insert->execute(array(
-                                    ':session_id' => $sessiondata['id'],
+                                    ':person_id' => $sessiondata['id'],
                                     ':name' => $booklet,
                                     ':laststate' => json_encode($laststate_booklet)
                                     ))) {
 
                                     $booklet_select = $this->pdoDBhandle->prepare(
                                         'SELECT booklets.id FROM booklets
-                                            WHERE booklets.session_id=:sessionId and booklets.name=:bookletname');
+                                            WHERE booklets.person_id=:personId and booklets.name=:bookletname');
                                         
                                     if ($booklet_select->execute(array(
-                                        ':sessionId' => $sessiondata['id'],
+                                        ':personId' => $sessiondata['id'],
                                         ':bookletname' => $booklet
                                         ))) {
                         

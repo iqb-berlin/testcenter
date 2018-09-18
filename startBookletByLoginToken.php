@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 					$xmlfile = simplexml_load_file($myBookletFilename);
 					if ($xmlfile != false) {
 						$myerrorcode = 0;
-						$bKey = strtoupper((string) $xmlfile->Metadata[0]->ID[0]);
+						$bKey = (string) $xmlfile->Metadata[0]->ID[0];
 						$myreturn = $myDBConnection->start_session($myLoginToken, $myCode, $bKey);
 					}
 				}

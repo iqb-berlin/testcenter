@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 		if (isset($myToken) && isset($myCode) && isset($myBooklet)) {
 			$myerrorcode = 0; // if there is no booklet in the database yet, this is not an error
-			$myreturn = $myDBConnection->getBookletStatus($myToken, $myCode, $myBooklet);
+			$myreturn = $myDBConnection->getBookletStatusNL($myToken, $myCode, $myBooklet);
 		}				
 	}    
 	unset($myDBConnection);

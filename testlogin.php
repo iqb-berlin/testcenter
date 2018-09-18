@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		$myBooklets = [];
 		$myWorkspace = '';
 		$myMode = '';
+		$myGroup = '';
 		if (isset($myName) and isset($myPassword)) {
 			$workspaceDir = opendir('vo_data');
 			$testeefiledirprefix = 'vo_data/ws_';
@@ -59,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 														$notAfter = (string) $group['notafter'];
 													}
 													if (isset($group['mode'])) {
+														$myGroup = $group['name'];
+
 														foreach($group->children() as $tt) { 
 															if ($tt['name'] == $myName) {
 																$hasfound = true;
@@ -124,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 			if (strlen($myWorkspace) > 0) {
 				$myreturn = $myDBConnection->login(
-					$myWorkspace, $myName, $myMode, json_encode($myBooklets));
+					$myWorkspace, $myGroup, $myName, $myMode, json_encode($myBooklets));
 			}
 		}				
 

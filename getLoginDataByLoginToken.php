@@ -12,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 	// *****************************************************************
 
-	// Booklet-Struktur: name, codes[], 
-	$myreturn = ['ws' => '', 'sessions' => [], 'mode' => ''];
+	// NO CODE!
+	$myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => []];
 
 	$myerrorcode = 503;
 
@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		$myToken = $data["lt"];
 
 		if (isset($myToken)) {
-			$myreturn = $myDBConnection->getSessions($myToken);
-			if (count($myreturn['sessions']) > 0 ) {
+			$myreturn = $myDBConnection->getAllBookletsByLoginToken($myToken);
+			if (count($myreturn['booklets']) > 0 ) {
 				$bookletfolder = 'vo_data/ws_' . $myreturn['ws'] . '/Booklet';
 
 				if (file_exists($bookletfolder)) {
@@ -48,12 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 					$myerrorcode = 0;
 					
 					if (count($bookletlist) > 0) {
-						foreach($myreturn['sessions'] as $key => $s) {
+						foreach($myreturn['booklets'] as $key => $s) {
 							$bookletkey = strtoupper($s['name']);
 							if (isset($bookletlist[$bookletkey])) {
 								$bData = $bookletlist[$bookletkey];
-								$myreturn['sessions'][$key]['filename'] = $bData['filename'];
-								$myreturn['sessions'][$key]['title'] = $bData['name'];
+								$myreturn['booklets'][$key]['filename'] = $bData['filename'];
+								$myreturn['booklets'][$key]['title'] = $bData['name'];
 							}
 						}
 					}
