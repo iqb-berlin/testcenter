@@ -170,6 +170,7 @@ class DBConnectionAdmin extends DBConnection {
 				':token' => $token))) {
 
 				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
+
 				if ($data != false) {
 					$this->refreshToken($token);
 					$myreturn = $data;
@@ -178,6 +179,17 @@ class DBConnectionAdmin extends DBConnection {
 		}
 		return $myreturn;
 	}
+
+	public function hasAdminAccessToWorkspace($token, $requestedWorkspaceId) {
+		$authorized = false;
+		foreach($this->getWorkspaces($token) as $allowedWorkspace) {
+
+			if ($allowedWorkspace['id'] == $requestedWorkspaceId) {
+				$authorized = true;
+			}
+		}
+		return $authorized;
+	} 
 
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// returns the name of the workspace given by id
@@ -203,17 +215,7 @@ class DBConnectionAdmin extends DBConnection {
 			
 		return $myreturn;
 	}
-
-	public function hasAdminAccessToWorkspace($token, $requestedWorkspaceId) {
-		$authorized = false;
-		foreach($this->getWorkspaces($token) as $allowedWorkspace) {
-
-			if ($allowedWorkspace['id'] == $requestedWorkspaceId) {
-				$authorized = true;
-			}
-		}
-		return $authorized;
-	}   
+  
 
 	// public function getUniqueIdCSV() {
 

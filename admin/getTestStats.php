@@ -1,6 +1,6 @@
 <?php
 
-function getGroupData($wsId) {
+ function getGroupData($wsId) {
   $return = [];
 
         
@@ -10,7 +10,7 @@ function getGroupData($wsId) {
     $myGroupCount = 1;
 
     $TesttakersDirname = __DIR__.'/../vo_data/ws_' . $sanitizedwsId . '/Testtakers';
-    error_log($TesttakersDirname);
+
     if (file_exists($TesttakersDirname)) {
 
       $testTakersDirectoryHandle = opendir($TesttakersDirname);
@@ -47,7 +47,7 @@ function getGroupData($wsId) {
                   $obj["groupname"] = "group " . $myGroupCount;
                   $myGroupCount += 1;
                 }
-                // group xml to get login names as sessions mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+                // group xml to get login names as sessions // they're called people in the new db schema
                 foreach($group->children() as $login) {
                   if($login->getName() == "Login") {
 
