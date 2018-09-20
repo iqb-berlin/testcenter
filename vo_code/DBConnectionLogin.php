@@ -63,7 +63,6 @@ class DBConnectionLogin extends DBConnection {
     public function getAllBookletsByLoginToken($logintoken) {
         $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => []];
 
-		$myreturn = ['workspaceName' => '', 'booklets' => [], 'mode' => ''];
         if (($this->pdoDBhandle != false) and (count($logintoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
 				'SELECT logins.session_def, logins.workspace_id, logins.mode, logins.groupname,
@@ -83,6 +82,38 @@ class DBConnectionLogin extends DBConnection {
                     $myreturn['ws'] = $logindata['workspace_id'];
                     $myreturn['mode'] = $logindata['mode'];
                     $myreturn['login_id'] = $logindata['id'];
+                    $myreturn['codeswithbooklets'] = $this->getCodesWithBooklets($myreturn['booklets']);
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+    // __________________________
+    public function getAllBookletsByPersonToken($persontoken) {
+        $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => [], 'code' => ''];
+
+        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+			$sql_select = $this->pdoDBhandle->prepare(
+				'SELECT logins.session_def, logins.workspace_id, logins.mode, logins.groupname,
+                        logins.id, logins.name as lname, workspaces.name as wname, people.code FROM people
+                    INNER JOIN logins ON logins.id = people.login_id
+                    INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+					WHERE people.token = :token');
+				
+			if ($sql_select->execute(array(
+				':token' => $persontoken))) {
+
+				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
+				if ($logindata !== false) {
+                    $myreturn['booklets'] = json_decode($logindata['session_def'], true);
+                    $myreturn['workspaceName'] = $logindata['wname'];
+                    $myreturn['loginname'] = $logindata['lname'];
+                    $myreturn['groupname'] = $logindata['groupname'];
+                    $myreturn['ws'] = $logindata['workspace_id'];
+                    $myreturn['mode'] = $logindata['mode'];
+                    $myreturn['login_id'] = $logindata['id'];
+                    $myreturn['code'] = $logindata['code'];
                     $myreturn['codeswithbooklets'] = $this->getCodesWithBooklets($myreturn['booklets']);
                 }
             }
@@ -147,8 +178,11 @@ class DBConnectionLogin extends DBConnection {
     }
 
     // __________________________
+    // having just the login, entry in the booklet table could be missing; so we have to go
+    // through the session_def
     public function getBookletStatusNL($logintoken, $code, $bookletname) {
-        $myreturn = ['canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0];
+        // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
+        $myreturn = [];
 
         if (($this->pdoDBhandle != false) and (count($logintoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
@@ -197,7 +231,7 @@ class DBConnectionLogin extends DBConnection {
                                 $persondata = $people_select->fetch(PDO::FETCH_ASSOC);
                                 if ($persondata !== false) {
                                     $booklet_select = $this->pdoDBhandle->prepare(
-                                        'SELECT booklets.laststate, booklets.locked FROM booklets
+                                        'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
                                             WHERE booklets.person_id = :personid and booklets.name = :bookletname');
                                         
                                     if ($booklet_select->execute(array(
@@ -207,6 +241,8 @@ class DBConnectionLogin extends DBConnection {
                         
                                         $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
                                         if ($bookletdata !== false) {
+                                            $myreturn['label'] = $bookletdata['label'];
+                                            $myreturn['id'] = $bookletdata['id'];
                                             $laststate = json_decode($bookletdata['laststate'], true);
                                             if (isset($laststate['u'])) {
                                                 $myreturn['lastUnit'] = $laststate['u'];
@@ -230,6 +266,122 @@ class DBConnectionLogin extends DBConnection {
         return $myreturn;
     }
     
+    public function getBookletStatusNP($persontoken, $bookletname) {
+        // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
+        $myreturn = [];
+
+        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+			$sql_select = $this->pdoDBhandle->prepare(
+				'SELECT logins.session_def, people.id, people.code FROM people
+                    INNER JOIN logins ON logins.id = people.login_id
+					WHERE people.token = :token');
+				
+			if ($sql_select->execute(array(
+				':token' => $persontoken))) {
+
+				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
+				if ($logindata !== false) {
+                    $myBooklets = json_decode($logindata['session_def'], true);
+                    $code = $logindata['code'];
+                    $personId = $logindata['id'];
+
+                    if (count($myBooklets) > 0) {
+                        // check whether code and booklet are part of login
+                        $bookletFound = false;
+                        foreach($myBooklets as $b) {
+                            // todo: notbefore/notafter
+                            if (strtoupper($b['name']) == strtoupper($bookletname)) {
+                                if (count($b['codes']) > 0) {
+                                    if (in_array($code, $b['codes'])) {
+                                        $bookletFound = true;
+                                    }
+                                } else {
+                                    $bookletFound = true;
+                                }
+                            }
+                            if ($bookletFound) {
+                                break;
+                            }
+                        }
+
+                        if ($bookletFound) {
+                            $myreturn['canStart'] = true;
+                            $myreturn['statusLabel'] = 'Zum Starten hier klicken';
+                
+                            $booklet_select = $this->pdoDBhandle->prepare(
+                                'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
+                                    WHERE booklets.person_id = :personid and booklets.name = :bookletname');
+                                
+                            if ($booklet_select->execute(array(
+                                ':personid' => $personId,
+                                ':bookletname' => $bookletname
+                                ))) {
+                
+                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                                if ($bookletdata !== false) {
+                                    $myreturn['label'] = $bookletdata['label'];
+                                    $myreturn['id'] = $bookletdata['id'];
+                                    $laststate = json_decode($bookletdata['laststate'], true);
+                                    if (isset($laststate['u'])) {
+                                        $myreturn['lastUnit'] = $laststate['u'];
+                                    }
+                                    if ($bookletdata['locked'] === 't') {
+                                        $myreturn['canStart'] = false;
+                                        $myreturn['statusLabel'] = 'Gesperrt';
+                                        // later: differentiate between finished, cancelled etc.
+                                    } else {
+                                        $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $myreturn;
+    }
+    
+    // __________________________
+    public function getBookletStatusPI($persontoken, $bookletId) {
+        // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
+        $myreturn = [];
+
+        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+            $myreturn['canStart'] = true;
+            $myreturn['statusLabel'] = 'Zum Starten hier klicken';
+
+            $booklet_select = $this->pdoDBhandle->prepare(
+                'SELECT booklets.laststate, booklets.locked, booklets.label FROM booklets
+                    INNER JOIN people on people.id = booklets.person_id
+                    WHERE people.token = :token 
+                        and booklets.id = :bookletId');
+                
+            if ($booklet_select->execute(array(
+                ':token' => $persontoken,
+                ':bookletId' => $bookletId
+                ))) {
+
+                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                if ($bookletdata !== false) {
+                    $myreturn['label'] = $bookletdata['label'];
+                    $myreturn['id'] = $bookletId;
+                    $laststate = json_decode($bookletdata['laststate'], true);
+                    if (isset($laststate['u'])) {
+                        $myreturn['lastUnit'] = $laststate['u'];
+                    }
+                    if ($bookletdata['locked'] === 't') {
+                        $myreturn['canStart'] = false;
+                        $myreturn['statusLabel'] = 'Gesperrt';
+                        // later: differentiate between finished, cancelled etc.
+                    } else {
+                        $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
+                    }
+                }
+            }
+        }
+        return $myreturn;
+    }
 }
 
 ?>

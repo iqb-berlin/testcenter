@@ -145,7 +145,35 @@ class DBConnectionSession extends DBConnection {
     }
 
     // __________________________
-    public function start_session($logintoken, $code, $booklet) {
+    public function lockBooklet($bookletDBId) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $booklet_update = $this->pdoDBhandle->prepare(
+                'UPDATE booklets SET locked = "t" WHERE id = :id');
+            if ($booklet_update -> execute(array(
+                ':id' => $bookletDBId))) {
+                $myreturn = true;
+            }
+        }
+        return $myreturn;
+    }
+
+    // __________________________
+    public function unlockBooklet($bookletDBId) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $booklet_update = $this->pdoDBhandle->prepare(
+                'UPDATE booklets SET locked = "f" WHERE id = :id');
+            if ($booklet_update -> execute(array(
+                ':id' => $bookletDBId))) {
+                $myreturn = true;
+            }
+        }
+        return $myreturn;
+    }
+
+    // __________________________
+    public function start_session($logintoken, $code, $booklet, $bookletLabel) {
         $myreturn = '';
         if ($this->pdoDBhandle != false) {
             $login_select = $this->pdoDBhandle->prepare(
@@ -224,17 +252,25 @@ class DBConnectionSession extends DBConnection {
                                 if ($bookletdata['locked'] === 't') {
                                     $myreturn = '';
                                 } else {
-                                    $myreturn = $myreturn . "##" . $bookletdata['id'];
+                                    // setting $bookletLabel
+                                    $booklet_update = $this->pdoDBhandle->prepare(
+                                        'UPDATE booklets SET label = :label WHERE id = :id');
+                                    if ($booklet_update -> execute(array(
+                                        ':label' => $bookletLabel,
+                                        ':id' => $bookletdata['id']))) {
+                                        $myreturn = $myreturn . "##" . $bookletdata['id'];
+                                    }
                                 }
                             } else {
                                 $booklet_insert = $this->pdoDBhandle->prepare(
-                                    'INSERT INTO booklets (person_id, name, laststate) 
-                                        VALUES(:person_id, :name, :laststate)');
+                                    'INSERT INTO booklets (person_id, name, laststate, label) 
+                                        VALUES(:person_id, :name, :laststate, :label)');
             
                                 if ($booklet_insert->execute(array(
                                     ':person_id' => $sessiondata['id'],
                                     ':name' => $booklet,
-                                    ':laststate' => json_encode($laststate_booklet)
+                                    ':laststate' => json_encode($laststate_booklet),
+                                    ':label' => $bookletLabel
                                     ))) {
 
                                     $booklet_select = $this->pdoDBhandle->prepare(
