@@ -22,7 +22,6 @@
                 <xs:simpleType>
                   <xs:restriction base="xs:string">
                     <xs:enumeration value="content" />
-                    <xs:enumeration value="itemplayer_html" />
                     <xs:enumeration value="library_js" />
                     <xs:enumeration value="stylesheet" />
                     <xs:enumeration value="webfont" />
@@ -39,8 +38,8 @@
   <!-- ###################################################################-->
   <xs:complexType name="MetadataType">
     <xs:sequence>
-      <xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
-      <xs:element name="ID" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="Id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="Label" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Owner" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>

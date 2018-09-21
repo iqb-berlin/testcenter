@@ -174,7 +174,7 @@ class DBConnectionSession extends DBConnection {
 
     // __________________________
     public function start_session($logintoken, $code, $booklet, $bookletLabel) {
-        $myreturn = '';
+        $myreturn = [];
         if ($this->pdoDBhandle != false) {
             $login_select = $this->pdoDBhandle->prepare(
                 'SELECT logins.id FROM logins
@@ -195,7 +195,7 @@ class DBConnectionSession extends DBConnection {
                         ':code' => $code
                         ))) {
         
-                        $myreturn = uniqid('a', true);
+                        $pToken = uniqid('a', true);
                         $laststate_session = ['lastbooklet' => $booklet];
                         $sessiondata = $people_select->fetch(PDO::FETCH_ASSOC);
                         if ($sessiondata !== false) {
@@ -205,9 +205,9 @@ class DBConnectionSession extends DBConnection {
                             if (!$session_update -> execute(array(
                                 ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
                                 ':laststate' => json_encode($laststate_session),
-                                ':token' => $myreturn,
+                                ':token' => $pToken,
                                 ':id' => $sessiondata['id']))) {
-                                $myreturn = '';
+                                $pToken = '';
                             }
                         } else {
                             $session_insert = $this->pdoDBhandle->prepare(
@@ -215,13 +215,13 @@ class DBConnectionSession extends DBConnection {
                                     VALUES(:token, :code, :login_id, :valid_until, :laststate)');
         
                             if (!$session_insert->execute(array(
-                                ':token' => $myreturn,
+                                ':token' => $pToken,
                                 ':code' => $code,
                                 ':login_id' => $logindata['id'],
                                 ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
                                 ':laststate' => json_encode($laststate_session)
                                 ))) {
-                                    $myreturn = '';
+                                    $pToken = '';
                             }
                         }
                     }
@@ -232,7 +232,7 @@ class DBConnectionSession extends DBConnection {
                         WHERE people.token=:token');
                     
                 if ($people_select->execute(array(
-                    ':token' => $myreturn
+                    ':token' => $pToken
                     ))) {
     
                     $sessiondata = $people_select->fetch(PDO::FETCH_ASSOC);
@@ -250,7 +250,7 @@ class DBConnectionSession extends DBConnection {
                             $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
                             if ($bookletdata !== false) {
                                 if ($bookletdata['locked'] === 't') {
-                                    $myreturn = '';
+                                    $pToken = '';
                                 } else {
                                     // setting $bookletLabel
                                     $booklet_update = $this->pdoDBhandle->prepare(
@@ -258,7 +258,8 @@ class DBConnectionSession extends DBConnection {
                                     if ($booklet_update -> execute(array(
                                         ':label' => $bookletLabel,
                                         ':id' => $bookletdata['id']))) {
-                                        $myreturn = $myreturn . "##" . $bookletdata['id'];
+                                        $myreturn['pt'] = $pToken;
+                                        $myreturn['b'] = $bookletdata['id'];
                                     }
                                 }
                             } else {
@@ -284,15 +285,10 @@ class DBConnectionSession extends DBConnection {
                         
                                         $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
                                         if ($bookletdata !== false) {
-                                            $myreturn = $myreturn . "##" . $bookletdata['id'];
-                                        } else {
-                                            $myreturn = '';
+                                            $myreturn['pt'] = $pToken;
+                                            $myreturn['b'] = $bookletdata['id'];
                                         }
-                                    } else {
-                                        $myreturn = '';
                                     }
-                                } else {
-                                    $myreturn = '';
                                 }
                             }
                         }

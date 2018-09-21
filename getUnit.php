@@ -35,15 +35,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 					$myUnitFolder = 'vo_data/ws_' . $wsId . '/Unit';
 					if (file_exists($myUnitFolder)) {
 						$mydir = opendir($myUnitFolder);
+
+						$myUnitName = strtoupper($myUnitName);
+						require_once('vo_code/XMLFile.php'); // // // // ========================
 						while (($entry = readdir($mydir)) !== false) {
 							$fullfilename = $myUnitFolder . '/' . $entry;
 							if (is_file($fullfilename)) {
 
-								$xmlfile = simplexml_load_file($fullfilename);
-								if ($xmlfile != false) {
-									if (strtoupper((string) $xmlfile->Metadata[0]->ID[0]) == strtoupper($myUnitName)) {
+								$xFile = new XMLFile($fullfilename);
+								if ($xFile->isValid()) {
+									$uKey = $xFile->getId();
+									if ($uKey == $myUnitName) {
 										$myerrorcode = 0;
-										$myreturn['xml'] = $xmlfile->asXML();
+										$myreturn['xml'] = $xFile->xmlfile->asXML();
 										break;
 									}
 								}

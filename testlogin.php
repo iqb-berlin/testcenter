@@ -33,6 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		if (isset($myName) and isset($myPassword)) {
 			$workspaceDir = opendir('vo_data');
 			$testeefiledirprefix = 'vo_data/ws_';
+
+			require_once('vo_code/XMLFile.php'); // // // // ========================
+
 			while (($subdir = readdir($workspaceDir)) !== false) {
 				$mysplits = explode('_', $subdir);
 
@@ -45,11 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 								$fullfilename = $TesttakersDirname . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
 									// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-									$xmlfile = simplexml_load_file($fullfilename);
-									if ($xmlfile != false) {
-										$rootTagName = $xmlfile->getName();
-										if ($rootTagName == 'Testtakers') {
-											foreach($xmlfile->children() as $group) { 
+									$xFile = new XMLFile($fullfilename);
+									if ($xFile->isValid()) {
+										if ($xFile->getRoottagName()  == 'Testtakers') {
+											foreach($xFile->xmlfile->children() as $group) { 
 												if ($group->getName() == 'Group') {
 													$notBefore = '';
 													if (isset($group['notbefore'])) {
@@ -92,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 																			$notAfter = (string) $b['notafter'];
 																		}
 																		array_push($myBooklets, [
-																			'name' => (string) $b,
+																			'id' => (string) $b,
 																			'codes' => $ttcodesList,
 																			'notbefore' => $notBefore,
 																			'notafter' => $notAfter

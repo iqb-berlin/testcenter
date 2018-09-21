@@ -34,16 +34,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 					$myBookletFolder = 'vo_data/ws_' . $wsId . '/Booklet';
 					if (file_exists($myBookletFolder)) {
 						$mydir = opendir($myBookletFolder);
+
+						require_once('vo_code/XMLFile.php'); // // // // ========================
 						while (($entry = readdir($mydir)) !== false) {
 							$fullfilename = $myBookletFolder . '/' . $entry;
 							if (is_file($fullfilename)) {
 
-								$xmlfile = simplexml_load_file($fullfilename);
-								if ($xmlfile != false) {
-									$myerrorcode = 0;
-									if (strtoupper((string) $xmlfile->Metadata[0]->ID[0]) == $bookletName) {
+								$xFile = new XMLFile($fullfilename);
+								if ($xFile->isValid()) {
+									$bKey = $xFile->getId();
+									if ($bKey == $bookletName) {
 										$myerrorcode = 0;
-										$myreturn['xml'] = $xmlfile->asXML();
+										$myreturn['xml'] = $xFile->xmlfile->asXML();
 										break;
 									}
 								}

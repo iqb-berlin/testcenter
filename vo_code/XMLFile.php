@@ -12,15 +12,19 @@ class XMLFile
                                 'Unit' => 'vo_Unit.xsd'];
     private $rootTagName;
     private $isValid;
-    private $name;
+    private $id;
+    private $label;
+    public $xmlfile;
 
     // ####################################################
     public function __construct($xmlfilename)
     {
         $this->allErrors = [];
         $this->rootTagName = '';
-        $this->name = '';
+        $this->id = '';
+        $this->label = '';
         $this->isValid = false;
+        $this->xmlfile = false;
 
         $xsdFolderName = __DIR__ . '/';
 
@@ -31,34 +35,37 @@ class XMLFile
             array_push($this->allErrors, 'Konnte ' . $xmlfilename . ' nicht finden.');
         } else {
 
-            $xmlfile = simplexml_load_file($xmlfilename);
-            if ($xmlfile == false) {
+            $this->xmlfile = simplexml_load_file($xmlfilename);
+            if ($this->xmlfile == false) {
                 array_push($this->allErrors, 'Konnte ' . $xmlfilename . ' nicht öffnen.');
             } else {
-                $this->rootTagName = $xmlfile->getName();
+                $this->rootTagName = $this->xmlfile->getName();
                 if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
                     array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->rootTagName . '" unbekannt.');
                 } else {
                     $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
 
-                    $this->name = $xmlfile->Metadata[0]->Name[0];
+                    $this->id = strtoupper((string) $this->xmlfile->Metadata[0]->Id[0]);
+                    $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
 
-                    $myReader = new \XMLReader();
-                    $myReader->open($xmlfilename);
-                    $myReader->setSchema($mySchemaFilename);
-
-                    $continue = true;
-                    do {
-                        $continue = $myReader->read();
-                        foreach (libxml_get_errors() as $error) {
-                            $errorString = "Fehler $error->code in Zeile {$error->line}: ";
-                            $errorString .= trim($error->message);
-                            array_push($this->allErrors, $errorString);
-                        }
-                        libxml_clear_errors();
-                    } while ($continue);
-
-                    $this->isValid = count($this->allErrors) == 0;
+                    if ((strlen($this->id) > 0) && (strlen($this->label) > 0)) {
+                        $myReader = new \XMLReader();
+                        $myReader->open($xmlfilename);
+                        $myReader->setSchema($mySchemaFilename);
+    
+                        $continue = true;
+                        do {
+                            $continue = $myReader->read();
+                            foreach (libxml_get_errors() as $error) {
+                                $errorString = "Fehler $error->code in Zeile {$error->line}: ";
+                                $errorString .= trim($error->message);
+                                array_push($this->allErrors, $errorString);
+                            }
+                            libxml_clear_errors();
+                        } while ($continue);
+    
+                        $this->isValid = count($this->allErrors) == 0;
+                    }
                 }
             }
         }
@@ -86,9 +93,15 @@ class XMLFile
     }
 
     // ####################################################
-    public function getName()
+    public function getId()
     {
-        return $this->name;
+        return $this->id;
+    }
+
+    // ####################################################
+    public function getLabel()
+    {
+        return $this->label;
     }
 
     // ####################################################

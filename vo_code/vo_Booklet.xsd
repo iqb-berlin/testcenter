@@ -8,9 +8,9 @@
     <xs:sequence>
       <xs:element name="Restrictions" type="RestrictionsType" minOccurs="0" maxOccurs="1"/>
     </xs:sequence>
-    <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute name="title" type="xs:string" use="required"/>
-    <xs:attribute name="id" type="xs:string"/>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="required"/>
+    <xs:attribute name="alias" type="xs:string"/>
     <xs:attribute name="parameter" type="xs:string"/>
     <xs:attribute name="is_navi_spot" type="xs:boolean" default="false" />
   </xs:complexType>
@@ -53,6 +53,14 @@
         <xs:element name="Resources" type="ResourcesType" minOccurs="0" maxOccurs="1"/>
         <xs:element name="Units" type="BookletElementType" minOccurs="1" maxOccurs="unbounded"/>
       </xs:sequence>
+      <xs:attribute name="navibar" type="xs:string">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="left" />
+            <xs:enumeration value="none" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 </xs:schema>

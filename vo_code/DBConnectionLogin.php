@@ -141,7 +141,7 @@ class DBConnectionLogin extends DBConnection {
             }
 
             foreach($sessiondef as $b) {
-                $myBookletName = $b['name'];
+                $myBookletName = $b['id'];
 
                 if ((count($b['codes']) == 0) && (count($allCodes) > 0)) {
                     // add all possible codes
@@ -201,7 +201,7 @@ class DBConnectionLogin extends DBConnection {
                         $bookletFound = false;
                         foreach($myBooklets as $b) {
                             // todo: notbefore/notafter
-                            if (strtoupper($b['name']) == strtoupper($bookletname)) {
+                            if (strtoupper($b['id']) == strtoupper($bookletname)) {
                                 if (count($b['codes']) > 0) {
                                     if (in_array($code, $b['codes'])) {
                                         $bookletFound = true;

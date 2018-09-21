@@ -32,15 +32,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 				if (file_exists($bookletfolder)) {
 					$mydir = opendir($bookletfolder);
 					$bookletlist = [];
+
+					require_once('vo_code/XMLFile.php'); // // // // ========================
 					while (($entry = readdir($mydir)) !== false) {
 						$fullfilename = $bookletfolder . '/' . $entry;
 						if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
 
-							$xmlfile = simplexml_load_file($fullfilename);
-							if ($xmlfile != false) {
-								$bKey = strtoupper((string) $xmlfile->Metadata[0]->ID[0]);
+							$xFile = new XMLFile($fullfilename);
+							if ($xFile->isValid()) {
+								$bKey = $xFile->getId();
 								$bookletlist[$bKey] = [
-										'name' => (string) $xmlfile->Metadata[0]->Name[0],
+										'label' => $xFile->getLabel(),
 										'filename' => $entry];
 							}
 						}
@@ -53,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 							if (isset($bookletlist[$bookletkey])) {
 								$bData = $bookletlist[$bookletkey];
 								$myreturn['booklets'][$key]['filename'] = $bData['filename'];
-								$myreturn['booklets'][$key]['title'] = $bData['name'];
+								$myreturn['booklets'][$key]['label'] = $bData['id'];
 							}
 						}
 					}

@@ -32,11 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 				$myBookletFilename = 'vo_data/ws_' . $wsId . '/Booklet' . '/' . $myBookletFilename;
 				if (file_exists($myBookletFilename)) {
 
-					$xmlfile = simplexml_load_file($myBookletFilename);
-					if ($xmlfile != false) {
+					require_once('vo_code/XMLFile.php'); // // // // ========================
+					$xFile = new XMLFile($myBookletFilename);
+					if ($xFile->isValid()) {
 						$myerrorcode = 0;
-						$bKey = (string) $xmlfile->Metadata[0]->ID[0];
-						$bLabel = (string) $xmlfile->Metadata[0]->Name[0];
+						$bKey = $xFile->getId();
+						$bLabel = $xFile->getLabel();
 						$myreturn = $myDBConnection->start_session($myLoginToken, $myCode, $bKey, $bLabel);
 					}
 				}
