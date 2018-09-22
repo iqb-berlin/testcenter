@@ -28,13 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		$hasfound = false;
 		$myBooklets = [];
 		$myWorkspace = '';
-		$myMode = '';
-		$myGroup = '';
+
 		if (isset($myName) and isset($myPassword)) {
 			$workspaceDir = opendir('vo_data');
 			$testeefiledirprefix = 'vo_data/ws_';
 
-			require_once('vo_code/XMLFile.php'); // // // // ========================
+			require_once('vo_code/XMLFileTesttakers.php'); // // // // ========================
 
 			while (($subdir = readdir($workspaceDir)) !== false) {
 				$mysplits = explode('_', $subdir);
@@ -48,74 +47,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 								$fullfilename = $TesttakersDirname . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
 									// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-									$xFile = new XMLFile($fullfilename);
+									$xFile = new XMLFileTesttakers($fullfilename);
 									if ($xFile->isValid()) {
 										if ($xFile->getRoottagName()  == 'Testtakers') {
-											foreach($xFile->xmlfile->children() as $group) { 
-												if ($group->getName() == 'Group') {
-													$notBefore = '';
-													if (isset($group['notbefore'])) {
-														$notBefore = (string) $group['notbefore'];
-													}
-													$notAfter = '';
-													if (isset($group['notafter'])) {
-														$notAfter = (string) $group['notafter'];
-													}
-													if (isset($group['mode'])) {
-														$myGroup = $group['name'];
-
-														foreach($group->children() as $tt) { 
-															if ($tt['name'] == $myName) {
-																$hasfound = true;
-																if ($tt['pw'] == $myPassword) {
-																	$myerrorcode = 0;
-
-																	$myMode = (string) $group['mode'];
-																	$myWorkspace = $mysplits[1];
-
-																	if (isset($tt['notbefore'])) {
-																		$notBefore = (string) $tt['notbefore'];
-																	}
-																	if (isset($tt['notafter'])) {
-																		$notAfter = (string) $tt['notafter'];
-																	}
-																	foreach($tt->children() as $b) { 
-																		$ttcodesList = [];
-																		if (isset($b['codes'])) {
-																			$ttcodes = (string) $b['codes'];
-																			if (strlen($ttcodes) > 0) {
-																				$ttcodesList = explode(' ', $ttcodes);
-																			}
-																		}
-																		if (isset($b['notbefore'])) {
-																			$notBefore = (string) $b['notbefore'];
-																		}
-																		if (isset($b['notafter'])) {
-																			$notAfter = (string) $b['notafter'];
-																		}
-																		array_push($myBooklets, [
-																			'id' => (string) $b,
-																			'codes' => $ttcodesList,
-																			'notbefore' => $notBefore,
-																			'notafter' => $notAfter
-																		]);
-																	}
-																}
-																break;
-															}
-														} // xml Logins
-													}
-												}
-												if ($hasfound) {
-													break;
-												}
-											} // xml Groups
+											$myBooklets = $xFile->getLoginData($myName, $myPassword);
+											if (count($myBooklets['booklets']) > 0) {
+												$myWorkspace = $mysplits[1];
+												$hasfound = true;
+												break;
+											}
 										}
 									}
 									// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-								}
-								if ($hasfound) {
-									break;
 								}
 							} // lesen von Verzeichnisinhalt Testtakers
 						}
@@ -128,8 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 
 			if (strlen($myWorkspace) > 0) {
+				$myerrorcode = 0;
 				$myreturn = $myDBConnection->login(
-					$myWorkspace, $myGroup, $myName, $myMode, json_encode($myBooklets));
+					$myWorkspace, $myBooklets['groupname'], $myBooklets['loginname'], $myBooklets['mode'], $myBooklets['booklets']);
 			}
 		}				
 

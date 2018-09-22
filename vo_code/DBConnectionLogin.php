@@ -31,7 +31,7 @@ class DBConnectionLogin extends DBConnection {
 
 					if ($sql_insert->execute(array(
 						':token' => $mytoken,
-						':sd' => $sessiondef,
+						':sd' => json_encode($sessiondef),
                         ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletime),
                         ':name' => $name,
                         ':mode' => $mode,
@@ -48,7 +48,7 @@ class DBConnectionLogin extends DBConnection {
             
                     $sql_update->execute(array(
                         ':value' => date('Y/m/d h:i:s a', time() + $this->idletime),
-                        ':sd'=> $sessiondef,
+                        ':sd'=> json_encode($sessiondef),
                         ':loginid'=>$old_login['id'],
                         ':groupname'=>$groupname
                     ));
@@ -82,7 +82,6 @@ class DBConnectionLogin extends DBConnection {
                     $myreturn['ws'] = $logindata['workspace_id'];
                     $myreturn['mode'] = $logindata['mode'];
                     $myreturn['login_id'] = $logindata['id'];
-                    $myreturn['codeswithbooklets'] = $this->getCodesWithBooklets($myreturn['booklets']);
                 }
             }
         }
@@ -114,65 +113,8 @@ class DBConnectionLogin extends DBConnection {
                     $myreturn['mode'] = $logindata['mode'];
                     $myreturn['login_id'] = $logindata['id'];
                     $myreturn['code'] = $logindata['code'];
-                    $myreturn['codeswithbooklets'] = $this->getCodesWithBooklets($myreturn['booklets']);
                 }
             }
-        }
-        return $myreturn;
-    }
-
-    // __________________________
-    // returns all possible booklets of a login for each possible code
-    private function getCodesWithBooklets($sessiondef) {
-        $myreturn = [];
-
-        if (count($sessiondef) > 0) {
-            // collect all codes
-            $allCodes = [];
-            foreach($sessiondef as $b) {
-                if (count($b['codes']) > 0) {
-                    foreach($b['codes'] as $c) {
-                        // ?? strtoupper
-                        if (! in_array($c, $allCodes)) {
-                            array_push($allCodes, $c);
-                        }
-                    }
-                }
-            }
-
-            foreach($sessiondef as $b) {
-                $myBookletName = $b['id'];
-
-                if ((count($b['codes']) == 0) && (count($allCodes) > 0)) {
-                    // add all possible codes
-                    foreach($allCodes as $c) {
-                        if (!isset($myreturn[$c])) {
-                            $myreturn[$c] = [];
-                        }
-                        if (!in_array($c, $myreturn[$c])) {
-                            array_push($myreturn[$c], $myBookletName);
-                        }
-                    }
-                } else {
-                    if (count($b['codes']) > 0) {
-                        foreach($b['codes'] as $c) {
-                            if (!isset($myreturn[$c])) {
-                                $myreturn[$c] = [];
-                            }
-                            if (!in_array($c, $myreturn[$c])) {
-                                array_push($myreturn[$c], $myBookletName);
-                            }
-                        }
-                    } else {
-                        if (!isset($myreturn[''])) {
-                            $myreturn[''] = [];
-                        }
-                        if (!in_array($c, $myreturn[''])) {
-                            array_push($myreturn[''], $myBookletName);
-                        }
-                    }
-                }
-            }                
         }
         return $myreturn;
     }
@@ -180,7 +122,7 @@ class DBConnectionLogin extends DBConnection {
     // __________________________
     // having just the login, entry in the booklet table could be missing; so we have to go
     // through the session_def
-    public function getBookletStatusNL($logintoken, $code, $bookletname) {
+    public function getBookletStatusNL($logintoken, $code, $bookletid, $bookletlabel) {
         // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
         $myreturn = [];
 
@@ -194,30 +136,12 @@ class DBConnectionLogin extends DBConnection {
 
 				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($logindata !== false) {
-                    $myBooklets = json_decode($logindata['session_def'], true);
-
-                    if (count($myBooklets) > 0) {
-                        // check whether code and booklet are part of login
-                        $bookletFound = false;
-                        foreach($myBooklets as $b) {
-                            // todo: notbefore/notafter
-                            if (strtoupper($b['id']) == strtoupper($bookletname)) {
-                                if (count($b['codes']) > 0) {
-                                    if (in_array($code, $b['codes'])) {
-                                        $bookletFound = true;
-                                    }
-                                } else {
-                                    $bookletFound = true;
-                                }
-                            }
-                            if ($bookletFound) {
-                                break;
-                            }
-                        }
-
-                        if ($bookletFound) {
+                    $myBookletData = json_decode($logindata['session_def'], true);
+                    if (isset($myBookletData[$code])) {
+                        if (in_array($bookletid, $myBookletData[$code])) {
                             $myreturn['canStart'] = true;
                             $myreturn['statusLabel'] = 'Zum Starten hier klicken';
+                            $myreturn['label'] = $bookletlabel;
                 
                             $people_select = $this->pdoDBhandle->prepare(
                                 'SELECT people.id FROM people
@@ -236,7 +160,7 @@ class DBConnectionLogin extends DBConnection {
                                         
                                     if ($booklet_select->execute(array(
                                         ':personid' => $persondata['id'],
-                                        ':bookletname' => $bookletname
+                                        ':bookletname' => $bookletid
                                         ))) {
                         
                                         $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);

@@ -24,11 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		$data = json_decode(file_get_contents('php://input'), true);
 		$myToken = $data["lt"];
 		$myCode = $data["c"];
-		$myBooklet = $data["b"];
+		$myBookletId = $data["b"];
+		$myBookletLabel = $data["bl"];
 
-		if (isset($myToken) && isset($myCode) && isset($myBooklet)) {
+		if (isset($myToken) && isset($myCode) && isset($myBookletId)) {
 			$myerrorcode = 0; // if there is no booklet in the database yet, this is not an error
-			$myreturn = $myDBConnection->getBookletStatusNL($myToken, $myCode, $myBooklet);
+			$myreturn = $myDBConnection->getBookletStatusNL($myToken, $myCode, $myBookletId, $myBookletLabel);
 		}				
 	}    
 	unset($myDBConnection);

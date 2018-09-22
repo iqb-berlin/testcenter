@@ -6,6 +6,9 @@
 		require_once('../vo_code/DBConnectionAdmin.php');
 		require_once('../vo_code/FilesFactory.php');
 		require_once('../vo_code/XMLFile.php');
+		require_once('../vo_code/XMLFileBooklet.php');
+		require_once('../vo_code/XMLFileUnit.php');
+		require_once('../vo_code/XMLFileTesttakers.php');
 
 		// *****************************************************************
 
@@ -37,6 +40,8 @@
 						$allUnits = [];
 						$allBooklets = [];
 						$allLoginNames = [];
+						$validDefinitionTypes = [];
+						$testtakerCount = 0;
 
 						// get all resource files
 						$myFolder = '../vo_data/ws_' . $wsId . '/Resource';
@@ -44,7 +49,7 @@
 							$mydir = opendir($myFolder);
 							while (($entry = readdir($mydir)) !== false) {
 								if (is_file($myFolder . '/' . $entry)) {
-									array_push($allResources, $entry);
+									array_push($allResources, strtoupper($entry));
 								}
 							}
 						}
@@ -57,7 +62,7 @@
 							while (($entry = readdir($mydir)) !== false) {
 								$fullfilename = $myFolder . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-									$xFile = new XMLFile($fullfilename);
+									$xFile = new XMLFileUnit($fullfilename);
 									if ($xFile->isValid()) {
 										$rootTagName = $xFile->getRoottagName();
 										if ($rootTagName != 'Unit') {
@@ -67,32 +72,27 @@
 											if (in_array($unitId, $allUnits)) {
 												array_push($myreturn['errors'], 'double unit id "' . $unitId . '" in Unit-XML-file "' . $entry . '"');
 											} else {
-			
-												$resourcesElement = $xFile->xmlfile->Resources[0];
-												if (isset($resourcesElement)) {
-
-													$itemplayerFound = false;
-													foreach($resourcesElement->children() as $r) { 
-														$rType = (string) $r['type'];
-														if (isset($rType)) {
-															if (in_array((string) $r, $allResources)) {
-																if ($rType == 'itemplayer_html') {
-																	$itemplayerFound = true;
-																}
-															} else {
-																array_push($myreturn['errors'], 'resource "' . (string) $r . '" not found (required in Unit-XML-file "' . $entry . '"');
-															}
-														} else {
-															array_push($myreturn['errors'], 'invalid resource found in Unit-XML-file "' . $entry . '" (no type)');
-														}
+												$ok = true;
+												foreach($xFile->getResourceFilenames() as $r) { 
+													if (!in_array(strtoupper($r), $allResources)) {
+														array_push($myreturn['errors'], 'resource "' . $r . '" not found (required in Unit-XML-file "' . $entry . '"');
+														$ok = false;
 													}
-													if ($itemplayerFound == true) {
-														array_push($allUnits, $unitId);
-													} else {
-														array_push($myreturn['errors'], 'no itemplayer defined in Unit-XML-file "' . $entry . '"');
+												}
+
+												$myDefinitionType = $xFile->getUnitDefinitonType();
+												if (strlen($myDefinitionType) > 0) {
+													if (!in_array(strtoupper($myDefinitionType), $allResources) and !in_array(strtoupper($myDefinitionType) . '.HTML', $allResources)) {
+														array_push($myreturn['errors'], 'unit definition type "' . $myDefinitionType . '" not found (required in Unit-XML-file "' . $entry . '"');
+														$ok = false;
 													}
 												} else {
-													array_push($myreturn['errors'], 'no resources found in Unit-XML-file "' . $entry . '"');
+													array_push($myreturn['errors'], 'no unit definition type defined in Unit-XML-file "' . $entry . '"');
+													$ok = false;
+												}
+
+												if ($ok == true) {
+													array_push($allUnits, $unitId);
 												}
 											}
 										}
@@ -111,7 +111,7 @@
 							while (($entry = readdir($mydir)) !== false) {
 								$fullfilename = $myFolder . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-									$xFile = new XMLFile($fullfilename);
+									$xFile = new XMLFileBooklet($fullfilename);
 									if (!$xFile->isValid()) {
 										array_push($myreturn['warnings'], 'error reading Booklet-XML-file "' . $entry . '"');
 									} else {
@@ -124,49 +124,24 @@
 											if (in_array($bookletId, $allBooklets)) {
 												array_push($myreturn['errors'], 'double booklet id "' . $bookletId . '" in Booklet-XML-file "' . $entry . '"');
 											} else {
-												$resourcesOK = true;
-			
-												$resourcesElement = $xFile->xmlfile->Resources[0];
-												if (isset($resourcesElement)) {
-													foreach($resourcesElement->children() as $r) { 
-														$rType = (string) $r['type'];
-														if (isset($rType)) {
-															if (!in_array((string) $r, $allResources)) {
-																array_push($myreturn['errors'], 'resource "' . (string) $r . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
-																$resourcesOK = false;
-															}
-														} else {
-															array_push($myreturn['errors'], 'invalid resource found in Booklet-XML-file "' . $entry . '" (no type; ignore booklet)');
-															$resourcesOK = false;
-														}
+												$ok = true;
+												foreach($xFile->getResourceFilenames() as $r) { 
+													if (!in_array(strtoupper($r), $allResources)) {
+														array_push($myreturn['errors'], 'resource "' . $r . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
+														$ok = false;
 													}
 												}
-												if ($resourcesOK == true) {
-													// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-													$unitsElement = $xFile->xmlfile->Units[0];
-													if (isset($unitsElement)) {
-														if ($unitsElement->count() > 0) {
-															$unitsOK = true;
-															foreach($unitsElement->children() as $u) { 
-																$unitId = (string) $u['id'];
-																if (isset($unitId)) {
-																	$unitId = strtoupper($unitId);
-																	if (!in_array($unitId, $allUnits)) {
-																		array_push($myreturn['errors'], 'unit "' . $unitId . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
-																		$unitsOK = false;
-																	}
-																}
-															}
-															if ($unitsOK == true) {
-																array_push($allBooklets, $bookletId);
-															}
-														} else {
-															array_push($myreturn['errors'], 'no units defined in Booklet-XML-file "' . $entry . '" (ignore booklet)');
+			
+												if ($ok == true) {
+													foreach($xFile->getAllUnitIds() as $unitId) { 
+														if (!in_array($unitId, $allUnits)) {
+															array_push($myreturn['errors'], 'unit "' . $unitId . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
+															$ok = false;
 														}
-													} else {
-														array_push($myreturn['errors'], 'no units defined in Booklet-XML-file "' . $entry . '" (ignore booklet)');
 													}
-													// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+													if ($ok == true) {
+														array_push($allBooklets, $bookletId);
+													}
 												}
 											}
 											// ..........................
@@ -184,36 +159,36 @@
 							while (($entry = readdir($mydir)) !== false) {
 								$fullfilename = $myFolder . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-									$xFile = new XMLFile($fullfilename);
+									$xFile = new XMLFileTesttakers($fullfilename);
 									if ($xFile->isValid()) {
-										$xFile->getRoottagName();
+										$rootTagName = $xFile->getRoottagName();
 										if ($rootTagName != 'Testtakers') {
 											array_push($myreturn['warnings'], 'invalid root-tag "' . $rootTagName . '" in Testtakers-XML-file "' . $entry . '"');
 										} else {
 											// ..........................
-											foreach($xFile->xmlfile->children() as $group) { 
-												if ($group->getName() == 'Group') {
-													foreach($group->children() as $login) {
-														$loginName = (string) $login['name'];
-														if (in_array($loginName, $allLoginNames)) {
-															array_push($myreturn['errors'], 'double login "' . $loginName . '" in Testtakers-XML-file "' . $entry . '"');
-														} else {
-															array_push($allLoginNames, $loginName);
-															if ($login->count() > 0) {
-																foreach($login->children() as $b) {
-																	$bookletId = strtoupper((string) $b);
-																	if (!in_array($bookletId, $allBooklets)) {
-																		array_push($myreturn['errors'], 'booklet "' . $bookletId . '" not found for login "' . $loginName . '" in Testtakers-XML-file "' . $entry . '"');
-																	}
-																}
-															} else {
-																array_push($myreturn['errors'], 'no booklets defined for login "' . $loginName . '" in Testtakers-XML-file "' . $entry . '"');
-															}
+											$errorBookletnames = [];
+											$myTesttakers = $xFile->getAllTesttakers();
+											$testtakerCount = $testtakerCount + count($myTesttakers);
+											foreach($myTesttakers as $testtaker) {
+												foreach($testtaker['booklets'] as $bookletId) {
+													if (!in_array($bookletId, $allBooklets)) {
+														if (!in_array($bookletId, $errorBookletnames)) {
+															array_push($myreturn['errors'], 'booklet "' . $bookletId . '" not found for login "' . $loginName . '" in Testtakers-XML-file "' . $entry . '"');
+															array_push($errorBookletnames, $bookletId);
 														}
 													}
 												}
+												if (!in_array($testtaker['loginname'], $allLoginNames)) {
+													array_push($allLoginNames, $testtaker['loginname']);
+												}
 											}
 											// ..........................
+											$doubleLogins = $xFile->getDoubleLoginNames();
+											if (count($doubleLogins) > 0) {
+												foreach($doubleLogins as $ln) {
+													array_push($myreturn['errors'], 'loginname "' . $ln . '" appears more often then once in Testtakers-XML-file "' . $entry . '"');
+												}
+											}
 										}
 									} else {
 										array_push($myreturn['warnings'], 'Testtakers-XML-File "' . $entry . '" is not valid vo-XML');
@@ -240,19 +215,11 @@
 
 												$fullfilename = $myTesttakersFolder . '/' . $entry;
 												if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-													$xFile = new XMLFile($fullfilename);
+													$xFile = new XMLFileTesttakers($fullfilename);
 													if ($xFile->isValid()) {
-														$rootTagName = $xFile->getRoottagName();
-														if ($rootTagName == 'Testtakers') {
-															foreach($xFile->xmlfile->children() as $group) { 
-																if ($group->getName() == 'Group') {
-																	foreach($group->children() as $login) {
-																		$loginName = (string) $login['name'];
-																		if (in_array($loginName, $allLoginNames)) {
-																			array_push($myreturn['errors'], 'double login "' . $loginName . '" in Testtakers-XML-file "' . $entry . '" (other workspace "' . $wsName . '")');
-																		}
-																	}
-																}
+														foreach($xFile->getAllLoginNames() as $ln) { 
+															if (in_array($ln, $allLoginNames)) {
+																array_push($myreturn['errors'], 'double login "' . $ln . '" in Testtakers-XML-file "' . $entry . '" (other workspace "' . $wsName . '")');
 															}
 														}
 													}
@@ -263,7 +230,7 @@
 								}
 							}
 						}
-						array_push($myreturn['infos'], strval(count($allLoginNames)) . ' logins found');
+						array_push($myreturn['infos'], strval($testtakerCount) . ' testtakers in ' . strval(count($allLoginNames)) . ' logins found');
 
 					}
 				}

@@ -6,14 +6,14 @@
 
 class XMLFile
 {
-    private $allErrors = [];
+    protected $allErrors = [];
     private $schemaFileNames = ['Testtakers' => 'vo_Testtakers.xsd', 
                                 'Booklet' => 'vo_Booklet.xsd',
                                 'Unit' => 'vo_Unit.xsd'];
-    private $rootTagName;
-    private $isValid;
-    private $id;
-    private $label;
+    protected $rootTagName;
+    protected $isValid;
+    protected $id;
+    protected $label;
     public $xmlfile;
 
     // ####################################################

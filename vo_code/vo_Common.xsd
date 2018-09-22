@@ -11,23 +11,13 @@
       <xs:element name="Resource" minOccurs="1" maxOccurs="unbounded">
         <xs:complexType>
           <xs:simpleContent>
-            <xs:extension base="xs:string" >
-			  <xs:annotation>
-			    <xs:documentation>
-			      Element value: Filename, same as file beeing uploaded; required!
-			    </xs:documentation>
-			  </xs:annotation>
-			  <xs:attribute name="id" type="xs:string"/>
-              <xs:attribute name="type" use="required">
-                <xs:simpleType>
-                  <xs:restriction base="xs:string">
-                    <xs:enumeration value="content" />
-                    <xs:enumeration value="library_js" />
-                    <xs:enumeration value="stylesheet" />
-                    <xs:enumeration value="webfont" />
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:attribute>
+            <xs:extension base="xs:string">
+			        <xs:annotation>
+			          <xs:documentation>
+			            Element value: Filename, same as file beeing uploaded; required!
+			          </xs:documentation>
+			        </xs:annotation>
+			        <xs:attribute name="id" type="xs:string"/>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -37,7 +27,7 @@
 
   <!-- ###################################################################-->
   <xs:complexType name="MetadataType">
-    <xs:sequence>
+    <xs:all>
       <xs:element name="Id" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <xs:element name="Label" type="xs:string" minOccurs="1" maxOccurs="1"/>
       <xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="1"/>
@@ -45,7 +35,7 @@
       <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Status" type="xs:string" minOccurs="0" maxOccurs="1"/>
       <xs:element name="Project" type="xs:string" minOccurs="0" maxOccurs="1"/>
-    </xs:sequence>
+    </xs:all>
   </xs:complexType>
 
 </xs:schema>

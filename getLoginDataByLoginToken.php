@@ -49,16 +49,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 					}
 					$myerrorcode = 0;
 					
-					if (count($bookletlist) > 0) {
-						foreach($myreturn['booklets'] as $key => $s) {
-							$bookletkey = strtoupper($s['name']);
-							if (isset($bookletlist[$bookletkey])) {
-								$bData = $bookletlist[$bookletkey];
-								$myreturn['booklets'][$key]['filename'] = $bData['filename'];
-								$myreturn['booklets'][$key]['label'] = $bData['id'];
+					// transform bookletid[] to bookletdata[]
+					$newBookletList = [];
+					foreach($myreturn['booklets'] as $code => $booklets) {
+						$newBooklets = [];
+						foreach($booklets as $bookletid) {
+							$newBooklet['id'] = $bookletid;
+							if ((count($bookletlist) > 0) and isset($bookletlist[$bookletid])) {
+								$bData = $bookletlist[$bookletid];
+								$newBooklet['filename'] = $bData['filename'];
+								$newBooklet['label'] = $bData['label'];
 							}
+							array_push($newBooklets, $newBooklet);
 						}
+						$newBookletList[$code] = $newBooklets;
 					}
+					$myreturn['booklets'] = $newBookletList;
 				}
 			}
 		}				
