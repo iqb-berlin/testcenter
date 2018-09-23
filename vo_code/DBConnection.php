@@ -22,11 +22,6 @@ class DBConnection {
 
     // __________________________
     public function __destruct() {
-        if ($this->dbhandle !== false) {
-            pg_close($this->dbhandle);
-            $this->dbhandle = false;
-        }
-
         if ($this->pdoDBhandle !== false) {
             unset($this->pdoDBhandle);
             $this->pdoDBhandle = false;

@@ -8,44 +8,40 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionSession.php');
+	require_once('../vo_code/DBConnectionTC.php');
 
 	// *****************************************************************
 	$myreturn = ['xml' => '', 'status' => '', 'restorepoint' => ''];
 
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionSession();
+	$myDBConnection = new DBConnectionTC();
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 
 		$data = json_decode(file_get_contents('php://input'), true);
-		$myToken = $data["st"];
-		$myUnitName = $data["u"];
+		$auth = $data["au"];
+		$unitName = $data["u"];
 
-		if (isset($myToken)) {
-			$tokensplits = explode('##', $myToken);
-			if (count($tokensplits) == 2) {
-				$sessiontoken = $tokensplits[0];
-				$bookletDBId = $tokensplits[1];
+		if (isset($auth) and isset($unitName)) {
+			$wsId = $myDBConnection->getWorkspaceByAuth($auth);
+			if ($wsId > 0) {
+				$myerrorcode = 404;
+				$unitFolder = '../vo_data/ws_' . $wsId . '/Unit';
+				if (file_exists($unitFolder) and (strlen($unitName) > 0)) {
+					$mydir = opendir($unitFolder);
+					if ($mydir !== false) {
+						$unitName = strtoupper($unitName);
 
-				$wsId = $myDBConnection->getWorkspaceBySessiontoken($sessiontoken);
-				if ($wsId > 0) {
-					$myerrorcode = 404;
-					$myUnitFolder = 'vo_data/ws_' . $wsId . '/Unit';
-					if (file_exists($myUnitFolder)) {
-						$mydir = opendir($myUnitFolder);
-
-						$myUnitName = strtoupper($myUnitName);
-						require_once('vo_code/XMLFile.php'); // // // // ========================
+						require_once('../vo_code/XMLFile.php'); // // // // ========================
 						while (($entry = readdir($mydir)) !== false) {
-							$fullfilename = $myUnitFolder . '/' . $entry;
+							$fullfilename = $unitFolder . '/' . $entry;
 							if (is_file($fullfilename)) {
 
 								$xFile = new XMLFile($fullfilename);
 								if ($xFile->isValid()) {
 									$uKey = $xFile->getId();
-									if ($uKey == $myUnitName) {
+									if ($uKey == $unitName) {
 										$myerrorcode = 0;
 										$myreturn['xml'] = $xFile->xmlfile->asXML();
 										break;
@@ -54,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 							}
 						}
 						if ($myerrorcode == 0) {
-							$status = $myDBConnection->getUnitStatus($bookletDBId, $myUnitName);
+							$status = $myDBConnection->getUnitStatus($myDBConnection->getBookletId($auth), $unitName);
 							if (isset($status['restorepoint'])) {
 								$myreturn['restorepoint'] = $status['restorepoint'];
 							}

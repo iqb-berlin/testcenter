@@ -145,27 +145,84 @@ class DBConnectionTC extends DBConnection {
     }
 
     // __________________________
-    public function getWorkspaceByPersonToken($persontoken) {
+    public function getWorkspaceByAuth($auth) {
         $myreturn = 0;
-        if ($this->pdoDBhandle != false) {
-            $login_select = $this->pdoDBhandle->prepare(
-                'SELECT logins.workspace_id FROM logins
-                    INNER JOIN people ON people.login_id = logins.id
-                    WHERE people.token=:token');
-                
-            if ($login_select->execute(array(
-                ':token' => $persontoken
-                ))) {
 
-                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
-                if ($logindata !== false) {
-                    $myreturn = 0 + $logindata['workspace_id'];
+        if (isset($auth)) {
+            if (is_string($auth)) {
+                if (strlen($auth) > 0) {
+                    $tokensplits = explode('##', $auth);
+                    if (count($tokensplits) == 2) {
+                        $persontoken = $tokensplits[0];
+                        $bookletDBId = $tokensplits[1];
+                        if ((strlen($persontoken) > 0) and (strlen($bookletDBId) > 0) and is_numeric($bookletDBId)) {
+
+                            // 6666666666666666666666
+                            $person_select = $this->pdoDBhandle->prepare(
+                                'SELECT logins.workspace_id FROM booklets
+                                    INNER JOIN people ON people.id = booklets.person_id
+                                    INNER JOIN logins ON logins.id = people.login_id
+                                    WHERE people.token=:token and booklets.id=:bookletId');
+                                
+                            if ($person_select->execute(array(
+                                ':token' => $persontoken,
+                                ':bookletId' => $bookletDBId
+                                ))) {
+                
+                                $persondata = $person_select->fetch(PDO::FETCH_ASSOC);
+                                if ($persondata !== false) {
+                                    $myreturn = $persondata['workspace_id'];
+                                }
+                            }
+                
+                        }
+                    }
                 }
             }
+            
         }
         return $myreturn;
     }
+    
+    // __________________________
+    public function getBookletNameByAuth($auth) {
+        $myreturn = '';
 
+        if (isset($auth)) {
+            if (is_string($auth)) {
+                if (strlen($auth) > 0) {
+                    $tokensplits = explode('##', $auth);
+                    if (count($tokensplits) == 2) {
+                        $persontoken = $tokensplits[0];
+                        $bookletDBId = $tokensplits[1];
+                        if ((strlen($persontoken) > 0) and (strlen($bookletDBId) > 0) and is_numeric($bookletDBId)) {
+
+                            // 6666666666666666666666
+                            $booklet_select = $this->pdoDBhandle->prepare(
+                                'SELECT booklets.name FROM booklets
+                                    INNER JOIN people ON people.id = booklets.person_id
+                                    WHERE people.token=:token and booklets.id=:bookletId');
+                                
+                            if ($booklet_select->execute(array(
+                                ':token' => $persontoken,
+                                ':bookletId' => $bookletDBId
+                                ))) {
+                
+                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                                if ($bookletdata !== false) {
+                                    $myreturn = $bookletdata['name'];
+                                }
+                            }
+                
+                        }
+                    }
+                }
+            }
+            
+        }
+        return $myreturn;
+    }
+    
     // __________________________
     public function getBookletStatus($bookletDBId) {
         $myreturn = [];

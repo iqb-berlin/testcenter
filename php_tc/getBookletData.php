@@ -8,34 +8,31 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionSession.php');
+	require_once('../vo_code/DBConnectionTC.php');
 
 	// *****************************************************************
 	$myreturn = ['xml' => '', 'locked' => false, 'u' => 0];
 
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionSession();
+	$myDBConnection = new DBConnectionTC();
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 
 		$data = json_decode(file_get_contents('php://input'), true);
-		$myToken = $data["st"];
+		$auth = $data["au"];
 
-		if (isset($myToken)) {
-			$tokensplits = explode('##', $myToken);
-			if (count($tokensplits) == 2) {
-				$sessiontoken = $tokensplits[0];
-				$bookletDBId = $tokensplits[1];
+		if (isset($auth)) {
+			$wsId = $myDBConnection->getWorkspaceByAuth($auth);
+			if ($wsId > 0) {
+				$myerrorcode = 404;
+				$myBookletFolder = '../vo_data/ws_' . $wsId . '/Booklet';
+				$bookletName = $myDBConnection->getBookletNameByAuth($auth);
+				if (file_exists($myBookletFolder) and (strlen($bookletName) > 0)) {
+					$mydir = opendir($myBookletFolder);
+					if ($mydir !== false) {
 
-				$wsId = $myDBConnection->getWorkspaceBySessiontoken($sessiontoken);
-				$bookletName = $myDBConnection->getBookletName($bookletDBId);
-				if ($wsId > 0) {
-					$myBookletFolder = 'vo_data/ws_' . $wsId . '/Booklet';
-					if (file_exists($myBookletFolder)) {
-						$mydir = opendir($myBookletFolder);
-
-						require_once('vo_code/XMLFile.php'); // // // // ========================
+						require_once('../vo_code/XMLFile.php'); // // // // ========================
 						while (($entry = readdir($mydir)) !== false) {
 							$fullfilename = $myBookletFolder . '/' . $entry;
 							if (is_file($fullfilename)) {
@@ -52,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 							}
 						}
 						if ($myerrorcode == 0) {
-							$status = $myDBConnection->getBookletStatus($bookletDBId);
+							$status = $myDBConnection->getBookletStatus($myDBConnection->getBookletId($auth));
 							if (isset($status['u'])) {
 								$myreturn['u'] = $status['u'];
 							}
