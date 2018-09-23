@@ -10,26 +10,24 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionLogin.php');
+	require_once('../vo_code/DBConnectionStart.php');
 
 	// *****************************************************************
 	$myreturn = '';
 
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionLogin();
+	$myDBConnection = new DBConnectionStart();
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 
 		$data = json_decode(file_get_contents('php://input'), true);
-		$myToken = $data["lt"];
-		$myCode = $data["c"];
-		$myBookletId = $data["b"];
-		$myBookletLabel = $data["bl"];
+		$myToken = $data["pt"];
+		$myBooklet = $data["b"];
 
-		if (isset($myToken) && isset($myCode) && isset($myBookletId)) {
+		if (isset($myToken) && isset($myBooklet)) {
 			$myerrorcode = 0; // if there is no booklet in the database yet, this is not an error
-			$myreturn = $myDBConnection->getBookletStatusNL($myToken, $myCode, $myBookletId, $myBookletLabel);
+			$myreturn = $myDBConnection->getBookletStatusNP($myToken, $myBooklet);
 		}				
 	}    
 	unset($myDBConnection);

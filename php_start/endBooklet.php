@@ -8,14 +8,14 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionSession.php');
+	require_once('../vo_code/DBConnectionStart.php');
 
 	// *****************************************************************
 	$myreturn = '?';
 
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionSession();
+	$myDBConnection = new DBConnectionStart();
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 

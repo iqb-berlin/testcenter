@@ -6,7 +6,7 @@
 
 require_once('DBConnection.php');
 
-class DBConnectionSession extends DBConnection {
+class DBConnectionTC extends DBConnection {
     private $idletimeSession = 60 * 30;
 
     // for all functions here: $persontoken is the token as stored in the
@@ -38,6 +38,90 @@ class DBConnectionSession extends DBConnection {
         return $myreturn;
     }
 
+    public function getBookletId($auth) {
+        $myreturn = 0;
+
+        if (isset($auth)) {
+            if (is_string($auth)) {
+                if (strlen($auth) > 0) {
+                    $tokensplits = explode('##', $auth);
+                    if (count($tokensplits) == 2) {
+                        $persontoken = $tokensplits[0];
+                        $bookletDBId = $tokensplits[1];
+                        if ((strlen($persontoken) > 0) and (strlen($bookletDBId) > 0) and is_numeric($bookletDBId)) {
+                            $myreturn = intval($bookletDBId);
+                        }}}}}
+
+        return $myreturn;
+    }
+
+    public function authOk($auth, $RW = false) {
+        $myreturn = false;
+
+        if (isset($auth)) {
+            if (is_string($auth)) {
+                if (strlen($auth) > 0) {
+                    $tokensplits = explode('##', $auth);
+                    if (count($tokensplits) == 2) {
+                        $persontoken = $tokensplits[0];
+                        $bookletDBId = $tokensplits[1];
+                        if ((strlen($persontoken) > 0) and (strlen($bookletDBId) > 0) and is_numeric($bookletDBId)) {
+
+                            // 6666666666666666666666
+                            $booklet_select = $this->pdoDBhandle->prepare(
+                                'SELECT booklets.locked FROM booklets
+                                    INNER JOIN people ON people.id = booklets.person_id
+                                    WHERE people.token=:token and booklets.id=:bookletId');
+                                
+                            if ($booklet_select->execute(array(
+                                ':token' => $persontoken,
+                                ':bookletId' => $bookletDBId
+                                ))) {
+                
+                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                                if ($bookletdata !== false) {
+                                    $myreturn = ($RW === false) || ($bookletdata['locked'] !== 't');
+                                }
+                            }
+                
+                        }
+                    }
+                }
+            }
+            
+        }
+        return $myreturn;
+    }
+
+    public function addBookletReview($bookletDbId, $priority, $categories, $entry) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            if (is_numeric($priority)) {
+                $priority = intval($priority);
+                if (($priority <= 0) or ($priority > 3)) {
+                    $priority = 0;
+                }
+            } else {
+                $priority = 0;
+            }
+
+            $bookletreview_insert = $this->pdoDBhandle->prepare(
+                'INSERT INTO bookletreviews (booklet_id, reviewtime, reviewer, priority, categories, entry) 
+                    VALUES(:b, :t, :r, :p, :c, :e)');
+
+            if ($bookletreview_insert->execute(array(
+                ':b' => $bookletDbId,
+                ':t' => date('Y-m-d G:i:s', time()),
+                ':r' => '-',
+                ':p' => $priority,
+                ':c' => $categories,
+                ':e' => $entry
+                ))) {
+                    $myreturn = true;
+            }
+        }
+        return $myreturn;
+    }
 
     // __________________________
     public function getWorkspaceByLogintoken($logintoken) {
@@ -137,20 +221,6 @@ class DBConnectionSession extends DBConnection {
                 'UPDATE booklets SET laststate = :laststate WHERE id = :id');
             if ($booklet_update -> execute(array(
                 ':laststate' => json_encode($laststate),
-                ':id' => $bookletDBId))) {
-                $myreturn = true;
-            }
-        }
-        return $myreturn;
-    }
-
-    // __________________________
-    public function lockBooklet($bookletDBId) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            $booklet_update = $this->pdoDBhandle->prepare(
-                'UPDATE booklets SET locked = "t" WHERE id = :id');
-            if ($booklet_update -> execute(array(
                 ':id' => $bookletDBId))) {
                 $myreturn = true;
             }

@@ -8,7 +8,7 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionLogin.php');
+	require_once('../vo_code/DBConnectionStart.php');
 
 	// *****************************************************************
 
@@ -17,9 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionLogin();
+	$myDBConnection = new DBConnectionStart();
 	if (!$myDBConnection->isError()) {
-		$myerrorcode = 401;
+		$myerrorcode = 400;
 
 		$data = json_decode(file_get_contents('php://input'), true);
 		$myToken = $data["lt"];
@@ -27,13 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		if (isset($myToken)) {
 			$myreturn = $myDBConnection->getAllBookletsByLoginToken($myToken);
 			if (count($myreturn['booklets']) > 0 ) {
-				$bookletfolder = 'vo_data/ws_' . $myreturn['ws'] . '/Booklet';
+				$bookletfolder = '../vo_data/ws_' . $myreturn['ws'] . '/Booklet';
 
 				if (file_exists($bookletfolder)) {
+					$myerrorcode = 401;
 					$mydir = opendir($bookletfolder);
 					$bookletlist = [];
 
-					require_once('vo_code/XMLFile.php'); // // // // ========================
+					require_once('../vo_code/XMLFile.php'); // // // // ========================
 					while (($entry = readdir($mydir)) !== false) {
 						$fullfilename = $bookletfolder . '/' . $entry;
 						if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {

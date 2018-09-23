@@ -4,34 +4,39 @@
 // 2018
 // license: MIT
 
-// returns laststate-entry by logintoken and code and bookletname (if there is any)
-
 // preflight OPTIONS-Request bei CORS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionLogin.php');
+	require_once('../vo_code/DBConnectionTC.php');
 
 	// *****************************************************************
-	$myreturn = '';
-
+	$myreturn = false;
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionLogin();
+	$myDBConnection = new DBConnectionTC();
+
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 
 		$data = json_decode(file_get_contents('php://input'), true);
-		$myToken = $data["pt"];
-		$myBooklet = $data["b"];
+		$auth = $data["au"];
+		$prio = $data["p"];
+		$cat = $data["c"];
+		$entry = $data["e"];
 
-		if (isset($myToken) && isset($myBooklet)) {
-			$myreturn = $myDBConnection->getBookletStatusPI($myToken, $myBooklet);
-			if ($myreturn !== []) {
-				$myerrorcode = 0;
+		if ($myDBConnection->authOk($auth)) {
+			$myerrorcode = 0;
+			if ($myDBConnection->addBookletReview(
+				$myDBConnection->getBookletId($auth),
+				$prio,
+				$cat,
+				$entry
+			)) {
+				$myreturn = true;
 			}
-		}				
-	}    
+		}
+	}
 	unset($myDBConnection);
 
 	if ($myerrorcode > 0) {

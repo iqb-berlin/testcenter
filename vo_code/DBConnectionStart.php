@@ -6,7 +6,7 @@
 
 require_once('DBConnection.php');
 
-class DBConnectionLogin extends DBConnection {
+class DBConnectionStart extends DBConnection {
 
     // __________________________
     public function login($workspace, $groupname, $name, $mode, $sessiondef) {
@@ -302,6 +302,20 @@ class DBConnectionLogin extends DBConnection {
                         $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
                     }
                 }
+            }
+        }
+        return $myreturn;
+    }
+
+    // __________________________
+    public function lockBooklet($bookletDBId) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $booklet_update = $this->pdoDBhandle->prepare(
+                'UPDATE booklets SET locked = "t" WHERE id = :id');
+            if ($booklet_update -> execute(array(
+                ':id' => $bookletDBId))) {
+                $myreturn = true;
             }
         }
         return $myreturn;
