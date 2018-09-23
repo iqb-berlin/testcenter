@@ -8,14 +8,14 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionSession.php');
+	require_once('../vo_code/DBConnectionTC.php');
 
 	// *****************************************************************
-	$myreturn = ['xml' => '', 'locked' => false, 'u' => 0];
+	$myreturn = false;
 
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionSession();
+	$myDBConnection = new DBConnectionTC();
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 
@@ -26,8 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		$cat = $data["c"];
 		$entry = $data["e"];
 
-		$myerrorcode = 0;
-		$myreturn = "yoyo";
+		if ($myDBConnection->authOk($auth)) {
+			$myerrorcode = 0;
+			if ($myDBConnection->addUnitReview(
+				$myDBConnection->getBookletId($auth),
+				$unitId,
+				$prio,
+				$cat,
+				$entry
+			)) {
+				$myreturn = true;
+			}
+		}
 	}    
 	unset($myDBConnection);
 

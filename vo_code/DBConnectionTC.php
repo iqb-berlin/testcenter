@@ -124,6 +124,48 @@ class DBConnectionTC extends DBConnection {
     }
 
     // __________________________
+    public function addUnitReview($bookletDbId, $unit, $priority, $categories, $entry) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            if (is_numeric($priority)) {
+                $priority = intval($priority);
+                if (($priority <= 0) or ($priority > 3)) {
+                    $priority = 0;
+                }
+            } else {
+                $priority = 0;
+            }
+
+            $unit_select = $this->pdoDBhandle->prepare(
+                'SELECT units.id FROM units
+                    WHERE units.name=:name and units.booklet_id=:bookletId');
+                
+            if ($unit_select->execute(array(
+                ':name' => $unit,
+                ':bookletId' => $bookletDBId
+                ))) {
+
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+                if ($unitdata !== false) {
+                    $unitreview_insert = $this->pdoDBhandle->prepare(
+                        'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
+                            VALUES(:u, :t, :r, :p, :c, :e)');
+
+                    if ($unitreview_insert->execute(array(
+                        ':u' => $unitdata['id'],
+                        ':t' => date('Y-m-d G:i:s', time()),
+                        ':r' => '-',
+                        ':p' => $priority,
+                        ':c' => $categories,
+                        ':e' => $entry
+                        ))) {
+                            $myreturn = true;
+            }}}
+        }
+        return $myreturn;
+    }
+
+    // __________________________
     public function getWorkspaceByLogintoken($logintoken) {
         $myreturn = 0;
         if ($this->pdoDBhandle != false) {
@@ -456,7 +498,7 @@ class DBConnectionTC extends DBConnection {
         $myreturn = ['restorepoint' => ''];
         if ($this->pdoDBhandle != false) {
             $unit_select = $this->pdoDBhandle->prepare(
-                'SELECT units.laststate FROM units
+                'SELECT units.laststate, units.id FROM units
                     WHERE units.name=:name and units.booklet_id=:bookletId');
                 
             if ($unit_select->execute(array(
