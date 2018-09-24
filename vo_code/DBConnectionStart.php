@@ -212,20 +212,8 @@ class DBConnectionStart extends DBConnection {
                     if (count($myBooklets) > 0) {
                         // check whether code and booklet are part of login
                         $bookletFound = false;
-                        foreach($myBooklets as $b) {
-                            // todo: notbefore/notafter
-                            if (strtoupper($b['name']) == strtoupper($bookletname)) {
-                                if (count($b['codes']) > 0) {
-                                    if (in_array($code, $b['codes'])) {
-                                        $bookletFound = true;
-                                    }
-                                } else {
-                                    $bookletFound = true;
-                                }
-                            }
-                            if ($bookletFound) {
-                                break;
-                            }
+                        if (isset($myBooklets[$code])) {
+                            $bookletFound = in_array($bookletname, $myBooklets[$code]);
                         }
 
                         if ($bookletFound) {

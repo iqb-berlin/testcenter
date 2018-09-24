@@ -187,6 +187,30 @@ class DBConnectionTC extends DBConnection {
     }
 
     // __________________________
+    
+    public function getWorkspaceByPersonToken($persontoken) {
+        $myreturn = 0;
+
+        if (strlen($persontoken) > 0) {
+               
+            $person_select = $this->pdoDBhandle->prepare(
+                'SELECT logins.workspace_id FROM people
+                    INNER JOIN logins ON logins.id = people.login_id
+                    WHERE people.token=:token');
+            if ($person_select->execute(array(
+                ':token' => $persontoken
+                ))) {
+
+                $persondata = $person_select->fetch(PDO::FETCH_ASSOC);
+                if ($persondata !== false) {
+                    $myreturn = $persondata['workspace_id'];
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+    // __________________________
     public function getWorkspaceByAuth($auth) {
         $myreturn = 0;
 
@@ -472,6 +496,79 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
     
+    // __________________________
+    public function start_sessionByPersonToken($pToken, $booklet, $bookletLabel) {
+        $myreturn = 0;
+
+        $people_select = $this->pdoDBhandle->prepare(
+            'SELECT people.id FROM people
+                WHERE people.token=:token');
+            
+        if ($people_select->execute(array(
+            ':token' => $pToken
+            ))) {
+
+            $peopledata = $people_select->fetch(PDO::FETCH_ASSOC);
+            if ($peopledata !== false) {
+                $personId = $peopledata['id'];
+
+                $booklet_select = $this->pdoDBhandle->prepare(
+                    'SELECT booklets.locked, booklets.id FROM booklets
+                        WHERE booklets.person_id=:personId and booklets.name=:bookletname');
+                    
+                if ($booklet_select->execute(array(
+                    ':personId' => $personId,
+                    ':bookletname' => $booklet
+                    ))) {
+    
+                    $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                    if ($bookletdata !== false) {
+                        if ($bookletdata['locked'] !== 't') {
+                            // setting $bookletLabel
+                            $booklet_update = $this->pdoDBhandle->prepare(
+                                'UPDATE booklets SET label = :label WHERE id = :id');
+                            if ($booklet_update -> execute(array(
+                                ':label' => $bookletLabel,
+                                ':id' => $bookletdata['id']))) {
+
+                                $myreturn = $bookletdata['id'];
+                            }
+                        }
+                    } else {
+                        $booklet_insert = $this->pdoDBhandle->prepare(
+                            'INSERT INTO booklets (person_id, name, laststate, label) 
+                                VALUES(:person_id, :name, :laststate, :label)');
+    
+                        if ($booklet_insert->execute(array(
+                            ':person_id' => $personId,
+                            ':name' => $booklet,
+                            ':laststate' => json_encode(['u' => 0]),
+                            ':label' => $bookletLabel
+                            ))) {
+
+                            $booklet_select = $this->pdoDBhandle->prepare(
+                                'SELECT booklets.id FROM booklets
+                                    WHERE booklets.person_id=:personId and booklets.name=:bookletname');
+                                
+                            if ($booklet_select->execute(array(
+                                ':personId' => $peopledata['id'],
+                                ':bookletname' => $booklet
+                                ))) {
+                
+                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                                if ($bookletdata !== false) {
+                                    $myreturn = $bookletdata['id'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $myreturn;
+    }
+    
+    
     /*
     // __________________________
     public function stop_session($sessiontoken, $mode) {
@@ -696,7 +793,7 @@ class DBConnectionTC extends DBConnection {
                                 $okCount = $okCount + 1;
                         }
                     }
-                    if ($okCount === count($logs)) {
+                    if ($okCount === count($log)) {
                         $myreturn = true;
                     }
                 }

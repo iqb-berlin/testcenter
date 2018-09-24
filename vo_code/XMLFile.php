@@ -6,7 +6,7 @@
 
 class XMLFile
 {
-    protected $allErrors = [];
+    public $allErrors = [];
     private $schemaFileNames = ['Testtakers' => 'vo_Testtakers.xsd', 
                                 'Booklet' => 'vo_Booklet.xsd',
                                 'Unit' => 'vo_Unit.xsd'];

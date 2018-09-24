@@ -97,7 +97,9 @@
 											}
 										}
 									} else {
-										array_push($myreturn['warnings'], 'Unit "' . $entry . '" is not valid vo-XML');
+										foreach($xFile->allErrors as $e) {
+											array_push($myreturn['errors'], 'Unit "' . $entry . '" is not valid vo-XML: ' . $e);
+										}
 									}
 								}
 							}

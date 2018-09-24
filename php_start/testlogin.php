@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 			if ($workspaceDir) {
 
 				require_once('../vo_code/XMLFileTesttakers.php'); // // // // ========================
-				$myerrorcode = 401;
+				$myerrorcode = 0;
 
 				while (($subdir = readdir($workspaceDir)) !== false) {
 					$mysplits = explode('_', $subdir);
