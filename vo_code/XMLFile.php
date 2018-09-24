@@ -17,7 +17,7 @@ class XMLFile
     public $xmlfile;
 
     // ####################################################
-    public function __construct($xmlfilename)
+    public function __construct($xmlfilename, $validate = false)
     {
         $this->allErrors = [];
         $this->rootTagName = '';
@@ -47,35 +47,40 @@ class XMLFile
 
                     $this->id = strtoupper((string) $this->xmlfile->Metadata[0]->Id[0]);
                     $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
-
-                    if ((strlen($this->id) > 0) && (strlen($this->label) > 0)) {
-                        $myReader = new \XMLReader();
-                        $myReader->open($xmlfilename);
-                        $myReader->setSchema($mySchemaFilename);
-    
-                        $continue = true;
-                        do {
-                            $continue = $myReader->read();
-                            foreach (libxml_get_errors() as $error) {
-                                $errorString = "Fehler $error->code in Zeile {$error->line}: ";
-                                $errorString .= trim($error->message);
-                                array_push($this->allErrors, $errorString);
-                            }
-                            libxml_clear_errors();
-                        } while ($continue);
-    
+                    if ($validate) {
+                        if ((strlen($this->id) > 0) && (strlen($this->label) > 0)) {
+                            $myReader = new \XMLReader();
+                            $myReader->open($xmlfilename);
+                            $myReader->setSchema($mySchemaFilename);
+        
+                            $continue = true;
+                            do {
+                                $continue = $myReader->read();
+                                foreach (libxml_get_errors() as $error) {
+                                    $errorString = "Fehler $error->code in Zeile {$error->line}: ";
+                                    $errorString .= trim($error->message);
+                                    array_push($this->allErrors, $errorString);
+                                }
+                                libxml_clear_errors();
+                            } while ($continue);
+        
                         $this->isValid = count($this->allErrors) == 0;
+                        }
+                    } else {
+                        $this->isValid = true;
                     }
                 }
             }
         }
-        // simplexml_load_file gibt auch Fehler nach libxml
-        foreach (libxml_get_errors() as $error) {
-            $errorString = "Fehler $error->code in Zeile {$error->line}:";
-            $errorString .= trim($error->message);
-            array_push($this->allErrors, $errorString);
+        if ($validate) {
+            // simplexml_load_file gibt auch Fehler nach libxml
+            foreach (libxml_get_errors() as $error) {
+                $errorString = "Fehler $error->code in Zeile {$error->line}:";
+                $errorString .= trim($error->message);
+                array_push($this->allErrors, $errorString);
+            }
+            libxml_clear_errors();
         }
-        libxml_clear_errors();
         libxml_use_internal_errors(false);
 
     }

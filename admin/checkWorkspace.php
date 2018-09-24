@@ -62,7 +62,7 @@
 							while (($entry = readdir($mydir)) !== false) {
 								$fullfilename = $myFolder . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-									$xFile = new XMLFileUnit($fullfilename);
+									$xFile = new XMLFileUnit($fullfilename, true);
 									if ($xFile->isValid()) {
 										$rootTagName = $xFile->getRoottagName();
 										if ($rootTagName != 'Unit') {
@@ -111,7 +111,7 @@
 							while (($entry = readdir($mydir)) !== false) {
 								$fullfilename = $myFolder . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-									$xFile = new XMLFileBooklet($fullfilename);
+									$xFile = new XMLFileBooklet($fullfilename, true);
 									if (!$xFile->isValid()) {
 										array_push($myreturn['warnings'], 'error reading Booklet-XML-file "' . $entry . '"');
 									} else {
@@ -159,7 +159,7 @@
 							while (($entry = readdir($mydir)) !== false) {
 								$fullfilename = $myFolder . '/' . $entry;
 								if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-									$xFile = new XMLFileTesttakers($fullfilename);
+									$xFile = new XMLFileTesttakers($fullfilename, true);
 									if ($xFile->isValid()) {
 										$rootTagName = $xFile->getRoottagName();
 										if ($rootTagName != 'Testtakers') {
@@ -215,7 +215,7 @@
 
 												$fullfilename = $myTesttakersFolder . '/' . $entry;
 												if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-													$xFile = new XMLFileTesttakers($fullfilename);
+													$xFile = new XMLFileTesttakers($fullfilename, true);
 													if ($xFile->isValid()) {
 														foreach($xFile->getAllLoginNames() as $ln) { 
 															if (in_array($ln, $allLoginNames)) {

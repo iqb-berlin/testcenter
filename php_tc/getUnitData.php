@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 				if (file_exists($unitFolder) and (strlen($unitName) > 0)) {
 					$mydir = opendir($unitFolder);
 					if ($mydir !== false) {
-						$unitName = strtoupper($unitName);
+						$unitNameUpper = strtoupper($unitName);
 
 						require_once('../vo_code/XMLFile.php'); // // // // ========================
 						while (($entry = readdir($mydir)) !== false) {
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 								$xFile = new XMLFile($fullfilename);
 								if ($xFile->isValid()) {
 									$uKey = $xFile->getId();
-									if ($uKey == $unitName) {
+									if ($uKey == $unitNameUpper) {
 										$myerrorcode = 0;
 										$myreturn['xml'] = $xFile->xmlfile->asXML();
 										break;
@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 								}
 							}
 						}
+						
 						if ($myerrorcode == 0) {
 							$status = $myDBConnection->getUnitStatus($myDBConnection->getBookletId($auth), $unitName);
 							if (isset($status['restorepoint'])) {

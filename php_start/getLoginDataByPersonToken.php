@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 							if ($xFile->isValid()) {
 								$bKey = $xFile->getId();
 								$bookletlist[$bKey] = [
-										'name' => $xFile->getLabel(),
+										'label' => $xFile->getLabel(),
 										'filename' => $entry];
 							}
 						}
