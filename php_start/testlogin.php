@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 									if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
 										// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 										$xFile = new XMLFileTesttakers($fullfilename);
+
 										if ($xFile->isValid()) {
 											if ($xFile->getRoottagName()  == 'Testtakers') {
 												$myBooklets = $xFile->getLoginData($myName, $myPassword);

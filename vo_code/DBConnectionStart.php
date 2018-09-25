@@ -22,7 +22,7 @@ class DBConnectionStart extends DBConnection {
 				':name' => $name, 
 				':ws' => $workspace))) {
 
-				$old_login = $sql_select->fetch(PDO::FETCH_ASSOC);
+                $old_login = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($old_login === false) {
                     $mytoken = uniqid('a', true);
 					$sql_insert = $this->pdoDBhandle->prepare(

@@ -58,7 +58,7 @@
 									$myreturn = 'OK (valide)';
 
 									require_once('../vo_code/XMLFile.php'); // // // // ========================
-									$xFile = new XMLFile($tempFilename);
+									$xFile = new XMLFile($tempFilename, true);
 									if ($xFile->isValid()) {
 										$targetFolder = $myWorkspaceFolder . '/' . $xFile->getRoottagName();
 									} else {
