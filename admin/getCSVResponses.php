@@ -1,6 +1,12 @@
 <?php
 
- function getGroupData($wsId) {
+function addToResult($resultArray, $loginName, $code, $booklet) {
+  // place here getAllResponses()
+  $myDBConnection = new DBConnectionAdmin();
+  $return = $myDBConnection->getAllResponses($resultArray, $loginName, $code, $booklet);
+}
+
+function getGroupData($wsId) {
   $return = [];
 
         
@@ -10,7 +16,7 @@
     $myGroupCount = 1;
 
     $TesttakersDirname = __DIR__.'/../vo_data/ws_' . $sanitizedwsId . '/Testtakers';
-
+    error_log($TesttakersDirname);
     if (file_exists($TesttakersDirname)) {
 
       $testTakersDirectoryHandle = opendir($TesttakersDirname);
@@ -47,7 +53,7 @@
                   $obj["groupname"] = "group " . $myGroupCount;
                   $myGroupCount += 1;
                 }
-                // group xml to get login names as sessions // they're called people in the new db schema
+                // group xml to get login names as sessions mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
                 foreach($group->children() as $login) {
                   if($login->getName() == "Login") {
 
@@ -78,21 +84,21 @@
                             $myBookletCodes = explode(" ", $myCodesString);
                             foreach($myBookletCodes as $code) {
                               if(strlen($code) > 0) {
-                                array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
+                                addToResult($return, (string) $login['name'], $code, $myBookletName);
                               }
                             }  
                           } else {
                             foreach($myCodes as $code) {
-                              array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
+                              addToResult($return, (string) $login['name'], $code, $myBookletName);
                             }
                           }
                         } else {
                           foreach($myCodes as $code) {
-                            array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
+                            addToResult($return, (string) $login['name'], $code, $myBookletName);
                           }
                         }
                       } else {
-                        array_push($obj["sessions"], (string) $login['name'] . "##" . "" . "##" . $myBookletName);
+                        addToResult($return, (string) $login['name'], $code, $myBookletName);
                       }
 
                     }
@@ -100,11 +106,11 @@
                   }
                 }
                 // ends here
-                if($rso){
+                // if($rso){
 
-                } else {
-                  array_push($return, $obj);
-                }
+                // } else {
+                //   array_push($return, $obj);
+                // }
 
               }
             }
@@ -134,68 +140,54 @@
   return $return;
   }
 
+header("Content-type: text/plain, charset=utf-8");
+// header("Content-Disposition: attachment; filename=file.csv");
+header("Pragma: no-cache");
+header("Expires: 0");
 
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+  exit();
+} else {
 
-  if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    exit();
-  } else {
-    $myreturn = [];
-    require_once('../vo_code/DBConnectionAdmin.php');
-    $errorcode = 503;
+  $myreturn = [];
+  require_once('../vo_code/DBConnectionAdmin.php');
+  $errorcode = 503;
 
-    $myDBConnection = new DBConnectionAdmin();
-    if (!$myDBConnection->isError()) {
+  $myDBConnection = new DBConnectionAdmin();
+  if (!$myDBConnection->isError()) {
+    $errorcode = 401;
+    
+    $admin_token = $_GET["at"];
+    $workspace_id = $_GET["ws"];
+    $groups = $_GET["groups"];
+    print_r($groups);
+    if (isset($workspace_id) && isset($admin_token) && isset($groups)) {
+      if($myDBConnection->hasAdminAccessToWorkspace($admin_token, $workspace_id)===true) {
+        $reportData = $myDBConnection->getReportData($admin_token, $workspace_id, $groups);
+        $csvFilePath = "temp/" . uniqid('', true) . '.csv';
 
-      $errorcode = 401;
-      $data = json_decode(file_get_contents('php://input'), true);
-      $admin_token = $data["at"];
-      $workspace_id = $data["ws"];
-      $responsesGivenOnly = $data["rso"];
+        $fp = fopen($csvFilePath, 'w');
 
-      if (isset($workspace_id) && isset($admin_token)) {
-
-        $groupData = getGroupData($workspace_id);
-        $testsStarted = $myDBConnection->testsStarted($admin_token, $workspace_id);
-        $testsWithResponses = $myDBConnection->responsesGiven($workspace_id);
-
-
-        foreach ($groupData as $data) {
-          $groupname = $data["groupname"];
-          $totalCount = 0;
-          $startedCount = 0;
-          $respGivenCount = 0;
-          $sessions = $data["sessions"];
-
-          foreach ($sessions as $sessionString) {
-            $totalCount+=1;
-            
-            if(in_array($sessionString, $testsStarted)) {
-              $startedCount+=1;
-            }
-            if(in_array($sessionString, $testsWithResponses)) {
-              $respGivenCount+=1;
-            }
-          }
-
-          if($responsesGivenOnly === false || $respGivenCount > 0) {
-            array_push($myreturn, ["name" => $groupname,
-            "testsTotal" => $totalCount, 
-            "testsStarted" => $startedCount,
-            "responsesGiven" => $respGivenCount
-             ]);
-          }
+        foreach ($reportData as $fields) {
+          fputcsv($fp, $fields, ';');
         }
 
-        $errorcode = 0;  
+        fclose($fp);
+        $csvFileContent = file_get_contents($csvFilePath);
+        $csvFileContent = iconv("UTF-8", "WINDOWS-1252", $csvFileContent);
+        echo $csvFileContent;
+        unlink($csvFilePath);
+        $errorcode = 0;
       }
     }
-  }        
-
-  unset($myDBConnection);
-  if ($errorcode > 0) {
-    http_response_code($errorcode);
-  } else {
-    echo(json_encode($myreturn));
   }
+       
 
+unset($myDBConnection);
+if ($errorcode > 0) {
+  http_response_code($errorcode);
+} else {
+    // echo($myreturn);
+  }
+}
 ?>

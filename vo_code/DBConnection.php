@@ -12,7 +12,7 @@ class DBConnection {
     // __________________________
     public function __construct() {
         try {
-            $this->pdoDBhandle = new PDO("pgsql:host=moodledb.cms.hu-berlin.de;port=5432;dbname=iqbw2p04;user=iqbw2p04;password=Hufeisen%Glasuren%Hagel%Pult%Matrose%Allmacht");
+            $this->pdoDBhandle = new PDO("pgsql:host=moodledb.cms.hu-berlin.de;port=5432;dbname=iqbw2p02;user=iqbw2p02;password=Herklit%Annonce%Krume%Campari%Camp%Mixerin");
             $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
             $this->errorMsg = $e->getMessage();

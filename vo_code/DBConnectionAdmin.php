@@ -170,6 +170,7 @@ class DBConnectionAdmin extends DBConnection {
 				':token' => $token))) {
 
 				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
+
 				if ($data != false) {
 					$this->refreshToken($token);
 					$myreturn = $data;
@@ -178,6 +179,17 @@ class DBConnectionAdmin extends DBConnection {
 		}
 		return $myreturn;
 	}
+
+	public function hasAdminAccessToWorkspace($token, $requestedWorkspaceId) {
+		$authorized = false;
+		foreach($this->getWorkspaces($token) as $allowedWorkspace) {
+
+			if ($allowedWorkspace['id'] == $requestedWorkspaceId) {
+				$authorized = true;
+			}
+		}
+		return $authorized;
+	} 
 
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// returns the name of the workspace given by id
@@ -203,34 +215,44 @@ class DBConnectionAdmin extends DBConnection {
 			
 		return $myreturn;
 	}
+  
 
-	public function hasAdminAccessToWorkspace($token, $requestedWorkspaceId) {
-		$authorized = false;
-		foreach($this->getWorkspaces($token) as $allowedWorkspace) {
+	// public function getUniqueIdCSV() {
 
-			if ($allowedWorkspace['id'] == $requestedWorkspaceId) {
-				$authorized = true;
-			}
-		}
-		return $authorized;
-	}   
+	// 	if ($this->pdoDBhandle != false) {
+	// 		$this->pdoDBhandle->query("UPDATE misc SET value = value+1 WHERE key = 'csvuniqueid'");
+
+	// 		$sql = $this->pdoDBhandle->prepare(
+	// 			"SELECT value FROM misc
+	// 				WHERE key='csvuniqueid'");
+				
+	// 		if ($sql -> execute(array())) {
+					
+	// 			$data = $sql -> fetch(PDO::FETCH_ASSOC);
+	// 			if ($data != false) {
+			
+	// 				$csvuniqueid = intval($data['value']);
+	// 				return $csvuniqueid;		
+	// 			}
+	// 		}
+	// 	}
+	// 	return -1;
+
+	// }
 
 	/* Hard coded data for testing purposes in ng */
-	public function showStats($adminToken, $workspaceId) {
-			
-		$obj = [
-			[name => 'Rocket Schule', testsTotal => 12, testsStarted => 3, responsesGiven => 5],
-			[name => 'Potsdamer Schule', testsTotal => 42, testsStarted =>  36, responsesGiven => 5],
-			[name => 'Mecklenburg Schule', testsTotal => 26, testsStarted => 26, responsesGiven => 5],
-			[name => 'Berliner Schule', testsTotal => 11, testsStarted =>  8, responsesGiven => 5],
-			[name => 'Nollendorfer Schule', testsTotal => 31, testsStarted => 20, responsesGiven => 5],
-			[name => 'Pankower Schule', testsTotal => 23, testsStarted =>  20, responsesGiven => 5],
-			[name => 'West Schule', testsTotal => 16, testsStarted => 12, responsesGiven => 5],
-			[name => 'Ost Schule', testsTotal => 19, testsStarted => 6, responsesGiven => 5]
-		];
-	
-		return $obj;
- 
+	public function getReportData($adminToken, $workspaceId, $groups) {
+		// check here that the group array is valid and correct
+		// use that group array to query the sql for responses and return the result in $list
+		$testsWithResponses = $this->responsesGiven($workspaceId);
+
+		$list = array(
+			array("name 1", "age 1", "citüüy 1"),
+			array("name 2", "age 2", "citäy 2"),
+			array("name 3", "age€² 3", "citäöy 3"));
+		print_r($testsWithResponses);
+		return $testsWithResponses;
+		
 	}
 
 	public function testsStarted($adminToken, $workspaceId) {
@@ -260,6 +282,30 @@ class DBConnectionAdmin extends DBConnection {
 		return $return;
 	}
 
+	public function getAllResponses($workspaceId, $login_id, $code, $booklet) {
+		$return = [];
+		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
+			$sql = $this->pdoDBhandle->prepare(
+				'SELECT units.name, units.response
+				FROM units
+				INNER JOIN booklets ON booklets.id = units.booklet_id
+				INNER JOIN sessions ON sessions.id = booklets.session_id 
+				INNER JOIN logins ON logins.id = sessions.login_id
+				INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+				WHERE workspace_id =:workspaceId');
+
+			if ($sql -> execute(array(
+				':workspaceId' => $workspaceId))) {
+
+				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
+				if ($data != false) {
+					$this->refreshToken($token);
+				}
+			}
+			return $return;
+		}
+	}
+
 	public function responsesGiven($workspaceId) {
 		$return = [];
 		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
@@ -286,13 +332,6 @@ class DBConnectionAdmin extends DBConnection {
 			}
 		}
 		return $return;
-	}
-
-
-	
-
-	public function fetchStatsfromDB($wsId) {
-
 	}
 
 }
