@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
       //   $totalCount = 0;
       //   $startedCount = 0;
       //   $respGivenCount = 0;
-      //   $sessions = $data["sessions"];
+      //   $people = $data["people"];
 
 
       // }

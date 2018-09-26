@@ -39,7 +39,7 @@
             foreach($xmlfile->children() as $group) { 
               if ($group->getName() == 'Group') {
                 $obj = ["groupname" => "",
-                        "sessions" => [] 
+                        "people" => [] 
                 ];
                 if (isset($group['name'])) {
                   $obj["groupname"] = (string) $group['name'];
@@ -47,7 +47,7 @@
                   $obj["groupname"] = "group " . $myGroupCount;
                   $myGroupCount += 1;
                 }
-                // group xml to get login names as sessions // they're called people in the new db schema
+                // group xml to get login names as people // they're called people in the new db schema
                 foreach($group->children() as $login) {
                   if($login->getName() == "Login") {
 
@@ -78,21 +78,21 @@
                             $myBookletCodes = explode(" ", $myCodesString);
                             foreach($myBookletCodes as $code) {
                               if(strlen($code) > 0) {
-                                array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
+                                array_push($obj["people"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
                               }
                             }  
                           } else {
                             foreach($myCodes as $code) {
-                              array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
+                              array_push($obj["people"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
                             }
                           }
                         } else {
                           foreach($myCodes as $code) {
-                            array_push($obj["sessions"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
+                            array_push($obj["people"], (string) $login['name'] . "##" . $code . "##" . $myBookletName);
                           }
                         }
                       } else {
-                        array_push($obj["sessions"], (string) $login['name'] . "##" . "" . "##" . $myBookletName);
+                        array_push($obj["people"], (string) $login['name'] . "##" . "" . "##" . $myBookletName);
                       }
 
                     }
@@ -164,9 +164,9 @@
           $totalCount = 0;
           $startedCount = 0;
           $respGivenCount = 0;
-          $sessions = $data["sessions"];
+          $people = $data["people"];
 
-          foreach ($sessions as $sessionString) {
+          foreach ($people as $sessionString) {
             $totalCount+=1;
             
             if(in_array($sessionString, $testsStarted)) {

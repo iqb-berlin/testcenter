@@ -45,7 +45,7 @@ function getGroupData($wsId) {
             foreach($xmlfile->children() as $group) { 
               if ($group->getName() == 'Group') {
                 $obj = ["groupname" => "",
-                        "sessions" => [] 
+                        "people" => [] 
                 ];
                 if (isset($group['name'])) {
                   $obj["groupname"] = (string) $group['name'];
@@ -53,7 +53,7 @@ function getGroupData($wsId) {
                   $obj["groupname"] = "group " . $myGroupCount;
                   $myGroupCount += 1;
                 }
-                // group xml to get login names as sessions mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+                // group xml to get login names as people mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
                 foreach($group->children() as $login) {
                   if($login->getName() == "Login") {
 

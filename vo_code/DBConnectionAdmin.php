@@ -117,8 +117,8 @@ class DBConnectionAdmin extends DBConnection {
 
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT booklets.name, booklets.laststate, booklets.locked FROM booklets
-					INNER JOIN sessions ON booklets.session_id = sessions.id
-					INNER JOIN logins ON sessions.login_id = logins.id
+					INNER JOIN people ON booklets.session_id = people.id
+					INNER JOIN logins ON people.login_id = logins.id
 					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
 					WHERE workspaces.id=:workspace_id');
 				
@@ -138,8 +138,8 @@ class DBConnectionAdmin extends DBConnection {
 
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT booklets.locked FROM booklets
-					INNER JOIN sessions ON booklets.session_id = sessions.id
-					INNER JOIN logins ON sessions.login_id = logins.id
+					INNER JOIN people ON booklets.session_id = people.id
+					INNER JOIN logins ON people.login_id = logins.id
 					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
 					WHERE workspaces.id=:workspace_id');
 				
@@ -259,10 +259,10 @@ class DBConnectionAdmin extends DBConnection {
 		$return = [];
 		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
 			$sql = $this->pdoDBhandle->prepare(
-				'SELECT logins.name, sessions.code, booklets.name as booklet
+				'SELECT logins.name, people.code, booklets.name as booklet
 					FROM booklets
-					INNER JOIN sessions ON sessions.id = booklets.session_id
-					INNER JOIN logins ON logins.id = sessions.login_id
+					INNER JOIN people ON people.id = booklets.session_id
+					INNER JOIN logins ON logins.id = people.login_id
 					INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 					WHERE logins.workspace_id =:workspaceId');
 		
@@ -289,8 +289,8 @@ class DBConnectionAdmin extends DBConnection {
 				'SELECT units.name, units.response
 				FROM units
 				INNER JOIN booklets ON booklets.id = units.booklet_id
-				INNER JOIN sessions ON sessions.id = booklets.session_id 
-				INNER JOIN logins ON logins.id = sessions.login_id
+				INNER JOIN people ON people.id = booklets.session_id 
+				INNER JOIN logins ON logins.id = people.login_id
 				INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 				WHERE workspace_id =:workspaceId');
 
@@ -310,11 +310,11 @@ class DBConnectionAdmin extends DBConnection {
 		$return = [];
 		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
 			$sql = $this->pdoDBhandle->prepare(
-				'SELECT DISTINCT booklets.name as booklet, sessions.code as code, logins.name
+				'SELECT DISTINCT booklets.name as booklet, people.code as code, logins.name
 				FROM units
 				INNER JOIN booklets ON booklets.id = units.booklet_id
-				INNER JOIN sessions ON sessions.id = booklets.session_id 
-				INNER JOIN logins ON logins.id = sessions.login_id
+				INNER JOIN people ON people.id = booklets.session_id 
+				INNER JOIN logins ON logins.id = people.login_id
 				INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 				WHERE workspace_id =:workspaceId');
 		
@@ -342,10 +342,10 @@ class DBConnectionAdmin extends DBConnection {
 
 // 1. see name, code, laststate
 
-// SELECT logins.name, sessions.code, booklets.name
+// SELECT logins.name, people.code, booklets.name
 // FROM booklets
-// INNER JOIN sessions ON sessions.id = booklets.session_id
-// INNER JOIN logins ON logins.id = sessions.login_id
+// INNER JOIN people ON people.id = booklets.session_id
+// INNER JOIN logins ON logins.id = people.login_id
 // INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 // WHERE workspace_id =:wsId
 

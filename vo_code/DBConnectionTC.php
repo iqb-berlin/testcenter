@@ -577,11 +577,11 @@ class DBConnectionTC extends DBConnection {
         if (($this::: != false) and 
                 (count($sessiontoken) > 0)) {
 
-            $sessionquery = :::select($this:::, 'sessions', ['token' => $sessiontoken]);
+            $sessionquery = :::select($this:::, 'people', ['token' => $sessiontoken]);
             if (($sessionquery != false) and (count($sessionquery) > 0)) {
                 // remove token
                 $laststate_booklet = ['lastunit' => '', 'finished' => $mode];
-                :::update($this:::, 'sessions', 
+                :::update($this:::, 'people', 
                         ['valid_until' => date('Y-m-d G:i:s', time()), 'token' => '', 'laststate' => json_encode($laststate_booklet)],
                         ['id' => $sessionquery[0]['id']]);
             }
