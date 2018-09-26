@@ -121,6 +121,7 @@ class DBConnectionAdmin extends DBConnection {
 					INNER JOIN logins ON people.login_id = logins.id
 					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
 					WHERE workspaces.id=:workspace_id');
+
 				
 			if ($sql -> execute(array(
 				':workspace_id' => $workspace_id))) {
@@ -240,20 +241,6 @@ class DBConnectionAdmin extends DBConnection {
 
 	// }
 
-	/* Hard coded data for testing purposes in ng */
-	public function getReportData($adminToken, $workspaceId, $groups) {
-		// check here that the group array is valid and correct
-		// use that group array to query the sql for responses and return the result in $list
-		$testsWithResponses = $this->responsesGiven($workspaceId);
-
-		$list = array(
-			array("name 1", "age 1", "citüüy 1"),
-			array("name 2", "age 2", "citäy 2"),
-			array("name 3", "age€² 3", "citäöy 3"));
-		print_r($testsWithResponses);
-		return $testsWithResponses;
-		
-	}
 
 	public function testsStarted($adminToken, $workspaceId) {
 		$return = [];
@@ -306,32 +293,35 @@ class DBConnectionAdmin extends DBConnection {
 		}
 	}
 
-	public function responsesGiven($workspaceId) {
-		$return = [];
-		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
-			$sql = $this->pdoDBhandle->prepare(
-				'SELECT DISTINCT booklets.name as booklet, people.code as code, logins.name
-				FROM units
-				INNER JOIN booklets ON booklets.id = units.booklet_id
-				INNER JOIN people ON people.id = booklets.session_id 
-				INNER JOIN logins ON logins.id = people.login_id
-				INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-				WHERE workspace_id =:workspaceId');
-		
-			if ($sql -> execute(array(
-				':workspaceId' => $workspaceId))) {
+	public function responsesGiven($workspaceId, $groups) {
+		$lines = [];
+		$firstLine = ["Group Name", "Login Name", "Code", "Booklet Name", "Unit Name", "Unit Response"];
 
-				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
-				if ($data != false) {
-					$this->refreshToken($token);
-					
-					foreach ($data as $object) {
-						array_push($return, trim((string) $object["name"]) . "##" . trim((string) $object["code"]) . "##" . trim((string) $object["booklet"]));
+		array_push($lines, $firstLine);
+
+		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
+			foreach ($groups as $group) {
+				$sql = $this->pdoDBhandle->prepare(
+					'SELECT logins.groupname,logins.name as login_name, people.code, booklets.name AS booklet_name, units.name AS unit_name, units.responses FROM units
+						INNER JOIN booklets ON booklets.id = units.booklet_id
+						INNER JOIN people ON people.id = booklets.person_id
+						INNER JOIN logins ON logins.id = people.login_id
+	
+						WHERE logins.workspace_id =:workspaceId AND logins.groupname =:groupName');
+			
+				if ($sql -> execute(array(
+					':workspaceId' => $workspaceId,
+					 ':groupName' => $group))) {
+	
+					$dataNewLines = $sql->fetchAll(PDO::FETCH_ASSOC);
+					if ($dataNewLines != false) {
+						$lines = array_merge($lines, $dataNewLines);	
 					}
 				}
 			}
 		}
-		return $return;
+		
+		return $lines;
 	}
 
 }

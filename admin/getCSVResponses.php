@@ -141,7 +141,7 @@ function getGroupData($wsId) {
   }
 
 header("Content-type: text/plain, charset=utf-8");
-// header("Content-Disposition: attachment; filename=file.csv");
+header("Content-Disposition: attachment; filename=file.csv");
 header("Pragma: no-cache");
 header("Expires: 0");
 
@@ -156,14 +156,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
   $myDBConnection = new DBConnectionAdmin();
   if (!$myDBConnection->isError()) {
     $errorcode = 401;
-    
+
     $admin_token = $_GET["at"];
     $workspace_id = $_GET["ws"];
     $groups = $_GET["groups"];
-    print_r($groups);
+
     if (isset($workspace_id) && isset($admin_token) && isset($groups)) {
       if($myDBConnection->hasAdminAccessToWorkspace($admin_token, $workspace_id)===true) {
-        $reportData = $myDBConnection->getReportData($admin_token, $workspace_id, $groups);
+        $reportData = $myDBConnection->responsesGiven($workspace_id, $groups);
         $csvFilePath = "temp/" . uniqid('', true) . '.csv';
 
         $fp = fopen($csvFilePath, 'w');
@@ -171,6 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
         foreach ($reportData as $fields) {
           fputcsv($fp, $fields, ';');
         }
+
 
         fclose($fp);
         $csvFileContent = file_get_contents($csvFilePath);
@@ -186,8 +187,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 unset($myDBConnection);
 if ($errorcode > 0) {
   http_response_code($errorcode);
-} else {
-    // echo($myreturn);
   }
 }
 ?>
