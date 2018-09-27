@@ -9,7 +9,7 @@ require_once('DBConnection.php');
 class DBConnectionStart extends DBConnection {
 
     // __________________________
-    public function login($workspace, $groupname, $name, $mode, $sessiondef) {
+    public function login($workspace, $groupname, $name, $mode, $bookletdef) {
         $myreturn = '';
         if (($this->pdoDBhandle != false) and 
                 isset($workspace) and isset($name) > 0) {
@@ -26,13 +26,13 @@ class DBConnectionStart extends DBConnection {
 				if ($old_login === false) {
                     $mytoken = uniqid('a', true);
 					$sql_insert = $this->pdoDBhandle->prepare(
-						'INSERT INTO logins (token, session_def, valid_until, name, mode, workspace_id, groupname) 
+						'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
 							VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)');
 
 					if ($sql_insert->execute(array(
 						':token' => $mytoken,
-						':sd' => json_encode($sessiondef),
-                        ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletime),
+						':sd' => json_encode($bookletdef),
+                        ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletime),
                         ':name' => $name,
                         ':mode' => $mode,
                         ':ws' => $workspace,
@@ -43,12 +43,12 @@ class DBConnectionStart extends DBConnection {
                 } else {
                     $sql_update = $this->pdoDBhandle->prepare(
                         'UPDATE logins
-                            SET valid_until =:value, session_def =:sd, groupname =:groupname
+                            SET valid_until =:value, booklet_def =:sd, groupname =:groupname
                             WHERE id =:loginid');
             
                     $sql_update->execute(array(
-                        ':value' => date('Y/m/d h:i:s a', time() + $this->idletime),
-                        ':sd'=> json_encode($sessiondef),
+                        ':value' => date('Y-m-d H:i:s', time() + $this->idletime),
+                        ':sd'=> json_encode($bookletdef),
                         ':loginid'=>$old_login['id'],
                         ':groupname'=>$groupname
                     ));
@@ -65,7 +65,7 @@ class DBConnectionStart extends DBConnection {
 
         if (($this->pdoDBhandle != false) and (count($logintoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.session_def, logins.workspace_id, logins.mode, logins.groupname,
+				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname,
                         logins.id, logins.name as lname, workspaces.name as wname FROM logins
                     INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 					WHERE logins.token = :token');
@@ -75,7 +75,7 @@ class DBConnectionStart extends DBConnection {
 
 				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($logindata !== false) {
-                    $myreturn['booklets'] = json_decode($logindata['session_def'], true);
+                    $myreturn['booklets'] = json_decode($logindata['booklet_def'], true);
                     $myreturn['workspaceName'] = $logindata['wname'];
                     $myreturn['loginname'] = $logindata['lname'];
                     $myreturn['groupname'] = $logindata['groupname'];
@@ -94,18 +94,18 @@ class DBConnectionStart extends DBConnection {
 
         if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.session_def, logins.workspace_id, logins.mode, logins.groupname,
-                        logins.id, logins.name as lname, workspaces.name as wname, people.code FROM people
-                    INNER JOIN logins ON logins.id = people.login_id
+				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname,
+                        logins.id, logins.name as lname, workspaces.name as wname, persons.code FROM persons
+                    INNER JOIN logins ON logins.id = persons.login_id
                     INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-					WHERE people.token = :token');
+					WHERE persons.token = :token');
 				
 			if ($sql_select->execute(array(
 				':token' => $persontoken))) {
 
 				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($logindata !== false) {
-                    $myreturn['booklets'] = json_decode($logindata['session_def'], true);
+                    $myreturn['booklets'] = json_decode($logindata['booklet_def'], true);
                     $myreturn['workspaceName'] = $logindata['wname'];
                     $myreturn['loginname'] = $logindata['lname'];
                     $myreturn['groupname'] = $logindata['groupname'];
@@ -121,14 +121,14 @@ class DBConnectionStart extends DBConnection {
 
     // __________________________
     // having just the login, entry in the booklet table could be missing; so we have to go
-    // through the session_def
+    // through the booklet_def
     public function getBookletStatusNL($logintoken, $code, $bookletid, $bookletlabel) {
         // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
         $myreturn = [];
 
         if (($this->pdoDBhandle != false) and (count($logintoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.session_def, logins.id FROM logins
+				'SELECT logins.booklet_def, logins.id FROM logins
 					WHERE logins.token = :token');
 				
 			if ($sql_select->execute(array(
@@ -136,23 +136,23 @@ class DBConnectionStart extends DBConnection {
 
 				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($logindata !== false) {
-                    $myBookletData = json_decode($logindata['session_def'], true);
+                    $myBookletData = json_decode($logindata['booklet_def'], true);
                     if (isset($myBookletData[$code])) {
                         if (in_array($bookletid, $myBookletData[$code])) {
                             $myreturn['canStart'] = true;
                             $myreturn['statusLabel'] = 'Zum Starten hier klicken';
                             $myreturn['label'] = $bookletlabel;
                 
-                            $people_select = $this->pdoDBhandle->prepare(
-                                'SELECT people.id FROM people
-                                    WHERE people.login_id = :loginid and people.code = :code');
+                            $persons_select = $this->pdoDBhandle->prepare(
+                                'SELECT persons.id FROM persons
+                                    WHERE persons.login_id = :loginid and persons.code = :code');
                                 
-                            if ($people_select->execute(array(
+                            if ($persons_select->execute(array(
                                 ':loginid' => $logindata['id'],
                                 ':code' => $code
                                 ))) {
                 
-                                $persondata = $people_select->fetch(PDO::FETCH_ASSOC);
+                                $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
                                 if ($persondata !== false) {
                                     $booklet_select = $this->pdoDBhandle->prepare(
                                         'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
@@ -196,16 +196,16 @@ class DBConnectionStart extends DBConnection {
 
         if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.session_def, people.id, people.code FROM people
-                    INNER JOIN logins ON logins.id = people.login_id
-					WHERE people.token = :token');
+				'SELECT logins.booklet_def, persons.id, persons.code FROM persons
+                    INNER JOIN logins ON logins.id = persons.login_id
+					WHERE persons.token = :token');
 				
 			if ($sql_select->execute(array(
 				':token' => $persontoken))) {
 
 				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($logindata !== false) {
-                    $myBooklets = json_decode($logindata['session_def'], true);
+                    $myBooklets = json_decode($logindata['booklet_def'], true);
                     $code = $logindata['code'];
                     $personId = $logindata['id'];
 
@@ -265,8 +265,8 @@ class DBConnectionStart extends DBConnection {
 
             $booklet_select = $this->pdoDBhandle->prepare(
                 'SELECT booklets.laststate, booklets.locked, booklets.label FROM booklets
-                    INNER JOIN people on people.id = booklets.person_id
-                    WHERE people.token = :token 
+                    INNER JOIN persons on persons.id = booklets.person_id
+                    WHERE persons.token = :token 
                         and booklets.id = :bookletId');
                 
             if ($booklet_select->execute(array(

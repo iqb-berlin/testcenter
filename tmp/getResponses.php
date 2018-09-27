@@ -1,15 +1,23 @@
 <?php
+// www.IQB.hu-berlin.de
+// Bărbulescu, Stroescu, Mechtel
+// 2018
+// license: MIT
 
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 function getResponses($at, $wsId) {
   $return = ["hello"];
 }
 
 
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
   exit();
 } else {
   $myreturn = [];
-  require_once('../vo_code/DBConnectionAdmin.php');
+  require_once('../../vo_code/DBConnectionAdmin.php');
   $errorcode = 503;
 
   $myDBConnection = new DBConnectionAdmin();

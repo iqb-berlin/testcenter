@@ -8,7 +8,7 @@
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-		require_once('../vo_code/DBConnectionSuperadmin.php');
+		require_once('../../vo_code/DBConnectionSuperadmin.php');
 
 		// *****************************************************************
 
@@ -22,12 +22,10 @@
 
 			$data = json_decode(file_get_contents('php://input'), true);
 			$myToken = $data["t"];
+			$myUser = $data["u"];
 			if (isset($myToken)) {
-				$users = $myDBConnection->getWorkspaces($myToken);
-				if (count($users) > 0) {
-					$myerrorcode = 0;
-					$myreturn = $users;
-				}
+				$myreturn = $myDBConnection->getWorkspacesByUser($myToken, $myUser);
+				$myerrorcode = 0;
 			}
 		}        
 		unset($myDBConnection);

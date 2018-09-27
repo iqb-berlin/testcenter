@@ -13,10 +13,10 @@ class DBConnectionSuperAdmin extends DBConnection {
     // returns [] if token not valid or no workspaces 
     // token is refreshed via isSuperAdmin
     public function getWorkspaces($token) {
-        $myreturn = [];
+        $myreturn = []; // id, name
         if ($this->isSuperAdmin($token)) {
             $sql = $this->pdoDBhandle->prepare(
-                'SELECT workspaces.id as id, workspaces.name as label FROM workspaces ORDER BY workspaces.name');
+                'SELECT workspaces.id, workspaces.name FROM workspaces ORDER BY workspaces.name');
         
             if ($sql -> execute()) {
 
@@ -60,10 +60,10 @@ class DBConnectionSuperAdmin extends DBConnection {
     // returns [] if token not valid or no users 
     // token is refreshed via isSuperAdmin
     public function getUsers($token) {
-        $myreturn = [];
+        $myreturn = []; // name, id, email, is_superadmin
         if ($this->isSuperAdmin($token)) {
             $sql = $this->pdoDBhandle->prepare(
-                'SELECT users.name FROM users ORDER BY users.name');
+                'SELECT users.name, users.id, users.email, users.is_superadmin FROM users ORDER BY users.name');
         
             if ($sql -> execute()) {
                 $data = $sql->fetchAll(PDO::FETCH_ASSOC);
@@ -80,7 +80,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     // returns [] if token not valid or user not found
     // token is refreshed via isSuperAdmin
     public function getWorkspacesByUser($token, $username) {
-        $myreturn = [];
+        $myreturn = []; // id, name, selected
         if ($this->isSuperAdmin($token)) {
             $sql = $this->pdoDBhandle->prepare(
                 'SELECT workspace_users.workspace_id as id FROM workspace_users
@@ -107,7 +107,7 @@ class DBConnectionSuperAdmin extends DBConnection {
                         foreach ($allworkspaces as $workspace) {
                             array_push($myreturn, [
                                 'id' => $workspace['id'],
-                                'label' => $workspace['name'],
+                                'name' => $workspace['name'],
                                 'selected' => in_array($workspace['id'], $workspaceIdList)]);
                         }
                     }
@@ -300,7 +300,7 @@ class DBConnectionSuperAdmin extends DBConnection {
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
     public function getUsersByWorkspace($token, $wsId) {
-        $myreturn = [];
+        $myreturn = []; // id, name, selected
         if ($this->isSuperAdmin($token)) {
             $sql = $this->pdoDBhandle->prepare(
                 'SELECT workspace_users.user_id as id FROM workspace_users
@@ -326,7 +326,7 @@ class DBConnectionSuperAdmin extends DBConnection {
                         foreach ($allusers as $user) {
                             array_push($myreturn, [
                                 'id' => $user['id'],
-                                'label' => $user['name'],
+                                'name' => $user['name'],
                                 'selected' => in_array($user['id'], $userIdList)]);
                         }
                     }
