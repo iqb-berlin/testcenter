@@ -97,47 +97,14 @@ class DBConnectionAdmin extends DBConnection {
 		return $myreturn;
 	}
 
-<<<<<<< HEAD
-
-	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-	// returns all booklets stored in the database (i. e. already answered) for the given workspace
-	public function getBookletList($workspace_id) {
-		$myreturn = [];
-		if ($this->pdoDBhandle != false) {
-
-			$sql = $this->pdoDBhandle->prepare(
-				'SELECT booklets.name, booklets.laststate, booklets.locked FROM booklets
-					INNER JOIN people ON booklets.session_id = people.id
-					INNER JOIN logins ON people.login_id = logins.id
-					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
-					WHERE workspaces.id=:workspace_id');
-
-				
-			if ($sql -> execute(array(
-				':workspace_id' => $workspace_id))) {
-					
-					$myreturn = $sql -> fetchAll(PDO::FETCH_ASSOC);
-			}
-		}
-			
-		return $myreturn;
-	}
-
-=======
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
 	public function toggleLockedState($workspace_id) {
 		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
 
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT booklets.locked FROM booklets
-<<<<<<< HEAD
-					INNER JOIN people ON booklets.session_id = people.id
-					INNER JOIN logins ON people.login_id = logins.id
-=======
 					INNER JOIN persons ON booklets.person_id = persons.id
 					INNER JOIN logins ON persons.login_id = logins.id
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
 					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
 					WHERE workspaces.id=:workspace_id');
 				
@@ -235,20 +202,12 @@ class DBConnectionAdmin extends DBConnection {
 
 		if ($this->pdoDBhandle != false) {
 			$sql = $this->pdoDBhandle->prepare(
-<<<<<<< HEAD
-				'SELECT logins.name, people.code, booklets.name as booklet
-					FROM booklets
-					INNER JOIN people ON people.id = booklets.session_id
-					INNER JOIN logins ON logins.id = people.login_id
-					INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-=======
 				'SELECT logins.groupname, logins.name as loginname, persons.code, 
 						booklets.name as bookletname
 					FROM booklets
 					INNER JOIN persons ON persons.id = booklets.person_id
 					INNER JOIN logins ON logins.id = persons.login_id
 					ORDER BY logins.groupname, logins.name, persons.code, booklets.name
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
 					WHERE logins.workspace_id =:workspaceId');
 		
 			if ($sql -> execute(array(
@@ -272,13 +231,8 @@ class DBConnectionAdmin extends DBConnection {
 				'SELECT DISTINCT booklets.name as bookletname, persons.code, logins.name as loginname,
 						logins.groupname FROM units
 				INNER JOIN booklets ON booklets.id = units.booklet_id
-<<<<<<< HEAD
-				INNER JOIN people ON people.id = booklets.session_id 
-				INNER JOIN logins ON logins.id = people.login_id
-=======
 				INNER JOIN persons ON persons.id = booklets.person_id 
 				INNER JOIN logins ON logins.id = persons.login_id
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
 				INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 				ORDER BY logins.groupname, logins.name, persons.code, booklets.name
 				WHERE workspace_id =:workspaceId');
@@ -295,32 +249,6 @@ class DBConnectionAdmin extends DBConnection {
 		return $return;
 	}
 
-<<<<<<< HEAD
-	public function responsesGiven($workspaceId, $groups) {
-		$lines = [];
-		$firstLine = ["Group Name", "Login Name", "Code", "Booklet Name", "Unit Name", "Unit Response"];
-
-		array_push($lines, $firstLine);
-
-		if (($this->pdoDBhandle != false) and (strlen($workspaceId) > 0)) {
-			foreach ($groups as $group) {
-				$sql = $this->pdoDBhandle->prepare(
-					'SELECT logins.groupname,logins.name as login_name, people.code, booklets.name AS booklet_name, units.name AS unit_name, units.responses FROM units
-						INNER JOIN booklets ON booklets.id = units.booklet_id
-						INNER JOIN people ON people.id = booklets.person_id
-						INNER JOIN logins ON logins.id = people.login_id
-	
-						WHERE logins.workspace_id =:workspaceId AND logins.groupname =:groupName');
-			
-				if ($sql -> execute(array(
-					':workspaceId' => $workspaceId,
-					 ':groupName' => $group))) {
-	
-					$dataNewLines = $sql->fetchAll(PDO::FETCH_ASSOC);
-					if ($dataNewLines != false) {
-						$lines = array_merge($lines, $dataNewLines);	
-					}
-=======
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// responses
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
@@ -345,7 +273,6 @@ class DBConnectionAdmin extends DBConnection {
 				if ($data != false) {
 					$return = $data;
 					// array_push($return, trim((string) $object["name"]) . "##" . trim((string) $object["code"]) . "##" . trim((string) $object["booklet"]));					
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
 				}
 			}
 		}
@@ -362,17 +289,10 @@ class DBConnectionAdmin extends DBConnection {
 
 // 1. see name, code, laststate
 
-<<<<<<< HEAD
-// SELECT logins.name, people.code, booklets.name
-// FROM booklets
-// INNER JOIN people ON people.id = booklets.session_id
-// INNER JOIN logins ON logins.id = people.login_id
-=======
 // SELECT logins.name, persons.code, booklets.name
 // FROM booklets
 // INNER JOIN persons ON persons.id = booklets.person_id
 // INNER JOIN logins ON logins.id = persons.login_id
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
 // INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 // WHERE workspace_id =:wsId
 

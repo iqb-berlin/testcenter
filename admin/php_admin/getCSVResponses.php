@@ -174,13 +174,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
     if (isset($workspace_id) && isset($admin_token) && isset($groups)) {
       if($myDBConnection->hasAdminAccessToWorkspace($admin_token, $workspace_id)===true) {
-<<<<<<< HEAD:admin/getCSVResponses.php
-        $reportData = $myDBConnection->responsesGiven($workspace_id, $groups);
-        $csvFilePath = "temp/" . uniqid('', true) . '.csv';
-=======
         $reportData = $myDBConnection->getReportData($admin_token, $workspace_id, $groups);
         $csvFilePath = "../../tmpdownload/" . uniqid('', true) . '.csv';
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b:admin/php_admin/getCSVResponses.php
 
         $fp = fopen($csvFilePath, 'w');
 
