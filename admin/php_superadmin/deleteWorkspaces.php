@@ -9,7 +9,7 @@
 		exit();
 	} else {
 
-		require_once('../vo_code/DBConnectionSuperadmin.php');
+		require_once('../../vo_code/DBConnectionSuperadmin.php');
 
 		// Authorisation
 		$myerrorcode = 503;
@@ -20,11 +20,10 @@
 			$myerrorcode = 401;
 			$data = json_decode(file_get_contents('php://input'), true);
 			$myToken = $data["t"];
-			$wsId = $data["ws_id"];
-			$wsName = $data["ws_name"];
+			$wsIds = $data["ws"];
 
 			if (isset($myToken)) {
-				$ok = $myDBConnection->setWorkspace($myToken, $wsId, $wsName);
+				$ok = $myDBConnection->deleteWorkspaces($myToken, $wsIds);
 				if ($ok) {
 					$myerrorcode = 0;
 					$myreturn = $ok;

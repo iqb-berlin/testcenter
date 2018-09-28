@@ -1,4 +1,9 @@
 <?php
+// www.IQB.hu-berlin.de
+// Bărbulescu, Stroescu, Mechtel
+// 2018
+// license: MIT
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -7,7 +12,7 @@ error_reporting(E_ALL);
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
-    require_once('../vo_code/DBConnectionAdmin.php');
+    require_once('../../vo_code/DBConnectionAdmin.php');
     
     $myreturn = [];
 
@@ -22,20 +27,10 @@ error_reporting(E_ALL);
 		$myToken = $data["at"];
 		$wsId = $data["ws"];
 		if (isset($myToken)) {
-			$workspaces = $myDBConnection->getWorkspaces($myToken);
-			if (count($workspaces) > 0) {
-				$wsIdInt = intval($wsId);
-				$wsId = 0;
-				foreach($workspaces as $ws) {
-					if ($ws['id'] == $wsIdInt) {
-						$wsId = $wsIdInt;
-					}
-				}
-				if ($wsId > 0) {
-					$myerrorcode = 0;
-					// Check credentials
-					$myreturn = $myDBConnection->getBookletList($wsId);
-				}
+			if ($myDBConnection->hasAdminAccessToWorkspace($myToken, $wsId)) {
+				$myerrorcode = 0;
+				// Check credentials
+				$myreturn = $myDBConnection->getBookletList($wsId);
 			}
 		}
 		unset($myDBConnection);

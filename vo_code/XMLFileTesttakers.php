@@ -102,7 +102,7 @@ class XMLFileTesttakers extends XMLFile
                                                     foreach($codeBooklets as $code => $booklets) {
                                                         foreach($noCodeBooklets as $booklet) {
                                                             if (!in_array($booklet, $booklets)) {
-                                                                array_push($booklets, $$booklet);
+                                                                array_push($booklets, $booklet);
                                                             }
                                                         }
                                                     }
@@ -272,7 +272,7 @@ class XMLFileTesttakers extends XMLFile
                                                     foreach($codeBooklets as $code => $booklets) {
                                                         foreach($noCodeBooklets as $booklet) {
                                                             if (!in_array($booklet, $booklets)) {
-                                                                array_push($booklets, $$booklet);
+                                                                array_push($booklets, $booklet);
                                                             }
                                                         }
                                                     }

@@ -48,7 +48,7 @@ class DBConnection {
 
         if ($sql_update != false) {
             $sql_update->execute(array(
-                ':value' => date('Y/m/d h:i:s a', time() + $this->idletime),
+                ':value' => date('Y-m-d H:i:s', time() + $this->idletime),
                 ':token'=> $token));
         }
     }
@@ -71,7 +71,7 @@ class DBConnection {
 
                     if ($first != false) {
                         $this->refreshAdmintoken($token);
-                        $myreturn = $first['is_superadmin'] == 'true';
+                        $myreturn = $first['is_superadmin'] == true;
                     }
                 }
             }

@@ -1,13 +1,15 @@
 <?php 
-	// require_once('vo_code/XMLFile.php');
-	// require_once('vo_code/DBConnectionAdmin.php');
+// www.IQB.hu-berlin.de
+// Bărbulescu, Stroescu, Mechtel
+// 2018
+// license: MIT
 
 	// preflight OPTIONS-Request bei CORS
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
 	} else {
 
-		require_once('../vo_code/DBConnectionAdmin.php');
+		require_once('../../vo_code/DBConnectionAdmin.php');
 
 
 		// Authorisation
@@ -22,17 +24,12 @@
 
 			if (isset($myToken) and isset($wsId)) {
 				$myerrorcode = 401;
-				foreach($myDBConnection->getWorkspaces($myToken) as $ws) {
-					if ($ws['id'] == $wsId) {
-						$myerrorcode = 0;
-					}
-				}
-
-				if ($myerrorcode == 0) {
+				if ($myDBConnection->hasAdminAccessToWorkspace($myToken, $wsId)) {
+					$myerrorcode = 0;
 					$myreturn = 'ok';
 
 					// check if folder exists -> create
-					$myWorkspaceFolder = '../vo_data/ws_' . $wsId;
+					$myWorkspaceFolder = '../../vo_data/ws_' . $wsId;
 					if (!file_exists($myWorkspaceFolder)) {
 						if (!mkdir($myWorkspaceFolder)) {
 							$wsId = 0;
@@ -45,7 +42,7 @@
 						$originalTargetFilename = $_FILES['fileforvo']['name'];
 						if (isset($originalTargetFilename) and strlen($originalTargetFilename) > 0) {
 							$originalTargetFilename = basename($originalTargetFilename);
-							$tempPrefix = '../vo_data/' . uniqid('t', true) . '_';
+							$tempPrefix = '../../vo_data/' . uniqid('t', true) . '_';
 							$tempFilename = $tempPrefix . $originalTargetFilename;
 
 							// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -57,7 +54,7 @@
 								if (strtoupper(substr($tempFilename, -4)) == '.XML') {
 									$myreturn = 'OK (valide)';
 
-									require_once('../vo_code/XMLFile.php'); // // // // ========================
+									require_once('../../vo_code/XMLFile.php'); // // // // ========================
 									$xFile = new XMLFile($tempFilename, true);
 									if ($xFile->isValid()) {
 										$targetFolder = $myWorkspaceFolder . '/' . $xFile->getRoottagName();

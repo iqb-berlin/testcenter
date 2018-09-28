@@ -1,4 +1,9 @@
 <?php
+// www.IQB.hu-berlin.de
+// Bărbulescu, Stroescu, Mechtel
+// 2018
+// license: MIT
+
 	// preflight OPTIONS-Request bei CORS
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
@@ -10,7 +15,7 @@
 			'is_superadmin' => false
 		];
 		$myerrorcode = 503;
-		require_once('../vo_code/DBConnectionAdmin.php');
+		require_once('../../vo_code/DBConnectionAdmin.php');
 
 		$myDBConnection = new DBConnectionAdmin();
 		if (!$myDBConnection->isError()) {

@@ -19,8 +19,8 @@ class DBConnectionTC extends DBConnection {
         if ($this->pdoDBhandle != false) {
             $booklet_select = $this->pdoDBhandle->prepare(
                 'SELECT booklets.locked FROM booklets
-                    INNER JOIN people ON people.id = booklets.person_id
-                    WHERE people.token=:token and booklets.id=:bookletId');
+                    INNER JOIN persons ON persons.id = booklets.person_id
+                    WHERE persons.token=:token and booklets.id=:bookletId');
                 
             if ($booklet_select->execute(array(
                 ':token' => $persontoken,
@@ -70,8 +70,8 @@ class DBConnectionTC extends DBConnection {
                             // 6666666666666666666666
                             $booklet_select = $this->pdoDBhandle->prepare(
                                 'SELECT booklets.locked FROM booklets
-                                    INNER JOIN people ON people.id = booklets.person_id
-                                    WHERE people.token=:token and booklets.id=:bookletId');
+                                    INNER JOIN persons ON persons.id = booklets.person_id
+                                    WHERE persons.token=:token and booklets.id=:bookletId');
                                 
                             if ($booklet_select->execute(array(
                                 ':token' => $persontoken,
@@ -111,7 +111,7 @@ class DBConnectionTC extends DBConnection {
 
             if ($bookletreview_insert->execute(array(
                 ':b' => $bookletDbId,
-                ':t' => date('Y-m-d G:i:s', time()),
+                ':t' => date('Y-m-d H:i:s', time()),
                 ':r' => '-',
                 ':p' => $priority,
                 ':c' => $categories,
@@ -153,7 +153,7 @@ class DBConnectionTC extends DBConnection {
 
                     if ($unitreview_insert->execute(array(
                         ':u' => $unitdata['id'],
-                        ':t' => date('Y-m-d G:i:s', time()),
+                        ':t' => date('Y-m-d H:i:s', time()),
                         ':r' => '-',
                         ':p' => $priority,
                         ':c' => $categories,
@@ -194,9 +194,9 @@ class DBConnectionTC extends DBConnection {
         if (strlen($persontoken) > 0) {
                
             $person_select = $this->pdoDBhandle->prepare(
-                'SELECT logins.workspace_id FROM people
-                    INNER JOIN logins ON logins.id = people.login_id
-                    WHERE people.token=:token');
+                'SELECT logins.workspace_id FROM persons
+                    INNER JOIN logins ON logins.id = persons.login_id
+                    WHERE persons.token=:token');
             if ($person_select->execute(array(
                 ':token' => $persontoken
                 ))) {
@@ -227,14 +227,14 @@ class DBConnectionTC extends DBConnection {
                             // 6666666666666666666666
                             // $person_select = $this->pdoDBhandle->prepare(
                             //     'SELECT logins.workspace_id FROM booklets
-                            //         INNER JOIN people ON people.id = booklets.person_id
-                            //         INNER JOIN logins ON logins.id = people.login_id
-                            //         WHERE people.token=:token and booklets.id=:bookletId');
+                            //         INNER JOIN persons ON persons.id = booklets.person_id
+                            //         INNER JOIN logins ON logins.id = persons.login_id
+                            //         WHERE persons.token=:token and booklets.id=:bookletId');
                                 
                             $person_select = $this->pdoDBhandle->prepare(
-                                'SELECT logins.workspace_id FROM people
-                                    INNER JOIN logins ON logins.id = people.login_id
-                                    WHERE people.token=:token');
+                                'SELECT logins.workspace_id FROM persons
+                                    INNER JOIN logins ON logins.id = persons.login_id
+                                    WHERE persons.token=:token');
                             if ($person_select->execute(array(
                                 ':token' => $persontoken
                                 ))) {
@@ -270,8 +270,8 @@ class DBConnectionTC extends DBConnection {
                             // 6666666666666666666666
                             $booklet_select = $this->pdoDBhandle->prepare(
                                 'SELECT booklets.name FROM booklets
-                                    INNER JOIN people ON people.id = booklets.person_id
-                                    WHERE people.token=:token and booklets.id=:bookletId');
+                                    INNER JOIN persons ON persons.id = booklets.person_id
+                                    WHERE persons.token=:token and booklets.id=:bookletId');
                                 
                             if ($booklet_select->execute(array(
                                 ':token' => $persontoken,
@@ -383,39 +383,39 @@ class DBConnectionTC extends DBConnection {
 
                 $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
                 if ($logindata !== false) {
-                    $people_select = $this->pdoDBhandle->prepare(
-                        'SELECT people.id FROM people
-                            WHERE people.login_id=:id and people.code=:code');
+                    $persons_select = $this->pdoDBhandle->prepare(
+                        'SELECT persons.id FROM persons
+                            WHERE persons.login_id=:id and persons.code=:code');
                         
-                    if ($people_select->execute(array(
+                    if ($persons_select->execute(array(
                         ':id' => $logindata['id'],
                         ':code' => $code
                         ))) {
         
                         $pToken = uniqid('a', true);
                         $laststate_session = ['lastbooklet' => $booklet];
-                        $sessiondata = $people_select->fetch(PDO::FETCH_ASSOC);
+                        $sessiondata = $persons_select->fetch(PDO::FETCH_ASSOC);
                         if ($sessiondata !== false) {
                             // overwrite token
-                            $session_update = $this->pdoDBhandle->prepare(
-                                'UPDATE people SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
-                            if (!$session_update -> execute(array(
-                                ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
+                            $booklet_update = $this->pdoDBhandle->prepare(
+                                'UPDATE persons SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
+                            if (!$booklet_update -> execute(array(
+                                ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
                                 ':laststate' => json_encode($laststate_session),
                                 ':token' => $pToken,
                                 ':id' => $sessiondata['id']))) {
                                 $pToken = '';
                             }
                         } else {
-                            $session_insert = $this->pdoDBhandle->prepare(
-                                'INSERT INTO people (token, code, login_id, valid_until, laststate) 
+                            $booklet_insert = $this->pdoDBhandle->prepare(
+                                'INSERT INTO persons (token, code, login_id, valid_until, laststate) 
                                     VALUES(:token, :code, :login_id, :valid_until, :laststate)');
         
-                            if (!$session_insert->execute(array(
+                            if (!$booklet_insert->execute(array(
                                 ':token' => $pToken,
                                 ':code' => $code,
                                 ':login_id' => $logindata['id'],
-                                ':valid_until' => date('Y-m-d G:i:s', time() + $this->idletimeSession),
+                                ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
                                 ':laststate' => json_encode($laststate_session)
                                 ))) {
                                     $pToken = '';
@@ -424,15 +424,15 @@ class DBConnectionTC extends DBConnection {
                     }
                 }
 
-                $people_select = $this->pdoDBhandle->prepare(
-                    'SELECT people.id FROM people
-                        WHERE people.token=:token');
+                $persons_select = $this->pdoDBhandle->prepare(
+                    'SELECT persons.id FROM persons
+                        WHERE persons.token=:token');
                     
-                if ($people_select->execute(array(
+                if ($persons_select->execute(array(
                     ':token' => $pToken
                     ))) {
     
-                    $sessiondata = $people_select->fetch(PDO::FETCH_ASSOC);
+                    $sessiondata = $persons_select->fetch(PDO::FETCH_ASSOC);
                     if ($sessiondata !== false) {
                         $laststate_booklet = ['u' => 0];
                         $booklet_select = $this->pdoDBhandle->prepare(
@@ -500,17 +500,17 @@ class DBConnectionTC extends DBConnection {
     public function start_sessionByPersonToken($pToken, $booklet, $bookletLabel) {
         $myreturn = 0;
 
-        $people_select = $this->pdoDBhandle->prepare(
-            'SELECT people.id FROM people
-                WHERE people.token=:token');
+        $persons_select = $this->pdoDBhandle->prepare(
+            'SELECT persons.id FROM persons
+                WHERE persons.token=:token');
             
-        if ($people_select->execute(array(
+        if ($persons_select->execute(array(
             ':token' => $pToken
             ))) {
 
-            $peopledata = $people_select->fetch(PDO::FETCH_ASSOC);
-            if ($peopledata !== false) {
-                $personId = $peopledata['id'];
+            $personsdata = $persons_select->fetch(PDO::FETCH_ASSOC);
+            if ($personsdata !== false) {
+                $personId = $personsdata['id'];
 
                 $booklet_select = $this->pdoDBhandle->prepare(
                     'SELECT booklets.locked, booklets.id FROM booklets
@@ -551,7 +551,7 @@ class DBConnectionTC extends DBConnection {
                                     WHERE booklets.person_id=:personId and booklets.name=:bookletname');
                                 
                             if ($booklet_select->execute(array(
-                                ':personId' => $peopledata['id'],
+                                ':personId' => $personsdata['id'],
                                 ':bookletname' => $booklet
                                 ))) {
                 
@@ -581,8 +581,13 @@ class DBConnectionTC extends DBConnection {
             if (($sessionquery != false) and (count($sessionquery) > 0)) {
                 // remove token
                 $laststate_booklet = ['lastunit' => '', 'finished' => $mode];
+<<<<<<< HEAD
                 :::update($this:::, 'people', 
                         ['valid_until' => date('Y-m-d G:i:s', time()), 'token' => '', 'laststate' => json_encode($laststate_booklet)],
+=======
+                :::update($this:::, 'sessions', 
+                        ['valid_until' => date('Y-m-d H:i:s', time()), 'token' => '', 'laststate' => json_encode($laststate_booklet)],
+>>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
                         ['id' => $sessionquery[0]['id']]);
             }
         }
@@ -788,7 +793,7 @@ class DBConnectionTC extends DBConnection {
                         if ($unitlog_insert->execute(array(
                             ':unitId' => $unitDbId,
                             ':logentry' => $logentry,
-                            ':logtime' => date('Y-m-d G:i:s', time())
+                            ':logtime' => date('Y-m-d H:i:s', time())
                             ))) {
                                 $okCount = $okCount + 1;
                         }
