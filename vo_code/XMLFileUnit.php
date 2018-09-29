@@ -19,23 +19,31 @@ class XMLFileUnit extends XMLFile
                 if (isset($typeAttr)) {
                     $myreturn = (string) $typeAttr;
                 }
+            } else {
+                $definitionNode = $this->xmlfile->DefinitionRef[0];
+                if (isset($definitionNode)) {
+                    $typeAttr = $definitionNode['type'];
+                    if (isset($typeAttr)) {
+                        $myreturn = (string) $typeAttr;
+                    }
+                }
             }
         }
         return $myreturn;
     }
 
-    // ####################################################
-    public function getUnitDefiniton()
-    {
-        $myreturn = '';
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
-            $definitionNode = $this->xmlfile->Definition[0];
-            if (isset($definitionNode)) {
-                $myreturn = (string) $definitionNode;
-            }
-        }
-        return $myreturn;
-    }
+    // // ####################################################
+    // public function getUnitDefiniton()
+    // {
+    //     $myreturn = '';
+    //     if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
+    //         $definitionNode = $this->xmlfile->Definition[0];
+    //         if (isset($definitionNode)) {
+    //             $myreturn = (string) $definitionNode;
+    //         }
+    //     }
+    //     return $myreturn;
+    // }
 
     // ####################################################
     public function getResourceFilenames()
@@ -49,6 +57,13 @@ class XMLFileUnit extends XMLFile
                     if (isset($rFilename)) {
                         array_push($myreturn, $rFilename);
                     }
+                }
+            }
+            $definitionNode = $this->xmlfile->DefinitionRef[0];
+            if (isset($definitionNode)) {
+                $rFilename = (string) $definitionNode;
+                if (isset($rFilename)) {
+                    array_push($myreturn, $rFilename);
                 }
             }
         }
