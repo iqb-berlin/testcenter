@@ -14,6 +14,9 @@
 
 
 	function resourceExists($r) {
+		global $allResources;
+		global $allUsedResources;
+
 		$myExistsReturn = false;
 		if (in_array(strtoupper($r), $allResources)) {
 			if (!in_array(strtoupper($r), $allUsedResources)) {
@@ -25,6 +28,9 @@
 	}
 
 	function unitExists($u) {
+		global $allUnits;
+		global $allUsedUnits;
+
 		$myExistsReturn = false;
 		if (in_array(strtoupper($u), $allUnits)) {
 			if (!in_array(strtoupper($u), $allUsedUnits)) {
@@ -36,6 +42,9 @@
 	}
 
 	function bookletExists($b) {
+		global $allBooklets;
+		global $allUsedBooklets;
+
 		$myExistsReturn = false;
 		if (in_array(strtoupper($b), $allBooklets)) {
 			if (!in_array(strtoupper($b), $allUsedBooklets)) {
@@ -121,7 +130,7 @@
 											$myDefinitionType = $xFile->getUnitDefinitonType();
 											if (strlen($myDefinitionType) > 0) {
 												if (!resourceExists($myDefinitionType) and !resourceExists($myDefinitionType . '.HTML')) {
-													array_push($myreturn['errors'], 'unit definition type "' . $myDefinitionType . '" not found (required in Unit-XML-file "' . $entry . '"');
+													array_push($myreturn['errors'], 'unit definition type "' . $myDefinitionType . '" not found (required in Unit-XML-file "' . $entry . '")');
 													$ok = false;
 												}
 											} else {
@@ -275,17 +284,17 @@
 					// unused
 					foreach($allResources as $r) {
 						if (!in_array($r, $allUsedResources)) {
-							array_push($myreturn['warning'], 'Resource "' . $r . '" never used');
+							array_push($myreturn['warnings'], 'Resource "' . $r . '" never used');
 						}
 					}
 					foreach($allUnits as $u) {
 						if (!in_array($u, $allUsedUnits)) {
-							array_push($myreturn['warning'], 'Unit "' . $u . '" not used in booklets');
+							array_push($myreturn['warnings'], 'Unit "' . $u . '" not used in booklets');
 						}
 					}
 					foreach($allBooklets as $b) {
 						if (!in_array($b, $allUsedBooklets)) {
-							array_push($myreturn['warning'], 'Booklet "' . $b . '" not used by testtakers');
+							array_push($myreturn['warnings'], 'Booklet "' . $b . '" not used by testtakers');
 						}
 					}
 
