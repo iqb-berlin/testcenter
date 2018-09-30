@@ -8,31 +8,23 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
-	require_once('vo_code/DBConnectionSession.php');
+	require_once('../vo_code/DBConnectionTC.php');
 
 	// *****************************************************************
-	$myreturn = '?';
+	$myreturn = false;
 
 	$myerrorcode = 503;
 
-	$myDBConnection = new DBConnectionSession();
+	$myDBConnection = new DBConnectionTC();
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 
 		$data = json_decode(file_get_contents('php://input'), true);
-		$myToken = $data["st"];
-		$state = $data["state"];
-
-		if (isset($myToken)) {
-			$tokensplits = explode('##', $myToken);
-			if (count($tokensplits) == 2) {
-				$sessiontoken = $tokensplits[0];
-				$bookletDBId = $tokensplits[1];
-				if ($myDBConnection->canWriteBookletData($sessiontoken, $bookletDBId) === true) {
-					$myerrorcode = 0;
-					$myreturn = $myDBConnection->setBookletStatus($bookletDBId, $state);
-				}
-			}
+		$auth = $data["au"];
+		if ($myDBConnection->authOk($auth, true)) {
+			$myerrorcode = 0;
+			$state = $data["state"];
+			$myreturn = $myDBConnection->setBookletStatus($myDBConnection->getBookletId($auth), $state);
 		}
 	}    
 	unset($myDBConnection);

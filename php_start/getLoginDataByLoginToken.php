@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 	$myDBConnection = new DBConnectionStart();
 	if (!$myDBConnection->isError()) {
-		$myerrorcode = 400;
+		$myerrorcode = 401;
 
 		$data = json_decode(file_get_contents('php://input'), true);
 		$myToken = $data["lt"];
@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 				$bookletfolder = '../vo_data/ws_' . $myreturn['ws'] . '/Booklet';
 
 				if (file_exists($bookletfolder)) {
-					$myerrorcode = 401;
 					$mydir = opendir($bookletfolder);
 					$bookletlist = [];
 

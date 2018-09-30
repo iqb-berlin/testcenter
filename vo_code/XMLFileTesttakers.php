@@ -101,8 +101,8 @@ class XMLFileTesttakers extends XMLFile
                                                     // add all no-code-booklets to every code
                                                     foreach($codeBooklets as $code => $booklets) {
                                                         foreach($noCodeBooklets as $booklet) {
-                                                            if (!in_array($booklet, $booklets)) {
-                                                                array_push($booklets, $booklet);
+                                                            if (!in_array($booklet, $codeBooklets[$code])) {
+                                                                array_push($codeBooklets[$code], $booklet);
                                                             }
                                                         }
                                                     }
@@ -271,8 +271,8 @@ class XMLFileTesttakers extends XMLFile
                                                     // add all no-code-booklets to every code
                                                     foreach($codeBooklets as $code => $booklets) {
                                                         foreach($noCodeBooklets as $booklet) {
-                                                            if (!in_array($booklet, $booklets)) {
-                                                                array_push($booklets, $booklet);
+                                                            if (!in_array($booklet, $codeBooklets[$code])) {
+                                                                array_push($codeBooklets[$code], $booklet);
                                                             }
                                                         }
                                                     }

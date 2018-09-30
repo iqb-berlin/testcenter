@@ -341,19 +341,19 @@ class DBConnectionTC extends DBConnection {
 
     // __________________________
     // check via canWriteBookletData before calling this!
-    // public function setBookletStatus($bookletDbId, $laststate) {
-    //     $myreturn = false;
-    //     if ($this->pdoDBhandle != false) {
-    //         $booklet_update = $this->pdoDBhandle->prepare(
-    //             'UPDATE booklets SET laststate = :laststate WHERE id = :id');
-    //         if ($booklet_update -> execute(array(
-    //             ':laststate' => $laststate,
-    //             ':id' => $bookletDbId))) {
-    //             $myreturn = true;
-    //         }
-    //     }
-    //     return $myreturn;
-    // }
+    public function setBookletStatus($bookletDbId, $laststate) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $booklet_update = $this->pdoDBhandle->prepare(
+                'UPDATE booklets SET laststate = :laststate WHERE id = :id');
+            if ($booklet_update -> execute(array(
+                ':laststate' => json_encode($laststate), // not stringified before sending to server
+                ':id' => $bookletDbId))) {
+                $myreturn = true;
+            }
+        }
+        return $myreturn;
+    }
 
     // __________________________
     public function unlockBooklet($bookletDbId) {

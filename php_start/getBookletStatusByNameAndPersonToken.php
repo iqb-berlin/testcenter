@@ -28,6 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		if (isset($myToken) && isset($myBooklet)) {
 			$myerrorcode = 0; // if there is no booklet in the database yet, this is not an error
 			$myreturn = $myDBConnection->getBookletStatusNP($myToken, $myBooklet);
+			if (!isset($myreturn['label'])) {
+				// booklet not found in database, so look at xml
+				require_once('../vo_code/FilesFactory.php');
+				$myreturn['label'] = XFileFactory::getBookletName($myDBConnection->getWorkspaceIdByPersonToken($myToken), $myBooklet);
+			}
 		}				
 	}    
 	unset($myDBConnection);
