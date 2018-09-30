@@ -18,7 +18,7 @@
 			if ($xFile->isValid()) {
 				$targetFolder = $wsFolder . '/' . $xFile->getRoottagName();
 			} else {
-				$myreturn = 'e:XML nicht erkannt oder nicht valide';
+				$myreturn = 'e: "' . $targetFilename . '" XML nicht erkannt oder nicht valide';
 				foreach($xFile->getErrors() as $errormsg) {
 					$myreturn = $myreturn . '; ' . $errormsg;
 				}
