@@ -189,7 +189,28 @@ class DBConnectionStart extends DBConnection {
         }
         return $myreturn;
     }
-    
+
+    public function getWorkspaceIdByPersonToken($persontoken) {
+        $myreturn = '';
+
+        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+			$sql_select = $this->pdoDBhandle->prepare(
+				'SELECT logins.workspace_id FROM persons
+                    INNER JOIN logins ON logins.id = persons.login_id
+					WHERE persons.token = :token');
+				
+			if ($sql_select->execute(array(
+				':token' => $persontoken))) {
+
+				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
+				if ($logindata !== false) {
+                    $myreturn = $logindata['workspace_id'];
+                }
+            }
+        }
+        return $myreturn;
+    }
+
     public function getBookletStatusNP($persontoken, $bookletname) {
         // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
         $myreturn = [];

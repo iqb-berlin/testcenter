@@ -3,6 +3,59 @@
 // Bărbulescu, Stroescu, Mechtel
 // 2018
 // license: MIT
+	// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	$allResources = [];
+	$allUsedResources = [];
+	$allUnits = [];
+	$allUsedUnits = [];
+	$allBooklets = [];
+	$allUsedBooklets = [];
+
+
+	function resourceExists($r) {
+		global $allResources;
+		global $allUsedResources;
+
+		$myExistsReturn = false;
+		if (in_array(strtoupper($r), $allResources)) {
+			if (!in_array(strtoupper($r), $allUsedResources)) {
+				array_push($allUsedResources, strtoupper($r));
+			}
+			$myExistsReturn = true;
+		}
+		return $myExistsReturn;
+	}
+
+	function unitExists($u) {
+		global $allUnits;
+		global $allUsedUnits;
+
+		$myExistsReturn = false;
+		if (in_array(strtoupper($u), $allUnits)) {
+			if (!in_array(strtoupper($u), $allUsedUnits)) {
+				array_push($allUsedUnits, strtoupper($u));
+			}
+			$myExistsReturn = true;
+		}
+		return $myExistsReturn;
+	}
+
+	function bookletExists($b) {
+		global $allBooklets;
+		global $allUsedBooklets;
+
+		$myExistsReturn = false;
+		if (in_array(strtoupper($b), $allBooklets)) {
+			if (!in_array(strtoupper($b), $allUsedBooklets)) {
+				array_push($allUsedBooklets, strtoupper($b));
+			}
+			$myExistsReturn = true;
+		}
+		return $myExistsReturn;
+	}
+
+	// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	// preflight OPTIONS-Request bei CORS
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
@@ -33,9 +86,6 @@
 
 					// **********************************************************
 					$myerrorcode = 0;
-					$allResources = [];
-					$allUnits = [];
-					$allBooklets = [];
 					$allLoginNames = [];
 					$validDefinitionTypes = [];
 					$testtakerCount = 0;
@@ -71,7 +121,7 @@
 										} else {
 											$ok = true;
 											foreach($xFile->getResourceFilenames() as $r) { 
-												if (!in_array(strtoupper($r), $allResources)) {
+												if (!resourceExists($r)) {
 													array_push($myreturn['errors'], 'resource "' . $r . '" not found (required in Unit-XML-file "' . $entry . '"');
 													$ok = false;
 												}
@@ -79,8 +129,8 @@
 
 											$myDefinitionType = $xFile->getUnitDefinitonType();
 											if (strlen($myDefinitionType) > 0) {
-												if (!in_array(strtoupper($myDefinitionType), $allResources) and !in_array(strtoupper($myDefinitionType) . '.HTML', $allResources)) {
-													array_push($myreturn['errors'], 'unit definition type "' . $myDefinitionType . '" not found (required in Unit-XML-file "' . $entry . '"');
+												if (!resourceExists($myDefinitionType) and !resourceExists($myDefinitionType . '.HTML')) {
+													array_push($myreturn['errors'], 'unit definition type "' . $myDefinitionType . '" not found (required in Unit-XML-file "' . $entry . '")');
 													$ok = false;
 												}
 											} else {
@@ -125,7 +175,7 @@
 										} else {
 											$ok = true;
 											foreach($xFile->getResourceFilenames() as $r) { 
-												if (!in_array(strtoupper($r), $allResources)) {
+												if (!resourceExists($r)) {
 													array_push($myreturn['errors'], 'resource "' . $r . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
 													$ok = false;
 												}
@@ -133,7 +183,7 @@
 		
 											if ($ok == true) {
 												foreach($xFile->getAllUnitIds() as $unitId) { 
-													if (!in_array($unitId, $allUnits)) {
+													if (!unitExists($unitId)) {
 														array_push($myreturn['errors'], 'unit "' . $unitId . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
 														$ok = false;
 													}
@@ -170,7 +220,7 @@
 										$testtakerCount = $testtakerCount + count($myTesttakers);
 										foreach($myTesttakers as $testtaker) {
 											foreach($testtaker['booklets'] as $bookletId) {
-												if (!in_array($bookletId, $allBooklets)) {
+												if (!bookletExists($bookletId)) {
 													if (!in_array($bookletId, $errorBookletnames)) {
 														array_push($myreturn['errors'], 'booklet "' . $bookletId . '" not found for login "' . $loginName . '" in Testtakers-XML-file "' . $entry . '"');
 														array_push($errorBookletnames, $bookletId);
@@ -230,6 +280,23 @@
 						}
 					}
 					array_push($myreturn['infos'], strval($testtakerCount) . ' testtakers in ' . strval(count($allLoginNames)) . ' logins found');
+
+					// unused
+					foreach($allResources as $r) {
+						if (!in_array($r, $allUsedResources)) {
+							array_push($myreturn['warnings'], 'Resource "' . $r . '" never used');
+						}
+					}
+					foreach($allUnits as $u) {
+						if (!in_array($u, $allUsedUnits)) {
+							array_push($myreturn['warnings'], 'Unit "' . $u . '" not used in booklets');
+						}
+					}
+					foreach($allBooklets as $b) {
+						if (!in_array($b, $allUsedBooklets)) {
+							array_push($myreturn['warnings'], 'Booklet "' . $b . '" not used by testtakers');
+						}
+					}
 
 					// **********************************************************
 				}

@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 				$myerrorcode = 404;
 				$resourceFolder = '../vo_data/ws_' . $wsId . '/Resource';
 				$path_parts = pathinfo($resourceFileName); // extract filename if path is given
-				$resourceFileName = $path_parts['basename'];
+				$resourceFileName = strtoupper($path_parts['basename']);
 
 				if (file_exists($resourceFolder) and (strlen($resourceFileName) > 0)) {
 					$mydir = opendir($resourceFolder);

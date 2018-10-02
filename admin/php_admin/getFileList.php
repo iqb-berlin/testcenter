@@ -42,23 +42,25 @@
 						if (file_exists($workspaceDirName)) {
 							$workspaceDir = opendir($workspaceDirName);
 							while (($subdir = readdir($workspaceDir)) !== false) {
-								$fullsubdirname = $workspaceDirName . '/' .  $subdir;
-								if (is_dir($fullsubdirname)) {
-									$mydir = opendir($fullsubdirname);
-									while (($entry = readdir($mydir)) !== false) {
-										$fullfilename = $fullsubdirname . '/' . $entry;
-										if (is_file($fullfilename)) {
-											$rs = new ResourceFile($entry, filemtime($fullfilename), filesize($fullfilename));
+								if (($subdir !== '.') && ($subdir !== '..')) {
+									$fullsubdirname = $workspaceDirName . '/' .  $subdir;
+									if (is_dir($fullsubdirname)) {
+										$mydir = opendir($fullsubdirname);
+										while (($entry = readdir($mydir)) !== false) {
+											$fullfilename = $fullsubdirname . '/' . $entry;
+											if (is_file($fullfilename)) {
+												$rs = new ResourceFile($entry, filemtime($fullfilename), filesize($fullfilename));
 
-											array_push($myreturn, [
-												'filename' => $rs->getFileName(),
-												'filesize' => $rs->getFileSize(),
-												'filesizestr' => $rs->getFileSizeString(),
-												'filedatetime' => $rs->getFileDateTime(),
-												'filedatetimestr' => $rs->getFileDateTimeString(),
-												'type' => $subdir,
-												'typelabel' => $subdir
-											]);
+												array_push($myreturn, [
+													'filename' => $rs->getFileName(),
+													'filesize' => $rs->getFileSize(),
+													'filesizestr' => $rs->getFileSizeString(),
+													'filedatetime' => $rs->getFileDateTime(),
+													'filedatetimestr' => $rs->getFileDateTimeString(),
+													'type' => $subdir,
+													'typelabel' => $subdir
+												]);
+											}
 										}
 									}
 								}

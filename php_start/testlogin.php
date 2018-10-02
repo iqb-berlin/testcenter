@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 	$myDBConnection = new DBConnectionStart();
 	if (!$myDBConnection->isError()) {
-		$myerrorcode = 400;
+		$myerrorcode = 401;
 
 		$data = json_decode(file_get_contents('php://input'), true);
 		$myName = $data["n"];
@@ -35,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 			if ($workspaceDir) {
 
 				require_once('../vo_code/XMLFileTesttakers.php'); // // // // ========================
-				$myerrorcode = 0;
 
 				while (($subdir = readdir($workspaceDir)) !== false) {
 					$mysplits = explode('_', $subdir);
