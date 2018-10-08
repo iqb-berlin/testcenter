@@ -21,12 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 		$data = json_decode(file_get_contents('php://input'), true);
 		$auth = $data["au"];
-		$unit = $data["u"];
-		$data = $data["d"];
 
 		if ($myDBConnection->authOk($auth)) {
 			$myerrorcode = 0;
-			if ($myDBConnection->addUnitResponse($myDBConnection->getBookletId($auth), $unit, $data)) {
+			$unit = $data["u"];
+			$unitdata = $data["d"];
+			$respType = $data["rt"];
+			if ($myDBConnection->addUnitResponse($myDBConnection->getBookletId($auth), $unit, $unitdata, $respType)) {
 				$myreturn = true;
 			}
 		}

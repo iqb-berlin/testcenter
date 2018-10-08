@@ -285,7 +285,7 @@ class DBConnectionAdmin extends DBConnection {
 		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
 			$sql = $this->pdoDBhandle->prepare(
-				'SELECT units.name as unitname, units.responses, booklets.name as bookletname,
+				'SELECT units.name as unitname, units.responses, units.responsetype, units.laststate as restorepoint, booklets.name as bookletname,
 						logins.groupname, logins.name as loginname, persons.code
 				FROM units
 				INNER JOIN booklets ON booklets.id = units.booklet_id

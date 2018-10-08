@@ -61,6 +61,7 @@
               // error_log(print_r($preparedBooklets, true));
               // !! no cross checking, so it's not checked whether a prepared booklet is started or a started booklet has been prepared
               foreach($preparedBooklets as $group => $preparedData) {
+                $alreadyCountedLogins = [];
                 foreach($preparedData as $pd) {
                   // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]                            
                   if (!isset($keyedReturn[$group])) {
@@ -73,8 +74,8 @@
                       'bookletsLocked' => 0
                     ];
                   }
-                  if (!in_array($preparedData['loginname'], $alreadyCountedLogins)) {
-                    array_push($alreadyCountedLogins, $preparedData['loginname']);
+                  if (!in_array($pd['loginname'], $alreadyCountedLogins)) {
+                    array_push($alreadyCountedLogins, $pd['loginname']);
                     $keyedReturn[$group]['loginsPrepared'] += 1;
                   }
                   $keyedReturn[$group]['personsPrepared'] += 1;

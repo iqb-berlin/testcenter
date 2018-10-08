@@ -662,7 +662,7 @@ class DBConnectionTC extends DBConnection {
     // }
 
     // __________________________
-    public function addUnitResponse($bookletDbId, $unit, $responses) {
+    public function addUnitResponse($bookletDbId, $unit, $responses, $responseType) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
             $unit_select = $this->pdoDBhandle->prepare(
@@ -677,20 +677,23 @@ class DBConnectionTC extends DBConnection {
                 $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
                 if ($unitdata !== false) {
                     $unit_update = $this->pdoDBhandle->prepare(
-                        'UPDATE units SET responses=:responses WHERE id = :id');
+                        'UPDATE units SET responses=:responses, responsetype=:responseType 
+                        WHERE id = :id');
                     if ($unit_update -> execute(array(
                         ':responses' => $responses,
+                        ':responseType' => $responseType,
                         ':id' => $unitdata['id']))) {
                         $myreturn = true;
                     }
                 } else {
                     $unit_insert = $this->pdoDBhandle->prepare(
-                        'INSERT INTO units (booklet_id, name, responses) 
-                            VALUES(:bookletId, :name, :responses)');
+                        'INSERT INTO units (booklet_id, name, responses, responsetype) 
+                            VALUES(:bookletId, :name, :responses, :responseType)');
 
                     if ($unit_insert->execute(array(
                         ':bookletId' => $bookletDbId,
                         ':name' => $unit,
+                        ':responseType' => $responseType,
                         ':responses' => $responses
                         ))) {
                             $myreturn = true;
