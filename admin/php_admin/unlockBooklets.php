@@ -7,7 +7,7 @@
   if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
   } else {
-    $myreturn = [];   
+    $myreturn = false;   
     require_once('../../vo_code/DBConnectionAdmin.php');
     $errorcode = 503;
 
@@ -17,14 +17,20 @@
       $errorcode = 401;
 
       $data = json_decode(file_get_contents('php://input'), true);
-      $workspace_id = $data["ws"];
-
-      if (isset($workspace_id)) {
-        $data = $myDBConnection->toggleLockedState($workspace_id);
-        // check in xml for the strings that are lockeable -> done in another file, check that
-        // then, compare them and just change their status in sql with the ones that you found
-        // this is not seen in UI, it's only toggled by a radio button at the group level in monitoring view
-        $myreturn = $data;
+      $myToken = $data["at"];
+			$wsId = $data["ws"];
+			if (isset($myToken)) {
+        if ($myDBConnection->hasAdminAccessToWorkspace($myToken, $wsId)) {
+          $groups = $data["g"];
+          $errorcode = 0;
+          $myreturn = true;
+          foreach($groups as $groupName) {
+            if (!$myDBConnection->changeBookletLockStatus($wsId, $groupName, false)) {
+              $myreturn = false;
+              break;
+            }
+          }
+        }
       }
     } 
     $errorcode = 0;

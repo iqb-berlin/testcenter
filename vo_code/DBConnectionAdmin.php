@@ -97,24 +97,27 @@ class DBConnectionAdmin extends DBConnection {
 		return $myreturn;
 	}
 
-	public function toggleLockedState($workspace_id) {
-		$myreturn = [];
+	public function changeBookletLockStatus($workspace_id, $group_name, $lock) {
+		$myreturn = false;
 		if ($this->pdoDBhandle != false) {
-
-			$sql = $this->pdoDBhandle->prepare(
-				'SELECT booklets.locked FROM booklets
-					INNER JOIN persons ON booklets.person_id = persons.id
+			$lockStr = '0';
+			if ($lock) {
+				$lockStr = '1';
+			}
+            $sql_update = $this->pdoDBhandle->prepare(
+                'UPDATE booklets as b
+					INNER JOIN persons ON b.person_id = persons.id
 					INNER JOIN logins ON persons.login_id = logins.id
 					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
-					WHERE workspaces.id=:workspace_id');
-				
-				if ($sql -> execute(array(
-				':workspace_id' => $workspace_id))) {
-					
-					$myreturn = $sql -> fetchAll(PDO::FETCH_ASSOC);
-				}
-				
-		}	
+					SET b.locked = :locked
+					WHERE workspaces.id=:workspace_id and logins.groupname = :groupname');
+            if ($sql_update -> execute(array(
+				':workspace_id' => $workspace_id,
+				':locked' => $lockStr,
+                ':groupname' => $group_name))) {
+                $myreturn = true;
+            }
+		}
 		return $myreturn;
 	}
 
@@ -191,23 +194,48 @@ class DBConnectionAdmin extends DBConnection {
 	}
   
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-	// monitor
+	// monitor + results
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 
 
+	// $return = []; groupname, loginname, code, bookletname, num_units
+	public function getResultsCount($workspaceId) {
+		$myreturn = [];
 
-	// $return = []; groupname, loginname, code, bookletname
+		if ($this->pdoDBhandle != false) {
+			$sql = $this->pdoDBhandle->prepare(
+				'SELECT logins.groupname, logins.name as loginname, persons.code,
+						booklets.name as bookletname, COUNT(distinct units.id) AS num_units
+					FROM booklets
+						INNER JOIN persons ON persons.id = booklets.person_id
+						INNER JOIN logins ON logins.id = persons.login_id
+						INNER JOIN units ON units.booklet_id = booklets.id
+					WHERE logins.workspace_id =:workspaceId
+					GROUP BY booklets.name, logins.groupname, logins.name, persons.code');
+		
+			if ($sql -> execute(array(
+				':workspaceId' => $workspaceId))) {
+
+				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
+				if ($data != false) {
+					$myreturn = $data;
+				}
+			}
+		}
+		return $myreturn;
+	}
+
+	// $return = []; groupname, loginname, code, bookletname, locked
 	public function getBookletsStarted($workspaceId) {
-		$return = [];
+		$myreturn = [];
 
 		if ($this->pdoDBhandle != false) {
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT logins.groupname, logins.name as loginname, persons.code, 
-						booklets.name as bookletname
+						booklets.name as bookletname, booklets.locked
 					FROM booklets
 					INNER JOIN persons ON persons.id = booklets.person_id
 					INNER JOIN logins ON logins.id = persons.login_id
-					ORDER BY logins.groupname, logins.name, persons.code, booklets.name
 					WHERE logins.workspace_id =:workspaceId');
 		
 			if ($sql -> execute(array(
@@ -221,7 +249,7 @@ class DBConnectionAdmin extends DBConnection {
 				}
 			}
 		}
-		return $return;
+		return $myreturn;
 	}
 
 	public function getBookletsResponsesGiven($workspaceId) {
@@ -252,9 +280,9 @@ class DBConnectionAdmin extends DBConnection {
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// responses
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-	// $return = []; groupname, loginname, code, unitname, responses
+	// $return = []; groupname, loginname, code, bookletname, unitname, responses
 	public function getResponses($workspaceId) {
-		$return = [];
+		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT units.name as unitname, units.responses, booklets.name as bookletname,
@@ -263,7 +291,6 @@ class DBConnectionAdmin extends DBConnection {
 				INNER JOIN booklets ON booklets.id = units.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 
 				INNER JOIN logins ON logins.id = persons.login_id
-				ORDER BY logins.groupname, logins.name, persons.code, booklets.name
 				WHERE logins.workspace_id =:workspaceId');
 
 			if ($sql -> execute(array(
@@ -271,68 +298,117 @@ class DBConnectionAdmin extends DBConnection {
 
 				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
 				if ($data != false) {
-					$return = $data;
+					$myreturn = $data;
 					// array_push($return, trim((string) $object["name"]) . "##" . trim((string) $object["code"]) . "##" . trim((string) $object["booklet"]));					
 				}
 			}
 		}
 		
-		return $lines;
+		return $myreturn;
 	}
 
+	// $return = []; groupname, loginname, code, bookletname, unitname, logtime, logentry
+	public function getLogs($workspaceId) {
+		$myreturn = [];
+		if ($this->pdoDBhandle != false) {
+			$unit_sql = $this->pdoDBhandle->prepare(
+				'SELECT units.name as unitname, booklets.name as bookletname,
+						logins.groupname, logins.name as loginname, persons.code,
+						unitlogs.logtime, unitlogs.logentry
+				FROM unitlogs
+				INNER JOIN units ON units.id = unitlogs.unit_id
+				INNER JOIN booklets ON booklets.id = units.booklet_id
+				INNER JOIN persons ON persons.id = booklets.person_id 
+				INNER JOIN logins ON logins.id = persons.login_id
+				WHERE logins.workspace_id =:workspaceId');
 
-}
+			if ($unit_sql -> execute(array(
+				':workspaceId' => $workspaceId))) {
 
-/******************HELPER FUNCTIONS*************/
+				$unit_data = $unit_sql->fetchAll(PDO::FETCH_ASSOC);
+				if ($unit_data != false) {
+					$myreturn = $unit_data;
+				}
+			}
 
-/* Helpful SQL queries*/
+			$booklet_sql = $this->pdoDBhandle->prepare(
+				'SELECT booklets.name as bookletname,
+						logins.groupname, logins.name as loginname, persons.code,
+						bookletlogs.logtime, bookletlogs.logentry
+				FROM bookletlogs
+				INNER JOIN booklets ON booklets.id = bookletlogs.booklet_id
+				INNER JOIN persons ON persons.id = booklets.person_id 
+				INNER JOIN logins ON logins.id = persons.login_id
+				WHERE logins.workspace_id =:workspaceId');
 
-// 1. see name, code, laststate
+			if ($booklet_sql -> execute(array(
+				':workspaceId' => $workspaceId))) {
 
-// SELECT logins.name, persons.code, booklets.name
-// FROM booklets
-// INNER JOIN persons ON persons.id = booklets.person_id
-// INNER JOIN logins ON logins.id = persons.login_id
-// INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-// WHERE workspace_id =:wsId
-
-	// public function getUniqueIdCSV() {
-
-	// 	if ($this->pdoDBhandle != false) {
-	// 		$this->pdoDBhandle->query("UPDATE misc SET value = value+1 WHERE key = 'csvuniqueid'");
-
-	// 		$sql = $this->pdoDBhandle->prepare(
-	// 			"SELECT value FROM misc
-	// 				WHERE key='csvuniqueid'");
-				
-	// 		if ($sql -> execute(array())) {
-					
-	// 			$data = $sql -> fetch(PDO::FETCH_ASSOC);
-	// 			if ($data != false) {
-			
-	// 				$csvuniqueid = intval($data['value']);
-	// 				return $csvuniqueid;		
-	// 			}
-	// 		}
-	// 	}
-	// 	return -1;
-
-	// }
-
-	/* Hard coded data for testing purposes in ng */
-	// public function getReportData($adminToken, $workspaceId, $groups) {
-	// 	// check here that the group array is valid and correct
-	// 	// use that group array to query the sql for responses and return the result in $list
-	// 	$testsWithResponses = $this->responsesGiven($workspaceId);
-
-	// 	$list = array(
-	// 		array("name 1", "age 1", "citüüy 1"),
-	// 		array("name 2", "age 2", "citäy 2"),
-	// 		array("name 3", "age€² 3", "citäöy 3"));
-	// 	print_r($testsWithResponses);
-	// 	return $testsWithResponses;
+				$booklet_data = $booklet_sql->fetchAll(PDO::FETCH_ASSOC);
+				if ($booklet_data != false) {
+					foreach($booklet_data as $bd) {
+						$bd['unitname'] = '';
+						array_push($myreturn, $bd);
+					}
+				}
+			}
+		}
 		
-	// }
+		return $myreturn;
+	}
+
+	// $return = []; groupname, loginname, code, bookletname, unitname, priority, categories, entry
+	public function getReviews($workspaceId) {
+		$myreturn = [];
+		if ($this->pdoDBhandle != false) {
+			$unit_sql = $this->pdoDBhandle->prepare(
+				'SELECT units.name as unitname, booklets.name as bookletname,
+						logins.groupname, logins.name as loginname, persons.code,
+						unitreviews.reviewtime, unitreviews.entry,
+						unitreviews.priority, unitreviews.categories
+				FROM unitreviews
+				INNER JOIN units ON units.id = unitreviews.unit_id
+				INNER JOIN booklets ON booklets.id = units.booklet_id
+				INNER JOIN persons ON persons.id = booklets.person_id 
+				INNER JOIN logins ON logins.id = persons.login_id
+				WHERE logins.workspace_id =:workspaceId');
+
+			if ($unit_sql -> execute(array(
+				':workspaceId' => $workspaceId))) {
+
+				$unit_data = $unit_sql->fetchAll(PDO::FETCH_ASSOC);
+				if ($unit_data != false) {
+					$myreturn = $unit_data;
+				}
+			}
+
+			$booklet_sql = $this->pdoDBhandle->prepare(
+				'SELECT booklets.name as bookletname,
+						logins.groupname, logins.name as loginname, persons.code,
+						bookletreviews.reviewtime, bookletreviews.entry,
+						bookletreviews.priority, bookletreviews.categories
+				FROM bookletreviews
+				INNER JOIN booklets ON booklets.id = bookletreviews.booklet_id
+				INNER JOIN persons ON persons.id = booklets.person_id 
+				INNER JOIN logins ON logins.id = persons.login_id
+				WHERE logins.workspace_id =:workspaceId');
+
+			if ($booklet_sql -> execute(array(
+				':workspaceId' => $workspaceId))) {
+
+				$booklet_data = $booklet_sql->fetchAll(PDO::FETCH_ASSOC);
+				if ($booklet_data != false) {
+					foreach($booklet_data as $bd) {
+						$bd['unitname'] = '';
+						array_push($myreturn, $bd);
+					}
+				}
+			}
+		}
+		
+		return $myreturn;
+	}
+}
 
 
 ?>

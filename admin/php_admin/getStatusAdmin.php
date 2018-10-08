@@ -27,7 +27,7 @@
 			
 				$myName = $myDBConnection->getLoginName($myAToken);
 			
-				if (isset($myName) and (count($myName) > 0)) {
+				if (isset($myName) and (strlen($myName) > 0)) {
 					$workspaces = $myDBConnection->getWorkspaces($myAToken);
 					if (count($workspaces) > 0) {
 						$myerrorcode = 0;

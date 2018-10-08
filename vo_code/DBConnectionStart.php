@@ -63,7 +63,7 @@ class DBConnectionStart extends DBConnection {
     public function getAllBookletsByLoginToken($logintoken) {
         $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => []];
 
-        if (($this->pdoDBhandle != false) and (count($logintoken) > 0)) {
+        if (($this->pdoDBhandle != false) and (strlen($logintoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
 				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname,
                         logins.id, logins.name as lname, workspaces.name as wname FROM logins
@@ -92,7 +92,7 @@ class DBConnectionStart extends DBConnection {
     public function getAllBookletsByPersonToken($persontoken) {
         $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => [], 'code' => ''];
 
-        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
 				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname,
                         logins.id, logins.name as lname, workspaces.name as wname, persons.code FROM persons
@@ -126,7 +126,7 @@ class DBConnectionStart extends DBConnection {
         // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
         $myreturn = [];
 
-        if (($this->pdoDBhandle != false) and (count($logintoken) > 0)) {
+        if (($this->pdoDBhandle != false) and (strlen($logintoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
 				'SELECT logins.booklet_def, logins.id FROM logins
 					WHERE logins.token = :token');
@@ -171,7 +171,8 @@ class DBConnectionStart extends DBConnection {
                                             if (isset($laststate['u'])) {
                                                 $myreturn['lastUnit'] = $laststate['u'];
                                             }
-                                            if ($bookletdata['locked'] === 't') {
+
+                                            if ($bookletdata['locked'] === "1") {
                                                 $myreturn['canStart'] = false;
                                                 $myreturn['statusLabel'] = 'Gesperrt';
                                                 // later: differentiate between finished, cancelled etc.
@@ -193,7 +194,7 @@ class DBConnectionStart extends DBConnection {
     public function getWorkspaceIdByPersonToken($persontoken) {
         $myreturn = '';
 
-        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
 				'SELECT logins.workspace_id FROM persons
                     INNER JOIN logins ON logins.id = persons.login_id
@@ -215,7 +216,7 @@ class DBConnectionStart extends DBConnection {
         // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
         $myreturn = [];
 
-        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
 				'SELECT logins.booklet_def, persons.id, persons.code FROM persons
                     INNER JOIN logins ON logins.id = persons.login_id
@@ -258,7 +259,7 @@ class DBConnectionStart extends DBConnection {
                                     if (isset($laststate['u'])) {
                                         $myreturn['lastUnit'] = $laststate['u'];
                                     }
-                                    if ($bookletdata['locked'] === 't') {
+                                    if ($bookletdata['locked'] === '1') {
                                         $myreturn['canStart'] = false;
                                         $myreturn['statusLabel'] = 'Gesperrt';
                                         // later: differentiate between finished, cancelled etc.
@@ -280,7 +281,7 @@ class DBConnectionStart extends DBConnection {
         // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
         $myreturn = [];
 
-        if (($this->pdoDBhandle != false) and (count($persontoken) > 0)) {
+        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
             $myreturn['canStart'] = true;
             $myreturn['statusLabel'] = 'Zum Starten hier klicken';
 
@@ -303,7 +304,7 @@ class DBConnectionStart extends DBConnection {
                     if (isset($laststate['u'])) {
                         $myreturn['lastUnit'] = $laststate['u'];
                     }
-                    if ($bookletdata['locked'] === 't') {
+                    if ($bookletdata['locked'] === '1') {
                         $myreturn['canStart'] = false;
                         $myreturn['statusLabel'] = 'Gesperrt';
                         // later: differentiate between finished, cancelled etc.
