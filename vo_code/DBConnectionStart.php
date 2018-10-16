@@ -59,6 +59,34 @@ class DBConnectionStart extends DBConnection {
         return $myreturn;
     }
 
+    public function authOk($persontoken, $bookletDbId, $RW = false) {
+        $myreturn = false;
+
+        if (isset($bookletDbId) && isset($persontoken)) {
+            if ((strlen($persontoken) > 0) and (strlen($bookletDbId) > 0) and is_numeric($bookletDbId)) {
+
+                // 6666666666666666666666
+                $booklet_select = $this->pdoDBhandle->prepare(
+                    'SELECT booklets.locked FROM booklets
+                        INNER JOIN persons ON persons.id = booklets.person_id
+                        WHERE persons.token=:token and booklets.id=:bookletId');
+                    
+                if ($booklet_select->execute(array(
+                    ':token' => $persontoken,
+                    ':bookletId' => $bookletDbId
+                    ))) {
+    
+                    $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                    if ($bookletdata !== false) {
+                        $myreturn = ($RW === false) || ($bookletdata['locked'] !== 't');
+                    }
+                }
+    
+            }
+        }
+        return $myreturn;
+    }
+
     // __________________________
     public function getAllBookletsByLoginToken($logintoken) {
         $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => []];

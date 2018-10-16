@@ -12,8 +12,13 @@ class DBConnection {
     // __________________________
     public function __construct() {
         try {
-            $this->pdoDBhandle = new PDO("pgsql:host=moodledb.cms.hu-berlin.de;port=5432;dbname=iqbw2p02;user=iqbw2p02;password=Herklit%Annonce%Krume%Campari%Camp%Mixerin");
+
+            // $this->pdoDBhandle = new PDO("mysql:host=111.11.111.0;port=1111;dbname=testcenter", "user111", "111111");
+			// $this->pdoDBhandle = new PDO("pgsql:host=ddbb.ddr.rrt.de;port=5432;dbname=db3456;user=userdb3456;password=db3456");
+
             $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
         } catch(PDOException $e) {
             $this->errorMsg = $e->getMessage();
             $this->pdoDBhandle = false;
@@ -68,10 +73,9 @@ class DBConnection {
                     ':token' => $token))) {
 
                     $first = $sql -> fetch(PDO::FETCH_ASSOC);
-
                     if ($first != false) {
                         $this->refreshAdmintoken($token);
-                        $myreturn = $first['is_superadmin'] == true;
+                        $myreturn = ($first['is_superadmin'] == true);
                     }
                 }
             }

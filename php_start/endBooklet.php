@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		$bId = $data["b"];
 
 		if (isset($pToken) && isset($bId)) {
-			if ($myDBConnection->canWriteBookletData($pToken, $bId) === true) {
+			if ($myDBConnection->authOK($pToken, $bId) === true) {
 				$myerrorcode = 0;
 				$myreturn = $myDBConnection->lockBooklet($bId);
 			}
