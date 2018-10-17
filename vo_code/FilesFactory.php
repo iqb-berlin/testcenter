@@ -33,8 +33,7 @@ class ResourceFile {
         if ($filedatevalue == 0) {
             return 'n/a';
         } else {
-            setlocale(LC_TIME, "de_DE");
-            return strftime('%x', $filedatevalue);
+            return strftime('%d.%m.%Y', $filedatevalue);
         }
     }
 

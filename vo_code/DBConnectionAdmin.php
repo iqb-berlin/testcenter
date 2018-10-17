@@ -121,6 +121,21 @@ class DBConnectionAdmin extends DBConnection {
 		return $myreturn;
 	}
 
+	public function deleteData($workspace_id, $group_name) {
+		$myreturn = false;
+		if ($this->pdoDBhandle != false) {
+            $sql_delete = $this->pdoDBhandle->prepare(
+                'DELETE FROM logins
+					WHERE logins.workspace_id=:workspace_id and logins.groupname = :groupname');
+            if ($sql_delete -> execute(array(
+				':workspace_id' => $workspace_id,
+                ':groupname' => $group_name))) {
+                $myreturn = true;
+            }
+		}
+		return $myreturn;
+	}
+
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// returns all workspaces for the user associated with the given token
 	// returns [] if token not valid or no workspaces 
