@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
   echo(json_encode($myreturn));
 
 }
-     
+
+unset($myDBConnection);
 
 ?>
