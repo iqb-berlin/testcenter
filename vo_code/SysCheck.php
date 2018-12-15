@@ -68,4 +68,68 @@ class SysCheck
         }
         return [];
     }
+
+    static function getUnitData($unitId) {
+        $myreturn = [
+            'id' => $unitId,
+            'key' => '',
+            'label' => '',
+            'def' => '',
+            'player' => ''
+        ];        
+        if (file_exists(SysCheck::$configfolder)) {
+            $mydir = opendir(SysCheck::$configfolder);
+            while (($entry = readdir($mydir)) !== false) {
+                $fullfilename = SysCheck::$configfolder . $entry;
+                if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {                
+                    $xmlfile = simplexml_load_file($fullfilename);
+                    if ($xmlfile != false) {
+                        $myId = strtoupper((string) $xmlfile->Metadata[0]->Id[0]);
+                        if ($myId == $unitId) {
+                            $myreturn['key'] = $unitId;
+                            $myreturn['label'] = (string) $xmlfile->Metadata[0]->Label[0];
+                            $definitionNode = $xmlfile->Definition[0];
+                            if (isset($definitionNode)) {
+                                $typeAttr = $definitionNode['type'];
+                                if (isset($typeAttr)) {
+                                    $myreturn['player_id'] = (string) $typeAttr;
+                                    $myreturn['def'] = (string) $definitionNode;
+                                }
+                            } else {
+                                $definitionNode = $xmlfile->DefinitionRef[0];
+                                if (isset($definitionNode)) {
+                                    $typeAttr = $definitionNode['type'];
+                                    if (isset($typeAttr)) {
+                                        $myreturn['player_id'] = (string) $typeAttr;
+                                        $unitfilename = strtoupper((string) $definitionNode);
+                                        while (($anyfile = readdir($mydir)) !== false) {
+                                            if (strtoupper($anyfile) == $unitfilename) {
+                                                $fullanyfilename = SysCheck::$configfolder . '/' . $anyfile;
+                                                $myerrorcode = 0;
+                                                $myreturn['def'] = file_get_contents($fullanyfilename);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }            
+                            break;
+                        }
+                    }
+                }
+            }
+            if (isset($myreturn['player_id'])) {
+                $myFile = SysCheck::$configfolder . '/' . $myreturn['player_id'] . '.html';
+                if (file_exists($myFile)) {
+                    $myreturn['player'] = file_get_contents($myFile);
+                }
+            }
+   
+        }
+        return $myreturn;
+    }
+
+    static function getItemPlayerById($pId) {
+
+    }
 }
