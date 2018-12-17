@@ -21,9 +21,12 @@ class SysCheck
                             'label' => 'Fehler: konnte nicht öffnen',
                             'description' => '']);
                     } else {
-                        array_push($myreturn, ['id' => strtoupper((string) $xmlfile->Metadata[0]->Id[0]), 
+                        $rootTagName = $xmlfile->getName();
+                        if ($rootTagName === 'SysCheck') {
+                            array_push($myreturn, ['id' => strtoupper((string) $xmlfile->Metadata[0]->Id[0]), 
                             'label' => (string) $xmlfile->Metadata[0]->Label[0],
                             'description' => (string) $xmlfile->Metadata[0]->Description[0]]);
+                        }
                     }
                 }
             }
@@ -51,7 +54,7 @@ class SysCheck
                                     'id' => (string) count($questions),
                                     'type' => (string) $q['type'],
                                     'prompt' => (string) $q['prompt'],
-                                    'options' => []
+                                    'options' => explode(',', (string) $q)
                                 ]);
                             }
                             return [
