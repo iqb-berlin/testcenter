@@ -33,7 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 						'label' => $xFile->getLabel(),
 						'cansave' => $xFile->hasSaveKey(),
 						'hasunit' => $xFile->hasUnit(),
-						'questions' => $xFile->getQuestions()
+						'questions' => $xFile->getQuestions(),
+						'ratings' => $xFile->getRatings()
 					];
 				}
 			}

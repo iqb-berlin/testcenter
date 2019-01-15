@@ -64,9 +64,9 @@ class XMLFileSysCheck extends XMLFile
                 foreach($configNode->children() as $q) { 
                     if ($q->getName() === 'Q') {
                         array_push($myreturn, [
-                            'id' => $q['id'],
-                            'type' => $q['type'],
-                            'prompt' => $q['prompt'],
+                            'id' => (string) $q['id'],
+                            'type' => (string) $q['type'],
+                            'prompt' => (string) $q['prompt'],
                             'value' => (string) $q
                         ]);
                     }
@@ -86,9 +86,9 @@ class XMLFileSysCheck extends XMLFile
                 foreach($ratingsNode->children() as $r) { 
                     if ($r->getName() === 'R') {
                         array_push($myreturn, [
-                            'type' => $r['type'],
-                            'min' => $r['min'],
-                            'good' => $r['good'],
+                            'type' => (string) $r['type'],
+                            'min' => (string) $r['min'],
+                            'good' => (string) $r['good'],
                             'value' => (string) $r
                         ]);
                     }
@@ -110,7 +110,7 @@ class XMLFileSysCheck extends XMLFile
         if (strlen($myUnitId) > 0) {
             $workspaceDirName = dirname($this->filename, 2);
             if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
-                $myreturn['key'] = $workspaceDirName;
+                $myreturn['workspaceDirName'] = $workspaceDirName;
                 
                 $unitFolder = $workspaceDirName . '/Unit';
                 $resourcesFolder = $workspaceDirName . '/Resource';
@@ -127,7 +127,7 @@ class XMLFileSysCheck extends XMLFile
                             if ($xFile->isValid()) {
                                 $uKey = $xFile->getId();
                                 if ($uKey == $unitNameUpper) {
-                                    $definitionNode = $this->xmlfile->Definition[0];
+                                    $definitionNode = $xFile->xmlfile->Definition[0];
                                     if (isset($definitionNode)) {
                                         $typeAttr = $definitionNode['type'];
                                         if (isset($typeAttr)) {
@@ -135,7 +135,7 @@ class XMLFileSysCheck extends XMLFile
                                             $myreturn['def'] = (string) $definitionNode;
                                         }
                                     } else {
-                                        $definitionNode = $this->xmlfile->DefinitionRef[0];
+                                        $definitionNode = $xFile->xmlfile->DefinitionRef[0];
                                         if (isset($definitionNode)) {
                                             $typeAttr = $definitionNode['type'];
                                             if (isset($typeAttr)) {
