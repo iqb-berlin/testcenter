@@ -10,11 +10,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 } else {
 
 	$data = json_decode(file_get_contents('php://input'), true);
-	$uId = $data["u"];
+	$configFileNameCoded = $data["c"];
 
-	require_once('../vo_code/SysCheck.php');
+	if (isset($configFileNameCoded)) {
+		$configFileName = urldecode($configFileNameCoded);
+		if (file_exists($configFileName)) {
+			require_once('../vo_code/XMLFileSysCheck.php'); // // // // ========================
 
-	$myreturn = SysCheck::getUnitData($uId);
+			$xFile = new XMLFileSysCheck($configFileName);
+
+			if ($xFile->isValid()) {
+				if ($xFile->getRoottagName()  == 'SysCheck') {
+					$myreturn = $xFile->getUnitData();
+				}
+			}
+		}
+	}
 
 	echo(json_encode($myreturn));
 }

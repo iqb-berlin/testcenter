@@ -9,11 +9,14 @@ class XMLFile
     public $allErrors = [];
     private $schemaFileNames = ['Testtakers' => 'vo_Testtakers.xsd', 
                                 'Booklet' => 'vo_Booklet.xsd',
+                                'SysCheck' => 'vo_SysCheck.xsd',
                                 'Unit' => 'vo_Unit.xsd'];
     protected $rootTagName;
     protected $isValid;
     protected $id;
     protected $label;
+    protected $description;
+    protected $filename;
     public $xmlfile;
 
     // ####################################################
@@ -25,6 +28,7 @@ class XMLFile
         $this->label = '';
         $this->isValid = false;
         $this->xmlfile = false;
+        $this->filename = $xmlfilename;
 
         $xsdFolderName = __DIR__ . '/';
 
@@ -45,10 +49,20 @@ class XMLFile
                 } else {
                     $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
 
-                    $this->id = strtoupper((string) $this->xmlfile->Metadata[0]->Id[0]);
+                    $myId = $this->xmlfile->Metadata[0]->Id[0];
+                    if (isset($myId)) {
+                        $this->id = strtoupper((string) $myId);
+                    }
+
+                    // label is required!
                     $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
+                    $myDescription = $this->xmlfile->Metadata[0]->Description[0];
+                    if (isset($myDescription)) {
+                        $this->description = (string) $myDescription;
+                    }
+
                     if ($validate) {
-                        if ((strlen($this->id) > 0) && (strlen($this->label) > 0)) {
+                        if (strlen($this->label) > 0) {
                             $myReader = new \XMLReader();
                             $myReader->open($xmlfilename);
                             $myReader->setSchema($mySchemaFilename);
@@ -107,6 +121,12 @@ class XMLFile
     public function getLabel()
     {
         return $this->label;
+    }
+
+    // ####################################################
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     // ####################################################

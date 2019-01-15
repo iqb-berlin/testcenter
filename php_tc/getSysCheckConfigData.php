@@ -8,12 +8,41 @@
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 } else {
+	$myreturn = [
+		'id' => '',
+		'label' => '',
+		'cansave' => false,
+		'hasunit' => false,
+		'questions' => []
+	];
 
 	$data = json_decode(file_get_contents('php://input'), true);
-	$cId = $data["c"];
+	$configFileNameCoded = $data["c"];
 
-	require_once('../vo_code/SysCheck.php');
+	if (isset($configFileNameCoded)) {
+		$configFileName = urldecode($configFileNameCoded);
+		if (file_exists($configFileName)) {
+			require_once('../vo_code/XMLFileSysCheck.php'); // // // // ========================
 
-	echo(json_encode(SysCheck::getConfig($cId)));
+			$xFile = new XMLFileSysCheck($configFileName);
+
+			if ($xFile->isValid()) {
+				if ($xFile->getRoottagName()  == 'SysCheck') {
+					$myreturn = [
+						'id' => $configFileNameCoded,
+						'label' => $xFile->getLabel(),
+						'cansave' => $xFile->hasSaveKey(),
+						'hasunit' => $xFile->hasUnit(),
+						'questions' => $xFile->getQuestions()
+					];
+				}
+			}
+		}
+	}
+
+
+	echo(json_encode($myreturn));
 }
 ?>
+
+

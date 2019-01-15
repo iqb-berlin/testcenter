@@ -67,6 +67,7 @@
 		require_once('../../vo_code/XMLFileBooklet.php');
 		require_once('../../vo_code/XMLFileUnit.php');
 		require_once('../../vo_code/XMLFileTesttakers.php');
+		require_once('../../vo_code/XMLFileSysCheck.php');
 
 		// *****************************************************************
 
@@ -200,6 +201,42 @@
 						}
 					}
 					array_push($myreturn['infos'], strval(count($allBooklets)) . ' valid booklets found');
+
+					// get all syschecks and check units
+					$myFolder = '../../vo_data/ws_' . $wsId . '/SysCheck';
+					$validSysCheckCount = 0;
+					if (file_exists($myFolder) && is_dir($myFolder)) {
+						$mydir = opendir($myFolder);
+						while (($entry = readdir($mydir)) !== false) {
+							$fullfilename = $myFolder . '/' . $entry;
+							if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
+								$xFile = new XMLFileSysCheck($fullfilename, true);
+								if (!$xFile->isValid()) {
+									array_push($myreturn['warnings'], 'error reading SysCheck-XML-file "' . $entry . '"');
+								} else {
+									$rootTagName = $xFile->getRoottagName();
+									if ($rootTagName != 'SysCheck') {
+										array_push($myreturn['warnings'], 'invalid root-tag "' . $rootTagName . '" in SysCheck-XML-file "' . $entry . '"');
+									} else {
+										// ..........................
+										$unitId = $xFile->getUnitId();
+										if (strlen($unitId) > 0) {
+											if (!unitExists($unitId)) {
+												array_push($myreturn['errors'], 'unit "' . $unitId . '" not found (required in SysCheck-XML-file "' . $entry . '")');
+											} else {
+												$validSysCheckCount = $validSysCheckCount + 1;
+											}
+										} else {
+											$validSysCheckCount = $validSysCheckCount + 1;
+										}
+									// ..........................
+									}
+								}		
+							}
+						}
+					}
+					array_push($myreturn['infos'], strval($validSysCheckCount) . ' valid syschecks found');
+					
 
 					// get all logins and check booklets
 					$myFolder = '../../vo_data/ws_' . $wsId . '/Testtakers';
