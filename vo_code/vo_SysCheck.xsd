@@ -15,6 +15,9 @@
               <xs:enumeration value="string" />
               <xs:enumeration value="select" />
               <xs:enumeration value="header" />
+              <xs:enumeration value="check" />
+              <xs:enumeration value="text" />
+              <xs:enumeration value="radio" />
             </xs:restriction>
           </xs:simpleType>
         </xs:attribute>
