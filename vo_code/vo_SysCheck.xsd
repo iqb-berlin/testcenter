@@ -34,6 +34,8 @@
     </xs:sequence>
     <xs:attribute name="unit" type="xs:string"/>
     <xs:attribute name="savekey" type="xs:string"/>
+    <xs:attribute name="questionsonlymode" type="xs:boolean"/>
+    <xs:attribute name="skipnetwork" type="xs:boolean"/>
   </xs:complexType>
 
   <!-- ###################################################################-->

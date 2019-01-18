@@ -55,6 +55,40 @@ class XMLFileSysCheck extends XMLFile
     }
 
     // ####################################################
+    public function getQuestionsOnlyMode()
+    {
+        $myreturn = false;
+        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+            $configNode = $this->xmlfile->Config[0];
+            if (isset($configNode)) {
+                $qomAttr = $configNode['questionsonlymode'];
+                if (isset($qomAttr)) {
+                    $qom = (string) $qomAttr;
+                    $myreturn = ($qom == 'true');
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+    // ####################################################
+    public function getSkipNetwork()
+    {
+        $myreturn = false;
+        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+            $configNode = $this->xmlfile->Config[0];
+            if (isset($configNode)) {
+                $qomAttr = $configNode['skipnetwork'];
+                if (isset($qomAttr)) {
+                    $qom = (string) $qomAttr;
+                    $myreturn = ($qom == 'true');
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+    // ####################################################
     public function getQuestions()
     {
         $myreturn = [];
@@ -108,7 +142,7 @@ class XMLFileSysCheck extends XMLFile
         ];
         $myUnitId = $this->getUnitId();
         if (strlen($myUnitId) > 0) {
-            $workspaceDirName = dirname($this->filename, 2);
+            $workspaceDirName = dirname(dirname($this->filename));
             if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
                 $myreturn['workspaceDirName'] = $workspaceDirName;
                 
