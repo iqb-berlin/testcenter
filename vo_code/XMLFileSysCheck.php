@@ -205,4 +205,43 @@ class XMLFileSysCheck extends XMLFile
         
         return $myreturn;
     }
+
+    // ####################################################
+    public function saveReport($key, $title, $envData, $netData, $questData) {
+        $myreturn = false;
+
+        if (strlen($key) > 0) {
+            if (strtoupper($key) == strtoupper($this->getSaveKey())) {
+                $workspaceDirName = dirname(dirname($this->filename));
+                if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
+                
+                    $sysCheckFolder = $workspaceDirName . '/' . $this->getRoottagName();
+                    if (file_exists($sysCheckFolder)) {
+                        $reportFolder = $sysCheckFolder . '/reports';
+                        if (!file_exists($reportFolder)) {
+                            if (!mkdir($reportFolder)) {
+                                $reportFolder = '';
+                            }
+                        }
+                        if (strlen($reportFolder) > 0) {																	
+                            $reportFilename = $reportFolder . '/' . uniqid('report_', true) . '.json';
+                            $reportData = [
+                                'date' => date('Y-m-d H:i:s', time()),
+                                'checkId' => $this->getId(),
+                                'checkLabel' => $this->getLabel(),
+                                'title' => $title,
+                                'envData' => $envData,
+                                'netData' => $netData,
+                                'questData' => $questData
+                            ];
+                            if (file_put_contents($reportFilename, json_encode($reportData)) !== false) {
+                                $myreturn = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $myreturn;
+    }
 }
