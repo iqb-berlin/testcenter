@@ -118,6 +118,7 @@ $app->get('/bookletdata', function (ServerRequestInterface $request, ResponseInt
 });
 
 
+// ##############################################################
 $app->get('/unitdata/{unitid}', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
@@ -177,6 +178,66 @@ $app->get('/unitdata/{unitid}', function (ServerRequestInterface $request, Respo
             $response->getBody()->write($responseData);
     
             $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
+// ##############################################################
+$app->get('/resource/{resourceid}', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $myerrorcode = 500;
+        $personToken = $_SESSION['personToken'];
+        $bookletDbId = $_SESSION['bookletDbId'];
+        $resourceid = $request->getAttribute('resourceid');
+        $myreturn = '';
+
+        if ((strlen($personToken) > 0) && ($bookletDbId > 0)) {
+            require_once($this->get('code_directory') . '/DBConnectionTC.php');
+
+            $myDBConnection = new DBConnectionTC();
+            if (!$myDBConnection->isError()) {
+                $myerrorcode = 401;
+        
+                $auth = $personToken . '##' .  $bookletDbId;
+                $wsId = $myDBConnection->getWorkspaceByAuth($auth);
+                if ($wsId > 0) {
+                    $myerrorcode = 404;
+                    $resourceFolder = $this->get('data_directory') . '/ws_' . $wsId . '/Resource';
+                    $path_parts = pathinfo($resourceid); // extract filename if path is given
+                    $resourceFileName = strtoupper($path_parts['basename']);
+    
+                    if (file_exists($resourceFolder) and (strlen($resourceFileName) > 0)) {
+                        $mydir = opendir($resourceFolder);
+                        if ($mydir !== false) {
+    
+                            while (($entry = readdir($mydir)) !== false) {
+                                if (strtoupper($entry) == $resourceFileName) {
+                                    $fullfilename = $resourceFolder . '/' . $entry;
+                                    $myerrorcode = 0;
+                                    $myreturn = file_get_contents($fullfilename);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }    
+            unset($myDBConnection);
+        }
+        if ($myerrorcode == 0) {
+            $response->getBody()->write($myreturn);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'text/html');
         } else {
             $responseToReturn = $response->withStatus($myerrorcode)
                 ->withHeader('Content-Type', 'text/html')

@@ -122,7 +122,7 @@ class DBConnectionStart extends DBConnection {
 
         if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
 			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname,
+				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname, logins.token as logintoken,
                         logins.id, logins.name as lname, workspaces.name as wname, persons.code FROM persons
                     INNER JOIN logins ON logins.id = persons.login_id
                     INNER JOIN workspaces ON workspaces.id = logins.workspace_id
@@ -136,6 +136,7 @@ class DBConnectionStart extends DBConnection {
                     $myreturn['booklets'] = json_decode($logindata['booklet_def'], true);
                     $myreturn['workspaceName'] = $logindata['wname'];
                     $myreturn['loginname'] = $logindata['lname'];
+                    $myreturn['logintoken'] = $logindata['logintoken'];
                     $myreturn['groupname'] = $logindata['groupname'];
                     $myreturn['ws'] = $logindata['workspace_id'];
                     $myreturn['mode'] = $logindata['mode'];
@@ -358,6 +359,31 @@ class DBConnectionStart extends DBConnection {
         }
         return $myreturn;
     }
+
+    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+	// returns the name of the workspace given by id
+	// returns '' if not found
+	// token is not refreshed
+	public function getWorkspaceName($workspace_id) {
+		$myreturn = '';
+		if ($this->pdoDBhandle != false) {
+
+			$sql = $this->pdoDBhandle->prepare(
+				'SELECT workspaces.name FROM workspaces
+					WHERE workspaces.id=:workspace_id');
+				
+			if ($sql -> execute(array(
+				':workspace_id' => $workspace_id))) {
+					
+				$data = $sql -> fetch(PDO::FETCH_ASSOC);
+				if ($data != false) {
+					$myreturn = $data['name'];
+				}
+			}
+		}
+			
+		return $myreturn;
+	}
 }
 
 ?>
