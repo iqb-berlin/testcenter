@@ -1,0 +1,8 @@
+{
+    "type": "mysql",
+    "host": "dbsuper.center.de",
+    "port": "2554",
+    "dbname": "testcenter",
+    "user": "name",
+    "password": "verysecret"
+}

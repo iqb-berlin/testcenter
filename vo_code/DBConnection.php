@@ -12,12 +12,14 @@ class DBConnection {
     // __________________________
     public function __construct() {
         try {
-
-            // $this->pdoDBhandle = new PDO("mysql:host=111.11.111.0;port=1111;dbname=testcenter", "user111", "111111");
-			// $this->pdoDBhandle = new PDO("pgsql:host=ddbb.ddr.rrt.de;port=5432;dbname=db3456;user=userdb3456;password=db3456");
+            $cData = json_decode(file_get_contents(__DIR__ . '/DBConnectionData.json'));
+            if ($cData->type === 'mysql') {
+                $this->pdoDBhandle = new PDO("mysql:host=" . $cData->host . ";port=" . $cData->port . ";dbname=" . $cData->dbname, $cData->user, $cData->password);
+            } elseif ($cData->type === 'pgsql') {
+                $this->pdoDBhandle = new PDO("pgsql:host=" . $cData->host . ";port=" . $cData->port . ";dbname=" . $cData->dbname . ";user=" . $cData->user . ";password=" . $cData->password);
+            }
 
             $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
 
         } catch(PDOException $e) {
             $this->errorMsg = $e->getMessage();
@@ -83,6 +85,55 @@ class DBConnection {
         return $myreturn;
     }
 
+    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+	// returns the name of the workspace given by id
+	// returns '' if not found
+	// token is not refreshed
+	public function getWorkspaceName($workspace_id) {
+		$myreturn = '';
+		if ($this->pdoDBhandle != false) {
+
+			$sql = $this->pdoDBhandle->prepare(
+				'SELECT workspaces.name FROM workspaces
+					WHERE workspaces.id=:workspace_id');
+				
+			if ($sql -> execute(array(
+				':workspace_id' => $workspace_id))) {
+					
+				$data = $sql -> fetch(PDO::FETCH_ASSOC);
+				if ($data != false) {
+					$myreturn = $data['name'];
+				}
+			}
+		}
+			
+		return $myreturn;
+	}
+
+
+    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+	// returns the id of the workspace given by logintoken
+	// returns 0 if not found
+	// token is not refreshed
+    public function getWorkspaceId($logintoken) {
+        $myreturn = 0;
+
+        if (($this->pdoDBhandle != false) and (strlen($logintoken) > 0)) {
+			$sql_select = $this->pdoDBhandle->prepare(
+				'SELECT logins.workspace_id FROM logins
+					WHERE logins.token = :token');
+				
+			if ($sql_select->execute(array(
+				':token' => $logintoken))) {
+
+				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
+				if ($logindata !== false) {
+                    $myreturn = $logindata['workspace_id'];
+                }
+            }
+        }
+        return $myreturn;
+    }
 }
 
 ?>
