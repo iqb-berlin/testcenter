@@ -1,14 +1,18 @@
 <?php
 // www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
+// Bărbulescu, Mechtel
+// 2019
 // license: MIT
+//
+// to approach the testing, i. e. login, start/stop booklet
 
 require_once('DBConnection.php');
 
 class DBConnectionStart extends DBConnection {
+    private $idletimeSession = 60 * 30;
 
-    // __________________________
+    // #######################################################################################
+    // #######################################################################################
     public function login($workspace, $groupname, $name, $mode, $bookletdef) {
         $myreturn = '';
         if (($this->pdoDBhandle != false) and 
@@ -59,35 +63,8 @@ class DBConnectionStart extends DBConnection {
         return $myreturn;
     }
 
-    public function authOk($persontoken, $bookletDbId, $RW = false) {
-        $myreturn = false;
-
-        if (isset($bookletDbId) && isset($persontoken)) {
-            if ((strlen($persontoken) > 0) and (strlen($bookletDbId) > 0) and is_numeric($bookletDbId)) {
-
-                // 6666666666666666666666
-                $booklet_select = $this->pdoDBhandle->prepare(
-                    'SELECT booklets.locked FROM booklets
-                        INNER JOIN persons ON persons.id = booklets.person_id
-                        WHERE persons.token=:token and booklets.id=:bookletId');
-                    
-                if ($booklet_select->execute(array(
-                    ':token' => $persontoken,
-                    ':bookletId' => $bookletDbId
-                    ))) {
-    
-                    $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                    if ($bookletdata !== false) {
-                        $myreturn = ($RW === false) || ($bookletdata['locked'] !== 't');
-                    }
-                }
-    
-            }
-        }
-        return $myreturn;
-    }
-
-    // __________________________
+    // #######################################################################################
+    // #######################################################################################
     public function getAllBookletsByLoginToken($logintoken) {
         $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => []];
 
@@ -116,7 +93,8 @@ class DBConnectionStart extends DBConnection {
         return $myreturn;
     }
 
-    // __________________________
+    // #######################################################################################
+    // #######################################################################################
     public function getAllBookletsByPersonToken($persontoken) {
         $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => [], 'code' => ''];
 
@@ -148,7 +126,8 @@ class DBConnectionStart extends DBConnection {
         return $myreturn;
     }
 
-    // **********************************************************
+    // #######################################################################################
+    // #######################################################################################
     // if the booklet is not found in the database, the booklet label will be empty and
     // the bookletid will be 0
     public function getBookletStatus($logintoken, $code, $persontoken, $bookletid, $bookletDbId) {
@@ -326,198 +305,76 @@ class DBConnectionStart extends DBConnection {
         }
         return $myreturn;
     }
-        
-    // __________________________
-    // having just the login, entry in the booklet table could be missing; so we have to go
-    // through the booklet_def
-    public function getBookletStatusNL($logintoken, $code, $bookletid, $bookletlabel) {
-        // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
+
+
+    // #######################################################################################
+    // #######################################################################################
+    public function startBookletByLoginToken($logintoken, $code, $booklet, $bookletLabel) {
         $myreturn = [];
-
-        if (($this->pdoDBhandle != false) and (strlen($logintoken) > 0)) {
-			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.booklet_def, logins.id FROM logins
-					WHERE logins.token = :token');
-				
-			if ($sql_select->execute(array(
-				':token' => $logintoken))) {
-
-				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
-				if ($logindata !== false) {
-                    $myBookletData = json_decode($logindata['booklet_def'], true);
-                    if (isset($myBookletData[$code])) {
-                        if (in_array($bookletid, $myBookletData[$code])) {
-                            $myreturn['canStart'] = true;
-                            $myreturn['statusLabel'] = 'Zum Starten hier klicken';
-                            $myreturn['label'] = $bookletlabel;
+        error_log('enter startBookletByLoginToken');
+        if ($this->pdoDBhandle != false) {
+            $login_select = $this->pdoDBhandle->prepare(
+                'SELECT logins.id FROM logins
+                    WHERE logins.token=:token');
                 
-                            $persons_select = $this->pdoDBhandle->prepare(
-                                'SELECT persons.id FROM persons
-                                    WHERE persons.login_id = :loginid and persons.code = :code');
-                                
-                            if ($persons_select->execute(array(
-                                ':loginid' => $logindata['id'],
-                                ':code' => $code
-                                ))) {
-                
-                                $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
-                                if ($persondata !== false) {
-                                    $booklet_select = $this->pdoDBhandle->prepare(
-                                        'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
-                                            WHERE booklets.person_id = :personid and booklets.name = :bookletname');
-                                        
-                                    if ($booklet_select->execute(array(
-                                        ':personid' => $persondata['id'],
-                                        ':bookletname' => $bookletid
-                                        ))) {
-                        
-                                        $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                        if ($bookletdata !== false) {
-                                            $myreturn['label'] = $bookletdata['label'];
-                                            $myreturn['id'] = $bookletdata['id'];
-                                            $laststate = json_decode($bookletdata['laststate'], true);
-                                            if (isset($laststate['u'])) {
-                                                $myreturn['lastUnit'] = $laststate['u'];
-                                            }
-
-                                            if ($bookletdata['locked'] === "1") {
-                                                $myreturn['canStart'] = false;
-                                                $myreturn['statusLabel'] = 'Gesperrt';
-                                                // later: differentiate between finished, cancelled etc.
-                                            } else {
-                                                $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-
-    public function getWorkspaceIdByPersonToken($persontoken) {
-        $myreturn = '';
-
-        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
-			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.workspace_id FROM persons
-                    INNER JOIN logins ON logins.id = persons.login_id
-					WHERE persons.token = :token');
-				
-			if ($sql_select->execute(array(
-				':token' => $persontoken))) {
-
-				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
-				if ($logindata !== false) {
-                    $myreturn = $logindata['workspace_id'];
-                }
-            }
-        }
-        return $myreturn;
-    }
-
-    public function getBookletStatusNP($persontoken, $bookletname) {
-        // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
-        $myreturn = [];
-
-        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
-			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.booklet_def, persons.id, persons.code FROM persons
-                    INNER JOIN logins ON logins.id = persons.login_id
-					WHERE persons.token = :token');
-				
-			if ($sql_select->execute(array(
-				':token' => $persontoken))) {
-
-				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
-				if ($logindata !== false) {
-                    $myBooklets = json_decode($logindata['booklet_def'], true);
-                    $code = $logindata['code'];
-                    $personId = $logindata['id'];
-
-                    if (count($myBooklets) > 0) {
-                        // check whether code and booklet are part of login
-                        $bookletFound = false;
-                        if (isset($myBooklets[$code])) {
-                            $bookletFound = in_array($bookletname, $myBooklets[$code]);
-                        }
-
-                        if ($bookletFound) {
-                            $myreturn['canStart'] = true;
-                            $myreturn['statusLabel'] = 'Zum Starten hier klicken';
-                
-                            $booklet_select = $this->pdoDBhandle->prepare(
-                                'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
-                                    WHERE booklets.person_id = :personid and booklets.name = :bookletname');
-                                
-                            if ($booklet_select->execute(array(
-                                ':personid' => $personId,
-                                ':bookletname' => $bookletname
-                                ))) {
-                
-                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                if ($bookletdata !== false) {
-                                    $myreturn['label'] = $bookletdata['label'];
-                                    $myreturn['id'] = $bookletdata['id'];
-                                    $laststate = json_decode($bookletdata['laststate'], true);
-                                    if (isset($laststate['u'])) {
-                                        $myreturn['lastUnit'] = $laststate['u'];
-                                    }
-                                    if ($bookletdata['locked'] === '1') {
-                                        $myreturn['canStart'] = false;
-                                        $myreturn['statusLabel'] = 'Gesperrt';
-                                        // later: differentiate between finished, cancelled etc.
-                                    } else {
-                                        $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-    
-    // __________________________
-    public function getBookletStatusPI($persontoken, $bookletId) {
-        // 'canStart' => false, 'statusLabel' => 'Zugriff verweigert', 'lastUnit' => 0, 'label' => ''
-        $myreturn = [];
-
-        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
-            $myreturn['canStart'] = true;
-            $myreturn['statusLabel'] = 'Zum Starten hier klicken';
-
-            $booklet_select = $this->pdoDBhandle->prepare(
-                'SELECT booklets.laststate, booklets.locked, booklets.label FROM booklets
-                    INNER JOIN persons on persons.id = booklets.person_id
-                    WHERE persons.token = :token 
-                        and booklets.id = :bookletId');
-                
-            if ($booklet_select->execute(array(
-                ':token' => $persontoken,
-                ':bookletId' => $bookletId
+            if ($login_select->execute(array(
+                ':token' => $logintoken
                 ))) {
 
-                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                if ($bookletdata !== false) {
-                    $myreturn['label'] = $bookletdata['label'];
-                    $myreturn['id'] = $bookletId;
-                    $laststate = json_decode($bookletdata['laststate'], true);
-                    if (isset($laststate['u'])) {
-                        $myreturn['lastUnit'] = $laststate['u'];
+                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
+                if ($logindata !== false) {
+                    // ++++++++++++++++++++++++++++++++++++++++++++++
+                    // logintoken ok
+                    // delete old persontoken and get new one
+
+                    $personToken = '';
+                    $tempToken = uniqid('a', true);
+                    $laststate_person = ['lastbooklet' => $booklet];
+
+                    $persons_select = $this->pdoDBhandle->prepare(
+                        'SELECT persons.id FROM persons
+                            WHERE persons.login_id=:id and persons.code=:code');
+                    if ($persons_select->execute(array(
+                        ':id' => $logindata['id'],
+                        ':code' => $code
+                        ))) {
+        
+                        $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
+                        if ($persondata !== false) {
+                            // overwrite token
+                            $booklet_update = $this->pdoDBhandle->prepare(
+                                'UPDATE persons SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
+                            if ($booklet_update -> execute(array(
+                                ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
+                                ':laststate' => json_encode($laststate_person),
+                                ':token' => $tempToken,
+                                ':id' => $persondata['id']))) {
+                                $personToken = $tempToken;
+                            }
+                        }
                     }
-                    if ($bookletdata['locked'] === '1') {
-                        $myreturn['canStart'] = false;
-                        $myreturn['statusLabel'] = 'Gesperrt';
-                        // later: differentiate between finished, cancelled etc.
-                    } else {
-                        $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
+
+                    if (strlen($personToken) === 0) {
+                        $booklet_insert = $this->pdoDBhandle->prepare(
+                            'INSERT INTO persons (token, code, login_id, valid_until, laststate) 
+                                VALUES(:token, :code, :login_id, :valid_until, :laststate)');
+    
+                        if ($booklet_insert->execute(array(
+                            ':token' => $tempToken,
+                            ':code' => $code,
+                            ':login_id' => $logindata['id'],
+                            ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
+                            ':laststate' => json_encode($laststate_person)
+                            ))) {
+                                $personToken = $tempToken;
+                                error_log('personToken set ok');
+                        }
+                    }
+
+                    // ++++++++++++++++++++++++++++++++++++++++++++++
+                    // start booklet
+                    if (strlen($personToken) > 0) {
+                        $myreturn = $this->startBookletByPersonToken($personToken, $booklet, $bookletLabel);
                     }
                 }
             }
@@ -525,14 +382,157 @@ class DBConnectionStart extends DBConnection {
         return $myreturn;
     }
 
-    // __________________________
-    public function lockBooklet($bookletDBId) {
+    // #######################################################################################
+    // #######################################################################################
+    public function startBookletByPersonToken($persontoken, $booklet, $bookletLabel) {
+        $myreturn = [];
+        if ($this->pdoDBhandle != false) {
+            $persons_select = $this->pdoDBhandle->prepare(
+                'SELECT persons.id FROM persons
+                    WHERE persons.token=:token');
+                
+            if ($persons_select->execute(array(
+                ':token' => $persontoken
+                ))) {
+
+                $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
+                if ($persondata !== false) {
+                    // ++++++++++++++++++++++++++++++++++++++++++++++
+                    // persontoken ok
+
+                    $bookletDbId = 0;
+                    $laststate_booklet = ['u' => 0, 'responses' => 'no', 'presented' => 'no', 'status' => 'started'];
+                    $isLocked = false;
+
+                    $booklet_select = $this->pdoDBhandle->prepare(
+                        'SELECT booklets.locked, booklets.id, booklets.laststate FROM booklets
+                            WHERE booklets.person_id=:personId and booklets.name=:bookletname');
+                        
+                    if ($booklet_select->execute(array(
+                        ':personId' => $persondata['id'],
+                        ':bookletname' => $booklet
+                        ))) {
+        
+                        $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                        if ($bookletdata !== false) {
+                            if ($bookletdata['locked'] === 't') {
+                                $isLocked = true;
+                            } else {
+                                // update booklet data
+                                $laststate_booklet = json_decode($bookletdata['laststate']);
+                                $laststate_booklet['status'] = 'restarted';
+
+                                $booklet_update = $this->pdoDBhandle->prepare(
+                                    'UPDATE booklets SET label = :label, laststate = :laststate WHERE id = :id');
+                                if ($booklet_update -> execute(array(
+                                    ':label' => $bookletLabel,
+                                    ':laststate' => json_encode($laststate_booklet),
+                                    ':id' => $bookletdata['id']))) {
+                                    $bookletDbId = $bookletdata['id'];
+                                }
+                            }
+                        }
+                    }
+
+                    if (($bookletDbId === 0) && !$isLocked) {
+                        // create new booklet record
+                        try{
+                            $this->pdoDBhandle->beginTransaction();
+                            $booklet_insert = $this->pdoDBhandle->prepare(
+                                'INSERT INTO booklets (person_id, name, laststate, label) 
+                                    VALUES(:person_id, :name, :laststate, :label)');
+        
+                            if ($booklet_insert->execute(array(
+                                ':person_id' => $persondata['id'],
+                                ':name' => $booklet,
+                                ':laststate' => json_encode($laststate_booklet),
+                                ':label' => $bookletLabel
+                                ))) {
+    
+                                $bookletDbId = $this->pdoDBhandle->lastInsertId();
+                            }
+    
+                            $this->pdoDBhandle->commit();
+                        } 
+
+                        catch(Exception $e){
+                            $this->pdoDBhandle->rollBack();
+                            $bookletDbId = 0;
+                        }
+                    }
+                }
+            }
+        }
+        if ($bookletDbId > 0) {
+            $myreturn = [
+                'bookletDbId' => $bookletDbId,
+                'persontoken' => $persontoken
+            ];
+        }
+
+        return $myreturn;
+    }
+
+    // #######################################################################################
+    // #######################################################################################
+    public function stopBooklet($persontoken, $bookletDbId) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $persons_select = $this->pdoDBhandle->prepare(
+                'SELECT persons.id FROM persons
+                    WHERE persons.token=:token');
+                
+            if ($persons_select->execute(array(
+                ':token' => $persontoken
+                ))) {
+
+                $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
+                if ($persondata !== false) {
+                    // ++++++++++++++++++++++++++++++++++++++++++++++
+                    // persontoken ok
+
+                    $booklet_select = $this->pdoDBhandle->prepare(
+                        'SELECT booklets.locked, booklets.laststate FROM booklets
+                            WHERE booklets.person_id=:personId and booklets.id=:bookletid');
+                        
+                    if ($booklet_select->execute(array(
+                        ':personId' => $persondata['id'],
+                        ':bookletid' => $bookletDbId
+                        ))) {
+        
+                        $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                        if ($bookletdata !== false) {
+                            if ($bookletdata['locked'] !== 't') {
+                                // update booklet data
+                                $laststate_booklet = json_decode($bookletdata['laststate'], true);
+                                $laststate_booklet['status'] = 'finished';
+
+                                $booklet_update = $this->pdoDBhandle->prepare(
+                                    'UPDATE booklets SET laststate = :laststate WHERE id = :id');
+                                if ($booklet_update -> execute(array(
+                                    ':laststate' => json_encode($laststate_booklet),
+                                    ':id' => $bookletDbId))) {
+                                        $myreturn = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+
+    // #######################################################################################
+    // #######################################################################################
+    public function setBookletStatus($bookletDbId) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
             $booklet_update = $this->pdoDBhandle->prepare(
                 'UPDATE booklets SET locked = "t" WHERE id = :id');
             if ($booklet_update -> execute(array(
-                ':id' => $bookletDBId))) {
+                ':id' => $bookletDbId))) {
                 $myreturn = true;
             }
         }

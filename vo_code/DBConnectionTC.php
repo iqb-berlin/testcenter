@@ -370,132 +370,7 @@ class DBConnectionTC extends DBConnection {
     }
 
     // __________________________
-    public function start_session($logintoken, $code, $booklet, $bookletLabel) {
-        $myreturn = [];
-        if ($this->pdoDBhandle != false) {
-            $login_select = $this->pdoDBhandle->prepare(
-                'SELECT logins.id FROM logins
-                    WHERE logins.token=:token');
-                
-            if ($login_select->execute(array(
-                ':token' => $logintoken
-                ))) {
 
-                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
-                if ($logindata !== false) {
-                    $persons_select = $this->pdoDBhandle->prepare(
-                        'SELECT persons.id FROM persons
-                            WHERE persons.login_id=:id and persons.code=:code');
-                        
-                    if ($persons_select->execute(array(
-                        ':id' => $logindata['id'],
-                        ':code' => $code
-                        ))) {
-        
-                        $pToken = uniqid('a', true);
-                        $laststate_session = ['lastbooklet' => $booklet];
-                        $sessiondata = $persons_select->fetch(PDO::FETCH_ASSOC);
-                        if ($sessiondata !== false) {
-                            // overwrite token
-                            $booklet_update = $this->pdoDBhandle->prepare(
-                                'UPDATE persons SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
-                            if (!$booklet_update -> execute(array(
-                                ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
-                                ':laststate' => json_encode($laststate_session),
-                                ':token' => $pToken,
-                                ':id' => $sessiondata['id']))) {
-                                $pToken = '';
-                            }
-                        } else {
-                            $booklet_insert = $this->pdoDBhandle->prepare(
-                                'INSERT INTO persons (token, code, login_id, valid_until, laststate) 
-                                    VALUES(:token, :code, :login_id, :valid_until, :laststate)');
-        
-                            if (!$booklet_insert->execute(array(
-                                ':token' => $pToken,
-                                ':code' => $code,
-                                ':login_id' => $logindata['id'],
-                                ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
-                                ':laststate' => json_encode($laststate_session)
-                                ))) {
-                                    $pToken = '';
-                            }
-                        }
-                    }
-                }
-
-                $persons_select = $this->pdoDBhandle->prepare(
-                    'SELECT persons.id FROM persons
-                        WHERE persons.token=:token');
-                    
-                if ($persons_select->execute(array(
-                    ':token' => $pToken
-                    ))) {
-    
-                    $sessiondata = $persons_select->fetch(PDO::FETCH_ASSOC);
-                    if ($sessiondata !== false) {
-                        $laststate_booklet = ['u' => 0];
-                        $booklet_select = $this->pdoDBhandle->prepare(
-                            'SELECT booklets.locked, booklets.id FROM booklets
-                                WHERE booklets.person_id=:personId and booklets.name=:bookletname');
-                            
-                        if ($booklet_select->execute(array(
-                            ':personId' => $sessiondata['id'],
-                            ':bookletname' => $booklet
-                            ))) {
-            
-                            $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                            if ($bookletdata !== false) {
-                                if ($bookletdata['locked'] === 't') {
-                                    $pToken = '';
-                                } else {
-                                    // setting $bookletLabel
-                                    $booklet_update = $this->pdoDBhandle->prepare(
-                                        'UPDATE booklets SET label = :label WHERE id = :id');
-                                    if ($booklet_update -> execute(array(
-                                        ':label' => $bookletLabel,
-                                        ':id' => $bookletdata['id']))) {
-                                        $myreturn['pt'] = $pToken;
-                                        $myreturn['b'] = $bookletdata['id'];
-                                    }
-                                }
-                            } else {
-                                $booklet_insert = $this->pdoDBhandle->prepare(
-                                    'INSERT INTO booklets (person_id, name, laststate, label) 
-                                        VALUES(:person_id, :name, :laststate, :label)');
-            
-                                if ($booklet_insert->execute(array(
-                                    ':person_id' => $sessiondata['id'],
-                                    ':name' => $booklet,
-                                    ':laststate' => json_encode($laststate_booklet),
-                                    ':label' => $bookletLabel
-                                    ))) {
-
-                                    $booklet_select = $this->pdoDBhandle->prepare(
-                                        'SELECT booklets.id FROM booklets
-                                            WHERE booklets.person_id=:personId and booklets.name=:bookletname');
-                                        
-                                    if ($booklet_select->execute(array(
-                                        ':personId' => $sessiondata['id'],
-                                        ':bookletname' => $booklet
-                                        ))) {
-                        
-                                        $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                        if ($bookletdata !== false) {
-                                            $myreturn['pt'] = $pToken;
-                                            $myreturn['b'] = $bookletdata['id'];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-    
     // __________________________
     public function start_sessionByPersonToken($pToken, $booklet, $bookletLabel) {
         $myreturn = 0;
@@ -581,13 +456,8 @@ class DBConnectionTC extends DBConnection {
             if (($sessionquery != false) and (count($sessionquery) > 0)) {
                 // remove token
                 $laststate_booklet = ['lastunit' => '', 'finished' => $mode];
-<<<<<<< HEAD
                 :::update($this:::, 'people', 
                         ['valid_until' => date('Y-m-d G:i:s', time()), 'token' => '', 'laststate' => json_encode($laststate_booklet)],
-=======
-                :::update($this:::, 'sessions', 
-                        ['valid_until' => date('Y-m-d H:i:s', time()), 'token' => '', 'laststate' => json_encode($laststate_booklet)],
->>>>>>> f773d7dfe10b4248f12e498fd70777002fe03c5b
                         ['id' => $sessionquery[0]['id']]);
             }
         }

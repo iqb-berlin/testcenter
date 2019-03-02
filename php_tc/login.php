@@ -147,59 +147,8 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                     $myreturn = $dbReturn;
                     $myreturn['persontoken'] = $personToken;
                     $myreturn['booklet'] = 0;
-
-                    // $bookletfolder = $this->get('data_directory') . '/ws_' . $dbReturn['ws'] . '/Booklet';
-    
-                    // if (file_exists($bookletfolder)) {
-                    //     $mydir = opendir($bookletfolder);
-                    //     $bookletlist = [];
-    
-                    //     require_once($this->get('code_directory') . '/XMLFile.php'); // // // // ========================
-                    //     while (($entry = readdir($mydir)) !== false) {
-                    //         $fullfilename = $bookletfolder . '/' . $entry;
-                    //         if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-    
-                    //             $xFile = new XMLFile($fullfilename);
-                    //             if ($xFile->isValid()) {
-                    //                 $bKey = $xFile->getId();
-                    //                 $bookletlist[$bKey] = [
-                    //                         'label' => $xFile->getLabel(),
-                    //                         'filename' => $entry];
-                    //             }
-                    //         }
-                    //     }
-                    //     $myerrorcode = 0;
-                        
-    
-                    //     // transform bookletid[] to bookletdata[]
-                    //     $newBookletList = [];
-                    //     foreach($dbReturn['booklets'] as $code => $booklets) {
-                    //         $newBooklets = [];
-                    //         foreach($booklets as $bookletid) {
-                    //             $newBooklet['id'] = $bookletid;
-                    //             if ((count($bookletlist) > 0) and isset($bookletlist[$bookletid])) {
-                    //                 $bData = $bookletlist[$bookletid];
-                    //                 $newBooklet['filename'] = $bData['filename'];
-                    //                 $newBooklet['label'] = $bData['label'];
-                    //             }
-                    //             array_push($newBooklets, $newBooklet);
-                    //         }
-                    //         $newBookletList[$code] = $newBooklets;
-                    //     }
-
-                    //     $myreturn = [
-                    //         'logintoken' => $dbReturn['$logintoken'],
-                    //         'persontoken' => $personToken,
-                    //         'mode' => $dbReturn['mode'],
-                    //         'groupname' => $dbReturn['groupname'],
-                    //         'loginname' => $dbReturn['loginname'],
-                    //         'workspaceName' => $dbReturn['workspaceName'],
-                    //         'booklets' => $newBookletList,
-                    //         'code' => $dbReturn['code'],
-                    //         'booklet' => 0
-                    //     ];
-                    // }
                 }
+
             // //////////////////////////////////////////////////////////////////////////////////////////////////
             // CASE C: get logindata by logintoken //////////////////////////////////////////////////////////////
             } elseif (strlen($loginToken) > 0) {
@@ -211,55 +160,6 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                     $myreturn['booklet'] = 0;
                     $myreturn['code'] = '';
 
-                    // $bookletfolder = $this->get('data_directory') . '/ws_' . $dbReturn['ws'] . '/Booklet';
-    
-                    // if (file_exists($bookletfolder)) {
-                    //     $mydir = opendir($bookletfolder);
-                    //     $bookletlist = [];
-    
-                    //     require_once($this->get('code_directory') . '/XMLFile.php'); // // // // ========================
-                    //     while (($entry = readdir($mydir)) !== false) {
-                    //         $fullfilename = $bookletfolder . '/' . $entry;
-                    //         if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-    
-                    //             $xFile = new XMLFile($fullfilename);
-                    //             if ($xFile->isValid()) {
-                    //                 $bKey = $xFile->getId();
-                    //                 $bookletlist[$bKey] = [
-                    //                         'label' => $xFile->getLabel(),
-                    //                         'filename' => $entry];
-                    //             }
-                    //         }
-                    //     }
-                    //     $myerrorcode = 0;
-                        
-                    //     // transform bookletid[] to bookletdata[]
-                    //     $newBookletList = [];
-                    //     foreach($dbReturn['booklets'] as $code => $booklets) {
-                    //         $newBooklets = [];
-                    //         foreach($booklets as $bookletid) {
-                    //             $newBooklet['id'] = $bookletid;
-                    //             if ((count($bookletlist) > 0) and isset($bookletlist[$bookletid])) {
-                    //                 $bData = $bookletlist[$bookletid];
-                    //                 $newBooklet['filename'] = $bData['filename'];
-                    //                 $newBooklet['label'] = $bData['label'];
-                    //             }
-                    //             array_push($newBooklets, $newBooklet);
-                    //         }
-                    //         $newBookletList[$code] = $newBooklets;
-                    //     }
-                    //     $myreturn = [
-                    //         'logintoken' => $dbReturn['$logintoken'],
-                    //         'persontoken' => '',
-                    //         'mode' => $dbReturn['mode'],
-                    //         'groupname' => $dbReturn['groupname'],
-                    //         'loginname' => $dbReturn['loginname'],
-                    //         'workspaceName' => $dbReturn['workspaceName'],
-                    //         'booklets' => $newBookletList,
-                    //         'code' => '',
-                    //         'booklet' => 0
-                    //     ];
-                    // }
                 }
             }
         }
@@ -320,6 +220,106 @@ $app->get('/bookletstatus', function (ServerRequestInterface $request, ResponseI
             $responseData = jsonencode($myreturn);
             $response->getBody()->write($responseData);
 
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
+
+// ##############################################################
+// ##############################################################
+$app->post('/startbooklet', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $myerrorcode = 500;
+        $loginToken = $_SESSION['loginToken'];
+        $personToken = $_SESSION['personToken'];
+
+        $bodydata = json_decode($request->getBody());
+		$code = isset($bodydata->c) ? $bodydata->c : '';
+        $bookletLabel = isset($bodydata->bl) ? $bodydata->bl : 'Testheft??';
+        $bookletid = isset($bodydata->b) ? $bodydata->b : '';
+
+        $myreturn = [
+            'persontoken' => '',
+            'bookletDbId' => 0
+        ];
+
+        if (strlen($bookletid) > 0) {
+            require_once($this->get('code_directory') . '/DBConnectionStart.php');
+            $myDBConnection = new DBConnectionStart();
+            if (!$myDBConnection->isError()) {
+                $myerrorcode = 404;
+        
+                // CASE A: start by persontoken
+                if (strlen($personToken) > 0) {
+                    $myreturn = $myDBConnection->startBookletByPersonToken($personToken, $bookletid, $bookletLabel);
+
+                // CASE B: start by login and (in case) code
+                } elseif (strlen($loginToken) > 0) {
+                    $myreturn = $myDBConnection->startBookletByLoginToken($loginToken, $code, $bookletid, $bookletLabel);
+
+                }
+                if (isset($myreturn['bookletDbId'])) {
+                    $myerrorcode = 0;
+                }
+            }
+            unset($myDBConnection);
+        }
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
+// ##############################################################
+// ##############################################################
+$app->post('/stopbooklet', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $myerrorcode = 500;
+        $personToken = $_SESSION['personToken'];
+        $bookletDbId = $_SESSION['bookletDbId'];
+
+        $myreturn = false;
+
+        if ((strlen($bookletDbId) > 0) && (strlen($personToken) > 0)) {
+            require_once($this->get('code_directory') . '/DBConnectionStart.php');
+            $myDBConnection = new DBConnectionStart();
+            if (!$myDBConnection->isError()) {
+        
+                $myreturn = $myDBConnection->stopBooklet($personToken, $bookletDbId);
+                $myerrorcode = $myreturn ? 0 : 401;
+            }
+            unset($myDBConnection);
+        }
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
             $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
         } else {
             $responseToReturn = $response->withStatus($myerrorcode)
