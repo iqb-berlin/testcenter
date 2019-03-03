@@ -3,4 +3,5 @@ logs/*
 
 # Empty folder must exist to ensure functionality.
 vo_data/*
+vendor/*
 !vo_data/.gitkeep

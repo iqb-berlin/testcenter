@@ -419,7 +419,7 @@ class DBConnectionStart extends DBConnection {
                                 $isLocked = true;
                             } else {
                                 // update booklet data
-                                $laststate_booklet = json_decode($bookletdata['laststate']);
+                                $laststate_booklet = json_decode($bookletdata['laststate'], true);
                                 $laststate_booklet['status'] = 'restarted';
 
                                 $booklet_update = $this->pdoDBhandle->prepare(
