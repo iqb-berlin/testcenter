@@ -52,6 +52,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
         // do not take the AuthHeader-Data!
         $loginToken = isset($bodydata->lt) ? $bodydata->lt : '';
         $personToken = isset($bodydata->pt) ? $bodydata->pt : '';
+        $booklet = isset($bodydata->b) ? $bodydata->b : 0;
 
         $myreturn = [
             'logintoken' => '',
@@ -146,7 +147,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                     $myerrorcode = 0;
                     $myreturn = $dbReturn;
                     $myreturn['persontoken'] = $personToken;
-                    $myreturn['booklet'] = 0;
+                    $myreturn['booklet'] = $booklet;
                 }
 
             // //////////////////////////////////////////////////////////////////////////////////////////////////
