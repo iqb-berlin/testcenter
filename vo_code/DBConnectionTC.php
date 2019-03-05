@@ -122,40 +122,38 @@ class DBConnectionTC extends DBConnection {
     public function addUnitReview($bookletDbId, $unit, $priority, $categories, $entry) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
-            if (is_numeric($priority)) {
-                $priority = intval($priority);
-                if (($priority <= 0) or ($priority > 3)) {
+            try {
+                $this->pdoDBhandle->beginTransaction();
+                $unitDbId = $this->findOrAddUnit($bookletDbId, $unit);
+                if (is_numeric($priority)) {
+                    $priority = intval($priority);
+                    if (($priority <= 0) or ($priority > 3)) {
+                        $priority = 0;
+                    }
+                } else {
                     $priority = 0;
                 }
-            } else {
-                $priority = 0;
+                $unitreview_insert = $this->pdoDBhandle->prepare(
+                    'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
+                        VALUES(:u, :t, :r, :p, :c, :e)');
+
+                if ($unitreview_insert->execute(array(
+                    ':u' => $unitDbId,
+                    ':t' => date('Y-m-d H:i:s', time()),
+                    ':r' => '-',
+                    ':p' => $priority,
+                    ':c' => $categories,
+                    ':e' => $entry
+                    ))) {
+                        $myreturn = true;
+                }
+
+                $this->pdoDBhandle->commit();
+            } 
+
+            catch(Exception $e){
+                $this->pdoDBhandle->rollBack();
             }
-
-            $unit_select = $this->pdoDBhandle->prepare(
-                'SELECT units.id FROM units
-                    WHERE units.name=:name and units.booklet_id=:bookletId');
-                
-            if ($unit_select->execute(array(
-                ':name' => $unit,
-                ':bookletId' => $bookletDbId
-                ))) {
-
-                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
-                if ($unitdata !== false) {
-                    $unitreview_insert = $this->pdoDBhandle->prepare(
-                        'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
-                            VALUES(:u, :t, :r, :p, :c, :e)');
-
-                    if ($unitreview_insert->execute(array(
-                        ':u' => $unitdata['id'],
-                        ':t' => date('Y-m-d H:i:s', time()),
-                        ':r' => '-',
-                        ':p' => $priority,
-                        ':c' => $categories,
-                        ':e' => $entry
-                        ))) {
-                            $myreturn = true;
-            }}}
         }
         return $myreturn;
     }
@@ -569,7 +567,43 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // __________________________
+    // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/
+    // the caller should check $this->pdoDBhandle and try/catch
+    private function findOrAddUnit($bookletDbId, $unitname) {
+        $standard_unit_laststate = ['restorepoint' => '', 'presentation_complete' => ''];
+
+        $myreturn = 0;
+        $unit_select = $this->pdoDBhandle->prepare(
+            'SELECT units.id FROM units
+                WHERE units.name = :unitname and units.booklet_id = :bookletId');
+            
+        if ($unit_select->execute(array(
+            ':unitname' => $unitname,
+            ':bookletId' => $bookletDbId
+            ))) {
+            
+            $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+            if ($unitdata === false) {
+                $unit_insert = $this->pdoDBhandle->prepare(
+                    'INSERT INTO units (booklet_id, name, laststate) 
+                        VALUES(:bookletId, :name, :laststate)');
+        
+                if ($unit_insert->execute(array(
+                    ':bookletId' => $bookletDbId,
+                    ':name' => $unitname,
+                    ':laststate' => json_encode($standard_unit_laststate)
+                    ))) {
+                        $myreturn = $this->pdoDBhandle->lastInsertId();;
+                }
+            } else {
+                $myreturn = $unitdata['id'];
+            }
+        }
+
+        return $myreturn;
+    }
+
+    // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/
     public function addUnitRestorePoint($bookletDbId, $unit, $restorepoint) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
