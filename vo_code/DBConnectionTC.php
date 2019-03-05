@@ -13,31 +13,6 @@ class DBConnectionTC extends DBConnection {
     // database; the sessiontoken given to other functions and used by the 
     // client is a  combination of sessiontoken (db) + booklet-DB-id
 
-    // __________________________
-    public function canWriteBookletData($persontoken, $bookletDbId) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            $booklet_select = $this->pdoDBhandle->prepare(
-                'SELECT booklets.locked FROM booklets
-                    INNER JOIN persons ON persons.id = booklets.person_id
-                    WHERE persons.token=:token and booklets.id=:bookletId');
-                
-            if ($booklet_select->execute(array(
-                ':token' => $persontoken,
-                ':bookletId' => $bookletDbId
-                ))) {
-
-                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                if ($bookletdata !== false) {
-                    if ($bookletdata['locked'] !== 't') {
-                        $myreturn = true;
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-
     public function getBookletId($auth) {
         $myreturn = 0;
 
@@ -89,6 +64,26 @@ class DBConnectionTC extends DBConnection {
                 }
             }
             
+        }
+        return $myreturn;
+    }
+
+    public function canWriteBookletData($persontoken, $bookletDbId) {
+        $myreturn = false;
+        $booklet_select = $this->pdoDBhandle->prepare(
+            'SELECT booklets.locked FROM booklets
+                INNER JOIN persons ON persons.id = booklets.person_id
+                WHERE persons.token=:token and booklets.id=:bookletId');
+            
+        if ($booklet_select->execute(array(
+            ':token' => $persontoken,
+            ':bookletId' => $bookletDbId
+            ))) {
+
+            $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+            if ($bookletdata !== false) {
+                $myreturn = $bookletdata['locked'] !== 't';
+            }
         }
         return $myreturn;
     }
