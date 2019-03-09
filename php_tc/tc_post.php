@@ -122,5 +122,129 @@ $app->post('/review', function (ServerRequestInterface $request, ResponseInterfa
     
 // ##############################################################
 // ##############################################################
+$app->post('/response', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $myerrorcode = 500;
+        $bodydata = json_decode($request->getBody());
+
+        $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
+        $unitDbKey = isset($bodydata->u) ? $bodydata->u : '';
+        $timestamp = isset($bodydata->t) ? $bodydata->t : 0;
+        $r = isset($bodydata->r) ? $bodydata->r : '';
+        $responseType = isset($bodydata->rt) ? $bodydata->rt : '';
+
+        $myreturn = false;
+
+        require_once($this->get('code_directory') . '/DBConnectionTC.php');
+        $myDBConnection = new DBConnectionTC();
+        if (!$myDBConnection->isError()) {
+            $myerrorcode = 0;
+
+            $myreturn = $myDBConnection->newResponses($bookletDbId, $unitDbKey, $r, $responseType, $timestamp);
+        }
+        unset($myDBConnection);
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
+// ##############################################################
+$app->post('/restorepoint', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $myerrorcode = 500;
+        $bodydata = json_decode($request->getBody());
+
+        $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
+        $unitDbKey = isset($bodydata->u) ? $bodydata->u : '';
+        $timestamp = isset($bodydata->t) ? $bodydata->t : 0;
+        $restorepoint = isset($bodydata->r) ? $bodydata->r : '';
+
+        $myreturn = false;
+
+        require_once($this->get('code_directory') . '/DBConnectionTC.php');
+        $myDBConnection = new DBConnectionTC();
+        if (!$myDBConnection->isError()) {
+            $myerrorcode = 0;
+
+            $myreturn = $myDBConnection->newRestorePoint($bookletDbId, $unitDbKey, $restorepoint, $timestamp);
+        }
+        unset($myDBConnection);
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
+// ##############################################################
+$app->post('/bookletstate', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $myerrorcode = 500;
+        $bodydata = json_decode($request->getBody());
+
+        $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
+        $statekey = isset($bodydata->sk) ? $bodydata->sk : '';
+        $statevalue = isset($bodydata->s) ? $bodydata->s : '';
+
+        $myreturn = false;
+
+        require_once($this->get('code_directory') . '/DBConnectionTC.php');
+        $myDBConnection = new DBConnectionTC();
+        if (!$myDBConnection->isError()) {
+            $myerrorcode = 0;
+
+            $myreturn = $myDBConnection->setBookletStatus($bookletDbId, $statekey, $statevalue);
+        }
+        unset($myDBConnection);
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
+// ##############################################################
+// ##############################################################
 $app->run();
 ?>
