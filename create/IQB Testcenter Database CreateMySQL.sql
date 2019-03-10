@@ -42,7 +42,7 @@ CREATE TABLE `admintokens` (
 
 CREATE TABLE `bookletlogs` (
   `booklet_id` bigint(20) UNSIGNED NOT NULL,
-  `logtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `timestamp` bigint(20) NOT NULL DEFAULT '0',
   `logentry` text COLLATE utf8_german2_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci;
 
@@ -116,7 +116,7 @@ CREATE TABLE `persons` (
 
 CREATE TABLE `unitlogs` (
   `unit_id` bigint(20) UNSIGNED NOT NULL,
-  `logtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `timestamp` bigint(20) NOT NULL DEFAULT '0',
   `logentry` text COLLATE utf8_german2_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci;
 
@@ -147,7 +147,10 @@ CREATE TABLE `units` (
   `booklet_id` bigint(20) UNSIGNED NOT NULL,
   `laststate` text COLLATE utf8_german2_ci,
   `responses` text COLLATE utf8_german2_ci,
-  `responsetype` varchar(50) COLLATE utf8_german2_ci DEFAULT NULL
+  `responsetype` varchar(50) COLLATE utf8_german2_ci DEFAULT NULL,
+  `responses_ts` bigint(20) NOT NULL DEFAULT '0',
+  `restorepoint` text COLLATE utf8_german2_ci,
+  `restorepoint_ts` bigint(20) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci;
 
 -- --------------------------------------------------------
@@ -183,7 +186,8 @@ CREATE TABLE `workspaces` (
 
 CREATE TABLE `workspace_users` (
   `workspace_id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `role` varchar(20) COLLATE utf8_german2_ci NOT NULL DEFAULT 'RW'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci;
 
 --

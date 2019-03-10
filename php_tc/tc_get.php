@@ -48,7 +48,7 @@ $app->get('/bookletdata', function (ServerRequestInterface $request, ResponseInt
         $myerrorcode = 500;
         $personToken = $_SESSION['personToken'];
         $bookletDbId = $_SESSION['bookletDbId'];
-        $myreturn = ['xml' => '', 'locked' => false, 'u' => 0];
+        $myreturn = ['xml' => '', 'locked' => false, 'laststate' => []];
 
         if ((strlen($personToken) > 0) && ($bookletDbId > 0)) {
             require_once($this->get('code_directory') . '/DBConnectionTC.php');
@@ -84,13 +84,8 @@ $app->get('/bookletdata', function (ServerRequestInterface $request, ResponseInt
                                 }
                             }
                             if ($myerrorcode == 0) {
-                                $status = $myDBConnection->getBookletStatus($myDBConnection->getBookletId($auth));
-                                if (isset($status['u'])) {
-                                    $myreturn['u'] = $status['u'];
-                                }
-                                if (isset($status['locked'])) {
-                                    $myreturn['locked'] = $status['locked'];
-                                }
+                                $myreturn['laststate'] = $myDBConnection->getBookletLastState($bookletDbId);
+                                $myreturn['locked'] = $myDBConnection->isBookletLocked($bookletDbId);
                             }
                         }
                     }
@@ -125,7 +120,7 @@ $app->get('/unitdata/{unitid}', function (ServerRequestInterface $request, Respo
         $personToken = $_SESSION['personToken'];
         $bookletDbId = $_SESSION['bookletDbId'];
         $unitid = $request->getAttribute('unitid');
-        $myreturn = ['xml' => '', 'status' => '', 'restorepoint' => ''];
+        $myreturn = ['xml' => '', 'laststate' => [], 'restorepoint' => ''];
 
         if ((strlen($personToken) > 0) && ($bookletDbId > 0)) {
             require_once($this->get('code_directory') . '/DBConnectionTC.php');
@@ -162,10 +157,8 @@ $app->get('/unitdata/{unitid}', function (ServerRequestInterface $request, Respo
                             }
                             
                             if ($myerrorcode == 0) {
-                                $status = $myDBConnection->getUnitStatus($myDBConnection->getBookletId($auth), $unitid);
-                                if (isset($status['restorepoint'])) {
-                                    $myreturn['restorepoint'] = $status['restorepoint'];
-                                }
+                                $myreturn['laststate'] = $myDBConnection->getUnitLastState($bookletDbId, $unitid);
+                                $myreturn['restorepoint'] = $myDBConnection->getUnitRestorePoint($bookletDbId, $unitid);
                             }
                         }
                     }

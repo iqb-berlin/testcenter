@@ -9,68 +9,8 @@ require_once('DBConnection.php');
 class DBConnectionTC extends DBConnection {
     private $idletimeSession = 60 * 30;
 
-    // for all functions here: $persontoken is the token as stored in the
-    // database; the sessiontoken given to other functions and used by the 
-    // client is a  combination of sessiontoken (db) + booklet-DB-id
-
     // =================================================================
-    public function getBookletId($auth) {
-        $myreturn = 0;
-
-        if (isset($auth)) {
-            if (is_string($auth)) {
-                if (strlen($auth) > 0) {
-                    $tokensplits = explode('##', $auth);
-                    if (count($tokensplits) == 2) {
-                        $persontoken = $tokensplits[0];
-                        $bookletDbId = $tokensplits[1];
-                        if ((strlen($persontoken) > 0) and (strlen($bookletDbId) > 0) and is_numeric($bookletDbId)) {
-                            $myreturn = intval($bookletDbId);
-                        }}}}}
-
-        return $myreturn;
-    }
-
-    // =================================================================
-    public function authOk($auth, $RW = false) {
-        $myreturn = false;
-
-        if (isset($auth)) {
-            if (is_string($auth)) {
-                if (strlen($auth) > 0) {
-                    $tokensplits = explode('##', $auth);
-                    if (count($tokensplits) == 2) {
-                        $persontoken = $tokensplits[0];
-                        $bookletDbId = $tokensplits[1];
-                        if ((strlen($persontoken) > 0) and (strlen($bookletDbId) > 0) and is_numeric($bookletDbId)) {
-
-                            // 6666666666666666666666
-                            $booklet_select = $this->pdoDBhandle->prepare(
-                                'SELECT booklets.locked FROM booklets
-                                    INNER JOIN persons ON persons.id = booklets.person_id
-                                    WHERE persons.token=:token and booklets.id=:bookletId');
-                                
-                            if ($booklet_select->execute(array(
-                                ':token' => $persontoken,
-                                ':bookletId' => $bookletDbId
-                                ))) {
-                
-                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                if ($bookletdata !== false) {
-                                    $myreturn = ($RW === false) || ($bookletdata['locked'] !== 't');
-                                }
-                            }
-                
-                        }
-                    }
-                }
-            }
-            
-        }
-        return $myreturn;
-    }
-
-    // =================================================================
+    // used as entry check in tc_post.php
     public function canWriteBookletData($persontoken, $bookletDbId) {
         $myreturn = false;
         $booklet_select = $this->pdoDBhandle->prepare(
@@ -288,11 +228,11 @@ class DBConnectionTC extends DBConnection {
     }
     
     // =================================================================
-    public function getBookletStatus($bookletDbId) {
+    public function getBookletLastState($bookletDbId) {
         $myreturn = [];
         if ($this->pdoDBhandle != false) {
             $booklet_select = $this->pdoDBhandle->prepare(
-                'SELECT booklets.locked, booklets.laststate FROM booklets
+                'SELECT booklets.laststate FROM booklets
                     WHERE booklets.id=:bookletId');
                 
             if ($booklet_select->execute(array(
@@ -302,8 +242,28 @@ class DBConnectionTC extends DBConnection {
                 $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
                 if ($bookletdata !== false) {
                     $myreturn = json_decode($bookletdata['laststate'], true);
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+    // =================================================================
+    public function isBookletLocked($bookletDbId) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $booklet_select = $this->pdoDBhandle->prepare(
+                'SELECT booklets.locked FROM booklets
+                    WHERE booklets.id=:bookletId');
+                
+            if ($booklet_select->execute(array(
+                ':bookletId' => $bookletDbId
+                ))) {
+
+                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                if ($bookletdata !== false) {
                     if ($bookletdata['locked'] === 't') {
-                        $myreturn['locked'] = true;
+                        $myreturn = true;
                     }
                 }
             }
@@ -334,8 +294,7 @@ class DBConnectionTC extends DBConnection {
         
 
     // =================================================================
-    // check via canWriteBookletData before calling this!
-    public function setBookletStatus($bookletDbId, $stateKey, $stateValue) {
+    public function setBookletLastState($bookletDbId, $stateKey, $stateValue) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
             try {
@@ -373,6 +332,45 @@ class DBConnectionTC extends DBConnection {
     }
 
     // =================================================================
+    public function setUnitLastState($bookletDbId, $unitname, $stateKey, $stateValue) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            try {
+                $this->pdoDBhandle->beginTransaction();
+                $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
+                $unit_select = $this->pdoDBhandle->prepare(
+                    'SELECT units.laststate FROM units
+                        WHERE units.id=:unitId');
+                    
+                $unit_select->execute(array(':unitId' => $unitDbId));
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+
+                $stateStr = $unitdata['laststate'];
+                $state = [];
+                if (isset($stateStr)) {
+                    if(strlen($stateStr) > 0) {
+                        $state = json_decode($stateStr, true);
+                    }
+                }
+                $state[$stateKey] = $stateValue;
+                $unit_update = $this->pdoDBhandle->prepare(
+                    'UPDATE units SET laststate = :laststate WHERE id = :id');
+                $unit_update -> execute(array(
+                    ':laststate' => json_encode($state),
+                    ':id' => $unitDbId));
+                $this->pdoDBhandle->commit();
+                $myreturn = true;
+            } 
+
+            catch(Exception $e){
+                $this->pdoDBhandle->rollBack();
+            }
+
+        }
+        return $myreturn;
+    }
+
+    // =================================================================
     public function unlockBooklet($bookletDbId) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
@@ -388,106 +386,14 @@ class DBConnectionTC extends DBConnection {
 
     // __________________________
 
-    // =================================================================
-    public function start_sessionByPersonToken($pToken, $booklet, $bookletLabel) {
-        $myreturn = 0;
 
-        $persons_select = $this->pdoDBhandle->prepare(
-            'SELECT persons.id FROM persons
-                WHERE persons.token=:token');
-            
-        if ($persons_select->execute(array(
-            ':token' => $pToken
-            ))) {
-
-            $personsdata = $persons_select->fetch(PDO::FETCH_ASSOC);
-            if ($personsdata !== false) {
-                $personId = $personsdata['id'];
-
-                $booklet_select = $this->pdoDBhandle->prepare(
-                    'SELECT booklets.locked, booklets.id FROM booklets
-                        WHERE booklets.person_id=:personId and booklets.name=:bookletname');
-                    
-                if ($booklet_select->execute(array(
-                    ':personId' => $personId,
-                    ':bookletname' => $booklet
-                    ))) {
-    
-                    $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                    if ($bookletdata !== false) {
-                        if ($bookletdata['locked'] !== 't') {
-                            // setting $bookletLabel
-                            $booklet_update = $this->pdoDBhandle->prepare(
-                                'UPDATE booklets SET label = :label WHERE id = :id');
-                            if ($booklet_update -> execute(array(
-                                ':label' => $bookletLabel,
-                                ':id' => $bookletdata['id']))) {
-
-                                $myreturn = $bookletdata['id'];
-                            }
-                        }
-                    } else {
-                        $booklet_insert = $this->pdoDBhandle->prepare(
-                            'INSERT INTO booklets (person_id, name, laststate, label) 
-                                VALUES(:person_id, :name, :laststate, :label)');
-    
-                        if ($booklet_insert->execute(array(
-                            ':person_id' => $personId,
-                            ':name' => $booklet,
-                            ':laststate' => json_encode(['u' => 0]),
-                            ':label' => $bookletLabel
-                            ))) {
-
-                            $booklet_select = $this->pdoDBhandle->prepare(
-                                'SELECT booklets.id FROM booklets
-                                    WHERE booklets.person_id=:personId and booklets.name=:bookletname');
-                                
-                            if ($booklet_select->execute(array(
-                                ':personId' => $personsdata['id'],
-                                ':bookletname' => $booklet
-                                ))) {
-                
-                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                if ($bookletdata !== false) {
-                                    $myreturn = $bookletdata['id'];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-    
-    
-    /*
-    // __________________________
-    public function stop_session($sessiontoken, $mode) {
-        // mode: (by testee) 'cancelled', 'intended', (by test-mc) 'killed'
-        $myreturn = '';
-        if (($this::: != false) and 
-                (count($sessiontoken) > 0)) {
-
-            $sessionquery = :::select($this:::, 'people', ['token' => $sessiontoken]);
-            if (($sessionquery != false) and (count($sessionquery) > 0)) {
-                // remove token
-                $laststate_booklet = ['lastunit' => '', 'finished' => $mode];
-                :::update($this:::, 'people', 
-                        ['valid_until' => date('Y-m-d G:i:s', time()), 'token' => '', 'laststate' => json_encode($laststate_booklet)],
-                        ['id' => $sessionquery[0]['id']]);
-            }
-        }
-        return $myreturn;
-    }
-    */
 
 
     // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
     //  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
     // =================================================================
-    public function getUnitStatus($bookletDbId, $unit) {
+    public function getUnitLastState($bookletDbId, $unit) {
         $myreturn = [];
         if ($this->pdoDBhandle != false) {
             $unit_select = $this->pdoDBhandle->prepare(
@@ -501,54 +407,34 @@ class DBConnectionTC extends DBConnection {
                 
                 $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
                 if ($unitdata !== false) {
-                    $myreturn['restorepoint'] = $unitdata['laststate'];
+                    $myreturn = json_decode($unitdata['laststate'], true);
                 }
             }
         }
         return $myreturn;
     }
-
-    // __________________________
-    // public function setUnitStatus_laststate($bookletDbId, $unit, $laststate) {
-    //     $myreturn = false;
-    //     if ($this->pdoDBhandle != false) {
-    //         $unit_select = $this->pdoDBhandle->prepare(
-    //             'SELECT units.id FROM units
-    //                 WHERE units.name=:name and units.booklet_id=:bookletId');
-                
-    //         if ($unit_select->execute(array(
-    //             ':name' => $unit,
-    //             ':bookletId' => $bookletDbId
-    //             ))) {
-
-    //             $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
-    //             if ($unitdata !== false) {
-    //                 $unit_update = $this->pdoDBhandle->prepare(
-    //                     'UPDATE units SET laststate=:laststate WHERE id = :id');
-    //                 if ($unit_update -> execute(array(
-    //                     ':laststate' => json_encode($laststate),
-    //                     ':id' => $unitdata['id']))) {
-    //                     $myreturn = true;
-    //                 }
-    //             } else {
-    //                 $unit_insert = $this->pdoDBhandle->prepare(
-    //                     'INSERT INTO units (booklet_id, name, laststate) 
-    //                         VALUES(:bookletId, :name, :laststate)');
-
-    //                 if ($unit_insert->execute(array(
-    //                     ':bookletId' => $bookletDbId,
-    //                     ':name' => $unit,
-    //                     ':laststate' => json_encode($laststate)
-    //                     ))) {
-    //                         $myreturn = true;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return $myreturn;
-    // }
-
  
+    // =================================================================
+    public function getUnitRestorePoint($bookletDbId, $unit) {
+        $myreturn = '';
+        if ($this->pdoDBhandle != false) {
+            $unit_select = $this->pdoDBhandle->prepare(
+                'SELECT units.restorepoint FROM units
+                    WHERE units.name = :unitname and units.booklet_id = :bookletId');
+                
+            if ($unit_select->execute(array(
+                ':unitname' => $unit,
+                ':bookletId' => $bookletDbId
+                ))) {
+                
+                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
+                if ($unitdata !== false) {
+                    $myreturn = $unitdata['restorepoint'];
+                }
+            }
+        }
+        return $myreturn;
+    }
 
     // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/
     // the caller should check $this->pdoDBhandle and try/catch
@@ -656,20 +542,55 @@ class DBConnectionTC extends DBConnection {
     }
 
     // =================================================================
-    public function addUnitLog($unitDbId, $logentry, $time) {
+    public function addUnitLog($bookletDbId, $unitname, $logentry, $time) {
         $myreturn = false;
-        if (($this->pdoDBhandle != false) && ($unitDbId > 0)) {
-            $unitlog_insert = $this->pdoDBhandle->prepare(
-                'INSERT INTO unitlogs (unit_id, logentry, timestamp) 
-                    VALUES(:unitId, :logentry, :timestamp)');
+        if ($this->pdoDBhandle != false) {
+            try {
+                $this->pdoDBhandle->beginTransaction();
+                $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
+                $unitlog_insert = $this->pdoDBhandle->prepare(
+                    'INSERT INTO unitlogs (unit_id, logentry, timestamp) 
+                        VALUES(:unitId, :logentry, :timestamp)');
+    
+                if ($unitlog_insert->execute(array(
+                    ':unitId' => $unitDbId,
+                    ':logentry' => $logentry,
+                    ':timestamp' => $time))) {
+                    $myreturn = true;
+                };
+                $this->pdoDBhandle->commit();
+            } 
 
-            if ($unitlog_insert->execute(array(
-                ':unitId' => $unitDbId,
-                ':logentry' => $logentry,
-                ':timestamp' => $time
-                ))) {
+            catch(Exception $e){
+                $this->pdoDBhandle->rollBack();
+            }
+        }
 
-                $myreturn = true;
+        return $myreturn;
+    }
+
+    // =================================================================
+    public function addBookletLog($bookletDbId, $logentry, $time) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            try {
+                $this->pdoDBhandle->beginTransaction();
+                $bookletlog_insert = $this->pdoDBhandle->prepare(
+                    'INSERT INTO bookletlogs (booklet_id, logentry, timestamp) 
+                        VALUES(:bookletId, :logentry, :timestamp)');
+    
+                if ($bookletlog_insert->execute(array(
+                    ':bookletId' => $bookletDbId,
+                    ':logentry' => $logentry,
+                    ':timestamp' => $time))) {
+
+                    $myreturn = true;
+                }
+                $this->pdoDBhandle->commit();
+            } 
+
+            catch(Exception $e){
+                $this->pdoDBhandle->rollBack();
             }
         }
 

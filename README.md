@@ -7,7 +7,7 @@ schrittweise an dieser Stelle folgen.
 # Installation
 
 1) Als erstes ist die Datenbankstruktur anzulegen. Dazu existieren zwei Create-Scripte, eines für MySQL, eines für PostgreSQL. 
-2) Dann ist die Datei 'vo_code/DBConnection.php' so anzupassen, dass der PDO-Zugriff auf die Datenbank erfolgen kann.
+2) Dann ist die Datei 'vo_code/DBConnectionData.json' so anzupassen, dass der PDO-Zugriff auf die Datenbank erfolgen kann.
 3) Alle Dateien *.php und *.xsd auf den Server kopieren unter Beibehaltung der Ordner. 'tmp' und 'unused' kann ignoriert werden.
 4) Auf dem Server den Ordner 'vo_data' anlegen.
 5) .htaccess so anpassen, dass der Zugriff auf vo_* unterbunden wird (Sicherheitsaspekte): RedirectMatch 404 ^/vo_.*$
