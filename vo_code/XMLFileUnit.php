@@ -1,7 +1,7 @@
 <?php
 // www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
+// Bărbulescu, Mechtel
+// 2018, 2019
 // license: MIT
 
 require_once('XMLFile.php');
@@ -9,41 +9,28 @@ require_once('XMLFile.php');
 class XMLFileUnit extends XMLFile
 {
     // ####################################################
-    public function getUnitDefinitonType()
+    public function getPlayer()
     {
         $myreturn = '';
         if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
             $definitionNode = $this->xmlfile->Definition[0];
             if (isset($definitionNode)) {
-                $typeAttr = $definitionNode['type'];
-                if (isset($typeAttr)) {
-                    $myreturn = (string) $typeAttr;
+                $playerAttr = $definitionNode['player'];
+                if (isset($playerAttr)) {
+                    $myreturn = (string) $playerAttr;
                 }
             } else {
                 $definitionNode = $this->xmlfile->DefinitionRef[0];
                 if (isset($definitionNode)) {
-                    $typeAttr = $definitionNode['type'];
-                    if (isset($typeAttr)) {
-                        $myreturn = (string) $typeAttr;
+                    $playerAttr = $definitionNode['player'];
+                    if (isset($playerAttr)) {
+                        $myreturn = (string) $playerAttr;
                     }
                 }
             }
         }
         return $myreturn;
     }
-
-    // // ####################################################
-    // public function getUnitDefiniton()
-    // {
-    //     $myreturn = '';
-    //     if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
-    //         $definitionNode = $this->xmlfile->Definition[0];
-    //         if (isset($definitionNode)) {
-    //             $myreturn = (string) $definitionNode;
-    //         }
-    //     }
-    //     return $myreturn;
-    // }
 
     // ####################################################
     public function getResourceFilenames()

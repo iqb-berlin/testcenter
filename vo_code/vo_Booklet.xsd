@@ -5,19 +5,15 @@
 
   <!-- ###################################################################-->
   <xs:complexType name="UnitType">
-    <xs:sequence>
-      <xs:element name="Restrictions" type="RestrictionsType" minOccurs="0" maxOccurs="1"/>
-    </xs:sequence>
     <xs:attribute name="id" type="xs:string" use="required"/>
     <xs:attribute name="label" type="xs:string" use="required"/>
     <xs:attribute name="labelshort" type="xs:string"/>
     <xs:attribute name="alias" type="xs:string"/>
-    <xs:attribute name="parameter" type="xs:string"/>
-    <xs:attribute name="is_navi_spot" type="xs:boolean" default="false" />
+    <xs:attribute name="givesResponses" type="xs:boolean" default="true" />
   </xs:complexType>
 
   <!-- ###################################################################-->
-  <xs:complexType name="RestrictionType">
+  <xs:complexType name="TestletRestrictionType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="parameter" type="xs:string"/>
@@ -26,23 +22,30 @@
   </xs:complexType>
 
   <!-- ###################################################################-->
-  <xs:complexType name="RestrictionsType">
+  <xs:complexType name="TestletRestrictionsType">
     <xs:sequence>
-      <xs:element name="TimeMin" type="RestrictionType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="TimeMax" type="RestrictionType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="ConditionToEnter" type="RestrictionType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="StartLock" type="RestrictionType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="NaviPrevEnabled" type="RestrictionType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="NaviNextEnabled" type="RestrictionType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="TimeMin" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="TimeMax" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="CodeToEnter" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
 
   <!-- ###################################################################-->
-  <xs:complexType name="BookletElementType">
+  <xs:group name="unitOrTestlet">
+    <xs:choice>
+      <xs:element name="Unit" type="UnitType" minOccurs = "1" maxOccurs="unbounded"/>
+      <xs:element name="Testlet" type="TestletType" minOccurs = "1" maxOccurs="unbounded"/>
+    </xs:choice>
+  </xs:group>
+
+  <!-- ###################################################################-->
+  <xs:complexType name="TestletType">
     <xs:sequence>
-      <xs:element name="Restrictions" type="RestrictionsType" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="Unit" type="UnitType" minOccurs = "0" maxOccurs="unbounded"/>
-      <xs:element name="Testlet" type="BookletElementType" minOccurs = "0" maxOccurs="unbounded"/>
+      <xs:element name="Restrictions" type="TestletRestrictionsType" minOccurs="0" maxOccurs="1"/>
+      <xs:choice>
+        <xs:element name="Unit" type="UnitType" minOccurs = "1" maxOccurs="unbounded"/>
+        <xs:group ref="unitOrTestlet" minOccurs = "1" maxOccurs="unbounded"/>
+      </xs:choice>
     </xs:sequence>
     <xs:attribute name="id" type="xs:string" />
     <xs:attribute name="label" type="xs:string" />
@@ -56,7 +59,7 @@
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
         <xs:element name="Resources" type="ResourcesType" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="Units" type="BookletElementType" minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element name="Units" type="TestletType" minOccurs="1" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute name="navibar">
         <xs:simpleType>

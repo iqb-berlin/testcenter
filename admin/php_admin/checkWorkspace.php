@@ -128,14 +128,14 @@
 												}
 											}
 
-											$myDefinitionType = $xFile->getUnitDefinitonType();
-											if (strlen($myDefinitionType) > 0) {
-												if (!resourceExists($myDefinitionType) and !resourceExists($myDefinitionType . '.HTML')) {
-													array_push($myreturn['errors'], 'unit definition type "' . $myDefinitionType . '" not found (required in Unit-XML-file "' . $entry . '")');
+											$myPlayer = $xFile->getPlayer();
+											if (strlen($myPlayer) > 0) {
+												if (!resourceExists($myPlayer) and !resourceExists($myPlayer . '.HTML')) {
+													array_push($myreturn['errors'], 'unit definition type "' . $myPlayer . '" not found (required in Unit-XML-file "' . $entry . '")');
 													$ok = false;
 												}
 											} else {
-												array_push($myreturn['errors'], 'no unit definition type defined in Unit-XML-file "' . $entry . '"');
+												array_push($myreturn['errors'], 'no player defined in Unit-XML-file "' . $entry . '"');
 												$ok = false;
 											}
 
@@ -145,7 +145,7 @@
 										}
 									}
 								} else {
-									foreach($xFile->allErrors as $e) {
+									foreach($xFile->getErrors() as $e) {
 										array_push($myreturn['errors'], 'Unit "' . $entry . '" is not valid vo-XML: ' . $e);
 									}
 								}
@@ -163,11 +163,13 @@
 							if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
 								$xFile = new XMLFileBooklet($fullfilename, true);
 								if (!$xFile->isValid()) {
-									array_push($myreturn['warnings'], 'error reading Booklet-XML-file "' . $entry . '"');
+									foreach($xFile->getErrors() as $r) {
+										array_push($myreturn['errors'], 'error reading Booklet-XML-file "' . $entry . '": ' . $r);
+									}
 								} else {
 									$rootTagName = $xFile->getRoottagName();
 									if ($rootTagName != 'Booklet') {
-										array_push($myreturn['warnings'], 'invalid root-tag "' . $rootTagName . '" in Booklet-XML-file "' . $entry . '"');
+										array_push($myreturn['errors'], 'invalid root-tag "' . $rootTagName . '" in Booklet-XML-file "' . $entry . '"');
 									} else {
 										// ..........................
 										$bookletId = $xFile->getId();
@@ -212,7 +214,9 @@
 							if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
 								$xFile = new XMLFileSysCheck($fullfilename, true);
 								if (!$xFile->isValid()) {
-									array_push($myreturn['warnings'], 'error reading SysCheck-XML-file "' . $entry . '"');
+									foreach($xFile->getErrors() as $r) {
+										array_push($myreturn['errors'], 'error reading SysCheck-XML-file "' . $entry . '": ' . $r);
+									}
 								} else {
 									$rootTagName = $xFile->getRoottagName();
 									if ($rootTagName != 'SysCheck') {
@@ -259,7 +263,7 @@
 											foreach($testtaker['booklets'] as $bookletId) {
 												if (!bookletExists($bookletId)) {
 													if (!in_array($bookletId, $errorBookletnames)) {
-														array_push($myreturn['errors'], 'booklet "' . $bookletId . '" not found for login "' . $loginName . '" in Testtakers-XML-file "' . $entry . '"');
+														array_push($myreturn['errors'], 'booklet "' . $bookletId . '" not found for login "' . $testtaker['loginname'] . '" in Testtakers-XML-file "' . $entry . '"');
 														array_push($errorBookletnames, $bookletId);
 													}
 												}
@@ -277,7 +281,9 @@
 										}
 									}
 								} else {
-									array_push($myreturn['warnings'], 'Testtakers-XML-File "' . $entry . '" is not valid vo-XML');
+									foreach($xFile->getErrors() as $r) {
+										array_push($myreturn['errors'], 'error reading Testtakers-XML-file "' . $entry . '": ' . $r);
+									}
 								}
 							}
 						}
