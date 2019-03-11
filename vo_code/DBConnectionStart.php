@@ -1,10 +1,9 @@
 <?php
 // www.IQB.hu-berlin.de
 // Bărbulescu, Mechtel
-// 2019
+// 2018, 2019
 // license: MIT
-//
-// to approach the testing, i. e. login, start/stop booklet
+
 
 require_once('DBConnection.php');
 
@@ -472,72 +471,5 @@ class DBConnectionStart extends DBConnection {
 
         return $myreturn;
     }
-
-    // #######################################################################################
-    // #######################################################################################
-    public function stopBooklet($persontoken, $bookletDbId) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            $persons_select = $this->pdoDBhandle->prepare(
-                'SELECT persons.id FROM persons
-                    WHERE persons.token=:token');
-                
-            if ($persons_select->execute(array(
-                ':token' => $persontoken
-                ))) {
-
-                $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
-                if ($persondata !== false) {
-                    // ++++++++++++++++++++++++++++++++++++++++++++++
-                    // persontoken ok
-
-                    $booklet_select = $this->pdoDBhandle->prepare(
-                        'SELECT booklets.locked, booklets.laststate FROM booklets
-                            WHERE booklets.person_id=:personId and booklets.id=:bookletid');
-                        
-                    if ($booklet_select->execute(array(
-                        ':personId' => $persondata['id'],
-                        ':bookletid' => $bookletDbId
-                        ))) {
-        
-                        $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                        if ($bookletdata !== false) {
-                            if ($bookletdata['locked'] !== 't') {
-                                // update booklet data
-                                $laststate_booklet = json_decode($bookletdata['laststate'], true);
-                                $laststate_booklet['status'] = 'finished';
-
-                                $booklet_update = $this->pdoDBhandle->prepare(
-                                    'UPDATE booklets SET laststate = :laststate WHERE id = :id');
-                                if ($booklet_update -> execute(array(
-                                    ':laststate' => json_encode($laststate_booklet),
-                                    ':id' => $bookletDbId))) {
-                                        $myreturn = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-
-
-    // #######################################################################################
-    // #######################################################################################
-    public function setBookletStatus($bookletDbId) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            $booklet_update = $this->pdoDBhandle->prepare(
-                'UPDATE booklets SET locked = "t" WHERE id = :id');
-            if ($booklet_update -> execute(array(
-                ':id' => $bookletDbId))) {
-                $myreturn = true;
-            }
-        }
-        return $myreturn;
-    }
-}
-
+} 
 ?>

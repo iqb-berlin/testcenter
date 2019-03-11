@@ -77,7 +77,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
 
                 $workspaceDir = opendir($this->get('data_directory'));
                 $testeefiledirprefix = $this->get('data_directory') . '/ws_';
-                $myWorkspace = 0;
+                $myWorkspace = '';
                 if ($workspaceDir) {
 
                     require_once($this->get('code_directory') . '/XMLFileTesttakers.php'); // // // // ========================
@@ -296,45 +296,6 @@ $app->post('/startbooklet', function (ServerRequestInterface $request, ResponseI
     }
 });
 
-// ##############################################################
-// ##############################################################
-$app->post('/stopbooklet', function (ServerRequestInterface $request, ResponseInterface $response) {
-    try {
-        $myerrorcode = 500;
-        $personToken = $_SESSION['personToken'];
-        $bookletDbId = $_SESSION['bookletDbId'];
-
-        $myreturn = false;
-
-        if ((strlen($bookletDbId) > 0) && (strlen($personToken) > 0)) {
-            require_once($this->get('code_directory') . '/DBConnectionStart.php');
-            $myDBConnection = new DBConnectionStart();
-            if (!$myDBConnection->isError()) {
-        
-                $myreturn = $myDBConnection->stopBooklet($personToken, $bookletDbId);
-                $myerrorcode = $myreturn ? 0 : 401;
-            }
-            unset($myDBConnection);
-        }
-
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
-
-        return $responseToReturn;
-    } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
-    }
-});
 
 $app->run();
 ?>
