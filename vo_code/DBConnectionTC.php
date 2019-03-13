@@ -25,7 +25,7 @@ class DBConnectionTC extends DBConnection {
 
             $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
             if ($bookletdata !== false) {
-                $myreturn = $bookletdata['locked'] !== 't';
+                $myreturn = $bookletdata['locked'] != '1';
             }
         }
         return $myreturn;
@@ -262,7 +262,7 @@ class DBConnectionTC extends DBConnection {
 
                 $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
                 if ($bookletdata !== false) {
-                    if ($bookletdata['locked'] === 't') {
+                    if ($bookletdata['locked'] == '1') {
                         $myreturn = true;
                     }
                 }
@@ -384,7 +384,20 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // __________________________
+    // =================================================================
+    public function lockBooklet($bookletDbId) {
+        $myreturn = false;
+        if ($this->pdoDBhandle != false) {
+            $booklet_update = $this->pdoDBhandle->prepare(
+                'UPDATE booklets SET locked = :locked WHERE id = :id');
+            if ($booklet_update -> execute(array(
+                ':locked' => '1',
+                ':id' => $bookletDbId))) {
+                $myreturn = true;
+            }
+        }
+        return $myreturn;
+    }
 
 
 

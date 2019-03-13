@@ -163,9 +163,10 @@ class DBConnectionStart extends DBConnection {
                         if (isset($laststate['u'])) {
                             $myreturn['lastUnit'] = $laststate['u'];
                         }
-                        if ($bookletdata['locked'] === '1') {
+
+                        if ($bookletdata['locked'] == '1') {
                             $myreturn['canStart'] = false;
-                            $myreturn['statusLabel'] = 'Gesperrt';
+                            $myreturn['statusLabel'] = 'Beendet';
                         } else {
                             $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
                         }
@@ -222,9 +223,10 @@ class DBConnectionStart extends DBConnection {
                                         if (isset($laststate['u'])) {
                                             $myreturn['lastUnit'] = $laststate['u'];
                                         }
-                                        if ($bookletdata['locked'] === '1') {
+
+                                        if ($bookletdata['locked'] == '1') {
                                             $myreturn['canStart'] = false;
-                                            $myreturn['statusLabel'] = 'Gesperrt';
+                                            $myreturn['statusLabel'] = 'Beendet';
                                         } else {
                                             $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
                                         }
@@ -285,10 +287,10 @@ class DBConnectionStart extends DBConnection {
                                                 if (isset($laststate['u'])) {
                                                     $myreturn['lastUnit'] = $laststate['u'];
                                                 }
-    
-                                                if ($bookletdata['locked'] === "1") {
+
+                                                if ($bookletdata['locked'] == '1') {
                                                     $myreturn['canStart'] = false;
-                                                    $myreturn['statusLabel'] = 'Gesperrt';
+                                                    $myreturn['statusLabel'] = 'Beendet';
                                                 } else {
                                                     $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
                                                 }
@@ -310,7 +312,6 @@ class DBConnectionStart extends DBConnection {
     // #######################################################################################
     public function startBookletByLoginToken($logintoken, $code, $booklet, $bookletLabel) {
         $myreturn = [];
-        error_log('enter startBookletByLoginToken');
         if ($this->pdoDBhandle != false) {
             $login_select = $this->pdoDBhandle->prepare(
                 'SELECT logins.id FROM logins
@@ -366,7 +367,6 @@ class DBConnectionStart extends DBConnection {
                             ':laststate' => json_encode($laststate_person)
                             ))) {
                                 $personToken = $tempToken;
-                                error_log('personToken set ok');
                         }
                     }
 
@@ -414,7 +414,7 @@ class DBConnectionStart extends DBConnection {
         
                         $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
                         if ($bookletdata !== false) {
-                            if ($bookletdata['locked'] === 't') {
+                            if ($bookletdata['locked'] == '1') {
                                 $isLocked = true;
                             } else {
                                 // update booklet data
