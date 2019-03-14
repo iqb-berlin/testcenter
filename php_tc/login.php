@@ -236,6 +236,38 @@ $app->get('/bookletstatus', function (ServerRequestInterface $request, ResponseI
     }
 });
 
+// ##############################################################
+// ##############################################################
+$app->get('/sysconfig', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $myerrorcode = 404;
+
+        $myreturn = [];
+
+        $sysConfigFilename = $this->get('code_directory') . '/SysConfig.json';
+        if (file_exists($sysConfigFilename)) {
+            $myreturn = json_decode(file_get_contents($sysConfigFilename));
+            $myerrorcode = 0;
+        }
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
 
 // ##############################################################
 // ##############################################################
