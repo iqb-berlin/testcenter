@@ -134,6 +134,28 @@ class DBConnection {
         }
         return $myreturn;
     }
+
+    // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+    public function getBookletName($bookletDbId) {
+        $myreturn = '';
+        if ($this->pdoDBhandle != false) {
+            $booklet_select = $this->pdoDBhandle->prepare(
+                'SELECT booklets.name FROM booklets
+                    WHERE booklets.id=:bookletId');
+                
+            if ($booklet_select->execute(array(
+                ':bookletId' => $bookletDbId
+                ))) {
+
+                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
+                if ($bookletdata !== false) {
+                    $myreturn =  $bookletdata['name'];
+                }
+            }
+        }
+        return $myreturn;
+    }
+
 }
 
 ?>

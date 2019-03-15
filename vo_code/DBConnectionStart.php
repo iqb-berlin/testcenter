@@ -159,10 +159,7 @@ class DBConnectionStart extends DBConnection {
                         $myreturn['statusLabel'] = 'Zum Starten hier klicken';
                         $myreturn['label'] = $bookletdata['label'];
                         $myreturn['id'] = $bookletDbId;
-                        $laststate = json_decode($bookletdata['laststate'], true);
-                        if (isset($laststate['u'])) {
-                            $myreturn['lastUnit'] = $laststate['u'];
-                        }
+                        $myreturn['laststate'] = json_decode($bookletdata['laststate'], true);
 
                         if ($bookletdata['locked'] == '1') {
                             $myreturn['canStart'] = false;
@@ -219,10 +216,7 @@ class DBConnectionStart extends DBConnection {
                                     if ($bookletdata !== false) {
                                         $myreturn['label'] = $bookletdata['label'];
                                         $myreturn['id'] = $bookletdata['id'];
-                                        $laststate = json_decode($bookletdata['laststate'], true);
-                                        if (isset($laststate['u'])) {
-                                            $myreturn['lastUnit'] = $laststate['u'];
-                                        }
+                                        $myreturn['laststate'] = json_decode($bookletdata['laststate'], true);
 
                                         if ($bookletdata['locked'] == '1') {
                                             $myreturn['canStart'] = false;
@@ -283,10 +277,7 @@ class DBConnectionStart extends DBConnection {
                                             if ($bookletdata !== false) {
                                                 $myreturn['label'] = $bookletdata['label'];
                                                 $myreturn['id'] = $bookletdata['id'];
-                                                $laststate = json_decode($bookletdata['laststate'], true);
-                                                if (isset($laststate['u'])) {
-                                                    $myreturn['lastUnit'] = $laststate['u'];
-                                                }
+                                                $myreturn['laststate'] = json_decode($bookletdata['laststate'], true);
 
                                                 if ($bookletdata['locked'] == '1') {
                                                     $myreturn['canStart'] = false;
@@ -329,7 +320,6 @@ class DBConnectionStart extends DBConnection {
 
                     $personToken = '';
                     $tempToken = uniqid('a', true);
-                    $laststate_person = ['lastbooklet' => $booklet];
 
                     $persons_select = $this->pdoDBhandle->prepare(
                         'SELECT persons.id FROM persons
@@ -343,10 +333,9 @@ class DBConnectionStart extends DBConnection {
                         if ($persondata !== false) {
                             // overwrite token
                             $booklet_update = $this->pdoDBhandle->prepare(
-                                'UPDATE persons SET valid_until =:valid_until, token=:token, laststate=:laststate WHERE id = :id');
+                                'UPDATE persons SET valid_until =:valid_until, token=:token WHERE id = :id');
                             if ($booklet_update -> execute(array(
                                 ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
-                                ':laststate' => json_encode($laststate_person),
                                 ':token' => $tempToken,
                                 ':id' => $persondata['id']))) {
                                 $personToken = $tempToken;
@@ -356,15 +345,14 @@ class DBConnectionStart extends DBConnection {
 
                     if (strlen($personToken) === 0) {
                         $booklet_insert = $this->pdoDBhandle->prepare(
-                            'INSERT INTO persons (token, code, login_id, valid_until, laststate) 
-                                VALUES(:token, :code, :login_id, :valid_until, :laststate)');
+                            'INSERT INTO persons (token, code, login_id, valid_until) 
+                                VALUES(:token, :code, :login_id, :valid_until)');
     
                         if ($booklet_insert->execute(array(
                             ':token' => $tempToken,
                             ':code' => $code,
                             ':login_id' => $logindata['id'],
-                            ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
-                            ':laststate' => json_encode($laststate_person)
+                            ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession)
                             ))) {
                                 $personToken = $tempToken;
                         }
@@ -400,7 +388,6 @@ class DBConnectionStart extends DBConnection {
                     // persontoken ok
 
                     $bookletDbId = 0;
-                    $laststate_booklet = ['u' => 0, 'responses' => 'no', 'presented' => 'no', 'status' => 'started'];
                     $isLocked = false;
 
                     $booklet_select = $this->pdoDBhandle->prepare(
@@ -417,15 +404,10 @@ class DBConnectionStart extends DBConnection {
                             if ($bookletdata['locked'] == '1') {
                                 $isLocked = true;
                             } else {
-                                // update booklet data
-                                $laststate_booklet = json_decode($bookletdata['laststate'], true);
-                                $laststate_booklet['status'] = 'restarted';
-
                                 $booklet_update = $this->pdoDBhandle->prepare(
-                                    'UPDATE booklets SET label = :label, laststate = :laststate WHERE id = :id');
+                                    'UPDATE booklets SET label = :label WHERE id = :id');
                                 if ($booklet_update -> execute(array(
                                     ':label' => $bookletLabel,
-                                    ':laststate' => json_encode($laststate_booklet),
                                     ':id' => $bookletdata['id']))) {
                                     $bookletDbId = $bookletdata['id'];
                                 }
@@ -438,13 +420,12 @@ class DBConnectionStart extends DBConnection {
                         try{
                             $this->pdoDBhandle->beginTransaction();
                             $booklet_insert = $this->pdoDBhandle->prepare(
-                                'INSERT INTO booklets (person_id, name, laststate, label) 
-                                    VALUES(:person_id, :name, :laststate, :label)');
+                                'INSERT INTO booklets (person_id, name, label) 
+                                    VALUES(:person_id, :name, :label)');
         
                             if ($booklet_insert->execute(array(
                                 ':person_id' => $persondata['id'],
                                 ':name' => $booklet,
-                                ':laststate' => json_encode($laststate_booklet),
                                 ':label' => $bookletLabel
                                 ))) {
     

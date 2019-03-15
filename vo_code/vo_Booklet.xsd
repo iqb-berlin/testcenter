@@ -23,11 +23,11 @@
 
   <!-- ###################################################################-->
   <xs:complexType name="TestletRestrictionsType">
-    <xs:sequence>
+    <xs:all>
       <xs:element name="TimeMin" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
       <xs:element name="TimeMax" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
       <xs:element name="CodeToEnter" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
-    </xs:sequence>
+    </xs:all>
   </xs:complexType>
 
   <!-- ###################################################################-->

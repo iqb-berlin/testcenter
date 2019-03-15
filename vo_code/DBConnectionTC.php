@@ -1,7 +1,7 @@
 <?php
 // www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
+// Bărbulescu, Mechtel
+// 2018, 2019
 // license: MIT
 
 require_once('DBConnection.php');
@@ -101,133 +101,6 @@ class DBConnectionTC extends DBConnection {
     }
 
     // =================================================================
-    public function getWorkspaceByLogintoken($logintoken) {
-        $myreturn = 0;
-        if ($this->pdoDBhandle != false) {
-            $login_select = $this->pdoDBhandle->prepare(
-                'SELECT logins.workspace_id FROM logins
-                    WHERE logins.token=:token');
-                
-            if ($login_select->execute(array(
-                ':token' => $logintoken
-                ))) {
-
-                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
-                if ($logindata !== false) {
-                    $myreturn = 0 + $logindata['workspace_id'];
-                }
-            }
-        }
-        return $myreturn;
-    }
-
-    // =================================================================
-    public function getWorkspaceByPersonToken($persontoken) {
-        $myreturn = 0;
-
-        if (strlen($persontoken) > 0) {
-               
-            $person_select = $this->pdoDBhandle->prepare(
-                'SELECT logins.workspace_id FROM persons
-                    INNER JOIN logins ON logins.id = persons.login_id
-                    WHERE persons.token=:token');
-            if ($person_select->execute(array(
-                ':token' => $persontoken
-                ))) {
-
-                $persondata = $person_select->fetch(PDO::FETCH_ASSOC);
-                if ($persondata !== false) {
-                    $myreturn = $persondata['workspace_id'];
-                }
-            }
-        }
-        return $myreturn;
-    }
-
-    // =================================================================
-    public function getWorkspaceByAuth($auth) {
-        $myreturn = 0;
-
-        if (isset($auth)) {
-            if (is_string($auth)) {
-                if (strlen($auth) > 0) {
-                    $tokensplits = explode('##', $auth);
-                    if (count($tokensplits) == 2) {
-                        $persontoken = $tokensplits[0];
-                        // $bookletDbId = $tokensplits[1];
-                        // if ((strlen($persontoken) > 0) and (strlen($bookletDbId) > 0) and is_numeric($bookletDbId)) {
-                        if (strlen($persontoken) > 0) {
-
-                            // 6666666666666666666666
-                            // $person_select = $this->pdoDBhandle->prepare(
-                            //     'SELECT logins.workspace_id FROM booklets
-                            //         INNER JOIN persons ON persons.id = booklets.person_id
-                            //         INNER JOIN logins ON logins.id = persons.login_id
-                            //         WHERE persons.token=:token and booklets.id=:bookletId');
-                                
-                            $person_select = $this->pdoDBhandle->prepare(
-                                'SELECT logins.workspace_id FROM persons
-                                    INNER JOIN logins ON logins.id = persons.login_id
-                                    WHERE persons.token=:token');
-                            if ($person_select->execute(array(
-                                ':token' => $persontoken
-                                ))) {
-                
-                                $persondata = $person_select->fetch(PDO::FETCH_ASSOC);
-                                if ($persondata !== false) {
-                                    $myreturn = $persondata['workspace_id'];
-                                }
-                            }
-                
-                        }
-                    }
-                }
-            }
-            
-        }
-        return $myreturn;
-    }
-    
-    // =================================================================
-    public function getBookletNameByAuth($auth) {
-        $myreturn = '';
-
-        if (isset($auth)) {
-            if (is_string($auth)) {
-                if (strlen($auth) > 0) {
-                    $tokensplits = explode('##', $auth);
-                    if (count($tokensplits) == 2) {
-                        $persontoken = $tokensplits[0];
-                        $bookletDbId = $tokensplits[1];
-                        if ((strlen($persontoken) > 0) and (strlen($bookletDbId) > 0) and is_numeric($bookletDbId)) {
-
-                            // 6666666666666666666666
-                            $booklet_select = $this->pdoDBhandle->prepare(
-                                'SELECT booklets.name FROM booklets
-                                    INNER JOIN persons ON persons.id = booklets.person_id
-                                    WHERE persons.token=:token and booklets.id=:bookletId');
-                                
-                            if ($booklet_select->execute(array(
-                                ':token' => $persontoken,
-                                ':bookletId' => $bookletDbId
-                                ))) {
-                
-                                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                if ($bookletdata !== false) {
-                                    $myreturn = $bookletdata['name'];
-                                }
-                            }
-                
-                        }
-                    }
-                }
-            }
-            
-        }
-        return $myreturn;
-    }
-    
-    // =================================================================
     public function getBookletLastState($bookletDbId) {
         $myreturn = [];
         if ($this->pdoDBhandle != false) {
@@ -272,28 +145,6 @@ class DBConnectionTC extends DBConnection {
     }
 
     // =================================================================
-    public function getBookletName($bookletDbId) {
-        $myreturn = '';
-        if ($this->pdoDBhandle != false) {
-            $booklet_select = $this->pdoDBhandle->prepare(
-                'SELECT booklets.name FROM booklets
-                    WHERE booklets.id=:bookletId');
-                
-            if ($booklet_select->execute(array(
-                ':bookletId' => $bookletDbId
-                ))) {
-
-                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                if ($bookletdata !== false) {
-                    $myreturn =  $bookletdata['name'];
-                }
-            }
-        }
-        return $myreturn;
-    }
-        
-
-    // =================================================================
     public function setBookletLastState($bookletDbId, $stateKey, $stateValue) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {
@@ -301,7 +152,7 @@ class DBConnectionTC extends DBConnection {
                 $this->pdoDBhandle->beginTransaction();
                 $booklet_select = $this->pdoDBhandle->prepare(
                     'SELECT booklets.laststate FROM booklets
-                        WHERE booklets.id=:bookletId');
+                        WHERE booklets.id=:bookletId FOR UPDATE');
                     
                 $booklet_select->execute(array(':bookletId' => $bookletDbId));
                 $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
@@ -340,7 +191,7 @@ class DBConnectionTC extends DBConnection {
                 $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
                 $unit_select = $this->pdoDBhandle->prepare(
                     'SELECT units.laststate FROM units
-                        WHERE units.id=:unitId');
+                        WHERE units.id=:unitId FOR UPDATE');
                     
                 $unit_select->execute(array(':unitId' => $unitDbId));
                 $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
@@ -366,20 +217,6 @@ class DBConnectionTC extends DBConnection {
                 $this->pdoDBhandle->rollBack();
             }
 
-        }
-        return $myreturn;
-    }
-
-    // =================================================================
-    public function unlockBooklet($bookletDbId) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            $booklet_update = $this->pdoDBhandle->prepare(
-                'UPDATE booklets SET locked = "f" WHERE id = :id');
-            if ($booklet_update -> execute(array(
-                ':id' => $bookletDbId))) {
-                $myreturn = true;
-            }
         }
         return $myreturn;
     }
@@ -452,8 +289,6 @@ class DBConnectionTC extends DBConnection {
     // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/
     // the caller should check $this->pdoDBhandle and try/catch
     private function findOrAddUnit($bookletDbId, $unitname) {
-        $standard_unit_laststate = ['restorepoint' => '', 'presentation_complete' => ''];
-
         $myreturn = 0;
         $unit_select = $this->pdoDBhandle->prepare(
             'SELECT units.id FROM units
@@ -468,12 +303,11 @@ class DBConnectionTC extends DBConnection {
             if ($unitdata === false) {
                 $unit_insert = $this->pdoDBhandle->prepare(
                     'INSERT INTO units (booklet_id, name, laststate) 
-                        VALUES(:bookletId, :name, :laststate)');
+                        VALUES(:bookletId, :name)');
         
                 if ($unit_insert->execute(array(
                     ':bookletId' => $bookletDbId,
-                    ':name' => $unitname,
-                    ':laststate' => json_encode($standard_unit_laststate)
+                    ':name' => $unitname
                     ))) {
                         $myreturn = $this->pdoDBhandle->lastInsertId();;
                 }
@@ -492,20 +326,15 @@ class DBConnectionTC extends DBConnection {
             try {
                 $this->pdoDBhandle->beginTransaction();
                 $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
-                $unit_select = $this->pdoDBhandle->prepare(
-                    'SELECT units.restorepoint_ts FROM units
-                        WHERE units.id=:unitId');
-                $unit_select->execute(array(':unitId' => $unitDbId));
-                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
-                if ($unitdata['restorepoint_ts'] < $time) {
-                    $unit_update = $this->pdoDBhandle->prepare(
-                        'UPDATE units SET restorepoint=:rp, restorepoint_ts=:rp_ts WHERE id = :unitId');
-                    if ($unit_update -> execute(array(
-                        ':rp' => $restorepoint,
-                        ':rp_ts' => $time,
-                        ':unitId' => $unitDbId))) {
-                        $myreturn = true;
-                    }
+                $unit_update = $this->pdoDBhandle->prepare(
+                    'UPDATE units SET restorepoint=:rp, restorepoint_ts=:rp_ts
+                    WHERE id = :unitId and restorepoint_ts < :ts');
+                if ($unit_update -> execute(array(
+                    ':ts' => $time,
+                    ':rp' => $restorepoint,
+                    ':rp_ts' => $time,
+                    ':unitId' => $unitDbId))) {
+                    $myreturn = true;
                 }
                 $this->pdoDBhandle->commit();
                 $myreturn = true;
@@ -525,22 +354,16 @@ class DBConnectionTC extends DBConnection {
             try {
                 $this->pdoDBhandle->beginTransaction();
                 $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
-                $unit_select = $this->pdoDBhandle->prepare(
-                    'SELECT units.responses_ts FROM units
-                        WHERE units.id=:unitId');
-                    
-                $unit_select->execute(array(':unitId' => $unitDbId));
-                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
-                if ($unitdata['responses_ts'] < $time) {
-                    $unit_update = $this->pdoDBhandle->prepare(
-                        'UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt WHERE id = :unitId');
-                    if ($unit_update -> execute(array(
-                        ':r' => $responses,
-                        ':r_ts' => $time,
-                        ':rt' => $responseType,
-                        ':unitId' => $unitDbId))) {
-                        $myreturn = true;
-                    }
+                $unit_update = $this->pdoDBhandle->prepare(
+                    'UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt
+                    WHERE id = :unitId and responses_ts < :ts');
+                if ($unit_update -> execute(array(
+                    ':ts' => $time,
+                    ':r' => $responses,
+                    ':r_ts' => $time,
+                    ':rt' => $responseType,
+                    ':unitId' => $unitDbId))) {
+                    $myreturn = true;
                 }
                 $this->pdoDBhandle->commit();
                 $myreturn = true;

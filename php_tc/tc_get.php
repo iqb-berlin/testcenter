@@ -2,6 +2,22 @@
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+// ...................................................
+function normaliseFileName($fn, $v) {
+    $myreturn = strtoupper($fn);
+    if ($v) {
+        $firstDotPos = strpos($myreturn, '.');
+        if ($firstDotPos) {
+            $lastDotPos = strrpos($myreturn, '.');
+            if ($lastDotPos > $firstDotPos) {
+                $myreturn = substr($myreturn, 0, $firstDotPos) . substr($myreturn, $lastDotPos);
+            }
+        }
+    }
+    return $myreturn;
+}
+// ...................................................
+
 session_start();
 require '../vendor/autoload.php';
 $app = new \Slim\App();
@@ -46,6 +62,7 @@ $container['data_directory'] = __DIR__.'/../vo_data';
 $app->get('/bookletdata', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
+        $loginToken= $_SESSION['loginToken'];
         $personToken = $_SESSION['personToken'];
         $bookletDbId = $_SESSION['bookletDbId'];
         $myreturn = ['xml' => '', 'locked' => false, 'laststate' => []];
@@ -58,11 +75,11 @@ $app->get('/bookletdata', function (ServerRequestInterface $request, ResponseInt
                 $myerrorcode = 401;
         
                 $auth = $personToken . '##' . $bookletDbId;
-                $wsId = $myDBConnection->getWorkspaceByAuth($auth);
+                $wsId = $myDBConnection->getWorkspaceId($loginToken);
                 if ($wsId > 0) {
                     $myerrorcode = 404;
                     $myBookletFolder = $this->get('data_directory') . '/ws_' . $wsId . '/Booklet';
-                    $bookletName = $myDBConnection->getBookletNameByAuth($auth);
+                    $bookletName = $myDBConnection->getBookletName($bookletDbId);
                     if (file_exists($myBookletFolder) and (strlen($bookletName) > 0)) {
                         $mydir = opendir($myBookletFolder);
                         if ($mydir !== false) {
@@ -117,6 +134,7 @@ $app->get('/bookletdata', function (ServerRequestInterface $request, ResponseInt
 $app->get('/unitdata/{unitid}', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
+        $loginToken= $_SESSION['loginToken'];
         $personToken = $_SESSION['personToken'];
         $bookletDbId = $_SESSION['bookletDbId'];
         $unitid = $request->getAttribute('unitid');
@@ -129,8 +147,7 @@ $app->get('/unitdata/{unitid}', function (ServerRequestInterface $request, Respo
             if (!$myDBConnection->isError()) {
                 $myerrorcode = 401;
         
-                $auth = $personToken . '##' .  $bookletDbId;
-                $wsId = $myDBConnection->getWorkspaceByAuth($auth);
+                $wsId = $myDBConnection->getWorkspaceId($loginToken);
                 if ($wsId > 0) {
                     $myerrorcode = 404;
                     $unitFolder = $this->get('data_directory') . '/ws_' . $wsId . '/Unit';
@@ -189,9 +206,11 @@ $app->get('/unitdata/{unitid}', function (ServerRequestInterface $request, Respo
 $app->get('/resource/{resourceid}', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
+        $loginToken = $_SESSION['loginToken'];
         $personToken = $_SESSION['personToken'];
         $bookletDbId = $_SESSION['bookletDbId'];
         $resourceid = $request->getAttribute('resourceid');
+        $versionning = $request->getQueryParam('v', 'f');
         $myreturn = '';
 
         if ((strlen($personToken) > 0) && ($bookletDbId > 0)) {
@@ -201,20 +220,20 @@ $app->get('/resource/{resourceid}', function (ServerRequestInterface $request, R
             if (!$myDBConnection->isError()) {
                 $myerrorcode = 401;
         
-                $auth = $personToken . '##' .  $bookletDbId;
-                $wsId = $myDBConnection->getWorkspaceByAuth($auth);
+                $wsId = $myDBConnection->getWorkspaceId($loginToken);
                 if ($wsId > 0) {
                     $myerrorcode = 404;
                     $resourceFolder = $this->get('data_directory') . '/ws_' . $wsId . '/Resource';
                     $path_parts = pathinfo($resourceid); // extract filename if path is given
-                    $resourceFileName = strtoupper($path_parts['basename']);
+                    $resourceFileName = normaliseFileName($path_parts['basename'], $versionning != 'f');
     
                     if (file_exists($resourceFolder) and (strlen($resourceFileName) > 0)) {
                         $mydir = opendir($resourceFolder);
                         if ($mydir !== false) {
     
                             while (($entry = readdir($mydir)) !== false) {
-                                if (strtoupper($entry) == $resourceFileName) {
+                                $normfilename = normaliseFileName($entry, $versionning != 'f');
+                                if ($normfilename == $resourceFileName) {
                                     $fullfilename = $resourceFolder . '/' . $entry;
                                     $myerrorcode = 0;
                                     $myreturn = file_get_contents($fullfilename);

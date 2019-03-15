@@ -183,30 +183,6 @@ class DBConnectionAdmin extends DBConnection {
 		return $authorized;
 	} 
 
-	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-	// returns the name of the workspace given by id
-	// returns '' if not found
-	// token is not refreshed
-	public function getWorkspaceName($workspace_id) {
-		$myreturn = '';
-		if ($this->pdoDBhandle != false) {
-
-			$sql = $this->pdoDBhandle->prepare(
-				'SELECT workspaces.name FROM workspaces
-					WHERE workspaces.id=:workspace_id');
-				
-			if ($sql -> execute(array(
-				':workspace_id' => $workspace_id))) {
-					
-				$data = $sql -> fetch(PDO::FETCH_ASSOC);
-				if ($data != false) {
-					$myreturn = $data['name'];
-				}
-			}
-		}
-			
-		return $myreturn;
-	}
   
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// monitor + results
@@ -300,8 +276,9 @@ class DBConnectionAdmin extends DBConnection {
 		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
 			$sql = $this->pdoDBhandle->prepare(
-				'SELECT units.name as unitname, units.responses, units.responsetype, units.laststate as restorepoint, booklets.name as bookletname,
-						logins.groupname, logins.name as loginname, persons.code
+				'SELECT units.name as unitname, units.responses, units.responsetype, units.laststate, booklets.name as bookletname,
+						units.restorepoint_ts, units.responses_ts,
+						units.restorepoint, logins.groupname, logins.name as loginname, persons.code
 				FROM units
 				INNER JOIN booklets ON booklets.id = units.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 
@@ -322,14 +299,14 @@ class DBConnectionAdmin extends DBConnection {
 		return $myreturn;
 	}
 
-	// $return = []; groupname, loginname, code, bookletname, unitname, logtime, logentry
+	// $return = []; groupname, loginname, code, bookletname, unitname, timestamp, logentry
 	public function getLogs($workspaceId) {
 		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
 			$unit_sql = $this->pdoDBhandle->prepare(
 				'SELECT units.name as unitname, booklets.name as bookletname,
 						logins.groupname, logins.name as loginname, persons.code,
-						unitlogs.logtime, unitlogs.logentry
+						unitlogs.timestamp, unitlogs.logentry
 				FROM unitlogs
 				INNER JOIN units ON units.id = unitlogs.unit_id
 				INNER JOIN booklets ON booklets.id = units.booklet_id
@@ -349,7 +326,7 @@ class DBConnectionAdmin extends DBConnection {
 			$booklet_sql = $this->pdoDBhandle->prepare(
 				'SELECT booklets.name as bookletname,
 						logins.groupname, logins.name as loginname, persons.code,
-						bookletlogs.logtime, bookletlogs.logentry
+						bookletlogs.timestamp, bookletlogs.logentry
 				FROM bookletlogs
 				INNER JOIN booklets ON booklets.id = bookletlogs.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 

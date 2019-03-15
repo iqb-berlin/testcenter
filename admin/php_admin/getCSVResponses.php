@@ -1,7 +1,7 @@
 <?php
 // www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
+// Bărbulescu, Mechtel
+// 2018, 2019
 // license: MIT
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
