@@ -13,7 +13,7 @@
   </xs:complexType>
 
   <!-- ###################################################################-->
-  <xs:complexType name="TestletRestrictionType">
+  <xs:complexType name="ParameterType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="parameter" type="xs:string"/>
@@ -24,9 +24,9 @@
   <!-- ###################################################################-->
   <xs:complexType name="TestletRestrictionsType">
     <xs:all>
-      <xs:element name="TimeMin" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="TimeMax" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="CodeToEnter" type="TestletRestrictionType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="TimeMin" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="TimeMax" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="CodeToEnter" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
     </xs:all>
   </xs:complexType>
 
@@ -52,12 +52,21 @@
   </xs:complexType>
 
   <!-- ###################################################################-->
+  <xs:complexType name="BookletConfigType">
+    <xs:all>
+      <xs:element name="NavPolicy" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="ShowNaviButtons" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
+    </xs:all>
+  </xs:complexType>
+
+  <!-- ###################################################################-->
   <!-- ###################################################################-->
 
   <xs:element name="Booklet">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="BookletConfig" type="BookletConfigType" minOccurs="0" maxOccurs="1"/>
         <xs:element name="Resources" type="ResourcesType" minOccurs="0" maxOccurs="1"/>
         <xs:element name="Units" type="TestletType" minOccurs="1" maxOccurs="unbounded"/>
       </xs:sequence>
