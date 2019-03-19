@@ -302,7 +302,7 @@ class DBConnectionTC extends DBConnection {
             $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
             if ($unitdata === false) {
                 $unit_insert = $this->pdoDBhandle->prepare(
-                    'INSERT INTO units (booklet_id, name, laststate) 
+                    'INSERT INTO units (booklet_id, name) 
                         VALUES(:bookletId, :name)');
         
                 if ($unit_insert->execute(array(
