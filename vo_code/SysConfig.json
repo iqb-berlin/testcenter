@@ -1,9 +1,10 @@
 {
-    "testEndButtonText": "Test beenden",
-    "bookletSelectPrompt": "Bitte wählen",
-    "bookletSelectTitle": "Bitte wählen",
-    "bookletSelectPromptOne": "Bitte klick auf die Schaltfläche links, um den Test zu starten!",
-    "bookletSelectPromptMany": "Bitte klick auf eine der Schaltflächen links, um einen Test zu starten!",
-    "codeInputPrompt": "Bitte Log-in eingeben, der auf dem Zettel steht!",
-    "codeInputTitle": "Log-in eingeben"
+    "login_testEndButtonText": "Test beenden",
+    "login_bookletSelectPrompt": "Bitte wählen",
+    "login_bookletSelectTitle": "Bitte wählen",
+    "login_bookletSelectPromptOne": "Bitte klick auf die Schaltfläche links, um den Test zu starten!",
+    "login_bookletSelectPromptMany": "Bitte klick auf eine der Schaltflächen links, um einen Test zu starten!",
+    "login_codeInputPrompt": "Bitte Personen-Code eingeben",
+    "login_codeInputTitle": "Personen-Code",
+    "app_title": "IQB-Testcenter"
 }

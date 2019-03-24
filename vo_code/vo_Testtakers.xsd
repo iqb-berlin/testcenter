@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="vo_Testtakers"
     elementFormDefault="qualified"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
->
-  <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
-  <xs:include schemaLocation="vo_Common.xsd"/>
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:include schemaLocation="vo_Common.xsd"/>
 
  
   <!-- ###################################################################-->
@@ -13,6 +12,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="CustomTexts" type="CustomTextsType" minOccurs = "0" maxOccurs="1"/>
         <xs:element name="Group" minOccurs="1" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>

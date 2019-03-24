@@ -33,24 +33,15 @@ class XMLFileUnit extends XMLFile
     }
 
     // ####################################################
-    public function getResourceFilenames()
+    public function getDefinitionRef()
     {
-        $myreturn = [];
+        $myreturn = '';
         if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
-            $resourcesNode = $this->xmlfile->Resources[0];
-            if (isset($resourcesNode)) {
-                foreach($resourcesNode->children() as $r) { 
-                    $rFilename = (string) $r;
-                    if (isset($rFilename)) {
-                        array_push($myreturn, $rFilename);
-                    }
-                }
-            }
             $definitionNode = $this->xmlfile->DefinitionRef[0];
             if (isset($definitionNode)) {
                 $rFilename = (string) $definitionNode;
                 if (isset($rFilename)) {
-                    array_push($myreturn, $rFilename);
+                    $myreturn = $rFilename;
                 }
             }
         }
