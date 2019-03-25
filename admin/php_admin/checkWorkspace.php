@@ -160,11 +160,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 										$ok = true;
 										$filesizeTotal = filesize($fullfilename);
 
-										foreach($xFile->getResourceFilenames() as $r) { 
-											if (resourceExists($r, false)) {
-												$filesizeTotal += $allResourceFilesWithSize[normaliseFileName($r, false)];
+										$definitionRef = $xFile->getDefinitionRef();
+										if (strlen($definitionRef) > 0) {
+											if (resourceExists($definitionRef, false)) {
+												$filesizeTotal += $allResourceFilesWithSize[normaliseFileName($definitionRef, false)];
 											} else {
-												array_push($myreturn['errors'], 'resource "' . $r . '" not found (required in Unit-XML-file "' . $entry . '"');
+												array_push($myreturn['errors'], 'definitionRef "' . $definitionRef . '" not found (required in Unit-XML-file "' . $entry . '"');
 												$ok = false;
 											}
 										}
@@ -225,40 +226,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 										array_push($myreturn['errors'], 'double booklet id "' . $bookletId . '" in Booklet-XML-file "' . $entry . '"');
 									} else {
 										$ok = true;
-										foreach($xFile->getResourceFilenames() as $r) { 
-											if (!resourceExists($r, false)) {
-												array_push($myreturn['errors'], 'resource "' . $r . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
-												$ok = false;
-											}
-										}
 	
-										if ($ok == true) {
-											foreach($xFile->getAllUnitIds() as $unitId) { 
-												if (unitExists($unitId)) {
-													$bookletLoad += $allUnitsOnlyFilesize[$unitId];
-													$myPlayer = $allUnitsWithPlayer[$unitId];
-													if (!in_array($myPlayer, $bookletPlayers)) {
+										foreach($xFile->getAllUnitIds() as $unitId) { 
+											if (unitExists($unitId)) {
+												$bookletLoad += $allUnitsOnlyFilesize[$unitId];
+												$myPlayer = $allUnitsWithPlayer[$unitId];
+												if (!in_array($myPlayer, $bookletPlayers)) {
+													if (isset($allResourceFilesWithSize[$myPlayer])) {
+														$bookletLoad += $allResourceFilesWithSize[$myPlayer];
+													} else {
+														$myPlayer = normaliseFileName($myPlayer, true);
 														if (isset($allResourceFilesWithSize[$myPlayer])) {
 															$bookletLoad += $allResourceFilesWithSize[$myPlayer];
 														} else {
-															$myPlayer = normaliseFileName($myPlayer, true);
-															if (isset($allResourceFilesWithSize[$myPlayer])) {
-																$bookletLoad += $allResourceFilesWithSize[$myPlayer];
-															} else {
-																array_push($myreturn['warnings'], 'resource "' . $myPlayer . '" not found in filesize-list');
-															}
+															array_push($myreturn['warnings'], 'resource "' . $myPlayer . '" not found in filesize-list');
 														}
-														array_push($bookletPlayers, $myPlayer);
 													}
-												} else {
-													array_push($myreturn['errors'], 'unit "' . $unitId . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
-													$ok = false;
+													array_push($bookletPlayers, $myPlayer);
 												}
+											} else {
+												array_push($myreturn['errors'], 'unit "' . $unitId . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
+												$ok = false;
 											}
-											if ($ok == true) {
-												array_push($allBooklets, $bookletId);
-												$allBookletsFilesize[$bookletId] = $bookletLoad;
-											}
+										}
+										if ($ok == true) {
+											array_push($allBooklets, $bookletId);
+											$allBookletsFilesize[$bookletId] = $bookletLoad;
 										}
 									}
 									// ..........................
@@ -406,8 +399,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 					}
 				}
 
+				if (asort($allBookletsFilesize, SORT_NUMERIC)) {
+					array_push($myreturn['infos'], 'booklet loads (bytes, sorted):');
+				} else {
+					array_push($myreturn['infos'], 'booklet loads (bytes, not sorted):');
+				};
 				foreach(array_keys($allBookletsFilesize) as $b) {
-					array_push($myreturn['infos'], 'booklet load for ' . $b . ': ' .  number_format($allBookletsFilesize[$b], 0, "," , "." ));
+					array_push($myreturn['infos'], '    ' . $b . ': ' .  number_format($allBookletsFilesize[$b], 0, "," , "." ));
 				}
 
 				// **********************************************************

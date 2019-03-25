@@ -1,7 +1,7 @@
 <?php
 // www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
+// Bărbulescu, Mechtel
+// 2018, 2019
 // license: MIT
 
 require_once('XMLFile.php');
@@ -26,6 +26,7 @@ class XMLFileBooklet extends XMLFile
         return $myreturn;
     }
 
+    // ####################################################
     public function getAllUnitIds()
     {
         $myreturn = [];
@@ -33,24 +34,6 @@ class XMLFileBooklet extends XMLFile
             $unitsNode = $this->xmlfile->Units[0];
             if (isset($unitsNode)) {
                 $myreturn = $this->getUnitIds($unitsNode);
-            }
-        }
-        return $myreturn;
-    }
-
-    // ####################################################
-    public function getResourceFilenames()
-    {
-        $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Booklet')) {
-            $resourcesNode = $this->xmlfile->Resources[0];
-            if (isset($resourcesNode)) {
-                foreach($resourcesNode->children() as $r) { 
-                    $rFilename = (string) $r;
-                    if (isset($rFilename)) {
-                        array_push($myreturn, $rFilename);
-                    }
-                }
             }
         }
         return $myreturn;

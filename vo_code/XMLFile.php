@@ -17,6 +17,7 @@ class XMLFile
     protected $label;
     protected $description;
     protected $filename;
+    protected $costumTexts;
     public $xmlfile;
 
     // ####################################################
@@ -29,6 +30,7 @@ class XMLFile
         $this->isValid = false;
         $this->xmlfile = false;
         $this->filename = $xmlfilename;
+        $this->costumTexts = [];
 
         $xsdFolderName = __DIR__ . '/';
 
@@ -59,6 +61,22 @@ class XMLFile
                     $myDescription = $this->xmlfile->Metadata[0]->Description[0];
                     if (isset($myDescription)) {
                         $this->description = (string) $myDescription;
+                    }
+                    $myCostumTextsNode = $this->xmlfile->CustomTexts[0];
+                    if (isset($myCostumTextsNode)) {
+                        foreach($myCostumTextsNode->children() as $costumTextElement) {
+                            if ($costumTextElement->getName() == 'Text') {
+                                $costumTextValue = (string) $costumTextElement;
+                                $costumTextKeyAttr = $costumTextElement['key'];
+                                if ((strlen($costumTextValue) > 0) && isset($costumTextKeyAttr)) {
+                                    $costumTextKey = (string) $costumTextKeyAttr;
+                                    if (strlen($costumTextKey) > 0) {
+                                        $this->costumTexts[$costumTextKey] = $costumTextValue;
+                                    }
+                                }
+                            }
+                        }
+    
                     }
 
                     if ($validate) {
@@ -133,5 +151,11 @@ class XMLFile
     public function isValid()
     {
         return $this->isValid;
+    }
+
+    // ####################################################
+    public function getCostumTexts()
+    {
+        return $this->costumTexts;
     }
 }

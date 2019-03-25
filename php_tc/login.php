@@ -84,6 +84,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                     require_once($this->get('code_directory') . '/XMLFileTesttakers.php'); // // // // ========================
 
                     $hasfound = false;
+                    $costumTexts = [];
                     while (($subdir = readdir($workspaceDir)) !== false) {
                         $mysplits = explode('_', $subdir);
 
@@ -103,6 +104,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                                                     $myBooklets = $xFile->getLoginData($loginName, $loginPassword);
                                                     if (count($myBooklets['booklets']) > 0) {
                                                         $myWorkspace = $mysplits[1];
+                                                        $costumTexts = $xFile->getCostumTexts();
                                                         $hasfound = true;
                                                         break;
                                                     }
@@ -135,7 +137,8 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                                 'booklets' => $myBooklets['booklets'],
                                 'code' => '',
                                 'booklet' => 0,
-                                'bookletlabel' => ''
+                                'bookletlabel' => '',
+                                'costumTexts'=> $costumTexts
                             ];
                         }
                     }

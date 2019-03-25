@@ -2,8 +2,8 @@
 <xs:schema id="vo_Itemdefinition"
     elementFormDefault="qualified"
     xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
-  <xs:include schemaLocation="vo_Common.xsd"/>
+
+<xs:include schemaLocation="vo_Common.xsd"/>
 
   <!-- ###################################################################-->
   <xs:complexType name="QuestionType">
@@ -25,17 +25,6 @@
         <xs:attribute name="id" type="xs:string" use="required"/>
       </xs:extension>
     </xs:simpleContent>
-  </xs:complexType>
-
-  <!-- ###################################################################-->
-  <xs:complexType name="ConfigType">
-    <xs:sequence>
-      <xs:element name="Q" type="QuestionType" minOccurs = "0" maxOccurs="unbounded"/>
-    </xs:sequence>
-    <xs:attribute name="unit" type="xs:string"/>
-    <xs:attribute name="savekey" type="xs:string"/>
-    <xs:attribute name="questionsonlymode" type="xs:boolean"/>
-    <xs:attribute name="skipnetwork" type="xs:boolean"/>
   </xs:complexType>
 
   <!-- ###################################################################-->
@@ -70,7 +59,16 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
-        <xs:element name="Config" type="ConfigType" minOccurs="0" maxOccurs="1">
+        <xs:element name="Config" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Q" type="QuestionType" minOccurs = "0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="unit" type="xs:string"/>
+            <xs:attribute name="savekey" type="xs:string"/>
+            <xs:attribute name="questionsonlymode" type="xs:boolean"/>
+            <xs:attribute name="skipnetwork" type="xs:boolean"/>
+          </xs:complexType>
           <xs:unique name="UniqueQuestionId">
             <xs:selector xpath=".|Q"/>
             <xs:field xpath="@id"/>

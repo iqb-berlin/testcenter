@@ -1,32 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" id="vo_Booklet">
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
-  <xs:include schemaLocation="vo_Common.xsd"/>
+<xs:schema id="vo_Booklet"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified">
+
+<xs:include schemaLocation="vo_Common.xsd"/>
 
   <!-- ###################################################################-->
   <xs:complexType name="UnitType">
-    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
     <xs:attribute name="label" type="xs:string" use="required"/>
     <xs:attribute name="labelshort" type="xs:string"/>
     <xs:attribute name="alias" type="xs:string"/>
-    <xs:attribute name="givesResponses" type="xs:boolean" default="true" />
-  </xs:complexType>
-
-  <!-- ###################################################################-->
-  <xs:complexType name="ParameterType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute name="parameter" type="xs:string"/>
-      </xs:extension>
-    </xs:simpleContent>
   </xs:complexType>
 
   <!-- ###################################################################-->
   <xs:complexType name="TestletRestrictionsType">
     <xs:all>
-      <xs:element name="TimeMin" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="TimeMax" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="CodeToEnter" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="TimeMax" type="ConfigType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="CodeToEnter" type="ConfigType" minOccurs = "0" maxOccurs="1"/>
     </xs:all>
   </xs:complexType>
 
@@ -68,17 +59,10 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="CustomTexts" type="CustomTextsType" minOccurs = "0" maxOccurs="1"/>
         <xs:element name="BookletConfig" type="BookletConfigType" minOccurs="0" maxOccurs="1"/>
         <xs:element name="Units" type="TestletType" minOccurs="1" maxOccurs="unbounded"/>
       </xs:sequence>
-      <xs:attribute name="navibar">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="left" />
-            <xs:enumeration value="none" />
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
     </xs:complexType>
   </xs:element>
 </xs:schema>
