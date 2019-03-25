@@ -40,6 +40,7 @@ CREATE TABLE public.workspace_users
 (
     workspace_id integer NOT NULL,
     user_id integer NOT NULL,
+    role character varying(10) NOT NULL DEFAULT 'RW',
     CONSTRAINT pk_workspace_users PRIMARY KEY (workspace_id, user_id),
     CONSTRAINT fk_workspace_users_user FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE
@@ -113,7 +114,7 @@ CREATE TABLE public.booklets
 CREATE TABLE public.bookletlogs
 (
     booklet_id integer NOT NULL,
-    logtime timestamp without time zone NOT NULL,
+    timestamp bigint NOT NULL DEFAULT 0,
     logentry text,
     CONSTRAINT fk_log_booklet FOREIGN KEY (booklet_id)
         REFERENCES public.booklets (id) MATCH SIMPLE
@@ -143,6 +144,9 @@ CREATE TABLE public.units
     laststate text,
     responses text,
     responsetype character varying(50),
+    responses_ts bigint default 0,
+    restorepoint text,
+    restorepoint_ts bigint default 0,
     CONSTRAINT pk_units PRIMARY KEY (id),
     CONSTRAINT fk_unit_booklet FOREIGN KEY (booklet_id)
         REFERENCES public.booklets (id) MATCH SIMPLE
@@ -153,7 +157,7 @@ CREATE TABLE public.units
 CREATE TABLE public.unitlogs
 (
     unit_id integer NOT NULL,
-    logtime timestamp without time zone NOT NULL,
+    timestamp bigint NOT NULL DEFAULT 0,
     logentry text,
     CONSTRAINT fk_log_unit FOREIGN KEY (unit_id)
         REFERENCES public.units (id) MATCH SIMPLE

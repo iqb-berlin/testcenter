@@ -187,7 +187,7 @@ CREATE TABLE `workspaces` (
 CREATE TABLE `workspace_users` (
   `workspace_id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
-  `role` varchar(20) COLLATE utf8_german2_ci NOT NULL DEFAULT 'RW'
+  `role` varchar(10) COLLATE utf8_german2_ci NOT NULL DEFAULT 'RW'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci;
 
 --
