@@ -43,8 +43,6 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="start" type="xs:date"/>
-            <xs:attribute name="end" type="xs:date"/>
             <xs:attribute name="name" type="xs:string" use="required"/>
           </xs:complexType>
         </xs:element>

@@ -63,6 +63,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
             'workspaceName' => '',
             'booklets' => [],
             'code' => '',
+            'bookletlabel' => '',
             'booklet' => 0
         ];
 
@@ -133,7 +134,8 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                                 'workspaceName' => $myDBConnection->getWorkspaceName($myWorkspace),
                                 'booklets' => $myBooklets['booklets'],
                                 'code' => '',
-                                'booklet' => 0
+                                'booklet' => 0,
+                                'bookletlabel' => ''
                             ];
                         }
                     }
@@ -148,6 +150,9 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                     $myreturn = $dbReturn;
                     $myreturn['persontoken'] = $personToken;
                     $myreturn['booklet'] = $booklet;
+                    if ($booklet > 0) {
+                        $myreturn['bookletlabel'] = $myDBConnection->getBookletName($booklet);
+                    }
                 }
 
             // //////////////////////////////////////////////////////////////////////////////////////////////////
