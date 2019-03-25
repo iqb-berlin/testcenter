@@ -12,7 +12,6 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
-        <xs:element name="Resources" type="ResourcesType" minOccurs="0" maxOccurs="1"/>
         <xs:sequence>
           <xs:choice minOccurs="1" maxOccurs="1">
             <xs:element name="Definition" minOccurs="1" maxOccurs="1">

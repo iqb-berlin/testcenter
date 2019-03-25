@@ -6,26 +6,6 @@
 
 
   <!-- ###################################################################-->
-  <xs:complexType name="ResourcesType">
-    <xs:sequence>
-      <xs:element name="Resource" minOccurs="1" maxOccurs="unbounded">
-        <xs:complexType>
-          <xs:simpleContent>
-            <xs:extension base="xs:string">
-			        <xs:annotation>
-			          <xs:documentation>
-			            Element value: Filename, same as file beeing uploaded; required!
-			          </xs:documentation>
-			        </xs:annotation>
-			        <xs:attribute name="id" type="xs:string"/>
-            </xs:extension>
-          </xs:simpleContent>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-
-  <!-- ###################################################################-->
   <xs:complexType name="MetadataType">
     <xs:all>
       <xs:element name="Id" type="xs:string" minOccurs="0" maxOccurs="1"/>
