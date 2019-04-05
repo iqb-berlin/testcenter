@@ -143,7 +143,7 @@ class DBConnectionAdmin extends DBConnection {
 		$myreturn = [];
 		if (($this->pdoDBhandle != false) and (strlen($token) > 0)) {
 			$sql = $this->pdoDBhandle->prepare(
-				'SELECT workspaces.id, workspaces.name FROM workspaces
+				'SELECT workspaces.id, workspaces.name, workspace_users.role FROM workspaces
 					INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
 					INNER JOIN users ON workspace_users.user_id = users.id
 					INNER JOIN admintokens ON  users.id = admintokens.user_id
@@ -163,6 +163,7 @@ class DBConnectionAdmin extends DBConnection {
 		return $myreturn;
 	}
 
+	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	public function hasAdminAccessToWorkspace($token, $requestedWorkspaceId) {
 		$authorized = false;
 		$this->refreshAdmintoken($token);
@@ -184,6 +185,30 @@ class DBConnectionAdmin extends DBConnection {
 	} 
 
   
+	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+	public function getWorkspaceRole($token, $requestedWorkspaceId) {
+		$myreturn = '';
+		$this->refreshAdmintoken($token);
+		$sql = $this->pdoDBhandle->prepare(
+			'SELECT workspace_users.role FROM workspaces
+				INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
+				INNER JOIN users ON workspace_users.user_id = users.id
+				INNER JOIN admintokens ON  users.id = admintokens.user_id
+				WHERE admintokens.id =:token and workspaces.id = :wsId');
+	
+		if ($sql -> execute(array(
+			':token' => $token,
+			':wsId' => $requestedWorkspaceId))) {
+
+			$first = $sql -> fetch(PDO::FETCH_ASSOC);
+
+			if ($first != false) {
+				$myreturn = $first['role'];
+			}
+		}
+		return $myreturn;
+	} 
+
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// monitor + results
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /

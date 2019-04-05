@@ -58,6 +58,7 @@
       <xs:element name="NavButtons" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
       <xs:element name="PageNavBar" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
       <xs:element name="Logging" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="Loading" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
     </xs:all>
   </xs:complexType>
 
