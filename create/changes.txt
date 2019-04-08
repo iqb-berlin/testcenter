@@ -10,3 +10,7 @@ drop logtime
 
 workspace_users
 role varchar(20) NOT NULL DEFAULT 'RW'
+
+todo
+====
+dbSchema.pdf aktualisieren

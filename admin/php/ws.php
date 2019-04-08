@@ -1,6 +1,10 @@
 <?php
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+// www.IQB.hu-berlin.de
+// Bărbulescu, Mechtel
+// 2018, 2019
+// license: MIT
 
 session_start();
 require '../../vendor/autoload.php';
@@ -35,6 +39,7 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
                                         $errorcode = 0;
                                         $_SESSION['adminToken'] = $adminToken;
                                         $_SESSION['workspace'] = $workspace;
+                                        $_SESSION['workspaceDirName'] = $this->get('data_directory') . '/ws_' . $workspace;
                                     }
                                 }
                                 unset($myDBConnection);
@@ -70,12 +75,12 @@ function jsonencode($obj)
 // ##############################################################
 $app->get('/filelist', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
-        $workspace = $_SESSION['workspace'];
+        $workspaceDirName = $_SESSION['workspaceDirName'];
 		$myreturn = [];
 
-        $myerrorcode = 0;
-        $workspaceDirName = $this->get('data_directory') . '/ws_' . $workspace;
+        $myerrorcode = 404;
         if (file_exists($workspaceDirName)) {
+            $myerrorcode = 0;
             require_once($this->get('code_directory') . '/FilesFactory.php');
             $workspaceDir = opendir($workspaceDirName);
             while (($subdir = readdir($workspaceDir)) !== false) {
@@ -125,32 +130,43 @@ $app->get('/filelist', function (ServerRequestInterface $request, ResponseInterf
 
 // ##############################################################
 // ##############################################################
-$app->get('/file/{filename}', function (ServerRequestInterface $request, ResponseInterface $response) {
+$app->post('/delete', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
-        $workspace = $_SESSION['workspace'];
-        $path_parts = pathinfo($request->getAttribute('filename'));
-        $filename = $path_parts['basename'];
-        $path_parts = pathinfo($request->getQueryParam('ft', ''));
-        $subFolder = $path_parts['basename'];
-        $myreturn = '';
+        $workspaceDirName = $_SESSION['workspaceDirName'];
+        $bodydata = json_decode($request->getBody());
+		$fileList = isset($bodydata->f) ? $bodydata->f : [];
 
         $myerrorcode = 404;
-        $fullfilename = $this->get('data_directory') . '/ws_' . $workspace . '/' . $subFolder . '/' . $filename;
-        if (file_exists($fullfilename)) {
+        if (file_exists($workspaceDirName)) {
             $myerrorcode = 0;
-            $myreturn = file_get_contents($fullfilename);
+            $errorcount = 0;
+            $successcount = 0;
+            foreach($fileList as $fileToDelete) {
+                $mysplits = explode('::', $fileToDelete);
+                if (count($mysplits) == 2) {
+                    if (unlink($workspaceDirName . '/' . $mysplits[0] . '/' . $mysplits[1])) {
+                        $successcount = $successcount + 1;
+                    } else {
+                        $errorcount = $errorcount + 1;
+                    }
+                }
+            }
+            if ($errorcount > 0) {
+                $myreturn = 'e:Konnte ' . $errorcount . ' Dateien nicht löschen.';	
+            } else {
+                if ($successcount == 1) {
+                    $myreturn = 'Eine Datei gelöscht.';
+                } else {
+                    $myreturn = 'Erfolgreich ' . $successcount . ' Dateien gelöscht.';	
+                }
+            }
         }
 
         if ($myerrorcode == 0) {
-            $response->getBody()->write($myreturn);
-            $responseToReturn = $response->withHeader('Content-type', 'text/html')
-                ->withHeader('Content-Description', 'File Transfer')
-                ->withHeader('Content-Type', ($subFolder == 'Resource') ? 'application/octet-stream' : 'text/xml')
-                ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
-                ->withHeader('Expires', '0')
-                ->withHeader('Cache-Control', 'must-revalidate')
-                ->withHeader('Pragma', 'public')
-                ->withHeader('Content-Length', filesize($fullfilename));
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
         } else {
             $responseToReturn = $response->withStatus($myerrorcode)
                 ->withHeader('Content-Type', 'text/html')
@@ -164,6 +180,93 @@ $app->get('/file/{filename}', function (ServerRequestInterface $request, Respons
             ->write('Something went wrong: ' . $ex->getMessage());
     }
 });
+
+// ##############################################################
+// ##############################################################
+$app->post('/unlock', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $workspace = $_SESSION['workspace'];
+        $bodydata = json_decode($request->getBody());
+		$groups = isset($bodydata->g) ? $bodydata->g : [];
+
+        require_once($this->get('code_directory') . '/DBConnectionAdmin.php');                                
+        $myDBConnection = new DBConnectionAdmin();
+        $myerrorcode = 0;
+        $myreturn = false;
+
+        if (!$myDBConnection->isError()) {
+            $myreturn = true;
+            foreach($groups as $groupName) {
+                if (!$myDBConnection->changeBookletLockStatus($workspace, $groupName, false)) {
+                    $myreturn = false;
+                    break;
+                }
+            }
+        }
+        unset($myDBConnection);        
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
+// ##############################################################
+// ##############################################################
+$app->post('/lock', function (ServerRequestInterface $request, ResponseInterface $response) {
+    try {
+        $workspace = $_SESSION['workspace'];
+        $bodydata = json_decode($request->getBody());
+		$groups = isset($bodydata->g) ? $bodydata->g : [];
+
+        require_once($this->get('code_directory') . '/DBConnectionAdmin.php');                                
+        $myDBConnection = new DBConnectionAdmin();
+        $myerrorcode = 0;
+        $myreturn = false;
+
+        if (!$myDBConnection->isError()) {
+            $myreturn = true;
+            foreach($groups as $groupName) {
+                if (!$myDBConnection->changeBookletLockStatus($workspace, $groupName, true)) {
+                    $myreturn = false;
+                    break;
+                }
+            }
+        }
+        unset($myDBConnection);        
+
+        if ($myerrorcode == 0) {
+            $responseData = jsonencode($myreturn);
+            $response->getBody()->write($responseData);
+    
+            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        } else {
+            $responseToReturn = $response->withStatus($myerrorcode)
+                ->withHeader('Content-Type', 'text/html')
+                ->write('Something went wrong!');
+        }
+
+        return $responseToReturn;
+    } catch (Exception $ex) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->write('Something went wrong: ' . $ex->getMessage());
+    }
+});
+
 
 $app->run();
 ?>

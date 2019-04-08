@@ -1,6 +1,10 @@
 <?php
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+// www.IQB.hu-berlin.de
+// Bărbulescu, Mechtel
+// 2018, 2019
+// license: MIT
 
 session_start();
 require '../../vendor/autoload.php';

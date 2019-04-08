@@ -100,22 +100,28 @@ class DBConnectionAdmin extends DBConnection {
 	public function changeBookletLockStatus($workspace_id, $group_name, $lock) {
 		$myreturn = false;
 		if ($this->pdoDBhandle != false) {
-			$lockStr = '0';
-			if ($lock) {
-				$lockStr = '1';
-			}
-            $sql_update = $this->pdoDBhandle->prepare(
-                'UPDATE booklets as b
-					INNER JOIN persons ON b.person_id = persons.id
-					INNER JOIN logins ON persons.login_id = logins.id
-					INNER JOIN workspaces ON logins.workspace_id = workspaces.id
-					SET b.locked = :locked
-					WHERE workspaces.id=:workspace_id and logins.groupname = :groupname');
-            if ($sql_update -> execute(array(
-				':workspace_id' => $workspace_id,
-				':locked' => $lockStr,
-                ':groupname' => $group_name))) {
-                $myreturn = true;
+			try {
+                $this->pdoDBhandle->beginTransaction();
+				$lockStr = '0';
+				if ($lock) {
+					$lockStr = '1';
+				}
+				$booklet_update = $this->pdoDBhandle->prepare(
+					'UPDATE booklets SET locked=:locked WHERE id IN (
+						SELECT booklets.id FROM booklets
+							INNER JOIN persons ON (persons.id = booklets.person_id)
+							INNER JOIN logins ON (persons.login_id = logins.id)
+							INNER JOIN workspaces ON (logins.workspace_id = workspaces.id)
+							WHERE workspaces.id=:workspace_id AND logins.groupname=:groupname
+					)');
+				$booklet_update -> execute(array(
+					':locked' => $lockStr,
+					':workspace_id' => $workspace_id,
+					':groupname' => $group_name));
+				$this->pdoDBhandle->commit();
+				$myreturn = true;
+            } catch(Exception $e){
+                $this->pdoDBhandle->rollBack();
             }
 		}
 		return $myreturn;
@@ -221,7 +227,8 @@ class DBConnectionAdmin extends DBConnection {
 		if ($this->pdoDBhandle != false) {
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT logins.groupname, logins.name as loginname, persons.code,
-						booklets.name as bookletname, COUNT(distinct units.id) AS num_units
+						booklets.name as bookletname, COUNT(distinct units.id) AS num_units,
+						MAX(units.responses_ts) as lastchange
 					FROM booklets
 						INNER JOIN persons ON persons.id = booklets.person_id
 						INNER JOIN logins ON logins.id = persons.login_id
@@ -248,7 +255,8 @@ class DBConnectionAdmin extends DBConnection {
 		if ($this->pdoDBhandle != false) {
 			$sql = $this->pdoDBhandle->prepare(
 				'SELECT logins.groupname, logins.name as loginname, persons.code, 
-						booklets.name as bookletname, booklets.locked
+						booklets.name as bookletname, booklets.locked,
+						logins.valid_until as lastlogin, persons.valid_until as laststart
 					FROM booklets
 					INNER JOIN persons ON persons.id = booklets.person_id
 					INNER JOIN logins ON logins.id = persons.login_id
@@ -260,8 +268,6 @@ class DBConnectionAdmin extends DBConnection {
 				$data = $sql->fetchAll(PDO::FETCH_ASSOC);
 				if ($data != false) {
 					$myreturn = $data;
-					
-					// array_push($return, trim((string) $object["name"]) . "##" . trim((string) $object["code"]) . "##" . trim((string) $object["booklet"]));
 				}
 			}
 		}
@@ -297,18 +303,19 @@ class DBConnectionAdmin extends DBConnection {
 	// responses
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	// $return = []; groupname, loginname, code, bookletname, unitname, responses
-	public function getResponses($workspaceId) {
+	public function getResponses($workspaceId, $groups) {
 		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
+			$groupsString = implode("','", $groups);
 			$sql = $this->pdoDBhandle->prepare(
-				'SELECT units.name as unitname, units.responses, units.responsetype, units.laststate, booklets.name as bookletname,
+				"SELECT units.name as unitname, units.responses, units.responsetype, units.laststate, booklets.name as bookletname,
 						units.restorepoint_ts, units.responses_ts,
 						units.restorepoint, logins.groupname, logins.name as loginname, persons.code
 				FROM units
 				INNER JOIN booklets ON booklets.id = units.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 
 				INNER JOIN logins ON logins.id = persons.login_id
-				WHERE logins.workspace_id =:workspaceId');
+				WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('" . $groupsString . "')");
 
 			if ($sql -> execute(array(
 				':workspaceId' => $workspaceId))) {
@@ -325,11 +332,12 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 	// $return = []; groupname, loginname, code, bookletname, unitname, timestamp, logentry
-	public function getLogs($workspaceId) {
+	public function getLogs($workspaceId, $groups) {
 		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
+			$groupsString = implode("','", $groups);
 			$unit_sql = $this->pdoDBhandle->prepare(
-				'SELECT units.name as unitname, booklets.name as bookletname,
+				"SELECT units.name as unitname, booklets.name as bookletname,
 						logins.groupname, logins.name as loginname, persons.code,
 						unitlogs.timestamp, unitlogs.logentry
 				FROM unitlogs
@@ -337,7 +345,7 @@ class DBConnectionAdmin extends DBConnection {
 				INNER JOIN booklets ON booklets.id = units.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 
 				INNER JOIN logins ON logins.id = persons.login_id
-				WHERE logins.workspace_id =:workspaceId');
+				WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('" . $groupsString . "')");
 
 			if ($unit_sql -> execute(array(
 				':workspaceId' => $workspaceId))) {
@@ -349,14 +357,14 @@ class DBConnectionAdmin extends DBConnection {
 			}
 
 			$booklet_sql = $this->pdoDBhandle->prepare(
-				'SELECT booklets.name as bookletname,
+				"SELECT booklets.name as bookletname,
 						logins.groupname, logins.name as loginname, persons.code,
 						bookletlogs.timestamp, bookletlogs.logentry
 				FROM bookletlogs
 				INNER JOIN booklets ON booklets.id = bookletlogs.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 
 				INNER JOIN logins ON logins.id = persons.login_id
-				WHERE logins.workspace_id =:workspaceId');
+				WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('" . $groupsString . "')");
 
 			if ($booklet_sql -> execute(array(
 				':workspaceId' => $workspaceId))) {
@@ -375,11 +383,12 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 	// $return = []; groupname, loginname, code, bookletname, unitname, priority, categories, entry
-	public function getReviews($workspaceId) {
+	public function getReviews($workspaceId, $groups) {
 		$myreturn = [];
 		if ($this->pdoDBhandle != false) {
+			$groupsString = implode("','", $groups);
 			$unit_sql = $this->pdoDBhandle->prepare(
-				'SELECT units.name as unitname, booklets.name as bookletname,
+				"SELECT units.name as unitname, booklets.name as bookletname,
 						logins.groupname, logins.name as loginname, persons.code,
 						unitreviews.reviewtime, unitreviews.entry,
 						unitreviews.priority, unitreviews.categories
@@ -388,7 +397,7 @@ class DBConnectionAdmin extends DBConnection {
 				INNER JOIN booklets ON booklets.id = units.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 
 				INNER JOIN logins ON logins.id = persons.login_id
-				WHERE logins.workspace_id =:workspaceId');
+				WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('" . $groupsString . "')");
 
 			if ($unit_sql -> execute(array(
 				':workspaceId' => $workspaceId))) {
@@ -400,7 +409,7 @@ class DBConnectionAdmin extends DBConnection {
 			}
 
 			$booklet_sql = $this->pdoDBhandle->prepare(
-				'SELECT booklets.name as bookletname,
+				"SELECT booklets.name as bookletname,
 						logins.groupname, logins.name as loginname, persons.code,
 						bookletreviews.reviewtime, bookletreviews.entry,
 						bookletreviews.priority, bookletreviews.categories
@@ -408,7 +417,7 @@ class DBConnectionAdmin extends DBConnection {
 				INNER JOIN booklets ON booklets.id = bookletreviews.booklet_id
 				INNER JOIN persons ON persons.id = booklets.person_id 
 				INNER JOIN logins ON logins.id = persons.login_id
-				WHERE logins.workspace_id =:workspaceId');
+				WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('" . $groupsString . "')");
 
 			if ($booklet_sql -> execute(array(
 				':workspaceId' => $workspaceId))) {
