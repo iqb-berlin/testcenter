@@ -13,3 +13,10 @@ schrittweise an dieser Stelle folgen.
 5) .htaccess so anpassen, dass der Zugriff auf vo_* unterbunden wird (Sicherheitsaspekte): RedirectMatch 404 ^/vo_.*$
 6) <serveradresse>/create aufrufen: Damit wird in der Datenbank ein Superuser angelegt (der kann dann die anderen User anlegen).
 7) Build der Angular-Programmierungen testcenter-iqb-ng und testcenter-admin-iqb-ng (letzere in den Ordner /admin) übertragen.
+  
+# Testing
+
+The following technology is / will be used in the development of this project:
+
+![Browserstack logo](https://ocba2.iqb.hu-berlin.de/browserstack/logo-smaller.png)
+
