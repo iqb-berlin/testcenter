@@ -5,3 +5,7 @@ logs/*
 vo_data/*
 vendor/*
 !vo_data/.gitkeep
+
+#IDE stuff
+testcenter-iqb-php.iml
+.idea
