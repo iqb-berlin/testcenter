@@ -156,24 +156,23 @@ class XMLFileSysCheck extends XMLFile
                     while (($entry = readdir($mydir)) !== false) {
                         $fullfilename = $unitFolder . '/' . $entry;
                         if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
-
                             $xFile = new XMLFile($fullfilename);
                             if ($xFile->isValid()) {
                                 $uKey = $xFile->getId();
                                 if ($uKey == $unitNameUpper) {
                                     $definitionNode = $xFile->xmlfile->Definition[0];
                                     if (isset($definitionNode)) {
-                                        $typeAttr = $definitionNode['type'];
+                                        $typeAttr = $definitionNode['player'];
                                         if (isset($typeAttr)) {
-                                            $myreturn['player_id'] = (string) $typeAttr;
+                                            $myreturn['player'] = (string) $typeAttr;
                                             $myreturn['def'] = (string) $definitionNode;
                                         }
                                     } else {
                                         $definitionNode = $xFile->xmlfile->DefinitionRef[0];
                                         if (isset($definitionNode)) {
-                                            $typeAttr = $definitionNode['type'];
+                                            $typeAttr = $definitionNode['player'];
                                             if (isset($typeAttr)) {
-                                                $myreturn['player_id'] = (string) $typeAttr;
+                                                $myreturn['player'] = (string) $typeAttr;
                                                 $unitfilename = strtoupper((string) $definitionNode);
                                                 $myRdir = opendir($resourcesFolder);
                                                 if ($myRdir !== false) {
