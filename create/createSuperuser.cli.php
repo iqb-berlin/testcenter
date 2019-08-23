@@ -34,9 +34,16 @@ try  {
     }
 
     $dbc = new dbUserCreator();
-    if ($dbc->isError()) {
+    $retries = 5;
+    while ($retries-- && $dbc->isError()) {
+        $dbc = new dbUserCreator();
+        echo "Database connection failed... retry ($retries attempts left)\n";
+        usleep(20 * 1000000); // give database container time to come up
+    }
+    if (($retries <= 0) and $dbc->isError()) {
         throw new Exception($dbc->errorMsg);
     }
+
     $dbc->addSuperuser($args['user_name'], $args['user_password']);
 
 } catch (Exception $e) {
