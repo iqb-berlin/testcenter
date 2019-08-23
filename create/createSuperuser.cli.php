@@ -13,10 +13,8 @@ try  {
     }
 
     if (strlen($args['user_password']) < 7) {
-        throw new Exception("Password must eb at least 7 characters long!");
+        throw new Exception("Password must have at least 7 characters!");
     }
-
-    echo "Create super user `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` ... ";
 
     require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnection.php');
     require_once "dbUserCreator.class.php";
@@ -44,7 +42,9 @@ try  {
         throw new Exception($dbc->errorMsg);
     }
 
-    $dbc->addSuperuser($args['user_name'], $args['user_password']);
+    if ($dbc->addSuperuser($args['user_name'], $args['user_password'])) {
+        echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.";
+    }
 
 } catch (Exception $e) {
     echo("\nError: " . $e->getMessage() . "\n");
@@ -54,6 +54,5 @@ try  {
     exit(1);
 }
 
-echo "success.";
 echo "\n";
 exit(0);
