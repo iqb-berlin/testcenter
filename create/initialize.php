@@ -10,16 +10,29 @@
  * --user_name=(super user name)
  * --user_password=(super user password)
  *
- * if you want to create a wordkspace with sample data as well, provide:
+ * if you want to create a workspace with sample data as well, provide:
  * --workspace=(workspace name)
  * --test_login_name=(login for the sample test booklet)
  * --test_login_password=(login for the sample test booklet)
  *
  *
+ * Note: run this script as a user who can create files wich can be read by the webserver or change file rights after wards
+ * for example: sudo --user=www-data php create/initialize.php --user_name=a --user_password=x123456
+
  */
-$args = getopt("", array('user_name:', 'user_password:', 'workspace:'));
+$args = getopt("", array(
+    'user_name:',
+    'user_password:',
+    'workspace:',
+    'test_login_name:',
+    'test_login_password:'
+));
 
 try  {
+
+    if (isset($args['apache_user'])) {
+        define('APACHE_USER', $args['apache_user']);
+    }
 
     if (!isset($args['user_name'])) {
         throw new Exception("user name not provided. use: --user_name=...");
@@ -64,8 +77,8 @@ try  {
     }
 
     if (isset($args['workspace'])) {
-        $dbc->addWorkspace($args['workspace']);
-        $dbc->importSampleData($args['workspace']);
+        $workspace_id = $dbc->addWorkspace($args['workspace']);
+        $dbc->importSampleData($workspace_id, $args);
     }
 
 
