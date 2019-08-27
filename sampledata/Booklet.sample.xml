@@ -1,0 +1,44 @@
+<Booklet
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.3.1/vo_code/vo_Booklet.xsd"
+>
+  <Metadata>
+    <Id>BOOKLET.SAMPLE</Id>
+    <Label>Sample booklet</Label>
+    <Description>This a a sample booklet for testing/development/showcase purposes.</Description>
+    <Owner>__USER_NAME__</Owner>
+    <Lastchange>2019-10-27T13:37:00</Lastchange>
+    <Status>unknown</Status>
+    <Project>sample</Project>
+  </Metadata>
+
+  <BookletConfig>
+    <NavPolicy parameter="NextOnlyIfPresentationComplete"/>
+    <NavButtons parameter="on"/>
+    <PageNavBar parameter="on"/>
+    <Logging parameter="on"/>
+    <Loading parameter="on"/>
+  </BookletConfig>
+
+  <CustomTexts>
+    <Text key="sampletext">This is sample data!</Text>
+  </CustomTexts>
+
+  <Units id="section_A" label="section_A">
+    <Restrictions>
+      <TimeMax parameter="string">60</TimeMax>
+      <CodeToEnter parameter="string">string</CodeToEnter>
+    </Restrictions>
+
+    <Testlet>
+
+      <Restrictions>
+        <CodeToEnter parameter="sample">Please insert the word `sample`.</CodeToEnter>
+        <TimeMax parameter="1" />
+      </Restrictions>
+
+      <Unit id="UNIT.SAMPLE" label="the great sample unit" labelshort="sample unit" alias="example unit" />
+    </Testlet>
+
+  </Units>
+</Booklet>
