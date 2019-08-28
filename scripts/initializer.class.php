@@ -72,6 +72,20 @@ class Initializer extends DBConnectionSuperadmin {
     }
 
     /**
+     *
+     * grants RW rights to a given workspace( by id) to a user
+     * @param $userName
+     * @param $workspaceId
+     */
+    public function grantRights($userName, $workspaceId) {
+
+        $this->setWorkspacesByUser($userName, array((object) array(
+            "id" => $workspaceId,
+            "role" => "RW"
+        )));
+    }
+
+    /**
      * creates missing subdirectories for a missing path,
      * for example: let /var/www/html/vo_data exist
      * and $filePath be /var/www/html/vo_data/ws_5/Testtakers
@@ -156,7 +170,8 @@ class Initializer extends DBConnectionSuperadmin {
         $this->_importSampleFile($workspace, 'Unit', $parameters);
         $this->_importSampleFile($workspace, 'Player.html', $parameters, true);
 
-        echo "created sample data with parameters: " . print_r($parameters, 1);
+        echo "Sample data parameters: \n";
+        echo implode("\n", array_map(function($param_key) use ($parameters) {return "$param_key: {$parameters[$param_key]}";}, array_keys($parameters)));
     }
 
 }

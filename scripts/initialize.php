@@ -76,11 +76,12 @@ try  {
     }
 
     if ($dbc->addSuperuser($args['user_name'], $args['user_password'])) {
-        echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.";
+        echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.\n";
     }
 
     if (isset($args['workspace'])) {
         $workspace_id = $dbc->getWorkspace($args['workspace']);
+        $dbc->grantRights($args['user_name'], $workspace_id);
         $dbc->importSampleData($workspace_id, $args);
     }
 
