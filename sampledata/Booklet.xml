@@ -27,7 +27,6 @@
   <Units id="section_A" label="section_A">
     <Restrictions>
       <TimeMax parameter="string">60</TimeMax>
-      <CodeToEnter parameter="string">string</CodeToEnter>
     </Restrictions>
 
     <Testlet>

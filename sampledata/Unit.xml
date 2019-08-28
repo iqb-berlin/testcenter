@@ -11,6 +11,18 @@
     <Project>sample</Project>
   </Metadata>
 
-  <Definition player="SAMPLE_PLAYER">{"some":"stuff"}</Definition>
+  <Definition player="SAMPLE_PLAYER">
+    {
+      "name": {
+        "type": 'string',
+        "title": 'Insert Your Name',
+        "required": true
+      },
+      "age": {
+        "type": 'number',
+        "title": 'Insert Your Age'
+      }
+    }
+  </Definition>
 
 </Unit>
