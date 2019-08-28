@@ -3,7 +3,7 @@
 /**
  * CLi script to initialize app
  *
- * creates a super user (if no user exists allready)
+ * creates a super user (if no user exists already)
  * creates also a workspace (if non exists)
  *
  * usage:
@@ -16,7 +16,7 @@
  * --test_login_password=(login for the sample test booklet)
  *
  *
- * Note: run this script as a user who can create files wich can be read by the webserver or change file rights after wards
+ * Note: run this script as a user who can create files which can be read by the webserver or change file rights after wards
  * for example: sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
 
  */
