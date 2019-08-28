@@ -20,6 +20,9 @@
  * for example: sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
 
  */
+
+include('index.php');
+
 $args = getopt("", array(
     'user_name:',
     'user_password:',
