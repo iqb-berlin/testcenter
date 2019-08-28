@@ -17,7 +17,7 @@
  *
  *
  * Note: run this script as a user who can create files wich can be read by the webserver or change file rights after wards
- * for example: sudo --user=www-data php create/initialize.php --user_name=a --user_password=x123456
+ * for example: sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
 
  */
 $args = getopt("", array(
@@ -47,7 +47,7 @@ try  {
     }
 
     require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionSuperadmin.php');
-    require_once "initializor.class.php";
+    require_once "initializer.class.php";
 
     $config_file_path = realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionData.json';
 
@@ -58,7 +58,7 @@ try  {
     $config = file_get_contents($config_file_path);
 
     if (!json_decode($config)) {
-        throw new Exception("DB-config file is malformed json:\n$config");
+        throw new Exception("DB-config file is malformed JSON:\n$config");
     }
 
     $dbc = new Initializer();
@@ -80,8 +80,6 @@ try  {
         $workspace_id = $dbc->getWorkspace($args['workspace']);
         $dbc->importSampleData($workspace_id, $args);
     }
-
-
 
 } catch (Exception $e) {
     echo("\nError: " . $e->getMessage() . "\n");
