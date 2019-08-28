@@ -77,7 +77,7 @@ try  {
     }
 
     if (isset($args['workspace'])) {
-        $workspace_id = $dbc->addWorkspace($args['workspace']);
+        $workspace_id = $dbc->getWorkspace($args['workspace']);
         $dbc->importSampleData($workspace_id, $args);
     }
 

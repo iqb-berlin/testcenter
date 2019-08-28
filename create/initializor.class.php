@@ -49,9 +49,9 @@ class Initializer extends DBConnectionSuperadmin {
      * @return int - workspace id
      * @throws Exception - if error occurs
      */
-    public function addWorkspace($name) {
+    public function getWorkspace($name) {
 
-        if (!($this->pdoDBhandle)) {
+        if (!$this->pdoDBhandle) {
             throw new Exception('no database connection');
         }
 
@@ -64,11 +64,11 @@ class Initializer extends DBConnectionSuperadmin {
             return $workspaces_names[0]['id'];
         }
 
-        if (!parent::addWorkspace($name)) {
+        if (!$this->addWorkspace($name)) {
             throw new Exception("Could not insert `$name` into table `workspaces`" . "SELECT workspaces.id FROM workspaces WHERE name = '$name'");
         }
 
-        return count($workspaces_names) + 1;
+        return $this->getWorkspace($name);
     }
 
     /**
@@ -97,25 +97,30 @@ class Initializer extends DBConnectionSuperadmin {
     }
 
     /**
-     * @param $workspace
-     * @param $type
-     * @param array $vars
+     * @param $workspaceId
+     * @param $filename - Filename in sampledata directory. For resources with extension.
+     * @param array $vars - key-value list to replace placeholders in sample files
+     * @param bool $isResource - set true if it's a unitplayer or voud file
      * @throws Exception
      */
-    private function _importSampleFile($workspace, $type, $vars = array()) {
+    private function _importSampleFile($workspaceId, $filename, $vars = array(), $isResource = false) {
 
         $path = realpath(dirname(__FILE__) . "/../");
-        $sampleFileContent = file_get_contents("$path/sampledata/$type.sample.xml");
+
+        $ext = $isResource ? '' : '.xml';
+        $importFileName = "$path/sampledata/$filename$ext";
+        $sampleFileContent = file_get_contents($importFileName);
 
         if (!$sampleFileContent) {
-            throw new Exception("Sample file not found: $type.sample.xml");
+            throw new Exception("Sample file not found: $importFileName");
         }
 
         foreach ($vars as $key => $value) {
             $sampleFileContent = str_replace('__' . strtoupper($key) . '__', $value, $sampleFileContent);
         }
 
-        $fileNameToWrite = $this->_createSubdirectories("$path/vo_data/ws_$workspace/$type/") . strtoupper("$type.sample.xml");
+        $destinationSubDir = $isResource ? 'Resource' : $filename;
+        $fileNameToWrite = $this->_createSubdirectories("$path/vo_data/ws_$workspaceId/$destinationSubDir/") . strtoupper("sample_$filename$ext");
         if (!file_put_contents($fileNameToWrite, $sampleFileContent)) {
             throw new Exception("Could not write file: $fileNameToWrite");
         }
@@ -148,6 +153,8 @@ class Initializer extends DBConnectionSuperadmin {
         $this->_importSampleFile($workspace, 'Booklet', $parameters);
         $this->_importSampleFile($workspace, 'Testtakers', $parameters);
         $this->_importSampleFile($workspace, 'SysCheck', $parameters);
+        $this->_importSampleFile($workspace, 'Unit', $parameters);
+        $this->_importSampleFile($workspace, 'Player.html', $parameters, true);
 
         echo "created sample data with parameters: " . print_r($parameters, 1);
     }
