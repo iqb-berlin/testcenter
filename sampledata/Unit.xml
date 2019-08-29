@@ -14,13 +14,13 @@
   <Definition player="SAMPLE_PLAYER">
     {
       "name": {
-        "type": 'string',
-        "title": 'Insert Your Name',
+        "type": "string",
+        "title": "Insert Your Name",
         "required": true
       },
       "age": {
-        "type": 'number',
-        "title": 'Insert Your Age'
+        "type": "number",
+        "title": "Insert Your Age"
       }
     }
   </Definition>
