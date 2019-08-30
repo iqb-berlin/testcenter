@@ -12,7 +12,7 @@ class DBConnection {
     // __________________________
     public function __construct() {
         try {
-            $cData = json_decode(file_get_contents(__DIR__ . '/DBConnectionData.json'));
+            $cData = json_decode(file_get_contents(realpath(__DIR__ . '/../config/DBConnectionData.json')));
             if ($cData->type === 'mysql') {
                 $this->pdoDBhandle = new PDO("mysql:host=" . $cData->host . ";port=" . $cData->port . ";dbname=" . $cData->dbname, $cData->user, $cData->password);
             } elseif ($cData->type === 'pgsql') {

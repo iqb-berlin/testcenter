@@ -52,7 +52,7 @@ try  {
     require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionSuperadmin.php');
     require_once "initializer.class.php";
 
-    $config_file_path = realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionData.json';
+    $config_file_path = realpath(dirname(__FILE__)) . '/../config/DBConnectionData.json';
 
     if (!file_exists($config_file_path)) {
         throw new Exception("DB-config file is missing!");
