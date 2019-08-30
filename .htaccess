@@ -3,5 +3,12 @@ Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type,
 Header add Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS"
 Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
 
-RewriteEngine On
-RedirectMatch 404 ^/vo_.*$
+Options +FollowSymLinks
+Options -Indexes
+
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !/admin/
+RewriteCond %{REQUEST_URI} !/php_tc/
+RewriteCond %{REQUEST_URI} !/vo_config/
+RewriteRule (.*) - [L,R=404]
+
