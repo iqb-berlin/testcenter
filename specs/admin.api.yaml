@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: IQB Demo API
+  description: This is a simple API
+  version: "1"
+servers:
+- url: https://virtserver.swaggerhub.com/paflov/iqb_demo/1
+  description: SwaggerHub API Auto Mocking
+paths:
+  /login:
+    post:
+      summary: Mock Login-Endpunkt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login_request'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/login_response'
+        401:
+          description: Not authenticated
+        404:
+          description: Other Error
+components:
+  schemas:
+    login_request:
+      type: object
+      properties:
+        n:
+          type: string
+          description: Benutzername als String
+          example: frankfurt
+        p:
+          type: string
+          description: Passwort als String
+          example: main
+    login_response:
+      type: object
+      properties:
+        admintoken:
+          type: string
+          description: Token für die weitere Authentifizierung
+          example: was_ist_das_fuer_1_token
+        name:
+          type: string
+          description: Wiederholung des Benutzernamens
+          example: frankfurt
+        workspaces:
+          type: array
+          description: Liste mit Arbeitsbereichen, für die der Zugriff gestattet ist
+          example:
+          - /workspace1
+          - /workspace2
+          items:
+            type: string
+        is_superadmin:
+          type: boolean
+          description: Flag, ob mit den Anmeldedaten auch Nutzer angelegt werden können

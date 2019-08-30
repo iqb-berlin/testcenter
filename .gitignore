@@ -1,6 +1,4 @@
-.vscode/ftp-sync.json
-logs/*
-
+# composer
 vendor
 composer.phar
 
@@ -11,3 +9,11 @@ vo_data/*
 #IDE stuff
 testcenter-iqb-php.iml
 .idea
+.vscode
+
+#integration stuff
+integration/node_modules
+!docs/api/admin/.gitkeep
+
+#?
+logs/*
