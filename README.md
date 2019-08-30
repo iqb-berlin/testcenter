@@ -34,7 +34,7 @@ php composer.phar install
  the shipped `.htaccess` as basis. 
 - Run initialize to create a superuser, and, if you want to a workspace with some sample data and a test-login 
 ```
-sudo ---user=www-data scripts/initialize.php --user-name=super --user-password=user_password --workspace=workspace --test_login_name=a --test_login_password=another_pw`
+sudo --user=www-data php scripts/initialize.php --user_name=super --user_password=user123 --workspace=example_workspace --test_login_name=test --test_login_password=user123
 ```  
   
 ## Prerequisites 
@@ -42,3 +42,17 @@ sudo ---user=www-data scripts/initialize.php --user-name=super --user-password=u
 * weserver, for Example apache2 (with mod_rewrite and header extension)
 * php > 7.0 (with pdo_extension)
 * mysql or postgresql
+
+# Dev
+## Refactoring workflow
+* repeat until no error
+  - develop spec
+  - `npm run --prefix integration compare_spec_wth_v1`
+* commit
+* refactor (in v2)
+* repeat until no error
+  - refactor v2 (of sepc if changes were desired) 
+  - `npm run --prefix integration compare_spec_wth_v2`
+* `npm run --prefix integration create_docs`
+* commit
+* next endpoint  

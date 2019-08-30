@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "create_docs": "node_modules/.bin/openapi-generator generate -g html2 -i ../specs/admin.api.yaml -o ../docs/api/admin",
-    "compare_spec_wth_v1": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/login.php"
+    "compare_spec_wth_v1": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/login.php",
+    "compare_spec_wth_v2": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin_v2/php/login.php"
   },
   "keywords": [],
   "author": "Philipp Franck",
