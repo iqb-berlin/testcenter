@@ -30,9 +30,17 @@
 
                 "ReadyNotification": () => {
                     return {
-                        'type': 'vo.FromPlayer.ReadyNotification',
-                        'version': 1
+                        type: 'vo.FromPlayer.ReadyNotification',
+                        version: 1
                     }
+                },
+
+                "NavigationRequestedNotification": (target) => {
+                    return {
+                        type: 'vo.FromPlayer.NavigationRequestedNotification',
+                        sessionId: sessionId,
+                        navigationTarget: target,
+                    };
                 }
             };
 
@@ -51,6 +59,7 @@
                                 alert('Something went wrong.');
                             } else {
                                 send("ChangedDataTransfer", values);
+                                send("NavigationRequestedNotification", '#last');
                             }
                         }
                     });
@@ -74,10 +83,10 @@
 <div style="margin: 10em;">
     <div class="well">
         <h1>This is a sample unit player</h1>
-        <p>... anyway usable, define some forms, using the schema of <a href='' target='_blank'>jsonforms</a> in your Unit."</p>
+        <p>... anyway usable: define some forms, using the schema of <a href='' target='_blank'>jsonforms</a> in your Unit."</p>
         <form></form>
     </div>
-</div>>
+</div>
 
 
 </body>

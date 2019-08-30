@@ -4,7 +4,7 @@
 >
 
   <Metadata>
-    <Id>Testtakers.sample</Id>
+    <Id>TESTTAKERS.SAMPLE</Id>
     <Label>Some logins for testing</Label>
     <Description>This file contains some logins for testing and works a a sample for developers.</Description>
     <Owner>__USER_NAME__</Owner>
