@@ -4,16 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "create_docs": "node_modules/.bin/openapi-generator generate -g html2 -i ../specs/admin.api.yaml -o ../docs/api/admin",
     "compare_spec_wth_v1": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/login.php",
     "compare_spec_wth_v2": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin_v2/php/login.php"
   },
-  "keywords": [],
   "author": "Philipp Franck",
   "license": "MIT",
   "dependencies": {
     "@openapitools/openapi-generator-cli": "0.0.17-4.1.1",
-    "dredd": "^12.0.5"
+    "browser-sync": "^2.26.7",
+    "dredd": "^12.0.5",
+    "gulp": "^4.0.2",
+    "gulp-run": "^1.7.1"
   }
 }
