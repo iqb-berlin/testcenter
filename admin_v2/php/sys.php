@@ -1,26 +1,22 @@
 <?php
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 // www.IQB.hu-berlin.de
 // Bărbulescu, Mechtel
 // 2018, 2019
 // license: MIT
 
-session_start();
-require '../../vendor/autoload.php';
-$app = new \Slim\App();
-// global Variables #############################################
-$container = $app->getContainer();
-$container['code_directory'] = __DIR__.'/../../vo_code';
-$container['data_directory'] = __DIR__.'/../../vo_data';
-$container['conf_directory'] = __DIR__.'/../../config';
-// use in Routes: $directory = $this->get('data_directory');
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
+include_once '../webservice.php';
 
-$app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) {
-    $errorcode = 0;
+/**
+ * check login status
+ */
+$app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
+
+    $responseStatus = 0;
     if ($req->isPost() || $req->isGet()) {
-        $errorcode = 401;
+        $responseStatus = 401;
         $errormessage = 'Auth-Header not sufficient';
         if ($req->hasHeader('Accept')) {
             if ($req->hasHeader('AuthToken')) {
@@ -28,19 +24,19 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
                     $authToken = json_decode($req->getHeaderLine('AuthToken'));
                     $adminToken = $authToken->at;
                     if (strlen($adminToken) > 0) {
-                        require_once($this->get('code_directory') . '/DBConnection.php');
+
                         $myDBConnection = new DBConnection();
                         if (!$myDBConnection->isError()) {
                             $errormessage = 'access denied';
                             if ($myDBConnection->isSuperAdmin($adminToken)) {
-                                $errorcode = 0;
+                                $responseStatus = 0;
                                 $_SESSION['adminToken'] = $adminToken;
                             }
                         }
                         unset($myDBConnection);
                     }
                 } catch (Exception $ex) {
-                    $errorcode = 500;
+                    $responseStatus = 500;
                     $errormessage = 'Something went wrong: ' . $ex->getMessage();
                 }
             }
@@ -48,58 +44,38 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
         }
     }
     
-    if ($errorcode === 0) {
+    if ($responseStatus === 0) {
         return $next($req, $res);
     } else {
-        return $res->withStatus($errorcode)
+        return $res->withStatus($responseStatus)
             ->withHeader('Content-Type', 'text/html')
             ->write($errormessage);
     }
 });
 
-// HELPERs #######################################################
-function jsonencode($obj)
-{
-    return json_encode($obj, JSON_UNESCAPED_UNICODE);
-}
 
-// ##############################################################
-// ######                    routes                        ######
-// ##############################################################
-$app->get('/users', function (ServerRequestInterface $request, ResponseInterface $response) {
+$app->get('/users', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
-        $myerrorcode = 500;
-        $myreturn = [];
-        
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
-		$myDBConnection = new DBConnectionSuperadmin();
-		if (!$myDBConnection->isError()) {
-            $myerrorcode = 0;
-            $ws = $request->getQueryParam('ws', 0);
-            if ($ws > 0) {
-                $myreturn = $myDBConnection->getUsersByWorkspace($ws);
-            } else {
-                $myreturn = $myDBConnection->getUsers();
-            }
-        }
-        unset($myDBConnection);
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        $dbConnection = getDBConnectionSuperAdmin();
+
+        $ws = $request->getQueryParam('ws', 0);
+        if ($ws > 0) {
+            $returner = $dbConnection->getUsersByWorkspace($ws);
         } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+            $returner = $dbConnection->getUsers();
         }
 
-        return $responseToReturn;
-    } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+        unset($dbConnection); // TODO destroy db connection in destructor, (not here)
+
+        $responseData = jsonencode($returner);
+        $response->getBody()->write($responseData);
+
+        return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+
+    } catch (Exception $ex) { // TODO global exception catching
+
+        errorOut($request, $response, $ex);
     }
 });
 

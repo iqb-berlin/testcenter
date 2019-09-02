@@ -40,7 +40,7 @@ sudo --user=www-data php scripts/initialize.php --user_name=super --user_passwor
 ## Prerequisites 
 
 * weserver, for Example apache2 (with mod_rewrite and header extension)
-* php > 7.0 (with pdo_extension)
+* php > 7.1 (with pdo_extension)
 * mysql or postgresql
 
 # Dev
