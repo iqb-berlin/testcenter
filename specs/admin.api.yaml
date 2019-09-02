@@ -1,11 +1,8 @@
 openapi: 3.0.0
 info:
-  title: IQB Demo API
-  description: This is a simple API
-  version: "1"
-servers:
-- url: https://virtserver.swaggerhub.com/paflov/iqb_demo/1
-  description: SwaggerHub API Auto Mocking
+  title: IQB Testcenter API - Backend
+  description: This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend's e2e-test and a mock-server for frontend's e2e-tests. It's the basis for out vision of continuous integration.
+  version: "2.0.0-start"
 paths:
   /login:
     post:
@@ -16,16 +13,20 @@ paths:
             schema:
               $ref: '#/components/schemas/login_request'
       responses:
-        200:
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/login_response'
-        401:
+        "401":
           description: Not authenticated
-        404:
+        "404":
           description: Other Error
+        "406":
+          description: Other Error
+        "500":
+          description: Server Error
 
 components:
   schemas:
@@ -34,31 +35,42 @@ components:
       properties:
         n:
           type: string
-          description: Benutzername als String
-          example: frankfurt
+          description: Username
+          example: super
         p:
           type: string
-          description: Passwort als String
-          example: main
+          description: Password
+          example: user123
+
     login_response:
       type: object
       properties:
         admintoken:
           type: string
-          description: Token für die weitere Authentifizierung
-          example: was_ist_das_fuer_1_token
+          description: "Token for session authentication"
         name:
           type: string
-          description: Wiederholung des Benutzernamens
-          example: frankfurt
+          description: Username repetition
+          example: super
         workspaces:
           type: array
-          description: Liste mit Arbeitsbereichen, für die der Zugriff gestattet ist
-          example:
-          - /workspace1
-          - /workspace2
+          description: "List of workspaces wich are open to this user"
           items:
-            type: string
+            $ref: '#/components/schemas/workspace'
         is_superadmin:
           type: boolean
-          description: Flag, ob mit den Anmeldedaten auch Nutzer angelegt werden können
+          description: "Flag that tells, if this user is a superadmin"
+          example: true
+
+    workspace:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        name:
+          type: string
+          example: "example_workspace"
+        "role":
+          type: string
+          example: "RW"
