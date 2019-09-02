@@ -4,7 +4,7 @@ info:
   description: This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend's e2e-test and a mock-server for frontend's e2e-tests. It's the basis for out vision of continuous integration.
   version: "2.0.0-start"
 paths:
-  /login:
+  /login.php/login:
     post:
       summary: Login
       requestBody:
@@ -27,6 +27,23 @@ paths:
           description: Other Error
         "500":
           description: Server Error
+
+  /sys.php/users:
+    get:
+      summary: get info about all registered users
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_list'
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+
 
 components:
   schemas:
@@ -74,3 +91,29 @@ components:
         "role":
           type: string
           example: "RW"
+
+    user_list:
+      type: array
+      description: List of Users
+      items:
+        $ref: '#/components/schemas/user'
+
+    user:
+      type: object
+      description: a user
+      properties:
+        name:
+          type: string
+          example: super
+        id:
+          type: string
+          example: "1"
+        email:
+          type: string
+          nullable: true
+          example: null
+        is_superadmin:
+          type: string # dredd does not know enum, otherwise ot would be enum["1", "2"]
+          example: "1"
+
+
