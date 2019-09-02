@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "create_docs": "node_modules/.bin/openapi-generator generate -g html2 -i ../specs/admin.api.yaml -o ../docs/api/admin",
+    "create_docs": "node_modules/.bin/openapi-generator generate -g dynamic-html -i ../specs/admin.api.yaml -o ../docs/api/admin",
+    "sync_tasks": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_tasks",
     "compare_spec_wth_v1": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/login.php",
     "compare_spec_wth_v2": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin_v2/php/login.php"
   },

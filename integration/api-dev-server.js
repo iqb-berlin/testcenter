@@ -7,7 +7,7 @@ const browserSync = require('browser-sync').create();
 const run         = require('gulp-run');
 
 
-function browser_sync() {
+function sync_tasks() {
 
     browserSync.init({
         server: "../docs/api/admin"
@@ -28,4 +28,4 @@ function create_docs() {
 }
 
 
-exports.browser_sync = browser_sync;
+exports.sync_tasks = sync_tasks;
