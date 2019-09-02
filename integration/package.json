@@ -4,18 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "create_docs": "node_modules/.bin/openapi-generator generate -g dynamic-html -i ../specs/admin.api.yaml -o ../docs/api/admin",
-    "sync_tasks": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_tasks",
+    "sync_spec_docs": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_spec_docs",
     "compare_spec_wth_v1": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/login.php",
     "compare_spec_wth_v2": "node_modules/.bin/dredd ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin_v2/php/login.php"
   },
   "author": "Philipp Franck",
   "license": "MIT",
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "0.0.17-4.1.1",
     "browser-sync": "^2.26.7",
     "dredd": "^12.0.5",
     "gulp": "^4.0.2",
-    "gulp-run": "^1.7.1"
+    "redoc": "^2.0.0-rc.14"
   }
 }

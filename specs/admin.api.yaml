@@ -9,7 +9,7 @@ servers:
 paths:
   /login:
     post:
-      summary: Mock Login-Endpunkt
+      summary: Login
       requestBody:
         content:
           application/json:
@@ -26,6 +26,7 @@ paths:
           description: Not authenticated
         404:
           description: Other Error
+
 components:
   schemas:
     login_request:

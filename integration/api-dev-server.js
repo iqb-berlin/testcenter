@@ -4,16 +4,25 @@
 
 const gulp        = require('gulp');
 const browserSync = require('browser-sync').create();
-const run         = require('gulp-run');
 
 
-function sync_tasks() {
+function sync_spec_docs() {
 
     browserSync.init({
-        server: "../docs/api/admin"
+        server: "../docs/api/admin",
+        serveStatic: [
+            {
+                route: '/integration/node_modules/redoc/bundles',
+                dir: 'node_modules/redoc/bundles'
+            },
+            {
+                route: '/specs',
+                dir: '../specs'
+            },
+        ]
     });
 
-    gulp.watch("../specs/**", gulp.series(create_docs, update_browser));
+    gulp.watch("../specs/**", gulp.series(update_browser));
 
 }
 
@@ -23,9 +32,4 @@ function update_browser() {
         .pipe(browserSync.stream());
 }
 
-function create_docs() {
-    return run("npm run create_docs").exec();
-}
-
-
-exports.sync_tasks = sync_tasks;
+exports.sync_spec_docs = sync_spec_docs;

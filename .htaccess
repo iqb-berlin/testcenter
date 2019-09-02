@@ -13,5 +13,6 @@ RewriteCond %{REQUEST_URI} !/php_tc/
 RewriteCond %{REQUEST_URI} !/vo_config/
 RewriteCond %{REQUEST_URI} !/specs/
 RewriteCond %{REQUEST_URI} !/docs/
+RewriteCond %{REQUEST_URI} !/integration/node_modules/redoc
 RewriteRule (.*) - [L,R=404]
 
