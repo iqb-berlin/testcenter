@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "sync_spec_docs": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_spec_docs",
-    "compare_spec_wth_v1": "node_modules/.bin/dredd --hookfiles=./hooks.js ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/login.php",
-    "compare_spec_wth_v2": "node_modules/.bin/dredd --hookfiles=./hooks.js ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin_v2/php/login.php"
+    "compare_spec_wth_v1": "node_modules/.bin/dredd --hookfiles=./hooks.js ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/",
+    "compare_spec_wth_v2": "node_modules/.bin/dredd --hookfiles=./hooks.js ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin_v2/php/"
   },
   "author": "Philipp Franck",
   "license": "MIT",

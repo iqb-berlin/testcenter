@@ -1,4 +1,6 @@
-var hooks = require('hooks');
+const hooks = require('hooks');
+
+const stash = {};
 
 hooks.beforeEachValidation(function(transaction) {
 
@@ -7,23 +9,23 @@ hooks.beforeEachValidation(function(transaction) {
     transaction.expected.headers = {};
 });
 
+hooks.beforeEach(function(transaction, done) {
 
-hooks.before('/login > Login > 401', function (transaction, done) {
-    transaction.skip = true;
+    // dont' check error responses
+    if (transaction.expected.statusCode.substr(0,1) !== "2") {
+        transaction.skip = true;
+    }
+
+    // use login credentials
+    transaction.request.headers['AuthToken'] = stash.authToken;
+    transaction.request.headers['Accept'] = "*/*";
     done();
 });
 
-hooks.before('/login > Login > 404', function (transaction, done) {
-    transaction.skip = true;
-    done();
-});
+hooks.after('/login.php/login > Login > 200 > application/json', function(transaction, done) {
 
-hooks.before('/login > Login > 406', function (transaction, done) {
-    transaction.skip = true;
-    done();
-});
-
-hooks.before('/login > Login > 500', function (transaction, done) {
-    transaction.skip = true;
+    // store login credentials
+    stash.authToken = JSON.stringify({at: JSON.parse(transaction.real.body).admintoken});
+    hooks.log("stashing auth token:" + stash.authToken );
     done();
 });
