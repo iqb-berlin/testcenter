@@ -23,6 +23,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/login_response'
+              example:
+                admintoken: a5d6e6c6ef132f2.36500408
+                name: super
+                workspaces:
+                  - id: '1'
+                    name: example_workspace
+                    role: RW
+                is_superadmin: true
+
         "401":
           description: Not authenticated
         "404":
@@ -34,7 +43,7 @@ paths:
 
   /sys.php/users:
     get:
-      summary: get list of users
+      summary: get a list of users
       description: get info about all registered users - in whole application or in a workspace.
 
       parameters:
@@ -73,6 +82,44 @@ paths:
         "500":
           description: Server Error
 
+  /sys.php/workspaces:
+    get:
+      summary: get a list of workspaces
+      description: get a list of all workspaces or all workspaces belonging to a given user
+
+      parameters:
+        - in: query
+          name: u
+          description: user-id or ""
+          required: false
+          examples:
+            a:
+              value: 0
+            b:
+              value: 1
+
+      responses:
+        "200":
+          description: List of Workspaces
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspace_list'
+              examples:
+                a:
+                  value:
+                  - id: '1'
+                    name: example_workspace
+                b:
+                  value:
+                  - id: '1'
+                    name: example_workspace
+                    selected: false
+                    role: ''
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
 
 components:
   schemas:
@@ -117,9 +164,22 @@ components:
         name:
           type: string
           example: "example_workspace"
-        "role":
+        role:
           type: string
           example: "RW"
+        selected:
+          type: boolean
+          example: false
+          description: TODO what does this do?
+      required:
+        - id
+        - name
+
+    workspace_list:
+      type: array
+      description: LIst of Workspaces
+      items:
+        $ref: '#/components/schemas/workspace'
 
     user_list:
       type: array
@@ -147,9 +207,14 @@ components:
         selected:
           type: boolean
           example: true
+          description: TODO what does this do?
         role:
           type: string #dredd does not support enum
           example: "RW"
+      required:
+        - id
+        - name
+        - email
 
 
 
