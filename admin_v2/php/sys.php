@@ -68,53 +68,39 @@ $app->get('/users', function (Slim\Http\Request $request, Slim\Http\Response $re
 
         unset($dbConnection); // TODO destroy db connection in destructor, (not here)
 
-        $responseData = jsonencode($returner);
-        $response->getBody()->write($responseData);
-
-        return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        $response->getBody()->write(jsonencode($returner));
 
     } catch (Exception $ex) { // TODO global exception catching
 
         errorOut($request, $response, $ex);
     }
+
+    return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
 
-// ##############################################################
-$app->get('/workspaces', function (ServerRequestInterface $request, ResponseInterface $response) {
+
+$app->get('/workspaces', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
-        $myerrorcode = 500;
-        $myreturn = [];
-        
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
+
 		$myDBConnection = new DBConnectionSuperadmin();
-		if (!$myDBConnection->isError()) {
-            $myerrorcode = 0;
-            $user = $request->getQueryParam('u', '');
-            if (strlen($user) > 0) {
-                $myreturn = $myDBConnection->getWorkspacesByUser($user);
-            } else {
-                $myreturn = $myDBConnection->getWorkspaces();
-            }
-        }
-        unset($myDBConnection);
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        $user = $request->getQueryParam('u', '');
+        if (strlen($user) > 0) {
+            $returner = $myDBConnection->getWorkspacesByUser($user);
         } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+            $returner = $myDBConnection->getWorkspaces();
         }
 
-        return $responseToReturn;
+        unset($myDBConnection); // TODO destroy db connection in destructor, (not here)
+
+        $response->getBody()->write(jsonencode($returner));
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
+
+    return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
 
 // ##############################################################
