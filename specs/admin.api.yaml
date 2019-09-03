@@ -7,11 +7,13 @@ paths:
   /login.php/login:
     post:
       summary: Login
+
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/login_request'
+
       responses:
         "200":
           description: OK
@@ -30,7 +32,17 @@ paths:
 
   /sys.php/users:
     get:
-      summary: get info about all registered users
+      summary: get list of users
+      description: get info about all registered users - in whole application or in a workspace.
+
+      parameters:
+        - in: query
+          name: ws
+          schema:
+            type: integer
+          description: id of a workspace to get users from. can be omitted for all users in system
+          required: false
+
       responses:
         "200":
           description: List of users
