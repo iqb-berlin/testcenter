@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "sync_spec_docs": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_spec_docs",
-    "compare_spec_wth_v1": "node_modules/.bin/dredd --hookfiles=./hooks.js ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin/php/",
-    "compare_spec_wth_v2": "node_modules/.bin/dredd --hookfiles=./hooks.js ../specs/admin.api.yaml http://localhost/testcenter-iqb-php/admin_v2/php/"
+    "compare_spec_wth_v1": "node test-api-spec.js http://localhost/testcenter-iqb-php/admin/php/",
+    "compare_spec_wth_v2": "node test-api-spec.js http://localhost/testcenter-iqb-php/admin_v2/php/"
   },
   "author": "Philipp Franck",
   "license": "MIT",
@@ -14,6 +14,7 @@
     "browser-sync": "^2.26.7",
     "dredd": "^12.0.5",
     "gulp": "^4.0.2",
-    "redoc": "^2.0.0-rc.14"
+    "redoc": "^2.0.0-rc.14",
+    "yamljs": "^0.3.0"
   }
 }

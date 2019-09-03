@@ -1,8 +1,10 @@
 openapi: 3.0.0
+
 info:
   title: IQB Testcenter API - Backend
   description: This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend's e2e-test and a mock-server for frontend's e2e-tests. It's the basis for out vision of continuous integration.
   version: "2.0.0-start"
+
 paths:
   /login.php/login:
     post:
@@ -38,10 +40,13 @@ paths:
       parameters:
         - in: query
           name: ws
-          schema:
-            type: integer
           description: id of a workspace to get users from. can be omitted for all users in system
           required: false
+          examples:
+            a:
+              value: 0
+            b:
+              value: 1
 
       responses:
         "200":
@@ -50,11 +55,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/user_list'
+              examples:
+                a:
+                  value:
+                    - name: super
+                      id: '1'
+                      email: null
+                      is_superadmin: '1'
+                b:
+                  value:
+                    - name: super
+                      id: '1'
+                      selected: true
+                      role: 'RW'
         "401":
           description: Not authenticated
         "500":
           description: Server Error
-
 
 
 components:
@@ -127,5 +144,14 @@ components:
         is_superadmin:
           type: string # dredd does not know enum, otherwise ot would be enum["1", "2"]
           example: "1"
+        selected:
+          type: boolean
+          example: true
+        role:
+          type: string #dredd does not support enum
+          example: "RW"
+
+
+
 
 
