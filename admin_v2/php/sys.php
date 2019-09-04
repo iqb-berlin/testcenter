@@ -53,226 +53,154 @@ $app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
     }
 });
 
+$app->get('/users', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
 
-$app->get('/users', function (Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
-
-        $dbConnection = getDBConnectionSuperAdmin();
-
-        $ws = $request->getQueryParam('ws', 0);
-        if ($ws > 0) {
-            $returner = $dbConnection->getUsersByWorkspace($ws);
-        } else {
-            $returner = $dbConnection->getUsers();
-        }
-
-        $response->getBody()->write(jsonencode($returner));
-
-    } catch (Exception $ex) { // TODO global exception catching
-
-        return errorOut($request, $response, $ex);
+    $ws = $request->getQueryParam('ws', 0);
+    if ($ws > 0) {
+        $returner = $dbConnection->getUsersByWorkspace($ws);
+    } else {
+        $returner = $dbConnection->getUsers();
     }
+
+    $response->getBody()->write(jsonencode($returner));
 
     return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
 
 
-$app->get('/workspaces', function (Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
+$app->get('/workspaces', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
 
-		$dbConnection = new DBConnectionSuperadmin();
-
-        $user = $request->getQueryParam('u', '');
-        if (strlen($user) > 0) {
-            $returner = $dbConnection->getWorkspacesByUser($user);
-        } else {
-            $returner = $dbConnection->getWorkspaces();
-        }
-
-        $response->getBody()->write(jsonencode($returner));
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
+    $user = $request->getQueryParam('u', '');
+    if (strlen($user) > 0) {
+        $returner = $dbConnection->getWorkspacesByUser($user);
+    } else {
+        $returner = $dbConnection->getWorkspaces();
     }
+
+    $response->getBody()->write(jsonencode($returner));
 
     return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
 
-$app->post('/user/add', function (Slim\Http\Request $request, Slim\Http\Response $response) { //TODO -> [PUT] /user
-    try {
-
-		$dbConnection = new DBConnectionSuperadmin();
-        $requestBody = json_decode($request->getBody());
-        if (!isset($requestBody->n) or !isset($requestBody->p)) { // TODO I made them required. is that okay?
-            throw new HttpBadRequestException($request,"Username or Password missing");
-        }
-
-        $dbConnection->addUser($requestBody->n, $requestBody->p);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
+$app->post('/user/add', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { //TODO -> [PUT] /user
+    $requestBody = json_decode($request->getBody());
+    if (!isset($requestBody->n) or !isset($requestBody->p)) { // TODO I made them required. is that okay?
+        throw new HttpBadRequestException($request,"Username or Password missing");
     }
+
+    $dbConnection->addUser($requestBody->n, $requestBody->p);
+
+    $response->getBody()->write('true'); // TODO don't give anything back
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 
-$app->post('/user/pw', function(Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
-
-        $dbConnection = new DBConnectionSuperadmin();
-        $requestBody = json_decode($request->getBody());
-        if (!isset($requestBody->n) or !isset($requestBody->p)) { // TODO I made them required. is that okay?
-            throw new HttpBadRequestException($request,"Username or Password missing");
-        }
-
-        $dbConnection->setPassword($requestBody->n, $requestBody->p);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
+$app->post('/user/pw', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $requestBody = json_decode($request->getBody());
+    if (!isset($requestBody->n) or !isset($requestBody->p)) { // TODO I made them required. is that okay?
+        throw new HttpBadRequestException($request,"Username or Password missing");
     }
+
+    $dbConnection->setPassword($requestBody->n, $requestBody->p);
+
+    $response->getBody()->write('true'); // TODO don't give anything back
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 
-$app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Response $response) { // TODO change to [DEL] /user
-    try {
+$app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { // TODO change to [DEL] /user
+    $bodyData = json_decode($request->getBody());
+    $userList = isset($bodyData->u) ? $bodyData->u : []; // TODO is it clever to allow emptyness?
 
-		$dbConnection = new DBConnectionSuperadmin();
-        $bodyData = json_decode($request->getBody());
-        $userList = isset($bodyData->u) ? $bodyData->u : []; // TODO is it clever to allow emptyness?
+    $dbConnection->deleteUsers($userList);
 
-        $dbConnection->deleteUsers($userList);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
-    }
+    $response->getBody()->write('true'); // TODO don't give anything back
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return umber of deleted?
 });
 
 
-$app->post('/workspace/add', function (Slim\Http\Request $request, Slim\Http\Response $response) { // TODO use PUT
-    try {
+$app->post('/workspace/add', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { // TODO use PUT
 
-		$dbConnection = new DBConnectionSuperadmin();
-
-        $requestBody = json_decode($request->getBody());
-        if (!isset($requestBody->n)) { // TODO It made them required. is that okay?
-            throw new HttpBadRequestException($request,"New workspace name (n) missing");
-        }
-
-        $dbConnection->addWorkspace($requestBody->n);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
+    $requestBody = json_decode($request->getBody());
+    if (!isset($requestBody->n)) { // TODO It made them required. is that okay?
+        throw new HttpBadRequestException($request,"New workspace name (n) missing");
     }
+
+    $dbConnection->addWorkspace($requestBody->n);
+
+    $response->getBody()->write('true'); // TODO don't give anything back
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 
-$app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
+$app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
 
-		$dbConnection = new DBConnectionSuperadmin();
+    $requestBody = json_decode($request->getBody());
 
-        $requestBody = json_decode($request->getBody());
-
-        if (!isset($requestBody->ws) or !isset($requestBody->n)) { // TODO I made them required. is that okay?
-            throw new HttpBadRequestException($request,"Workspace ID (ws) or new name (n) is missing");
-        }
-
-        $dbConnection->renameWorkspace($requestBody->ws, $requestBody->n);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
+    if (!isset($requestBody->ws) or !isset($requestBody->n)) { // TODO I made them required. is that okay?
+        throw new HttpBadRequestException($request,"Workspace ID (ws) or new name (n) is missing");
     }
+
+    $dbConnection->renameWorkspace($requestBody->ws, $requestBody->n);
+
+    $response->getBody()->write('true'); // TODO don't give anything back
+
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 
-$app->post('/workspaces/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) { // todo use [del]
-    try {
+$app->post('/workspaces/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { // todo use [del]
+    $bodyData = json_decode($request->getBody());
+    $workspaceList = isset($bodyData->ws) ? $bodyData->ws : []; // TODO is it clever to allow emptyness?
 
-        $dbConnection = new DBConnectionSuperadmin();
-        $bodyData = json_decode($request->getBody());
-        $workspaceList = isset($bodyData->ws) ? $bodyData->ws : []; // TODO is it clever to allow emptyness?
+    $dbConnection->deleteWorkspaces($workspaceList);
 
-        $dbConnection->deleteWorkspaces($workspaceList);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
-    }
+    $response->getBody()->write('true'); // TODO don't give anything back
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
 });
 
 
-$app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
+$app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
 
-        $dbConnection = new DBConnectionSuperadmin();
+    $requestBody = json_decode($request->getBody());
 
-        $requestBody = json_decode($request->getBody());
-
-        if (!isset($requestBody->ws) or !isset($requestBody->u) or (!count($requestBody->u))) { // TODO I made them required. is that okay?
-            throw new HttpBadRequestException($request,"Workspace ID (ws) or user-list (u) is missing");
-        }
-
-        $dbConnection->setUsersByWorkspace($requestBody->ws, $requestBody->u);
-
-        $response->getBody()->write('true'); // TODO don't give anything back | number of updated rows?
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
+    if (!isset($requestBody->ws) or !isset($requestBody->u) or (!count($requestBody->u))) { // TODO I made them required. is that okay?
+        throw new HttpBadRequestException($request,"Workspace ID (ws) or user-list (u) is missing");
     }
-});
 
+    $dbConnection->setUsersByWorkspace($requestBody->ws, $requestBody->u);
 
-$app->post('/user/workspaces', function(Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
+    $response->getBody()->write('true'); // TODO don't give anything back | number of updated rows?
 
-        $dbConnection = new DBConnectionSuperadmin();
-
-        $requestBody = json_decode($request->getBody());
-
-        if (!isset($requestBody->u) or !isset($requestBody->ws) or (!count($requestBody->ws))) { // TODO I made them required. is that okay?
-            throw new HttpBadRequestException($request,"User-Name (ws) or workspace-list (u) is missing. Provide user-NAME, not ID.");
-        }
-
-        $dbConnection->setWorkspacesByUser($requestBody->u, $requestBody->ws);
-
-        $response->getBody()->write('true'); // TODO don't give anything back | number of updated rows?
-
-    } catch (Exception $ex) {
-
-        return errorOut($request, $response, $ex);
-    }
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
 });
 
 
 
-$app->run();
+$app->post('/user/workspaces', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+
+    $requestBody = json_decode($request->getBody());
+
+    if (!isset($requestBody->u) or !isset($requestBody->ws) or (!count($requestBody->ws))) { // TODO I made them required. is that okay?
+        throw new HttpBadRequestException($request,"User-Name (ws) or workspace-list (u) is missing. Provide user-NAME, not ID.");
+    }
+
+    $dbConnection->setWorkspacesByUser($requestBody->u, $requestBody->ws);
+
+    $response->getBody()->write('true'); // TODO don't give anything back | number of updated rows?
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
+});
+
+
+try {
+    $app->run();
+} catch (Throwable $e) {
+    error_log('fatal error:' . $e->getMessage());
+}

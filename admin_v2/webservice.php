@@ -41,3 +41,10 @@ $container['code_directory'] = "$ROOT_DIR/vo_code";
 $container['data_directory'] = "$ROOT_DIR/vo_data";
 $container['conf_directory'] = "$ROOT_DIR/config";
 
+$container['errorHandler'] = function($container) {
+    return function ($request, $response, $exception) use ($container) {
+        return errorOut($request, $response, $exception);
+    };
+};
+
+$dbConnection = new DBConnectionSuperadmin();
