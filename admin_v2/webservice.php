@@ -16,6 +16,10 @@ session_start();
 require_once "$ROOT_DIR/vendor/autoload.php";
 require_once "$ROOT_DIR/vo_code/DBConnection.php";
 require_once "$ROOT_DIR/vo_code/DBConnectionSuperadmin.php";
+/**
+ * TODO refactor DCCONNECTION
+ * we assume it will throw exceptions on error
+ */
 require_once "helpers.php";
 
 require_once "$ROOT_DIR/admin_v2/classes/exception/HttpException.class.php";
