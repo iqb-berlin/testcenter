@@ -265,6 +265,85 @@ paths:
         "500":
           description: Server Error
 
+  /sys.php/workspaces/delete:
+    post:
+      summary: delete a list of worksapces
+      description: deletes a list of workspaces given by their ids
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: array
+                  description: list of Workspace-Id
+                  items:
+                    type: integer
+              required:
+                - ws
+            example:
+              ws: [2]
+
+      responses:
+        "200":
+          description: OK, workspace has been renamed
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /sys.php/workspace/users:
+    post:
+      summary: change user roles
+      description: change user roles in a given workspaces
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: integer
+                  description: Workspace-Id
+                u:
+                  type: array
+                  description: array of pairs role-id
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: user-id
+                      role:
+                        type: string # because dredd does not support enum
+                        description: "role: 'RW', 'MO' or 'RO'"
+              required:
+                - ws
+                - u
+            example:
+              ws: 1
+              u:
+                - role: RO
+                  id: 1
+
+
+      responses:
+        "200":
+          description: OK, roles has been updated
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
 components:
   schemas:
     login_request:
