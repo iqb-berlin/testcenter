@@ -82,6 +82,33 @@ paths:
         "500":
           description: Server Error
 
+  /sys.php/user/add:
+    post:
+      summary: add a user
+      description: add a user
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+            example:
+              n: secondUser
+              p: secondUser'sPassword
+
+      responses:
+        "200":
+          description: OK, user has been added
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+
   /sys.php/workspaces:
     get:
       summary: get a list of workspaces
@@ -120,6 +147,8 @@ paths:
           description: Not authenticated
         "500":
           description: Server Error
+
+
 
 components:
   schemas:
@@ -214,7 +243,6 @@ components:
       required:
         - id
         - name
-        - email
 
 
 
