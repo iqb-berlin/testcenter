@@ -198,6 +198,30 @@ paths:
         "500":
           description: Server Error
 
+  /sys.php/workspace/add:
+    post:
+      summary: add a worksapce
+      description: adds a workspace with given name
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workspace'
+            example:
+              n: "new work space"
+
+      responses:
+        "200":
+          description: OK, workspace has been added
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
 
 
 components:
@@ -252,7 +276,6 @@ components:
           description: TODO what does this do?
       required:
         - id
-        - name
 
     workspace_list:
       type: array
