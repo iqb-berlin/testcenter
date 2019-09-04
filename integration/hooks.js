@@ -22,7 +22,7 @@ hooks.beforeEach(function(transaction, done) {
     done();
 });
 
-hooks.after('transformed spec > /login.php/login > Login > 200 > application/json', function(transaction, done) {
+hooks.after('/login.php/login > Login > 200 > application/json', function(transaction, done) {
 
     // store login credentials
     stash.authToken = JSON.stringify({at: JSON.parse(transaction.real.body).admintoken});
