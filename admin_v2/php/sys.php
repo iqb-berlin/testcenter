@@ -163,42 +163,27 @@ $app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Respo
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
-// ##############################################################
-$app->post('/workspace/add', function (ServerRequestInterface $request, ResponseInterface $response) {
+
+$app->post('/workspace/add', function (ServerRequestInterface $request, ResponseInterface $response) { // TODO use PUT
     try {
-        $myerrorcode = 500;
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
+
 		$myDBConnection = new DBConnectionSuperadmin();
-		if (!$myDBConnection->isError()) {
-			$myerrorcode = 401;
-            $bodydata = json_decode($request->getBody());
-            $wsname = isset($bodydata->n) ? $bodydata->n : '';
 
-            $ok = $myDBConnection->addWorkspace($wsname);
-            if ($ok) {
-                $myerrorcode = 0;
-                $myreturn = $ok;
-            }
-		}
-		unset($myDBConnection);
-
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+        $requestBody = json_decode($request->getBody());
+        if (!isset($requestBody->n)) { // TODO It made them required. is that okay?
+            throw new HttpBadRequestException($request,"New workspace name missing");
         }
 
-        return $responseToReturn;
+        $myDBConnection->addWorkspace($requestBody->n);
+
+        $response->getBody()->write('true'); // TODO don't give anything back
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 // ##############################################################
