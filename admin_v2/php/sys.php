@@ -100,8 +100,7 @@ $app->get('/workspaces', function (Slim\Http\Request $request, Slim\Http\Respons
     return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
 
-$app->post('/user/add', function (ServerRequestInterface $request, ResponseInterface $response) { //TODO -> [PUT] /user
-
+$app->post('/user/add', function (Slim\Http\Request $request, Slim\Http\Response $response) { //TODO -> [PUT] /user
     try {
 
 		$dbConnection = new DBConnectionSuperadmin();
@@ -122,43 +121,30 @@ $app->post('/user/add', function (ServerRequestInterface $request, ResponseInter
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
-// ##############################################################
-$app->post('/user/pw', function (ServerRequestInterface $request, ResponseInterface $response) {
+
+$app->post('/user/pw', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
-        $myerrorcode = 500;
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
+
 		$myDBConnection = new DBConnectionSuperadmin();
-		if (!$myDBConnection->isError()) {
-			$myerrorcode = 401;
-            $bodydata = json_decode($request->getBody());
-            $username = isset($bodydata->n) ? $bodydata->n : '';
-            $userpassword = isset($bodydata->p) ? $bodydata->p : '';
 
-            $ok = $myDBConnection->setPassword($username, $userpassword);
-            if ($ok) {
-                $myerrorcode = 0;
-                $myreturn = $ok;
-            }
-		}
-		unset($myDBConnection);
-
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+        $dbConnection = new DBConnectionSuperadmin();
+        $requestBody = json_decode($request->getBody());
+        if (!isset($requestBody->n) or !isset($requestBody->p)) { // TODO I made them required. is that okay?
+            throw new HttpBadRequestException($request,"Username or Password missing");
         }
 
-        return $responseToReturn;
+        $dbConnection->setPassword($requestBody->n, $requestBody->p);
+
+        $response->getBody()->write('true'); // TODO don't give anything back
+
+		unset($myDBConnection);
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 // ##############################################################
