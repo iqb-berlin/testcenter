@@ -108,6 +108,31 @@ paths:
         "500":
           description: Server Error
 
+  /sys.php/user/pw:
+    post:
+      summary: change user-password
+      description: changes the password of a given user. returns true if user does not exist.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+            example:
+              n: seconUser
+              p: secondUser'sNewPassword
+
+      responses:
+        "200":
+          description: password has changed / user did not exist
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
 
   /sys.php/workspaces:
     get:
