@@ -70,7 +70,7 @@ $app->get('/users', function (Slim\Http\Request $request, Slim\Http\Response $re
 
     } catch (Exception $ex) { // TODO global exception catching
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
@@ -93,7 +93,7 @@ $app->get('/workspaces', function (Slim\Http\Request $request, Slim\Http\Respons
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
@@ -114,7 +114,7 @@ $app->post('/user/add', function (Slim\Http\Request $request, Slim\Http\Response
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
@@ -136,7 +136,7 @@ $app->post('/user/pw', function(Slim\Http\Request $request, Slim\Http\Response $
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
@@ -156,7 +156,7 @@ $app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Respo
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return umber of deleted?
@@ -179,7 +179,7 @@ $app->post('/workspace/add', function (Slim\Http\Request $request, Slim\Http\Res
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
@@ -203,7 +203,7 @@ $app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
@@ -223,7 +223,7 @@ $app->post('/workspaces/delete', function (Slim\Http\Request $request, Slim\Http
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
@@ -247,7 +247,7 @@ $app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\R
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 });
 
@@ -269,7 +269,7 @@ $app->post('/user/workspaces', function(Slim\Http\Request $request, Slim\Http\Re
 
     } catch (Exception $ex) {
 
-        errorOut($request, $response, $ex);
+        return errorOut($request, $response, $ex);
     }
 });
 
