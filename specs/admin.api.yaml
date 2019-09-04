@@ -331,6 +331,52 @@ paths:
                 - role: RO
                   id: 1
 
+      responses:
+        "200":
+          description: OK, roles has been updated
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /sys.php/user/workspaces:
+    post:
+      summary: change user roles
+      description: change user roles for a given user in several workspaces. *Provide user-name, not user-id!*
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                u:
+                  type: string
+                  description: user-name (not id!)
+                ws:
+                  type: array
+                  description: array of pairs role-id
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: workspace-id
+                      role:
+                        type: string # because dredd does not support enum
+                        description: "role: 'RW', 'MO' or 'RO'"
+              required:
+                - ws
+                - u
+            example:
+              u: super
+              ws:
+                - role: RW
+                  id: 1
+
 
       responses:
         "200":
