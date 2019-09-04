@@ -4,8 +4,6 @@
 // 2018, 2019
 // license: MIT
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpBadRequestException;
 
 include_once '../webservice.php';
@@ -15,6 +13,7 @@ include_once '../webservice.php';
  */
 $app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
 
+    $errormessage = '';
     $responseStatus = 0;
     if ($req->isPost() || $req->isGet()) {
         $responseStatus = 401;
@@ -244,7 +243,7 @@ $app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\R
 
         $dbConnection->setUsersByWorkspace($requestBody->ws, $requestBody->u);
 
-        $response->getBody()->write('true'); // TODO don't give anything back | numbe rod updated rows?
+        $response->getBody()->write('true'); // TODO don't give anything back | number of updated rows?
 
     } catch (Exception $ex) {
 
@@ -252,44 +251,28 @@ $app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\R
     }
 });
 
-// ##############################################################
-$app->post('/user/workspaces', function (ServerRequestInterface $request, ResponseInterface $response) {
+
+$app->post('/user/workspaces', function(Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
-        $bodydata = json_decode($request->getBody());
-		$workspaces = isset($bodydata->ws) ? $bodydata->ws : [];
-		$username = isset($bodydata->u) ? $bodydata->u : '';
 
-        $myerrorcode = 0;
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
-		$myDBConnection = new DBConnectionSuperadmin();
-        $myreturn = false;
+        $dbConnection = new DBConnectionSuperadmin();
 
-        if (!$myDBConnection->isError()) {
-            $myreturn = $myDBConnection->setWorkspacesByUser($username, $workspaces);
-        }
-        unset($myDBConnection);        
+        $requestBody = json_decode($request->getBody());
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+        if (!isset($requestBody->u) or !isset($requestBody->ws) or (!count($requestBody->ws))) { // TODO I made them required. is that okay?
+            throw new HttpBadRequestException($request,"User-Name (ws) or workspace-list (u) is missing. Provide user-NAME, not ID.");
         }
 
-        return $responseToReturn;
+        $dbConnection->setWorkspacesByUser($requestBody->u, $requestBody->ws);
+
+        $response->getBody()->write('true'); // TODO don't give anything back | number of updated rows?
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
 });
 
-// ##############################################################
-// ##############################################################
+
 
 $app->run();
-?>
