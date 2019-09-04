@@ -137,13 +137,23 @@ paths:
   /sys.php/users/delete:
     post:
       summary: deletes some users
-      description: deletes a list of given users. if the list containes unexistant users, nothing happens.
+      description: deletes a list of given user-names (not ids!). if the list containes unexistant users, nothing happens.
 
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user_name_list'
+              type: object
+              properties:
+                u:
+                  type: array
+                  items:
+                    type: string
+                    description: user-name (not id)
+            example:
+              u:
+                - secondUser
+
 
       responses:
         "200":
