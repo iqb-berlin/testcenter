@@ -147,11 +147,11 @@ $app->post('/user/pw', function(Slim\Http\Request $request, Slim\Http\Response $
 $app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Response $response) { // TODO change to [DEL] /user
     try {
 
-		$myDBConnection = new DBConnectionSuperadmin();
+		$dbConnection = new DBConnectionSuperadmin();
         $bodyData = json_decode($request->getBody());
-        $userList = isset($bodyData->u) ? $bodyData->u : [];
+        $userList = isset($bodyData->u) ? $bodyData->u : []; // TODO is it clever to allow emptyness?
 
-        $myDBConnection->deleteUsers($userList);
+        $dbConnection->deleteUsers($userList);
 
         $response->getBody()->write('true'); // TODO don't give anything back
 
@@ -160,21 +160,21 @@ $app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Respo
         errorOut($request, $response, $ex);
     }
 
-    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return umber of deleted?
 });
 
 
 $app->post('/workspace/add', function (Slim\Http\Request $request, Slim\Http\Response $response) { // TODO use PUT
     try {
 
-		$myDBConnection = new DBConnectionSuperadmin();
+		$dbConnection = new DBConnectionSuperadmin();
 
         $requestBody = json_decode($request->getBody());
         if (!isset($requestBody->n)) { // TODO It made them required. is that okay?
             throw new HttpBadRequestException($request,"New workspace name (n) missing");
         }
 
-        $myDBConnection->addWorkspace($requestBody->n);
+        $dbConnection->addWorkspace($requestBody->n);
 
         $response->getBody()->write('true'); // TODO don't give anything back
 
@@ -190,7 +190,7 @@ $app->post('/workspace/add', function (Slim\Http\Request $request, Slim\Http\Res
 $app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
 
-		$myDBConnection = new DBConnectionSuperadmin();
+		$dbConnection = new DBConnectionSuperadmin();
 
         $requestBody = json_decode($request->getBody());
 
@@ -198,7 +198,7 @@ $app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\
             throw new HttpBadRequestException($request,"Workspace ID (ws) or new name (n) is missing");
         }
 
-        $myDBConnection->renameWorkspace($requestBody->ws, $requestBody->n);
+        $dbConnection->renameWorkspace($requestBody->ws, $requestBody->n);
 
         $response->getBody()->write('true'); // TODO don't give anything back
 
@@ -210,76 +210,45 @@ $app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
-// ##############################################################
-$app->post('/workspaces/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) {
+
+$app->post('/workspaces/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) { // todo use [del]
     try {
-        $bodydata = json_decode($request->getBody());
-		$wsIds = isset($bodydata->ws) ? $bodydata->ws : [];
 
-        $myerrorcode = 500;
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
-		$myDBConnection = new DBConnectionSuperadmin();
-		if (!$myDBConnection->isError()) {
-            $ok = $myDBConnection->deleteWorkspaces($wsIds);
-            if ($ok) {
-                $myerrorcode = 0;
-                $myreturn = $ok;
-            }
-        }
-		unset($myDBConnection);
+        $dbConnection = new DBConnectionSuperadmin();
+        $bodyData = json_decode($request->getBody());
+        $workspaceList = isset($bodyData->ws) ? $bodyData->ws : []; // TODO is it clever to allow emptyness?
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
+        $dbConnection->deleteWorkspaces($workspaceList);
 
-        return $responseToReturn;
+        $response->getBody()->write('true'); // TODO don't give anything back
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
 });
 
-// ##############################################################
+
 $app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
-        $bodydata = json_decode($request->getBody());
-		$wsId = isset($bodydata->ws) ? $bodydata->ws : 0;
-		$users = isset($bodydata->u) ? $bodydata->u : [];
 
-        $myerrorcode = 0;
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
-		$myDBConnection = new DBConnectionSuperadmin();
-        $myreturn = false;
+        $dbConnection = new DBConnectionSuperadmin();
 
-        if (!$myDBConnection->isError()) {
-            $myreturn = $myDBConnection->setUsersByWorkspace($wsId, $users);
-        }
-        unset($myDBConnection);        
+        $requestBody = json_decode($request->getBody());
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+        if (!isset($requestBody->ws) or !isset($requestBody->u) or (!count($requestBody->u))) { // TODO I made them required. is that okay?
+            throw new HttpBadRequestException($request,"Workspace ID (ws) or user-list (u) is missing");
         }
 
-        return $responseToReturn;
+        $dbConnection->setUsersByWorkspace($requestBody->ws, $requestBody->u);
+
+        $response->getBody()->write('true'); // TODO don't give anything back | numbe rod updated rows?
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
 });
 
