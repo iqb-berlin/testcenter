@@ -122,10 +122,8 @@ $app->post('/user/add', function (Slim\Http\Request $request, Slim\Http\Response
 });
 
 
-$app->post('/user/pw', function (Slim\Http\Request $request, Slim\Http\Response $response) {
+$app->post('/user/pw', function(Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
-
-		$myDBConnection = new DBConnectionSuperadmin();
 
         $dbConnection = new DBConnectionSuperadmin();
         $requestBody = json_decode($request->getBody());
@@ -137,8 +135,6 @@ $app->post('/user/pw', function (Slim\Http\Request $request, Slim\Http\Response 
 
         $response->getBody()->write('true'); // TODO don't give anything back
 
-		unset($myDBConnection);
-
     } catch (Exception $ex) {
 
         errorOut($request, $response, $ex);
@@ -147,41 +143,24 @@ $app->post('/user/pw', function (Slim\Http\Request $request, Slim\Http\Response 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
-// ##############################################################
-$app->post('/users/delete', function (ServerRequestInterface $request, ResponseInterface $response) {
+
+$app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Response $response) { // TODO change to [DEL] /user
     try {
-        $bodydata = json_decode($request->getBody());
-		$userList = isset($bodydata->u) ? $bodydata->u : [];
 
-        $myerrorcode = 500;
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
 		$myDBConnection = new DBConnectionSuperadmin();
-		if (!$myDBConnection->isError()) {
-            $ok = $myDBConnection->deleteUsers($userList);
-            if ($ok) {
-                $myerrorcode = 0;
-                $myreturn = $ok;
-            }
-		}
-		unset($myDBConnection);
+        $bodyData = json_decode($request->getBody());
+        $userList = isset($bodyData->u) ? $bodyData->u : [];
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
+        $myDBConnection->deleteUsers($userList);
 
-        return $responseToReturn;
+        $response->getBody()->write('true'); // TODO don't give anything back
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 // ##############################################################
