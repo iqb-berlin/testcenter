@@ -164,14 +164,14 @@ $app->post('/users/delete', function(Slim\Http\Request $request, Slim\Http\Respo
 });
 
 
-$app->post('/workspace/add', function (ServerRequestInterface $request, ResponseInterface $response) { // TODO use PUT
+$app->post('/workspace/add', function (Slim\Http\Request $request, Slim\Http\Response $response) { // TODO use PUT
     try {
 
 		$myDBConnection = new DBConnectionSuperadmin();
 
         $requestBody = json_decode($request->getBody());
         if (!isset($requestBody->n)) { // TODO It made them required. is that okay?
-            throw new HttpBadRequestException($request,"New workspace name missing");
+            throw new HttpBadRequestException($request,"New workspace name (n) missing");
         }
 
         $myDBConnection->addWorkspace($requestBody->n);
@@ -186,48 +186,32 @@ $app->post('/workspace/add', function (ServerRequestInterface $request, Response
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
-// ##############################################################
-$app->post('/workspace/rename', function (ServerRequestInterface $request, ResponseInterface $response) {
+
+$app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
-        $myerrorcode = 500;
-        $myreturn = false;
-        require_once($this->get('code_directory') . '/DBConnectionSuperadmin.php');
+
 		$myDBConnection = new DBConnectionSuperadmin();
-		if (!$myDBConnection->isError()) {
-			$myerrorcode = 401;
-            $bodydata = json_decode($request->getBody());
-            $wsId = isset($bodydata->ws) ? $bodydata->ws : 0;
-            $wsname = isset($bodydata->n) ? $bodydata->n : '';
 
-            $ok = $myDBConnection->renameWorkspace($wsId, $wsname);
-            if ($ok) {
-                $myerrorcode = 0;
-                $myreturn = $ok;
-            }
-		}
-		unset($myDBConnection);
+        $requestBody = json_decode($request->getBody());
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+        if (!isset($requestBody->ws) or !isset($requestBody->n)) { // TODO I made them required. is that okay?
+            throw new HttpBadRequestException($request,"Workspace ID (ws) or new name (n) is missing");
         }
 
-        return $responseToReturn;
+        $myDBConnection->renameWorkspace($requestBody->ws, $requestBody->n);
+
+        $response->getBody()->write('true'); // TODO don't give anything back
+
     } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+
+        errorOut($request, $response, $ex);
     }
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 // ##############################################################
-$app->post('/workspaces/delete', function (ServerRequestInterface $request, ResponseInterface $response) {
+$app->post('/workspaces/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
         $bodydata = json_decode($request->getBody());
 		$wsIds = isset($bodydata->ws) ? $bodydata->ws : [];
@@ -264,7 +248,7 @@ $app->post('/workspaces/delete', function (ServerRequestInterface $request, Resp
 });
 
 // ##############################################################
-$app->post('/workspace/users', function (ServerRequestInterface $request, ResponseInterface $response) {
+$app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
         $bodydata = json_decode($request->getBody());
 		$wsId = isset($bodydata->ws) ? $bodydata->ws : 0;
