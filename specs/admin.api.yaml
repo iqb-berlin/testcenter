@@ -186,11 +186,11 @@ paths:
                 a:
                   value:
                   - id: '1'
-                    name: example_workspace
+                    name: "example_workspace"
                 b:
                   value:
                   - id: '1'
-                    name: example_workspace
+                    name: "example_workspace"
                     selected: false
                     role: ''
         "401":
@@ -207,7 +207,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/workspace'
+              properties:
+                n:
+                  type: string
+                  description: Password
+              required:
+                - n
             example:
               n: "new work space"
 
@@ -223,6 +228,42 @@ paths:
         "500":
           description: Server Error
 
+  /sys.php/workspace/rename:
+    post:
+      summary: rename a worksapces
+      description: renames a workspace with given id
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: integer
+                  description: Workspace-Id
+                  example: 2
+                n:
+                  type: string
+                  description: Password
+                  example:
+              required:
+                - ws
+                - n
+            example:
+              ws: 2
+              n: "new york space"
+
+      responses:
+        "200":
+          description: OK, workspace has been renamed
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
 
 components:
   schemas:
