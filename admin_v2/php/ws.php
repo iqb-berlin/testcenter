@@ -1,6 +1,5 @@
 <?php
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
+
 use Slim\Exception\HttpInternalServerErrorException;use Slim\Exception\HttpNotFoundException;
 
 // www.IQB.hu-berlin.de
@@ -13,6 +12,7 @@ $dbConnection = new DBConnectionAdmin();
 
 $app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
     $errorCode = 0;
+    $errormessage = "Only get and post are allowed";
     if ($req->isPost() || $req->isGet()) {
         $errorCode = 401;
         $errormessage = 'Auth-Header not sufficient';
@@ -61,7 +61,7 @@ $app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
 });
 
 
-$app->get('/filelist', function (Slim\Http\Request $request, Slim\Http\Response $response) {
+$app->get('/filelist', function(Slim\Http\Request $request, Slim\Http\Response $response) {
 
     $files = getAllFilesFromWorkspace($_SESSION['workspaceDirName']);
     $response->getBody()->write(jsonencode($files));
@@ -69,7 +69,7 @@ $app->get('/filelist', function (Slim\Http\Request $request, Slim\Http\Response 
 });
 
 
-$app->post('/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) {
+$app->post('/delete', function(Slim\Http\Request $request, Slim\Http\Response $response) {
 
     $workspaceDirName = $_SESSION['workspaceDirName'];
     $requestBody = json_decode($request->getBody());
@@ -86,6 +86,8 @@ $app->post('/delete', function (Slim\Http\Request $request, Slim\Http\Response $
     if (!$deleted) { // TODO is this ok?
         throw new HttpInternalServerErrorException($request, "Konnte keine Dateien löschen.");
     }
+
+    $returnMessage = "";
 
     if ($deleted == 1) {
         $returnMessage = 'Eine Datei gelöscht.'; // TODO should't these messages be business of the frontend?
@@ -138,5 +140,8 @@ $app->post('/lock', function (Slim\Http\Request $request, Slim\Http\Response $re
 });
 
 
-$app->run();
-?>
+try {
+    $app->run();
+} catch (Throwable $e) {
+    error_log('fatal error:' . $e->getMessage());
+}
