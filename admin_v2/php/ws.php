@@ -1,7 +1,7 @@
 <?php
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpInternalServerErrorException;use Slim\Exception\HttpNotFoundException;
 
 // www.IQB.hu-berlin.de
 // Bărbulescu, Mechtel
@@ -34,7 +34,7 @@ $app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
                                         $_SESSION['adminToken'] = $adminToken;
                                         $_SESSION['workspace'] = $workspace;
                                         $_SESSION['workspaceDirName'] = $this->get('data_directory') . '/ws_' . $workspace;
-                                        if (!file_exists($_SESSION['workspaceDirName'])) { // TODO move this to auth token check?
+                                        if (!file_exists($_SESSION['workspaceDirName'])) { // TODO I moved this to auth token check - is that OK
                                             throw new HttpNotFoundException($req, "Workspace {$_SESSION['workspaceDirName']} not found");
                                         }
                                     }
@@ -68,100 +68,57 @@ $app->get('/filelist', function (Slim\Http\Request $request, Slim\Http\Response 
     return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
 
-// ##############################################################
-// ##############################################################
+
 $app->post('/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
-        $workspaceDirName = $_SESSION['workspaceDirName'];
-        $bodydata = json_decode($request->getBody());
-		$fileList = isset($bodydata->f) ? $bodydata->f : [];
 
-        $myerrorcode = 404;
-        if (file_exists($workspaceDirName)) {
-            $myerrorcode = 0;
-            $errorcount = 0;
-            $successcount = 0;
-            foreach($fileList as $fileToDelete) {
-                $mysplits = explode('::', $fileToDelete);
-                if (count($mysplits) == 2) {
-                    if (unlink($workspaceDirName . '/' . $mysplits[0] . '/' . $mysplits[1])) {
-                        $successcount = $successcount + 1;
-                    } else {
-                        $errorcount = $errorcount + 1;
-                    }
-                }
-            }
-            if ($errorcount > 0) {
-                $myreturn = 'e:Konnte ' . $errorcount . ' Dateien nicht löschen.';	
-            } else {
-                if ($successcount == 1) {
-                    $myreturn = 'Eine Datei gelöscht.';
-                } else {
-                    $myreturn = 'Erfolgreich ' . $successcount . ' Dateien gelöscht.';	
-                }
-            }
-        }
+    $workspaceDirName = $_SESSION['workspaceDirName'];
+    $requestBody = json_decode($request->getBody());
+    $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
+    $filesToDelete = array_map(function($fileAndFolderName) { // TODO make this unnecessary (provide proper names from frontend)
+        return str_replace('::', '/', $fileAndFolderName);
+    }, $filesToDelete);
 
-        return $responseToReturn;
-    } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+    error_log("E:" . print_r($filesToDelete,1));
+
+    $deleted = deleteFilesFromWorkspace($workspaceDirName, $filesToDelete);
+
+    if (!$deleted) { // TODO is this ok?
+        throw new HttpInternalServerErrorException($request, "Konnte keine Dateien löschen.");
     }
+
+    if ($deleted == 1) {
+        $returnMessage = 'Eine Datei gelöscht.'; // TODO should't these messages be business of the frontend?
+    }
+
+    if ($deleted == count($filesToDelete)) {
+        $returnMessage = "Erfolgreich $filesToDelete Dateien gelöscht.";
+    }
+
+    if ($deleted < count($filesToDelete)) { // TODO check if it makes sense that this still returns 200
+        $returnMessage = 'Konnte ' . (count($filesToDelete) - $deleted) . ' Dateien nicht löschen.';
+    }
+
+    $response->getBody()->write(jsonencode($returnMessage));  // TODO why encoding a single string as JSON?
+    $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+
+    return $responseToReturn;
 });
 
-// ##############################################################
-// ##############################################################
-$app->post('/unlock', function (Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
-        $workspace = $_SESSION['workspace'];
-        $bodydata = json_decode($request->getBody());
-		$groups = isset($bodydata->g) ? $bodydata->g : [];
 
-        require_once($this->get('code_directory') . '/DBConnectionAdmin.php');                                
-        $myDBConnection = new DBConnectionAdmin();
-        $myerrorcode = 0;
-        $myreturn = false;
+$app->post('/unlock', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
 
-        if (!$myDBConnection->isError()) {
-            $myreturn = true;
-            foreach($groups as $groupName) {
-                if (!$myDBConnection->changeBookletLockStatus($workspace, $groupName, false)) {
-                    $myreturn = false;
-                    break;
-                }
-            }
-        }
-        unset($myDBConnection);        
+    $workspace = $_SESSION['workspace'];
+    $requestBody = json_decode($request->getBody());
+    $groups = isset($requestBody->g) ? $requestBody->g : [];
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
-
-        return $responseToReturn;
-    } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+    foreach($groups as $groupName) {
+        $dbConnection->changeBookletLockStatus($workspace, $groupName, true);
     }
+
+    $response->getBody()->write('true'); // TODO don't give anything back
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
 
@@ -178,7 +135,6 @@ $app->post('/lock', function (Slim\Http\Request $request, Slim\Http\Response $re
     $response->getBody()->write('true'); // TODO don't give anything back
 
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
-
 });
 
 

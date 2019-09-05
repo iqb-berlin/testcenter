@@ -42,7 +42,13 @@ function errorOut(Slim\Http\Request $request, Slim\Http\Response $response, Thro
         ->write($ex->getMessage() ? $ex->getMessage() : $ex->getDescription());
 }
 
-
+/**
+ *
+ * TODO move this to a better place... maybe filefactory?
+ *
+ * @param $workspaceDirPath
+ * @return array
+ */
 function getAllFilesFromWorkspace($workspaceDirPath) {
 
     $fileList = array();
@@ -85,3 +91,23 @@ function getAllFilesFromWorkspace($workspaceDirPath) {
 
     return $fileList;
 }
+
+/**
+ * @param $workspaceDirPath
+ * @param $filesToDelete - array of relative file paths
+ * @return integer
+ */
+function deleteFilesFromWorkspace($workspaceDirPath, $filesToDelete) {
+    $deleted = 0;
+    foreach($filesToDelete as $fileToDelete) {
+        $fileToDeletePath = $workspaceDirPath . '/' . $fileToDelete;
+        if (file_exists($fileToDeletePath)
+            and (realpath($fileToDeletePath) === $fileToDeletePath) // to avoid hacks like ..::../README.md
+            and unlink($fileToDeletePath)) {
+                $deleted += 1;
+        }
+    }
+    return $deleted;
+}
+
+
