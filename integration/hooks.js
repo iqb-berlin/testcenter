@@ -17,7 +17,11 @@ hooks.beforeEach(function(transaction, done) {
     }
 
     // use login credentials
-    transaction.request.headers['AuthToken'] = stash.authToken;
+    if (typeof transaction.request.headers['AuthToken'] !== "undefined") {
+        let authToken =transaction.request.headers['AuthToken'];
+        authToken.at = stash.authToken;
+        transaction.request.headers['AuthToken'] = JSON.stringify(authToken);
+    }
     transaction.request.headers['Accept'] = "*/*";
     done();
 });
@@ -25,7 +29,7 @@ hooks.beforeEach(function(transaction, done) {
 hooks.after('/login.php/login > Login > 200 > application/json', function(transaction, done) {
 
     // store login credentials
-    stash.authToken = JSON.stringify({at: JSON.parse(transaction.real.body).admintoken});
+    stash.authToken = JSON.parse(transaction.real.body).admintoken;
     hooks.log("stashing auth token:" + stash.authToken );
     done();
 });
