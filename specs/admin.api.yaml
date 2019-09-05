@@ -542,7 +542,7 @@ paths:
   /ws.php/lock:
     post:
       summary: lock workspace
-      description: locks a workspace
+      description: locks a group of booklets in a workspace
 
       requestBody:
         content:
@@ -569,11 +569,109 @@ paths:
 
       responses:
         "200":
-          description: OK, roles has been updated
+          description: OK
           content:
             text/plain:
               example:
                 "true"
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+
+  /ws.php/unlock:
+    post:
+      summary: unlock workspace
+      description: unlocks a group of bookltes in a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                g:
+                  type: array
+                  description: array of group names
+                  items:
+                    type: string
+            example:
+              g:
+                - group1
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+
+  /ws.php/delete:
+    post:
+      summary: delete files
+      description: deletes files from a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                f:
+                  type: array
+                  description: array of file names. path delimitershave to be replaced by `::`
+                  items:
+                    type: string
+            examples:
+                a:
+                  value:
+                    f:
+                      - "SysCheck::SAMPLE_SYSCHECK.XML"
+                b:
+                  description: include some non-existant or forbidden files
+                  value:
+                    f:
+                      - "SysCheck::SAMPLE_SYSCHECK.XML"
+                      - "some rubbish"
+                      - "a/b"
+                      - "../../README.md"
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK, roles has been updated
+          content:
+            application/json:
+              examples:
+                a:
+                  value: "Eine Datei gelöscht."
+                b:
+                  value: "Konnte 3 Dateien nicht löschen."
+
         "401":
           description: Not authenticated
         "404":
@@ -591,7 +689,7 @@ components:
         at:
           type: string
           description: authtoken
-          example: "xxxx.xxxx"
+          example: 1337ymca1337666.xxx13370
         ws:
           type: integer
           description: workspace-id
