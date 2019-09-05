@@ -9,6 +9,7 @@ use Slim\Exception\HttpNotFoundException;
 // license: MIT
 
 include_once '../webservice.php';
+$dbConnection = new DBConnectionAdmin();
 
 $app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
     $errorCode = 0;
@@ -163,47 +164,21 @@ $app->post('/unlock', function (Slim\Http\Request $request, Slim\Http\Response $
     }
 });
 
-// ##############################################################
-// ##############################################################
-$app->post('/lock', function (Slim\Http\Request $request, Slim\Http\Response $response) {
-    try {
-        $workspace = $_SESSION['workspace'];
-        $bodydata = json_decode($request->getBody());
-		$groups = isset($bodydata->g) ? $bodydata->g : [];
 
-        require_once($this->get('code_directory') . '/DBConnectionAdmin.php');                                
-        $myDBConnection = new DBConnectionAdmin();
-        $myerrorcode = 0;
-        $myreturn = false;
+$app->post('/lock', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
 
-        if (!$myDBConnection->isError()) {
-            $myreturn = true;
-            foreach($groups as $groupName) {
-                if (!$myDBConnection->changeBookletLockStatus($workspace, $groupName, true)) {
-                    $myreturn = false;
-                    break;
-                }
-            }
-        }
-        unset($myDBConnection);        
+    $workspace = $_SESSION['workspace'];
+    $requestBody = json_decode($request->getBody());
+    $groups = isset($requestBody->g) ? $requestBody->g : [];
 
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
-
-        return $responseToReturn;
-    } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
+    foreach($groups as $groupName) {
+        $dbConnection->changeBookletLockStatus($workspace, $groupName, true);
     }
+
+    $response->getBody()->write('true'); // TODO don't give anything back
+
+    return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+
 });
 
 

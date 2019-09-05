@@ -49,5 +49,3 @@ $container['errorHandler'] = function($container) {
         return errorOut($request, $response, $exception);
     };
 };
-
-$dbConnection = new DBConnectionSuperadmin();

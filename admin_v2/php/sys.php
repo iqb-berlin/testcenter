@@ -7,6 +7,7 @@
 use Slim\Exception\HttpBadRequestException;
 
 include_once '../webservice.php';
+$dbConnection = new DBConnectionSuperadmin();
 
 /**
  * check login status
