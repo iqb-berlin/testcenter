@@ -1,26 +1,19 @@
 <?php
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\HttpNotFoundException;
+
 // www.IQB.hu-berlin.de
 // Bărbulescu, Mechtel
 // 2018, 2019
 // license: MIT
 
-session_start();
-require '../../vendor/autoload.php';
-$app = new \Slim\App();
-// global Variables #############################################
-$container = $app->getContainer();
-$container['code_directory'] = __DIR__.'/../../vo_code';
-$container['data_directory'] = __DIR__.'/../../vo_data';
-$container['conf_directory'] = __DIR__.'/../../config';
-// use in Routes: $directory = $this->get('data_directory');
+include_once '../webservice.php';
 
-
-$app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) {
-    $errorcode = 0;
+$app->add(function (Slim\Http\Request $req, Slim\Http\Response $res, $next) {
+    $errorCode = 0;
     if ($req->isPost() || $req->isGet()) {
-        $errorcode = 401;
+        $errorCode = 401;
         $errormessage = 'Auth-Header not sufficient';
         if ($req->hasHeader('Accept')) {
             if ($req->hasHeader('AuthToken')) {
@@ -30,25 +23,26 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
                     if (strlen($adminToken) > 0) {
                         $workspace = $authToken->ws;
                         if (is_numeric($workspace)) {
-                            if ($workspace > 0) {
-                                require_once($this->get('code_directory') . '/DBConnectionAdmin.php');                                
-                                $myDBConnection = new DBConnectionAdmin();
-                                if (!$myDBConnection->isError()) {
+                            if ($workspace > 0) { // TODO 401 is not correct for missing workspace
+                                $dbConnection = new DBConnectionAdmin();
+                                if (!$dbConnection->isError()) {
                                     $errormessage = 'access denied';
-                                    $role = $myDBConnection->getWorkspaceRole($adminToken, $workspace);
+                                    $role = $dbConnection->getWorkspaceRole($adminToken, $workspace);
                                     if (($req->isPost() && ($role == 'RW')) || ($req->isGet() && ($role != ''))) {
-                                        $errorcode = 0;
+                                        $errorCode = 0;
                                         $_SESSION['adminToken'] = $adminToken;
                                         $_SESSION['workspace'] = $workspace;
                                         $_SESSION['workspaceDirName'] = $this->get('data_directory') . '/ws_' . $workspace;
+                                        if (!file_exists($_SESSION['workspaceDirName'])) { // TODO move this to auth token check?
+                                            throw new HttpNotFoundException($req, "Workspace {$_SESSION['workspaceDirName']} not found");
+                                        }
                                     }
                                 }
-                                unset($myDBConnection);
                             }
                         }
                     }
                 } catch (Exception $ex) {
-                    $errorcode = 500;
+                    $errorCode = 500;
                     $errormessage = 'Something went wrong: ' . $ex->getMessage();
                 }
             }
@@ -56,82 +50,26 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
         }
     }
     
-    if ($errorcode === 0) {
+    if ($errorCode === 0) {
         return $next($req, $res);
     } else {
-        return $res->withStatus($errorcode)
+        return $res->withStatus($errorCode)
             ->withHeader('Content-Type', 'text/html')
             ->write($errormessage);
     }
 });
 
-// HELPERs #######################################################
-function jsonencode($obj)
-{
-    return json_encode($obj, JSON_UNESCAPED_UNICODE);
-}
 
-// ##############################################################
-// ######                    routes                        ######
-// ##############################################################
-$app->get('/filelist', function (ServerRequestInterface $request, ResponseInterface $response) {
-    try {
-        $workspaceDirName = $_SESSION['workspaceDirName'];
-		$myreturn = [];
+$app->get('/filelist', function (Slim\Http\Request $request, Slim\Http\Response $response) {
 
-        $myerrorcode = 404;
-        if (file_exists($workspaceDirName)) {
-            $myerrorcode = 0;
-            require_once($this->get('code_directory') . '/FilesFactory.php');
-            $workspaceDir = opendir($workspaceDirName);
-            while (($subdir = readdir($workspaceDir)) !== false) {
-                if (($subdir !== '.') && ($subdir !== '..')) {
-                    $fullsubdirname = $workspaceDirName . '/' .  $subdir;
-                    if (is_dir($fullsubdirname)) {
-                        $mydir = opendir($fullsubdirname);
-                        while (($entry = readdir($mydir)) !== false) {
-                            $fullfilename = $fullsubdirname . '/' . $entry;
-                            if (is_file($fullfilename)) {
-                                $rs = new ResourceFile($entry, filemtime($fullfilename), filesize($fullfilename));
-
-                                array_push($myreturn, [
-                                    'filename' => $rs->getFileName(),
-                                    'filesize' => $rs->getFileSize(),
-                                    'filesizestr' => $rs->getFileSizeString(),
-                                    'filedatetime' => $rs->getFileDateTime(),
-                                    'filedatetimestr' => $rs->getFileDateTimeString(),
-                                    'type' => $subdir,
-                                    'typelabel' => $subdir
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($myreturn);
-            $response->getBody()->write($responseData);
-    
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
-
-        return $responseToReturn;
-    } catch (Exception $ex) {
-        return $response->withStatus(500)
-            ->withHeader('Content-Type', 'text/html')
-            ->write('Something went wrong: ' . $ex->getMessage());
-    }
+    $files = getAllFilesFromWorkspace($_SESSION['workspaceDirName']);
+    $response->getBody()->write(jsonencode($files));
+    return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
 
 // ##############################################################
 // ##############################################################
-$app->post('/delete', function (ServerRequestInterface $request, ResponseInterface $response) {
+$app->post('/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
         $workspaceDirName = $_SESSION['workspaceDirName'];
         $bodydata = json_decode($request->getBody());
@@ -184,7 +122,7 @@ $app->post('/delete', function (ServerRequestInterface $request, ResponseInterfa
 
 // ##############################################################
 // ##############################################################
-$app->post('/unlock', function (ServerRequestInterface $request, ResponseInterface $response) {
+$app->post('/unlock', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
         $workspace = $_SESSION['workspace'];
         $bodydata = json_decode($request->getBody());
@@ -227,7 +165,7 @@ $app->post('/unlock', function (ServerRequestInterface $request, ResponseInterfa
 
 // ##############################################################
 // ##############################################################
-$app->post('/lock', function (ServerRequestInterface $request, ResponseInterface $response) {
+$app->post('/lock', function (Slim\Http\Request $request, Slim\Http\Response $response) {
     try {
         $workspace = $_SESSION['workspace'];
         $bodydata = json_decode($request->getBody());

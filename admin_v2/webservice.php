@@ -15,7 +15,10 @@ session_start();
 
 require_once "$ROOT_DIR/vendor/autoload.php";
 require_once "$ROOT_DIR/vo_code/DBConnection.php";
+require_once "$ROOT_DIR/vo_code/DBConnectionAdmin.php";
 require_once "$ROOT_DIR/vo_code/DBConnectionSuperadmin.php";
+require_once "$ROOT_DIR/vo_code/FilesFactory.php";
+
 /**
  * TODO refactor DCCONNECTION
  * we assume it will throw exceptions on error
@@ -37,9 +40,9 @@ require_once "$ROOT_DIR/admin_v2/classes/exception/HttpUnauthorizedException.cla
 $app = new App();
 
 $container = $app->getContainer();
-$container['code_directory'] = "$ROOT_DIR/vo_code";
-$container['data_directory'] = "$ROOT_DIR/vo_data";
-$container['conf_directory'] = "$ROOT_DIR/config";
+$container['code_directory'] = realpath("$ROOT_DIR/vo_code");
+$container['data_directory'] = realpath("$ROOT_DIR/vo_data");
+$container['conf_directory'] = realpath("$ROOT_DIR/config");
 
 $container['errorHandler'] = function($container) {
     return function ($request, $response, $exception) use ($container) {

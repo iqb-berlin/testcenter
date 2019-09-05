@@ -41,3 +41,47 @@ function errorOut(Slim\Http\Request $request, Slim\Http\Response $response, Thro
         ->withHeader('Content-Type', 'text/html')
         ->write($ex->getMessage() ? $ex->getMessage() : $ex->getDescription());
 }
+
+
+function getAllFilesFromWorkspace($workspaceDirPath) {
+
+    $fileList = array();
+
+    $workspaceDirHandle = opendir($workspaceDirPath);
+    while (($subDir = readdir($workspaceDirHandle)) !== false) {
+        if (($subDir === '.') or ($subDir === '..')) {
+            continue;
+        }
+
+        $fullSubDirPath = $workspaceDirPath . '/' . $subDir;
+
+        if (!is_dir($fullSubDirPath)) {
+            continue;
+        }
+
+        $subDirHandle = opendir($fullSubDirPath);
+        while (($entry = readdir($subDirHandle)) !== false) {
+            $fullFilePath = $fullSubDirPath . '/' . $entry;
+            if (!is_file($fullFilePath)) {
+                continue;
+            }
+
+            $rs = new ResourceFile($entry, filemtime($fullFilePath), filesize($fullFilePath));
+
+            error_log("PUSH" .  $rs->getFileName());
+            array_push($fileList, [
+                'filename' => $rs->getFileName(),
+                'filesize' => $rs->getFileSize(),
+                'filesizestr' => $rs->getFileSizeString(), // TODO is this used?
+                'filedatetime' => $rs->getFileDateTime(),
+                'filedatetimestr' => $rs->getFileDateTimeString(), // TODO is this used?
+                'type' => $subDir,
+                'typelabel' => $subDir // TODO is this used?
+            ]);
+
+        }
+
+    }
+
+    return $fileList;
+}

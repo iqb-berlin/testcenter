@@ -3,7 +3,7 @@
 // Bărbulescu, Stroescu, Mechtel
 // 2018
 // license: MIT
-
+// duplication!??!
 	// preflight OPTIONS-Request bei CORS
 	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		exit();
