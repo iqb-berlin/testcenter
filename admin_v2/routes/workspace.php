@@ -37,3 +37,28 @@ $app->post('/php/getReviews.php', function(Slim\Http\Request $request, Slim\Http
 
     return $response->withHeader("Warning", "endpoint deprecated");
 });
+
+// TODO describe
+$app->get('/workspace/{ws_id}/results', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+
+    $wsId = $request->getAttribute('ws_id');
+    $adminToken = $_SESSION['adminToken'];
+
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $wsId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$wsId is not provided.");
+    }
+
+    $results = getAssembledResults($wsId);
+
+    return $response->withJson($results);
+});
+
+
+$app->post('/php/getResultData.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+
+    $workspaceId = $_SESSION['workspace'];
+
+    $response = $app->subRequest('GET', "/workspace/$workspaceId/results");
+
+    return $response->withHeader("Warning", "endpoint deprecated");
+});
