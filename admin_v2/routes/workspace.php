@@ -62,3 +62,31 @@ $app->post('/php/getResultData.php', function(Slim\Http\Request $request, Slim\H
 
     return $response->withHeader("Warning", "endpoint deprecated");
 });
+
+// TODO describe
+$app->get('/workspace/{ws_id}/responses', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+
+    $wsId = $request->getAttribute('ws_id');
+    $adminToken = $_SESSION['adminToken'];
+    $groups = explode(",", $request->getParam('groups'));
+
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $wsId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$wsId is not provided.");
+    }
+
+    $results = $dbConnectionAdmin->getResponses($wsId, $groups);
+
+    return $response->withJson($results);
+});
+
+
+$app->post('/php/getResponses.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+
+    $workspaceId = $_SESSION['workspace'];
+    $requestBody = json_decode($request->getBody());
+    $groups = isset($requestBody->g) ? $requestBody->g : [];
+
+    $response = $app->subRequest('GET', "/workspace/$workspaceId/responses", 'groups=' . implode(',', $groups));
+
+    return $response->withHeader("Warning", "endpoint deprecated");
+});
