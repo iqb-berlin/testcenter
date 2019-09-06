@@ -26,7 +26,7 @@ hooks.beforeEach(function(transaction, done) {
     done();
 });
 
-hooks.after('/login.php/login > Login > 200 > application/json', function(transaction, done) {
+hooks.after('/php/login.php/login > Login > 200 > application/json', function(transaction, done) {
 
     // store login credentials
     stash.authToken = JSON.parse(transaction.real.body).admintoken;

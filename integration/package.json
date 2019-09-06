@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "sync_spec_docs": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_spec_docs",
-    "dredd_test": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin/php/",
-    "dredd_test_repeat": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js repeat_dredd_test --api=http://localhost/testcenter-iqb-php/admin/php/",
-    "dredd_test_with_v2": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin_v2/php/"
+    "dredd_test": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin/",
+    "dredd_test_repeat": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js repeat_dredd_test --api=http://localhost/testcenter-iqb-php/admin/",
+    "dredd_test_with_v2": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin_v2/"
   },
   "author": "Philipp Franck",
   "license": "MIT",

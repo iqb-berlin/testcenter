@@ -6,7 +6,7 @@ info:
   version: "2.0.0-start"
 
 paths:
-  /login.php/login:
+  /php/login.php/login:
     post:
       summary: Login
 
@@ -41,7 +41,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/users:
+  /php/sys.php/users:
     get:
       summary: get a list of users
       description: get info about all registered users - in whole application or in a workspace.
@@ -88,7 +88,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/user/add:
+  /php/sys.php/user/add:
     post:
       summary: add a user
       description: add a user
@@ -122,7 +122,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/user/pw:
+  /php/sys.php/user/pw:
     post:
       summary: change user-password
       description: changes the password of a given user. returns true if user does not exist.
@@ -156,7 +156,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/users/delete:
+  /php/sys.php/users/delete:
     post:
       summary: deletes some users
       description: deletes a list of given user-names (not ids!). if the list containes unexistant users, nothing happens.
@@ -199,7 +199,7 @@ paths:
 
 
 
-  /sys.php/workspaces:
+  /php/sys.php/workspaces:
     get:
       summary: get a list of workspaces
       description: get a list of all workspaces or all workspaces belonging to a given user
@@ -244,7 +244,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/workspace/add:
+  /php/sys.php/workspace/add:
     post:
       summary: add a worksapce
       description: adds a workspace with given name
@@ -282,7 +282,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/workspace/rename:
+  /php/sys.php/workspace/rename:
     post:
       summary: rename a worksapces
       description: renames a workspace with given id
@@ -327,7 +327,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/workspaces/delete:
+  /php/sys.php/workspaces/delete:
     post:
       summary: delete a list of worksapces
       description: deletes a list of workspaces given by their ids
@@ -367,7 +367,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/workspace/users:
+  /php/sys.php/workspace/users:
     post:
       summary: change user roles
       description: change user roles in a given workspaces
@@ -421,7 +421,7 @@ paths:
         "500":
           description: Server Error
 
-  /sys.php/user/workspaces:
+  /php/sys.php/user/workspaces:
     post:
       summary: change user roles
       description: change user roles for a given user in several workspaces. *Provide user-name, not user-id!*
@@ -474,7 +474,7 @@ paths:
         "500":
           description: Server Error
 
-  /ws.php/filelist:
+  /php/ws.php/filelist:
     get:
       summary: get files of workspace
       description: get a list of all files in workspace
@@ -539,7 +539,7 @@ paths:
           description: Server Error
 
 
-  /ws.php/lock:
+  /php/ws.php/lock:
     post:
       summary: lock workspace
       description: locks a group of booklets in a workspace
@@ -581,7 +581,7 @@ paths:
         "500":
           description: Server Error
 
-  /ws.php/unlock:
+  /php/ws.php/unlock:
     post:
       summary: unlock workspace
       description: unlocks a group of bookltes in a workspace
@@ -623,7 +623,7 @@ paths:
         "500":
           description: Server Error
 
-  /ws.php/delete:
+  /php/ws.php/delete:
     post:
       summary: delete files
       description: deletes files from a workspace
@@ -651,10 +651,10 @@ paths:
                       - "some rubbish"
                       - "a/b"
                       - "../../README.md"
-
       parameters:
         - in: header
           name: AuthToken
+          description: auth-token with wokspace number
           schema:
             $ref: '#/components/schemas/auth'
           example:
@@ -678,6 +678,73 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
+
+  /php/getReviews.php:
+    post:
+      summary: get reviews
+      description: retrieves a list of unit- and booklet reviews for a given workspace and groups
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                g:
+                  type: array
+                  description: a list
+                  items:
+                    type: string
+            example:
+              g:
+                - sample_group
+
+      responses:
+        "200":
+          description: OK, list of reviews
+          content:
+            application/json:
+              example:
+                - unitname: UNIT.SAMPLE
+                  bookletname: BOOKLET.SAMPLE
+                  groupname: sample_group
+                  loginname: test
+                  code: euf
+                  reviewtime: '2019-09-06 11:19:56'
+                  entry: this is a sample unit review
+                  priority: '1'
+                  categories: ''
+                - bookletname: BOOKLET.SAMPLE
+                  groupname: sample_group
+                  loginname: test
+                  code: euf
+                  reviewtime: '2019-09-06 11:19:56'
+                  entry: sample booklet review
+                  priority: '1'
+                  categories: ''
+                  unitname: ''
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+
 
 
 components:
