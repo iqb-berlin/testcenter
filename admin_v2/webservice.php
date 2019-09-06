@@ -20,7 +20,7 @@ require_once "$ROOT_DIR/vo_code/DBConnectionSuperadmin.php";
 require_once "$ROOT_DIR/vo_code/FilesFactory.php";
 
 /**
- * TODO refactor DCCONNECTION
+ * TODO refactor DBCONNECTION
  * we assume it will throw exceptions on error
  */
 require_once "helpers.php";
@@ -38,6 +38,8 @@ require_once "$ROOT_DIR/admin_v2/classes/exception/HttpUnauthorizedException.cla
  */
 
 $app = new App();
+
+require_once "authMiddlewares.php";
 
 $container = $app->getContainer();
 $container['code_directory'] = realpath("$ROOT_DIR/vo_code");

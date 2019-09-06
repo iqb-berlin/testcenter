@@ -109,5 +109,3 @@ function deleteFilesFromWorkspace($workspaceDirPath, $filesToDelete) {
     }
     return $deleted;
 }
-
-
