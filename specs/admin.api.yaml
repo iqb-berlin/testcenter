@@ -682,7 +682,7 @@ paths:
   /php/getReviews.php:
     post:
       summary: get reviews
-      description: retrieves a list of unit- and booklet reviews for a given workspace and groups
+      description: retrieves a list of unit- and booklet-reviews for a given workspace and groups
 
       parameters:
         - in: header
@@ -714,6 +714,28 @@ paths:
           description: OK, list of reviews
           content:
             application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    unitname:
+                      type: string
+                      description: stays empty if booklet review
+                    bookletname:
+                      type: string
+                    groupname:
+                      type: string
+                    code:
+                      type: string
+                      description: login code
+                    entry:
+                      type: string
+                    priority:
+                      type: string
+                    categories:
+                      type: string
+
               example:
                 - unitname: UNIT.SAMPLE
                   bookletname: BOOKLET.SAMPLE
@@ -733,6 +755,65 @@ paths:
                   priority: '1'
                   categories: ''
                   unitname: ''
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /php/getResultData.php:
+    post:
+      summary: get results
+      description: retrieves a list of unit- and booklet reviews for a given workspace and groups
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK, list of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    groupname:
+                      type: string
+                    bookletsStarted:
+                      type: integer
+                    num_units_min:
+                      type: string
+                    num_units_max:
+                      type: string
+                    num_units_total:
+                      type: string
+                    lastchange:
+                      type: string
+                      description: timestamp
+                    num_units_mean:
+                      type: integer
+              example:
+                - groupname: sample_group
+                  bookletsStarted: 1
+                  num_units_min: '1'
+                  num_units_max: '1'
+                  num_units_total: '1'
+                  lastchange: '1567776853037'
+                  num_units_mean: 1
         "401":
           description: Not authenticated
         "403":
