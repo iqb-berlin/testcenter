@@ -1,5 +1,9 @@
 <?php
 
+require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionSuperadmin.php');
+require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionTC.php');
+require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionStart.php');
+
 /**
  * Class DBConnectionStarter
  */
@@ -155,14 +159,22 @@ class Initializer extends DBConnectionSuperadmin {
     }
 
     /**
+     * returns a string with 10 randomized 3-letter logins codes
+     *
+     * @return array
+     */
+    public function getLoginCodes() {
+
+        return array_map(array($this, '_generateLogin'), range(0, 9));
+    }
+
+    /**
      * @param $workspace - _number_ of workspace where to import
      * @param $parameters - assoc array of parameters. they can replace placeholders like __TEST_LOGIN__ in the sample
      * data files if given
      * @throws Exception
      */
     public function importSampleData($workspace, $parameters) {
-
-        $parameters['test_person_codes'] = implode(" ", array_map(array($this, '_generateLogin'), range(0, 9)));
 
         $this->_importSampleFile($workspace, 'Booklet', $parameters);
         $this->_importSampleFile($workspace, 'Testtakers', $parameters);
@@ -172,6 +184,29 @@ class Initializer extends DBConnectionSuperadmin {
 
         echo "Sample data parameters: \n";
         echo implode("\n", array_map(function($param_key) use ($parameters) {return "$param_key: {$parameters[$param_key]}";}, array_keys($parameters)));
+    }
+
+    /**
+     * @param $loginCode
+     */
+    public function createSampleLoginsReviewsLogs($loginCode) {
+
+        $timestamp = microtime(true) * 1000;
+
+        $dbc = new DBConnectionStart();
+        $token = $dbc->login(1, 'sample_group', 'test', 'hot', "");
+        $bookletDbIdAndPersontoken = $dbc->startBookletByLoginToken($token, $loginCode, 'BOOKLET.SAMPLE', "sample_booklet_label");
+        $bookletDbId = $bookletDbIdAndPersontoken['bookletDbId'];
+
+        $dbc = new DBConnectionTC();
+        $dbc->addBookletReview($bookletDbId, 1, "", "sample booklet review");
+        $dbc->addUnitReview($bookletDbId, "UNIT.SAMPLE", 1, "", "this is a sample unit review");
+        $dbc->addUnitLog($bookletDbId, 'UNIT.SAMPLE', "sample unit log", $timestamp);
+        $dbc->addBookletLog($bookletDbId, "sample log entry", $timestamp);
+        $dbc->newResponses($bookletDbId, 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
+        $dbc->setUnitLastState($bookletDbId, "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
+
+
     }
 
 }

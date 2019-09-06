@@ -49,7 +49,6 @@ try  {
         throw new Exception("Password must have at least 7 characters!");
     }
 
-    require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionSuperadmin.php');
     require_once "initializer.class.php";
 
     $config_file_path = realpath(dirname(__FILE__)) . '/../config/DBConnectionData.json';
@@ -64,25 +63,33 @@ try  {
         throw new Exception("DB-config file is malformed JSON:\n$config");
     }
 
-    $dbc = new Initializer();
+    $initializer = new Initializer();
     $retries = 5;
-    while ($retries-- && $dbc->isError()) {
-        $dbc = new Initializer();
+    while ($retries-- && $initializer->isError()) {
+        $initializer = new Initializer();
         echo "Database connection failed... retry ($retries attempts left)\n";
         usleep(20 * 1000000); // give database container time to come up
     }
-    if (($retries <= 0) and $dbc->isError()) {
-        throw new Exception($dbc->errorMsg);
+    if (($retries <= 0) and $initializer->isError()) {
+        throw new Exception($initializer->errorMsg);
     }
 
-    if ($dbc->addSuperuser($args['user_name'], $args['user_password'])) {
+    if ($initializer->addSuperuser($args['user_name'], $args['user_password'])) {
         echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.\n";
     }
 
     if (isset($args['workspace'])) {
-        $workspace_id = $dbc->getWorkspace($args['workspace']);
-        $dbc->grantRights($args['user_name'], $workspace_id);
-        $dbc->importSampleData($workspace_id, $args);
+
+        $workspace_id = $initializer->getWorkspace($args['workspace']);
+
+        $initializer->grantRights($args['user_name'], $workspace_id);
+
+        $loginCodes = $initializer->getLoginCodes();
+        $args['test_person_codes'] = implode(" ", $loginCodes);
+
+        $initializer->importSampleData($workspace_id, $args);
+
+        $initializer->createSampleLoginsReviewsLogs($loginCodes[0]);
     }
 
 } catch (Exception $e) {
