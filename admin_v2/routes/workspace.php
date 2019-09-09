@@ -8,7 +8,7 @@ $dbConnectionAdmin = new DBConnectionAdmin();
 
 $app->add('authWithWorkspace');
 
-$app->get('/php/ws.php/filelist', function(Slim\Http\Request $request, Slim\Http\Response $response) {
+$app->get('/php/ws.php/filelist', function(/** @noinspection PhpUnusedParameterInspection */ Slim\Http\Request $req, Slim\Http\Response $response) {
 
     $workspaceId = $_SESSION['workspace'];
     $workspaceController = new WorkspaceController($workspaceId);
@@ -110,7 +110,7 @@ $app->get('/workspace/{ws_id}/reviews', function(Slim\Http\Request $request, Sli
     return $response->withJson($reviews);
 });
 
-$app->post('/php/getReviews.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+$app->post('/php/getReviews.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
 
     $workspaceId = $_SESSION['workspace'];
     $requestBody = json_decode($request->getBody());
@@ -139,7 +139,7 @@ $app->get('/workspace/{ws_id}/results', function(Slim\Http\Request $request, Sli
 });
 
 
-$app->post('/php/getResultData.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+$app->post('/php/getResultData.php', function(/** @noinspection PhpUnusedParameterInspection */ Slim\Http\Request $req, Slim\Http\Response $response) use ($app) {
 
     $workspaceId = $_SESSION['workspace'];
 
@@ -165,7 +165,7 @@ $app->get('/workspace/{ws_id}/responses', function(Slim\Http\Request $request, S
 });
 
 
-$app->post('/php/getResponses.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+$app->post('/php/getResponses.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
 
     $workspaceId = $_SESSION['workspace'];
     $requestBody = json_decode($request->getBody());
@@ -193,7 +193,7 @@ $app->get('/workspace/{ws_id}/status', function(Slim\Http\Request $request, Slim
 });
 
 
-$app->post('/php/getMonitorData.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+$app->post('/php/getMonitorData.php', function(/** @noinspection PhpUnusedParameterInspection */  Slim\Http\Request $req, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
 
     $workspaceId = $_SESSION['workspace'];
 
@@ -219,7 +219,7 @@ $app->get('/workspace/{ws_id}/logs', function(Slim\Http\Request $request, Slim\H
 });
 
 
-$app->post('/php/getLogs.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+$app->post('/php/getLogs.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
 
     $workspaceId = $_SESSION['workspace'];
     $requestBody = json_decode($request->getBody());
