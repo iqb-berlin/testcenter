@@ -4,8 +4,6 @@ use Slim\Exception\HttpNotFoundException;
 
 function authWithWorkspace(Slim\Http\Request $req, Slim\Http\Response $res, $next) {
 
-    global $ROOT_DIR; // TODO find a better solution then global
-
     $errorCode = 0;
     $errormessage = "Only get and post are allowed";
     if ($req->isPost() || $req->isGet()) {
@@ -28,7 +26,7 @@ function authWithWorkspace(Slim\Http\Request $req, Slim\Http\Response $res, $nex
                                         $errorCode = 0;
                                         $_SESSION['adminToken'] = $adminToken;
                                         $_SESSION['workspace'] = $workspace;
-                                        $_SESSION['workspaceDirName'] = realpath("$ROOT_DIR/vo_data") . '/ws_' . $workspace;
+                                        $_SESSION['workspaceDirName'] = realpath(ROOT_DIR . "/vo_data/ws_$workspace");
                                         if (!file_exists($_SESSION['workspaceDirName'])) { // TODO I moved this to auth token check - is that OK
                                             throw new HttpNotFoundException($req, "Workspace {$_SESSION['workspaceDirName']} not found");
                                         }

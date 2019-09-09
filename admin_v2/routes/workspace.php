@@ -10,7 +10,9 @@ $app->add('authWithWorkspace');
 
 $app->get('/php/ws.php/filelist', function(Slim\Http\Request $request, Slim\Http\Response $response) {
 
-    $files = getAllFilesFromWorkspace($_SESSION['workspaceDirName']);
+    $workspaceId = $_SESSION['workspace'];
+    $workspaceController = new WorkspaceController($workspaceId);
+    $files = $workspaceController->getAllFiles();
     $response->getBody()->write(jsonencode($files));
     return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 });
@@ -18,7 +20,6 @@ $app->get('/php/ws.php/filelist', function(Slim\Http\Request $request, Slim\Http
 
 $app->post('/php/ws.php/delete', function(Slim\Http\Request $request, Slim\Http\Response $response) {
 
-    $workspaceDirName = $_SESSION['workspaceDirName'];
     $requestBody = json_decode($request->getBody());
     $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
 
@@ -26,7 +27,9 @@ $app->post('/php/ws.php/delete', function(Slim\Http\Request $request, Slim\Http\
         return str_replace('::', '/', $fileAndFolderName);
     }, $filesToDelete);
 
-    $deleted = deleteFilesFromWorkspace($workspaceDirName, $filesToDelete);
+    $workspaceId = $_SESSION['workspace'];
+    $workspaceController = new WorkspaceController($workspaceId);
+    $deleted = $workspaceController->deleteFiles($filesToDelete);
 
     if (!$deleted) { // TODO is this ok?
         throw new HttpInternalServerErrorException($request, "Konnte keine Dateien löschen.");
@@ -84,23 +87,24 @@ $app->post('/php/ws.php/lock', function (Slim\Http\Request $request, Slim\Http\R
     return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
 });
 
+// the following endpoints have already new routes and redirects from the old ones
 
 // TODO describe
 $app->get('/workspace/{ws_id}/reviews', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
 
     $groups = explode(",", $request->getParam('groups'));
-    $wsId = $request->getAttribute('ws_id');
+    $workspaceId = $request->getAttribute('ws_id');
     $adminToken = $_SESSION['adminToken'];
 
     if (!$groups) {
         throw new HttpBadRequestException($request, "Parameter groups is missing");
     }
 
-    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $wsId)) {
-        throw new HttpForbiddenException($request,"Access to workspace ws_$wsId is not provided.");
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
     }
 
-    $reviews = $dbConnectionAdmin->getReviews($wsId, $groups);
+    $reviews = $dbConnectionAdmin->getReviews($workspaceId, $groups);
 
     return $response->withJson($reviews);
 });
@@ -119,14 +123,14 @@ $app->post('/php/getReviews.php', function(Slim\Http\Request $request, Slim\Http
 // TODO describe
 $app->get('/workspace/{ws_id}/results', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
 
-    $wsId = $request->getAttribute('ws_id');
+    $workspaceId = $request->getAttribute('ws_id');
     $adminToken = $_SESSION['adminToken'];
 
-    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $wsId)) {
-        throw new HttpForbiddenException($request,"Access to workspace ws_$wsId is not provided.");
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
     }
 
-    $results = getAssembledResults($wsId);
+    $results = getAssembledResults($workspaceId);
 
     return $response->withJson($results);
 });
@@ -144,15 +148,15 @@ $app->post('/php/getResultData.php', function(Slim\Http\Request $request, Slim\H
 // TODO describe
 $app->get('/workspace/{ws_id}/responses', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
 
-    $wsId = $request->getAttribute('ws_id');
+    $workspaceId = $request->getAttribute('ws_id');
     $adminToken = $_SESSION['adminToken'];
     $groups = explode(",", $request->getParam('groups'));
 
-    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $wsId)) {
-        throw new HttpForbiddenException($request,"Access to workspace ws_$wsId is not provided.");
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
     }
 
-    $results = $dbConnectionAdmin->getResponses($wsId, $groups);
+    $results = $dbConnectionAdmin->getResponses($workspaceId, $groups);
 
     return $response->withJson($results);
 });
@@ -168,3 +172,30 @@ $app->post('/php/getResponses.php', function(Slim\Http\Request $request, Slim\Ht
 
     return $response->withHeader("Warning", "endpoint deprecated");
 });
+
+
+// TODO describe
+$app->get('/workspace/{ws_id}/status', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+
+    $workspaceId = $request->getAttribute('ws_id');
+    $adminToken = $_SESSION['adminToken'];
+
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
+    }
+
+    $workspaceController = new WorkspaceController($workspaceId);
+
+    return $response->withJson($workspaceController->getTestStatusOverview());
+});
+
+
+$app->post('/php/getMonitorData.php', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+
+    $workspaceId = $_SESSION['workspace'];
+
+    $response = $app->subRequest('GET', "/workspace/$workspaceId/status");
+
+    return $response->withHeader("Warning", "endpoint deprecated");
+});
+
