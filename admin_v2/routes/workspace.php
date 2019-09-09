@@ -225,7 +225,7 @@ $app->post('/php/getLogs.php', function(Slim\Http\Request $request, /** @noinspe
     $requestBody = json_decode($request->getBody());
     $groups = isset($requestBody->g) ? $requestBody->g : [];
 
-    $response = $app->subRequest('GET', "/workspace/$workspaceId/responses", 'groups=' . implode(',', $groups));
+    $response = $app->subRequest('GET', "/workspace/$workspaceId/logs", 'groups=' . implode(',', $groups));
 
     return $response->withHeader("Warning", "endpoint deprecated");
 });
