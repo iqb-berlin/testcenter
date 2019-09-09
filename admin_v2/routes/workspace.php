@@ -3,6 +3,8 @@
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpInternalServerErrorException;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Http\Stream;
 
 $dbConnectionAdmin = new DBConnectionAdmin();
 
@@ -229,3 +231,79 @@ $app->post('/php/getLogs.php', function(Slim\Http\Request $request, /** @noinspe
 
     return $response->withHeader("Warning", "endpoint deprecated");
 });
+
+
+// TODO describe
+$app->get('/workspace/{ws_id}/file/{type}/{filename}', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+
+    $workspaceId = $request->getAttribute('ws_id', 0);
+    $fileType = $request->getAttribute('type', '[type missing]'); // TODO basename
+    $filename = $request->getAttribute('filename', '[filename missing]');
+    $adminToken = $_SESSION['adminToken'];
+
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
+    }
+
+    $fullFilename = ROOT_DIR . "/vo_data/ws_$workspaceId/$fileType/$filename";
+    if (!file_exists($fullFilename)) {
+        throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
+    }
+
+    $response->withHeader('Content-Description', 'File Transfer');
+    $response->withHeader('Content-Type', ($fileType == 'Resource') ? 'application/octet-stream' : 'text/xml' );
+    $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    $response->withHeader('Expires', '0');
+    $response->withHeader('Cache-Control', 'must-revalidate');
+    $response->withHeader('Pragma', 'public');
+    $response->withHeader('Content-Length', filesize($fullFilename));
+
+    $fileHandle = fopen($fullFilename, 'rb');
+
+    $fileStream = new Stream($fileHandle);
+
+    return $response->withBody($fileStream);
+});
+
+$app->get('/php/getFile.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app, $dbConnectionAdmin) {
+
+    $workspaceId = $request->getAttribute('ws_id', 0);
+    $fileType = $request->getAttribute('t', '[parameter missing: t]'); // TODO basename
+    $filename = $request->getAttribute('fn', '[parameter missing: fn]');
+    $adminToken = $request->getAttribute('at', '[parameter missing at]');
+
+    // in this endpoint at is not given in header but as get parameter!
+    if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+        throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
+    }
+
+    $response = $app->subRequest('GET', "/workspace/$workspaceId/file/$fileType/$filename");
+
+    return $response->withHeader("Warning", "endpoint deprecated");
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
