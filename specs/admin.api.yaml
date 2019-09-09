@@ -1057,6 +1057,52 @@ paths:
         "503":
           description: Service Unavailable
 
+  /php/getFile.php:
+
+    get:
+      summary: get file
+      description: retrieves a file form a goven worksapce by filename
+
+      parameters:
+        - in: query
+          name: ws
+          description: workspace-id
+          example: 1
+        - in: query
+          name: at
+          description: auth token
+          example: 1337ymca1337666.xxx13370
+        - in: query
+          name: t
+          description: file type - Testtakers | Booklet | Resource | Unit | SysCheck - CASE SENSITIVE!
+          example: Unit
+        - in: query
+          name: fn
+          description: filename. - CASE SENSITIVE!
+          example: SAMPLE_UNIT.XML
+
+      responses:
+        "200":
+          description: File contents
+          content:
+            text/xml:
+              example:
+                <Unit>....</Unit>
+            application/octet-stream:
+              example:
+                <DOCTYPE html>...
+
+        "404":
+          description: workspace or file not found
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
 components:
   schemas:
 
