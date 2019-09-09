@@ -49,7 +49,21 @@ $container['data_directory'] = realpath(ROOT_DIR . "/vo_data");
 $container['conf_directory'] = realpath(ROOT_DIR . "/config");
 
 $container['errorHandler'] = function($container) {
-    return function ($request, $response, $exception) use ($container) {
-        return errorOut($request, $response, $exception);
+    return function (Slim\Http\Request $request, Slim\Http\Response $response, Exception $exception) use ($container) {
+
+        error_log("[Error: " . $exception->getCode() . "]". $exception->getMessage());
+        error_log("[Error: " . $exception->getCode() . "]".  $exception->getFile() . ' | line ' . $exception->getLine());
+
+        if (!is_a($exception, "Slim\Exception\HttpException")) {
+            $exception = new \Slim\Exception\HttpException($request, $exception->getMessage(), 500, $exception);
+        }
+
+        error_log("[Error: " . $exception->getCode() . "]". $exception->getTitle());
+        error_log("[Error: " . $exception->getCode() . "]". $exception->getDescription());
+
+        return $response
+            ->withStatus($exception->getCode())
+            ->withHeader('Content-Type', 'text/html')
+            ->write($exception->getMessage() ? $exception->getMessage() : $exception->getDescription());
     };
 };

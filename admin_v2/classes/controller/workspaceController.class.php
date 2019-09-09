@@ -5,6 +5,7 @@ class WorkspaceController {
 
     private $_workspaceId = 0;
     private $_workspacePath = '';
+    private $_dbConnection;
 
     function __construct($workspaceId) {
 
@@ -12,6 +13,8 @@ class WorkspaceController {
         $this->_workspaceId = $workspaceId;
 
         $this->_workspacePath = ROOT_DIR . '/vo_data/ws_' .  $workspaceId;
+
+        $this->_dbConnection = new DBConnectionAdmin();
     }
 
     /**
@@ -77,6 +80,53 @@ class WorkspaceController {
             }
         }
         return $deleted;
+    }
+
+    /**
+     * TODO find better place for this, maybe in DBconnector?
+     *
+     * @param $workspaceId
+     * @return array
+     */
+    function getAssembledResults($workspaceId) {
+
+        $keyedReturn = [];
+
+        foreach($this->_dbConnection->getResultsCount($workspaceId) as $resultSet) {
+            // groupname, loginname, code, bookletname, num_units
+            if (!isset($keyedReturn[$resultSet['groupname']])) {
+                $keyedReturn[$resultSet['groupname']] = [
+                    'groupname' => $resultSet['groupname'],
+                    'bookletsStarted' => 1,
+                    'num_units_min' => $resultSet['num_units'],
+                    'num_units_max' => $resultSet['num_units'],
+                    'num_units_total' => $resultSet['num_units'],
+                    'lastchange' => $resultSet['lastchange']
+                ];
+            } else {
+                $keyedReturn[$resultSet['groupname']]['bookletsStarted'] += 1;
+                $keyedReturn[$resultSet['groupname']]['num_units_total'] += $resultSet['num_units'];
+                if ($resultSet['num_units'] > $keyedReturn[$resultSet['groupname']]['num_units_max']) {
+                    $keyedReturn[$resultSet['groupname']]['num_units_max'] = $resultSet['num_units'];
+                }
+                if ($resultSet['num_units'] < $keyedReturn[$resultSet['groupname']]['num_units_min']) {
+                    $keyedReturn[$resultSet['groupname']]['num_units_min'] = $resultSet['num_units'];
+                }
+                if ($resultSet['lastchange'] > $keyedReturn[$resultSet['groupname']]['lastchange']) {
+                    $keyedReturn[$resultSet['groupname']]['lastchange'] = $resultSet['lastchange'];
+                }
+            }
+        }
+
+        $returner = array();
+
+        // get rid of the key and calculate mean
+        foreach($keyedReturn as $group => $groupData) {
+            $groupData['num_units_mean'] = $groupData['num_units_total'] / $groupData['bookletsStarted'];
+            array_push($returner, $groupData);
+        }
+
+        return $returner;
     }
 
 
@@ -158,8 +208,7 @@ class WorkspaceController {
 
         $preparedBooklets = $this->assemblePreparedBookletsFromFiles();
 
-        $dbConnection = new DBConnectionAdmin();
-        foreach($dbConnection->getBookletsStarted($this->_workspaceId) as $startedBooklets) {
+        foreach($this->_dbConnection->getBookletsStarted($this->_workspaceId) as $startedBooklets) {
             // groupname, loginname, code, bookletname, locked
             if (!isset($preparedBooklets[$startedBooklets['groupname']])) {
                 $preparedBooklets[$startedBooklets['groupname']] = [

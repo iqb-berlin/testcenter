@@ -29,6 +29,7 @@ $app->post('/php/ws.php/delete', function(Slim\Http\Request $request, Slim\Http\
 
     $workspaceId = $_SESSION['workspace'];
     $workspaceController = new WorkspaceController($workspaceId);
+
     $deleted = $workspaceController->deleteFiles($filesToDelete);
 
     if (!$deleted) { // TODO is this ok?
@@ -130,7 +131,9 @@ $app->get('/workspace/{ws_id}/results', function(Slim\Http\Request $request, Sli
         throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
     }
 
-    $results = getAssembledResults($workspaceId);
+    $workspaceController = new WorkspaceController($workspaceId);
+
+    $results = $workspaceController->getAssembledResults($workspaceId);
 
     return $response->withJson($results);
 });
