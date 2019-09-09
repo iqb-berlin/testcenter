@@ -1,4 +1,5 @@
 const hooks = require('hooks');
+const fs = require("fs");
 
 const stash = {};
 
@@ -31,5 +32,19 @@ hooks.after('/php/login.php/login > Login > 200 > application/json', function(tr
     // store login credentials
     stash.authToken = JSON.parse(transaction.real.body).admintoken;
     hooks.log("stashing auth token:" + stash.authToken );
+    done();
+});
+
+hooks.before('/php/getFile.php > get file > 200 > text/xml', function(transaction, done) {
+
+    const atParameterRegex = /at=[\w\\.]+/gm;
+    transaction.fullPath = transaction.fullPath.replace(atParameterRegex, 'at=' + stash.authToken);
+    transaction.expected.body = fs.readFileSync('../vo_data/ws_1/Unit/SAMPLE_UNIT.XML', 'utf-8').toString();
+    done();
+});
+
+hooks.before('/php/getFile.php > get file > 200 > application/octet-stream', function(transaction, done) {
+
+    transaction.skip = true;
     done();
 });
