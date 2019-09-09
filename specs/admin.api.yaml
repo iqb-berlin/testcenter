@@ -912,6 +912,68 @@ paths:
         "503":
           description: Service Unavailable
 
+  /php/getMonitorData.php:
+    post:
+      summary: get monitor data
+      description: retrieves an overview about running tests
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK, list of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    groupname:
+                      type: string
+                    loginsPrepared:
+                      type: integer
+                    personsPrepared:
+                      type: integer
+                    bookletsPrepared:
+                      type: integer
+                    bookletsStarted:
+                      type: integer
+                    bookletsLocked:
+                      type: integer
+                    laststart:
+                      type: integer
+                      description: timestamp of last start
+                    laststartStr:
+                      type: string
+                      description: "date of last start in human readable format (german date format: dd.MM.yyyy)"
+              example:
+                - groupname: sample_group
+                  loginsPrepared: 1
+                  personsPrepared: 10
+                  bookletsPrepared: 10
+                  bookletsStarted: 1
+                  bookletsLocked: 0
+                  laststart: 1567783156
+                  laststartStr: 06.09.2019
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
 
 components:
   schemas:
@@ -961,6 +1023,8 @@ components:
           type: boolean
           description: "Flag that tells, if this user is a superadmin"
           example: true
+
+
 
     workspace:
       type: object
