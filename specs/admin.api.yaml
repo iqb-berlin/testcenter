@@ -1057,6 +1057,83 @@ paths:
         "503":
           description: Service Unavailable
 
+  /php/getBookletsStarted.php:
+    post:
+      summary: get started booklets
+      description: retrieves an overview about started booklets
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                g:
+                  type: array
+                  description: a list
+                  items:
+                    type: string
+            example:
+              g:
+                - sample_group
+      responses:
+        "200":
+          description: OK, list of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    groupname:
+                      type: string
+                    loginname:
+                      type: string
+                    code:
+                      type: string
+                      description: person code
+                    bookletname:
+                      type: string
+                    locked:
+                      type: boolean
+                    lastlogin:
+                      type: string
+                      description: "date of last login and time in US format: YYYY-mm-dd HH:mm:SS"
+                    laststart:
+                      type: string
+                      description: "date of last start and time in US format: YYYY-mm-dd HH:mm:SS"
+              example:
+                - groupname: sample_group
+                  loginname: test
+                  code: dlu
+                  bookletname: BOOKLET.SAMPLE
+                  locked: false
+                  lastlogin: '2019-09-10 13:29:36'
+                  laststart: '2019-09-10 13:29:37'
+
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
   /php/getFile.php:
 
     get:
