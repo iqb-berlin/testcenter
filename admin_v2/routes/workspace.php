@@ -97,7 +97,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($results);
     });
 
-    $app->get('/{ws_id}/bookletsStarted', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/booklets/started', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];
@@ -122,7 +122,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($bookletsStarted);
     });
 
-    $app->get('/{ws_id}/validate', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/validation', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];

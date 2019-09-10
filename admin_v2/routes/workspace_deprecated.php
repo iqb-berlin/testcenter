@@ -65,7 +65,7 @@ $app->group('/php', function(App $app) {
         $requestBody = json_decode($request->getBody());
         $groups = isset($requestBody->g) ? $requestBody->g : [];
 
-        $response = $app->subRequest('GET', "/workspace/$workspaceId/bookletsStarted", 'groups=' . implode(',', $groups), $request->getHeaders());
+        $response = $app->subRequest('GET', "/workspace/$workspaceId/booklets/started", 'groups=' . implode(',', $groups), $request->getHeaders());
 
         return $response->withHeader("Warning", "endpoint deprecated");
     });
@@ -74,7 +74,7 @@ $app->group('/php', function(App $app) {
 
         $workspaceId = $_SESSION['workspace'];
 
-        $response = $app->subRequest('GET', "/workspace/$workspaceId/validate", '', $request->getHeaders());
+        $response = $app->subRequest('GET', "/workspace/$workspaceId/validation", '', $request->getHeaders());
 
         return $response->withHeader("Warning", "endpoint deprecated");
     });
