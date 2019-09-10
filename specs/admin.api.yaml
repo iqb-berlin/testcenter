@@ -1134,6 +1134,63 @@ paths:
         "503":
           description: Service Unavailable
 
+  /php/checkWorkspace.php:
+    post:
+      summary: check workspace
+      description: triggers a check of all xmls in the workspace and retrieves the results
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK, list of reviews
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+                  infos:
+                    type: array
+                    items:
+                      type: string
+              example:
+                errors: []
+                warnings: []
+                infos:
+                  - 1 resource files found
+                  - 1 valid units found
+                  - 1 valid booklets found
+                  - 0 valid syschecks found
+                  - 10 testtakers in 1 logins found
+                  - 'booklet loads (bytes, sorted):'
+                  - "    BOOKLET.SAMPLE: 5.365"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
   /php/getFile.php:
 
     get:
