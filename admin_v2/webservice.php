@@ -18,8 +18,14 @@ require_once ROOT_DIR . "/vo_code/DBConnection.php";
 require_once ROOT_DIR . "/vo_code/DBConnectionAdmin.php";
 require_once ROOT_DIR . "/vo_code/DBConnectionSuperadmin.php";
 require_once ROOT_DIR . "/vo_code/FilesFactory.php";
+require_once ROOT_DIR . '/vo_code/XMLFile.php';
+require_once ROOT_DIR . '/vo_code/XMLFileBooklet.php';
+require_once ROOT_DIR . '/vo_code/XMLFileUnit.php';
+require_once ROOT_DIR . '/vo_code/XMLFileTesttakers.php';
+require_once ROOT_DIR . '/vo_code/XMLFileSysCheck.php';
 require_once ROOT_DIR . '/vo_code/XMLFileTesttakers.php';
 require_once ROOT_DIR . '/admin_v2/classes/controller/workspaceController.class.php';
+require_once ROOT_DIR . '/admin_v2/classes/controller/workspaceValidator.class.php';
 
 /**
  * TODO refactor DBCONNECTION

@@ -3,16 +3,18 @@
 
 class WorkspaceController {
 
-    private $_workspaceId = 0;
-    private $_workspacePath = '';
-    private $_dbConnection;
+    protected $_workspaceId = 0;
+    protected $_workspacePath = '';
+    protected $_dataPath = '';
+    protected $_dbConnection;
 
     function __construct($workspaceId) {
 
         // TODO check here if ws exists could be found
         $this->_workspaceId = $workspaceId;
 
-        $this->_workspacePath = ROOT_DIR . '/vo_data/ws_' .  $workspaceId;
+        $this->_dataPath = ROOT_DIR . '/vo_data';
+        $this->_workspacePath = $this->_dataPath . '/ws_' .  $workspaceId;
 
         $this->_dbConnection = new DBConnectionAdmin();
     }
@@ -241,4 +243,8 @@ class WorkspaceController {
         return $returner;
 
     }
+
+
+
+
 }

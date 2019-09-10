@@ -70,6 +70,15 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
+    $app->post('/checkWorkspace.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+
+        $workspaceId = $_SESSION['workspace'];
+
+        $response = $app->subRequest('GET', "/workspace/$workspaceId/validate", '', $request->getHeaders());
+
+        return $response->withHeader("Warning", "endpoint deprecated");
+    });
+
 
 })->add('authWithWorkspace');
 

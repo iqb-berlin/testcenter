@@ -122,6 +122,21 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($bookletsStarted);
     });
 
+    $app->get('/{ws_id}/validate', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+
+        $workspaceId = $request->getAttribute('ws_id');
+        $adminToken = $_SESSION['adminToken'];
+
+        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
+        }
+
+        $workspaceValidator = new workspaceValidator($workspaceId);
+        $report = $workspaceValidator->validate();
+
+        return $response->withJson($report);
+    });
+
     $app->get('/{ws_id}/file/{type}/{filename}', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
