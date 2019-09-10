@@ -97,6 +97,31 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($results);
     });
 
+    $app->get('/{ws_id}/bookletsStarted', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+
+        $workspaceId = $request->getAttribute('ws_id');
+        $adminToken = $_SESSION['adminToken'];
+        $groups = explode(",", $request->getParam('groups'));
+
+        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
+            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
+        }
+
+        $bookletsStarted = array();
+        foreach($dbConnectionAdmin->getBookletsStarted($workspaceId) as $booklet) {
+            if (in_array($booklet['groupname'], $groups)) {
+                if ($booklet['locked'] == '1') {
+                    $booklet['locked'] = true;
+                } else {
+                    $booklet['locked'] = false;
+                }
+                array_push($bookletsStarted, $booklet);
+            }
+        }
+
+        return $response->withJson($bookletsStarted);
+    });
+
     $app->get('/{ws_id}/file/{type}/{filename}', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
