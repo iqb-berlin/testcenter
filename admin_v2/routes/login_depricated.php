@@ -5,10 +5,12 @@
  */
 
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 $app->group('/php', function(App $app) {
 
-    $app->post('/login.php/login', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/login.php/login', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $response = $app->subRequest('POST', "/login", '', $request->getHeaders(), array(), $request->getBody()->getContents());
 

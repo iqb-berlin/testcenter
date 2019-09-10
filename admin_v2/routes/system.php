@@ -4,13 +4,14 @@
  * status: completely new endpoints
  */
 
-
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpException;
 use Slim\Route;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 
-$app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Slim\Http\Request $request, Slim\Http\Response $response) use ($app) {
+$app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
     $routes = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
         foreach ($route->getMethods() as $method) {
@@ -23,7 +24,7 @@ $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspectio
 });
 
 
-$app->post('/login', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($app, $dbConnection) {
+$app->post('/login', function(Request $request, Response $response) use ($app, $dbConnection) {
 
     $requestBody = json_decode($request->getBody());
 

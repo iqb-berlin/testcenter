@@ -7,12 +7,14 @@
 use Slim\App;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpInternalServerErrorException;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 $app->group('/php/ws.php', function(App $app) {
 
     $dbConnection = new DBConnectionAdmin();
 
-    $app->get('/filelist', function(/** @noinspection PhpUnusedParameterInspection */ Slim\Http\Request $req, Slim\Http\Response $response) {
+    $app->get('/filelist', function(/** @noinspection PhpUnusedParameterInspection */ Request $req, Response $response) {
 
         $workspaceId = $_SESSION['workspace'];
         $workspaceController = new WorkspaceController($workspaceId);
@@ -22,7 +24,7 @@ $app->group('/php/ws.php', function(App $app) {
     });
 
 
-    $app->post('/delete', function(Slim\Http\Request $request, Slim\Http\Response $response) {
+    $app->post('/delete', function(Request $request, Response $response) {
 
         $requestBody = json_decode($request->getBody());
         $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
@@ -61,7 +63,7 @@ $app->group('/php/ws.php', function(App $app) {
     });
 
 
-    $app->post('/unlock', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->post('/unlock', function (Request $request, Response $response) use ($dbConnection) {
 
         $workspace = $_SESSION['workspace'];
         $requestBody = json_decode($request->getBody());
@@ -77,7 +79,7 @@ $app->group('/php/ws.php', function(App $app) {
     });
 
 
-    $app->post('/lock', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->post('/lock', function (Request $request, Response $response) use ($dbConnection) {
 
         $workspace = $_SESSION['workspace'];
         $requestBody = json_decode($request->getBody());
@@ -99,7 +101,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $dbConnection = new DBConnectionSuperadmin();
 
-    $app->get('/workspaces', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->get('/workspaces', function (Request $request, Response $response) use ($dbConnection) {
 
         $user = $request->getQueryParam('u', '');
         if (strlen($user) > 0) {
@@ -113,7 +115,7 @@ $app->group('/php/sys.php', function(App $app) {
         return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
     });
 
-    $app->post('/workspace/add', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { // TODO use PUT
+    $app->post('/workspace/add', function (Request $request, Response $response) use ($dbConnection) { // TODO use PUT
 
         $requestBody = json_decode($request->getBody());
         if (!isset($requestBody->n)) { // TODO It made them required. is that okay?
@@ -128,7 +130,7 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/workspace/rename', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->post('/workspace/rename', function (Request $request, Response $response) use ($dbConnection) {
 
         $requestBody = json_decode($request->getBody());
 
@@ -145,7 +147,7 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/workspaces/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { // todo use [del]
+    $app->post('/workspaces/delete', function (Request $request, Response $response) use ($dbConnection) { // todo use [del]
         $bodyData = json_decode($request->getBody());
         $workspaceList = isset($bodyData->ws) ? $bodyData->ws : []; // TODO is it clever to allow emptyness?
 
@@ -157,7 +159,7 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/workspace/users', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->post('/workspace/users', function (Request $request, Response $response) use ($dbConnection) {
 
         $requestBody = json_decode($request->getBody());
 

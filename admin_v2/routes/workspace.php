@@ -10,13 +10,15 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Stream;
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 
 $app->group('/workspace', function(App $app) {
 
     $dbConnectionAdmin = new DBConnectionAdmin();
 
-    $app->get('/{ws_id}/reviews', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/reviews', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $groups = explode(",", $request->getParam('groups'));
         $workspaceId = $request->getAttribute('ws_id');
@@ -35,7 +37,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($reviews);
     });
 
-    $app->get('/{ws_id}/results', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/results', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];
@@ -52,7 +54,7 @@ $app->group('/workspace', function(App $app) {
     });
 
 
-    $app->get('/{ws_id}/responses', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/responses', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];
@@ -68,7 +70,7 @@ $app->group('/workspace', function(App $app) {
     });
 
 
-    $app->get('/{ws_id}/status', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];
@@ -82,7 +84,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($workspaceController->getTestStatusOverview());
     });
 
-    $app->get('/{ws_id}/logs', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];
@@ -97,7 +99,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($results);
     });
 
-    $app->get('/{ws_id}/booklets/started', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/booklets/started', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];
@@ -122,7 +124,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($bookletsStarted);
     });
 
-    $app->get('/{ws_id}/validation', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/validation', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $adminToken = $_SESSION['adminToken'];
@@ -137,7 +139,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($report);
     });
 
-    $app->get('/{ws_id}/file/{type}/{filename}', function(Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/file/{type}/{filename}', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
         $fileType = $request->getAttribute('type', '[type missing]'); // TODO basename

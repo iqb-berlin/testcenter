@@ -2,12 +2,14 @@
 
 use Slim\App;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 $app->group('/php/sys.php', function(App $app) {
 
     $dbConnection = new DBConnectionSuperadmin();
 
-    $app->get('/users', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->get('/users', function(Request $request, Response $response) use ($dbConnection) {
 
         $ws = $request->getQueryParam('ws', 0);
         if ($ws > 0) {
@@ -22,7 +24,7 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/user/add', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { //TODO -> [PUT] /user
+    $app->post('/user/add', function(Request $request, Response $response) use ($dbConnection) { //TODO -> [PUT] /user
         $requestBody = json_decode($request->getBody());
         if (!isset($requestBody->n) or !isset($requestBody->p)) { // TODO I made them required. is that okay?
             throw new HttpBadRequestException($request, "Username or Password missing");
@@ -36,7 +38,7 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/user/pw', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->post('/user/pw', function(Request $request, Response $response) use ($dbConnection) {
         $requestBody = json_decode($request->getBody());
         if (!isset($requestBody->n) or !isset($requestBody->p)) { // TODO I made them required. is that okay?
             throw new HttpBadRequestException($request, "Username or Password missing");
@@ -50,7 +52,7 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/users/delete', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) { // TODO change to [DEL] /user
+    $app->post('/users/delete', function(Request $request, Response $response) use ($dbConnection) { // TODO change to [DEL] /user
         $bodyData = json_decode($request->getBody());
         $userList = isset($bodyData->u) ? $bodyData->u : []; // TODO is it clever to allow emptyness?
 
@@ -62,7 +64,7 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/user/workspaces', function (Slim\Http\Request $request, Slim\Http\Response $response) use ($dbConnection) {
+    $app->post('/user/workspaces', function(Request $request, Response $response) use ($dbConnection) {
 
         $requestBody = json_decode($request->getBody());
 

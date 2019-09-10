@@ -5,10 +5,12 @@
  */
 
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 $app->group('/php', function(App $app) {
 
-    $app->post('/getReviews.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/getReviews.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
         $requestBody = json_decode($request->getBody());
@@ -19,7 +21,7 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->post('/getResultData.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/getResultData.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
 
@@ -28,7 +30,7 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->post('/getResponses.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/getResponses.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
         $requestBody = json_decode($request->getBody());
@@ -39,7 +41,7 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->post('/getMonitorData.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/getMonitorData.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
 
@@ -48,7 +50,7 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->post('/getLogs.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/getLogs.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
         $requestBody = json_decode($request->getBody());
@@ -59,7 +61,7 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->post('/getBookletsStarted.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/getBookletsStarted.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
         $requestBody = json_decode($request->getBody());
@@ -70,7 +72,7 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->post('/checkWorkspace.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+    $app->post('/checkWorkspace.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
 
@@ -82,7 +84,7 @@ $app->group('/php', function(App $app) {
 
 })->add('authWithWorkspace');
 
-$app->get('/php/getFile.php', function(Slim\Http\Request $request, /** @noinspection PhpUnusedParameterInspection */ Slim\Http\Response $res) use ($app) {
+$app->get('/php/getFile.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
     $workspaceId = $request->getQueryParam('ws', 0);
     $fileType = $request->getQueryParam('t', '[parameter missing: t]'); // TODO basename
