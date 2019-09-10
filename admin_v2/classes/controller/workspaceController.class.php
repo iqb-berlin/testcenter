@@ -45,7 +45,6 @@ class WorkspaceController {
 
                 $rs = new ResourceFile($entry, filemtime($fullFilePath), filesize($fullFilePath));
 
-                error_log("PUSH" .  $rs->getFileName());
                 array_push($fileList, [
                     'filename' => $rs->getFileName(),
                     'filesize' => $rs->getFileSize(),
