@@ -24,7 +24,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/login_response'
               example:
-                admintoken: a5d6e6c6ef132f2.36500408
+                admintoken: 1337ymca1337666.xxx13370
                 name: super
                 workspaces:
                   - id: '1'
@@ -40,6 +40,7 @@ paths:
           description: Other Error
         "500":
           description: Server Error
+
 
   /php/sys.php/users:
     get:
