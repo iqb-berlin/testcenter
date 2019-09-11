@@ -241,10 +241,6 @@ class WorkspaceController {
         }
 
         return $returner;
-
     }
-
-
-
 
 }

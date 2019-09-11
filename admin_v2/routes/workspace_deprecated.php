@@ -82,7 +82,7 @@ $app->group('/php', function(App $app) {
     });
 
 
-})->add('authWithWorkspace');
+})->add(new NormalAuthWithWorkspaceInHeader());
 
 $app->get('/php/getFile.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 

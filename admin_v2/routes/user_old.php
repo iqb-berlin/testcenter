@@ -79,4 +79,4 @@ $app->group('/php/sys.php', function(App $app) {
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
     });
 
-})->add('auth');
+})->add(new NormalAuth());

@@ -10,10 +10,7 @@ require_once "helpers.php";
 
 session_start();
 
-
 $app = new App();
-
-require_once "authMiddlewares.php";
 
 $container = $app->getContainer();
 $container['code_directory'] = realpath(ROOT_DIR . "/vo_code");

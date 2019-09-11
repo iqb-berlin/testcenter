@@ -41,7 +41,7 @@ $app->post('/login', function(Request $request, Response $response) use ($app) {
     $userName = $dbConnection->getLoginName($token);
 
     if (!isset($userName) or (strlen($userName) == 0)) { // TODO not necessary if dbC would throw Exception
-        error_log("Login attempt with: " . $request->getBody());
+        error_log("Rejected login attempt with: " . $request->getBody());
         throw new HttpForbiddenException($request, "Wrong authentication credentials");
     }
 
