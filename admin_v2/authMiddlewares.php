@@ -118,8 +118,6 @@ function checkWs(Request $request, Response $response, $next) {
     }
 
     $adminToken = $_SESSION['adminToken'];
-    error_log('token:' . $_SESSION['adminToken']);
-    error_log('wsid:' . $params['ws_id']);
 
     $dbConnectionAdmin = new DBConnectionAdmin();
 

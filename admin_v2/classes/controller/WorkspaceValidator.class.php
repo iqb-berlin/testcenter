@@ -1,7 +1,7 @@
 <?php
 
 
-class workspaceValidator extends WorkspaceController {
+class WorkspaceValidator extends WorkspaceController {
 
     private $_allResources = [];
     private $_allVersionedResources = [];

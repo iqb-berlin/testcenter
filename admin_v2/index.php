@@ -1,42 +1,15 @@
 <?php
 
+use Slim\App;
+
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 
-use Slim\App;
+require_once ROOT_DIR . "/vendor/autoload.php";
+require_once "autoload.php";
+require_once "helpers.php";
 
 session_start();
 
-require_once ROOT_DIR . "/vendor/autoload.php";
-require_once ROOT_DIR . "/vo_code/DBConnection.php";
-require_once ROOT_DIR . "/vo_code/DBConnectionAdmin.php";
-require_once ROOT_DIR . "/vo_code/DBConnectionSuperadmin.php";
-require_once ROOT_DIR . "/vo_code/FilesFactory.php";
-require_once ROOT_DIR . '/vo_code/XMLFile.php';
-require_once ROOT_DIR . '/vo_code/XMLFileBooklet.php';
-require_once ROOT_DIR . '/vo_code/XMLFileUnit.php';
-require_once ROOT_DIR . '/vo_code/XMLFileTesttakers.php';
-require_once ROOT_DIR . '/vo_code/XMLFileSysCheck.php';
-require_once ROOT_DIR . '/vo_code/XMLFileTesttakers.php';
-require_once ROOT_DIR . '/admin_v2/classes/controller/workspaceController.class.php';
-require_once ROOT_DIR . '/admin_v2/classes/controller/workspaceValidator.class.php';
-
-/**
- * TODO refactor DBCONNECTION
- * we assume it will throw exceptions on error
- */
-require_once "helpers.php";
-
-require_once ROOT_DIR . "/admin_v2/classes/exception/HttpException.class.php";
-require_once ROOT_DIR . "/admin_v2/classes/exception/HttpSpecializedException.class.php";
-require_once ROOT_DIR . "/admin_v2/classes/exception/HttpBadRequestException.class.php";
-require_once ROOT_DIR . "/admin_v2/classes/exception/HttpForbiddenException.class.php";
-require_once ROOT_DIR . "/admin_v2/classes/exception/HttpInternalServerErrorException.class.php";
-require_once ROOT_DIR . "/admin_v2/classes/exception/HttpNotFoundException.class.php";
-require_once ROOT_DIR . "/admin_v2/classes/exception/HttpUnauthorizedException.class.php";
-/**
- * note: we don't want to upgrade slack right no, since we do not know the implications, (TODO: update slack)
- * but we allready use the slack 4 exceptions.
- */
 
 $app = new App();
 

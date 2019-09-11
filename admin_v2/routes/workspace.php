@@ -97,7 +97,7 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
-        $workspaceValidator = new workspaceValidator($workspaceId);
+        $workspaceValidator = new WorkspaceValidator($workspaceId);
         $report = $workspaceValidator->validate();
 
         return $response->withJson($report);
