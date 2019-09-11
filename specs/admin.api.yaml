@@ -159,7 +159,7 @@ paths:
 
   /php/sys.php/users/delete:
     post:
-      summary: deletes some users
+      summary: delete some users
       description: deletes a list of given user-names (not ids!). if the list containes unexistant users, nothing happens.
 
       parameters:
@@ -247,7 +247,7 @@ paths:
 
   /php/sys.php/workspace/add:
     post:
-      summary: add a worksapce
+      summary: add a workspace
       description: adds a workspace with given name
 
       parameters:
@@ -285,7 +285,7 @@ paths:
 
   /php/sys.php/workspace/rename:
     post:
-      summary: rename a worksapces
+      summary: rename a workspace
       description: renames a workspace with given id
 
       parameters:
@@ -330,7 +330,7 @@ paths:
 
   /php/sys.php/workspaces/delete:
     post:
-      summary: delete a list of worksapces
+      summary: delete some workspaces
       description: deletes a list of workspaces given by their ids
 
       parameters:
@@ -770,7 +770,7 @@ paths:
   /php/getResultData.php:
     post:
       summary: get results
-      description: retrieves a list of unit- and booklet reviews for a given workspace and groups
+      description: retrieves a list of unit- and booklet results for a given workspace and groups
 
       parameters:
         - in: header
@@ -784,7 +784,7 @@ paths:
 
       responses:
         "200":
-          description: OK, list of reviews
+          description: OK, list of results
           content:
             application/json:
               schema:
@@ -857,7 +857,7 @@ paths:
                 - sample_group
       responses:
         "200":
-          description: OK, list of reviews
+          description: OK, list of responses
           content:
             application/json:
               schema:
@@ -916,7 +916,7 @@ paths:
 
   /php/getMonitorData.php:
     post:
-      summary: get monitor data
+      summary: get status
       description: retrieves an overview about running tests
 
       parameters:
@@ -931,7 +931,7 @@ paths:
 
       responses:
         "200":
-          description: OK, list of reviews
+          description: OK, list of monitor data
           content:
             application/json:
               schema:
@@ -1009,7 +1009,7 @@ paths:
                 - sample_group
       responses:
         "200":
-          description: OK, list of reviews
+          description: OK, list of logs
           content:
             application/json:
               schema:
@@ -1090,7 +1090,7 @@ paths:
                 - sample_group
       responses:
         "200":
-          description: OK, list of reviews
+          description: OK, list of started booklets
           content:
             application/json:
               schema:
@@ -1196,7 +1196,7 @@ paths:
 
     get:
       summary: get file
-      description: retrieves a file form a goven worksapce by filename
+      description: retrieves a file form a goven workspace by filename
 
       parameters:
         - in: query
