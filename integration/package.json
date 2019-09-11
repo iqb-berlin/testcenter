@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "sync_spec_docs": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_spec_docs",
+    "render_api_docs": "node_modules/.bin/snowboard html -o ../docs/admin/index.html  ../specs/admin.api.apib",
     "dredd_test": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin/",
     "dredd_test_repeat": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js repeat_dredd_test --api=http://localhost/testcenter-iqb-php/admin/",
-    "dredd_test_with_v2": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin_v2/"
+    "dredd_test_with_v2": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin_v2/",
+    "dredd_test_with_apib": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_apib --api=http://localhost/testcenter-iqb-php/admin/"
   },
   "author": "Philipp Franck",
   "license": "MIT",
@@ -16,6 +18,7 @@
     "dredd": "^12.0.5",
     "gulp": "^4.0.2",
     "redoc": "^2.0.0-rc.14",
+    "snowboard": "^3.3.2",
     "yamljs": "^0.3.0"
   }
 }

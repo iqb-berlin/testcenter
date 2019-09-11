@@ -52,7 +52,7 @@ task('prepare_spec_for_dredd', done => {
             key: "example",
             val: examples => (typeof examples[filterExampleCode] !== "undefined")
                                 ? examples[filterExampleCode].value
-                                : examples.a.value
+                                : null
         },
         title: {
             key: "title",
@@ -69,11 +69,16 @@ task('prepare_spec_for_dredd', done => {
         if (isType('object', branch)) {
             let transformedBranch = {};
             Object.keys(branch).forEach(entry => {
-                if (typeof rules[entry] !== "undefined") {
-                    transformedBranch = {...transformedBranch, [rules[entry].key]: transformTree(rules[entry].val(branch[entry]))}
-                } else {
-                    transformedBranch = {...transformedBranch, [entry]: transformTree(branch[entry])}
+                if (typeof rules[entry] === "undefined") {
+                    transformedBranch = {...transformedBranch, [entry]: transformTree(branch[entry])};
+                    return;
                 }
+                let newValue =  rules[entry].val(branch[entry]);
+                if (newValue === null) {
+                    return;
+                }
+                transformedBranch = {...transformedBranch, [rules[entry].key]: transformTree(newValue)}
+
             });
 
             return transformedBranch;
@@ -82,7 +87,7 @@ task('prepare_spec_for_dredd', done => {
         return branch;
     };
 
-    let spec = YAML.parse(fs.readFileSync("../specs/admin.api.yaml", "utf8"));
+    let spec = YAML.parse(fs.readFileSync("../specs/test.api.yaml", "utf8"));
     spec = YAML.stringify(transformTree(spec), 10);
     fs.writeFileSync(tmpSpecFileName(filterExampleCode), spec, "utf8");
     console.log(`${tmpSpecFileName(filterExampleCode)} written.`);
@@ -97,6 +102,25 @@ task('run_dredd', done => {
         path: [tmpSpecFileName(filterExampleCode)],
         hookfiles: ['hooks.js'],
         output: [`tmp/report.${tmpSpecFileName(filterExampleCode)}.html`],
+        reporter: ['html'],
+        names: false
+    }).run(function(err, stats) {
+        if (err) {
+            console.error(err);
+        }
+        console.log(stats);
+        done();
+    });
+});
+
+task('run_dredd_apib', done => {
+
+    printHeadline("run dredd with ../specs/admin.api.apib");
+    new Dredd({
+        endpoint: endpoint,
+        path: '../specs/admin.api.apib',
+        hookfiles: ['hooks.js'],
+        output: [`tmp/apib.report.apib.html`],
         reporter: ['html'],
         names: false
     }).run(function(err, stats) {
@@ -171,18 +195,26 @@ task('change_example_code', done => {
 
 exports.run_dredd_test = series(
     'info',
-    'clear_tmp_dir',
-    'db_clean',
-    'init_backend',
+    // 'clear_tmp_dir',
+    // 'db_clean',
+    // 'init_backend',
     'prepare_spec_for_dredd',
     'run_dredd',
     'change_example_code',
-    'db_clean',
-    'init_backend',
+    // 'db_clean',
+    // 'init_backend',
     'prepare_spec_for_dredd',
     'run_dredd'
 );
 
 exports.repeat_dredd_test = series(
     'run_dredd'
+);
+
+exports.run_dredd_apib = series(
+    'info',
+    'clear_tmp_dir',
+    'db_clean',
+    'init_backend',
+    'run_dredd_apib'
 );
