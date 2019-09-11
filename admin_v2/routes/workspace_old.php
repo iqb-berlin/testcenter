@@ -19,8 +19,7 @@ $app->group('/php/ws.php', function(App $app) {
         $workspaceId = $_SESSION['workspace'];
         $workspaceController = new WorkspaceController($workspaceId);
         $files = $workspaceController->getAllFiles();
-        $response->getBody()->write(jsonencode($files));
-        return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        return $response->withJson($files);
     });
 
 
@@ -56,7 +55,7 @@ $app->group('/php/ws.php', function(App $app) {
             $returnMessage = 'Konnte ' . (count($filesToDelete) - $deleted) . ' Dateien nicht löschen.';
         }
 
-        $response->getBody()->write(jsonencode($returnMessage));  // TODO why encoding a single string as JSON?
+        $response->getBody()->write(json_encode($returnMessage, JSON_UNESCAPED_UNICODE));  // TODO why encoding a single string as JSON?
         $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 
         return $responseToReturn;
@@ -105,14 +104,12 @@ $app->group('/php/sys.php', function(App $app) {
 
         $user = $request->getQueryParam('u', '');
         if (strlen($user) > 0) {
-            $returner = $dbConnection->getWorkspacesByUser($user);
+            $workspaces = $dbConnection->getWorkspacesByUser($user);
         } else {
-            $returner = $dbConnection->getWorkspaces();
+            $workspaces = $dbConnection->getWorkspaces();
         }
 
-        $response->getBody()->write(jsonencode($returner));
-
-        return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        return $response->withJson($workspaces);
     });
 
     $app->post('/workspace/add', function (Request $request, Response $response) use ($dbConnection) { // TODO use PUT

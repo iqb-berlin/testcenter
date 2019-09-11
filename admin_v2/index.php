@@ -6,7 +6,6 @@ define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 
 require_once ROOT_DIR . "/vendor/autoload.php";
 require_once "autoload.php";
-require_once "helpers.php";
 
 session_start();
 

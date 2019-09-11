@@ -95,12 +95,12 @@ $app->get('/php/getFile.php', function(Request $request, /** @noinspection PhpUn
     $_SESSION['adminToken'] = $adminToken;
 
     $headers = array(
-      'AuthToken' => jsonencode(array(
+      'AuthToken' => json_encode(array(
          'at' => $adminToken,
          'ws' => $workspaceId
       )),
       'Accept' => '*/*'
-    );
+    , JSON_UNESCAPED_UNICODE);
 
     $response = $app->subRequest('GET', "/workspace/$workspaceId/file/$fileType/$filename",'', $headers);
 

@@ -13,14 +13,12 @@ $app->group('/php/sys.php', function(App $app) {
 
         $ws = $request->getQueryParam('ws', 0);
         if ($ws > 0) {
-            $returner = $dbConnection->getUsersByWorkspace($ws);
+            $users = $dbConnection->getUsersByWorkspace($ws);
         } else {
-            $returner = $dbConnection->getUsers();
+            $users = $dbConnection->getUsers();
         }
 
-        $response->getBody()->write(jsonencode($returner));
-
-        return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        return $response->withJson($users);
     });
 
 
