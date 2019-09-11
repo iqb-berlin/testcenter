@@ -6,7 +6,6 @@
  */
 
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Stream;
 use Slim\App;
@@ -22,14 +21,9 @@ $app->group('/workspace', function(App $app) {
 
         $groups = explode(",", $request->getParam('groups'));
         $workspaceId = $request->getAttribute('ws_id');
-        $adminToken = $_SESSION['adminToken'];
 
         if (!$groups) {
             throw new HttpBadRequestException($request, "Parameter groups is missing");
-        }
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
         }
 
         $reviews = $dbConnectionAdmin->getReviews($workspaceId, $groups);
@@ -40,11 +34,6 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/results', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
-        $adminToken = $_SESSION['adminToken'];
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
-        }
 
         $workspaceController = new WorkspaceController($workspaceId);
 
@@ -57,12 +46,7 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/responses', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
-        $adminToken = $_SESSION['adminToken'];
         $groups = explode(",", $request->getParam('groups'));
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
-        }
 
         $results = $dbConnectionAdmin->getResponses($workspaceId, $groups);
 
@@ -73,11 +57,6 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
-        $adminToken = $_SESSION['adminToken'];
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
-        }
 
         $workspaceController = new WorkspaceController($workspaceId);
 
@@ -87,12 +66,7 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
-        $adminToken = $_SESSION['adminToken'];
         $groups = explode(",", $request->getParam('groups'));
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
-        }
 
         $results = $dbConnectionAdmin->getLogs($workspaceId, $groups);
 
@@ -102,12 +76,7 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/booklets/started', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
-        $adminToken = $_SESSION['adminToken'];
         $groups = explode(",", $request->getParam('groups'));
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
-        }
 
         $bookletsStarted = array();
         foreach($dbConnectionAdmin->getBookletsStarted($workspaceId) as $booklet) {
@@ -127,11 +96,6 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/validation', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
-        $adminToken = $_SESSION['adminToken'];
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
-        }
 
         $workspaceValidator = new workspaceValidator($workspaceId);
         $report = $workspaceValidator->validate();
@@ -144,11 +108,6 @@ $app->group('/workspace', function(App $app) {
         $workspaceId = $request->getAttribute('ws_id', 0);
         $fileType = $request->getAttribute('type', '[type missing]'); // TODO basename
         $filename = $request->getAttribute('filename', '[filename missing]');
-        $adminToken = $_SESSION['adminToken'];
-
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $workspaceId)) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_$workspaceId is not provided.");
-        }
 
         $fullFilename = ROOT_DIR . "/vo_data/ws_$workspaceId/$fileType/$filename";
         if (!file_exists($fullFilename)) {
@@ -170,4 +129,4 @@ $app->group('/workspace', function(App $app) {
         return $response->withBody($fileStream);
     });
 
-})->add('auth');
+})->add('auth')->add('checkWs');
