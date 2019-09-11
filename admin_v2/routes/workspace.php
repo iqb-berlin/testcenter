@@ -129,4 +129,4 @@ $app->group('/workspace', function(App $app) {
         return $response->withBody($fileStream);
     });
 
-})->add('auth')->add('checkWs');
+})->add('checkWs')->add('auth');
