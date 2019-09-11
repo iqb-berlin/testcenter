@@ -24,7 +24,9 @@ $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspectio
 });
 
 
-$app->post('/login', function(Request $request, Response $response) use ($app, $dbConnection) {
+$app->post('/login', function(Request $request, Response $response) use ($app) {
+
+    $dbConnection = new DBConnectionAdmin();
 
     $requestBody = json_decode($request->getBody());
 
