@@ -1238,6 +1238,52 @@ paths:
         "503":
           description: Service Unavailable
 
+
+  /php/uploadFile.php:
+
+    post:
+      summary: upload file
+      description: uploads a Resource, Unit, Booklet, SysCheck ort Testtakers file
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileforvo:
+                  type: string
+                  format: binary
+                  description: upload file
+              required:
+                - fileforvo
+
+      responses:
+        "200":
+          description: upload susccessfull
+          content:
+            application/json:
+              example: OK (valide)
+        "404":
+          description: workspace or file not found
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
 components:
   schemas:
 

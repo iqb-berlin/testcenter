@@ -87,7 +87,7 @@ task('prepare_spec_for_dredd', done => {
         return branch;
     };
 
-    let spec = YAML.parse(fs.readFileSync("../specs/test.api.yaml", "utf8"));
+    let spec = YAML.parse(fs.readFileSync("../specs/admin.api.yaml", "utf8"));
     spec = YAML.stringify(transformTree(spec), 10);
     fs.writeFileSync(tmpSpecFileName(filterExampleCode), spec, "utf8");
     console.log(`${tmpSpecFileName(filterExampleCode)} written.`);
@@ -195,19 +195,20 @@ task('change_example_code', done => {
 
 exports.run_dredd_test = series(
     'info',
-    // 'clear_tmp_dir',
-    // 'db_clean',
-    // 'init_backend',
+    'clear_tmp_dir',
+    'db_clean',
+    'init_backend',
     'prepare_spec_for_dredd',
     'run_dredd',
-    'change_example_code',
+    // 'change_example_code',
     // 'db_clean',
     // 'init_backend',
-    'prepare_spec_for_dredd',
-    'run_dredd'
+    // 'prepare_spec_for_dredd',
+    // 'run_dredd'
 );
 
 exports.repeat_dredd_test = series(
+    'prepare_spec_for_dredd',
     'run_dredd'
 );
 
