@@ -5,6 +5,6 @@
         "ext-pdo_mysql": "*",
         "ext-json": "*",
         "ext-pdo": "*",
-      "ext-yaml": "*"
+        "ext-zip": "*"
     }
 }

@@ -8,15 +8,43 @@ class WorkspaceController {
     protected $_dataPath = '';
     protected $_dbConnection;
 
+    /**
+     * WorkspaceController constructor.
+     * @param $workspaceId
+     * @throws Exception
+     */
     function __construct($workspaceId) {
 
         // TODO check here if ws exists could be found
         $this->_workspaceId = $workspaceId;
 
         $this->_dataPath = ROOT_DIR . '/vo_data';
-        $this->_workspacePath = $this->_dataPath . '/ws_' .  $workspaceId;
+        $this->_workspacePath = $this->_createWorkspaceFolderIfNotExistant();
+
 
         $this->_dbConnection = new DBConnectionAdmin();
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function _createWorkspaceFolderIfNotExistant() {
+
+        $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
+        if (file_exists($workspacePath) and !is_dir($workspacePath)) {
+            throw new Exception("Workspace dir {$this->_workspaceId} seems not to be a proper directory!");
+        }
+        if (!file_exists($workspacePath)) {
+            if (!mkdir($workspacePath)) {
+                throw new Exception("Could not create workspace dir {$this->_workspaceId}");
+            }
+        }
+        return $workspacePath;
+    }
+
+    function getWorkspacePath() {
+
+        return $this->_workspacePath;
     }
 
     /**
@@ -241,6 +269,131 @@ class WorkspaceController {
         }
 
         return $returner;
+    }
+
+
+    /**
+     * takes a file from the workspcae-dir toplevel and puts it to the correct subdir
+     *
+     *
+     * @param $fileName
+     * @return array - keys: imported files; value true or error message
+     * @throws Exception
+     */
+    function importUnfiledResource($fileName) {
+
+        if (strtoupper(substr($fileName, -4)) == '.ZIP') {
+            return $this->_importUnfiledZipArchive($fileName);
+        }
+
+        $this->_fileAndValidateUnfiledResource($fileName);
+
+        return  array(
+            $fileName => true
+        );
+    }
+
+    /**
+     * @param $fileName
+     * @throws Exception
+     */
+    private function _fileAndValidateUnfiledResource($fileName) {
+
+        $targetFolder = $this->_workspacePath . '/Resource';
+
+        if (strtoupper(substr($fileName, -4)) == '.XML') {
+            $xFile = new XMLFile($this->_workspacePath . '/' . $fileName, true);
+            if ($xFile->isValid()) {
+                $targetFolder = $this->_workspacePath . '/' . $xFile->getRoottagName();
+            } else {
+                throw new Exception("e: '$fileName' XML nicht erkannt oder nicht valide: \n" . implode(";\n ", $xFile->getErrors()));
+            }
+        }
+
+        // move file from testcenter-tmp-folder to targetfolder
+        if (!file_exists($targetFolder)) {
+            if (!mkdir($targetFolder)) {
+                throw new Exception('e:Interner Fehler: Konnte Unterverzeichnis nicht anlegen.');
+            }
+        }
+
+        $targetFilePath = $targetFolder . '/' . basename($fileName);
+
+        if (file_exists($targetFilePath)) {
+            if (!unlink($targetFilePath)) {
+                throw new Exception('e:Interner Fehler: Konnte alte Datei nicht löschen: ' . "$targetFolder/$fileName");
+            }
+        }
+
+        if (strlen($targetFilePath) > 0) {
+            if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
+                throw new Exception('e:Interner Fehler: Konnte Datei nicht in Zielordner verschieben: ' . "$targetFolder/$fileName");
+            }
+        }
+    }
+
+    /**
+     * @param $fileName
+     * @return array - keys: imported files; value true or error message
+     * @throws Exception
+     */
+    private function _importUnfiledZipArchive($fileName) {
+
+        $extractedFiles = array();
+
+        $extractionFolder = "{$fileName}_Extract";
+        $filePath = "{$this->_workspacePath}/$fileName";
+        $extractionPath = "{$this->_workspacePath}/$extractionFolder";
+
+        if (!mkdir($extractionPath)) {
+            throw new Exception('e:Interner Fehler: Konnte Verzeichnis für ZIP-Ziel nicht anlegen: ' . $extractionPath);
+        }
+
+        $zip = new ZipArchive;
+        if ($zip->open($filePath) !== TRUE) {
+            throw new Exception('e:Interner Fehler: Konnte ZIP-Datei nicht entpacken.');
+        }
+
+        $zip->extractTo($extractionPath . '/');
+        $zip->close();
+
+        $zipFolderDir = opendir($extractionPath);
+        if ($zipFolderDir !== false) {
+            while (($entry = readdir($zipFolderDir)) !== false) {
+                if (is_file($extractionPath . '/' .  $entry)) {
+                    try { // we don't want to fail if one file fails
+                        $this->_fileAndValidateUnfiledResource("$extractionFolder/$entry");
+                        $extractedFiles["$extractionFolder/$entry"] = true;
+                    } catch (Exception $e) {
+                        $extractedFiles["$extractionFolder/$entry"] = $e->getMessage();
+                    }
+                }
+            }
+        }
+
+        $this->_emptyAndDeleteFolder($extractionPath);
+        unlink($filePath);
+
+        return $extractedFiles;
+    }
+
+    private function _emptyAndDeleteFolder($folder) {
+        if (file_exists($folder)) {
+            $folderDir = opendir($folder);
+            if ($folderDir !== false) {
+                while (($entry = readdir($folderDir)) !== false) {
+                    if (($entry !== '.') && ($entry !== '..')) {
+                        $fullname = $folder . '/' .  $entry;
+                        if (is_dir($fullname)) {
+                            emptyAndDeleteFolder($fullname);
+                        } else {
+                            unlink($fullname);
+                        }
+                    }
+                }
+                rmdir($folder);
+            }
+        }
     }
 
 }

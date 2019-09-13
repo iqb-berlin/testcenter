@@ -129,4 +129,13 @@ $app->group('/workspace', function(App $app) {
         return $response->withBody($fileStream);
     });
 
+    $app->post('/{ws_id}/file', function(Request $request, Response $response) {
+
+        $workspaceId = $request->getAttribute('ws_id');
+
+        $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
+
+        return $response->withJson($importedFiles);
+    });
+
 })->add(new IsWorkspacePermitted())->add(new NormalAuth());

@@ -81,6 +81,14 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
+    $app->post('/uploadFile.php', function(Request $request, Response $response) use ($app) {
+
+        $workspaceId = $_SESSION['workspace'];
+
+        UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
+
+        return $response->withJson('OK (valide)')->withHeader("Warning", "endpoint deprecated");
+    });
 
 })->add(new NormalAuthWithWorkspaceInHeader());
 

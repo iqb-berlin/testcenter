@@ -51,7 +51,7 @@ hooks.before('/php/getFile.php > get file > 200 > application/octet-stream', fun
     done();
 });
 
-hooks.before('/php/uploadFile.php > upload file > 200 > text/plain', async function(transaction, done) {
+hooks.before('/php/uploadFile.php > upload file > 200 > application/json', async function(transaction, done) {
 
     const form = new Multipart();
 
