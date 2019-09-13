@@ -6,7 +6,7 @@ spl_autoload_register(function($className) {
 
     $includeDirs = [
         ROOT_DIR . "/vo_code",
-        ROOT_DIR . "/admin_v2/classes"
+        ROOT_DIR . "/admin/classes"
     ];
 
     foreach ($includeDirs as $includeDir) {
