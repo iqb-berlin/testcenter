@@ -59,12 +59,5 @@ hooks.before('/php/uploadFile.php > upload file > 200 > application/json', async
 
     transaction.request.body = await streamToString(form.stream());
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
-
-    hooks.log('-.-.-.-.-');
-    hooks.log(transaction.request);
-    hooks.log(transaction.request.body);
-    hooks.log('-.-.-.-.-');
-
-    // transaction.request.body = fs.readFileSync('../vo_data/ws_1/Unit/SAMPLE_UNIT.XML', 'utf-8').toString();
     done();
 });
