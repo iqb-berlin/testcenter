@@ -4,6 +4,7 @@
         "php": "7.*",
         "ext-pdo_mysql": "*",
         "ext-json": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-zip": "*"
     }
 }
