@@ -3,28 +3,39 @@
  * so before testing with dredd we preparse the api
  */
 
-const YAML = require('yamljs');
 const fs = require("fs");
 const Dredd = require('dredd');
 const fsExtra = require('fs-extra');
 const {spawnSync} = require('child_process');
 const {series} = require('gulp');
 const {task} = require('gulp');
-
-const printHeadline = text => console.log(`\x1b[37m\x1b[44m${text}\x1b[0m`);
-const tmpSpecFileName = filterExampleCode => "tmp/admin.api." + filterExampleCode + ".yaml";
+const yamlTransform = require('./yamlTransform');
 
 const args = process.argv.slice(-1);
 const endpoint = args[0].substring(6);
+const specFileName = 'admin.api.yaml';
 
-const exampleCodes = ['a', 'b'];
-let filterExampleCode = 'a';
+const printHeadline = text => console.log(`\x1b[37m\x1b[44m${text}\x1b[0m`);
+const tmpFileName = fileName => "tmp/transformed." + fileName;
+
+const shellExec = (command, params = []) => {
+
+    const process = spawnSync(command, params);
+
+    if (process.status > 0) {
+        console.error(`Error: ${process.stderr.toString()}`);
+        return false;
+    }
+    console.log(process.stdout.toString());
+    return true;
+};
 
 task('info', done => {
 
     if (!endpoint) {
         throw new Error("no endpoint given");
     }
+
     printHeadline(`running Dredd tests against API: ${endpoint}`);
     done();
 });
@@ -39,69 +50,23 @@ task('clear_tmp_dir', done => {
 
 task('prepare_spec_for_dredd', done => {
 
-    printHeadline("creating dredd-compatible API-Spec version " + filterExampleCode);
+    printHeadline(`creating Dredd-compatible API-Spec version: ${specFileName}`);
 
-    const isType = (type, val) =>
-        (val === null)
-            ? (type === 'null')
-            : !!(val.constructor && val.constructor.name.toLowerCase() === type.toLowerCase());
-
-    const rules = {
-
-        examples: {
-            key: "example",
-            val: examples => (typeof examples[filterExampleCode] !== "undefined")
-                                ? examples[filterExampleCode].value
-                                : null
-        },
-        title: {
-            key: "title",
-            val: () => "transformed spec"
-        }
-    };
-
-    const transformTree = (branch) => {
-
-        if (isType('array', branch)) {
-            return branch.map(transformTree);
-        }
-
-        if (isType('object', branch)) {
-            let transformedBranch = {};
-            Object.keys(branch).forEach(entry => {
-                if (typeof rules[entry] === "undefined") {
-                    transformedBranch = {...transformedBranch, [entry]: transformTree(branch[entry])};
-                    return;
-                }
-                let newValue =  rules[entry].val(branch[entry]);
-                if (newValue === null) {
-                    return;
-                }
-                transformedBranch = {...transformedBranch, [rules[entry].key]: transformTree(newValue)}
-
-            });
-
-            return transformedBranch;
-        }
-
-        return branch;
-    };
-
-    let spec = YAML.parse(fs.readFileSync("../specs/admin.api.yaml", "utf8"));
-    spec = YAML.stringify(transformTree(spec), 10);
-    fs.writeFileSync(tmpSpecFileName(filterExampleCode), spec, "utf8");
-    console.log(`${tmpSpecFileName(filterExampleCode)} written.`);
+    let spec = fs.readFileSync("../specs/" + specFileName, "utf8");
+    spec = yamlTransform(spec);
+    fs.writeFileSync(tmpFileName(specFileName), spec, "utf8");
+    console.log(`${tmpFileName(specFileName)} written.`);
     done();
 });
 
 task('run_dredd', done => {
 
-    printHeadline("run dredd with " + tmpSpecFileName(filterExampleCode));
+    printHeadline("run dredd");
     new Dredd({
         endpoint: endpoint,
-        path: [tmpSpecFileName(filterExampleCode)],
+        path: [tmpFileName(specFileName)],
         hookfiles: ['hooks.js'],
-        output: [`tmp/report.${tmpSpecFileName(filterExampleCode)}.html`],
+        output: [`tmp/report.${tmpFileName(specFileName)}.html`],
         reporter: ['html'],
         names: false
     }).run(function(err, stats) {
@@ -113,36 +78,7 @@ task('run_dredd', done => {
     });
 });
 
-task('run_dredd_apib', done => {
 
-    printHeadline("run dredd with ../specs/admin.api.apib");
-    new Dredd({
-        endpoint: endpoint,
-        path: '../specs/admin.api.apib',
-        hookfiles: ['hooks.js'],
-        output: [`tmp/apib.report.apib.html`],
-        reporter: ['html'],
-        names: false
-    }).run(function(err, stats) {
-        if (err) {
-            console.error(err);
-        }
-        console.log(stats);
-        done();
-    });
-});
-
-function shellExec(command, params = []) {
-
-    const process = spawnSync(command, params);
-
-    if (process.status > 0) {
-        console.error(`Error: ${process.stderr.toString()}`);
-        return false;
-    }
-    console.log(process.stdout.toString());
-    return true;
-}
 
 task('init_backend', done => {
 
@@ -200,22 +136,10 @@ exports.run_dredd_test = series(
     'init_backend',
     'prepare_spec_for_dredd',
     'run_dredd',
-    // 'change_example_code',
-    // 'db_clean',
-    // 'init_backend',
-    // 'prepare_spec_for_dredd',
-    // 'run_dredd'
+
 );
 
 exports.repeat_dredd_test = series(
     'prepare_spec_for_dredd',
     'run_dredd'
-);
-
-exports.run_dredd_apib = series(
-    'info',
-    'clear_tmp_dir',
-    'db_clean',
-    'init_backend',
-    'run_dredd_apib'
 );

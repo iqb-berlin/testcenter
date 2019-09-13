@@ -304,11 +304,9 @@ paths:
                 ws:
                   type: integer
                   description: Workspace-Id
-                  example: 2
                 n:
                   type: string
                   description: Password
-                  example:
               required:
                 - ws
                 - n
@@ -1222,10 +1220,12 @@ paths:
           content:
             text/xml:
               example:
-                <Unit>....</Unit>
+                value:
+                  <Unit>....</Unit>
             application/octet-stream:
               example:
-                <DOCTYPE html>...
+                value:
+                  <DOCTYPE html>...
 
         "404":
           description: workspace or file not found
@@ -1263,7 +1263,6 @@ paths:
               properties:
                 fileforvo:
                   type: string
-                  format: binary
                   description: upload file
               required:
                 - fileforvo
