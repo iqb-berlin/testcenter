@@ -28,7 +28,6 @@ class UploadedFilesHandler {
      * @return array
      * @throws HttpBadRequestException
      * @throws HttpInternalServerErrorException
-     * @throws Exception
      */
     static function handleUploadedFiles(Request $request, $fieldName, $workspaceId) {
 
