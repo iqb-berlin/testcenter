@@ -16,7 +16,6 @@ if (!isset($_GET['size']) or (!intval($_GET['size'])) or (intval($_GET['size']) 
 }
 
 header('Content-Transfer-Encoding: binary');
-header('Content-Length: base64');
 header('Content-Type: text/plain');
 
 $allowedChars = "ABCDEFGHIJKLOMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz0123456789+/";
