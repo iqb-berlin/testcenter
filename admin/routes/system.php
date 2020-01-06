@@ -23,6 +23,28 @@ $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspectio
     return $response->withJson($routes);
 });
 
+$app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+
+    $routes = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
+        foreach ($route->getMethods() as $method) {
+            $target[] = "[$method] " . $route->getPattern();
+        }
+        return $target;
+    }, []);
+
+    sort($routes);
+
+    $status = array();
+
+    $specs = SpecCollector::collect(__DIR__);
+
+    foreach ($routes as $route) {
+        $status[$route] = isset($specs[$route]) ? $specs[$route] : "<spec missing>";
+    }
+
+    return $response->withJson($status);
+});
+
 
 $app->post('/login', function(Request $request, Response $response) use ($app) {
 
