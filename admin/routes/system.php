@@ -25,21 +25,27 @@ $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspectio
 
 $app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
-    $routes = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
+    $routesRegistred = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
         foreach ($route->getMethods() as $method) {
             $target[] = "[$method] " . $route->getPattern();
         }
         return $target;
     }, []);
 
-    sort($routes);
+    $specs = SpecCollector::collectSpecs(__DIR__);
+    $routes = SpecCollector::collectRoutes(__DIR__);
+
 
     $status = array();
 
-    $specs = SpecCollector::collect(__DIR__);
+    $allroutes = array_unique(array_merge(array_keys($specs), array_keys($routes), $routesRegistred));
+    sort($allroutes);
 
-    foreach ($routes as $route) {
-        $status[$route] = isset($specs[$route]) ? $specs[$route] : "<spec missing>";
+    foreach ($allroutes as $route) {
+        $status[$route] = array(
+            "spec" => isset($specs[$route]) ? $specs[$route] : "<spec missing>",
+            "code" => isset($routes[$route]) ? $routes[$route] : "<code missing>"
+        );
     }
 
     return $response->withJson($status);

@@ -2,7 +2,7 @@
 
 class SpecCollector {
 
-    static function collect($dir) {
+    static function collectSpecs($dir) {
 
         $routes = array();
 
@@ -18,6 +18,31 @@ class SpecCollector {
             }
         }
 
+        return $routes;
+    }
+
+    static function collectRoutes($dir) {
+
+        $routes = array();
+
+        foreach (glob($dir . '/*.php') as $file) {
+            $fp = fopen($file, "r+");
+            $currentGroup = "";
+            while ($line = fgets($fp)) {
+                if (preg_match('#^\s*?\$app->(\w+)\(\s*[\\\'\"]([^\\\'\"]+)[\\\'\"]#', $line, $matches)) {
+                    if ($matches[1] == 'group') {
+                        $currentGroup = $matches[2];
+                    } else {
+                        $route = '[' . strtoupper($matches[1]) . '] ' . $currentGroup . $matches[2];
+                        $routes[$route] = $file;
+                    }
+
+                }
+
+            }
+            fclose($fp);
+
+        }
         return $routes;
     }
 
