@@ -48,7 +48,7 @@ $app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection
         );
     }
 
-    return $response->withJson($status);
+    return $response->withJson(array('status'=>$status, 'specs'=>$specs));
 });
 
 
@@ -77,7 +77,7 @@ $app->post('/login', function(Request $request, Response $response) use ($app) {
     $isSuperAdmin = $dbConnection->isSuperAdmin($token);
 
     if ((count($workspaces) == 0) and !$isSuperAdmin) {
-        throw new HttpException($request, "You don't any workspaces and are not allowed to create some.", 406);
+        throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 406);
     }
 
     return $response->withJson([
