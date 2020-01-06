@@ -11,15 +11,6 @@ class SpecCollector {
             $data = file_get_contents($file);
             preg_match_all('#^\s\s(\/\S+)\:\n\s\s\s\s(\w+)\:#m', $data, $matches, PREG_SET_ORDER, 0);
 
-//            $routes = array_merge(
-//                $routes,
-//                array_map(
-//                    function($item){
-//                        return '[' . strtoupper($item[2]) . '] ' . $item[1];
-//                    },
-//                    $matches
-//                )
-//            );
             foreach ($matches as $item) {
                 $route = '[' . strtoupper($item[2]) . '] ' . $item[1];
                 $routes[$route] = $file;
@@ -29,5 +20,6 @@ class SpecCollector {
 
         return $routes;
     }
+
 
 }
