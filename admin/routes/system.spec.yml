@@ -1,0 +1,63 @@
+openapi: 3.0.0
+
+info:
+  title: IQB Testcenter API - Backend
+  version: "2.0.0"
+
+paths:
+  /list/routes:
+    get:
+      summary: Lists all available endpoints
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              example:
+                - "[GET] /list/routes":
+                  "spec": "<spec missing>"
+                  "code": "/var/www/html/testcenter-iqb-php/admin/routes/system.php"
+
+  /specstatus:
+    get:
+      summary: temporaray helper endpoint
+
+      responses:
+        "200":
+          description: OK
+
+  /login:
+    post:
+      summary: Login
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login_request'
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/login_response'
+              example:
+                admintoken: 1337ymca1337666.xxx13370
+                name: super
+                workspaces:
+                  - id: '1'
+                    name: example_workspace
+                    role: RW
+                is_superadmin: true
+
+        "401":
+          description: Not authenticated
+        "404":
+          description: Other Error
+        "406":
+          description: Other Error
+        "500":
+          description: Server Error

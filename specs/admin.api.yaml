@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   title: IQB Testcenter API - Backend
   description: This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend's e2e-test and a mock-server for frontend's e2e-tests. It's the basis for out vision of continuous integration.
-  version: "2.0.0-start"
+  version: "2.0.0"
 
 paths:
   /php/login.php/login:
@@ -109,7 +109,7 @@ paths:
               $ref: '#/components/schemas/user'
             example:
               n: secondUser
-              p: secondUser'sPassword
+              p: secondUsersPassword
 
       responses:
         "200":
@@ -143,7 +143,7 @@ paths:
               $ref: '#/components/schemas/user'
             example:
               n: seconUser
-              p: secondUser'sNewPassword
+              p: secondUsersNewPassword
 
       responses:
         "200":
@@ -664,7 +664,7 @@ paths:
         "200":
           description: OK, roles has been updated
           content:
-            application/json:
+            text/plain:
               examples:
                 a:
                   value: "Eine Datei gelöscht."
@@ -1217,15 +1217,6 @@ paths:
       responses:
         "200":
           description: File contents
-          content:
-            text/xml:
-              example:
-                value:
-                  <Unit>....</Unit>
-            application/octet-stream:
-              example:
-                value:
-                  <DOCTYPE html>...
 
         "404":
           description: workspace or file not found
@@ -1283,6 +1274,8 @@ paths:
           description: Server Error
         "503":
           description: Service Unavailable
+
+
 components:
   schemas:
 

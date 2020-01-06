@@ -8,10 +8,12 @@ You can find frontends for those applications [here](https://github.com/iqb-berl
 and [here](https://github.com/iqb-berlin/testcenter-admin-iqb-ng).
 
 
-# Docker
+# Installation
+
+## With Docker
 You can find Docker files and a complete setup [here](https://github.com/iqb-berlin/iqb-tba-docker-setup) .
 
-# Local Installation
+## Manual Installation
 
 - clone this repository
 ```
@@ -30,18 +32,37 @@ psql -U username database_name < scripts/sql-schema/postgres.sql
 sh scripts/install_composer.sh # or install composer manually
 php composer.phar install
 ``` 
-- configurate webserver, so that only vo_code and admin directories are served outside. if you use apache2 you can take
+- configurate webserver, so that only vo_code and admin directories are served outside. If you use Apache2 you can take
  the shipped `.htaccess` as basis. 
+- ensure that PHP has access to /tmp and /vo_data
+```
+sudo chown -R www-data:www-data ./integration/tmp # normal apache2 config
+sudo chown -R www-data:www-data ./vo_data # normal apache2 config
+``` 
 - Run initialize to create a superuser, and, if you want to a workspace with some sample data and a test-login 
 ```
 sudo --user=www-data php scripts/initialize.php --user_name=super --user_password=user123 --workspace=example_workspace --test_login_name=test --test_login_password=user123
 ```  
-  
-## Prerequisites 
 
-* weserver, for Example apache2 (with mod_rewrite and header extension)
-* php > 7.1 (with pdo_extension)
-* mysql or postgresql
+  
+### Prerequisites
+
+* Webserver, for Example Apache2 
+  * mod_rewrite 
+  * header extension
+* php > 7.1 
+  * pdo_extension
+* MySQL or PostgreSQL
+* for tests / doc-building: NPM
+
+# Tests
+
+## API tests
+
+Tests the In/Output of all Endpoints againt the API Specification.
+
+```
+ npm --prefix=integration run dredd_test
 
 # Dev
 ## Refactoring workflow

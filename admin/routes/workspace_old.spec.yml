@@ -1,0 +1,432 @@
+openapi: 3.0.0
+
+info:
+  title: IQB Testcenter API - Backend
+  version: "2.0.0"
+
+paths:
+  /php/ws.php/filelist:
+    get:
+      summary: get files of workspace
+      description: get a list of all files in workspace
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK, a list of files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/file_list'
+              example:
+                - filename: SAMPLE_TESTTAKERS.XML
+                  filesize: 823
+                  filesizestr: 823 Bytes
+                  filedatetime: 1567610586
+                  filedatetimestr: 04.09.2019
+                  type: Testtakers
+                  typelabel: Testtakers
+                - filename: SAMPLE_BOOKLET.XML
+                  filesize: 1284
+                  filesizestr: 1.25 KB
+                  filedatetime: 1567610586
+                  filedatetimestr: 04.09.2019
+                  type: Booklet
+                  typelabel: Booklet
+                - filename: SAMPLE_PLAYER.HTML
+                  filesize: 3386
+                  filesizestr: 3.31 KB
+                  filedatetime: 1567610586
+                  filedatetimestr: 04.09.2019
+                  type: Resource
+                  typelabel: Resource
+                - filename: SAMPLE_UNIT.XML
+                  filesize: 696
+                  filesizestr: 696 Bytes
+                  filedatetime: 1567610586
+                  filedatetimestr: 04.09.2019
+                  type: Unit
+                  typelabel: Unit
+                - filename: SAMPLE_SYSCHECK.XML
+                  filesize: 960
+                  filesizestr: 960 Bytes
+                  filedatetime: 1567610586
+                  filedatetimestr: 04.09.2019
+                  type: SysCheck
+                  typelabel: SysCheck
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+
+  /php/ws.php/lock:
+    post:
+      summary: lock workspace
+      description: locks a group of booklets in a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                g:
+                  type: array
+                  description: array of group names
+                  items:
+                    type: string
+            example:
+              g:
+                - group1
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+
+  /php/ws.php/unlock:
+    post:
+      summary: unlock workspace
+      description: unlocks a group of bookltes in a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                g:
+                  type: array
+                  description: array of group names
+                  items:
+                    type: string
+            example:
+              g:
+                - group1
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+
+  /php/ws.php/delete:
+    post:
+      summary: delete files
+      description: deletes files from a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                f:
+                  type: array
+                  description: array of file names. path delimitershave to be replaced by `::`
+                  items:
+                    type: string
+            examples:
+              a:
+                value:
+                  f:
+                    - "SysCheck::SAMPLE_SYSCHECK.XML"
+              b:
+                description: include some non-existant or forbidden files
+                value:
+                  f:
+                    - "SysCheck::SAMPLE_SYSCHECK.XML"
+                    - "some rubbish"
+                    - "a/b"
+                    - "../../README.md"
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK, roles has been updated
+          content:
+            text/plain:
+              examples:
+                a:
+                  value: "Eine Datei gelöscht."
+                b:
+                  value: "Konnte 3 Dateien nicht löschen."
+
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+
+  /php/sys.php/workspaces:
+    get:
+      summary: get a list of workspaces
+      description: get a list of all workspaces or all workspaces belonging to a given user
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: query
+          name: u
+          description: user-id or ""
+          required: false
+          schema:
+            $ref: '#/components/schemas/workspace_list'
+          examples:
+            a:
+              value: 0
+            b:
+              value: 1
+
+      responses:
+        "200":
+          description: List of Workspaces
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspace_list'
+              examples:
+                a:
+                  value:
+                    - id: '1'
+                      name: "example_workspace"
+                b:
+                  value:
+                    - id: '1'
+                      name: "example_workspace"
+                      selected: false
+                      role: ''
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/workspace/add:
+    post:
+      summary: add a workspace
+      description: adds a workspace with given name
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                n:
+                  type: string
+                  description: Password
+              required:
+                - n
+            example:
+              n: "new work space"
+
+      responses:
+        "200":
+          description: OK, workspace has been added
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/workspace/rename:
+    post:
+      summary: rename a workspace
+      description: renames a workspace with given id
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: integer
+                  description: Workspace-Id
+                n:
+                  type: string
+                  description: Password
+              required:
+                - ws
+                - n
+            example:
+              ws: 2
+              n: "new york space"
+
+      responses:
+        "200":
+          description: OK, workspace has been renamed
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/workspaces/delete:
+    post:
+      summary: delete some workspaces
+      description: deletes a list of workspaces given by their ids
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: array
+                  description: list of Workspace-Id
+                  items:
+                    type: integer
+              required:
+                - ws
+            example:
+              ws: [2]
+
+      responses:
+        "200":
+          description: OK, workspace has been renamed
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/workspace/users:
+    post:
+      summary: change user roles
+      description: change user roles in a given workspaces
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: integer
+                  description: Workspace-Id
+                u:
+                  type: array
+                  description: array of pairs role-id
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: user-id
+                      role:
+                        type: string # because dredd does not support enum
+                        description: "role: 'RW', 'MO' or 'RO'"
+              required:
+                - ws
+                - u
+            example:
+              ws: 1
+              u:
+                - role: RO
+                  id: 1
+
+      responses:
+        "200":
+          description: OK, roles has been updated
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error

@@ -1,0 +1,648 @@
+openapi: 3.0.0
+
+info:
+  title: IQB Testcenter API - Backend
+  version: "2.0.0"
+
+paths:
+  /workspace/{ws_id}/booklets/started:
+    get:
+      summary: get started booklets
+      description: retrieves an overview about started booklets
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          required: true
+          description: workspace-Id
+          schema:
+            type: integer
+          example: 1
+        - in: query
+          name: groups
+          schema:
+            type: object
+            properties:
+              g:
+                type: array
+                description: a list
+                items:
+                  type: string
+          example:
+            g:
+                - sample_group
+      responses:
+        "200":
+          description: OK, list of started booklets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    groupname:
+                      type: string
+                    loginname:
+                      type: string
+                    code:
+                      type: string
+                      description: person code
+                    bookletname:
+                      type: string
+                    locked:
+                      type: boolean
+                    lastlogin:
+                      type: string
+                      description: "date of last login and time in US format: YYYY-mm-dd HH:mm:SS"
+                    laststart:
+                      type: string
+                      description: "date of last start and time in US format: YYYY-mm-dd HH:mm:SS"
+              example:
+                - groupname: sample_group
+                  loginname: test
+                  code: dlu
+                  bookletname: BOOKLET.SAMPLE
+                  locked: false
+                  lastlogin: '2019-09-10 13:29:36'
+                  laststart: '2019-09-10 13:29:37'
+
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/file/{type}/{filename}:
+    get:
+      summary: get file
+      description: retrieves a file form a goven workspace by filename
+
+      parameters:
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: at
+          description: auth token
+          example: 1337ymca1337666.xxx13370
+          required: true
+          schema:
+            $ref: '#/components/schemas/auth'
+        - in: path
+          name: type
+          description: file type - Testtakers | Booklet | Resource | Unit | SysCheck - CASE SENSITIVE!
+          example: Unit
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: filename
+          description: filename. - CASE SENSITIVE!
+          example: SAMPLE_UNIT.XML
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: File contents
+
+        "404":
+          description: workspace or file not found
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/logs:
+    get:
+      summary: get logs
+      description: retrieves unit and bookltes logs from this workspace
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: groups
+          schema:
+            type: object
+            properties:
+              g:
+                type: array
+                description: a list
+                items:
+                  type: string
+          example:
+            g:
+              - sample_group
+      responses:
+        "200":
+          description: OK, list of logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    unitname:
+                      type: string
+                    bookletname:
+                      type: string
+                    groupname:
+                      type: string
+                    loginname:
+                      type: string
+                    code:
+                      type: string
+                      description: person code
+                    timestamp:
+                      type: string
+                    logentry:
+                      type: string
+              example:
+                - unitname: UNIT.SAMPLE
+                  bookletname: BOOKLET.SAMPLE
+                  groupname: sample_group
+                  loginname: test
+                  code: sxx
+                  timestamp: '1568026665043'
+                  logentry: sample unit log
+                - bookletname: BOOKLET.SAMPLE
+                  groupname: sample_group
+                  loginname: test
+                  code: sxx
+                  timestamp: '1568026665043'
+                  logentry: sample log entry
+                  unitname: ''
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/responses:
+    get:
+      summary: get responses
+      description: retrieves a list of responses by a given list of groups
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: groups
+          schema:
+            type: object
+            properties:
+              g:
+                type: array
+                description: a list
+                items:
+                  type: string
+          example:
+            g:
+              - sample_group
+      responses:
+        "200":
+          description: OK, list of responses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    unitname:
+                      type: string
+                    responses:
+                      type: string
+                      description: may contain encoded JSON
+                    responsetype:
+                      type: string
+                    laststate:
+                      type: string
+                      description: may contain encoded JSON
+                    bookletname:
+                      type: string
+                    restorepoint_ts:
+                      type: string
+                    responses_ts:
+                      type: string
+                      description: contains a unix timestamp
+                    restorepoint:
+                      type: string
+                    groupname:
+                      type: string
+                    loginname:
+                      type: string
+                    code:
+                      type: string
+                      description: login code
+                example:
+                  - unitname: UNIT.SAMPLE
+                    responses: '{"name":"Sam Sample","age":34}'
+                    responsetype: ''
+                    laststate: '{"PRESENTATIONCOMPLETE":"yes"}'
+                    bookletname: BOOKLET.SAMPLE
+                    restorepoint_ts: '0'
+                    responses_ts: '1567778660869'
+                    restorepoint:
+                    groupname: sample_group
+                    loginname: test
+                    code: jsx
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/results:
+    get:
+      summary: get results
+      description: retrieves a list of unit- and booklet results for a given workspace and groups
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: OK, list of results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    groupname:
+                      type: string
+                    bookletsStarted:
+                      type: integer
+                    num_units_min:
+                      type: string
+                    num_units_max:
+                      type: string
+                    num_units_total:
+                      type: string
+                    lastchange:
+                      type: string
+                      description: timestamp
+                    num_units_mean:
+                      type: integer
+              example:
+                - groupname: sample_group
+                  bookletsStarted: 1
+                  num_units_min: '1'
+                  num_units_max: '1'
+                  num_units_total: '1'
+                  lastchange: '1567776853037'
+                  num_units_mean: 1
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/reviews:
+    get:
+      summary: get reviews
+      description: retrieves a list of unit- and booklet-reviews for a given workspace and groups
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: groups
+          schema:
+            type: object
+            properties:
+              g:
+                type: array
+                description: a list
+                items:
+                  type: string
+          example:
+            g:
+              - sample_group
+
+      responses:
+        "200":
+          description: OK, list of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    unitname:
+                      type: string
+                      description: stays empty if booklet review
+                    bookletname:
+                      type: string
+                    groupname:
+                      type: string
+                    code:
+                      type: string
+                      description: login code
+                    entry:
+                      type: string
+                    priority:
+                      type: string
+                    categories:
+                      type: string
+
+              example:
+                - unitname: UNIT.SAMPLE
+                  bookletname: BOOKLET.SAMPLE
+                  groupname: sample_group
+                  loginname: test
+                  code: euf
+                  reviewtime: '2019-09-06 11:19:56'
+                  entry: this is a sample unit review
+                  priority: '1'
+                  categories: ''
+                - bookletname: BOOKLET.SAMPLE
+                  groupname: sample_group
+                  loginname: test
+                  code: euf
+                  reviewtime: '2019-09-06 11:19:56'
+                  entry: sample booklet review
+                  priority: '1'
+                  categories: ''
+                  unitname: ''
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/status:
+    get:
+      summary: get status
+      description: retrieves an overview about running tests
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: OK, list of monitor data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    groupname:
+                      type: string
+                    loginsPrepared:
+                      type: integer
+                    personsPrepared:
+                      type: integer
+                    bookletsPrepared:
+                      type: integer
+                    bookletsStarted:
+                      type: integer
+                    bookletsLocked:
+                      type: integer
+                    laststart:
+                      type: integer
+                      description: timestamp of last start
+                    laststartStr:
+                      type: string
+                      description: "date of last start in human readable format (german date format: dd.MM.yyyy)"
+              example:
+                - groupname: sample_group
+                  loginsPrepared: 1
+                  personsPrepared: 10
+                  bookletsPrepared: 10
+                  bookletsStarted: 1
+                  bookletsLocked: 0
+                  laststart: 1567783156
+                  laststartStr: 06.09.2019
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/validation:
+    get:
+      summary: check workspace
+      description: triggers a check of all xmls in the workspace and retrieves the results
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: OK, list of reviews
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+                  infos:
+                    type: array
+                    items:
+                      type: string
+              example:
+                errors: []
+                warnings: []
+                infos:
+                  - 1 resource files found
+                  - 1 valid units found
+                  - 1 valid booklets found
+                  - 0 valid syschecks found
+                  - 10 testtakers in 1 logins found
+                  - 'booklet loads (bytes, sorted):'
+                  - "    BOOKLET.SAMPLE: 5.365"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable
+
+  /workspace/{ws_id}/file:
+    post:
+      summary: upload file
+      description: uploads a Resource, Unit, Booklet, SysCheck ort Testtakers file
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileforvo:
+                  type: string
+                  description: upload file
+              required:
+                - fileforvo
+
+      responses:
+        "200":
+          description: upload susccessfull
+          content:
+            application/json:
+              example: OK (valide)
+        "404":
+          description: workspace or file not found
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+        "503":
+          description: Service Unavailable

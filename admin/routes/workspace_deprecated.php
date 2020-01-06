@@ -92,25 +92,29 @@ $app->group('/php', function(App $app) {
 
 })->add(new NormalAuthWithWorkspaceInHeader());
 
-$app->get('/php/getFile.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
+$app->group('/php', function(App $app) {
 
-    $workspaceId = $request->getQueryParam('ws', 0);
-    $fileType = $request->getQueryParam('t', '[parameter missing: t]'); // TODO basename
-    $filename = $request->getQueryParam('fn', '[parameter missing: fn]');
-    $adminToken = $request->getQueryParam('at', '[parameter missing at]');
+    $app->get('/getFile.php', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
-    // in this endpoint at is not given in header but as get parameter!
-    $_SESSION['adminToken'] = $adminToken;
+        $workspaceId = $request->getQueryParam('ws', 0);
+        $fileType = $request->getQueryParam('t', '[parameter missing: t]'); // TODO basename
+        $filename = $request->getQueryParam('fn', '[parameter missing: fn]');
+        $adminToken = $request->getQueryParam('at', '[parameter missing at]');
 
-    $headers = array(
-      'AuthToken' => json_encode(array(
-         'at' => $adminToken,
-         'ws' => $workspaceId
-      )),
-      'Accept' => '*/*'
-    , JSON_UNESCAPED_UNICODE);
+        // in this endpoint at is not given in header but as get parameter! // TODO change this
+        $_SESSION['adminToken'] = $adminToken;
 
-    $response = $app->subRequest('GET', "/workspace/$workspaceId/file/$fileType/$filename",'', $headers);
+        $headers = array(
+            'AuthToken' => json_encode(array(
+                'at' => $adminToken,
+                'ws' => $workspaceId
+            )),
+            'Accept' => '*/*'
+        , JSON_UNESCAPED_UNICODE);
 
-    return $response->withHeader("Warning", "endpoint deprecated");
-}); // no auth middleware!
+        $response = $app->subRequest('GET', "/workspace/$workspaceId/file/$fileType/$filename", '', $headers);
+
+        return $response->withHeader("Warning", "endpoint deprecated");
+    }); // no auth middleware!
+
+});

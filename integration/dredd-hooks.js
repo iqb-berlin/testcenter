@@ -1,18 +1,18 @@
-const hooks = require('hooks');
+const dreddHooks = require('integration/dredd-hooks');
 const fs = require('fs');
 const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
 
 const stash = {};
 
-hooks.beforeEachValidation(function(transaction) {
+dreddHooks.beforeEachValidation(function(transaction) {
 
     // don't compare headers
     transaction.real.headers = {};
     transaction.expected.headers = {};
 });
 
-hooks.beforeEach(function(transaction, done) {
+dreddHooks.beforeEach(function(transaction, done) {
 
     // dont' check error responses
     if (transaction.expected.statusCode.substr(0,1) !== "2") {
@@ -29,15 +29,15 @@ hooks.beforeEach(function(transaction, done) {
     done();
 });
 
-hooks.after('/php/login.php/login > Login > 200 > application/json', function(transaction, done) {
+dreddHooks.after('/php/login.php/login > Login > 200 > application/json', function(transaction, done) {
 
     // store login credentials
     stash.authToken = JSON.parse(transaction.real.body).admintoken;
-    hooks.log("stashing auth token:" + stash.authToken );
+    dreddHooks.log("stashing auth token:" + stash.authToken );
     done();
 });
 
-hooks.before('/php/getFile.php > get file > 200 > text/xml', function(transaction, done) {
+dreddHooks.before('/php/getFile.php > get file > 200 > text/xml', function(transaction, done) {
 
     const atParameterRegex = /at=[\w\\.]+/gm;
     transaction.fullPath = transaction.fullPath.replace(atParameterRegex, 'at=' + stash.authToken);
@@ -45,13 +45,13 @@ hooks.before('/php/getFile.php > get file > 200 > text/xml', function(transactio
     done();
 });
 
-hooks.before('/php/getFile.php > get file > 200 > application/octet-stream', function(transaction, done) {
+dreddHooks.before('/php/getFile.php > get file > 200 > application/octet-stream', function(transaction, done) {
 
     transaction.skip = true;
     done();
 });
 
-hooks.before('/php/uploadFile.php > upload file > 200 > application/json', async function(transaction, done) {
+dreddHooks.before('/php/uploadFile.php > upload file > 200 > application/json', async function(transaction, done) {
 
     const form = new Multipart();
 

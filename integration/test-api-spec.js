@@ -7,9 +7,9 @@ const fs = require("fs");
 const Dredd = require('dredd');
 const fsExtra = require('fs-extra');
 const {spawnSync} = require('child_process');
-const {series} = require('gulp');
-const {task} = require('gulp');
-const yamlTransform = require('./yamlTransform');
+const gulp = require('gulp');
+const yamlMerge = require('gulp-yaml-merge');
+const yamlTransform = require('./yaml-transformer');
 
 const args = process.argv.slice(-1);
 const endpoint = args[0].substring(6);
@@ -30,7 +30,7 @@ const shellExec = (command, params = []) => {
     return true;
 };
 
-task('info', done => {
+gulp.task('info', done => {
 
     if (!endpoint) {
         throw new Error("no endpoint given");
@@ -40,7 +40,7 @@ task('info', done => {
     done();
 });
 
-task('clear_tmp_dir', done => {
+gulp.task('clear_tmp_dir', done => {
 
     printHeadline("clear tmp dir");
 
@@ -48,24 +48,41 @@ task('clear_tmp_dir', done => {
     done();
 });
 
-task('prepare_spec_for_dredd', done => {
+gulp.task('compile_spec_files', function() {
+
+    printHeadline(`compile spec files to one`);
+
+    return gulp.src('../admin/routes/*.spec.yml')
+        .on("data", function(d) { console.log("File: " + d.path);})
+        // .on("error", function(e) { console.warn(e);})
+        // .pipe(map(function(file, done) {
+        //     const yaml = YAML.parse(file.contents);
+        //     // file.contents = new Buffer(YAML.stringify(yaml.paths));
+        //     done(null, file);
+        // }))
+        // .pipe(concat('compiled_specs.yml'))
+        .pipe(yamlMerge('compiled_specs.yml'))
+        .pipe(gulp.dest('./tmp/'));
+});
+
+gulp.task('prepare_spec_for_dredd', done => {
 
     printHeadline(`creating Dredd-compatible API-Spec version: ${specFileName}`);
 
-    let spec = fs.readFileSync("../specs/" + specFileName, "utf8");
+    let spec = fs.readFileSync("tmp/compiled_specs.yml", "utf8");
     spec = yamlTransform(spec);
     fs.writeFileSync(tmpFileName(specFileName), spec, "utf8");
     console.log(`${tmpFileName(specFileName)} written.`);
     done();
 });
 
-task('run_dredd', done => {
+gulp.task('run_dredd', done => {
 
     printHeadline("run dredd");
     new Dredd({
         endpoint: endpoint,
         path: [tmpFileName(specFileName)],
-        hookfiles: ['hooks.js'],
+        hookfiles: ['dredd-hooks.js'],
         output: [`tmp/report.${tmpFileName(specFileName)}.html`],
         reporter: ['html'],
         names: false
@@ -78,9 +95,7 @@ task('run_dredd', done => {
     });
 });
 
-
-
-task('init_backend', done => {
+gulp.task('init_backend', done => {
 
     printHeadline('run init script');
     shellExec('php',
@@ -97,7 +112,7 @@ task('init_backend', done => {
 });
 
 
-task('db_clean', done => {
+gulp.task('db_clean', done => {
 
     printHeadline('wipe out db and set up a clean one');
     const sqlConfig = require('../config/DBConnectionData');
@@ -117,21 +132,10 @@ task('db_clean', done => {
     done();
 });
 
-task('change_example_code', done => {
-
-    filterExampleCode = exampleCodes[exampleCodes.indexOf(filterExampleCode) + 1];
-    if (typeof filterExampleCode === "undefined") {
-        filterExampleCode = exampleCodes[0];
-    }
-    printHeadline(`change example code to ${filterExampleCode}`);
-
-    done();
-});
-
-
-exports.run_dredd_test = series(
+exports.run_dredd_test = gulp.series(
     'info',
     'clear_tmp_dir',
+    'compile_spec_files',
     'db_clean',
     'init_backend',
     'prepare_spec_for_dredd',
@@ -139,7 +143,12 @@ exports.run_dredd_test = series(
 
 );
 
-exports.repeat_dredd_test = series(
+exports.repeat_dredd_test = gulp.series(
+    'compile_spec_files',
     'prepare_spec_for_dredd',
     'run_dredd'
+);
+
+exports.xx = gulp.series(
+    'compile_spec_files'
 );

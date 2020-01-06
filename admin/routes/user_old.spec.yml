@@ -1,0 +1,265 @@
+openapi: 3.0.0
+
+info:
+  title: IQB Testcenter API - Backend
+  version: "2.0.0"
+
+paths:
+
+  /php/sys.php/users:
+    get:
+      summary: get a list of users
+      description: get info about all registered users - in whole application or in a workspace.
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: query
+          name: ws
+          description: id of a workspace to get users from. can be omitted for all users in system
+          required: false
+          schema:
+            $ref: '#/components/schemas/workspace_list'
+          examples:
+            a:
+              value: 0
+            b:
+              value: 1
+
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_list'
+              examples:
+                a:
+                  value:
+                    - name: super
+                      id: '1'
+                      email: null
+                      is_superadmin: '1'
+                b:
+                  value:
+                    - name: super
+                      id: '1'
+                      selected: true
+                      role: 'RW'
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/user/add:
+    post:
+      summary: add a user
+      description: add a user
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+            example:
+              n: secondUser
+              p: secondUsersPassword
+
+      responses:
+        "200":
+          description: OK, user has been added
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/user/pw:
+    post:
+      summary: change user-password
+      description: changes the password of a given user. returns true if user does not exist.
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+            example:
+              n: seconUser
+              p: secondUsersNewPassword
+
+      responses:
+        "200":
+          description: password has changed / user did not exist
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/users/delete:
+    post:
+      summary: delete some users
+      description: deletes a list of given user-names (not ids!). if the list containes unexistant users, nothing happens.
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                u:
+                  type: array
+                  items:
+                    type: string
+                    description: user-name (not id)
+            example:
+              u:
+                - secondUser
+
+
+      responses:
+        "200":
+          description: OK, users has been deleted
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+
+
+  /php/sys.php/workspaces:
+    get:
+      summary: get a list of workspaces
+      description: get a list of all workspaces or all workspaces belonging to a given user
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: query
+          name: u
+          description: user-id or ""
+          required: false
+          examples:
+            a:
+              value: 0
+            b:
+              value: 1
+
+      responses:
+        "200":
+          description: List of Workspaces
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspace_list'
+              examples:
+                a:
+                  value:
+                    - id: '1'
+                      name: "example_workspace"
+                b:
+                  value:
+                    - id: '1'
+                      name: "example_workspace"
+                      selected: false
+                      role: ''
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /php/sys.php/user/workspaces:
+    post:
+      summary: change user roles
+      description: change user roles for a given user in several workspaces. *Provide user-name, not user-id!*
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                u:
+                  type: string
+                  description: user-name (not id!)
+                ws:
+                  type: array
+                  description: array of pairs role-id
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: workspace-id
+                      role:
+                        type: string # because dredd does not support enum
+                        description: "role: 'RW', 'MO' or 'RO'"
+              required:
+                - ws
+                - u
+            example:
+              u: super
+              ws:
+                - role: RW
+                  id: 1
+      responses:
+        "200":
+          description: OK, roles has been updated
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
