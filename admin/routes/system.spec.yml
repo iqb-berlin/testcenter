@@ -15,9 +15,7 @@ paths:
           content:
             application/json:
               example:
-                - "[GET] /list/routes":
-                  "spec": "<spec missing>"
-                  "code": "/var/www/html/testcenter-iqb-php/admin/routes/system.php"
+                - "[GET] /list/routes"
 
   /specstatus:
     get:

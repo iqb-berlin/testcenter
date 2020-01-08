@@ -91,6 +91,13 @@ paths:
       description: retrieves a file form a goven workspace by filename
 
       parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
         - in: path
           name: ws_id
           description: workspace-id
@@ -98,13 +105,6 @@ paths:
           schema:
             type: integer
           required: true
-        - in: query
-          name: at
-          description: auth token
-          example: 1337ymca1337666.xxx13370
-          required: true
-          schema:
-            $ref: '#/components/schemas/auth'
         - in: path
           name: type
           description: file type - Testtakers | Booklet | Resource | Unit | SysCheck - CASE SENSITIVE!
@@ -470,14 +470,17 @@ paths:
   /workspace/{ws_id}/status:
     get:
       summary: get status
-      description: retrieves an overview about running tests
+      description: Retrieves an overview about running tests
 
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token with wokspace number
+          description: auth-token
           schema:
             $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
         - in: path
           name: ws_id
           description: workspace-id
@@ -635,7 +638,8 @@ paths:
           description: upload susccessfull
           content:
             application/json:
-              example: OK (valide)
+              example:
+                "SAMPLE_UNIT.XML": true
         "404":
           description: workspace or file not found
         "401":

@@ -79,7 +79,7 @@ components:
 
     workspace_list:
       type: array
-      description: LIst of Workspaces
+      description: List of Workspaces
       items:
         $ref: '#/components/schemas/workspace'
 
