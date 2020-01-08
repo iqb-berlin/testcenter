@@ -9,7 +9,8 @@ const fsExtra = require('fs-extra');
 const {spawnSync} = require('child_process');
 const gulp = require('gulp');
 const yamlMerge = require('gulp-yaml-merge');
-const yamlTransform = require('./yaml-transformer');
+const jsonTransform = require('./json-transformer');
+const YAML = require('yamljs');
 
 const args = process.argv.slice(-1);
 const endpoint = args[0].substring(6);
@@ -69,9 +70,38 @@ gulp.task('prepare_spec_for_dredd', done => {
 
     printHeadline(`creating Dredd-compatible API-Spec version: ${specFileName}`);
 
-    let spec = fs.readFileSync("tmp/compiled_specs.yml", "utf8");
-    spec = yamlTransform(spec);
-    fs.writeFileSync(tmpFileName(specFileName), spec, "utf8");
+    const yamlString = fs.readFileSync("tmp/compiled_specs.yml", "utf8");
+    const yamlTree = YAML.parse(yamlString);
+    const resolveReference = (key, val) => {
+        const referenceString = val.substring(val.lastIndexOf('/') + 1);
+        console.log("resolving reference '" + val + "' - |" + referenceString + "|");
+        return {
+            key: null,
+            val: yamlTree.components.schemas[referenceString]
+        }
+    };
+
+    const rules = {
+
+        "examples$": (key, val) => {return {
+            key: "example",
+            val: val[Object.keys(val)[0]].value
+        }},
+        "^info > description$": (key, val) => {return {
+            key: "description",
+            val: val + " - transformed to be dredd compatible"
+        }},
+        "parameters > \\d+ > schema$": () => null,
+        "text/xml > example$": () => null,
+        "application/octet-stream > example$": () => null,
+        "^paths > .*? > .*? > responses > [^2]\\d\\d$": () => null,
+        "schema > \\$ref$": resolveReference,
+        "items > \\$ref$": resolveReference
+    };
+
+    const transformed = jsonTransform(yamlTree, rules);
+    const transformedAsString = YAML.stringify(transformed, 10);
+    fs.writeFileSync(tmpFileName(specFileName), transformedAsString, "utf8");
     console.log(`${tmpFileName(specFileName)} written.`);
     done();
 });

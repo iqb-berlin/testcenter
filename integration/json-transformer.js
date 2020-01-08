@@ -1,32 +1,27 @@
-const YAML = require('yamljs');
-
-module.exports = function(yamlString) {
+module.exports = function(json, rules) {
 
     const isType = (type, val) =>
         (val === null)
             ? (type === 'null')
             : !!(val.constructor && val.constructor.name.toLowerCase() === type.toLowerCase());
 
-    const rules = {
+    const toObject = (thing) => {
 
-        "examples$": (key, val) => {return {
-            key: "example",
-            val: val[Object.keys(val)[0]].value
-        }},
-        "^info > description$": (key, val) => {return {
-            key: "description",
-            val: val + " - transformed to be dredd compatible"
-        }},
-        "parameters > \\d+ > schema$": () => null,
-        "text/xml > example$": () => null,
-        "application/octet-stream > example$": () => null,
-        "^paths > .*? > .*? > responses > [^2]\\d\\d$": () => null
+        if (isType('object', thing)) return Object.assign({}, thing);
+        if (isType('array', thing)) return thing.values;
+        return {value: thing};
+    };
+
+    const toArray = (thing) => {
+
+        if (isType('array', thing)) return thing;
+        if (isType('object', thing)) return Object.values(thing);
+        return [thing];
     };
 
     const applyRules = (key, value, trace) => {
 
         const traceString = trace.join(' > ');
-        // console.log(traceString);
 
         let newKeyValue = {
             key: key,
@@ -49,7 +44,13 @@ module.exports = function(yamlString) {
             Object.keys(tree).forEach(key => {
                 const replace = applyRules(key, tree[key], [...trace, key]);
                 if (replace !== null) {
-                    transformedTree.push(transformTree(replace.val, [...trace, key]));
+                    if (replace.key === null) {
+                        toArray(replace.val).forEach(item => {
+                            transformedTree.push(transformTree(item, [...trace, key]));
+                        });
+                    } else {
+                        transformedTree.push(transformTree(replace.val, [...trace, key]));
+                    }
                 }
             });
             return transformedTree;
@@ -60,7 +61,14 @@ module.exports = function(yamlString) {
             Object.keys(tree).forEach(key => {
                 const replace = applyRules(key, tree[key], [...trace, key]);
                 if (replace !== null) {
-                    transformedTree = {...transformedTree, [replace.key]: transformTree(replace.val, [...trace, key])}
+                    if (replace.key === null) {
+                        const valueAsObject = toObject(replace.val);
+                        Object.keys(valueAsObject).forEach(key => {
+                            transformedTree = {...transformedTree, [key]: transformTree(valueAsObject[key], [...trace, key])}
+                        })
+                    } else {
+                        transformedTree = {...transformedTree, [replace.key]: transformTree(replace.val, [...trace, key])}
+                    }
                 }
             });
             return transformedTree;
@@ -69,9 +77,7 @@ module.exports = function(yamlString) {
         return tree;
     };
 
+    return transformTree(json);
 
-    let spec = YAML.parse(yamlString);
-    const specTrans = transformTree(spec);
-    return YAML.stringify(specTrans, 10);
 };
 
