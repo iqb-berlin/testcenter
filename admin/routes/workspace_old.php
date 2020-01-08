@@ -43,19 +43,19 @@ $app->group('/php/ws.php', function(App $app) {
 
         $returnMessage = "";
 
-        if ($deleted == 1) {
-            $returnMessage = 'Eine Datei gelöscht.'; // TODO should't these messages be business of the frontend?
+        if ($deleted == count($filesToDelete)) {
+            $returnMessage = "Erfolgreich $deleted gelöscht.";
         }
 
-        if ($deleted == count($filesToDelete)) {
-            $returnMessage = "Erfolgreich $filesToDelete Dateien gelöscht.";
+        if ($deleted == 1) {
+            $returnMessage = 'Eine Datei gelöscht.'; // TODO should't these messages be business of the frontend?
         }
 
         if ($deleted < count($filesToDelete)) { // TODO check if it makes sense that this still returns 200
             $returnMessage = 'Konnte ' . (count($filesToDelete) - $deleted) . ' Dateien nicht löschen.';
         }
 
-        $response->getBody()->write(json_encode($returnMessage, JSON_UNESCAPED_UNICODE));  // TODO why encoding a single string as JSON?
+        $response->getBody()->write($returnMessage);
         $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
 
         return $responseToReturn;

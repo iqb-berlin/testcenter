@@ -101,7 +101,7 @@ $app->group('/php', function(App $app) {
         $filename = $request->getQueryParam('fn', '[parameter missing: fn]');
         $adminToken = $request->getQueryParam('at', '[parameter missing at]');
 
-        // in this endpoint at is not given in header but as get parameter! // TODO change this
+        // in this endpoint at is not given in header but as get parameter!
         $_SESSION['adminToken'] = $adminToken;
 
         $headers = array(
