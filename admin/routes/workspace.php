@@ -138,4 +138,14 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($importedFiles);
     });
 
+    $app->get('/{ws_id}/files', function(Request $request, Response $response) {
+
+        $workspaceId = $request->getAttribute('ws_id');
+
+        $workspaceController = new WorkspaceController($workspaceId);
+        $files = $workspaceController->getAllFiles();
+        return $response->withJson($files);
+    });
+
+
 })->add(new IsWorkspacePermitted())->add(new NormalAuth());

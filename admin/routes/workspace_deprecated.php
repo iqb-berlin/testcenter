@@ -90,6 +90,15 @@ $app->group('/php', function(App $app) {
         return $response->withJson('OK (valide)')->withHeader("Warning", "endpoint deprecated");
     });
 
+    $app->get('/ws.php/filelist', function(Request $request, Response $response) use ($app) {
+
+        $workspaceId = $_SESSION['workspace'];
+
+        $response = $app->subRequest('GET', "/workspace/$workspaceId/files", '', $request->getHeaders());
+
+        return $response->withHeader("Warning", "endpoint deprecated");
+    });
+
 })->add(new NormalAuthWithWorkspaceInHeader());
 
 $app->group('/php', function(App $app) {

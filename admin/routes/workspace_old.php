@@ -14,15 +14,6 @@ $app->group('/php/ws.php', function(App $app) {
 
     $dbConnection = new DBConnectionAdmin();
 
-    $app->get('/filelist', function(/** @noinspection PhpUnusedParameterInspection */ Request $req, Response $response) {
-
-        $workspaceId = $_SESSION['workspace'];
-        $workspaceController = new WorkspaceController($workspaceId);
-        $files = $workspaceController->getAllFiles();
-        return $response->withJson($files);
-    });
-
-
     $app->post('/delete', function(Request $request, Response $response) {
 
         $requestBody = json_decode($request->getBody());

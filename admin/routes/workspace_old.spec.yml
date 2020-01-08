@@ -5,69 +5,7 @@ info:
   version: "2.0.0"
 
 paths:
-  /php/ws.php/filelist:
-    get:
-      summary: get files of workspace
-      description: get a list of all files in workspace
 
-      parameters:
-        - in: header
-          name: AuthToken
-          schema:
-            $ref: '#/components/schemas/auth'
-          example:
-            at: 1337ymca1337666.xxx13370
-            ws: 1
-
-      responses:
-        "200":
-          description: OK, a list of files
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/file_list'
-              example:
-                - filename: SAMPLE_TESTTAKERS.XML
-                  filesize: 823
-                  filesizestr: 823 Bytes
-                  filedatetime: 1567610586
-                  filedatetimestr: 04.09.2019
-                  type: Testtakers
-                  typelabel: Testtakers
-                - filename: SAMPLE_BOOKLET.XML
-                  filesize: 1284
-                  filesizestr: 1.25 KB
-                  filedatetime: 1567610586
-                  filedatetimestr: 04.09.2019
-                  type: Booklet
-                  typelabel: Booklet
-                - filename: SAMPLE_PLAYER.HTML
-                  filesize: 3386
-                  filesizestr: 3.31 KB
-                  filedatetime: 1567610586
-                  filedatetimestr: 04.09.2019
-                  type: Resource
-                  typelabel: Resource
-                - filename: SAMPLE_UNIT.XML
-                  filesize: 696
-                  filesizestr: 696 Bytes
-                  filedatetime: 1567610586
-                  filedatetimestr: 04.09.2019
-                  type: Unit
-                  typelabel: Unit
-                - filename: SAMPLE_SYSCHECK.XML
-                  filesize: 960
-                  filesizestr: 960 Bytes
-                  filedatetime: 1567610586
-                  filedatetimestr: 04.09.2019
-                  type: SysCheck
-                  typelabel: SysCheck
-        "401":
-          description: Not authenticated
-        "404":
-          description: Workspace not found
-        "500":
-          description: Server Error
 
   /php/ws.php/lock:
     post:
