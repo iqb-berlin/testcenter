@@ -17,3 +17,6 @@ integration/node_modules
 
 #?
 logs/*
+
+trash
+integration/tmp
