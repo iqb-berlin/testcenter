@@ -90,6 +90,8 @@ try  {
         $initializer->importSampleData($workspace_id, $args);
 
         $initializer->createSampleLoginsReviewsLogs($loginCodes[0]);
+
+        $initializer->openPermissionsOnDataDir();
     }
 
 } catch (Exception $e) {

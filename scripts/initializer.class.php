@@ -209,4 +209,27 @@ class Initializer extends DBConnectionSuperadmin {
 
     }
 
+    /**
+     * sets all files an subdirs of datadir to 777. this is needed by the dredd test for example.
+     */
+    public function openPermissionsOnDataDir() {
+
+        $path = realpath(dirname(__FILE__) . "/../vo_data");
+        $this->_openPermissionsOnDir($path);
+    }
+
+    /**
+     * @param $path
+     */
+    private function _openPermissionsOnDir($path) {
+
+        $dir = new DirectoryIterator($path);
+        foreach ($dir as $item) {
+            chmod($item->getPathname(), 0777);
+            if ($item->isDir() && !$item->isDot()) {
+                $this->_openPermissionsOnDir($item->getPathname());
+            }
+        }
+    }
+
 }
