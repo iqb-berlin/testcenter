@@ -1,0 +1,21 @@
+dist: trusty
+
+language: php
+php:
+  - 7
+
+env:
+  - NODE_RELEASE=10.x
+
+before_install:
+  - sudo rm -rf ~/.nvm - curl -sL "https://deb.nodesource.com/setup_${NODE_RELEASE}" | sudo -E bash -
+  - sudo apt-get install -y nodejs
+
+install:
+  - composer install
+  - cd integration
+  - npm install
+
+script:
+#  - bin/phpunit
+  - npm --prefix=integration run dredd_test
