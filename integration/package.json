@@ -7,7 +7,6 @@
     "sync_spec_docs": "node_modules/.bin/gulp --gulpfile=./api-dev-server.js sync_spec_docs",
     "dredd_test": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test --api=http://localhost/testcenter-iqb-php/admin/",
     "dredd_test_repeat": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js repeat_dredd_test --api=http://localhost/testcenter-iqb-php/admin/",
-    "xx": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js xx --api=http://localhost/testcenter-iqb-php/admin/"
   },
   "author": "Philipp Franck",
   "license": "MIT",

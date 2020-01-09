@@ -55,13 +55,7 @@ gulp.task('compile_spec_files', function() {
 
     return gulp.src('../admin/routes/*.spec.yml')
         .on("data", function(d) { console.log("File: " + d.path);})
-        // .on("error", function(e) { console.warn(e);})
-        // .pipe(map(function(file, done) {
-        //     const yaml = YAML.parse(file.contents);
-        //     // file.contents = new Buffer(YAML.stringify(yaml.paths));
-        //     done(null, file);
-        // }))
-        // .pipe(concat('compiled_specs.yml'))
+        .on("error", function(e) { console.warn(e);})
         .pipe(yamlMerge('compiled_specs.yml'))
         .pipe(gulp.dest('./tmp/'));
 });
@@ -119,6 +113,10 @@ gulp.task('run_dredd', done => {
     }).run(function(err, stats) {
         if (err) {
             console.error(err);
+            return process.exit(1);
+        }
+        if (stats.errors.length + stats.failures.length) {
+            return process.exit(1);
         }
         console.log(stats);
         done();
@@ -177,8 +175,4 @@ exports.repeat_dredd_test = gulp.series(
     'compile_spec_files',
     'prepare_spec_for_dredd',
     'run_dredd'
-);
-
-exports.xx = gulp.series(
-    'compile_spec_files'
 );
