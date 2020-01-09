@@ -52,18 +52,6 @@ $app->group('/php/sys.php', function(App $app) {
 
     $dbConnection = new DBConnectionSuperadmin();
 
-    $app->get('/workspaces', function (Request $request, Response $response) use ($dbConnection) {
-
-        $user = $request->getQueryParam('u', '');
-        if (strlen($user) > 0) {
-            $workspaces = $dbConnection->getWorkspacesByUser($user);
-        } else {
-            $workspaces = $dbConnection->getWorkspaces();
-        }
-
-        return $response->withJson($workspaces);
-    });
-
     $app->post('/workspace/add', function (Request $request, Response $response) use ($dbConnection) { // TODO use PUT
 
         $requestBody = json_decode($request->getBody());

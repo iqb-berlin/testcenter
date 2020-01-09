@@ -17,12 +17,15 @@ $container['errorHandler'] = function(/** @noinspection PhpUnusedParameterInspec
 
 include_once 'routes/system.php';
 include_once 'routes/workspace.php';
+include_once 'routes/user.php';
 
 include_once 'routes/workspace_old.php';
 include_once 'routes/user_old.php';
 
 include_once 'routes/login_deprecated.php';
 include_once 'routes/workspace_deprecated.php';
+include_once 'routes/system_deprecated.php';
+//include_once 'routes/user_deprecated.php';
 
 try {
     $app->run();

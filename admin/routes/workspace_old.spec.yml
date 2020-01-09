@@ -93,52 +93,7 @@ paths:
 
 
 
-  /php/sys.php/workspaces:
-    get:
-      summary: get a list of workspaces
-      description: get a list of all workspaces or all workspaces belonging to a given user
 
-      parameters:
-        - in: header
-          name: AuthToken
-          schema:
-            $ref: '#/components/schemas/auth'
-          example:
-            at: 1337ymca1337666.xxx13370
-        - in: query
-          name: u
-          description: user-id or ""
-          required: false
-          schema:
-            $ref: '#/components/schemas/workspace_list'
-          examples:
-            a:
-              value: 0
-            b:
-              value: 1
-
-      responses:
-        "200":
-          description: List of Workspaces
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/workspace_list'
-              examples:
-                a:
-                  value:
-                    - id: '1'
-                      name: "example_workspace"
-                b:
-                  value:
-                    - id: '1'
-                      name: "example_workspace"
-                      selected: false
-                      role: ''
-        "401":
-          description: Not authenticated
-        "500":
-          description: Server Error
 
   /php/sys.php/workspace/add:
     post:

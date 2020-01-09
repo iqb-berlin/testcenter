@@ -59,3 +59,32 @@ paths:
           description: Other Error
         "500":
           description: Server Error
+
+  /workspaces:
+    get:
+      summary: get a list of workspaces
+      description: get a list of all workspaces
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      responses:
+        "200":
+          description: List of Workspaces
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspace_list'
+              example:
+                - id: '1'
+                  name: "example_workspace"
+
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error

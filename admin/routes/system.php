@@ -11,6 +11,13 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 
+$app->get('/workspaces', function (Request $request, Response $response) {
+
+    $dbConnection = new DBConnectionSuperadmin();
+    $workspaces = $dbConnection->getWorkspaces();
+    return $response->withJson($workspaces);
+});
+
 $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
     $routes = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
