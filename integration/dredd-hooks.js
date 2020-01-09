@@ -19,12 +19,16 @@ dreddHooks.beforeEach(function(transaction, done) {
         transaction.skip = true;
     }
 
-    // make sure, sample unit is available
-    const sampleUnitPathInWorkspace = '../vo_data/ws_1/Unit/SAMPLE_UNIT.XML';
-    if (!fs.existsSync(sampleUnitPathInWorkspace)) {
-        fs.copyFileSync('../sampledata/Unit.xml', sampleUnitPathInWorkspace);
-        fs.chmod(sampleUnitPathInWorkspace, '777');
-    }
+    // make sure, sample files are available
+    [
+        {src: '../sampledata/Unit.xml', target: '../vo_data/ws_1/Unit/SAMPLE_UNIT.XML'},
+        {src: '../sampledata/SysCheck.xml', target: '../vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML'}
+    ].forEach(copyFile => {
+        if (!fs.existsSync(copyFile.target)) {
+            fs.copyFileSync(copyFile.src, copyFile.target);
+            fs.chmodSync(copyFile.target, '777');
+        }
+    });
 
     // use login credentials
     if (typeof transaction.request.headers['AuthToken'] !== "undefined") {
