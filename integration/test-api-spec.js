@@ -113,9 +113,11 @@ gulp.task('run_dredd', done => {
     }).run(function(err, stats) {
         if (err) {
             console.error(err);
+            printHeadline('exit with error');
             return process.exit(1);
         }
-        if (stats.errors.length + stats.failures.length) {
+        if (stats.errors.length + stats.failures.length > 0) {
+            printHeadline('exit with failures');
             return process.exit(1);
         }
         console.log(stats);
