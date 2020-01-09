@@ -16,7 +16,8 @@ install:
   - composer install
   - cd integration
   - npm install
+  - cd ..
 
 script:
 #  - bin/phpunit
-  - npm run dredd_test
+  - npm --prefix=integration run dredd_test
