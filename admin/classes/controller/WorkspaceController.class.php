@@ -95,20 +95,27 @@ class WorkspaceController {
 
     /**
      * @param $filesToDelete - array containing file names
-     * @return int
+     * @return array
      */
     function deleteFiles($filesToDelete) {
 
-        $deleted = 0;
+        $report = array(
+            'deleted' => array(),
+            'did_not_exist' => array(),
+            'not_allowed' => array()
+        );
         foreach($filesToDelete as $fileToDelete) {
             $fileToDeletePath = $this->_workspacePath . '/' . $fileToDelete;
-            if (file_exists($fileToDeletePath)
-                and (realpath($fileToDeletePath) === $fileToDeletePath) // to avoid hacks like ..::../README.md
-                and unlink($fileToDeletePath)) {
-                $deleted += 1;
+            if (!file_exists($fileToDeletePath)) {
+                $report['did_not_exist'][] = $fileToDelete;
+            } else if ((realpath($fileToDeletePath) === $fileToDeletePath) and unlink($fileToDeletePath)) {
+                // realpath comparison is to avoid hacks like ../../README.md
+                $report['deleted'][] = $fileToDelete;
+            } else {
+                $report['not_allowed'][] = $fileToDelete;
             }
         }
-        return $deleted;
+        return $report;
     }
 
     /**
@@ -385,7 +392,7 @@ class WorkspaceController {
                     if (($entry !== '.') && ($entry !== '..')) {
                         $fullname = $folder . '/' .  $entry;
                         if (is_dir($fullname)) {
-                            emptyAndDeleteFolder($fullname);
+                            $this->_emptyAndDeleteFolder($fullname);
                         } else {
                             unlink($fullname);
                         }
