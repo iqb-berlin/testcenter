@@ -19,4 +19,4 @@ install:
 
 script:
 #  - bin/phpunit
-  - npm --prefix=integration run dredd_test
+  - npm run dredd_test
