@@ -14,7 +14,7 @@ paths:
         - in: header
           name: AuthToken
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
         - in: query
@@ -35,7 +35,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/workspace_list'
+                $ref: './components.spec.yml#/components/schemas/workspace_list'
               examples:
                 a:
                   value:

@@ -33,7 +33,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/login_request'
+              $ref: './components.spec.yml#/components/schemas/login_request'
 
       responses:
         "200":
@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/login_response'
+                $ref: './components.spec.yml#/components/schemas/login_response'
               example:
                 admintoken: 1337ymca1337666.xxx13370
                 name: super
@@ -69,7 +69,7 @@ paths:
         - in: header
           name: AuthToken
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
 
@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/workspace_list'
+                $ref: './components.spec.yml#/components/schemas/workspace_list'
               example:
                 - id: '1'
                   name: "example_workspace"

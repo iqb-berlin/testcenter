@@ -15,7 +15,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -102,7 +102,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -161,7 +161,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -249,7 +249,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -312,7 +312,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -393,7 +393,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -470,7 +470,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -574,7 +574,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -617,7 +617,7 @@ paths:
         - in: header
           name: AuthToken
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
@@ -628,7 +628,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/file_list'
+                $ref: './components.spec.yml#/components/schemas/file_list'
               example:
                 - filename: SAMPLE_TESTTAKERS.XML
                   filesize: 823
@@ -705,7 +705,7 @@ paths:
           name: AuthToken
           description: auth-token with wokspace number
           schema:
-            $ref: '#/components/schemas/auth'
+            $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
             ws: 1
