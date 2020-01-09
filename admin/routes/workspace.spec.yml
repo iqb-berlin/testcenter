@@ -851,7 +851,13 @@ paths:
             $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
-            ws: 1
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
 
       responses:
         "200":
@@ -896,6 +902,52 @@ paths:
       responses:
         "200":
           description: OK, workspace has been added
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /workspace/{ws_id}:
+    patch:
+      summary: rename a workspace
+      description: renames a workspace with given id
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Password
+              required:
+                - n
+            example:
+              name: "a new york space"
+
+      responses:
+        "200":
+          description: OK, workspace has been renamed
           content:
             text/plain:
               example:

@@ -235,4 +235,20 @@ $app->group('/workspace', function(App $app) {
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
     });
 
+    $app->patch('/{ws_id}', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
+
+        $requestBody = json_decode($request->getBody());
+        $workspaceId = $request->getAttribute('ws_id');
+
+        if (!isset($requestBody->name) or (!$requestBody->name)) {
+            throw new HttpBadRequestException($request, "New name (n) is missing");
+        }
+
+        $dbConnectionSuperAdmin->renameWorkspace($workspaceId, $requestBody->name);
+
+        $response->getBody()->write('true'); // TODO don't give anything back
+
+        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+    });
+
 })->add(new NormalAuth());

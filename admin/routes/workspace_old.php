@@ -13,24 +13,6 @@ $app->group('/php/sys.php', function(App $app) {
 
     $dbConnection = new DBConnectionSuperadmin();
 
-
-    $app->post('/workspace/rename', function (Request $request, Response $response) use ($dbConnection) {
-
-        $requestBody = json_decode($request->getBody());
-
-        if (!isset($requestBody->ws) or !isset($requestBody->n)) { // TODO I made them required. is that okay?
-            throw new HttpBadRequestException($request, "Workspace ID (ws) or new name (n) is missing");
-        }
-
-        $dbConnection->renameWorkspace($requestBody->ws, $requestBody->n);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
-    });
-
-
     $app->post('/workspaces/delete', function (Request $request, Response $response) use ($dbConnection) { // todo use [del]
         $bodyData = json_decode($request->getBody());
         $workspaceList = isset($bodyData->ws) ? $bodyData->ws : []; // TODO is it clever to allow emptyness?

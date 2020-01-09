@@ -202,7 +202,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function renameWorkspace($wsId, $newname) {
+    public function renameWorkspace($wsId, $newname) { // todo RAISE ERROR IS WS_ID WAS NOT EXISTANT
         $myreturn = false;
         if (($wsId > 0) && (strlen($newname) > 0)) {
             $sql = $this->pdoDBhandle->prepare(
