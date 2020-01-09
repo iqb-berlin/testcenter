@@ -29,7 +29,7 @@ class SpecCollector {
             $fp = fopen($file, "r+");
             $currentGroup = "";
             while ($line = fgets($fp)) {
-                if (preg_match('#^\s*?\$app->(\w+)\(\s*[\\\'\"]([^\\\'\"]+)[\\\'\"]#', $line, $matches)) {
+                if (preg_match('#^\s*?\$app->(\w+)\(\s*[\\\'\"]([^\\\'\"]*)[\\\'\"]#', $line, $matches)) {
                     if ($matches[1] == 'group') {
                         $currentGroup = $matches[2];
                     } else {
