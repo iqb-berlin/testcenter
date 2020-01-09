@@ -15,6 +15,9 @@ testcenter-iqb-php.iml
 integration/node_modules
 !docs/api/admin/.gitkeep
 
+#config
+config/DBConnectionData.json
+
 #?
 logs/*
 
