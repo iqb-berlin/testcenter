@@ -19,6 +19,12 @@ dreddHooks.beforeEach(function(transaction, done) {
         transaction.skip = true;
     }
 
+
+    ['../sampledata', '../sampledata/Unit.xml', '../vo_data', '../vo_data/ws_1', '../vo_data/ws_1/Unit']
+        .forEach((file => {
+            dreddHooks.log('FILE ' + file + (fs.existsSync(file) ? ' EXISTS' : 'DOES NOT EXIST'));
+        }));
+
     // make sure, sample files are available
     [
         {src: '../sampledata/Unit.xml', target: '../vo_data/ws_1/Unit/SAMPLE_UNIT.XML'},
