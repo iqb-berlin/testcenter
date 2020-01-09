@@ -6,6 +6,7 @@
  */
 
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Stream;
 use Slim\App;
@@ -145,6 +146,44 @@ $app->group('/workspace', function(App $app) {
         $workspaceController = new WorkspaceController($workspaceId);
         $files = $workspaceController->getAllFiles();
         return $response->withJson($files);
+    });
+
+    $app->delete('/{ws_id}/files', function(Request $request, Response $response) {
+
+        $workspaceId = $request->getAttribute('ws_id');
+
+        $requestBody = json_decode($request->getBody());
+        $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
+
+        $workspaceController = new WorkspaceController($workspaceId);
+
+        $deletionReport = $workspaceController->deleteFiles($filesToDelete);
+        $deleted = count($deletionReport['did_not_exist']) + count($deletionReport['deleted']);
+
+        if ($deleted == 0) {
+            throw new HttpInternalServerErrorException($request, "Konnte keine Dateien löschen." . print_r(scandir($workspaceController->getWorkspacePath() . '/SysCheck'),1));
+        }
+
+        // TODO return full report and generate these messages in frontend
+
+        $returnMessage = "";
+
+        if ($deleted == count($filesToDelete)) {
+            $returnMessage = "Erfolgreich $deletionReport gelöscht.";
+        }
+
+        if ($deleted == 1) {
+            $returnMessage = 'Eine Datei gelöscht.';
+        }
+
+        if ($deleted < count($filesToDelete)) { // TODO check if it makes sense that this still returns 200
+            $returnMessage = 'Konnte ' . (count($filesToDelete) - $deleted) . ' Dateien nicht löschen.';
+        }
+
+        $response->getBody()->write($returnMessage);
+        $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+
+        return $responseToReturn;
     });
 
 

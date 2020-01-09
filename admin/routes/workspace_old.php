@@ -14,45 +14,6 @@ $app->group('/php/ws.php', function(App $app) {
 
     $dbConnection = new DBConnectionAdmin();
 
-    $app->post('/delete', function(Request $request, Response $response) {
-
-        $requestBody = json_decode($request->getBody());
-        $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
-
-        $filesToDelete = array_map(function($fileAndFolderName) { // TODO make this unnecessary (provide proper names from frontend)
-            return str_replace('::', '/', $fileAndFolderName);
-        }, $filesToDelete);
-
-        $workspaceId = $_SESSION['workspace'];
-        $workspaceController = new WorkspaceController($workspaceId);
-
-        $deleted = $workspaceController->deleteFiles($filesToDelete);
-
-        if (!$deleted) { // TODO is this ok?
-            throw new HttpInternalServerErrorException($request, "Konnte keine Dateien löschen.");
-        }
-
-        $returnMessage = "";
-
-        if ($deleted == count($filesToDelete)) {
-            $returnMessage = "Erfolgreich $deleted gelöscht.";
-        }
-
-        if ($deleted == 1) {
-            $returnMessage = 'Eine Datei gelöscht.'; // TODO should't these messages be business of the frontend?
-        }
-
-        if ($deleted < count($filesToDelete)) { // TODO check if it makes sense that this still returns 200
-            $returnMessage = 'Konnte ' . (count($filesToDelete) - $deleted) . ' Dateien nicht löschen.';
-        }
-
-        $response->getBody()->write($returnMessage);
-        $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-
-        return $responseToReturn;
-    });
-
-
     $app->post('/unlock', function (Request $request, Response $response) use ($dbConnection) {
 
         $workspace = $_SESSION['workspace'];

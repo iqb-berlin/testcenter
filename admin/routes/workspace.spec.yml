@@ -721,3 +721,64 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
+
+    delete:
+      summary: delete files
+      description: deletes files from a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                f:
+                  type: array
+                  description: array of file names
+                  items:
+                    type: string
+            examples:
+              a:
+                value:
+                  f:
+                    - "SysCheck/SAMPLE_SYSCHECK.XML"
+              b:
+                description: include some non-existant or forbidden files
+                value:
+                  f:
+                    - "SysCheck/SAMPLE_SYSCHECK.XML"
+                    - "some rubbish"
+                    - "a/b"
+                    - "../../README.md"
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token
+          schema:
+            $ref: '#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: OK, roles has been updated
+          content:
+            text/plain:
+              examples:
+                a:
+                  value: "Eine Datei gelöscht."
+                b:
+                  value: "Konnte 3 Dateien nicht löschen."
+
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
