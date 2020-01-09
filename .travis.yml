@@ -1,8 +1,9 @@
-dist: trusty
-
 language: php
 php:
   - 7
+
+sudo: true
+dist: bionic
 
 env:
   - NODE_RELEASE=10.x
