@@ -122,6 +122,41 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
+    $app->post('/ws.php/unlock', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
+
+        $requestBody = json_decode($request->getBody());
+        $groups = isset($requestBody->g) ? $requestBody->g : [];
+
+        $response = $app->subRequest(
+            'POST',
+            "/workspace/{$_SESSION['workspace']}/unlock",
+            '',
+            $request->getHeaders(),
+            $request->getCookieParams(),
+            json_encode(array('groups' => $groups))
+        );
+
+        return $response->withHeader("Warning", "endpoint deprecated");
+    });
+
+
+    $app->post('/ws.php/lock', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
+
+        $requestBody = json_decode($request->getBody());
+        $groups = isset($requestBody->g) ? $requestBody->g : [];
+
+        $response = $app->subRequest(
+            'POST',
+            "/workspace/{$_SESSION['workspace']}/lock",
+            '',
+            $request->getHeaders(),
+            $request->getCookieParams(),
+            json_encode(array('groups' => $groups))
+        );
+
+        return $response->withHeader("Warning", "endpoint deprecated");
+    });
+
 })->add(new NormalAuthWithWorkspaceInHeader());
 
 $app->group('/php', function(App $app) {

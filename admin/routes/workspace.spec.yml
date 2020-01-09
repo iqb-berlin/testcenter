@@ -782,3 +782,87 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
+
+  /workspace/{ws_id}/lock:
+    post:
+      summary: lock workspace
+      description: locks a group of booklets in a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                groups:
+                  type: array
+                  description: array of group names
+                  items:
+                    type: string
+            example:
+              groups:
+                - group1
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error
+
+  /workspace/{ws_id}/unlock:
+    post:
+      summary: unlock workspace
+      description: unlocks a group of bookltes in a workspace
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                groups:
+                  type: array
+                  description: array of group names
+                  items:
+                    type: string
+            example:
+              groups:
+                - group1
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+            ws: 1
+
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server Error

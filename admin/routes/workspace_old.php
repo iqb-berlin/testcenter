@@ -6,47 +6,8 @@
 
 use Slim\App;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-$app->group('/php/ws.php', function(App $app) {
-
-    $dbConnection = new DBConnectionAdmin();
-
-    $app->post('/unlock', function (Request $request, Response $response) use ($dbConnection) {
-
-        $workspace = $_SESSION['workspace'];
-        $requestBody = json_decode($request->getBody());
-        $groups = isset($requestBody->g) ? $requestBody->g : [];
-
-        foreach($groups as $groupName) {
-            $dbConnection->changeBookletLockStatus($workspace, $groupName, true);
-        }
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
-    });
-
-
-    $app->post('/lock', function (Request $request, Response $response) use ($dbConnection) {
-
-        $workspace = $_SESSION['workspace'];
-        $requestBody = json_decode($request->getBody());
-        $groups = isset($requestBody->g) ? $requestBody->g : [];
-
-        foreach($groups as $groupName) {
-            $dbConnection->changeBookletLockStatus($workspace, $groupName, true);
-        }
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
-    });
-
-})->add(new NormalAuthWithWorkspaceInHeader());
-
 
 $app->group('/php/sys.php', function(App $app) {
 

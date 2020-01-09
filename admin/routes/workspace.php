@@ -181,9 +181,37 @@ $app->group('/workspace', function(App $app) {
         }
 
         $response->getBody()->write($returnMessage);
-        $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+    });
 
-        return $responseToReturn;
+    $app->post('/{ws_id}/unlock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+
+        $requestBody = json_decode($request->getBody());
+        $groups = (isset($requestBody->groups)) ? $requestBody->groups : [];
+        $workspaceId = $request->getAttribute('ws_id');
+
+        foreach($groups as $groupName) {
+            $dbConnectionAdmin->changeBookletLockStatus($workspaceId, $groupName, true);
+        }
+
+        $response->getBody()->write('true'); // TODO don't give anything back except for status
+
+        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+    });
+
+
+    $app->post('/{ws_id}/lock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+
+        $requestBody = json_decode($request->getBody());
+        $groups = (isset($requestBody->groups)) ? $requestBody->groups : [];
+        $workspaceId = $request->getAttribute('ws_id');
+
+        foreach($groups as $groupName) {
+            $dbConnectionAdmin->changeBookletLockStatus($workspaceId, $groupName, true);
+        }
+
+        $response->getBody()->write('true'); // TODO don't give anything back except for status
+        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
     });
 
 
