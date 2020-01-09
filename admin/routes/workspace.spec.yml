@@ -866,3 +866,41 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
+
+  /workspace:
+    put:
+      summary: add a workspace
+      description: adds a workspace with given name
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: workspace name
+              required:
+                - name
+            example:
+              name: "new work space"
+
+      responses:
+        "200":
+          description: OK, workspace has been added
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error

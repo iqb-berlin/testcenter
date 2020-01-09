@@ -216,3 +216,23 @@ $app->group('/workspace', function(App $app) {
 
 
 })->add(new IsWorkspacePermitted())->add(new NormalAuth());
+
+$app->group('/workspace', function(App $app) {
+
+    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+
+    $app->put('', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
+
+        $requestBody = json_decode($request->getBody());
+        if (!isset($requestBody->name)) { // TODO I made them required. is that okay?
+            throw new HttpBadRequestException($request, "New workspace name missing");
+        }
+
+        $dbConnectionSuperAdmin->addWorkspace($requestBody->name);
+
+        $response->getBody()->write('true'); // TODO don't give anything back
+
+        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+    });
+
+})->add(new NormalAuth());

@@ -6,44 +6,6 @@ info:
 
 paths:
 
-  /php/sys.php/workspace/add:
-    post:
-      summary: add a workspace
-      description: adds a workspace with given name
-
-      parameters:
-        - in: header
-          name: AuthToken
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: 1337ymca1337666.xxx13370
-
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                n:
-                  type: string
-                  description: Password
-              required:
-                - n
-            example:
-              n: "new work space"
-
-      responses:
-        "200":
-          description: OK, workspace has been added
-          content:
-            text/plain:
-              example:
-                "true"
-        "401":
-          description: Not authenticated
-        "500":
-          description: Server Error
-
   /php/sys.php/workspace/rename:
     post:
       summary: rename a workspace

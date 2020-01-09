@@ -11,7 +11,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 
-$app->get('/workspaces', function (Request $request, Response $response) {
+$app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
     $dbConnection = new DBConnectionSuperadmin();
     $workspaces = $dbConnection->getWorkspaces();
@@ -50,12 +50,12 @@ $app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection
 
     foreach ($allroutes as $route) {
         $status[$route] = array(
-            "spec" => isset($specs[$route]) ? $specs[$route] : "<spec missing>",
-            "code" => isset($routes[$route]) ? $routes[$route] : "<code missing>"
+            "spec" => isset($specs[$route]) ? $specs[$route] : "(spec missing)",
+            "code" => isset($routes[$route]) ? $routes[$route] : "(code missing)"
         );
     }
 
-    return $response->withJson(array('status'=>$status, 'specs'=>$specs));
+    return $response->withJson(array('status'=>$status, 'specs'=>$routesRegistred));
 });
 
 

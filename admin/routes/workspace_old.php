@@ -13,20 +13,6 @@ $app->group('/php/sys.php', function(App $app) {
 
     $dbConnection = new DBConnectionSuperadmin();
 
-    $app->post('/workspace/add', function (Request $request, Response $response) use ($dbConnection) { // TODO use PUT
-
-        $requestBody = json_decode($request->getBody());
-        if (!isset($requestBody->n)) { // TODO It made them required. is that okay?
-            throw new HttpBadRequestException($request, "New workspace name (n) missing");
-        }
-
-        $dbConnection->addWorkspace($requestBody->n);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
-    });
-
 
     $app->post('/workspace/rename', function (Request $request, Response $response) use ($dbConnection) {
 
