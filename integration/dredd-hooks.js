@@ -20,7 +20,7 @@ dreddHooks.beforeEach(function(transaction, done) {
     }
 
 
-    ['../sampledata', '../sampledata/Unit.xml', '../vo_data', '../vo_data/ws_1', '../vo_data/ws_1/Unit']
+    ['../sampledata', '../sampledata/Unit.xml', '../vo_data', '../vo_data/ws_1', '../vo_data/ws_1/Unit'] // STAND 2 hier klappt auf travis was nicht
         .forEach((file => {
             dreddHooks.log('FILE ' + file + (fs.existsSync(file) ? ' EXISTS' : 'DOES NOT EXIST'));
         }));

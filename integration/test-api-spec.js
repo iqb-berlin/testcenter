@@ -1,8 +1,3 @@
-/**
- * Dredd does not support whole openapi3 spec right now. especially we need examples- element instead of example
- * so before testing with dredd we preparse the api
- */
-
 const fs = require("fs");
 const Dredd = require('dredd');
 const fsExtra = require('fs-extra');
@@ -12,24 +7,32 @@ const yamlMerge = require('gulp-yaml-merge');
 const jsonTransform = require('./json-transformer');
 const YAML = require('yamljs');
 
+// parse commands
 const args = process.argv.slice(-1);
 const endpoint = args[0].substring(6);
 const specFileName = 'admin.api.yaml';
 
+// helper functions
 const printHeadline = text => console.log(`\x1b[37m\x1b[44m${text}\x1b[0m`);
+const getError = text => new Error(`\x1B[31m${text}\x1B[34m`);
 const tmpFileName = fileName => "tmp/transformed." + fileName;
-
 const shellExec = (command, params = []) => {
 
     const process = spawnSync(command, params);
 
-    if (process.status > 0) {
-        console.error(`Error: ${process.stderr.toString()}`);
-        return false;
+    if (process.status == null) {
+        return getError(`Could not execute command: ${command}`);
     }
+
+    if (process.status > 0) {
+        return getError(`Error in command ${command}:\n ${process.stderr.toString()}`);
+    }
+
     console.log(process.stdout.toString());
-    return true;
+    return process.status;
 };
+
+// tasks
 
 gulp.task('info', done => {
 
@@ -111,16 +114,13 @@ gulp.task('run_dredd', done => {
         reporter: ['html'],
         names: false
     }).run(function(err, stats) {
-        if (err) {
-            console.error(err);
-            printHeadline('exit with error');
-            return process.exit(1);
-        }
-        if (stats.errors.length + stats.failures.length > 0) {
-            printHeadline('exit with failures');
-            return process.exit(1);
-        }
         console.log(stats);
+        if (err) {
+            done(getError(`Dredd Tests: ` + err));
+        }
+        if (stats.errors + stats.failures > 0) {
+            done(getError(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`));
+        }
         done();
     });
 });
@@ -128,7 +128,7 @@ gulp.task('run_dredd', done => {
 gulp.task('init_backend', done => {
 
     printHeadline('run init script');
-    shellExec('php',
+    const exitCode = shellExec('php',
         [
             '../scripts/initialize.php',
             `--user_name=super`,
@@ -138,7 +138,7 @@ gulp.task('init_backend', done => {
             `--test_login_password=user123`,
         ]
     );
-    done();
+    done(exitCode);
 });
 
 
@@ -152,14 +152,14 @@ gulp.task('db_clean', done => {
         `USE ${sqlConfig.dbname};` +
         `SOURCE ../scripts/sql-schema/mysql.sql;`;
         //`GRANT ALL PRIVILEGES ON \`${sqlConfig.dbname}\`.* TO '${sqlConfig.user}'@'${sqlConfig.host}';`;*/
-    shellExec('mysql',
+    const exitCode = shellExec('mysql',
         [
             `--user=${sqlConfig.user}`,
             `--password=${sqlConfig.password}`,
             `--execute=${sql}`
         ]
     );
-    done();
+    done(exitCode);
 });
 
 exports.run_dredd_test = gulp.series(
