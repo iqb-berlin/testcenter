@@ -24,7 +24,7 @@ install:
 
 before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo apt-get update
-  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  - sudo apt-get install apache2 libapache2-mod-fastcgi curl
   # enable php-fpm
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo a2enmod rewrite actions fastcgi alias
@@ -45,10 +45,10 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
   - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
-  - sudo wget 127.0.0.1/README.md >> test2
+  - sudo curl 127.0.0.1/README.md >> test2
   - more test2
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
-  - sudo wget http://localhost/README.md >> test
+  - sudo curl http://localhost/README.md >> test
   - more test
 
 
