@@ -43,22 +43,14 @@ install:
   - sh ./scripts/write_travis_config.sh
 
 before_script:
-  #  - sudo service apache2 status
-  #  - apache2ctl -M
-  #  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
-  #  - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  #  - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
-  - sudo curl http://localhost/admin/index.php >> test
-  - cat test
+  # test setup
+  - echo "<?php echo 'PHP + Apache runs';" >> test.php
+  - sudo wget -q -O - http://localhost/admin/test.php | less
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
-  - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  # echo "<?php phpinfo();" >> yo.php
-  # sudo curl http://localhost/yo.php >> testx
-  # cat testx
-  # cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
 
 script:
-#  - bin/phpunit
+  # run tests
+  # - bin/phpunit
   - export TC_API_URL=http://localhost
   - npm --prefix=integration run dredd_test
 
