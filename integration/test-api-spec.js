@@ -96,7 +96,7 @@ gulp.task('prepare_spec_for_dredd', done => {
         "items > \\$ref$": resolveReference
     };
 
-    const transformed = jsonTransform(yamlTree, rules);
+    const transformed = jsonTransform(yamlTree, rules, false);
     const transformedAsString = YAML.stringify(transformed, 10);
     fs.writeFileSync(tmpFileName(specFileName), transformedAsString, "utf8");
     console.log(`${tmpFileName(specFileName)} written.`);

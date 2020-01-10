@@ -19,11 +19,10 @@ dreddHooks.beforeEach(function(transaction, done) {
         transaction.skip = true;
     }
 
-
-    ['../sampledata', '../sampledata/Unit.xml', '../vo_data', '../vo_data/ws_1', '../vo_data/ws_1/Unit'] // STAND 2 hier klappt auf travis was nicht
-        .forEach((file => {
-            dreddHooks.log('FILE ' + file + (fs.existsSync(file) ? ' EXISTS' : 'DOES NOT EXIST'));
-        }));
+    // ['../sampledata', '../sampledata/Unit.xml', '../vo_data', '../vo_data/ws_1', '../vo_data/ws_1/Unit'] // STAND 2 hier klappt auf travis was nicht
+    //     .forEach((file => {
+    //         dreddHooks.log('FILE ' + file + (fs.existsSync(file) ? ' EXISTS' : 'DOES NOT EXIST'));
+    //     }));
 
     // make sure, sample files are available
     [
