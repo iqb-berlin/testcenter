@@ -33,16 +33,21 @@ before_install:
   - sudo ls -ah /usr/lib/cgi-bin
   - sudo ls -ah /var/lib/apache2/fastcgi
   - cat /etc/apache2/sites-available/000-default.conf
-  - sudo service apache2 status
-  - apache2ctl -M
-  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
-  - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
+#  - sudo service apache2 status
+#  - apache2ctl -M
+#  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
+#  - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+#  - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
   - sudo curl 127.0.0.1 >> test2
   - more test2
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
   - sudo curl http://localhost/admin/index.php >> test
-  - more test
+  - cat test
+  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
+  - echo "<?php phpino();" >> yo.php
+  - sudo curl http://localhost/yo.php >> testx
+  - cat testx
+  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
 
 install:
   - composer install
