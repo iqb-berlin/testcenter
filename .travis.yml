@@ -22,6 +22,7 @@ before_install:
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo a2enmod rewrite actions fastcgi alias headers
   - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - sudo sed -i -e "s,www-data,travis,g" /etc/apache2/envvars
   - sudo chown -R travis:travis /var/lib/apache2/fastcgi
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
@@ -50,12 +51,16 @@ before_script:
   - sudo curl http://localhost/admin/index.php >> test
   - cat test
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
-  - echo "<?php phpinfo();" >> yo.php
-  - sudo curl http://localhost/yo.php >> testx
-  - cat testx
-  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
+  - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  # echo "<?php phpinfo();" >> yo.php
+  # sudo curl http://localhost/yo.php >> testx
+  # cat testx
+  # cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
 
 script:
 #  - bin/phpunit
   - export TC_API_URL=http://localhost
   - npm --prefix=integration run dredd_test
+
+after_script:
+  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
