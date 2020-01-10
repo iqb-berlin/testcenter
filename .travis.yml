@@ -37,10 +37,10 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
   - more /etc/apache2/sites-available/000-default.conf
-  - service service apache2 status
-  - wget http://localhost >> test
+  - sudo service service apache2 status
+  - sudo wget http://localhost >> test
   - more test
-  - wget 127.0.0.1 >> test2
+  - sudo wget 127.0.0.1 >> test2
   - more test2
 
 script:
