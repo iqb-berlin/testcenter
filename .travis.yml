@@ -47,6 +47,7 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
   - sudo wget 127.0.0.1/README.md >> test2
   - more test2
+  - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
   - sudo wget http://localhost/README.md >> test
   - more test
 
