@@ -12,17 +12,10 @@ env:
   - NODE_RELEASE=10.x
 
 before_install:
+  # install node
   - sudo rm -rf ~/.nvm - curl -sL "https://deb.nodesource.com/setup_${NODE_RELEASE}" | sudo -E bash -
   - sudo apt-get install -y nodejs
-  - sh ./scripts/write_travis_config.sh
-
-install:
-  - composer install
-  - cd integration
-  - npm install
-  - cd ..
-
-before_script: # see https://docs.travis-ci.com/user/languages/php/
+  # install apache (see https://docs.travis-ci.com/user/languages/php/)
   - sudo apt-get update
   - sudo apt-get install apache2 libapache2-mod-fastcgi curl
   # enable php-fpm
@@ -36,7 +29,7 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo cp -f integration/travis/vhost.conf /etc/apache2/sites-available/000-default.conf
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
-#  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp Tests/build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
+  # debug out
   - sudo ls -ah /usr/lib/cgi-bin
   - sudo ls -ah /var/lib/apache2/fastcgi
   - cat /etc/apache2/sites-available/000-default.conf
@@ -45,12 +38,18 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
   - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
-  - sudo curl 127.0.0.1/README.md >> test2
+  - sudo curl 127.0.0.1 >> test2
   - more test2
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
-  - sudo curl http://localhost/README.md >> test
+  - sudo curl http://localhost/admin/index.php >> test
   - more test
 
+install:
+  - composer install
+  - cd integration
+  - npm install
+  - cd ..
+  - sh ./scripts/write_travis_config.sh
 
 script:
 #  - bin/phpunit
