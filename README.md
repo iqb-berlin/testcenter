@@ -64,6 +64,16 @@ Tests the In/Output of all Endpoints againt the API Specification.
 ```
  npm --prefix=integration run dredd_test
 
+```
+
+If your backend is not installed under http://localhost, use env TC_API_URL variable to set up loacation
+
+```
+export TC_API_URL=http://localhost/testcenter-iqb-php 
+  &&  npm --prefix=integration run dredd_test
+```
+
+
 # Dev
 ## Refactoring workflow
 * repeat until no error

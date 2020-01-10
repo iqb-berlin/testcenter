@@ -7,15 +7,17 @@ const yamlMerge = require('gulp-yaml-merge');
 const jsonTransform = require('./json-transformer');
 const YAML = require('yamljs');
 
-// parse commands
-const args = process.argv.slice(-1);
-const endpoint = args[0].substring(6);
-const specFileName = 'admin.api.yaml';
+// globals
+
+const apiUrl = process.env.TC_API_URL || 'http://localhost';
+const apiSubfolder = 'admin'; // to be remoed if APIs are merged
 
 // helper functions
+
 const printHeadline = text => console.log(`\x1b[37m\x1b[44m${text}\x1b[0m`);
+
 const getError = text => new Error(`\x1B[31m${text}\x1B[34m`);
-const tmpFileName = fileName => "tmp/transformed." + fileName;
+
 const shellExec = (command, params = []) => {
 
     const process = spawnSync(command, params);
@@ -32,15 +34,18 @@ const shellExec = (command, params = []) => {
     return process.status;
 };
 
+
 // tasks
 
-gulp.task('info', done => {
+gulp.task('start', done => {
+
+    const endpoint = apiUrl + '/' + apiSubfolder;
 
     if (!endpoint) {
-        throw new Error("no endpoint given");
+        done(getError("no endpoint given"));
     }
 
-    printHeadline(`running Dredd tests against API: ${endpoint}`);
+    printHeadline(`Running Dredd tests against API: ${endpoint}`);
     done();
 });
 
@@ -56,22 +61,24 @@ gulp.task('compile_spec_files', function() {
 
     printHeadline(`compile spec files to one`);
 
-    return gulp.src('../admin/routes/*.spec.yml')
+    return gulp.src(`../${apiSubfolder}/routes/*.spec.yml`)
         .on("data", function(d) { console.log("File: " + d.path);})
         .on("error", function(e) { console.warn(e);})
-        .pipe(yamlMerge('compiled_specs.yml'))
+        .pipe(yamlMerge(apiSubfolder + '.compiled.specs.yml'))
         .pipe(gulp.dest('./tmp/'));
 });
 
 gulp.task('prepare_spec_for_dredd', done => {
 
-    printHeadline(`creating Dredd-compatible API-Spec version: ${specFileName}`);
+    const compiledFileName = 'tmp/' + apiSubfolder + '.compiled.specs.yml';
+    const targetFileName = 'tmp/' + apiSubfolder + '.tarnsformed.specs.yml';
 
-    const yamlString = fs.readFileSync("tmp/compiled_specs.yml", "utf8");
+    printHeadline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
+
+    const yamlString = fs.readFileSync(compiledFileName, "utf8");
     const yamlTree = YAML.parse(yamlString);
     const resolveReference = (key, val) => {
         const referenceString = val.substring(val.lastIndexOf('/') + 1);
-        console.log("resolving reference '" + val + "' - |" + referenceString + "|");
         return {
             key: null,
             val: yamlTree.components.schemas[referenceString]
@@ -98,19 +105,22 @@ gulp.task('prepare_spec_for_dredd', done => {
 
     const transformed = jsonTransform(yamlTree, rules, false);
     const transformedAsString = YAML.stringify(transformed, 10);
-    fs.writeFileSync(tmpFileName(specFileName), transformedAsString, "utf8");
-    console.log(`${tmpFileName(specFileName)} written.`);
+    fs.writeFileSync(targetFileName, transformedAsString, "utf8");
+    console.log(`${targetFileName} written.`);
     done();
 });
 
 gulp.task('run_dredd', done => {
 
-    printHeadline("run dredd");
+    printHeadline(`run dredd against ${apiUrl + '/' + apiSubfolder}`);
+
+    const dreddFileName = 'tmp/' + apiSubfolder + '.tarnsformed.specs.yml';
+
     new Dredd({
-        endpoint: endpoint,
-        path: [tmpFileName(specFileName)],
+        endpoint: apiUrl + '/' + apiSubfolder,
+        path: [dreddFileName],
         hookfiles: ['dredd-hooks.js'],
-        output: [`tmp/report.${tmpFileName(specFileName)}.html`],
+        output: [`tmp/report.${dreddFileName}.html`],
         reporter: ['html'],
         names: false
     }).run(function(err, stats) {
@@ -163,7 +173,7 @@ gulp.task('db_clean', done => {
 });
 
 exports.run_dredd_test = gulp.series(
-    'info',
+    'start',
     'clear_tmp_dir',
     'compile_spec_files',
     'db_clean',
@@ -174,6 +184,7 @@ exports.run_dredd_test = gulp.series(
 );
 
 exports.repeat_dredd_test = gulp.series(
+    'start',
     'compile_spec_files',
     'prepare_spec_for_dredd',
     'run_dredd'
