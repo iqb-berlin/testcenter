@@ -45,4 +45,5 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
 
 script:
 #  - bin/phpunit
+  - export TC_API_URL=http://localhost:9000
   - npm --prefix=integration run dredd_test
