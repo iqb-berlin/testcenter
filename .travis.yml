@@ -36,6 +36,7 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo cp -f integration/travis/vhost.conf /etc/apache2/sites-available/000-default.conf
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp Tests/build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
   - ls /usr/lib/cgi-bin
   - more /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 status
