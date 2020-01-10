@@ -3,7 +3,7 @@ php:
   - 7.3.11
 
 sudo: true
-dist: bionic
+dist: xenial
 
 services:
   - mysql
@@ -22,7 +22,7 @@ install:
   - npm install
   - cd ..
 
-before_script:
+before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo apt-get update
   - sudo apt-get install apache2 libapache2-mod-fastcgi
   # enable php-fpm
