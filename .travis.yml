@@ -38,9 +38,9 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo service apache2 restart
   - more /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 status
-  - sudo wget http://localhost >> test
+  - sudo wget http://localhost:9000 >> test
   - more test
-  - sudo wget 127.0.0.1 >> test2
+  - sudo wget 127.0.0.1:9000 >> test2
   - more test2
 
 script:
