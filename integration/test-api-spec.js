@@ -4,7 +4,7 @@ const fsExtra = require('fs-extra');
 const {spawnSync} = require('child_process');
 const gulp = require('gulp');
 const yamlMerge = require('gulp-yaml-merge');
-const jsonTransform = require('./json-transformer');
+const jsonTransform = require('./helper/json-transformer');
 const YAML = require('yamljs');
 
 // globals
