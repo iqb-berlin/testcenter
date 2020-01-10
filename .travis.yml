@@ -38,10 +38,11 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo service apache2 restart
   - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then sudo cp Tests/build/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
   - ls /usr/lib/cgi-bin
-  - more /etc/apache2/sites-available/000-default.conf
+  - cat /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 status
   - apache2ctl -M
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
+  - cat ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
   - sudo wget 127.0.0.1:9000 >> test2
   - more test2
