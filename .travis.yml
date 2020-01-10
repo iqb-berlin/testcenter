@@ -36,6 +36,10 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo cp -f integration/travis/vhost.conf /etc/apache2/sites-available/000-default.conf
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
+  - wget http://localhost >> test
+  - more test
+  - wget 127.0.0.1 >> test2
+  - more test2
 
 script:
 #  - bin/phpunit
