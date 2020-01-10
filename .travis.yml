@@ -45,7 +45,7 @@ install:
 before_script:
   # test setup
   - echo "<?php echo 'PHP + Apache run';" >> test.php
-  - sudo curl -q -O - http://localhost/admin/test.php >> test-result
+  - sudo curl http://localhost/admin/test.php >> test-result
   - cat test-result
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
 
