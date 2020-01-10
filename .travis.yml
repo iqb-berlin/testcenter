@@ -39,10 +39,11 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - more /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 status
   - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
-  - sudo wget http://localhost:9000 >> test
-  - more test
   - sudo wget 127.0.0.1:9000 >> test2
   - more test2
+  - sudo wget http://localhost:9000 >> test
+  - more test
+
 
 script:
 #  - bin/phpunit
