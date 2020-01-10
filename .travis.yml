@@ -36,8 +36,8 @@ before_script: # see https://docs.travis-ci.com/user/languages/php/
   - sudo cp -f integration/travis/vhost.conf /etc/apache2/sites-available/000-default.conf
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
+  - ls /usr/lib/cgi-bin/php7-fcgi
   - more /etc/apache2/sites-available/000-default.conf
-  - more ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo service apache2 status
   - ls /home/travis/build/iqb-berlin/testcenter-iqb-php
   - sudo wget 127.0.0.1:9000 >> test2
