@@ -30,7 +30,7 @@ psql -U username database_name < scripts/sql-schema/postgres.sql
 sh scripts/install_composer.sh # or install composer manually
 php composer.phar install
 ``` 
-- configurate webserver, so that only vo_code and admin directories are served outside. if you use apache2 you can take
+- configure webserver, so that only vo_code and admin directories are served outside. if you use apache2 you can take
  the shipped `.htaccess` as basis. 
 - Run initialize to create a superuser, and, if you want to a workspace with some sample data and a test-login 
 ```
@@ -39,6 +39,6 @@ sudo ---user=www-data scripts/initialize.php --user-name=super --user-password=u
   
 ## Prerequisites 
 
-* weserver, for Example apache2 (with mod_rewrite and header extension)
+* web server, for Example apache2 (with mod_rewrite and header extension)
 * php > 7.0 (with pdo_extension)
 * mysql or postgresql
