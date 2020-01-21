@@ -206,7 +206,7 @@ class XMLFileSysCheck extends XMLFile
     }
 
     // ####################################################
-    public function saveReport($key, $title, $envData, $netData, $questData) {
+    public function saveReport($key, $title, $envData, $netData, $questData, $unitData) {
         $myreturn = false;
 
         if (strlen($key) > 0) {
@@ -231,7 +231,8 @@ class XMLFileSysCheck extends XMLFile
                                 'title' => $title,
                                 'envData' => $envData,
                                 'netData' => $netData,
-                                'questData' => $questData
+                                'questData' => $questData,
+                                'unitData' => $unitData
                             ];
                             if (file_put_contents($reportFilename, json_encode($reportData)) !== false) {
                                 $myreturn = true;
