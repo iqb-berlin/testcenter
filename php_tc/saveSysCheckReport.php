@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 			if ($xFile->isValid()) {
 				if ($xFile->getRoottagName()  == 'SysCheck') {
-					$myreturn = $xFile->saveReport($data["k"], $data["t"], $data["e"], $data["n"], $data["q"]);
+					$myreturn = $xFile->saveReport($data["k"], $data["t"], $data["e"], $data["n"], $data["q"], $data["u"]);
 				}
 			}
 		}

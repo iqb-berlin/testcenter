@@ -214,7 +214,7 @@ $app->get('/resource/{resourceid}', function (ServerRequestInterface $request, R
         $versionning = $request->getQueryParam('v', 'f');
         $myreturn = '';
 
-        if (strlen($personToken) > 0) {
+        if (strlen($loginToken) > 0) {
             require_once($this->get('code_directory') . '/DBConnectionTC.php');
 
             $myDBConnection = new DBConnectionTC();
@@ -254,7 +254,8 @@ $app->get('/resource/{resourceid}', function (ServerRequestInterface $request, R
         } else {
             $responseToReturn = $response->withStatus($myerrorcode)
                 ->withHeader('Content-Type', 'text/html')
-                ->write("Something went wrongy! $personToken) > 0) && ($bookletDbId");
+                ->write("Something went wrongy! loginToken: $loginToken");
+
         }
 
         return $responseToReturn;
