@@ -255,6 +255,7 @@ $app->get('/resource/{resourceid}', function (ServerRequestInterface $request, R
             $responseToReturn = $response->withStatus($myerrorcode)
                 ->withHeader('Content-Type', 'text/html')
                 ->write("Something went wrongy! loginToken: $loginToken");
+
         }
 
         return $responseToReturn;
