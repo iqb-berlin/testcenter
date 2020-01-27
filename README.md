@@ -34,7 +34,7 @@ php composer.phar install
  the shipped `.htaccess` as basis. 
 - Run initialize to create a superuser, and, if you want to a workspace with some sample data and a test-login 
 ```
-sudo ---user=www-data scripts/initialize.php --user-name=super --user-password=user_password --workspace=workspace --test_login_name=a --test_login_password=another_pw`
+sudo --user=www-data php scripts/initialize.php --user_name=super --user_password=user_password --workspace=workspace --test_login_name=a --test_login_password=another_pw
 ```  
   
 ## Prerequisites 
