@@ -135,8 +135,7 @@ class XMLFileSysCheck extends XMLFile
     // ####################################################
     public function getUnitData() {
         $myreturn = [
-            'key' => '',
-            'label' => '',
+            'player_id' => '',
             'def' => '',
             'player' => ''
         ];
@@ -144,8 +143,6 @@ class XMLFileSysCheck extends XMLFile
         if (strlen($myUnitId) > 0) {
             $workspaceDirName = dirname(dirname($this->filename));
             if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
-                $myreturn['workspaceDirName'] = $workspaceDirName;
-                
                 $unitFolder = $workspaceDirName . '/Unit';
                 $resourcesFolder = $workspaceDirName . '/Resource';
                 $mydir = opendir($unitFolder);
@@ -164,7 +161,7 @@ class XMLFileSysCheck extends XMLFile
                                     if (isset($definitionNode)) {
                                         $typeAttr = $definitionNode['player'];
                                         if (isset($typeAttr)) {
-                                            $myreturn['player'] = (string) $typeAttr;
+                                            $myreturn['player_id'] = (string) $typeAttr;
                                             $myreturn['def'] = (string) $definitionNode;
                                         }
                                     } else {
@@ -172,7 +169,7 @@ class XMLFileSysCheck extends XMLFile
                                         if (isset($definitionNode)) {
                                             $typeAttr = $definitionNode['player'];
                                             if (isset($typeAttr)) {
-                                                $myreturn['player'] = (string) $typeAttr;
+                                                $myreturn['player_id'] = (string) $typeAttr;
                                                 $unitfilename = strtoupper((string) $definitionNode);
                                                 $myRdir = opendir($resourcesFolder);
                                                 if ($myRdir !== false) {
@@ -193,9 +190,9 @@ class XMLFileSysCheck extends XMLFile
                         }
                     }
                     if (isset($myreturn['player_id'])) {
-                        $myFile = $resourcesFolder . '/' . $myreturn['player_id'] . '.html';
-                        if (file_exists($myFile)) {
-                            $myreturn['player'] = file_get_contents($myFile);
+                        $playerCode = $this->getResource($myreturn['player_id']  . '.HTML', $resourcesFolder);
+                        if ($playerCode) {
+                            $myreturn['player'] = $playerCode;
                         }
                     }
                 }
@@ -204,6 +201,46 @@ class XMLFileSysCheck extends XMLFile
         
         return $myreturn;
     }
+
+    // TODO copy from tc_get.php -> share in separate file
+    private function normaliseFileName($fn, $v) {
+
+        $myreturn = strtoupper($fn);
+        if ($v) {
+            $firstDotPos = strpos($myreturn, '.');
+            if ($firstDotPos) {
+                $lastDotPos = strrpos($myreturn, '.');
+                if ($lastDotPos > $firstDotPos) {
+                    $myreturn = substr($myreturn, 0, $firstDotPos) . substr($myreturn, $lastDotPos);
+                }
+            }
+        }
+        return $myreturn;
+    }
+
+
+    // TODO copy from tc_get.php -> share in separate file
+    private function getResource($resourceid, $resourceFolder, $versionning = 'v') {
+
+        $path_parts = pathinfo($resourceid); // extract filename if path is given
+        $resourceFileName = $this->normaliseFileName($path_parts['basename'], $versionning != 'f');
+
+        if (file_exists($resourceFolder) and (strlen($resourceFileName) > 0)) {
+            $mydir = opendir($resourceFolder);
+            if ($mydir !== false) {
+
+                while (($entry = readdir($mydir)) !== false) {
+                    $normfilename = $this->normaliseFileName($entry, $versionning != 'f');
+                    if ($normfilename == $resourceFileName) {
+                        $fullfilename = $resourceFolder . '/' . $entry;
+                        return file_get_contents($fullfilename);
+                    }
+                }
+            }
+        }
+        return "";
+    }
+
 
     // ####################################################
     public function saveReport($key, $title, $envData, $netData, $questData, $unitData) {
