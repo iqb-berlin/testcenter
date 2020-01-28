@@ -4,6 +4,7 @@
  * status: completely new endpoints
  */
 
+use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpException;
 use Slim\Route;
@@ -23,6 +24,10 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     $dbConnection = new DBConnectionSuperadmin();
     $bodyData = json_decode($request->getBody());
     $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
+
+    if (!is_array($workspaceList)) {
+        throw new HttpBadRequestException($request);
+    }
 
     $dbConnection->deleteWorkspaces($workspaceList);
 

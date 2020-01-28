@@ -962,3 +962,53 @@ paths:
           description: Not authenticated
         "500":
           description: Server Error
+
+  /workspace/{ws_id}/users:
+    get:
+      summary: change user roles
+      description: change user roles in a given workspaces
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: integer
+                  description: Workspace-Id
+                u:
+                  type: array
+                  description: array of pairs role-id
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: user-id
+                      role:
+                        type: string # because dredd does not support enum
+                        description: "role: 'RW', 'MO' or 'RO'"
+              required:
+                - ws
+                - u
+            example:
+              ws: 1
+              u:
+                - role: RO
+                  id: 1
+
+      responses:
+        "200":
+          description: OK, roles has been updated
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error

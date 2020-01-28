@@ -225,7 +225,7 @@ class DBConnectionSuperAdmin extends DBConnection {
                 WHERE workspaces.id = :ws_id');
     
         $myreturn = true;
-        foreach ($wsIds as $wsId) {
+        foreach ($wsIds as $wsId) { // TODO error if none
             if (!$sql->execute(array(
                     ':ws_id' => $wsId))) {
                 $myreturn = false;
@@ -275,7 +275,7 @@ class DBConnectionSuperAdmin extends DBConnection {
 
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function setUsersByWorkspace($wsId, $users) { // users: id and role
+    public function setUsersByWorkspace($wsId, $users) { // users: id and role // TODO rename to setUserRights
         $myreturn = false;
         $sql = $this->pdoDBhandle->prepare(
             'DELETE FROM workspace_users

@@ -214,6 +214,21 @@ $app->group('/workspace', function(App $app) {
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
     });
 
+    $app->get('/{ws_id}/users', function (Request $request, Response $response) {
+
+        $requestBody = json_decode($request->getBody());
+        $dbConnection = new DBConnectionSuperadmin();
+        $workspaceId = $request->getAttribute('ws_id');
+
+        if (!isset($requestBody->u) or (!count($requestBody->u))) {
+            throw new HttpBadRequestException($request, "User-list (u) is missing");
+        }
+
+        $dbConnection->setUsersByWorkspace($workspaceId, $requestBody->u);
+
+        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
+    });
+
 
 })->add(new IsWorkspacePermitted())->add(new NormalAuth());
 

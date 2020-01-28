@@ -118,11 +118,7 @@ paths:
 
       responses:
         "200":
-          description: OK, workspace has been renamed
-          content:
-            text/plain:
-              example:
-                "true"
+          description: OK, workspace has been deleted
         "401":
           description: Not authenticated
         "500":
