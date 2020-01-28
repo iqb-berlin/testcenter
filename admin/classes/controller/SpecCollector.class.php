@@ -9,15 +9,23 @@ class SpecCollector {
         foreach (glob($dir . '/*.spec.yml') as $file) {
 
             $data = file_get_contents($file);
-            preg_match_all('#^\s\s(\/\S+)\:\n\s\s\s\s(\w+)\:#m', $data, $matches, PREG_SET_ORDER, 0);
+            preg_match_all('#^\s\s(\/\S+)\:\n\s\s\s\s(\w+)\:(\s\s\s\s\s\s.+)+#m', $data, $matches, PREG_SET_ORDER, 0);
 
             foreach ($matches as $item) {
                 $route = '[' . strtoupper($item[2]) . '] ' . $item[1];
                 $routes[$route] = $file;
 
+                preg_match_all('#^\s\s\s\s(\w+)\:#m', $item[0], $subMatches, PREG_SET_ORDER, 0);
+
+                if (count($subMatches) > 1) {
+                    array_shift($subMatches);
+                    foreach ($subMatches as $otherVerb) {
+                        $route = '[' . strtoupper($otherVerb[1]) . '] ' . $item[1];
+                        $routes[$route] = $file;
+                    }
+                }
             }
         }
-
         return $routes;
     }
 
