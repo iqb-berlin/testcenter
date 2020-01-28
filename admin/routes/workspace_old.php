@@ -13,16 +13,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $dbConnection = new DBConnectionSuperadmin();
 
-    $app->post('/workspaces/delete', function (Request $request, Response $response) use ($dbConnection) { // todo use [del]
-        $bodyData = json_decode($request->getBody());
-        $workspaceList = isset($bodyData->ws) ? $bodyData->ws : []; // TODO is it clever to allow emptyness?
 
-        $dbConnection->deleteWorkspaces($workspaceList);
-
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back or return number of deleted?
-    });
 
 
     $app->post('/workspace/users', function (Request $request, Response $response) use ($dbConnection) {

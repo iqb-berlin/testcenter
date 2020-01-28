@@ -59,4 +59,21 @@ $app->group('/php/sys.php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
+    $app->post('/workspaces/delete', function (Request $request, Response $response) use ($app) {
+
+        $requestBody = json_decode($request->getBody());
+        $workspaceList = isset($requestBody->ws) ? $requestBody->ws : []; // TODO is it clever to allow emptyness?
+
+        $response = $app->subRequest(
+            'POST',
+            "/workspace/{$_SESSION['workspace']}/lock",
+            '',
+            $request->getHeaders(),
+            $request->getCookieParams(),
+            json_encode(array('ws' => $workspaceList))
+        );
+
+        return $response->withHeader("Warning", "endpoint deprecated");
+    });
+
 })->add(new NormalAuth());

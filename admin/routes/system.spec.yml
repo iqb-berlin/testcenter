@@ -88,3 +88,42 @@ paths:
           description: Not authenticated
         "500":
           description: Server Error
+
+    delete:
+      summary: delete some workspaces
+      description: deletes a list of workspaces given by their ids
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: array
+                  description: list of Workspace-Id
+                  items:
+                    type: integer
+              required:
+                - ws
+            example:
+              ws: [2]
+
+      responses:
+        "200":
+          description: OK, workspace has been renamed
+          content:
+            text/plain:
+              example:
+                "true"
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error

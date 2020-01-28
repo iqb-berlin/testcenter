@@ -16,7 +16,19 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
     $dbConnection = new DBConnectionSuperadmin();
     $workspaces = $dbConnection->getWorkspaces();
     return $response->withJson($workspaces);
-});
+})->add(new NormalAuth());;
+
+$app->delete('/workspaces', function (Request $request, Response $response) {
+
+    $dbConnection = new DBConnectionSuperadmin();
+    $bodyData = json_decode($request->getBody());
+    $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
+
+    $dbConnection->deleteWorkspaces($workspaceList);
+
+    return $response;
+})->add(new NormalAuth());;
+
 
 $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
