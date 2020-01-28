@@ -10,7 +10,7 @@ const YAML = require('yamljs');
 // globals
 
 const apiUrl = process.env.TC_API_URL || 'http://localhost';
-const apiSubfolder = 'admin'; // to be remoed if APIs are merged
+const apiSubfolder = 'admin'; // to be removed if APIs are merged
 
 // helper functions
 
@@ -71,7 +71,7 @@ gulp.task('compile_spec_files', function() {
 gulp.task('prepare_spec_for_dredd', done => {
 
     const compiledFileName = 'tmp/' + apiSubfolder + '.compiled.specs.yml';
-    const targetFileName = 'tmp/' + apiSubfolder + '.tarnsformed.specs.yml';
+    const targetFileName = 'tmp/' + apiSubfolder + '.transformed.specs.yml';
 
     printHeadline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
 
@@ -114,7 +114,7 @@ gulp.task('run_dredd', done => {
 
     printHeadline(`run dredd against ${apiUrl + '/' + apiSubfolder}`);
 
-    const dreddFileName = 'tmp/' + apiSubfolder + '.tarnsformed.specs.yml';
+    const dreddFileName = 'tmp/' + apiSubfolder + '.transformed.specs.yml';
 
     new Dredd({
         endpoint: apiUrl + '/' + apiSubfolder,
