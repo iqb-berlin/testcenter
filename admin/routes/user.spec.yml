@@ -41,3 +41,119 @@ paths:
           description: Not authenticated
         "500":
           description: Server Error
+
+    patch:
+      summary: change user roles
+      description: change user roles for a given user in several workspaces. *Provide user-name, not user-id!*
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: user_id
+          description: user-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: array
+                  description: array of pairs role-id
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: workspace-id
+                      role:
+                        type: string # because dredd does not support enum
+                        description: "role: 'RW', 'MO' or 'RO'"
+              required:
+                - ws
+            example:
+              ws:
+                - role: RW
+                  id: 1
+      responses:
+        "200":
+          description: OK, roles has been updated
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /user:
+    put:
+      summary: add a user
+      description: add a user
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/user'
+            example:
+              n: secondUser
+              p: secondUsersPassword
+
+      responses:
+        "200":
+          description: OK, user has been added
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+  /user/{user_id}/password:
+    patch:
+      summary: change user-password
+      description: changes the password of a given user.
+
+      parameters:
+        - in: header
+          name: AuthToken
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: user_id
+          description: user-id
+          example: 2
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/user'
+            example:
+              p: secondUsersNewPassword
+
+      responses:
+        "200":
+          description: password has changed / user did not exist
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error

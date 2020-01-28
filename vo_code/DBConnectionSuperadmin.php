@@ -41,16 +41,30 @@ class DBConnectionSuperAdmin extends DBConnection {
         return $myreturn;
     }
 
+    public function getUserByName($userName) {
+
+        $result = []; // name, id, email, is_superadmin
+        $sql = $this->pdoDBhandle->prepare('SELECT users.name, users.id, users.email, users.is_superadmin FROM users WHERE users.name=:user_name');
+
+        if ($sql->execute(array(':user_name' => $userName))) {
+            $data = $sql->fetchAll(PDO::FETCH_ASSOC);
+            if ($data != false) {
+                $result = $data;
+            }
+        }
+        return $result[0];
+    }
+
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function getWorkspacesByUser($username) {
+    public function getWorkspacesByUser($userId) {
         $myreturn = []; // id, name, selected
         $sql = $this->pdoDBhandle->prepare(
             'SELECT workspace_users.workspace_id as id, workspace_users.role as role  FROM workspace_users
                 INNER JOIN users ON users.id = workspace_users.user_id
-                WHERE users.name=:user_name');
+                WHERE users.id=:user_id');
     
         if ($sql -> execute(array(
-            ':user_name' => $username))) {
+            ':user_id' => $userId))) {
 
             $userworkspaces = $sql->fetchAll(PDO::FETCH_ASSOC);
             $workspaceIdList = [];
@@ -82,32 +96,21 @@ class DBConnectionSuperAdmin extends DBConnection {
 
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function setWorkspacesByUser($username, $workspaces) { // $workspaces is list of id and role
+    public function setWorkspacesByUser($userId, $workspaces) { // $workspaces is list of id and role
         $myreturn = false;
-        $sql = $this->pdoDBhandle->prepare(
-            'SELECT users.id FROM users
-                WHERE users.name=:user_name');
-        if ($sql -> execute(array(
-            ':user_name' => $username))) {
+        $sql = $this->pdoDBhandle->prepare('SELECT users.id FROM users WHERE users.id=:user_id');
+        if ($sql->execute(array(':user_id' => $userId))) {
             $data = $sql -> fetch(PDO::FETCH_ASSOC);
             if ($data != false) {
-                $userid = $data['id'];
-                $sql = $this->pdoDBhandle->prepare(
-                    'DELETE FROM workspace_users
-                        WHERE workspace_users.user_id=:user_id');
-            
-                if ($sql -> execute(array(
-                    ':user_id' => $userid))) {
-
-                    $sql_insert = $this->pdoDBhandle->prepare(
-                        'INSERT INTO workspace_users (workspace_id, user_id, role) 
-                            VALUES(:workspaceId, :userId, :role)');
+                $sql = $this->pdoDBhandle->prepare('DELETE FROM workspace_users WHERE workspace_users.user_id=:user_id');
+                if ($sql->execute(array(':user_id' => $userId))) {
+                    $sql_insert = $this->pdoDBhandle->prepare('INSERT INTO workspace_users (workspace_id, user_id, role) VALUES(:workspaceId, :userId, :role)');
                     foreach($workspaces as $userworkspace) {
                         if (strlen($userworkspace->role) > 0) {
                             $sql_insert->execute(array(
                                     ':workspaceId' => $userworkspace->id,
                                     ':role' => $userworkspace->role,
-                                    ':userId' => $userid));
+                                    ':userId' => $userId));
                         }
                     }
                     $myreturn = true;
@@ -118,12 +121,12 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function setPassword($username, $password) {
+    public function setPassword($userId, $password) {
         $myreturn = false;
         $sql = $this->pdoDBhandle->prepare(
-            'UPDATE users SET password = :password WHERE name = :user_name');
+            'UPDATE users SET password = :password WHERE id = :user_id');
         if ($sql -> execute(array(
-            ':user_name' => $username,
+            ':user_id' => $userId,
             ':password' => $this->encryptPassword($password)))) {
             $myreturn = true;
         }
@@ -157,7 +160,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
     // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-    public function deleteUsers($usernames) {
+    public function deleteUsers($usernames) { // TODO take ids, not names
         $myreturn = false;
         $sql = $this->pdoDBhandle->prepare(
             'DELETE FROM users

@@ -31,12 +31,23 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     return $response;
 })->add(new NormalAuth());
 
-$app->get('/users', function(Request $request, Response $response) {
+$app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
     $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
 
     return $response->withJson($dbConnectionSuperAdmin->getUsers());
-})->add(new NormalAuth());;
+})->add(new NormalAuth());
+
+$app->delete('/users', function(Request $request, Response $response) {
+
+    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+    $bodyData = json_decode($request->getBody());
+    $userList = isset($bodyData->u) ? $bodyData->u : [];
+
+    $dbConnectionSuperAdmin->deleteUsers($userList);
+
+    return $response;
+})->add(new NormalAuth());
 
 
 $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {

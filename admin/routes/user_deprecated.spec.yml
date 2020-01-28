@@ -61,8 +61,8 @@ paths:
             schema:
               $ref: './components.spec.yml#/components/schemas/user'
             example:
-              n: seconUser
-              p: secondUsersNewPassword
+              n: super
+              p: superUsersNewPassword
 
       responses:
         "200":

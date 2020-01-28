@@ -83,7 +83,9 @@ class Initializer extends DBConnectionSuperadmin {
      */
     public function grantRights($userName, $workspaceId) {
 
-        $this->setWorkspacesByUser($userName, array((object) array(
+        $user = $this->getUserByName($userName);
+
+        $this->setWorkspacesByUser($user['id'], array((object) array(
             "id" => $workspaceId,
             "role" => "RW"
         )));
