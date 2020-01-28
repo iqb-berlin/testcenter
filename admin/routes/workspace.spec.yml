@@ -964,7 +964,7 @@ paths:
           description: Server Error
 
   /workspace/{ws_id}/users:
-    get:
+    patch:
       summary: change user roles
       description: change user roles in a given workspaces
 
@@ -975,15 +975,19 @@ paths:
             $ref: './components.spec.yml#/components/schemas/auth'
           example:
             at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
 
       requestBody:
         content:
           application/json:
             schema:
               properties:
-                ws:
-                  type: integer
-                  description: Workspace-Id
                 u:
                   type: array
                   description: array of pairs role-id
@@ -997,17 +1001,52 @@ paths:
                         type: string # because dredd does not support enum
                         description: "role: 'RW', 'MO' or 'RO'"
               required:
-                - ws
                 - u
             example:
-              ws: 1
               u:
-                - role: RO
+                - role: RW
                   id: 1
 
       responses:
         "200":
           description: OK, roles has been updated
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error
+
+    get:
+      summary: get a list of users in a workspace
+      description: returns info about all registered users in a workspace.
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/user_list'
+              example:
+                - name: super
+                  id: '1'
+                  selected: true
+                  role: 'RW'
         "401":
           description: Not authenticated
         "500":

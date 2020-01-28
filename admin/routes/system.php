@@ -1,8 +1,5 @@
 <?php
 
-/**
- * status: completely new endpoints
- */
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
@@ -14,8 +11,8 @@ use Slim\Http\Response;
 
 $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
-    $dbConnection = new DBConnectionSuperadmin();
-    $workspaces = $dbConnection->getWorkspaces();
+    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+    $workspaces = $dbConnectionSuperAdmin->getWorkspaces();
     return $response->withJson($workspaces);
 })->add(new NormalAuth());;
 
@@ -32,6 +29,13 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     $dbConnection->deleteWorkspaces($workspaceList);
 
     return $response;
+})->add(new NormalAuth());
+
+$app->get('/users', function(Request $request, Response $response) {
+
+    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+
+    return $response->withJson($dbConnectionSuperAdmin->getUsers());
 })->add(new NormalAuth());;
 
 

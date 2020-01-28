@@ -87,7 +87,7 @@ $app->group('/php/sys.php', function(App $app) {
         }
 
         $response = $app->subRequest(
-            'GET',
+            'PATCH',
             "/workspace/{$workspaceId}/users",
             '',
             $request->getHeaders(),
@@ -95,6 +95,18 @@ $app->group('/php/sys.php', function(App $app) {
             $request->getBody()
         );
         $response->getBody()->write('true');
+        return $response->withHeader("Warning", "endpoint deprecated");
+    });
+
+    $app->get('/users', function(Request $request, Response $response) use ($app) {
+
+        $workspaceId = $request->getQueryParam('ws', 0);
+        if ($workspaceId > 0) {
+            $response = $app->subRequest('GET', "/workspace/{ws_id}/users", '', $request->getHeaders());
+        } else {
+            $response = $app->subRequest('GET', "/users", '', $request->getHeaders());
+        }
+
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 

@@ -9,17 +9,17 @@ $app->group('/php/sys.php', function(App $app) {
 
     $dbConnection = new DBConnectionSuperadmin();
 
-    $app->get('/users', function(Request $request, Response $response) use ($dbConnection) {
-
-        $ws = $request->getQueryParam('ws', 0);
-        if ($ws > 0) {
-            $users = $dbConnection->getUsersByWorkspace($ws);
-        } else {
-            $users = $dbConnection->getUsers();
-        }
-
-        return $response->withJson($users);
-    });
+//    $app->get('/users', function(Request $request, Response $response) use ($dbConnection) {
+//
+//        $ws = $request->getQueryParam('ws', 0);
+//        if ($ws > 0) {
+//            $users = $dbConnection->getUsersByWorkspace($ws);
+//        } else {
+//            $users = $dbConnection->getUsers();
+//        }
+//
+//        return $response->withJson($users);
+//    });
 
 
     $app->post('/user/add', function(Request $request, Response $response) use ($dbConnection) { //TODO -> [PUT] /user

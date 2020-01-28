@@ -24,8 +24,8 @@ class NormalAuthWithWorkspaceInHeader {
                                 if ($workspace > 0) { // TODO 401 is not correct for missing workspace
                                     $dbConnection = new DBConnectionAdmin();
                                     if (!$dbConnection->isError()) {
-                                        $errormessage = 'access denied';
                                         $role = $dbConnection->getWorkspaceRole($adminToken, $workspace);
+                                        $errormessage = 'access denied for ws_' . $workspace . ' as ' . $role;
                                         if (($req->isPost() && ($role == 'RW')) || ($req->isGet() && ($role != ''))) {
                                             $errorCode = 0;
                                             $_SESSION['adminToken'] = $adminToken;

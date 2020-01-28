@@ -123,3 +123,35 @@ paths:
           description: Not authenticated
         "500":
           description: Server Error
+
+  /users:
+    get:
+      summary: get a list of users
+      description: returns info about all registered users.
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/user_list'
+              example:
+                - name: super
+                  id: '1'
+                  email: null
+                  is_superadmin: '1'
+
+        "401":
+          description: Not authenticated
+        "500":
+          description: Server Error

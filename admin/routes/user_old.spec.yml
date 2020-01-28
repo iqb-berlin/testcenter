@@ -6,54 +6,7 @@ info:
 
 paths:
 
-  /php/sys.php/users:
-    get:
-      summary: get a list of users
-      description: get info about all registered users - in whole application or in a workspace.
 
-      parameters:
-        - in: header
-          name: AuthToken
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: 1337ymca1337666.xxx13370
-        - in: query
-          name: ws
-          description: id of a workspace to get users from. can be omitted for all users in system
-          required: false
-          schema:
-            $ref: './components.spec.yml#/components/schemas/workspace_list'
-          examples:
-            a:
-              value: 0
-            b:
-              value: 1
-
-      responses:
-        "200":
-          description: List of users
-          content:
-            application/json:
-              schema:
-                $ref: './components.spec.yml#/components/schemas/user_list'
-              examples:
-                a:
-                  value:
-                    - name: super
-                      id: '1'
-                      email: null
-                      is_superadmin: '1'
-                b:
-                  value:
-                    - name: super
-                      id: '1'
-                      selected: true
-                      role: 'RW'
-        "401":
-          description: Not authenticated
-        "500":
-          description: Server Error
 
   /php/sys.php/user/add:
     post:
