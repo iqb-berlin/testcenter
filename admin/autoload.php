@@ -2,11 +2,12 @@
 
 spl_autoload_register(function($className) {
 
-    $className = array_pop(explode("\\", $className));
+    $className = explode("\\", $className);
+    $className = array_pop($className);
 
     $includeDirs = [
+        ROOT_DIR . "/admin/classes",
         ROOT_DIR . "/vo_code",
-        ROOT_DIR . "/admin/classes"
     ];
 
     foreach ($includeDirs as $includeDir) {

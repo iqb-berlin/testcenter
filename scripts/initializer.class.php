@@ -1,9 +1,5 @@
 <?php
 
-require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionSuperadmin.php');
-require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionTC.php');
-require_once(realpath(dirname(__FILE__)) . '/../vo_code/DBConnectionStart.php');
-
 /**
  * Class DBConnectionStarter
  */
@@ -15,10 +11,10 @@ class Initializer extends DBConnectionSuperadmin {
      *
      * @param $username - name for the super user to create
      * @param $userpassword  - password for the super user to create
-     * @return boolean - true if user was created, false if not (but no error occurred)
+     * @return bool - true if user was created, false if not (but no error occurred)
      * @throws Exception - if error occurs during connection
      */
-    public function addSuperuser($username, $userpassword) {
+    public function addSuperuser(string $username, string $userpassword): bool {
 
         $sql = $this->pdoDBhandle->prepare('SELECT users.name FROM users');
 
@@ -53,7 +49,7 @@ class Initializer extends DBConnectionSuperadmin {
      * @return int - workspace id
      * @throws Exception - if error occurs
      */
-    public function getWorkspace($name) {
+    public function getWorkspace(string $name): int {
 
         if (!$this->pdoDBhandle) {
             throw new Exception('no database connection');
@@ -68,9 +64,7 @@ class Initializer extends DBConnectionSuperadmin {
             return $workspaces_names[0]['id'];
         }
 
-        if (!$this->addWorkspace($name)) {
-            throw new Exception("Could not insert `$name` into table `workspaces`" . "SELECT workspaces.id FROM workspaces WHERE name = '$name'");
-        }
+        $this->addWorkspace($name);
 
         return $this->getWorkspace($name);
     }
@@ -81,7 +75,7 @@ class Initializer extends DBConnectionSuperadmin {
      * @param $userName
      * @param $workspaceId
      */
-    public function grantRights($userName, $workspaceId) {
+    public function grantRights(string $userName, int $workspaceId) {
 
         $user = $this->getUserByName($userName);
 
@@ -101,7 +95,7 @@ class Initializer extends DBConnectionSuperadmin {
      * @param $dirPath - a full path
      * @return string - the path, again
      */
-    private function _createSubdirectories($dirPath) {
+    private function _createSubdirectories(string $dirPath) {
 
         return array_reduce(explode('/', $dirPath), function($agg, $item) {
             $agg .= "$item/";
@@ -123,7 +117,7 @@ class Initializer extends DBConnectionSuperadmin {
      * @param bool $isResource - set true if it's a unitplayer or voud file
      * @throws Exception
      */
-    private function _importSampleFile($workspaceId, $filename, $vars = array(), $isResource = false) {
+    private function _importSampleFile(int $workspaceId, string $filename, array $vars = array(), bool $isResource = false) {
 
         $path = realpath(dirname(__FILE__) . "/../");
 
@@ -223,7 +217,7 @@ class Initializer extends DBConnectionSuperadmin {
     /**
      * @param $path
      */
-    private function _openPermissionsOnDir($path) {
+    private function _openPermissionsOnDir(string $path) {
 
         $dir = new DirectoryIterator($path);
         foreach ($dir as $item) {

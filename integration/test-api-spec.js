@@ -27,7 +27,8 @@ const shellExec = (command, params = []) => {
     }
 
     if (process.status > 0) {
-        return getError(`Error in command ${command}:\n ${process.stderr.toString()}`);
+        console.log(process.stdout.toString());
+        return getError(`in command ${command}:\n ${process.stderr.toString()}`);
     }
 
     console.log(process.stdout.toString());

@@ -22,6 +22,8 @@
  */
 
 include('index.php');
+define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
+require_once(realpath(dirname(__FILE__)) . '/../admin/autoload.php');
 
 $args = getopt("", array(
     'user_name:',
@@ -63,15 +65,21 @@ try  {
         throw new Exception("DB-config file is malformed JSON:\n$config");
     }
 
-    $initializer = new Initializer();
-    $retries = 5;
-    while ($retries-- && $initializer->isError()) {
+    try {
         $initializer = new Initializer();
-        echo "Database connection failed... retry ($retries attempts left)\n";
-        usleep(20 * 1000000); // give database container time to come up
-    }
-    if (($retries <= 0) and $initializer->isError()) {
-        throw new Exception($initializer->errorMsg);
+    } catch (Throwable $t) {
+        $retries = 5;
+        $error = true;
+        while ($retries-- && $error) {
+            try {
+                $initializer = new Initializer();
+                echo "Database connection failed... retry ($retries attempts left)\n";
+                usleep(20 * 1000000); // give database container time to come up
+                $error = false;
+            } catch (Throwable $t) {
+                $error = true;
+            }
+        }
     }
 
     if ($initializer->addSuperuser($args['user_name'], $args['user_password'])) {
@@ -95,7 +103,7 @@ try  {
     }
 
 } catch (Exception $e) {
-    echo("\nError: " . $e->getMessage() . "\n");
+    fwrite(STDERR,"\n" . $e->getMessage() . "\n");
     if (isset($config)) {
         echo "\nconfig:\n$config";
     }

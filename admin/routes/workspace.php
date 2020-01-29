@@ -259,7 +259,7 @@ $app->group('/workspace', function(App $app) {
             throw new HttpBadRequestException($request, "User-list (u) is missing");
         }
 
-        $dbConnectionSuperAdmin->setUsersByWorkspace($workspaceId, $requestBody->u);
+        $dbConnectionSuperAdmin->setUserRightsForWorkspace($workspaceId, $requestBody->u);
 
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8');
     });

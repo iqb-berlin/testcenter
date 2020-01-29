@@ -4,21 +4,34 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 class ErrorHandler {
-    public function __invoke(Request $request, Response $response, Exception $exception) {
+    public function __invoke(Request $request, Response $response, Throwable $throwable) {
 
-        error_log("[Error: " . $exception->getCode() . "]" . $exception->getMessage());
-        error_log("[Error: " . $exception->getCode() . "]" . $exception->getFile() . ' | line ' . $exception->getLine());
+        $errorMessage = $throwable->getMessage();
+        $errorPlace = $throwable->getFile() . ' | line ' . $throwable->getLine();
+        $trace = $throwable->getTraceAsString();
 
-        if (!is_a($exception, "Slim\Exception\HttpException")) {
-            $exception = new \Slim\Exception\HttpException($request, $exception->getMessage(), 500, $exception);
+        if (!is_a($throwable, "Slim\Exception\HttpException")) {
+            if (is_a($throwable, 'HttpError')) {
+                $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), $throwable->getCode(), $throwable);
+            } else {
+                $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), 500, $throwable);
+            }
         }
 
-        error_log("[Error: " . $exception->getCode() . "]" . $exception->getTitle());
-        error_log("[Error: " . $exception->getCode() . "]" . $exception->getDescription());
+        $log = array_merge(
+            array($throwable->getTitle(), $throwable->getDescription(), $errorMessage, $errorPlace),
+            explode("\n", $trace)
+        );
+
+        foreach ($log as $errorText) {
+            if ($errorText) {
+                error_log("[Error: " . $throwable->getCode() . "] " . $errorText);
+            }
+        }
 
         return $response
-            ->withStatus($exception->getCode())
+            ->withStatus($throwable->getCode())
             ->withHeader('Content-Type', 'text/html')
-            ->write($exception->getMessage() ? $exception->getMessage() : $exception->getDescription());
+            ->write($throwable->getMessage() ? $throwable->getMessage() : $throwable->getDescription());
     }
 }
