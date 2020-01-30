@@ -19,23 +19,25 @@ class NormalAuthWithWorkspaceInHeader {
                         $authToken = json_decode($req->getHeaderLine('AuthToken'));
                         $adminToken = $authToken->at;
                         if (strlen($adminToken) > 0) {
-                            $workspace = $authToken->ws;
-                            if (is_numeric($workspace)) {
-                                if ($workspace > 0) { // TODO 401 is not correct for missing workspace
+                            $workspaceId = $authToken->ws;
+                            if (is_numeric($workspaceId)) {
+                                if ($workspaceId > 0) { // TODO 401 is not correct for missing workspaceId
                                     $dbConnection = new DBConnectionAdmin();
-                                    if (!$dbConnection->isError()) {
-                                        $role = $dbConnection->getWorkspaceRole($adminToken, $workspace);
-                                        $errormessage = 'access denied for ws_' . $workspace . ' as ' . $role;
-                                        if (($req->isPost() && ($role == 'RW')) || ($req->isGet() && ($role != ''))) {
-                                            $errorCode = 0;
-                                            $_SESSION['adminToken'] = $adminToken;
-                                            $_SESSION['workspace'] = $workspace;
-                                            $_SESSION['workspaceDirName'] = realpath(ROOT_DIR . "/vo_data/ws_$workspace");
-                                            if (!file_exists($_SESSION['workspaceDirName'])) { // TODO I moved this to auth token check - is that OK
-                                                throw new HttpNotFoundException($req, "Workspace {$_SESSION['workspaceDirName']} not found");
-                                            }
+
+                                    $role = $dbConnection->getWorkspaceRole($adminToken, $workspaceId);
+                                    $errormessage = 'access denied for ws_' . $workspaceId . ' as ' . print_r($role,1);
+                                    if (($req->isPost() && ($role == 'RW')) || ($req->isGet() && ($role != ''))) {
+                                        error_log("yp: $workspaceId.");
+                                        $errorCode = 0;
+                                        $_SESSION['adminToken'] = $adminToken;
+                                        $_SESSION['workspace'] = $workspaceId;
+                                        $_SESSION['workspaceDirName'] = realpath(ROOT_DIR . "/vo_data/ws_$workspaceId");
+                                        if (!file_exists($_SESSION['workspaceDirName'])) { // TODO I moved this to auth token check - is that OK
+                                            error_log("xx");
+                                            throw new HttpNotFoundException($req, "Workspace {$_SESSION['workspaceDirName']} not found");
                                         }
                                     }
+
                                 }
                             }
                         }

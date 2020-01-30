@@ -4,6 +4,7 @@ const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
 
 const stash = {};
+let skipTheRest = false;
 
 dreddHooks.beforeEachValidation(function(transaction) {
 
@@ -14,17 +15,19 @@ dreddHooks.beforeEachValidation(function(transaction) {
 
 dreddHooks.beforeEach(function(transaction, done) {
 
+    // skip everything after first failed test
+    if (skipTheRest) {
+        transaction.skip = true;
+        return done();
+    }
+
     // dont' check error responses
     if (transaction.expected.statusCode.substr(0,1) !== "2") {
         transaction.skip = true;
+        return done();
     }
 
-    // ['../sampledata', '../sampledata/Unit.xml', '../vo_data', '../vo_data/ws_1', '../vo_data/ws_1/Unit'] // STAND 2 hier klappt auf travis was nicht
-    //     .forEach((file => {
-    //         dreddHooks.log('FILE ' + file + (fs.existsSync(file) ? ' EXISTS' : 'DOES NOT EXIST'));
-    //     }));
-
-    // make sure, sample files are available
+    // make sure, sample files are available TODO rights problem
     [
         {src: '../sampledata/Unit.xml', target: '../vo_data/ws_1/Unit/SAMPLE_UNIT.XML'},
         {src: '../sampledata/SysCheck.xml', target: '../vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML'}
@@ -35,17 +38,24 @@ dreddHooks.beforeEach(function(transaction, done) {
         }
     });
 
-    // use login credentials
+    // inject login credentials
     if (typeof transaction.request.headers['AuthToken'] !== "undefined") {
         const authToken = transaction.request.headers['AuthToken'];
         authToken.at = stash.authToken;
         transaction.request.headers['AuthToken'] = JSON.stringify(authToken);
     }
+
     transaction.request.headers['Accept'] = "*/*";
+
     done();
 });
 
 dreddHooks.afterEach(function(transaction, done) {
+
+    // die after first failure
+    if (transaction.results.valid === false) {
+        skipTheRest = true;
+    }
 
     // store login credentials if we come from any login endpoint
     try {
@@ -55,7 +65,7 @@ dreddHooks.afterEach(function(transaction, done) {
             dreddHooks.log("stashing auth token:" + stash.authToken);
         }
     } catch (e) {
-        // do nothing, this is most likey not a JSOn request
+        // do nothing, this is most likely not a JSON request
     }
 
     done();
