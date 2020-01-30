@@ -44,7 +44,7 @@ sudo chown -R www-data:www-data ./vo_data # normal apache2 config
 ```
 
 sudo --user=www-data php scripts/initialize.php --user_name=super --user_password=user123 --workspace=example_workspace --test_login_name=test --test_login_password=user123
-
+```
 
   
 ### Prerequisites
@@ -76,6 +76,11 @@ export TC_API_URL=http://localhost/testcenter-iqb-php
 ```
 
 
+## Unit tests
+
+```
+vendor/bin/phpunit test
+```
 
 # Dev
 ## Refactoring workflow

@@ -195,7 +195,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function getResultsCount(int $workspaceId): array {
+	public function getResultsCount(int $workspaceId): array { // TODO add unit test
 
 		return $this->_(
 			'SELECT logins.groupname, logins.name as loginname, persons.code,
@@ -215,7 +215,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function getBookletsStarted($workspaceId) {
+	public function getBookletsStarted($workspaceId) { // TODO add unit test
 
 		return $this->_(
 			'SELECT logins.groupname, logins.name as loginname, persons.code, 
@@ -233,7 +233,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function getBookletsResponsesGiven($workspaceId) {
+	public function getBookletsResponsesGiven($workspaceId) { // TODO add unit test
 
 		return $this->_(
 			'SELECT DISTINCT booklets.name as bookletname, persons.code, logins.name as loginname,
@@ -252,7 +252,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function getResponses($workspaceId, $groups) {
+	public function getResponses($workspaceId, $groups) { // TODO add unit test
 
 		$groupsString = implode("','", $groups);
 		return $this->_(
@@ -272,7 +272,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 	// $return = []; groupname, loginname, code, bookletname, unitname, timestamp, logentry
-	public function getLogs($workspaceId, $groups) {
+	public function getLogs($workspaceId, $groups) { // TODO add unit test
 
 		$groupsString = implode("','", $groups);
 
@@ -316,7 +316,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 	// $return = []; groupname, loginname, code, bookletname, unitname, priority, categories, entry
-	public function getReviews($workspaceId, $groups) {
+	public function getReviews($workspaceId, $groups) { // TODO add unit test
 
 		$groupsString = implode("','", $groups);
 

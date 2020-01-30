@@ -75,6 +75,7 @@ class DBConnectionAdminTest extends TestCase {
         $this->assertEquals($result, false);
     }
 
+
     function test_getWorkspaceRole() {
 
         $token = $this->dbc->login('super', 'user123');
