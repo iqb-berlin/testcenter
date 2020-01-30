@@ -45,4 +45,18 @@ class DBConnectionAdminTest extends TestCase {
     }
 
 
+
+    function test_getWorkspaces() {
+
+        $token = $this->dbc->login('super', 'user123');
+        $result = $this->dbc->getWorkspaces($token);
+        $expect = array(
+            array(
+                'id'    =>  1,
+                'name'  =>  'example_workspace',
+                'role'  => 'RW'
+            )
+        );
+        $this->assertEquals($result, $expect);
+    }
 }

@@ -106,7 +106,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function changeBookletLockStatus(int $workspace_id, string $group_name, bool $lock): void {
+	public function changeBookletLockStatus(int $workspace_id, string $group_name, bool $lock): void { // TODO write unit test
 
 		$lockStr = $lock ? '1' : '0';
 
@@ -128,7 +128,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function deleteData(int $workspace_id, string $group_name): void {
+	public function deleteData(int $workspace_id, string $group_name): void { // TODO write unit test // TODO check if this is needed
 
 		$this->_(
 			'DELETE FROM logins
