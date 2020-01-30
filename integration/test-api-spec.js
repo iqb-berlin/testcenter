@@ -179,8 +179,8 @@ exports.run_dredd_test = gulp.series(
     'compile_spec_files',
     'db_clean',
     'init_backend',
-    'prepare_spec_for_dredd',
-    'run_dredd',
+    // 'prepare_spec_for_dredd',
+    // 'run_dredd',
 
 );
 

@@ -77,7 +77,7 @@ class DBConnection {
     }
 
 
-    public function isSuperAdmin(string $token): bool { // TODO move to DBConnectionAdmin or SuperAdmin?
+    public function isSuperAdmin(string $token): bool { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
 
         $first = $this->_(
             'SELECT users.is_superadmin 
@@ -93,7 +93,7 @@ class DBConnection {
     }
 
 
-	public function getWorkspaceName($workspace_id) { // TODO move to DBConnectionAdmin or SuperAdmin?
+	public function getWorkspaceName($workspace_id) { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
 
         $data = $this->_(
             'SELECT workspaces.name 
@@ -106,7 +106,7 @@ class DBConnection {
 	}
 
 
-    public function getWorkspaceId($loginToken) {
+    public function getWorkspaceId($loginToken) { // TODO add unit test
 
         $logindata = $this->_(
             'SELECT logins.workspace_id 
@@ -118,7 +118,7 @@ class DBConnection {
     }
 
 
-    public function getBookletName($bookletDbId) {
+    public function getBookletName($bookletDbId) { // TODO add unit test. is used in TC.
 
         $bookletdata = $this->_(
         'SELECT booklets.name FROM booklets

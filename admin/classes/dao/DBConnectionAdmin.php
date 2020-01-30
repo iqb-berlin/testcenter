@@ -9,7 +9,7 @@
 class DBConnectionAdmin extends DBConnection {
 
 
-	public function login($username, $password) {
+	public function login($username, $password): string {
 
 		if ((strlen($username) == 0) or (strlen($username) > 50)) {
 			throw new Exception("Invalid Username `$username`");

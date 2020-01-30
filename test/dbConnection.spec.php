@@ -1,10 +1,10 @@
 <?php
 use PHPUnit\Framework\TestCase;
-
-require_once "admin/classes/dao/DBConnection.php";
 require_once "admin/classes/dao/DBConfig.class.php";
+require_once "admin/classes/dao/DBConnection.php";
 
-class DatabaseTest extends TestCase {
+
+class DBConnectionTest extends TestCase {
 
     private $dbc;
     /* @type DBConnection
@@ -23,10 +23,12 @@ class DatabaseTest extends TestCase {
         unset($this->dbc);
     }
 
+
     public function testOne() {
 
         $this->assertEquals(array('2+2' => 4), $this->dbc->_("SELECT 2+2"));
     }
+
 
     public function test_getWorkspaceName() {
 
