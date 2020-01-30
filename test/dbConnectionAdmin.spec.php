@@ -74,5 +74,18 @@ class DBConnectionAdminTest extends TestCase {
         $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
         $this->assertEquals($result, false);
     }
-    
+
+    function test_getWorkspaceRole() {
+
+        $token = $this->dbc->login('super', 'user123');
+        $result = $this->dbc->getWorkspaceRole($token, 1);
+        $this->assertEquals($result, "RW");
+
+        $token = $this->dbc->login('i_exist_but_am_not_allowed_anything', 'user123');
+        $result = $this->dbc->getWorkspaceRole($token, 1);
+        $this->assertEquals($result, "");
+    }
+
+
+
 }
