@@ -87,6 +87,7 @@ CREATE TABLE `users` (
 ,  `is_superadmin` integer NOT NULL DEFAULT 0
 );
 INSERT INTO `users` VALUES (1,'super','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,1);
+INSERT INTO `users` VALUES (2,'i_exist_but_am_not_allowed_anything','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,0);
 CREATE TABLE `workspace_users` (
   `workspace_id` integer  NOT NULL
 ,  `user_id` integer  NOT NULL

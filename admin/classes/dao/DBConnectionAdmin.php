@@ -159,7 +159,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function hasAdminAccessToWorkspace(string $token, int $requestedWorkspaceId): bool {
+	public function hasAdminAccessToWorkspace(string $token, int $workspaceId): bool {
 
 		$data = $this->_(
 			'SELECT workspaces.id FROM workspaces
@@ -169,7 +169,7 @@ class DBConnectionAdmin extends DBConnection {
 				WHERE admintokens.id =:token and workspaces.id = :wsId',
 			array(
 				':token' => $token,
-				':wsId' => $requestedWorkspaceId
+				':wsId' => $workspaceId
 			)
 		);
 

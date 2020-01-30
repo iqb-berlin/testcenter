@@ -45,7 +45,6 @@ class DBConnectionAdminTest extends TestCase {
     }
 
 
-
     function test_getWorkspaces() {
 
         $token = $this->dbc->login('super', 'user123');
@@ -58,5 +57,22 @@ class DBConnectionAdminTest extends TestCase {
             )
         );
         $this->assertEquals($result, $expect);
+
+        $token = $this->dbc->login('i_exist_but_am_not_allowed_anything', 'user123');
+        $result = $this->dbc->getWorkspaces($token);
+        $this->assertEquals($result, array());
     }
+
+
+    function test_hasAdminAccessToWorkspace() {
+
+        $token = $this->dbc->login('super', 'user123');
+        $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
+        $this->assertEquals($result, true);
+
+        $token = $this->dbc->login('i_exist_but_am_not_allowed_anything', 'user123');
+        $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
+        $this->assertEquals($result, false);
+    }
+    
 }
