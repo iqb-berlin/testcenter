@@ -77,7 +77,7 @@ class DBConnection {
     }
 
 
-    public function isSuperAdmin(string $token): bool {
+    public function isSuperAdmin(string $token): bool { // TODO move to DBConnectionAdmin or SuperAdmin?
 
         $first = $this->_(
             'SELECT users.is_superadmin 
@@ -93,7 +93,7 @@ class DBConnection {
     }
 
 
-	public function getWorkspaceName($workspace_id) {
+	public function getWorkspaceName($workspace_id) { // TODO move to DBConnectionAdmin or SuperAdmin?
 
         $data = $this->_(
             'SELECT workspaces.name 
@@ -127,6 +127,22 @@ class DBConnection {
         );
 
         return $bookletdata['name'];
+    }
+
+
+    public function runFile(string $path) {
+
+        if (!file_exists($path)) {
+            throw New HttpError("File does not exist: `$path`");
+        }
+
+        $this->pdoDBhandle->exec(file_get_contents($path));
+    }
+
+
+    public function getDBType(): string {
+
+        return $this->pdoDBhandle->getAttribute(PDO::ATTR_DRIVER_NAME);
     }
 
 }

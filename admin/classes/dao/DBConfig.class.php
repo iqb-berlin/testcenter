@@ -10,7 +10,7 @@ class DBConfig {
     public $user = "user";
     public $password = "pw";
     public $salt = "t";
-    public $type ="mysql";
+    public $type = "mysql";
 
 
     public function __construct($configObject) {
