@@ -7,31 +7,30 @@ class DBConnection {
     protected $idleTime = 60 * 30;
     protected $passwordSalt = 't';
 
-    public function __construct() {
+    public function __construct(?DBConfig $connectionData = null) {
 
-        $configFileName = realpath(__DIR__ . '/../../../config/DBConnectionData.json');
-        if (!file_exists($configFileName)) {
-            throw new Exception("DB config not found: `$configFileName`");
+        if (!$connectionData) {
+            $connectionData = DBConfig::fromFile();
         }
 
-        $connectionData = JSON::decode(file_get_contents($configFileName));
         if ($connectionData->type === 'mysql') {
             $this->pdoDBhandle = new PDO("mysql:host=" . $connectionData->host . ";port=" . $connectionData->port . ";dbname=" . $connectionData->dbname, $connectionData->user, $connectionData->password);
         } elseif ($connectionData->type === 'pgsql') {
             $this->pdoDBhandle = new PDO("pgsql:host=" . $connectionData->host . ";port=" . $connectionData->port . ";dbname=" . $connectionData->dbname . ";user=" . $connectionData->user . ";password=" . $connectionData->password);
+        } elseif ($connectionData->type === 'temp') {
+            $this->pdoDBhandle = new PDO('sqlite::memory:');
         } else {
             throw new Exception("DB type `{$connectionData->type}` not supoported");
         }
 
-        if (isset($connectionData->salt)) {
-            $this->passwordSalt = $connectionData->salt;
-        }
+        $this->passwordSalt = $connectionData->salt;
 
         $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
 
     public function __destruct() {
+
         if ($this->pdoDBhandle !== false) {
             unset($this->pdoDBhandle);
             $this->pdoDBhandle = false;
@@ -39,7 +38,7 @@ class DBConnection {
     }
 
 
-    protected function _(string $sql, array $replacements = array(), $multiRow = false): ?array {
+    public function _(string $sql, array $replacements = array(), $multiRow = false): ?array {
 
         $sqlStatement = $this->pdoDBhandle->prepare($sql);
         $sqlStatement->execute($replacements);

@@ -19,6 +19,10 @@ class DBConnectionAdmin extends DBConnection {
 
 		$user = $this->_getUserByNameAndPasswordHash($username, $passwordSha);
 
+		if ($user === null) {
+            throw new HttpError("Invalid Password `$password`", 401);
+        }
+
 		$this->_deleteTokensByUser($user['id']);
 
 		$token = $this->_createToken();
@@ -29,7 +33,7 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	private function _getUserByNameAndPasswordHash(string $userName, string $passwordHash): array {
+	private function _getUserByNameAndPasswordHash(string $userName, string $passwordHash): ?array {
 
 		return $this->_(
 			'SELECT * FROM users
