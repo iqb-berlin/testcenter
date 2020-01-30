@@ -50,7 +50,7 @@ before_script:
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
 
 script:
-  # run tests
+  # run tests #
   - vendor/bin/phpunit test
   - export TC_API_URL=http://localhost
   - npm --prefix=integration run dredd_test
