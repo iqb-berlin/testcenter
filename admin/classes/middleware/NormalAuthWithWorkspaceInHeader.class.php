@@ -23,17 +23,14 @@ class NormalAuthWithWorkspaceInHeader {
                             if (is_numeric($workspaceId)) {
                                 if ($workspaceId > 0) { // TODO 401 is not correct for missing workspaceId
                                     $dbConnection = new DBConnectionAdmin();
-
                                     $role = $dbConnection->getWorkspaceRole($adminToken, $workspaceId);
                                     $errormessage = 'access denied for ws_' . $workspaceId . ' as ' . print_r($role,1);
                                     if (($req->isPost() && ($role == 'RW')) || ($req->isGet() && ($role != ''))) {
-                                        error_log("yp: $workspaceId.");
                                         $errorCode = 0;
                                         $_SESSION['adminToken'] = $adminToken;
                                         $_SESSION['workspace'] = $workspaceId;
                                         $_SESSION['workspaceDirName'] = realpath(ROOT_DIR . "/vo_data/ws_$workspaceId");
                                         if (!file_exists($_SESSION['workspaceDirName'])) { // TODO I moved this to auth token check - is that OK
-                                            error_log("xx");
                                             throw new HttpNotFoundException($req, "Workspace {$_SESSION['workspaceDirName']} not found");
                                         }
                                     }
