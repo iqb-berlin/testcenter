@@ -88,6 +88,7 @@ class DBConnectionAdmin extends DBConnection {
 		// TODO check this functions carefully
 		// original description was "deletes all tokens of this user", what is not what this function does
 		// check where this is used at all and which behavior exactly was intended
+        // then: write unit test
 	}
 
 

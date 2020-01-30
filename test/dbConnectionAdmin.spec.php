@@ -36,4 +36,13 @@ class DBConnectionAdminTest extends TestCase {
     }
 
 
+    function test_getLoginName() {
+
+        $token = $this->dbc->login('super', 'user123');
+        $result = $this->dbc->getLoginName($token);
+        $expect = "super";
+        $this->assertEquals($result, $expect);
+    }
+
+
 }
