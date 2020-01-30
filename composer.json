@@ -1,12 +1,11 @@
 {
   "require": {
     "slim/slim": "^3.12.0",
-    "php": "7.1",
+    "phpunit/phpunit":  "6.5",
+    "php": "^7.1",
     "ext-pdo_mysql": "*",
     "ext-json": "*",
     "ext-pdo": "*",
-    "ext-apache": "*",
-    "ext-zip": "*",
-    "ext-http": "*"
+    "ext-zip": "*"
   }
 }
