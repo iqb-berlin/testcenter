@@ -24,12 +24,6 @@ class DBConnectionTest extends TestCase {
     }
 
 
-    public function testOne() {
-
-        $this->assertEquals(array('2+2' => 4), $this->dbc->_("SELECT 2+2"));
-    }
-
-
     public function test_getWorkspaceName() {
 
         $result = $this->dbc->getWorkspaceName(1);
