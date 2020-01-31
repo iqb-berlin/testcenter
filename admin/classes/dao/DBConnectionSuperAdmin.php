@@ -105,7 +105,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function setPassword($userId, $password) { // TODO set up unit test
+    public function setPassword(int $userId, string $password): void { // TODO set up unit test
 
         $this->_(
             'UPDATE users SET password = :password WHERE id = :user_id',
@@ -114,6 +114,20 @@ class DBConnectionSuperAdmin extends DBConnection {
                 ':password' => $this->encryptPassword($password)
             )
         );
+    }
+
+
+    public function checkPassword(int $userId, string $password): bool {
+
+        $user = $this->_(
+            'SELECT * FROM users
+			WHERE users.id = :id AND users.password = :password',
+            array(
+                ':id' => $userId,
+                ':password' => $password
+            )
+        );
+        return !!$user;
     }
 
 

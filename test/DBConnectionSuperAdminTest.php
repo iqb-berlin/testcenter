@@ -132,6 +132,18 @@ class DBConnectionSuperAdminTest extends TestCase {
     }
 
 
+    public function test_setPassword() {
+
+        $this->dbc->setPassword(1, "new_password");
+
+        $result = $this->dbc->checkPassword(1, "wrong_password");
+        $this->assertNotNull(false, $result);
+
+        $result = $this->dbc->checkPassword(1, "new_password");
+        $this->assertNotNull(true, $result);
+    }
+
+
     public function test_addUser() {
 
         $this->dbc->addUser("a_third_user", "somepw");
