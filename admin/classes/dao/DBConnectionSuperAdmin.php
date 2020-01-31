@@ -87,7 +87,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function setWorkspacesByUser(int $userId, array $listOfWorkspaceIdsAndRoles) {
+    public function setWorkspacesByUser(int $userId, array $listOfWorkspaceIdsAndRoles) { // TODO set up unit test
 
         $this->_('DELETE FROM workspace_users WHERE workspace_users.user_id=:user_id', array(':user_id' => $userId));
         foreach($listOfWorkspaceIdsAndRoles as $workspaceIdAndRole) {
@@ -105,7 +105,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function setPassword($userId, $password) {
+    public function setPassword($userId, $password) { // TODO set up unit test
 
         $this->_(
             'UPDATE users SET password = :password WHERE id = :user_id',
@@ -118,6 +118,8 @@ class DBConnectionSuperAdmin extends DBConnection {
 
 
     public function addUser(string $userName, string $password): void {
+
+        // TODO maybe prove $userName and $password for validity
 
         $user = $this->_(
             'SELECT users.name FROM users WHERE users.name=:user_name',
@@ -138,7 +140,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function deleteUsers($usernames) { // TODO take ids, not names
+    public function deleteUsers($usernames) { // TODO take ids, not names // TODO add unit test
 
         foreach ($usernames as $username) {
             $this->_('DELETE FROM users WHERE users.name = :user_name', array(':user_name' => $username));

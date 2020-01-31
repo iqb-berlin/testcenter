@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
+
 use PHPUnit\Framework\TestCase;
 require_once "admin/classes/exception/HttpError.class.php";
 require_once "admin/classes/dao/DBConfig.class.php";
@@ -115,4 +116,27 @@ class DBConnectionSuperAdminTest extends TestCase {
         $expectation = array();
         $this->assertEquals($expectation, $result);
     }
+
+
+    public function test_addUser() {
+
+        $this->dbc->addUser("a_third_user", "somepw");
+        $result = $this->dbc->getUserByName("a_third_user");
+        $expectation = array(
+            "id" => "3",
+            "name" => "a_third_user",
+            "email" => null,
+            "is_superadmin" => '0'
+        );
+        $this->assertEquals($expectation, $result);
+
+        $this->expectException('HttpError');
+        $this->dbc->addUser("a_third_user", "again");
+
+
+        $this->expectException('HttpError');
+        $this->dbc->addUser("a_third_user", "again");
+    }
+
+
 }
