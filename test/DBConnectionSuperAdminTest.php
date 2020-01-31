@@ -139,4 +139,15 @@ class DBConnectionSuperAdminTest extends TestCase {
     }
 
 
+    public function test_renameWorkspace() {
+
+        $this->dbc->setWorkspaceName(1, 'new_name');
+        $result = $this->dbc->getWorkspaceName(1);
+        $expectation = 'new_name';
+        $this->assertEquals($expectation, $result);
+
+        $this->expectException('HttpError');
+        $this->dbc->setWorkspaceName(33, 'new_name');
+    }
+
 }

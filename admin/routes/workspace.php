@@ -243,7 +243,7 @@ $app->group('/workspace', function(App $app) {
             throw new HttpBadRequestException($request, "New name (n) is missing");
         }
 
-        $dbConnectionSuperAdmin->renameWorkspace($workspaceId, $requestBody->name);
+        $dbConnectionSuperAdmin->setWorkspaceName($workspaceId, $requestBody->name);
 
         $response->getBody()->write('true'); // TODO don't give anything back
 

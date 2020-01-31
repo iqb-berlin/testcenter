@@ -167,7 +167,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function renameWorkspace($wsId, $newname) { // todo RAISE ERROR IS WS_ID WAS NOT EXISTANT
+    public function setWorkspaceName($wsId, $newName) {
 
         $workspace = $this->_(
             'SELECT workspaces.id FROM workspaces 
@@ -182,7 +182,7 @@ class DBConnectionSuperAdmin extends DBConnection {
         $this->_(
             'UPDATE workspaces SET name = :name WHERE id = :id',
             array(
-                ':name' => $newname,
+                ':name' => $newName,
                 ':id' => $wsId
             )
         );
