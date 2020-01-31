@@ -204,7 +204,7 @@ class DBConnectionSuperAdmin extends DBConnection {
 
     public function getUsersByWorkspace(int $workspaceId): array {
 
-        $workspaceRolesPerUser = $this->getWorkspaceRolesPerUser($workspaceId);
+        $workspaceRolesPerUser = $this->getMapUserToRoleByWorkspace($workspaceId);
 
         $allUsers = $this->_('SELECT users.id, users.name FROM users ORDER BY users.name', array(), true);
 
@@ -221,7 +221,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function getWorkspaceRolesPerUser(int $workspaceId) {
+    public function getMapUserToRoleByWorkspace(int $workspaceId) {
 
         $workspaceUsers = $this->_(
             'SELECT 

@@ -179,4 +179,20 @@ class DBConnectionSuperAdminTest extends TestCase {
         $this->assertEquals($expectation, $result);
     }
 
+    public function test_getWorkspaceRolesPerUser() {
+
+        $result = $this->dbc->getMapUserToRoleByWorkspace(1);
+        $expectation = array(
+            1 => 'RW'
+        );
+        $this->assertEquals($expectation, $result);
+
+        $result = $this->dbc->getMapWorkspaceToRoleByUser(33);
+        $expectation = array();
+        $this->assertEquals($expectation, $result);
+    }
+
+
+
+
 }
