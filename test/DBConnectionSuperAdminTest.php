@@ -73,5 +73,31 @@ class DBConnectionSuperAdminTest extends TestCase {
     }
 
 
+    public function test_getWorkspacesByUser() {
+
+        $result = $this->dbc->getWorkspacesByUser(1);
+        $expectation = array(
+            array(
+                "id" => 1,
+                "name" => "example_workspace",
+                "selected" => true,
+                "role" => "RW"
+            )
+        );
+        $this->assertEquals($expectation, $result);
+
+        $result = $this->dbc->getWorkspacesByUser(2);
+        $expectation = array(
+            array(
+                "id" => 1,
+                "name" => "example_workspace",
+                "selected" => false,
+                "role" => ""
+            )
+        );
+        $this->assertEquals($expectation, $result);
+    }
+
+
 
 }

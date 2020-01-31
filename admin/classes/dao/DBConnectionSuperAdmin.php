@@ -40,7 +40,7 @@ class DBConnectionSuperAdmin extends DBConnection {
         );
     }
 
-    // id, name, selected
+    // id, name, selected, role
     public function getWorkspacesByUser(int $userId): array {
 
         $userRolesByWorkspace = $this->getUserRolesPerWorkspace($userId);
