@@ -198,7 +198,7 @@ class DBConnectionSuperAdmin extends DBConnection {
                 array(':ws_id' => $wsId)
             );
         }
-        // ROLLBACK if one fails!
+        // TODO ROLLBACK if one fails!
     }
 
 

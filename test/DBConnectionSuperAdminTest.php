@@ -150,4 +150,12 @@ class DBConnectionSuperAdminTest extends TestCase {
         $this->dbc->setWorkspaceName(33, 'new_name');
     }
 
+
+    public function test_deleteWorkspaces() {
+
+        $this->dbc->deleteWorkspaces(array(1));
+        $result = $this->dbc->getWorkspaces();
+        $this->assertEquals(array(), $result);
+    }
+
 }
