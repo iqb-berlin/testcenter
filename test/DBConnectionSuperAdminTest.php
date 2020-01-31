@@ -38,4 +38,25 @@ class DBConnectionSuperAdminTest extends TestCase {
         $this->assertEquals($expectation, $result);
     }
 
+
+    public function test_getUsers() {
+
+        $result = $this->dbc->getUsers();
+        $expectation = array(
+            array(
+                "id" => "2",
+                "name" => "i_exist_but_am_not_allowed_anything",
+                "email" => null,
+                "is_superadmin" => '0'
+            ),
+            array(
+                "id" => "1",
+                "name" => "super",
+                "email" => null,
+                "is_superadmin" => '1'
+            )
+        );
+        $this->assertEquals($expectation, $result);
+    }
+
 }
