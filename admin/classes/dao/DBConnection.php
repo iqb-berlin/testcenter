@@ -20,7 +20,7 @@ class DBConnection {
         } elseif ($connectionData->type === 'temp') {
             $this->pdoDBhandle = new PDO('sqlite::memory:');
         } else {
-            throw new Exception("DB type `{$connectionData->type}` not supoported");
+            throw new Exception("DB type `{$connectionData->type}` not supported");
         }
 
         $this->passwordSalt = $connectionData->salt;

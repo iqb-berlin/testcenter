@@ -32,7 +32,7 @@ class DBConnectionAdminTest extends TestCase {
         $this->assertNotNull($token);
 
         $this->expectException("HttpError");
-        $this->dbc->login('peter', 'lusting');
+        $this->dbc->login('peter', 'lustig');
     }
 
 
