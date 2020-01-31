@@ -158,4 +158,25 @@ class DBConnectionSuperAdminTest extends TestCase {
         $this->assertEquals(array(), $result);
     }
 
+
+    public function test_getUsersByWorkspace() {
+
+        $result = $this->dbc->getUsersByWorkspace(1);
+        $expectation = array(
+            array(
+                'id' => '2',
+                'name' => 'i_exist_but_am_not_allowed_anything',
+                'selected' => false,
+                'role' => ''
+            ),
+            array(
+                'id' => '1',
+                'name' => 'super',
+                'selected' => true,
+                'role' => 'RW'
+            )
+        );
+        $this->assertEquals($expectation, $result);
+    }
+
 }
