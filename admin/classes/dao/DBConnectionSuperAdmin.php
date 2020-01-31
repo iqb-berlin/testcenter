@@ -43,7 +43,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     // id, name, selected, role
     public function getWorkspacesByUser(int $userId): array {
 
-        $userRolesByWorkspace = $this->getUserRolesPerWorkspace($userId);
+        $userRolesByWorkspace = $this->getMapWorkspaceToRoleByUser($userId);
 
         $allWorkspaces = $this->_(
             'SELECT workspaces.id, workspaces.name FROM workspaces ORDER BY workspaces.name',
@@ -65,7 +65,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function getUserRolesPerWorkspace(int $userId): array {
+    public function getMapWorkspaceToRoleByUser(int $userId): array {
 
         $userWorkspaces = $this->_(
             'SELECT 
@@ -79,11 +79,11 @@ class DBConnectionSuperAdmin extends DBConnection {
             true
         );
 
-        $userRolesPerWorkspace = [];
+        $mapWorkspaceToRole= array();
         foreach ($userWorkspaces as $userWorkspace) {
-            $userRolesPerWorkspace[$userWorkspace['id']] = $userWorkspace['role'];
+            $mapWorkspaceToRole[$userWorkspace['id']] = $userWorkspace['role'];
         }
-        return $userRolesPerWorkspace;
+        return $mapWorkspaceToRole;
     }
 
 
