@@ -87,7 +87,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function setWorkspacesByUser(int $userId, array $listOfWorkspaceIdsAndRoles) { // TODO set up unit test
+    public function setWorkspaceRightsByUser(int $userId, array $listOfWorkspaceIdsAndRoles) {
 
         $this->_('DELETE FROM workspace_users WHERE workspace_users.user_id=:user_id', array(':user_id' => $userId));
         foreach($listOfWorkspaceIdsAndRoles as $workspaceIdAndRole) {

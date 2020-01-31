@@ -118,6 +118,20 @@ class DBConnectionSuperAdminTest extends TestCase {
     }
 
 
+    public function test_setWorkspaceRightsByUser() {
+
+        $this->dbc->setWorkspaceRightsByUser(1, array(
+            (object) array('id' => '1', 'role' => 'XX'),
+        ));
+
+        $result = $this->dbc->getMapWorkspaceToRoleByUser(1);
+        $expectation = array(
+            1 => 'XX'
+        );
+        $this->assertEquals($expectation, $result);
+    }
+
+
     public function test_addUser() {
 
         $this->dbc->addUser("a_third_user", "somepw");

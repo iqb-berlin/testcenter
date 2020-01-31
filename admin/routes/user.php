@@ -27,7 +27,7 @@ $app->group('/user', function(App $app) {
             throw new HttpBadRequestException($request, "Workspace-list (ws) is missing."); // TODO original function took name?!
         }
 
-        $dbConnection->setWorkspacesByUser($userId, $requestBody->ws);
+        $dbConnection->setWorkspaceRightsByUser($userId, $requestBody->ws);
 
         return $response;
     });
