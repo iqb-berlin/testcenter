@@ -179,6 +179,7 @@ class DBConnectionSuperAdminTest extends TestCase {
         $this->assertEquals($expectation, $result);
     }
 
+
     public function test_getWorkspaceRolesPerUser() {
 
         $result = $this->dbc->getMapUserToRoleByWorkspace(1);
@@ -189,6 +190,22 @@ class DBConnectionSuperAdminTest extends TestCase {
 
         $result = $this->dbc->getMapWorkspaceToRoleByUser(33);
         $expectation = array();
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_setUserRightsForWorkspace() {
+
+        $this->dbc->setUserRightsForWorkspace(1, array(
+            (object) array('id' => '1', 'role' => 'RO'),
+            (object) array('id' => '2', 'role' => 'MO')
+        ));
+
+        $result = $this->dbc->getMapUserToRoleByWorkspace(1);
+        $expectation = array(
+            1 => 'RO',
+            2 => 'MO'
+        );
         $this->assertEquals($expectation, $result);
     }
 
