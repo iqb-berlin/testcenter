@@ -218,7 +218,7 @@ $app->group('/workspace', function(App $app) {
 
 $app->group('/workspace', function(App $app) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
 
     $app->put('', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
 

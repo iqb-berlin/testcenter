@@ -11,14 +11,14 @@ use Slim\Http\Response;
 
 $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
     $workspaces = $dbConnectionSuperAdmin->getWorkspaces();
     return $response->withJson($workspaces);
 })->add(new NormalAuth());;
 
 $app->delete('/workspaces', function (Request $request, Response $response) {
 
-    $dbConnection = new DBConnectionSuperadmin();
+    $dbConnection = new DBConnectionSuperAdmin();
     $bodyData = json_decode($request->getBody());
     $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
 
@@ -33,14 +33,14 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
 
 $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
 
     return $response->withJson($dbConnectionSuperAdmin->getUsers());
 })->add(new NormalAuth());
 
 $app->delete('/users', function(Request $request, Response $response) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperadmin();
+    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
     $bodyData = json_decode($request->getBody());
     $userList = isset($bodyData->u) ? $bodyData->u : [];
 

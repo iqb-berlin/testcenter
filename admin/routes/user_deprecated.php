@@ -7,7 +7,7 @@ use Slim\Http\Response;
 
 $app->group('/php/sys.php', function(App $app) {
 
-    $dbConnection = new DBConnectionSuperadmin();
+    $dbConnection = new DBConnectionSuperAdmin();
 
 
     $app->post('/user/add', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app, $dbConnection) {

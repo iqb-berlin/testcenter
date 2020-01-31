@@ -3,7 +3,7 @@
 /**
  * Class DBConnectionStarter
  */
-class Initializer extends DBConnectionSuperadmin {
+class Initializer extends DBConnectionSuperAdmin {
 
     /**
      *

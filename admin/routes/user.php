@@ -8,7 +8,7 @@ use Slim\Http\Response;
 
 $app->group('/user', function(App $app) {
 
-    $dbConnection = new DBConnectionSuperadmin();
+    $dbConnection = new DBConnectionSuperAdmin();
 
     $app->get('/{user_id}/workspaces', function(Request $request, Response $response) use ($dbConnection) {
 
