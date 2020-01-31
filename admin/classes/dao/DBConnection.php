@@ -93,13 +93,13 @@ class DBConnection {
     }
 
 
-	public function getWorkspaceName($workspace_id) { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
+	public function getWorkspaceName($workspaceId) { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
 
         $data = $this->_(
             'SELECT workspaces.name 
             FROM workspaces
             WHERE workspaces.id=:workspace_id',
-            array(':workspace_id' => $workspace_id)
+            array(':workspace_id' => $workspaceId)
         );
 			
 		return $data['name'];

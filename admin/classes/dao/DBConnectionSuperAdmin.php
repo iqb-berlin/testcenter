@@ -105,7 +105,7 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function setPassword(int $userId, string $password): void { // TODO set up unit test
+    public function setPassword(int $userId, string $password): void {
 
         $this->_(
             'UPDATE users SET password = :password WHERE id = :user_id',

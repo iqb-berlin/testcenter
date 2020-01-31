@@ -8,6 +8,7 @@ CREATE TABLE `admintokens` (
 ,  PRIMARY KEY (`id`)
 ,  CONSTRAINT `fk_users_admintokens` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
+INSERT INTO admintokens (id, user_id, valid_until) VALUES('admin_token', 1, '2222-01-01 00:00:00');
 CREATE TABLE `bookletlogs` (
   `booklet_id` integer  NOT NULL
 ,  `timestamp` integer NOT NULL DEFAULT 0
