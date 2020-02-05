@@ -131,7 +131,7 @@ class WorkspaceController {
             throw new Exception("Folder not found: $testTakerDirPath");
         }
         $preparedBooklets = [];
-        
+
         foreach ($this->_globStreamSafe($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
 
             $testTakersFile = new XMLFileTesttakers($fullFilePath);
@@ -177,12 +177,11 @@ class WorkspaceController {
     }
 
 
-
     private function _sortPreparedBooklets(array $preparedBooklets): array {
 
         $preparedBookletsSorted = [];
         // error_log(print_r($preparedBooklets, true));
-        // !! no cross checking, so it's not checked whether a prepared booklet is started or a started booklet has been prepared
+        // !! no cross checking, so it's not checked whether a prepared booklet is started or a started booklet has been prepared // TODO overthink this
         foreach($preparedBooklets as $group => $preparedData) {
             $alreadyCountedLogins = [];
             foreach($preparedData as $pd) {
@@ -209,7 +208,6 @@ class WorkspaceController {
         }
         return $preparedBookletsSorted;
     }
-
 
 
     function getTestStatusOverview(array $bookletsStarted): array {
