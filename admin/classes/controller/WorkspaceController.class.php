@@ -130,13 +130,11 @@ class WorkspaceController {
         if (!file_exists($testTakerDirPath)) {
             throw new Exception("Folder not found: $testTakerDirPath");
         }
-
         $preparedBooklets = [];
-        foreach (glob("$testTakerDirPath/*.[xX][mM][lL]") as $fileName) {
+        
+        foreach ($this->_globStreamSafe($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
 
-            $fullFilePath = $testTakerDirPath . '/' . $fileName;
             $testTakersFile = new XMLFileTesttakers($fullFilePath);
-
             if (!$testTakersFile->isValid()) {
                 continue;
             }
@@ -146,6 +144,7 @@ class WorkspaceController {
             }
 
             foreach ($testTakersFile->getAllTesttakers() as $prepared) {
+
                 $localGroupName = $prepared['groupname'];
                 $localLoginData = $prepared;
                 // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
@@ -153,11 +152,33 @@ class WorkspaceController {
                     $preparedBooklets[$localGroupName] = [];
                 }
                 array_push($preparedBooklets[$localGroupName], $localLoginData);
-                // error_log($prepared['groupname'] . '/' . $prepared['loginname']);
-
             }
-            unset($prepared);
         }
+        return $this->_sortPreparedBooklets($preparedBooklets);
+    }
+
+
+    private function _globStreamSafe($dir, $filePattern) {
+
+        $files = scandir($dir);
+        $found = [];
+
+        foreach ($files as $filename) {
+            if (in_array($filename, ['.', '..'])) {
+                continue;
+            }
+
+            if (fnmatch($filePattern, $filename)) {
+                $found[] = "{$dir}/{$filename}";
+            }
+        }
+
+        return $found;
+    }
+
+
+
+    private function _sortPreparedBooklets(array $preparedBooklets): array {
 
         $preparedBookletsSorted = [];
         // error_log(print_r($preparedBooklets, true));
@@ -185,10 +206,10 @@ class WorkspaceController {
                 $preparedBookletsSorted[$group]['personsPrepared'] += 1;
                 $preparedBookletsSorted[$group]['bookletsPrepared'] += count($pd['booklets']);
             }
-        } // counting prepared
-
+        }
         return $preparedBookletsSorted;
     }
+
 
 
     function getTestStatusOverview(array $bookletsStarted): array {

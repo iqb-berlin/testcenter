@@ -1,11 +1,14 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
+
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 require_once "admin/classes/controller/Initializer.class.php";
 require_once "admin/classes/controller/WorkspaceController.class.php";
-require_once('vo_code/ResourceFile.class.php');
-require_once('vo_code/FileFactory.class.php');
+require_once "vo_code/ResourceFile.class.php";
+require_once "vo_code/FileFactory.class.php";
+require_once "vo_code/XMLFileTesttakers.php";
+
 
 class WorkspaceControllerTest extends TestCase {
 
@@ -143,6 +146,22 @@ class WorkspaceControllerTest extends TestCase {
     }
 
 
+    function test_assemblePreparedBookletsFromFiles() {
+
+//        echo file_get_contents(vfsStream::url('root/vo_data/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML'));
+
+        $result = $this->workspaceController->assemblePreparedBookletsFromFiles();
+
+        $this->assertArrayHasKey('sample_group', $result);
+        $this->assertEquals('sample_group', $result['sample_group']['groupname']);
+        $this->assertEquals(1, $result['sample_group']['loginsPrepared']);
+        $this->assertEquals(2, $result['sample_group']['personsPrepared']);
+        $this->assertEquals(2, $result['sample_group']['bookletsPrepared']);
+        $this->assertArrayHasKey('bookletsStarted', $result['sample_group']);
+        $this->assertArrayHasKey('bookletsLocked', $result['sample_group']);
+        $this->assertArrayHasKey('laststart', $result['sample_group']);
+        $this->assertArrayHasKey('laststartStr', $result['sample_group']);
+    }
 
 
 
