@@ -1,11 +1,14 @@
 {
   "require": {
     "slim/slim": "^3.12.0",
-    "phpunit/phpunit":  "^6.5.0",
     "php": "^7.1",
     "ext-pdo_mysql": "*",
     "ext-json": "*",
     "ext-pdo": "*",
     "ext-zip": "*"
+  },
+  "require-dev": {
+    "mikey179/vfsstream": "^1.6",
+    "phpunit/phpunit":  "^6.5.0"
   }
 }
