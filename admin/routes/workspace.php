@@ -36,9 +36,7 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
-        $workspaceController = new WorkspaceController($workspaceId);
-
-        $results = $workspaceController->getAssembledResults($workspaceId);
+        $results = $dbConnectionAdmin->getAssembledResults($workspaceId);
 
         return $response->withJson($results);
     });
@@ -61,7 +59,7 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceController = new WorkspaceController($workspaceId);
 
-        return $response->withJson($workspaceController->getTestStatusOverview());
+        return $response->withJson($workspaceController->getTestStatusOverview($dbConnectionAdmin->getBookletsStarted($workspaceId)));
     });
 
     $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($dbConnectionAdmin) {

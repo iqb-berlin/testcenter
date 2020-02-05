@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 
 class WorkspaceController {
@@ -6,7 +6,6 @@ class WorkspaceController {
     protected $_workspaceId = 0;
     protected $_workspacePath = '';
     protected $_dataPath = '';
-    protected $_dbConnection;
 
     /**
      * WorkspaceController constructor.
@@ -20,9 +19,6 @@ class WorkspaceController {
 
         $this->_dataPath = ROOT_DIR . '/vo_data';
         $this->_workspacePath = $this->_createWorkspaceFolderIfNotExistant();
-
-
-        $this->_dbConnection = new DBConnectionAdmin();
     }
 
     /**
@@ -108,8 +104,7 @@ class WorkspaceController {
             $fileToDeletePath = $this->_workspacePath . '/' . $fileToDelete;
             if (!file_exists($fileToDeletePath)) {
                 $report['did_not_exist'][] = $fileToDelete;
-            } else if ((realpath($fileToDeletePath) === $fileToDeletePath) and unlink($fileToDeletePath)) {
-                // realpath comparison is to avoid hacks like ../../README.md
+            } else if ($this->_isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
                 $report['deleted'][] = $fileToDelete;
             } else {
                 $report['not_allowed'][] = $fileToDelete;
@@ -118,51 +113,10 @@ class WorkspaceController {
         return $report;
     }
 
-    /**
-     * TODO find better place for this, maybe in DBconnector?
-     *
-     * @param $workspaceId
-     * @return array
-     */
-    function getAssembledResults($workspaceId) {
 
-        $keyedReturn = [];
+    private function _isPathLegal(string $path): bool {
 
-        foreach($this->_dbConnection->getResultsCount($workspaceId) as $resultSet) {
-            // groupname, loginname, code, bookletname, num_units
-            if (!isset($keyedReturn[$resultSet['groupname']])) {
-                $keyedReturn[$resultSet['groupname']] = [
-                    'groupname' => $resultSet['groupname'],
-                    'bookletsStarted' => 1,
-                    'num_units_min' => $resultSet['num_units'],
-                    'num_units_max' => $resultSet['num_units'],
-                    'num_units_total' => $resultSet['num_units'],
-                    'lastchange' => $resultSet['lastchange']
-                ];
-            } else {
-                $keyedReturn[$resultSet['groupname']]['bookletsStarted'] += 1;
-                $keyedReturn[$resultSet['groupname']]['num_units_total'] += $resultSet['num_units'];
-                if ($resultSet['num_units'] > $keyedReturn[$resultSet['groupname']]['num_units_max']) {
-                    $keyedReturn[$resultSet['groupname']]['num_units_max'] = $resultSet['num_units'];
-                }
-                if ($resultSet['num_units'] < $keyedReturn[$resultSet['groupname']]['num_units_min']) {
-                    $keyedReturn[$resultSet['groupname']]['num_units_min'] = $resultSet['num_units'];
-                }
-                if ($resultSet['lastchange'] > $keyedReturn[$resultSet['groupname']]['lastchange']) {
-                    $keyedReturn[$resultSet['groupname']]['lastchange'] = $resultSet['lastchange'];
-                }
-            }
-        }
-
-        $returner = array();
-
-        // get rid of the key and calculate mean
-        foreach($keyedReturn as $group => $groupData) {
-            $groupData['num_units_mean'] = $groupData['num_units_total'] / $groupData['bookletsStarted'];
-            array_push($returner, $groupData);
-        }
-
-        return $returner;
+        return substr_count($path, '..') == 0;
     }
 
 
@@ -236,19 +190,16 @@ class WorkspaceController {
         return $preparedBookletsSorted;
     }
 
-    /**
-     * @return array
-     * @throws Exception
-     */
-    function getTestStatusOverview() {
+
+    function getTestStatusOverview(array $bookletsStarted): array {
 
         $preparedBooklets = $this->assemblePreparedBookletsFromFiles();
 
-        foreach($this->_dbConnection->getBookletsStarted($this->_workspaceId) as $startedBooklets) {
+        foreach($bookletsStarted as $startedBooklet) {
             // groupname, loginname, code, bookletname, locked
-            if (!isset($preparedBooklets[$startedBooklets['groupname']])) {
-                $preparedBooklets[$startedBooklets['groupname']] = [
-                    'groupname' => $startedBooklets['groupname'],
+            if (!isset($preparedBooklets[$startedBooklet['groupname']])) {
+                $preparedBooklets[$startedBooklet['groupname']] = [
+                    'groupname' => $startedBooklet['groupname'],
                     'loginsPrepared' => 0,
                     'personsPrepared' => 0,
                     'bookletsPrepared' => 0,
@@ -258,14 +209,14 @@ class WorkspaceController {
                     'laststartStr' => ''
                 ];
             }
-            $preparedBooklets[$startedBooklets['groupname']]['bookletsStarted'] += 1;
-            if ($startedBooklets['locked'] == '1') {
-                $preparedBooklets[$startedBooklets['groupname']]['bookletsLocked'] += 1;
+            $preparedBooklets[$startedBooklet['groupname']]['bookletsStarted'] += 1;
+            if ($startedBooklet['locked'] == '1') {
+                $preparedBooklets[$startedBooklet['groupname']]['bookletsLocked'] += 1;
             }
-            $tmpTime = strtotime($startedBooklets['laststart']);
-            if ($tmpTime > $preparedBooklets[$startedBooklets['groupname']]['laststart']) {
-                $preparedBooklets[$startedBooklets['groupname']]['laststart'] = $tmpTime;
-                $preparedBooklets[$startedBooklets['groupname']]['laststartStr'] = strftime('%d.%m.%Y',$tmpTime);
+            $tmpTime = strtotime($startedBooklet['laststart']);
+            if ($tmpTime > $preparedBooklets[$startedBooklet['groupname']]['laststart']) {
+                $preparedBooklets[$startedBooklet['groupname']]['laststart'] = $tmpTime;
+                $preparedBooklets[$startedBooklet['groupname']]['laststartStr'] = strftime('%d.%m.%Y',$tmpTime);
             }
         }
 

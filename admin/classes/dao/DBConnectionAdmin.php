@@ -360,4 +360,47 @@ class DBConnectionAdmin extends DBConnection {
 
 		return $unitData;
 	}
+
+
+    public function getAssembledResults(int $workspaceId): array {
+
+        $keyedReturn = [];
+
+        foreach($this->_dbConnection->getResultsCount($workspaceId) as $resultSet) {
+            // groupname, loginname, code, bookletname, num_units
+            if (!isset($keyedReturn[$resultSet['groupname']])) {
+                $keyedReturn[$resultSet['groupname']] = [
+                    'groupname' => $resultSet['groupname'],
+                    'bookletsStarted' => 1,
+                    'num_units_min' => $resultSet['num_units'],
+                    'num_units_max' => $resultSet['num_units'],
+                    'num_units_total' => $resultSet['num_units'],
+                    'lastchange' => $resultSet['lastchange']
+                ];
+            } else {
+                $keyedReturn[$resultSet['groupname']]['bookletsStarted'] += 1;
+                $keyedReturn[$resultSet['groupname']]['num_units_total'] += $resultSet['num_units'];
+                if ($resultSet['num_units'] > $keyedReturn[$resultSet['groupname']]['num_units_max']) {
+                    $keyedReturn[$resultSet['groupname']]['num_units_max'] = $resultSet['num_units'];
+                }
+                if ($resultSet['num_units'] < $keyedReturn[$resultSet['groupname']]['num_units_min']) {
+                    $keyedReturn[$resultSet['groupname']]['num_units_min'] = $resultSet['num_units'];
+                }
+                if ($resultSet['lastchange'] > $keyedReturn[$resultSet['groupname']]['lastchange']) {
+                    $keyedReturn[$resultSet['groupname']]['lastchange'] = $resultSet['lastchange'];
+                }
+            }
+        }
+
+        $returner = array();
+
+        // get rid of the key and calculate mean
+        foreach($keyedReturn as $group => $groupData) {
+            $groupData['num_units_mean'] = $groupData['num_units_total'] / $groupData['bookletsStarted'];
+            array_push($returner, $groupData);
+        }
+
+        return $returner;
+    }
+
 }
