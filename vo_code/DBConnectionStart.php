@@ -34,7 +34,7 @@ class DBConnectionStart extends DBConnection {
 					if ($sql_insert->execute(array(
 						':token' => $mytoken,
 						':sd' => json_encode($bookletdef),
-                        ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletime),
+                        ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTime),
                         ':name' => $name,
                         ':mode' => $mode,
                         ':ws' => $workspace,
@@ -49,7 +49,7 @@ class DBConnectionStart extends DBConnection {
                             WHERE id =:loginid');
             
                     $sql_update->execute(array(
-                        ':value' => date('Y-m-d H:i:s', time() + $this->idletime),
+                        ':value' => date('Y-m-d H:i:s', time() + $this->idleTime),
                         ':sd'=> json_encode($bookletdef),
                         ':loginid'=>$old_login['id'],
                         ':groupname'=>$groupname
