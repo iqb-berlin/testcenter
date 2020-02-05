@@ -51,9 +51,7 @@ try  {
         throw new Exception("Password must have at least 7 characters!");
     }
 
-    require_once "initializer.class.php";
-
-    $config_file_path = realpath(dirname(__FILE__)) . '/../config/DBConnectionData.json';
+    $config_file_path = ROOT_DIR . '/config/DBConnectionData.json';
 
     if (!file_exists($config_file_path)) {
         throw new Exception("DB-config file is missing!");
@@ -61,12 +59,12 @@ try  {
 
     $config = file_get_contents($config_file_path);
 
-    if (!json_decode($config)) {
-        throw new Exception("DB-config file is malformed JSON:\n$config");
-    }
+    JSON::decode($config);
+
+    $initializer = new Initializer();
 
     try {
-        $initializer = new Initializer();
+        $DBConnectionInit = new DBConnectionInit();
     } catch (Throwable $t) {
         $retries = 5;
         $error = true;
@@ -82,24 +80,24 @@ try  {
         }
     }
 
-    if ($initializer->addSuperuser($args['user_name'], $args['user_password'])) {
+    if ($DBConnectionInit->addSuperuser($args['user_name'], $args['user_password'])) {
         echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.\n";
     }
 
     if (isset($args['workspace'])) {
 
-        $workspace_id = $initializer->getWorkspace($args['workspace']);
+        $workspaceId = $DBConnectionInit->getWorkspace($args['workspace']);
 
-        $initializer->grantRights($args['user_name'], $workspace_id);
+        $DBConnectionInit->grantRights($args['user_name'], $workspaceId);
 
         $loginCodes = $initializer->getLoginCodes();
         $args['test_person_codes'] = implode(" ", $loginCodes);
 
-        $initializer->importSampleData($workspace_id, $args);
+        $initializer->importSampleData($workspaceId, $args);
+        echo "Sample data parameters: \n";
+        echo implode("\n", array_map(function($param_key) use ($args) {return "$param_key: {$args[$param_key]}";}, array_keys($args)));
 
         $initializer->createSampleLoginsReviewsLogs($loginCodes[0]);
-
-        $initializer->openPermissionsOnDataDir();
     }
 
 } catch (Exception $e) {
