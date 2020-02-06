@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+    title: 'IQB Testcenter API'
+    description: 'Here will be found the documentation of the (REST-) API of the IQB-Testcenter. But this is just a stub.'
+    version: 0.0.0
+paths:
+    /php/login.php/login:
+        post:
+            summary: Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            value: '#/components/schemas/login_request'
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                value: '#/components/schemas/login_response'
+                            example:
+                                admintoken: 1337ymca1337666.xxx13370
+                                name: super
+                                workspaces:
+                                    - {id: '1', name: example_workspace, role: RW}
+                                is_superadmin: true
+                '401':
+                    description: 'Not authenticated'
+                '404':
+                    description: 'Other Error'
+                '406':
+                    description: 'Other Error'
+                '500':
+                    description: 'Server Error'
+components:
+    schemas:
+        auth:
+            type: object
+            properties:
+                at:
+                    type: string
+                    description: authtoken
+                    example: 1337ymca1337666.xxx13370
+                ws:
+                    type: integer
+                    description: workspace-id
+            required:
+                - at
+        login_request:
+            type: object
+            properties:
+                n:
+                    type: string
+                    description: Username
+                    example: super
+                p:
+                    type: string
+                    description: Password
+                    example: user123
+        login_response:
+            type: object
+            properties:
+                admintoken:
+                    type: string
+                    description: 'Token for session authentication'
+                name:
+                    type: string
+                    description: 'Username repetition'
+                    example: super
+                workspaces:
+                    type: array
+                    description: 'List of workspaces wich are open to this user'
+                    items:
+                        value: '#/components/schemas/workspace'
+                is_superadmin:
+                    type: boolean
+                    description: 'Flag that tells, if this user is a superadmin'
+                    example: true
+        workspace:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: '1'
+                name:
+                    type: string
+                    example: example_workspace
+                role:
+                    type: string
+                    example: RW
+                selected:
+                    type: boolean
+                    example: false
+                    description: 'TODO what does this do?'
+            required:
+                - id
+        workspace_list:
+            type: array
+            description: 'List of Workspaces'
+            items:
+                value: '#/components/schemas/workspace'
+        user_list:
+            type: array
+            description: 'List of Users'
+            items:
+                value: '#/components/schemas/user'
+        user:
+            type: object
+            description: 'a user'
+            properties:
+                name:
+                    type: string
+                    example: super
+                id:
+                    type: string
+                    example: '1'
+                email:
+                    type: string
+                    nullable: true
+                    example: null
+                is_superadmin:
+                    type: string
+                    example: '1'
+                selected:
+                    type: boolean
+                    example: true
+                    description: 'TODO what does this do?'
+                role:
+                    type: string
+                    example: RW
+            required:
+                - id
+                - name
+        file:
+            type: object
+            description: 'information about a file'
+            properties:
+                filename:
+                    type: string
+                filesize:
+                    type: integer
+                    description: 'file size in byte'
+                filesizestr:
+                    type: string
+                    description: 'human readable filesize'
+                filedatetime:
+                    type: integer
+                    description: 'modification date as unix time stamp'
+                filedatetimestr:
+                    type: string
+                    description: 'modification date as human readable string'
+                type:
+                    type: string
+                    description: 'Testtakers | Booklet | Resource | Unit | SysCheck'
+                typelabel:
+                    type: string
+                    description: 'Testtakers | Booklet | Resource | Unit | SysCheck'
+        file_list:
+            type: array
+            description: 'List of Files'
+            items:
+                value: '#/components/schemas/file'
