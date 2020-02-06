@@ -368,7 +368,7 @@ class DBConnectionAdmin extends DBConnection {
 
         $keyedReturn = [];
 
-        foreach($this->_dbConnection->getResultsCount($workspaceId) as $resultSet) {
+        foreach($this->getResultsCount($workspaceId) as $resultSet) {
             // groupname, loginname, code, bookletname, num_units
             if (!isset($keyedReturn[$resultSet['groupname']])) {
                 $keyedReturn[$resultSet['groupname']] = [
