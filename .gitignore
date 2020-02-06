@@ -14,8 +14,6 @@ testcenter-iqb-php.iml
 # integration
 integration/node_modules
 integration/tmp
-docs/api_doc_files/lib
-!docs/api_doc_files/lib/.gitkeep
 
 # config
 config/DBConnectionData.json

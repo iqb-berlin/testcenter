@@ -16,8 +16,7 @@
     "gulp": "^4.0.2",
     "multi-part": "^3.0.0",
     "stream-to-string": "^1.2.0",
-    "yamljs": "^0.3.0",
-    "redoc": "^2.0.0-rc.22"
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "gulp-yaml-merge": "^2.0.0"
