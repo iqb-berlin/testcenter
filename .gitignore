@@ -2,23 +2,24 @@
 vendor
 composer.phar
 
-# Empty folder must exist to ensure functionality.
+# data folder
 vo_data/*
 !vo_data/.gitkeep
 
-#IDE stuff
+# IDE stuff
 testcenter-iqb-php.iml
 .idea
 .vscode
 
-#integration stuff
+# integration
 integration/node_modules
+integration/tmp
+docs/api_doc_files/lib
+!docs/api_doc_files/lib/.gitkeep
 
-#config
+# config
 config/DBConnectionData.json
 
-#?
+# legacy
 logs/*
-
 trash
-integration/tmp

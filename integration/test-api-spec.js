@@ -173,6 +173,41 @@ gulp.task('db_clean', done => {
     done(exitCode);
 });
 
+
+gulp.task('update_docs', done => {
+
+    printHeadline('copy compiled spec and redoc lib to docs folder');
+    // const specsFile = apiSubfolder + '.compiled.specs.yml';
+    // fs.copyFileSync('tmp/' + specsFile, '../docs/generated_files/' + specsFile);
+    const redocFile ='node_modules/redoc/bundles/redoc.standalone.js';
+    fs.copyFileSync(redocFile, '../docs/api_doc_files/lib/redoc.standalone.js');
+
+    const compiledFileName = 'tmp/' + apiSubfolder + '.compiled.specs.yml';
+    const targetFileName = '../docs/api_doc_files/specs.yml';
+    const yamlString = fs.readFileSync(compiledFileName, "utf8");
+    const yamlTree = YAML.parse(yamlString);
+    const localizeReference = (key, val) => {
+        const referenceString = val.substring(val.lastIndexOf('#'));
+        return {
+            key: null,
+            val: referenceString
+        }
+    };
+
+    const rules = {
+        "schema > \\$ref$": localizeReference,
+        "items > \\$ref$": localizeReference
+    };
+
+    const transformed = jsonTransform(yamlTree, rules, false);
+    const transformedAsString = YAML.stringify(transformed, 10);
+    fs.writeFileSync(targetFileName, transformedAsString, "utf8");
+
+    done();
+
+});
+
+
 exports.run_dredd_test = gulp.series(
     'start',
     'clear_tmp_dir',
@@ -181,7 +216,7 @@ exports.run_dredd_test = gulp.series(
     'init_backend',
     'prepare_spec_for_dredd',
     'run_dredd',
-
+    'update_docs'
 );
 
 exports.repeat_dredd_test = gulp.series(
