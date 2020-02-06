@@ -112,18 +112,19 @@ class DBConnectionAdmin extends DBConnection {
 
 		$this->_(
 			'UPDATE booklets SET locked=:locked WHERE id IN (
-                SELECT booklets.id FROM booklets
-                    INNER JOIN persons ON (persons.id = booklets.person_id)
-                    INNER JOIN logins ON (persons.login_id = logins.id)
-                    INNER JOIN workspaces ON (logins.workspace_id = workspaces.id)
-                    WHERE workspaces.id=:workspace_id AND logins.groupname=:groupname
-            )',
+                SELECT inner_select.id from (
+                    SELECT booklets.id FROM booklets
+                        INNER JOIN persons ON (persons.id = booklets.person_id)
+                        INNER JOIN logins ON (persons.login_id = logins.id)
+                        INNER JOIN workspaces ON (logins.workspace_id = workspaces.id)
+                        WHERE workspaces.id=:workspace_id AND logins.groupname=:groupname
+                    ) as inner_select
+                )',
 			array(
 				':locked' => $lockStr,
 				':workspace_id' => $workspace_id,
 				':groupname' => $group_name
-            ),
-			true
+            )
 		);
 	}
 
@@ -242,8 +243,9 @@ class DBConnectionAdmin extends DBConnection {
 			INNER JOIN persons ON persons.id = booklets.person_id 
 			INNER JOIN logins ON logins.id = persons.login_id
 			INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-			ORDER BY logins.groupname, logins.name, persons.code, booklets.name
-			WHERE workspace_id =:workspaceId',
+            WHERE workspace_id =:workspaceId			
+            ORDER BY logins.groupname, logins.name, persons.code, booklets.name
+			',
 			array(
 				':workspaceId' => $workspaceId
 			),
