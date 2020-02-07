@@ -1,15 +1,10 @@
 <?php
-// www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
-// license: MIT
 
-require_once('XMLFile.php');
 
-class XMLFileTesttakers extends XMLFile
-{
-    // ####################################################
+class XMLFileTesttakers extends XMLFile {
+
     private function getCodesFromBookletElement($bookletElement) {
+
         $myreturn = [];
         if ($bookletElement->getName() == 'Booklet') {
             $codesAttr = $bookletElement['codes'];
@@ -29,13 +24,12 @@ class XMLFileTesttakers extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
+
     // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-    public function getAllTesttakers($onlyMode = '')
-    {
+    public function getAllTesttakers($onlyMode = '') {
         $myreturn = [];
 
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Testtakers')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             $allLoginNames = []; // double logins are ignored
             foreach($this->xmlfile->children() as $groupNode) {
                 if ($groupNode->getName() == 'Group') {
@@ -139,11 +133,11 @@ class XMLFileTesttakers extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
-    public function getDoubleLoginNames()
-    {
+
+    public function getDoubleLoginNames() {
+
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Testtakers')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             $allLoginNames = [];
             foreach($this->xmlfile->children() as $groupNode) {
                 if ($groupNode->getName() == 'Group') {
@@ -174,11 +168,10 @@ class XMLFileTesttakers extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
-    public function getAllLoginNames()
-    {
+
+    public function getAllLoginNames() {
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Testtakers')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             foreach($this->xmlfile->children() as $groupNode) {
                 if ($groupNode->getName() == 'Group') {
                     $groupnameAttr = $groupNode['name'];
@@ -204,11 +197,11 @@ class XMLFileTesttakers extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
+
     public function getLoginData($givenLoginName, $givenPassword) {
         $myreturn = ['groupname' => '', 'mode' => '', 'loginname' => '', 'booklets' => []];
 
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Testtakers')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             foreach($this->xmlfile->children() as $groupNode) {
                 if ($groupNode->getName() == 'Group') {
                     $groupnameAttr = $groupNode['name'];

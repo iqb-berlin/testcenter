@@ -1,15 +1,10 @@
 <?php
-// www.IQB.hu-berlin.de
-// Bărbulescu, Mechtel
-// 2018, 2019
-// license: MIT
 
-require_once('XMLFile.php');
 
-class XMLFileBooklet extends XMLFile
-{
-    // ####################################################
+class XMLFileBooklet extends XMLFile {
+
     private function getUnitIds($node) {
+
         $myreturn = [];
         foreach($node->children() as $element) {
             if ($element->getName() == 'Unit') {
@@ -26,11 +21,11 @@ class XMLFileBooklet extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
-    public function getAllUnitIds()
-    {
+
+    public function getAllUnitIds() {
+
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Booklet')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Booklet')) {
             $unitsNode = $this->xmlfile->Units[0];
             if (isset($unitsNode)) {
                 $myreturn = $this->getUnitIds($unitsNode);

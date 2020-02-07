@@ -4,35 +4,34 @@
 // 2018
 // license: MIT
 
-class XMLFile
-{
+class XMLFile {
     public $allErrors = [];
-    private $schemaFileNames = ['Testtakers' => 'vo_Testtakers.xsd', 
+    private $_schemaFileNames = ['Testtakers' => 'vo_Testtakers.xsd',
                                 'Booklet' => 'vo_Booklet.xsd',
                                 'SysCheck' => 'vo_SysCheck.xsd',
                                 'Unit' => 'vo_Unit.xsd'];
-    protected $rootTagName;
-    protected $isValid;
-    protected $id;
-    protected $label;
-    protected $description;
-    protected $filename;
-    protected $costumTexts;
+    protected $_rootTagName;
+    protected $_isValid;
+    protected $_id;
+    protected $_label;
+    protected $_description;
+    protected $_filename;
+    protected $_customTexts;
+
     public $xmlfile;
 
-    // ####################################################
-    public function __construct($xmlfilename, $validate = false)
-    {
-        $this->allErrors = [];
-        $this->rootTagName = '';
-        $this->id = '';
-        $this->label = '';
-        $this->isValid = false;
-        $this->xmlfile = false;
-        $this->filename = $xmlfilename;
-        $this->costumTexts = [];
 
-        $xsdFolderName = __DIR__ . '/';
+    public function __construct($xmlfilename, $validate = false) {
+        $this->allErrors = [];
+        $this->_rootTagName = '';
+        $this->_id = '';
+        $this->_label = '';
+        $this->_isValid = false;
+        $this->xmlfile = false;
+        $this->_filename = $xmlfilename;
+        $this->_customTexts = [];
+
+        $xsdFolderName = ROOT_DIR . '/definitions/';
 
         libxml_use_internal_errors(true);
         libxml_clear_errors();
@@ -45,33 +44,33 @@ class XMLFile
             if ($this->xmlfile == false) {
                 array_push($this->allErrors, 'Konnte ' . $xmlfilename . ' nicht öffnen.');
             } else {
-                $this->rootTagName = $this->xmlfile->getName();
-                if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
-                    array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->rootTagName . '" unbekannt.');
+                $this->_rootTagName = $this->xmlfile->getName();
+                if (!array_key_exists($this->_rootTagName, $this->_schemaFileNames)) {
+                    array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->_rootTagName . '" unbekannt.');
                 } else {
-                    $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
+                    $mySchemaFilename = $xsdFolderName . $this->_schemaFileNames[$this->_rootTagName];
 
                     $myId = $this->xmlfile->Metadata[0]->Id[0];
                     if (isset($myId)) {
-                        $this->id = strtoupper((string) $myId);
+                        $this->_id = strtoupper((string) $myId);
                     }
 
                     // label is required!
-                    $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
+                    $this->_label = (string) $this->xmlfile->Metadata[0]->Label[0];
                     $myDescription = $this->xmlfile->Metadata[0]->Description[0];
                     if (isset($myDescription)) {
-                        $this->description = (string) $myDescription;
+                        $this->_description = (string) $myDescription;
                     }
-                    $myCostumTextsNode = $this->xmlfile->CustomTexts[0];
-                    if (isset($myCostumTextsNode)) {
-                        foreach($myCostumTextsNode->children() as $costumTextElement) {
+                    $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
+                    if (isset($myCustomTextsNode)) {
+                        foreach($myCustomTextsNode->children() as $costumTextElement) {
                             if ($costumTextElement->getName() == 'Text') {
-                                $costumTextValue = (string) $costumTextElement;
-                                $costumTextKeyAttr = $costumTextElement['key'];
-                                if ((strlen($costumTextValue) > 0) && isset($costumTextKeyAttr)) {
-                                    $costumTextKey = (string) $costumTextKeyAttr;
+                                $customTextValue = (string) $costumTextElement;
+                                $customTextKeyAttr = $costumTextElement['key'];
+                                if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
+                                    $costumTextKey = (string) $customTextKeyAttr;
                                     if (strlen($costumTextKey) > 0) {
-                                        $this->costumTexts[$costumTextKey] = $costumTextValue;
+                                        $this->_customTexts[$costumTextKey] = $customTextValue;
                                     }
                                 }
                             }
@@ -80,7 +79,7 @@ class XMLFile
                     }
 
                     if ($validate) {
-                        if (strlen($this->label) > 0) {
+                        if (strlen($this->_label) > 0) {
                             $myReader = new \XMLReader();
                             $myReader->open($xmlfilename);
                             $myReader->setSchema($mySchemaFilename);
@@ -96,10 +95,10 @@ class XMLFile
                                 libxml_clear_errors();
                             } while ($continue);
         
-                        $this->isValid = count($this->allErrors) == 0;
+                        $this->_isValid = count($this->allErrors) == 0;
                         }
                     } else {
-                        $this->isValid = true;
+                        $this->_isValid = true;
                     }
                 }
             }
@@ -117,45 +116,44 @@ class XMLFile
 
     }
 
-    // ####################################################
-    public function getErrors()
-    {
+
+    public function getErrors() {
         return $this->allErrors;
     }
 
-    // ####################################################
-    public function getRoottagName()
-    {
-        return $this->rootTagName;
+
+    public function getRoottagName() {
+
+        return $this->_rootTagName;
     }
 
-    // ####################################################
-    public function getId()
-    {
-        return $this->id;
+
+    public function getId() {
+
+        return $this->_id;
     }
 
-    // ####################################################
-    public function getLabel()
-    {
-        return $this->label;
+
+    public function getLabel() {
+
+        return $this->_label;
     }
 
-    // ####################################################
-    public function getDescription()
-    {
-        return $this->description;
+
+    public function getDescription() {
+
+        return $this->_description;
     }
 
-    // ####################################################
-    public function isValid()
-    {
-        return $this->isValid;
+
+    public function isValid() {
+
+        return $this->_isValid;
     }
 
-    // ####################################################
-    public function getCostumTexts()
-    {
-        return $this->costumTexts;
+
+    public function getCustomTexts() {
+
+        return $this->_customTexts;
     }
 }

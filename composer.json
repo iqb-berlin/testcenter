@@ -21,7 +21,10 @@
     "ext-pdo_mysql": "*",
     "ext-json": "*",
     "ext-pdo": "*",
-    "ext-zip": "*"
+    "ext-zip": "*",
+    "ext-libxml": "*",
+    "ext-simplexml": "*",
+    "ext-xmlreader": "*"
   },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",

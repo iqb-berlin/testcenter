@@ -5,9 +5,10 @@ use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 require_once "admin/classes/workspace/WorkspaceInitializer.class.php";
 require_once "admin/classes/workspace/WorkspaceController.class.php";
-require_once "vo_code/ResourceFile.class.php";
-require_once "vo_code/FileFactory.class.php";
-require_once "vo_code/XMLFileTesttakers.php";
+require_once "admin/classes/files/XMLFile.php";
+require_once "admin/classes/files/ResourceFile.class.php";
+require_once "admin/classes/files/FileFactory.class.php";
+require_once "admin/classes/files/XMLFileTesttakers.php";
 
 
 class WorkspaceControllerTest extends TestCase {

@@ -1,18 +1,12 @@
 <?php
-// www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
-// license: MIT
 
-require_once('XMLFile.php');
 
-class XMLFileSysCheck extends XMLFile
-{
-    // # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-    public function getUnitId()
-    {
+class XMLFileSysCheck extends XMLFile {
+
+    public function getUnitId() {
+        
         $myreturn = '';
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $unitAttr = $configNode['unit'];
@@ -24,11 +18,11 @@ class XMLFileSysCheck extends XMLFile
         return $myreturn;
     }
 
-    // # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-    private function getSaveKey()
-    {
+
+    private function getSaveKey() {
+        
         $myreturn = '';
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $savekeyAttr = $configNode['savekey'];
@@ -40,25 +34,22 @@ class XMLFileSysCheck extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
-    public function hasSaveKey()
-    {
+
+    public function hasSaveKey() {
         $myKey = $this->getSaveKey();
         return strlen($myKey) > 0;
     }
 
-    // ####################################################
-    public function hasUnit()
-    {
+
+    public function hasUnit() {
         $myUnitId = $this->getUnitId();
         return strlen($myUnitId) > 0;
     }
 
-    // ####################################################
-    public function getQuestionsOnlyMode()
-    {
+
+    public function getQuestionsOnlyMode() {
         $myreturn = false;
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $qomAttr = $configNode['questionsonlymode'];
@@ -71,11 +62,11 @@ class XMLFileSysCheck extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
-    public function getSkipNetwork()
-    {
+
+    public function getSkipNetwork() {
+
         $myreturn = false;
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $qomAttr = $configNode['skipnetwork'];
@@ -88,11 +79,11 @@ class XMLFileSysCheck extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
-    public function getQuestions()
-    {
+
+    public function getQuestions() {
+
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 foreach($configNode->children() as $q) { 
@@ -110,11 +101,11 @@ class XMLFileSysCheck extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
-    public function getRatings()
-    {
+
+    public function getRatings() {
+
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $ratingsNode = $this->xmlfile->Ratings[0];
             if (isset($ratingsNode)) {
                 foreach($ratingsNode->children() as $r) { 
@@ -132,8 +123,9 @@ class XMLFileSysCheck extends XMLFile
         return $myreturn;
     }
 
-    // ####################################################
+
     public function getUnitData() {
+
         $myreturn = [
             'player_id' => '',
             'def' => '',
@@ -141,7 +133,7 @@ class XMLFileSysCheck extends XMLFile
         ];
         $myUnitId = $this->getUnitId();
         if (strlen($myUnitId) > 0) {
-            $workspaceDirName = dirname(dirname($this->filename));
+            $workspaceDirName = dirname(dirname($this->_filename));
             if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
                 $unitFolder = $workspaceDirName . '/Unit';
                 $resourcesFolder = $workspaceDirName . '/Resource';
@@ -149,7 +141,6 @@ class XMLFileSysCheck extends XMLFile
                 if ($mydir !== false) {
                     $unitNameUpper = strtoupper($myUnitId);
 
-                    require_once('XMLFile.php'); // // // // ========================
                     while (($entry = readdir($mydir)) !== false) {
                         $fullfilename = $unitFolder . '/' . $entry;
                         if (is_file($fullfilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
@@ -242,13 +233,13 @@ class XMLFileSysCheck extends XMLFile
     }
 
 
-    // ####################################################
     public function saveReport($key, $title, $envData, $netData, $questData, $unitData) {
+
         $myreturn = false;
 
         if (strlen($key) > 0) {
             if (strtoupper($key) == strtoupper($this->getSaveKey())) {
-                $workspaceDirName = dirname(dirname($this->filename));
+                $workspaceDirName = dirname(dirname($this->_filename));
                 if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
                 
                     $sysCheckFolder = $workspaceDirName . '/' . $this->getRoottagName();

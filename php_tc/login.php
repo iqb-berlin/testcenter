@@ -105,7 +105,7 @@ $app->post('/login', function (ServerRequestInterface $request, ResponseInterfac
                                                     $myBooklets = $xFile->getLoginData($loginName, $loginPassword);
                                                     if (count($myBooklets['booklets']) > 0) {
                                                         $myWorkspace = $mysplits[1];
-                                                        $costumTexts = $xFile->getCostumTexts();
+                                                        $costumTexts = $xFile->getCustomTexts();
                                                         $hasfound = true;
                                                         break;
                                                     }
@@ -218,7 +218,9 @@ $app->get('/bookletstatus', function (ServerRequestInterface $request, ResponseI
                 $myerrorcode = 0;
                 if (strlen($myreturn['label']) === 0) {
                     // booklet not found in database, so look at xml
-                    require_once($this->get('code_directory') . '/FilesFactory.php');
+                    require_once($this->get('code_directory') . '/ResourceFile.class.php');
+                    require_once($this->get('code_directory') . '/FileFactory.class.php');
+                    require_once($this->get('code_directory') . '/XFileFactory.class.php');
                     $myreturn['label'] = XFileFactory::getBookletName(
                         $myDBConnection->getWorkspaceId($loginToken), $bookletid);
                 }
