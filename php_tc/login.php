@@ -37,6 +37,7 @@ function jsonencode($obj)
 $container = $app->getContainer();
 $container['code_directory'] = __DIR__.'/../vo_code';
 $container['data_directory'] = __DIR__.'/../vo_data';
+$container['conf_directory'] = __DIR__.'/../config';
 // use in Routes: $directory = $this->get('data_directory');
 
 
@@ -252,7 +253,7 @@ $app->get('/sysconfig', function (ServerRequestInterface $request, ResponseInter
 
         $myreturn = [];
 
-        $sysConfigFilename = $this->get('code_directory') . '/SysConfig.json';
+        $sysConfigFilename = $this->get('conf_directory') . '/SysConfig.json';
         if (file_exists($sysConfigFilename)) {
             $myreturn = json_decode(file_get_contents($sysConfigFilename));
             $myerrorcode = 0;

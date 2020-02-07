@@ -53,6 +53,7 @@ function jsonencode($obj)
 $container = $app->getContainer();
 $container['code_directory'] = __DIR__.'/../vo_code';
 $container['data_directory'] = __DIR__.'/../vo_data';
+$container['conf_directory'] = __DIR__.'/../config';
 // use in Routes: $directory = $this->get('data_directory');
 
 
@@ -213,7 +214,7 @@ $app->get('/resource/{resourceid}', function (ServerRequestInterface $request, R
         $versionning = $request->getQueryParam('v', 'f');
         $myreturn = '';
 
-        if ((strlen($personToken) > 0) && ($bookletDbId > 0)) {
+        if (strlen($loginToken) > 0) {
             require_once($this->get('code_directory') . '/DBConnectionTC.php');
 
             $myDBConnection = new DBConnectionTC();
@@ -253,7 +254,8 @@ $app->get('/resource/{resourceid}', function (ServerRequestInterface $request, R
         } else {
             $responseToReturn = $response->withStatus($myerrorcode)
                 ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
+                ->write("Something went wrongy! loginToken: $loginToken");
+
         }
 
         return $responseToReturn;

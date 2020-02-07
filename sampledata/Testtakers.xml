@@ -1,0 +1,26 @@
+<Testtakers
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.3.1/vo_code/vo_Testtakers.xsd"
+>
+
+  <Metadata>
+    <Id>TESTTAKERS.SAMPLE</Id>
+    <Label>Some logins for testing</Label>
+    <Description>This file contains some logins for testing and works a a sample for developers.</Description>
+    <Owner>__USER_NAME__</Owner>
+    <Lastchange>2019-10-27T13:37:00</Lastchange>
+    <Status>string</Status>
+    <Project>string</Project>
+  </Metadata>
+
+  <CustomTexts>
+    <Text key="somestr">string</Text>
+  </CustomTexts>
+
+  <Group mode="hot" name="sample_group">
+    <Login name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
+      <Booklet codes="__TEST_PERSON_CODES__">BOOKLET.SAMPLE</Booklet>
+    </Login>
+  </Group>
+
+</Testtakers>

@@ -9,6 +9,7 @@ $app = new \Slim\App();
 $container = $app->getContainer();
 $container['code_directory'] = __DIR__.'/../vo_code';
 $container['data_directory'] = __DIR__.'/../vo_data';
+$container['conf_directory'] = __DIR__.'/../config';
 // use in Routes: $directory = $this->get('data_directory');
 
 // ##############################################################

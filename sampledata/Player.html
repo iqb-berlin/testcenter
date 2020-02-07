@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample Unit Player</title>
+    <link  rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/underscore@1.9.1/underscore-min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsonform@2.1.5/lib/jsonform.js"></script>
+    <script>
+
+        let sessionId = "";
+
+        const send = (messageType, data) => {
+
+            const messages = {
+
+                "ChangedDataTransfer": (values) => {
+                    return {
+                        type: 'vo.FromPlayer.ChangedDataTransfer',
+                        sessionId: sessionId,
+                        response: values,
+                        responseType: 'JSON',
+                        responseComplete: true,
+                        presentationComplete: 'yes',
+                        responsesGiven: 'all'
+                    }
+                },
+
+                "ReadyNotification": () => {
+                    return {
+                        type: 'vo.FromPlayer.ReadyNotification',
+                        version: 1
+                    }
+                },
+
+                "NavigationRequestedNotification": (target) => {
+                    return {
+                        type: 'vo.FromPlayer.NavigationRequestedNotification',
+                        sessionId: sessionId,
+                        navigationTarget: target,
+                    };
+                }
+            };
+
+            window.parent.postMessage(messages[messageType](data), '*')
+        };
+
+        const receive = (type, data) => {
+
+            const callbacks = {
+
+                "vo.ToPlayer.DataTransfer": (data) => {
+                    $('form').jsonForm({
+                        'schema': JSON.parse(data.unitDefinition),
+                        'onSubmit': (errors, values) => {
+                            if (errors) {
+                                alert('Something went wrong.');
+                            } else {
+                                send("ChangedDataTransfer", values);
+                                send("NavigationRequestedNotification", '#last');
+                            }
+                        }
+                    });
+                    sessionId = data.sessionId;
+                }
+            };
+
+            if (typeof callbacks[type] !== 'undefined') {
+                callbacks[type](data);
+            }
+        };
+
+        // listen to messages from parent frame
+        window.addEventListener('message', event => {receive(event.data.type, event.data);}, false);
+        // send ready notification if loaded
+        document.addEventListener("DOMContentLoaded", () => send("ReadyNotification"));
+    </script>
+</head>
+<body>
+
+<div style="margin: 10em;">
+    <div class="well">
+        <h1>This is a sample unit player</h1>
+        <p>... anyway usable: define some forms, using the schema of <a href='' target='_blank'>jsonforms</a> in your Unit."</p>
+        <form></form>
+    </div>
+</div>
+
+
+</body>
+</html>
