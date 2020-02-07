@@ -341,6 +341,7 @@ class WorkspaceController {
         return $extractedFiles;
     }
 
+
     private function _emptyAndDeleteFolder($folder) {
         if (file_exists($folder)) {
             $folderDir = opendir($folder);
@@ -358,6 +359,42 @@ class WorkspaceController {
                 rmdir($folder);
             }
         }
+    }
+
+
+    function getBookletName($bookletId) {
+
+        $bookletName = '';
+
+        $lookupFolder = $this->_workspacePath . '/Booklet';
+        if (file_exists($lookupFolder)) {
+            throw new Exception("Folder does not exists: `$lookupFolder`");
+        }
+
+        $lookupDir = opendir($lookupFolder);
+        if ($lookupDir === false) {
+            throw new Exception("Could not open: `$lookupFolder`");
+        }
+
+        while (($entry = readdir($lookupDir)) !== false) {
+            $fullFileName = $lookupFolder . '/' . $entry;
+            if (is_file($fullFileName) && (strtoupper(substr($entry, -4)) == '.XML')) {
+
+                $xFile = new XMLFile($fullFileName);
+
+                if ($xFile->isValid()) {
+                    if ($xFile->getRoottagName()  == 'Booklet') {
+                        $myBookletId = $xFile->getId();
+                        if ($myBookletId === $bookletId) {
+                            $bookletName = $xFile->getLabel();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $bookletName;
     }
 
 }
