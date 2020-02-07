@@ -212,7 +212,7 @@ $app->group('/workspace', function(App $app) {
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
     });
 
-})->add(new IsWorkspacePermitted())->add(new NormalAuth());
+})->add(new NormalAuth())->add(new IsWorkspacePermitted());
 
 $app->group('/workspace', function(App $app) {
 
@@ -269,4 +269,4 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($dbConnectionSuperAdmin->getUsersByWorkspace($workspaceId));
     });
 
-})->add(new NormalAuth());
+})->add(new NormalAuth()); // TODO check if user is superadmin!

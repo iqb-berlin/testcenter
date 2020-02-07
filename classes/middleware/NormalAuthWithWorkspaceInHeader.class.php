@@ -27,11 +27,12 @@ class NormalAuthWithWorkspaceInHeader {
                                     $errormessage = 'access denied for ws_' . $workspaceId . ' as ' . print_r($role,1);
                                     if (($req->isPost() && ($role == 'RW')) || ($req->isGet() && ($role != ''))) {
                                         $errorCode = 0;
-                                        $_SESSION['adminToken'] = $adminToken;
-                                        $_SESSION['workspace'] = $workspaceId;
-                                        $_SESSION['workspaceDirName'] = realpath(ROOT_DIR . "/vo_data/ws_$workspaceId");
-                                        if (!file_exists($_SESSION['workspaceDirName'])) { // TODO I moved this to auth token check - is that OK
-                                            throw new HttpNotFoundException($req, "Workspace {$_SESSION['workspaceDirName']} not found");
+                                        $authToken = new AdminAuthToken($adminToken, $dbConnection->isSuperAdmin($adminToken));
+                                        $req->withAttribute('AuthToken', $authToken);
+                                        $_SESSION['workspace'] = $workspaceId; // for deprecated endpoints
+                                        $workspaceDirName = realpath(ROOT_DIR . "/vo_data/ws_$workspaceId");
+                                        if (!file_exists($workspaceDirName)) { // TODO I moved this to auth token check - is that OK
+                                            throw new HttpNotFoundException($req, "Workspace `{$workspaceDirName}` not found");
                                         }
                                     }
 

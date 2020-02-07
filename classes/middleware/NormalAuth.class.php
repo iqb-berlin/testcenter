@@ -9,7 +9,6 @@ class NormalAuth {
 
         if ($req->isOptions()) return $next($req, $res);
 
-        $responseStatus = 401;
         $errormessage = 'Auth-Header not sufficient';
         if ($req->hasHeader('Accept')) {
             if ($req->hasHeader('AuthToken')) {
@@ -20,21 +19,15 @@ class NormalAuth {
 
                     $myDBConnection = new DBConnection();
 
-                    if ($myDBConnection->isSuperAdmin($adminToken)) {
-                        $responseStatus = 0;
-                        $_SESSION['adminToken'] = $adminToken;
-                    }
+                    $authToken = new AdminAuthToken($adminToken, $myDBConnection->isSuperAdmin($adminToken));
+                    $req->withAttribute('AuthToken', $authToken);
+                    return $next($req, $res);
                 }
 
             }
-            session_write_close();
         }
 
-        if ($responseStatus === 0) {
-            return $next($req, $res);
-        }
-
-        return $res->withStatus($responseStatus)
+        return $res->withStatus(401)
             ->withHeader('Content-Type', 'text/html')
             ->write($errormessage);
 

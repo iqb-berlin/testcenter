@@ -24,11 +24,12 @@ class IsWorkspacePermitted {
             throw new HttpBadRequestException($request, "No valid workspace: {$params['ws_id']}");
         }
 
-        $adminToken = $_SESSION['adminToken'];
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
 
         $dbConnectionAdmin = new DBConnectionAdmin();
 
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($adminToken, $params['ws_id'])) {
+        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($authToken->getToken(), $params['ws_id'])) {
             throw new HttpForbiddenException($request,"Access to workspace ws_{$params['ws_id']} is not provided.");
         }
 
