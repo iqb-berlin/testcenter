@@ -9,12 +9,19 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 
+$app->get('/', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+
+    return $response->withJson(array('version' => Version::get()));
+});
+
+
 $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
     $workspaces = $dbConnectionSuperAdmin->getWorkspaces();
     return $response->withJson($workspaces);
 })->add(new NormalAuth());;
+
 
 $app->delete('/workspaces', function (Request $request, Response $response) {
 
@@ -31,12 +38,14 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     return $response;
 })->add(new NormalAuth());
 
+
 $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
 
     return $response->withJson($dbConnectionSuperAdmin->getUsers());
 })->add(new NormalAuth());
+
 
 $app->delete('/users', function(Request $request, Response $response) {
 
@@ -62,32 +71,32 @@ $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspectio
     return $response->withJson($routes);
 });
 
+
 $app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
-    $routesRegistred = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
+    $routesRegistered = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
         foreach ($route->getMethods() as $method) {
             $target[] = "[$method] " . $route->getPattern();
         }
         return $target;
     }, []);
 
-    $specs = SpecCollector::collectSpecs(__DIR__);
-    $routes = SpecCollector::collectRoutes(__DIR__);
-
+    $specs = SpecCollector::collectSpecs(ROOT_DIR . '/routes');
+    $routes = SpecCollector::collectRoutes(ROOT_DIR . '/routes');
 
     $status = array();
 
-    $allroutes = array_unique(array_merge(array_keys($specs), array_keys($routes), $routesRegistred));
-    sort($allroutes);
+    $allRoutes = array_unique(array_merge(array_keys($specs), array_keys($routes), $routesRegistered));
+    sort($allRoutes);
 
-    foreach ($allroutes as $route) {
+    foreach ($allRoutes as $route) {
         $status[$route] = array(
             "spec" => isset($specs[$route]) ? $specs[$route] : "(spec missing)",
             "code" => isset($routes[$route]) ? $routes[$route] : "(code missing)"
         );
     }
 
-    return $response->withJson(array('status'=>$status, 'specs'=>$routesRegistred));
+    return $response->withJson(array('status'=>$status, 'specs'=>$routesRegistered));
 });
 
 

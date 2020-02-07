@@ -1,10 +1,10 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
-require_once "admin/classes/exception/HttpError.class.php";
-require_once "admin/classes/dao/DBConfig.class.php";
-require_once "admin/classes/dao/DBConnection.class.php";
-require_once "admin/classes/dao/DBConnectionAdmin.class.php";
+require_once "classes/exception/HttpError.class.php";
+require_once "classes/dao/DBConfig.class.php";
+require_once "classes/dao/DBConnection.class.php";
+require_once "classes/dao/DBConnectionAdmin.class.php";
 
 class DBConnectionAdminTest extends TestCase {
 

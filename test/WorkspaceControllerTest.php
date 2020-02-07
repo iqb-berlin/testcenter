@@ -3,12 +3,12 @@
 
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
-require_once "admin/classes/workspace/WorkspaceInitializer.class.php";
-require_once "admin/classes/workspace/WorkspaceController.class.php";
-require_once "admin/classes/files/XMLFile.php";
-require_once "admin/classes/helper/FileSize.class.php";
-require_once "admin/classes/files/ResourceFile.class.php";
-require_once "admin/classes/files/XMLFileTesttakers.php";
+require_once "classes/workspace/WorkspaceInitializer.class.php";
+require_once "classes/workspace/WorkspaceController.class.php";
+require_once "classes/files/XMLFile.php";
+require_once "classes/helper/FileSize.class.php";
+require_once "classes/files/ResourceFile.class.php";
+require_once "classes/files/XMLFileTesttakers.php";
 
 
 class WorkspaceControllerTest extends TestCase {

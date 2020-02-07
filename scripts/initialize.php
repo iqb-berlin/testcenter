@@ -23,7 +23,7 @@
 
 include('index.php');
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
-require_once(realpath(dirname(__FILE__)) . '/../admin/autoload.php');
+require_once(realpath(dirname(__FILE__)) . '/../autoload.php');
 
 $args = getopt("", array(
     'user_name:',

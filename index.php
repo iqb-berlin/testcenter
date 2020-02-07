@@ -5,7 +5,7 @@ use Slim\Container;
 
 try {
 
-    define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
+    define('ROOT_DIR', dirname(__FILE__));
 
     require_once ROOT_DIR . "/vendor/autoload.php";
     require_once "autoload.php";
@@ -31,6 +31,8 @@ try {
     include_once 'routes/workspace_deprecated.php';
     include_once 'routes/system_deprecated.php';
 
+    include_once 'routes/php_tc_deprecated.php';
+
     $app->run();
 
 } catch (Throwable $e) {
@@ -39,5 +41,4 @@ try {
     http_response_code(500);
     error_log('Fatal error:' . $e->getMessage());
     echo "Fatal error: " . $e->getMessage();
-
 }

@@ -10,7 +10,6 @@ const YAML = require('yamljs');
 // globals
 
 const apiUrl = process.env.TC_API_URL || 'http://localhost';
-const apiSubfolder = 'admin'; // to be removed if APIs are merged
 
 // helper functions
 
@@ -40,13 +39,11 @@ const shellExec = (command, params = []) => {
 
 gulp.task('start', done => {
 
-    const endpoint = apiUrl + '/' + apiSubfolder;
-
-    if (!endpoint) {
-        done(getError("no endpoint given"));
+    if (!apiUrl) {
+        done(getError("No API Url given!"));
     }
 
-    printHeadline(`Running Dredd tests against API: ${endpoint}`);
+    printHeadline(`Running Dredd tests against API: ${apiUrl}`);
     done();
 });
 
@@ -62,17 +59,17 @@ gulp.task('compile_spec_files', function() {
 
     printHeadline(`compile spec files to one`);
 
-    return gulp.src(`../${apiSubfolder}/routes/*.spec.yml`)
+    return gulp.src(`../routes/*.spec.yml`)
         .on("data", function(d) { console.log("File: " + d.path);})
         .on("error", function(e) { console.warn(e);})
-        .pipe(yamlMerge(apiSubfolder + '.compiled.specs.yml'))
+        .pipe(yamlMerge('compiled.specs.yml'))
         .pipe(gulp.dest('./tmp/'));
 });
 
 gulp.task('prepare_spec_for_dredd', done => {
 
-    const compiledFileName = 'tmp/' + apiSubfolder + '.compiled.specs.yml';
-    const targetFileName = 'tmp/' + apiSubfolder + '.transformed.specs.yml';
+    const compiledFileName = 'tmp/compiled.specs.yml';
+    const targetFileName = 'tmp/transformed.specs.yml';
 
     printHeadline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
 
@@ -113,12 +110,12 @@ gulp.task('prepare_spec_for_dredd', done => {
 
 gulp.task('run_dredd', done => {
 
-    printHeadline(`run dredd against ${apiUrl + '/' + apiSubfolder}`);
+    printHeadline(`run dredd against ${apiUrl}`);
 
-    const dreddFileName = 'tmp/' + apiSubfolder + '.transformed.specs.yml';
+    const dreddFileName = 'tmp/transformed.specs.yml';
 
     new Dredd({
-        endpoint: apiUrl + '/' + apiSubfolder,
+        endpoint: apiUrl,
         path: [dreddFileName],
         hookfiles: ['dredd-hooks.js'],
         output: [`tmp/report.${dreddFileName}.html`],
@@ -178,7 +175,7 @@ gulp.task('update_docs', done => {
 
     printHeadline('copy compiled spec and redoc lib to docs folder');
 
-    const compiledFileName = 'tmp/' + apiSubfolder + '.compiled.specs.yml';
+    const compiledFileName = 'tmp/compiled.specs.yml';
     const targetFileName = '../docs/api_doc_files/specs.yml';
     const yamlString = fs.readFileSync(compiledFileName, "utf8");
     const yamlTree = YAML.parse(yamlString);

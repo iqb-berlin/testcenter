@@ -31,8 +31,6 @@ class SpecCollector {
 
     static function collectRoutes($dir) {
 
-        $routes = array();
-
         foreach (glob($dir . '/*.php') as $file) {
             $fp = fopen($file, "r+");
             $currentGroup = "";
@@ -44,15 +42,10 @@ class SpecCollector {
                         $route = '[' . strtoupper($matches[1]) . '] ' . $currentGroup . $matches[2];
                         $routes[$route] = $file;
                     }
-
                 }
-
             }
             fclose($fp);
-
         }
         return $routes;
     }
-
-
 }

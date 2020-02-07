@@ -1,8 +1,8 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
-require_once "admin/classes/dao/DBConfig.class.php";
-require_once "admin/classes/dao/DBConnection.class.php";
+require_once "classes/dao/DBConfig.class.php";
+require_once "classes/dao/DBConnection.class.php";
 
 
 class DBConnectionTest extends TestCase {
