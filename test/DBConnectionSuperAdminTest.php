@@ -3,8 +3,8 @@
 use PHPUnit\Framework\TestCase;
 require_once "admin/classes/exception/HttpError.class.php";
 require_once "admin/classes/dao/DBConfig.class.php";
-require_once "admin/classes/dao/DBConnection.php";
-require_once "admin/classes/dao/DBConnectionSuperAdmin.php";
+require_once "admin/classes/dao/DBConnection.class.php";
+require_once "admin/classes/dao/DBConnectionSuperAdmin.class.php";
 
 
 class DBConnectionSuperAdminTest extends TestCase {

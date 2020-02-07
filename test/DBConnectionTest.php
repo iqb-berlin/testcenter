@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 require_once "admin/classes/dao/DBConfig.class.php";
-require_once "admin/classes/dao/DBConnection.php";
+require_once "admin/classes/dao/DBConnection.class.php";
 
 
 class DBConnectionTest extends TestCase {
