@@ -52,7 +52,7 @@ before_script:
 
 script:
   # run tests #
-  - vendor/bin/phpunit test
+  - vendor/bin/phpunit/. test
   - export TC_API_URL=http://localhost
   - npm --prefix=integration run dredd_test
 
