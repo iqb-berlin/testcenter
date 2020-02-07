@@ -212,4 +212,15 @@ class WorkspaceControllerTest extends TestCase {
 
     }
 
+
+    function test_getBookletName() {
+
+        $result = $this->workspaceController->getBookletName('BOOKLET.SAMPLE');
+        $expectation = 'Sample booklet';
+        $this->assertEquals($expectation, $result);
+
+        $result = $this->workspaceController->getBookletName('inexistent.BOOKLET');
+        $expectation = '';
+        $this->assertEquals($expectation, $result);
+    }
 }

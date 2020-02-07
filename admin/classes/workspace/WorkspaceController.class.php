@@ -362,12 +362,12 @@ class WorkspaceController {
     }
 
 
-    function getBookletName($bookletId) {
+    function getBookletName(string $bookletId): string {
 
         $bookletName = '';
 
         $lookupFolder = $this->_workspacePath . '/Booklet';
-        if (file_exists($lookupFolder)) {
+        if (!file_exists($lookupFolder)) {
             throw new Exception("Folder does not exists: `$lookupFolder`");
         }
 
@@ -377,15 +377,21 @@ class WorkspaceController {
         }
 
         while (($entry = readdir($lookupDir)) !== false) {
+
             $fullFileName = $lookupFolder . '/' . $entry;
+
             if (is_file($fullFileName) && (strtoupper(substr($entry, -4)) == '.XML')) {
 
                 $xFile = new XMLFile($fullFileName);
 
                 if ($xFile->isValid()) {
+
                     if ($xFile->getRoottagName()  == 'Booklet') {
+
                         $myBookletId = $xFile->getId();
+
                         if ($myBookletId === $bookletId) {
+
                             $bookletName = $xFile->getLabel();
                             break;
                         }
