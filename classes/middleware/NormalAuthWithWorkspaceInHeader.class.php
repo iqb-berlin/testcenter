@@ -16,7 +16,7 @@ class NormalAuthWithWorkspaceInHeader {
             if ($req->hasHeader('Accept')) {
                 if ($req->hasHeader('AuthToken')) {
                     try {
-                        $authToken = json_decode($req->getHeaderLine('AuthToken'));
+                        $authToken = JSON::decode($req->getHeaderLine('AuthToken'));
                         $adminToken = $authToken->at;
                         if (strlen($adminToken) > 0) {
                             $workspaceId = $authToken->ws;

@@ -27,7 +27,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $app->post('/user/pw', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app, $dbConnection) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $user = $dbConnection->getUserByName($requestBody->n);
 
         if (!$user) {
@@ -64,7 +64,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $app->post('/user/workspaces', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app, $dbConnection) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $user = $dbConnection->getUserByName($requestBody->u);
 
         $response = $app->subRequest(

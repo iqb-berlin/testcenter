@@ -27,7 +27,7 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
         $loginToken = '';
         $bookletDbId = 0;
         if ($req->hasHeader('AuthToken')) {
-            $authToken = json_decode($req->getHeaderLine('AuthToken'));
+            $authToken = JSON::decode($req->getHeaderLine('AuthToken'));
             $personToken = $authToken->p;
             $loginToken = $authToken->l;
             $bookletDbId = $authToken->b;

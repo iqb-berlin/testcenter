@@ -113,7 +113,7 @@ class DBConnectionTC extends DBConnection {
 
                 $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
                 if ($bookletdata !== false) {
-                    $myreturn = json_decode($bookletdata['laststate'], true);
+                    $myreturn = JSON::decode($bookletdata['laststate'], true);
                 }
             }
         }
@@ -160,7 +160,7 @@ class DBConnectionTC extends DBConnection {
                 $state = [];
                 if (isset($stateStr)) {
                     if(strlen($stateStr) > 0) {
-                        $state = json_decode($stateStr, true);
+                        $state = JSON::decode($stateStr, true);
                     }
                 }
                 $state[$stateKey] = $stateValue;
@@ -199,7 +199,7 @@ class DBConnectionTC extends DBConnection {
                 $state = [];
                 if (isset($stateStr)) {
                     if(strlen($stateStr) > 0) {
-                        $state = json_decode($stateStr, true);
+                        $state = JSON::decode($stateStr, true);
                     }
                 }
                 $state[$stateKey] = $stateValue;
@@ -256,7 +256,7 @@ class DBConnectionTC extends DBConnection {
                 
                 $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
                 if ($unitdata !== false) {
-                    $myreturn = json_decode($unitdata['laststate'], true);
+                    $myreturn = JSON::decode($unitdata['laststate'], true);
                 }
             }
         }

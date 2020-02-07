@@ -150,7 +150,7 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
 
         $workspaceController = new WorkspaceController($workspaceId);
@@ -184,7 +184,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->post('/{ws_id}/unlock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = (isset($requestBody->groups)) ? $requestBody->groups : [];
         $workspaceId = $request->getAttribute('ws_id');
 
@@ -200,7 +200,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->post('/{ws_id}/lock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = (isset($requestBody->groups)) ? $requestBody->groups : [];
         $workspaceId = $request->getAttribute('ws_id');
 
@@ -220,7 +220,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->put('', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         if (!isset($requestBody->name)) { // TODO I made them required. is that okay?
             throw new HttpBadRequestException($request, "New workspace name missing");
         }
@@ -234,7 +234,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->patch('/{ws_id}', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $workspaceId = $request->getAttribute('ws_id');
 
         if (!isset($requestBody->name) or (!$requestBody->name)) {
@@ -250,7 +250,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->patch('/{ws_id}/users', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $workspaceId = $request->getAttribute('ws_id');
 
         if (!isset($requestBody->u) or (!count($requestBody->u))) {

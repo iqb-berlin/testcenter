@@ -26,7 +26,7 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
 $app->delete('/workspaces', function (Request $request, Response $response) {
 
     $dbConnection = new DBConnectionSuperAdmin();
-    $bodyData = json_decode($request->getBody());
+    $bodyData = JSON::decode($request->getBody());
     $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
 
     if (!is_array($workspaceList)) {
@@ -50,7 +50,7 @@ $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ R
 $app->delete('/users', function(Request $request, Response $response) {
 
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
-    $bodyData = json_decode($request->getBody());
+    $bodyData = JSON::decode($request->getBody());
     $userList = isset($bodyData->u) ? $bodyData->u : [];
 
     $dbConnectionSuperAdmin->deleteUsers($userList);
@@ -110,7 +110,7 @@ $app->post('/login', function(Request $request, Response $response) use ($app) {
 
     $dbConnection = new DBConnectionAdmin();
 
-    $requestBody = json_decode($request->getBody());
+    $requestBody = JSON::decode($request->getBody());
 
     if (isset($requestBody->n) and isset($requestBody->p)) {
         $token = $dbConnection->login($requestBody->n, $requestBody->p);

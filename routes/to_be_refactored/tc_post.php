@@ -24,7 +24,7 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
             $bookletDbId = 0;
             if ($req->hasHeader('AuthToken')) {
                 try {
-                    $authToken = json_decode($req->getHeaderLine('AuthToken'));
+                    $authToken = JSON::decode($req->getHeaderLine('AuthToken'));
                     $loginToken = $authToken->l;
                     if (strlen($loginToken) > 0) {
                         $personToken = $authToken->p;
@@ -81,7 +81,7 @@ $app->post('/review', function (ServerRequestInterface $request, ResponseInterfa
     try {
         $myerrorcode = 500;
         $bookletDbId = $_SESSION['bookletDbId'];
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 		$unit = isset($bodydata->u) ? $bodydata->u : '';
         $prio = isset($bodydata->p) ? $bodydata->p : '';
         $cat = isset($bodydata->c) ? $bodydata->c : '';
@@ -126,7 +126,7 @@ $app->post('/review', function (ServerRequestInterface $request, ResponseInterfa
 $app->post('/response', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 
         $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
         $unitDbKey = isset($bodydata->u) ? $bodydata->u : '';
@@ -168,7 +168,7 @@ $app->post('/response', function (ServerRequestInterface $request, ResponseInter
 $app->post('/restorepoint', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 
         $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
         $unitDbKey = isset($bodydata->u) ? $bodydata->u : '';
@@ -209,7 +209,7 @@ $app->post('/restorepoint', function (ServerRequestInterface $request, ResponseI
 $app->post('/state', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 
         $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
         if ($bookletDbId === 0) {
@@ -257,7 +257,7 @@ $app->post('/state', function (ServerRequestInterface $request, ResponseInterfac
 $app->post('/log', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 
         $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
         if ($bookletDbId === 0) {
@@ -305,7 +305,7 @@ $app->post('/log', function (ServerRequestInterface $request, ResponseInterface 
 $app->post('/lock', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 
         $bookletDbId = isset($bodydata->b) ? $bodydata->b : 0;
         if ($bookletDbId === 0) {

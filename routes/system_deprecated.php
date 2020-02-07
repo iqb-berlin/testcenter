@@ -22,7 +22,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $app->post('/workspace/add', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $name = isset($requestBody->n) ? $requestBody->n : "";
 
         $response = $app->subRequest(
@@ -39,7 +39,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $app->post('/workspace/rename', function (Request $request, Response $response) use ($app) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $name = isset($requestBody->n) ? $requestBody->n : '';
         $workspaceId = isset($requestBody->ws) ? $requestBody->ws : '';
 
@@ -61,7 +61,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $app->post('/workspaces/delete', function (Request $request,  /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $workspaceList = isset($requestBody->ws) ? $requestBody->ws : []; // TODO is it clever to allow emptyness?
 
         $response = $app->subRequest(
@@ -79,7 +79,7 @@ $app->group('/php/sys.php', function(App $app) {
 
     $app->post('/workspace/users', function (Request $request,  Response $response) use ($app) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $workspaceId = isset($requestBody->ws) ? $requestBody->ws : '';
 
         if (!$workspaceId) {

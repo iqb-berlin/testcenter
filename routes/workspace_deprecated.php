@@ -13,7 +13,7 @@ $app->group('/php', function(App $app) {
     $app->post('/getReviews.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = isset($requestBody->g) ? $requestBody->g : [];
 
         $response = $app->subRequest('GET', "/workspace/$workspaceId/reviews", 'groups=' . implode(',', $groups), $request->getHeaders());
@@ -33,7 +33,7 @@ $app->group('/php', function(App $app) {
     $app->post('/getResponses.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = isset($requestBody->g) ? $requestBody->g : [];
 
         $response = $app->subRequest('GET', "/workspace/$workspaceId/responses", 'groups=' . implode(',', $groups), $request->getHeaders());
@@ -53,7 +53,7 @@ $app->group('/php', function(App $app) {
     $app->post('/getLogs.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = isset($requestBody->g) ? $requestBody->g : [];
 
         $response = $app->subRequest('GET', "/workspace/$workspaceId/logs", 'groups=' . implode(',', $groups), $request->getHeaders());
@@ -64,7 +64,7 @@ $app->group('/php', function(App $app) {
     $app->post('/getBookletsStarted.php', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $res) use ($app) {
 
         $workspaceId = $_SESSION['workspace'];
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = isset($requestBody->g) ? $requestBody->g : [];
 
         $response = $app->subRequest('GET', "/workspace/$workspaceId/booklets/started", 'groups=' . implode(',', $groups), $request->getHeaders());
@@ -103,7 +103,7 @@ $app->group('/php', function(App $app) {
 
         $workspaceId = $_SESSION['workspace'];
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
         $filesToDelete = array_map(function($fileAndFolderName) {
             return str_replace('::', '/', $fileAndFolderName);
@@ -124,7 +124,7 @@ $app->group('/php', function(App $app) {
 
     $app->post('/ws.php/unlock', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = isset($requestBody->g) ? $requestBody->g : [];
 
         $response = $app->subRequest(
@@ -142,7 +142,7 @@ $app->group('/php', function(App $app) {
 
     $app->post('/ws.php/lock', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $groups = isset($requestBody->g) ? $requestBody->g : [];
 
         $response = $app->subRequest(

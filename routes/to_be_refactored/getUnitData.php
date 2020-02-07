@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	if (!$myDBConnection->isError()) {
 		$myerrorcode = 401;
 
-		$data = json_decode(file_get_contents('php://input'), true);
+		$data = JSON::decode(file_get_contents('php://input'), true);
 		$auth = $data["au"];
 		$unitName = $data["u"];
 

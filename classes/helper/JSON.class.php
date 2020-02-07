@@ -3,9 +3,9 @@
 
 class JSON {
 
-    static function decode(string $json) {
+    static function decode(string $json, bool $assoc = false) {
 
-        $decoded = json_decode($json);
+        $decoded = json_decode($json, $assoc,512, JSON_UNESCAPED_UNICODE);
 
         switch (json_last_error()) {
             case JSON_ERROR_NONE:

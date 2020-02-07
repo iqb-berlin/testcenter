@@ -11,7 +11,7 @@ $app->add(function (ServerRequestInterface $req, ResponseInterface $res, $next) 
         $loginToken = '';
         $bookletDbId = 0;
         if ($req->hasHeader('AuthToken')) {
-            $authToken = json_decode($req->getHeaderLine('AuthToken'));
+            $authToken = JSON::decode($req->getHeaderLine('AuthToken'));
             $personToken = $authToken->p;
             $loginToken = $authToken->l;
             $bookletDbId = $authToken->b;
@@ -47,7 +47,7 @@ $container['conf_directory'] = __DIR__ . '/../config';
 $app->post('/login', function (ServerRequestInterface $request, ResponseInterface $response) {
     try {
         $myerrorcode = 500;
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 		$loginName = isset($bodydata->n) ? $bodydata->n : '';
         $loginPassword = isset($bodydata->p) ? $bodydata->p : '';
         // do not take the AuthHeader-Data!
@@ -254,7 +254,7 @@ $app->get('/sysconfig', function (ServerRequestInterface $request, ResponseInter
 
         $sysConfigFilename = $this->get('conf_directory') . '/SysConfig.json';
         if (file_exists($sysConfigFilename)) {
-            $myreturn = json_decode(file_get_contents($sysConfigFilename));
+            $myreturn = JSON::decode(file_get_contents($sysConfigFilename));
             $myerrorcode = 0;
         }
 
@@ -285,7 +285,7 @@ $app->post('/startbooklet', function (ServerRequestInterface $request, ResponseI
         $loginToken = $_SESSION['loginToken'];
         $personToken = $_SESSION['personToken'];
 
-        $bodydata = json_decode($request->getBody());
+        $bodydata = JSON::decode($request->getBody());
 		$code = isset($bodydata->c) ? $bodydata->c : '';
         $bookletLabel = isset($bodydata->bl) ? $bodydata->bl : 'Testheft??';
         $bookletid = isset($bodydata->b) ? $bodydata->b : '';

@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		'ratings' => []
 	];
 
-	$data = json_decode(file_get_contents('php://input'), true);
+	$data = JSON::decode(file_get_contents('php://input'), true);
 	$configFileNameCoded = $data["c"];
 
 	if (isset($configFileNameCoded)) {

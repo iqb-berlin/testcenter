@@ -78,7 +78,7 @@ class DBConnectionStart extends DBConnection {
 
 				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($logindata !== false) {
-                    $myreturn['booklets'] = json_decode($logindata['booklet_def'], true);
+                    $myreturn['booklets'] = JSON::decode($logindata['booklet_def'], true);
                     $myreturn['workspaceName'] = $logindata['wname'];
                     $myreturn['loginname'] = $logindata['lname'];
                     $myreturn['groupname'] = $logindata['groupname'];
@@ -109,7 +109,7 @@ class DBConnectionStart extends DBConnection {
 
 				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
 				if ($logindata !== false) {
-                    $myreturn['booklets'] = json_decode($logindata['booklet_def'], true);
+                    $myreturn['booklets'] = JSON::decode($logindata['booklet_def'], true);
                     $myreturn['workspaceName'] = $logindata['wname'];
                     $myreturn['loginname'] = $logindata['lname'];
                     $myreturn['logintoken'] = $logindata['logintoken'];
@@ -158,7 +158,7 @@ class DBConnectionStart extends DBConnection {
                         $myreturn['statusLabel'] = 'Zum Starten hier klicken';
                         $myreturn['label'] = $bookletdata['label'];
                         $myreturn['id'] = $bookletDbId;
-                        $myreturn['laststate'] = json_decode($bookletdata['laststate'], true);
+                        $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
 
                         if ($bookletdata['locked'] == '1') {
                             $myreturn['canStart'] = false;
@@ -182,7 +182,7 @@ class DBConnectionStart extends DBConnection {
     
                     $logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
                     if ($logindata !== false) {
-                        $myBooklets = json_decode($logindata['booklet_def'], true);
+                        $myBooklets = JSON::decode($logindata['booklet_def'], true);
                         $code = $logindata['code'];
                         $personId = $logindata['id'];
     
@@ -215,7 +215,7 @@ class DBConnectionStart extends DBConnection {
                                     if ($bookletdata !== false) {
                                         $myreturn['label'] = $bookletdata['label'];
                                         $myreturn['id'] = $bookletdata['id'];
-                                        $myreturn['laststate'] = json_decode($bookletdata['laststate'], true);
+                                        $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
 
                                         if ($bookletdata['locked'] == '1') {
                                             $myreturn['canStart'] = false;
@@ -241,7 +241,7 @@ class DBConnectionStart extends DBConnection {
     
                     $logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
                     if ($logindata !== false) {
-                        $myBookletData = json_decode($logindata['booklet_def'], true);
+                        $myBookletData = JSON::decode($logindata['booklet_def'], true);
                         if (isset($myBookletData[$code])) {
                             if (in_array($bookletid, $myBookletData[$code])) {
                                 $myreturn = [
@@ -276,7 +276,7 @@ class DBConnectionStart extends DBConnection {
                                             if ($bookletdata !== false) {
                                                 $myreturn['label'] = $bookletdata['label'];
                                                 $myreturn['id'] = $bookletdata['id'];
-                                                $myreturn['laststate'] = json_decode($bookletdata['laststate'], true);
+                                                $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
 
                                                 if ($bookletdata['locked'] == '1') {
                                                     $myreturn['canStart'] = false;

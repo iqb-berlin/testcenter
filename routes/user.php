@@ -20,7 +20,7 @@ $app->group('/user', function(App $app) {
 
     $app->patch('/{user_id}/workspaces', function(Request $request, Response $response) use ($dbConnection) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $userId = $request->getAttribute('user_id');
 
         if (!isset($requestBody->ws) or (!count($requestBody->ws))) {
@@ -35,7 +35,7 @@ $app->group('/user', function(App $app) {
 
     $app->put('', function(Request $request, Response $response) use ($dbConnection) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         if (!isset($requestBody->p) or !isset($requestBody->n)) {
             throw new HttpBadRequestException($request, "Username or Password missing");
         }
@@ -48,7 +48,7 @@ $app->group('/user', function(App $app) {
 
     $app->patch('/{user_id}/password', function(Request $request, Response $response) use ($dbConnection) {
 
-        $requestBody = json_decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody());
         $userId = $request->getAttribute('user_id');
 
         if (!isset($requestBody->p)) {
