@@ -148,8 +148,6 @@ class WorkspaceControllerTest extends TestCase {
 
     function test_assemblePreparedBookletsFromFiles() {
 
-//        echo file_get_contents(vfsStream::url('root/vo_data/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML'));
-
         $result = $this->workspaceController->assemblePreparedBookletsFromFiles();
 
         $this->assertArrayHasKey('sample_group', $result);
@@ -212,11 +210,5 @@ class WorkspaceControllerTest extends TestCase {
         $this->assertEquals(1, $result[0]['bookletsLocked']);
 
     }
-
-
-
-
-
-
-
-    }
+    
+}
