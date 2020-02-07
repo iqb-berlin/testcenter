@@ -31,12 +31,14 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            properties:
-              version:
-                type: string
-          example:
-            version: "2.0.0-beta"
+          content:
+            application/json:
+              schema:
+                properties:
+                  version:
+                    type: string
+              example:
+                version: "2.0.0-beta"
 
   /login:
     post:
