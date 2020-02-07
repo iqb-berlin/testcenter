@@ -48,6 +48,7 @@ before_script:
   - sudo curl http://localhost/admin/test.php >> test-result
   - cat test-result
   - cat /home/travis/build/iqb-berlin/testcenter-iqb-php/apache-error.log
+  - vendor/bin/phpunit --version
 
 script:
   # run tests #
