@@ -83,20 +83,14 @@ vendor/bin/phpunit test
 ```
 
 # Dev
-## Refactoring workflow
-* repeat until no error
-  - develop spec
-  - `npm run --prefix integration compare_spec_wth_v1`
-* commit
-* refactor (in v2)
-* repeat until no error
-  - refactor v2 (of sepc if changes were desired) 
-  - `npm run --prefix integration compare_spec_wth_v2`
-* `npm run --prefix integration create_docs`
-* commit
-* next endpoint  
-=======
-* web server, for Example apache2 (with mod_rewrite and header extension)
-* php > 7.0 (with pdo_extension)
-* mysql or postgresql
+## Coding Standards
+
+Mainly following [PSR-12](https://www.php-fig.org/psr/psr-12/)
+
+Most important:
+* Class names MUST be declared in StudlyCaps ([PSR-1](https://www.php-fig.org/psr/psr-1/))
+* Method names MUST be declared in camelCase ([PSR-1](https://www.php-fig.org/psr/psr-1/))
+* Class constants MUST be declared in all upper case with underscore separators. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
+* Files MUST use only UTF-8 without BOM for PHP code. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
+* Files SHOULD either declare symbols (classes, functions, constants, etc.) or cause side-effects (e.g. generate output, change .ini settings, etc.) but SHOULD NOT do both. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 
