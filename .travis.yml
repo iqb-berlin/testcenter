@@ -36,7 +36,7 @@ before_install:
   - cat /etc/apache2/sites-available/000-default.conf
 
 install:
-  - composer install
+  - composer install --dev
   - cd integration
   - npm install
   - cd ..
