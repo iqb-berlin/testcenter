@@ -37,7 +37,7 @@ class ResourceFile {
     }
 
     public function getFileSizeString() {
-        return FileFactory::filesizeAsString($this->size);
+        return FileSize::asString($this->size);
     }
 
     public function getIsXml() {

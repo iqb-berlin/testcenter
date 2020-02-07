@@ -6,8 +6,8 @@ use org\bovigo\vfs\vfsStream;
 require_once "admin/classes/workspace/WorkspaceInitializer.class.php";
 require_once "admin/classes/workspace/WorkspaceController.class.php";
 require_once "admin/classes/files/XMLFile.php";
+require_once "admin/classes/helper/FileSize.class.php";
 require_once "admin/classes/files/ResourceFile.class.php";
-require_once "admin/classes/files/FileFactory.class.php";
 require_once "admin/classes/files/XMLFileTesttakers.php";
 
 
