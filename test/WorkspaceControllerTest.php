@@ -210,5 +210,5 @@ class WorkspaceControllerTest extends TestCase {
         $this->assertEquals(1, $result[0]['bookletsLocked']);
 
     }
-    
+
 }
