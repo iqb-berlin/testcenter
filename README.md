@@ -85,7 +85,10 @@ vendor/bin/phpunit test
 # Dev
 ## Coding Standards
 
-Mainly following [PSR-12](https://www.php-fig.org/psr/psr-12/)
+Following [PSR-12](https://www.php-fig.org/psr/psr-12/)
+
+Exceptions:
+* private and protected class methods are prefixed with underscore to make it more visible that they are helper methods.  
 
 Most important:
 * Class names MUST be declared in StudlyCaps ([PSR-1](https://www.php-fig.org/psr/psr-1/))

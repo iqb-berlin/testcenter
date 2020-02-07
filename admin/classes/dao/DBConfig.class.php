@@ -1,6 +1,6 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
-// new DBConnection(DBConfig::fromFile())
+// TODO unit test
 
 class DBConfig {
 

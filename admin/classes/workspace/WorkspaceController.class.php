@@ -1,18 +1,13 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
-
 class WorkspaceController {
 
     protected $_workspaceId = 0;
     protected $_workspacePath = '';
     protected $_dataPath = '';
 
-    /**
-     * WorkspaceController constructor.
-     * @param $workspaceId
-     * @throws Exception
-     */
-    function __construct($workspaceId) {
+
+    function __construct(int $workspaceId) {
 
         // TODO check here if ws exists could be found
         $this->_workspaceId = $workspaceId;
@@ -21,9 +16,7 @@ class WorkspaceController {
         $this->_workspacePath = $this->_createWorkspaceFolderIfNotExistant();
     }
 
-    /**
-     * @throws Exception
-     */
+
     private function _createWorkspaceFolderIfNotExistant() {
 
         $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
@@ -43,10 +36,8 @@ class WorkspaceController {
         return $this->_workspacePath;
     }
 
-    /**
-     * @return array
-     */
-    function getAllFiles() {
+
+    function getAllFiles(): array {
 
         $fileList = array();
 
@@ -93,7 +84,7 @@ class WorkspaceController {
      * @param $filesToDelete - array containing file names
      * @return array
      */
-    function deleteFiles($filesToDelete) {
+    function deleteFiles(array $filesToDelete): array {
 
         $report = array(
             'deleted' => array(),
@@ -119,12 +110,8 @@ class WorkspaceController {
         return substr_count($path, '..') == 0;
     }
 
-
-    /**
-     * @return array
-     * @throws Exception
-     */
-    function assemblePreparedBookletsFromFiles() {
+    
+    function assemblePreparedBookletsFromFiles(): array {
 
         $testTakerDirPath = $this->_workspacePath . '/Testtakers';
         if (!file_exists($testTakerDirPath)) {
@@ -158,7 +145,7 @@ class WorkspaceController {
     }
 
 
-    private function _globStreamSafe($dir, $filePattern) {
+    private function _globStreamSafe(string $dir, string $filePattern): array {
 
         $files = scandir($dir);
         $found = [];

@@ -1,5 +1,7 @@
 <?php
 
+// TODO unit test
+
 class DBConnectionInit extends DBConnectionSuperAdmin {
 
 

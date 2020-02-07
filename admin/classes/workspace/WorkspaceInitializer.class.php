@@ -1,9 +1,8 @@
 <?php
 
-/**
- * Class DBConnectionStarter
- */
-class Initializer {
+// TODO unit test
+
+class WorkspaceInitializer {
 
 
     /**

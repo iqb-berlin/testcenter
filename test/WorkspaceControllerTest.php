@@ -3,8 +3,8 @@
 
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
-require_once "admin/classes/controller/Initializer.class.php";
-require_once "admin/classes/controller/WorkspaceController.class.php";
+require_once "admin/classes/workspace/WorkspaceInitializer.class.php";
+require_once "admin/classes/workspace/WorkspaceController.class.php";
 require_once "vo_code/ResourceFile.class.php";
 require_once "vo_code/FileFactory.class.php";
 require_once "vo_code/XMLFileTesttakers.php";
@@ -29,7 +29,7 @@ class WorkspaceControllerTest extends TestCase {
         vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../sampledata'), $sampledataDir);
         $this->vfsData = vfsStream::newDirectory('vo_data', 0777)->at($this->vfs);
 
-        $initializer = new Initializer();
+        $initializer = new WorkspaceInitializer();
         $initializer->importSampleData(1, array(
             'user_name' => 'unit_test_user',
             'user_password' => 'unit_test_user_password',

@@ -61,7 +61,7 @@ try  {
 
     JSON::decode($config);
 
-    $initializer = new Initializer();
+    $initializer = new WorkspaceInitializer();
 
     try {
         $DBConnectionInit = new DBConnectionInit();
@@ -70,7 +70,7 @@ try  {
         $error = true;
         while ($retries-- && $error) {
             try {
-                $initializer = new Initializer();
+                $initializer = new WorkspaceInitializer();
                 echo "Database connection failed... retry ($retries attempts left)\n";
                 usleep(20 * 1000000); // give database container time to come up
                 $error = false;

@@ -2,7 +2,8 @@
 
 /**
  * since forwarding from deprecated endpoint does not work with uploaded files, we let both endpoints use this class
- * this code could stay in workspace.php directly if deprecated endpoint is removed
+ * TODO this code could stay in workspace.php directly if deprecated endpoint is removed
+ * TODO unit test
  */
 
 use Slim\Exception\HttpBadRequestException;
