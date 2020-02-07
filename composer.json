@@ -1,4 +1,20 @@
 {
+  "name": "iqb/testcenter-api",
+  "description": "The backend for the IQB-Testcenter application(s).",
+  "version": "2.0.0-beta",
+  "homepage": "https://iqb-testcenter.de",
+  "type": "project",
+  "support": {
+    "issues": "https://github.com/iqb-berlin/testcenter-iqb-php/issues",
+    "docs": "https://iqb-berlin.github.io/testcenter-iqb-php/"
+  },
+  "repositories": [
+    {
+      "type": "github",
+      "url": "https://github.com/iqb-berlin/testcenter-iqb-php.git"
+    }
+  ],
+  "readme": "README.md",
   "require": {
     "slim/slim": "^3.12.0",
     "php": "^7.1",

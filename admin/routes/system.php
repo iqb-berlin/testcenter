@@ -91,6 +91,12 @@ $app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection
 });
 
 
+$app->get('/version', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+
+    return $response->withJson(array('version' => Version::get()));
+});
+
+
 $app->post('/login', function(Request $request, Response $response) use ($app) {
 
     $dbConnection = new DBConnectionAdmin();
