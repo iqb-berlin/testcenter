@@ -177,10 +177,6 @@ gulp.task('db_clean', done => {
 gulp.task('update_docs', done => {
 
     printHeadline('copy compiled spec and redoc lib to docs folder');
-    // const specsFile = apiSubfolder + '.compiled.specs.yml';
-    // fs.copyFileSync('tmp/' + specsFile, '../docs/generated_files/' + specsFile);
-    const redocFile ='node_modules/redoc/bundles/redoc.standalone.js';
-    fs.copyFileSync(redocFile, '../docs/api_doc_files/lib/redoc.standalone.js');
 
     const compiledFileName = 'tmp/' + apiSubfolder + '.compiled.specs.yml';
     const targetFileName = '../docs/api_doc_files/specs.yml';
