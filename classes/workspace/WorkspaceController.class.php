@@ -293,6 +293,8 @@ class WorkspaceController {
             if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
                 throw new Exception('e:Interner Fehler: Konnte Datei nicht in Zielordner verschieben: ' . "$targetFolder/$fileName");
             }
+            // TODO remove if https://github.com/iqb-berlin/testcenter-iqb-php/issues/30 is done
+            chmod($targetFilePath, 0777);
         }
     }
 
