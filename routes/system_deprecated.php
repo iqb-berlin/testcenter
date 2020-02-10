@@ -98,7 +98,7 @@ $app->group('/php/sys.php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->get('/users', function(Request $request, Response $response) use ($app) {
+    $app->get('/users', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
         $workspaceId = $request->getQueryParam('ws', 0);
         if ($workspaceId > 0) {

@@ -271,4 +271,6 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($dbConnectionSuperAdmin->getUsersByWorkspace($workspaceId));
     });
 
-})->add(new RequireAdminToken()); // TODO check if user is superadmin!
+})
+    ->add(new IsSuperAdmin())
+    ->add(new RequireAdminToken());

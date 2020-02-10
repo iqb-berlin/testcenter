@@ -20,7 +20,7 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
     $workspaces = $dbConnectionSuperAdmin->getWorkspaces();
     return $response->withJson($workspaces);
-})->add(new RequireAdminToken());;
+})->add(new RequireAdminToken());
 
 
 $app->delete('/workspaces', function (Request $request, Response $response) {

@@ -6,21 +6,21 @@ use Slim\Http\Response;
 
 class RequireAdminToken {
 
-    function __invoke(Request $req, Response $res, $next) {
+    function __invoke(Request $request, Response $response, $next) {
 
-        if ($req->isOptions()) {
-            return $next($req, $res);
+        if ($request->isOptions()) {
+            return $next($request, $response);
         }
 
-        if (!$req->hasHeader('AuthToken')) {
-            throw new HttpForbiddenException($req, 'Auth Header not sufficient: header missing');
+        if (!$request->hasHeader('AuthToken')) {
+            throw new HttpForbiddenException($request, 'Auth Header not sufficient: header missing');
         }
 
-        $authToken = JSON::decode($req->getHeaderLine('AuthToken'));
+        $authToken = JSON::decode($request->getHeaderLine('AuthToken'));
         $adminToken = $authToken->at;
 
         if (!isset($authToken->at) or strlen($adminToken) == 0) {
-            throw new HttpForbiddenException($req, 'Auth Header not sufficient: at missing');
+            throw new HttpForbiddenException($request, 'Auth Header not sufficient: at missing');
         }
 
         $dbConnectionAdmin = new DBConnectionAdmin();
@@ -28,8 +28,8 @@ class RequireAdminToken {
         $tokenInfo = $dbConnectionAdmin->validateToken($adminToken);
 
         $authToken = new AdminAuthToken($adminToken, $tokenInfo['user_is_superadmin']);
-        $req = $req->withAttribute('AuthToken', $authToken);
+        $request = $request->withAttribute('AuthToken', $authToken);
 
-        return $next($req, $res);
+        return $next($request, $response);
     }
 }

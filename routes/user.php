@@ -60,4 +60,6 @@ $app->group('/user', function(App $app) {
         return $response;
     });
 
-});
+})
+    ->add(new IsSuperAdmin())
+    ->add(new RequireAdminToken());

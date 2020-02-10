@@ -19,13 +19,13 @@ class IsSuperAdmin {
         }
 
         if ($authToken::type != 'admin') {
-            throw new HttpInternalServerErrorException($request, "AuthToken of wrong type: {$authToken::type}");
+            throw new HttpInternalServerErrorException($request, "AuthToken of wrong type: " . $authToken::type);
         }
 
         if (!$authToken->isSuperAdmin()) {
             throw new HttpForbiddenException($request, "Only SuperAdmins can do that");
         }
 
-        $next($request, $response);
+        return $next($request, $response);
     }
 }
