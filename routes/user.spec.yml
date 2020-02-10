@@ -86,7 +86,7 @@ paths:
                   id: 1
       responses:
         "200":
-          description: OK, roles has been updated
+          description: OK, roles have been updated
         "401":
           description: Not authenticated
         "500":

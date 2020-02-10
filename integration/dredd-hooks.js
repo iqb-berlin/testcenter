@@ -27,7 +27,7 @@ dreddHooks.beforeEach(function(transaction, done) {
         return done();
     }
 
-    // make sure, sample files are available TODO rights problem
+    // make sure, sample files are available
     [
         {src: '../sampledata/Unit.xml', target: '../vo_data/ws_1/Unit/SAMPLE_UNIT.XML'},
         {src: '../sampledata/SysCheck.xml', target: '../vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML'}
