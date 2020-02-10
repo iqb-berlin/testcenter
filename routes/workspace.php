@@ -214,7 +214,7 @@ $app->group('/workspace', function(App $app) {
 
 })
     ->add(new IsWorkspacePermitted())
-    ->add(new NormalAuth());
+    ->add(new RequireAdminToken());
 
 $app->group('/workspace', function(App $app) {
 
@@ -271,4 +271,4 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($dbConnectionSuperAdmin->getUsersByWorkspace($workspaceId));
     });
 
-})->add(new NormalAuth()); // TODO check if user is superadmin!
+})->add(new RequireAdminToken()); // TODO check if user is superadmin!

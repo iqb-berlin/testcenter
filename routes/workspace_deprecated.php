@@ -157,7 +157,7 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-})->add(new NormalAuthWithWorkspaceInHeader());
+})->add(new DeprecatedAuth());
 
 $app->group('/php', function(App $app) {
 

@@ -39,9 +39,11 @@ class DBConnectionAdminTest extends TestCase {
     function test_getLoginName() {
 
         $token = $this->dbc->login('super', 'user123');
-        $result = $this->dbc->getLoginName($token);
-        $expect = "super";
-        $this->assertEquals($result, $expect);
+        $result = $this->dbc->validateToken($token);
+        $this->assertEquals($result['user_id'], '1');
+        $this->assertEquals($result['user_name'], 'super');
+        $this->assertEquals($result['user_is_superadmin'], '1');
+        $this->assertEquals(isset($result['valid_until']), true);
     }
 
 

@@ -4,7 +4,7 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class NormalAuthWithWorkspaceInHeader {
+class DeprecatedAuth {
 
     function __invoke(Request $req, Response $res, $next) {
 

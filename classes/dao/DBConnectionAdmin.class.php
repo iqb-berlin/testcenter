@@ -92,17 +92,29 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function getLoginName(string $token): string {
+	public function validateToken(string $token): array {
 
-		$first = $this->_(
-			'SELECT users.name FROM users
+		$tokenInfo = $this->_(
+			'SELECT 
+                users.id as user_id,
+                users.name  as user_name,
+                users.email as user_email,
+                users.is_superadmin as user_is_superadmin,
+                admintokens.valid_until
+            FROM users
 			INNER JOIN admintokens ON users.id = admintokens.user_id
 			WHERE admintokens.id=:token',
 			array(':token' => $token)
 		);
 
+		// TODO check if Token is still valid (-> store timestamp instead of formatted date)
+
+		if (!$tokenInfo) {
+            throw new HttpError("Token not valid! ($token)", 401);
+        }
+
 		$this->refreshAdminToken($token); // TODO separation of concerns
-		return $first['name'];
+		return $tokenInfo;
 	}
 
 

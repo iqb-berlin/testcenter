@@ -1,6 +1,8 @@
 <?php
 
-class AuthToken {
+abstract class AuthToken {
+
+    const type = 'abstract token';
 
     protected $_token = "";
 

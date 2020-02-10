@@ -110,4 +110,4 @@ $app->group('/php/sys.php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-})->add(new NormalAuth());
+})->add(new RequireAdminToken());

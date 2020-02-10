@@ -20,7 +20,7 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
     $workspaces = $dbConnectionSuperAdmin->getWorkspaces();
     return $response->withJson($workspaces);
-})->add(new NormalAuth());;
+})->add(new RequireAdminToken());;
 
 
 $app->delete('/workspaces', function (Request $request, Response $response) {
@@ -36,7 +36,7 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     $dbConnection->deleteWorkspaces($workspaceList);
 
     return $response;
-})->add(new NormalAuth());
+})->add(new RequireAdminToken());
 
 
 $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
@@ -44,7 +44,7 @@ $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ R
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
 
     return $response->withJson($dbConnectionSuperAdmin->getUsers());
-})->add(new NormalAuth());
+})->add(new RequireAdminToken());
 
 
 $app->delete('/users', function(Request $request, Response $response) {
@@ -56,7 +56,7 @@ $app->delete('/users', function(Request $request, Response $response) {
     $dbConnectionSuperAdmin->deleteUsers($userList);
 
     return $response;
-})->add(new NormalAuth());
+})->add(new RequireAdminToken());
 
 
 $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
@@ -120,25 +120,20 @@ $app->post('/login', function(Request $request, Response $response) use ($app) {
         throw new HttpForbiddenException($request, "Authentication credentials missing.");
     }
 
-    $userName = $dbConnection->getLoginName($token);
-
-    if (!isset($userName) or (strlen($userName) == 0)) { // TODO not necessary if dbC would throw Exception
-        error_log("Rejected login attempt with: " . $request->getBody());
-        throw new HttpForbiddenException($request, "Wrong authentication credentials");
-    }
+    $tokenInfo = $dbConnection->validateToken($token);
 
     $workspaces = $dbConnection->getWorkspaces($token);
-    $isSuperAdmin = $dbConnection->isSuperAdmin($token);
 
-    if ((count($workspaces) == 0) and !$isSuperAdmin) {
+    if ((count($workspaces) == 0) and !$tokenInfo['user_is_superadmin']) {
         throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 406);
     }
 
     return $response->withJson([
         'admintoken' => $token,
-        'name' => $userName,
+        'user_id' => $tokenInfo['user_id'],
+        'name' => $tokenInfo['user_name'],
         'workspaces' => $workspaces,
-        'is_superadmin' => $isSuperAdmin
+        'is_superadmin' => $tokenInfo['user_is_superadmin']
     ]);
 });
 
