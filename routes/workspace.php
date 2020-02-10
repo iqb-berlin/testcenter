@@ -212,7 +212,9 @@ $app->group('/workspace', function(App $app) {
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
     });
 
-})->add(new NormalAuth())->add(new IsWorkspacePermitted());
+})
+    ->add(new IsWorkspacePermitted())
+    ->add(new NormalAuth());
 
 $app->group('/workspace', function(App $app) {
 

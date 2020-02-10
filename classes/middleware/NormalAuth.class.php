@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -20,7 +20,7 @@ class NormalAuth {
                     $myDBConnection = new DBConnection();
 
                     $authToken = new AdminAuthToken($adminToken, $myDBConnection->isSuperAdmin($adminToken));
-                    $req->withAttribute('AuthToken', $authToken);
+                    $req = $req->withAttribute('AuthToken', $authToken);
                     return $next($req, $res);
                 }
 

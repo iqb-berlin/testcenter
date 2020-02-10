@@ -28,7 +28,7 @@ class NormalAuthWithWorkspaceInHeader {
                                     if (($req->isPost() && ($role == 'RW')) || ($req->isGet() && ($role != ''))) {
                                         $errorCode = 0;
                                         $authToken = new AdminAuthToken($adminToken, $dbConnection->isSuperAdmin($adminToken));
-                                        $req->withAttribute('AuthToken', $authToken);
+                                        $req = $req->withAttribute('AuthToken', $authToken);
                                         $_SESSION['workspace'] = $workspaceId; // for deprecated endpoints
                                         $workspaceDirName = realpath(ROOT_DIR . "/vo_data/ws_$workspaceId");
                                         if (!file_exists($workspaceDirName)) { // TODO I moved this to auth token check - is that OK
