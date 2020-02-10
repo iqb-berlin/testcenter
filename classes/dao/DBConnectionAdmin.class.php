@@ -1,9 +1,6 @@
 <?php
+
 /** @noinspection PhpUnhandledExceptionInspection */
-// www.IQB.hu-berlin.de
-// Bărbulescu, Mechtel
-// 2018, 2019
-// license: MIT
 
 
 class DBConnectionAdmin extends DBConnection {
@@ -114,6 +111,7 @@ class DBConnectionAdmin extends DBConnection {
         $tokenDate = $dateTime = new DateTime($tokenInfo['valid_until'], new DateTimeZone('Europe/Berlin'));
 
 		if ($tokenDate < new DateTime('',new  DateTimeZone('Europe/Berlin'))) {
+
 		    throw new HttpError("Token expired since {$tokenInfo['valid_until']}", 401);
         }
 

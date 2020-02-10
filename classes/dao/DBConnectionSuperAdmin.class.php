@@ -1,11 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
-// www.IQB.hu-berlin.de
-// Bărbulescu, Stroescu, Mechtel
-// 2018
-// license: MIT
+<?php
 
-// all functions require the auth check to be done before! TODO understand this
-// i. e. call isSuperAdmin() from DBConnection
+/** @noinspection PhpUnhandledExceptionInspection */
 
 
 class DBConnectionSuperAdmin extends DBConnection {
