@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 						'cansave' => $xFile->hasSaveKey(),
 						'hasunit' => $xFile->hasUnit(),
 						'questions' => $xFile->getQuestions(),
-						'questionsintro' => $xFile->getQuestionsIntro(),
+						'customtexts' => $xFile->getCustomTexts(),
 						'skipnetwork' => $xFile->getSkipNetwork(),
 						'downloadspeed' => $xFile->getSpeedtestDownloadParams(),
 						'uploadspeed' => $xFile->getSpeedtestUploadParams()

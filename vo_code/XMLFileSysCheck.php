@@ -55,15 +55,19 @@ class XMLFileSysCheck extends XMLFile
     }
 
     // ####################################################
-    public function getQuestionsIntro()
+    public function getCustomTexts()
     {
-        $myreturn = '';
+        $myreturn = [];
         if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
-                $introNode = $configNode->QuestionsIntro[0];
-                if (isset($introNode)) {
-                    $myreturn = (string) $introNode;
+                foreach($configNode->children() as $ct) {
+                    if ($ct->getName() === 'CustomText') {
+                        array_push($myreturn, [
+                            'key' => (string) $ct['key'],
+                            'value' => (string) $ct
+                        ]);
+                    }
                 }
             }
         }
@@ -100,6 +104,7 @@ class XMLFileSysCheck extends XMLFile
                             'id' => (string) $q['id'],
                             'type' => (string) $q['type'],
                             'prompt' => (string) $q['prompt'],
+                            'required' => (boolean) $q['required'],
                             'value' => (string) $q
                         ]);
                     }

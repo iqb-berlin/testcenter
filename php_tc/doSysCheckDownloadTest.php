@@ -9,8 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	exit();
 }
 $start = microtime(true);
-
-apache_setenv('no-gzip', '1');
+if (function_exists('apache_setenv')) {
+    apache_setenv('no-gzip', '1');
+}
 //$_GET = json_decode(file_get_contents('php://input'), true);
 
 if (!isset($_GET['size']) or (!intval($_GET['size'])) or (intval($_GET['size']) > 8388608 * 8) or (intval($_GET['size']) < 16)) {
