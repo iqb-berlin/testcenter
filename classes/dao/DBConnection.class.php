@@ -26,6 +26,8 @@ class DBConnection {
         $this->passwordSalt = $connectionData->salt;
 
         $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        date_default_timezone_set('Europe/Berlin'); // TODO store timestamps instead of formatted dates in db
     }
 
 
