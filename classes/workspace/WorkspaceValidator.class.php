@@ -434,7 +434,6 @@ class WorkspaceValidator extends WorkspaceController {
             }
 
             $otherTesttakersDirHandle = opendir($otherTesttakersFolder);
-            $wsName = $this->_dbConnection->getWorkspaceName($wsIdOther);
 
             while (($entry = readdir($otherTesttakersDirHandle)) !== false) {
 
@@ -444,7 +443,7 @@ class WorkspaceValidator extends WorkspaceController {
                     if ($xFile->isValid()) {
                         foreach($xFile->getAllLoginNames() as $ln) {
                             if (in_array($ln, $this->_allLoginNames)) {
-                                $this->reportError('double login "' . $ln . '" in Testtakers-XML-file "' . $entry . '" (other workspace "' . $wsName . '")');
+                                $this->reportError('double login "' . $ln . '" in Testtakers-XML-file "' . $entry . '" (other workspace "' . $wsIdOther . '")');
                             }
                         }
                     }
