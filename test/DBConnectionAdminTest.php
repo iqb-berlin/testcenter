@@ -36,7 +36,7 @@ class DBConnectionAdminTest extends TestCase {
     }
 
 
-    function test_getLoginName() {
+    function test_validateToken() {
 
         $token = $this->dbc->login('super', 'user123');
         $result = $this->dbc->validateToken($token);
