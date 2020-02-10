@@ -39,6 +39,8 @@ paths:
                   role: ''
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -89,6 +91,8 @@ paths:
           description: OK, roles have been updated
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -119,6 +123,8 @@ paths:
           description: OK, user has been added
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -155,5 +161,7 @@ paths:
           description: password has changed / user did not exist
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error

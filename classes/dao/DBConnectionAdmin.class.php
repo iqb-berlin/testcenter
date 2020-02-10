@@ -105,14 +105,14 @@ class DBConnectionAdmin extends DBConnection {
 		);
 
 		if (!$tokenInfo) {
-            throw new HttpError("Token not valid! ($token)", 401);
+            throw new HttpError("Token not valid! ($token)", 403);
         }
 
         $tokenDate = $dateTime = new DateTime($tokenInfo['valid_until'], new DateTimeZone('Europe/Berlin'));
 
 		if ($tokenDate < new DateTime('',new  DateTimeZone('Europe/Berlin'))) {
 
-		    throw new HttpError("Token expired since {$tokenInfo['valid_until']}", 401);
+		    throw new HttpError("Token expired since {$tokenInfo['valid_until']}", 403);
         }
 
         $this->refreshAdminToken($token); // TODO separation of concerns

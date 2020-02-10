@@ -39,6 +39,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -73,6 +75,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -114,6 +118,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -167,5 +173,7 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error

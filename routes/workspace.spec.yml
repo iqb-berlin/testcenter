@@ -82,8 +82,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/file/{type}/{filename}:
     get:
@@ -132,8 +130,6 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/logs:
     get:
@@ -216,8 +212,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/responses:
     get:
@@ -308,8 +302,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/results:
     get:
@@ -373,8 +365,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/reviews:
     get:
@@ -464,8 +454,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/status:
     get:
@@ -534,8 +522,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/validation:
     get:
@@ -597,8 +583,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/file:
     post:
@@ -648,8 +632,6 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /workspace/{ws_id}/files:
     get:
@@ -717,10 +699,10 @@ paths:
                   typelabel: SysCheck
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
-        "500":
-          description: Server Error
 
     delete:
       summary: delete files
@@ -778,6 +760,8 @@ paths:
 
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
         "500":
@@ -826,6 +810,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
         "500":
@@ -874,6 +860,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
         "500":
@@ -960,6 +948,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -1012,6 +1002,8 @@ paths:
           description: OK, roles has been updated
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -1049,5 +1041,7 @@ paths:
                   role: 'RW'
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error

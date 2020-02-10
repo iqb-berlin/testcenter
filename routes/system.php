@@ -1,8 +1,6 @@
 <?php
 
-
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpException;
 use Slim\Route;
 use Slim\Http\Request;
@@ -20,7 +18,9 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
     $workspaces = $dbConnectionSuperAdmin->getWorkspaces();
     return $response->withJson($workspaces);
-})->add(new RequireAdminToken());
+})
+    ->add(new IsSuperAdmin())
+    ->add(new RequireAdminToken());
 
 
 $app->delete('/workspaces', function (Request $request, Response $response) {
@@ -36,7 +36,9 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     $dbConnection->deleteWorkspaces($workspaceList);
 
     return $response;
-})->add(new RequireAdminToken());
+})
+    ->add(new IsSuperAdmin())
+    ->add(new RequireAdminToken());
 
 
 $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
@@ -44,7 +46,9 @@ $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ R
     $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
 
     return $response->withJson($dbConnectionSuperAdmin->getUsers());
-})->add(new RequireAdminToken());
+})
+    ->add(new IsSuperAdmin())
+    ->add(new RequireAdminToken());
 
 
 $app->delete('/users', function(Request $request, Response $response) {
@@ -56,7 +60,9 @@ $app->delete('/users', function(Request $request, Response $response) {
     $dbConnectionSuperAdmin->deleteUsers($userList);
 
     return $response;
-})->add(new RequireAdminToken());
+})
+    ->add(new IsSuperAdmin())
+    ->add(new RequireAdminToken());
 
 
 $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
@@ -117,7 +123,7 @@ $app->post('/login', function(Request $request, Response $response) use ($app) {
     } else if (isset($requestBody->at)) {
         $token = $requestBody->at;
     } else {
-        throw new HttpForbiddenException($request, "Authentication credentials missing.");
+        throw new HttpBadRequestException($request, "Authentication credentials missing.");
     }
 
     $tokenInfo = $dbConnection->validateToken($token);
@@ -125,7 +131,7 @@ $app->post('/login', function(Request $request, Response $response) use ($app) {
     $workspaces = $dbConnection->getWorkspaces($token);
 
     if ((count($workspaces) == 0) and !$tokenInfo['user_is_superadmin']) {
-        throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 406);
+        throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 202);
     }
 
     return $response->withJson([

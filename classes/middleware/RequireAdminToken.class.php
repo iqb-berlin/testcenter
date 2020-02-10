@@ -1,6 +1,6 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
-use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -13,14 +13,14 @@ class RequireAdminToken {
         }
 
         if (!$request->hasHeader('AuthToken')) {
-            throw new HttpForbiddenException($request, 'Auth Header not sufficient: header missing');
+            throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: header missing');
         }
 
         $authToken = JSON::decode($request->getHeaderLine('AuthToken'));
         $adminToken = $authToken->at;
 
         if (!isset($authToken->at) or strlen($adminToken) == 0) {
-            throw new HttpForbiddenException($request, 'Auth Header not sufficient: at missing');
+            throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: at missing');
         }
 
         $dbConnectionAdmin = new DBConnectionAdmin();

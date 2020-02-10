@@ -65,13 +65,10 @@ paths:
                     name: example_workspace
                     role: RW
                 is_superadmin: true
-
-        "401":
-          description: Not authenticated
-        "404":
-          description: Other Error
-        "406":
-          description: Other Error
+        "202":
+          description: User has account but neither workspace nor admin priviliges
+        "400":
+          description: Insufficent Crendetials
         "500":
           description: Server Error
 
@@ -86,7 +83,7 @@ paths:
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
           example:
-            at: 1337ymca1337666.xxx13370
+            at: __super_admin_token__
 
       responses:
         "200":
@@ -101,6 +98,8 @@ paths:
 
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -132,10 +131,10 @@ paths:
               ws: [2]
 
       responses:
-        "200":
-          description: OK, workspace has been deleted
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -165,9 +164,10 @@ paths:
                   id: '1'
                   email: null
                   is_superadmin: '1'
-
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
 
@@ -199,9 +199,9 @@ paths:
                 - secondUser
 
       responses:
-        "200":
-          description: OK, users has been deleted
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "500":
           description: Server Error

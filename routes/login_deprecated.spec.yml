@@ -31,12 +31,3 @@ paths:
                     name: example_workspace
                     role: RW
                 is_superadmin: true
-
-        "401":
-          description: Not authenticated
-        "404":
-          description: Other Error
-        "406":
-          description: Other Error
-        "500":
-          description: Server Error

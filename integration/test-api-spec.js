@@ -96,7 +96,7 @@ gulp.task('prepare_spec_for_dredd', done => {
         "parameters > \\d+ > schema$": () => null,
         "text/xml > example$": () => null,
         "application/octet-stream > example$": () => null,
-        "^paths > .*? > .*? > responses > [^2]\\d\\d$": () => null,
+        "^paths > .*? > .*? > responses > (404|500|400|202)$": () => null,
         "schema > \\$ref$": resolveReference,
         "items > \\$ref$": resolveReference
     };
@@ -182,7 +182,7 @@ gulp.task('update_docs', done => {
     const localizeReference = (key, val) => {
         const referenceString = val.substring(val.lastIndexOf('#'));
         return {
-            key: null,
+            key: '$ref',
             val: referenceString
         }
     };

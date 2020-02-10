@@ -11,28 +11,20 @@ paths:
                 content:
                     application/json:
                         schema:
-                            value: '#/components/schemas/login_request'
+                            $ref: '#/components/schemas/login_request'
             responses:
                 '200':
                     description: OK
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/login_response'
+                                $ref: '#/components/schemas/login_response'
                             example:
                                 admintoken: 1337ymca1337666.xxx13370
                                 name: super
                                 workspaces:
                                     - {id: '1', name: example_workspace, role: RW}
                                 is_superadmin: true
-                '401':
-                    description: 'Not authenticated'
-                '404':
-                    description: 'Other Error'
-                '406':
-                    description: 'Other Error'
-                '500':
-                    description: 'Server Error'
     /list/routes:
         get:
             summary: 'Lists all available endpoints'
@@ -69,26 +61,24 @@ paths:
                 content:
                     application/json:
                         schema:
-                            value: '#/components/schemas/login_request'
+                            $ref: '#/components/schemas/login_request'
             responses:
                 '200':
                     description: OK
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/login_response'
+                                $ref: '#/components/schemas/login_response'
                             example:
                                 admintoken: 1337ymca1337666.xxx13370
                                 name: super
                                 workspaces:
                                     - {id: '1', name: example_workspace, role: RW}
                                 is_superadmin: true
-                '401':
-                    description: 'Not authenticated'
-                '404':
-                    description: 'Other Error'
-                '406':
-                    description: 'Other Error'
+                '202':
+                    description: 'User has account but neither workspace nor admin priviliges'
+                '400':
+                    description: 'Insufficent Crendetials'
                 '500':
                     description: 'Server Error'
     /workspaces:
@@ -100,22 +90,24 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: __super_admin_token__
             responses:
                 '200':
                     description: 'List of Workspaces'
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/workspace_list'
+                                $ref: '#/components/schemas/workspace_list'
                             example:
                                 -
                                     id: '1'
                                     name: example_workspace
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
         delete:
@@ -126,7 +118,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -144,10 +136,10 @@ paths:
                             ws:
                                 - 2
             responses:
-                '200':
-                    description: 'OK, workspace has been deleted'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /users:
@@ -160,7 +152,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             responses:
@@ -169,7 +161,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/user_list'
+                                $ref: '#/components/schemas/user_list'
                             example:
                                 -
                                     name: super
@@ -178,6 +170,8 @@ paths:
                                     is_superadmin: '1'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
         delete:
@@ -188,7 +182,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -204,10 +198,10 @@ paths:
                             u:
                                 - secondUser
             responses:
-                '200':
-                    description: 'OK, users has been deleted'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/workspaces:
@@ -219,7 +213,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -240,7 +234,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/workspace_list'
+                                $ref: '#/components/schemas/workspace_list'
                             examples:
                                 a:
                                     value: [{id: '1', name: example_workspace}]
@@ -248,6 +242,8 @@ paths:
                                     value: [{id: '1', name: example_workspace, selected: false, role: ""}]
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/workspace/add:
@@ -259,7 +255,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -282,6 +278,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/workspace/rename:
@@ -293,7 +291,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -321,6 +319,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/workspaces/delete:
@@ -332,7 +332,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -357,6 +357,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/workspace/users:
@@ -368,7 +370,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -400,6 +402,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/users:
@@ -411,7 +415,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -420,7 +424,7 @@ paths:
                     description: 'id of a workspace to get users from. can be omitted for all users in system'
                     required: false
                     schema:
-                        value: '#/components/schemas/workspace_list'
+                        $ref: '#/components/schemas/workspace_list'
                     examples:
                         a:
                             value: 0
@@ -432,7 +436,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/user_list'
+                                $ref: '#/components/schemas/user_list'
                             examples:
                                 a:
                                     value: [{name: super, id: '1', email: null, is_superadmin: '1'}]
@@ -440,6 +444,8 @@ paths:
                                     value: [{name: super, id: '1', selected: true, role: RW}]
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     '/user/{user_id}/workspaces':
@@ -451,7 +457,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -468,7 +474,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/workspace_list'
+                                $ref: '#/components/schemas/workspace_list'
                             example:
                                 -
                                     id: '1'
@@ -477,6 +483,8 @@ paths:
                                     role: ""
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
         patch:
@@ -487,7 +495,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -516,9 +524,11 @@ paths:
                                     id: 1
             responses:
                 '200':
-                    description: 'OK, roles has been updated'
+                    description: 'OK, roles have been updated'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /user:
@@ -530,14 +540,14 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
                 content:
                     application/json:
                         schema:
-                            value: '#/components/schemas/user'
+                            $ref: '#/components/schemas/user'
                         example:
                             n: thirdUser
                             p: thirdUsersPassword
@@ -546,6 +556,8 @@ paths:
                     description: 'OK, user has been added'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     '/user/{user_id}/password':
@@ -557,7 +569,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -572,7 +584,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            value: '#/components/schemas/user'
+                            $ref: '#/components/schemas/user'
                         example:
                             p: secondUsersNewPassword
             responses:
@@ -580,6 +592,8 @@ paths:
                     description: 'password has changed / user did not exist'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/user/add:
@@ -591,14 +605,14 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
                 content:
                     application/json:
                         schema:
-                            value: '#/components/schemas/user'
+                            $ref: '#/components/schemas/user'
                         example:
                             n: secondUser
                             p: secondUsersPassword
@@ -610,6 +624,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/user/pw:
@@ -621,14 +637,14 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
                 content:
                     application/json:
                         schema:
-                            value: '#/components/schemas/user'
+                            $ref: '#/components/schemas/user'
                         example:
                             n: super
                             p: superUsersNewPassword
@@ -640,6 +656,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/users/delete:
@@ -651,7 +669,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -674,6 +692,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/sys.php/user/workspaces:
@@ -685,7 +705,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -717,6 +737,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/booklets/started':
@@ -729,7 +751,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -781,8 +803,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/file/{type}/{filename}':
         get:
             summary: 'get file'
@@ -793,7 +813,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -831,8 +851,6 @@ paths:
                     description: 'workspace or file not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/logs':
         get:
             summary: 'get logs'
@@ -843,7 +861,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -903,8 +921,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/responses':
         get:
             summary: 'get responses'
@@ -915,7 +931,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -960,8 +976,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/results':
         get:
             summary: 'get results'
@@ -972,7 +986,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1010,8 +1024,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/reviews':
         get:
             summary: 'get reviews'
@@ -1022,7 +1034,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1086,8 +1098,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/status':
         get:
             summary: 'get status'
@@ -1098,7 +1108,7 @@ paths:
                     name: AuthToken
                     description: auth-token
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1137,8 +1147,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/validation':
         get:
             summary: 'check workspace'
@@ -1149,7 +1157,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1190,8 +1198,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/file':
         post:
             summary: 'upload file'
@@ -1202,7 +1208,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1239,8 +1245,6 @@ paths:
                     description: 'workspace or file not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     '/workspace/{ws_id}/files':
         get:
             summary: 'get files of workspace'
@@ -1251,7 +1255,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1268,7 +1272,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/file_list'
+                                $ref: '#/components/schemas/file_list'
                             example:
                                 -
                                     filename: SAMPLE_TESTTAKERS.XML
@@ -1312,10 +1316,10 @@ paths:
                                     typelabel: SysCheck
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
-                '500':
-                    description: 'Server Error'
         delete:
             summary: 'delete files'
             description: 'deletes files from a workspace'
@@ -1342,7 +1346,7 @@ paths:
                     name: AuthToken
                     description: auth-token
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1365,6 +1369,8 @@ paths:
                                     value: 'Konnte 3 Dateien nicht löschen.'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -1390,7 +1396,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1409,6 +1415,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -1434,7 +1442,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1453,6 +1461,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -1466,7 +1476,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
             requestBody:
@@ -1501,7 +1511,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1532,6 +1542,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/users':
@@ -1543,7 +1555,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1575,6 +1587,8 @@ paths:
                     description: 'OK, roles has been updated'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
         get:
@@ -1586,7 +1600,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                 -
@@ -1603,7 +1617,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/user_list'
+                                $ref: '#/components/schemas/user_list'
                             example:
                                 -
                                     name: super
@@ -1612,6 +1626,8 @@ paths:
                                     role: RW
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '500':
                     description: 'Server Error'
     /php/getReviews.php:
@@ -1624,7 +1640,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -1680,8 +1696,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/getResultData.php:
         post:
             summary: 'get results'
@@ -1692,7 +1706,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -1723,8 +1737,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/getResponses.php:
         post:
             summary: 'get responses'
@@ -1735,7 +1747,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -1772,8 +1784,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/getMonitorData.php:
         post:
             summary: 'get status'
@@ -1784,7 +1794,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -1816,8 +1826,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/getLogs.php:
         post:
             summary: 'get logs'
@@ -1828,7 +1836,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -1880,8 +1888,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/getBookletsStarted.php:
         post:
             summary: 'get started booklets'
@@ -1892,7 +1898,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -1936,8 +1942,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/checkWorkspace.php:
         post:
             summary: 'check workspace'
@@ -1948,7 +1952,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -1982,8 +1986,6 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/getFile.php:
         get:
             summary: 'get file'
@@ -2020,16 +2022,10 @@ paths:
             responses:
                 '200':
                     description: 'File contents'
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
                 '404':
                     description: 'workspace or file not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/uploadFile.php:
         post:
             summary: 'upload file'
@@ -2040,7 +2036,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -2069,8 +2065,6 @@ paths:
                     description: 'workspace or file not found'
                 '500':
                     description: 'Server Error'
-                '503':
-                    description: 'Service Unavailable'
     /php/ws.php/filelist:
         get:
             summary: 'get files of workspace'
@@ -2080,7 +2074,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -2090,7 +2084,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                value: '#/components/schemas/file_list'
+                                $ref: '#/components/schemas/file_list'
                             example:
                                 -
                                     filename: SAMPLE_TESTTAKERS.XML
@@ -2134,6 +2128,8 @@ paths:
                                     typelabel: SysCheck
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -2165,7 +2161,7 @@ paths:
                     name: AuthToken
                     description: 'auth-token with wokspace number'
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -2181,6 +2177,8 @@ paths:
                                     value: 'Konnte 3 Dateien nicht löschen.'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -2206,7 +2204,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -2218,6 +2216,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -2243,7 +2243,7 @@ paths:
                     in: header
                     name: AuthToken
                     schema:
-                        value: '#/components/schemas/auth'
+                        $ref: '#/components/schemas/auth'
                     example:
                         at: 1337ymca1337666.xxx13370
                         ws: 1
@@ -2255,6 +2255,8 @@ paths:
                             example: 'true'
                 '401':
                     description: 'Not authenticated'
+                '403':
+                    description: Forbidden
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -2298,7 +2300,7 @@ components:
                     type: array
                     description: 'List of workspaces wich are open to this user'
                     items:
-                        value: '#/components/schemas/workspace'
+                        $ref: '#/components/schemas/workspace'
                 is_superadmin:
                     type: boolean
                     description: 'Flag that tells, if this user is a superadmin'
@@ -2325,12 +2327,12 @@ components:
             type: array
             description: 'List of Workspaces'
             items:
-                value: '#/components/schemas/workspace'
+                $ref: '#/components/schemas/workspace'
         user_list:
             type: array
             description: 'List of Users'
             items:
-                value: '#/components/schemas/user'
+                $ref: '#/components/schemas/user'
         user:
             type: object
             description: 'a user'
@@ -2386,4 +2388,4 @@ components:
             type: array
             description: 'List of Files'
             items:
-                value: '#/components/schemas/file'
+                $ref: '#/components/schemas/file'

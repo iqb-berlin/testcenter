@@ -89,8 +89,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/getResultData.php:
     post:
@@ -148,8 +146,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/getResponses.php:
     post:
@@ -236,8 +232,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/getMonitorData.php:
     post:
@@ -299,8 +293,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/getLogs.php:
     post:
@@ -380,8 +372,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/getBookletsStarted.php:
     post:
@@ -457,8 +447,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/checkWorkspace.php:
     post:
@@ -514,8 +502,6 @@ paths:
           description: Workspace not found
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/getFile.php:
     get:
@@ -551,17 +537,10 @@ paths:
       responses:
         "200":
           description: File contents
-
         "404":
           description: workspace or file not found
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
 
   /php/uploadFile.php:
@@ -605,8 +584,6 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
-        "503":
-          description: Service Unavailable
 
   /php/ws.php/filelist:
     get:
@@ -667,6 +644,8 @@ paths:
                   typelabel: SysCheck
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
         "500":
@@ -723,6 +702,8 @@ paths:
 
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
         "500":
@@ -765,6 +746,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
         "500":
@@ -807,6 +790,8 @@ paths:
                 "true"
         "401":
           description: Not authenticated
+        "403":
+          description: Forbidden
         "404":
           description: Workspace not found
         "500":

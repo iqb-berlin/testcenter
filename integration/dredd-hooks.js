@@ -6,12 +6,22 @@ const streamToString = require('stream-to-string');
 const stash = {};
 let skipTheRest = false;
 
+
+const changeAuthToken = (transaction, newAuthTokenData) => {
+
+    if (typeof transaction.request.headers['AuthToken'] !== "undefined") {
+        newAuthTokenData.ws = transaction.request.headers['AuthToken'].ws; // for depricated endpoints
+        transaction.request.headers['AuthToken'] = JSON.stringify(newAuthTokenData);
+    }
+};
+
 dreddHooks.beforeEachValidation(function(transaction) {
 
     // don't compare headers
     transaction.real.headers = {};
     transaction.expected.headers = {};
 });
+
 
 dreddHooks.beforeEach(function(transaction, done) {
 
@@ -21,10 +31,21 @@ dreddHooks.beforeEach(function(transaction, done) {
         return done();
     }
 
-    // dont' check error responses
-    if (transaction.expected.statusCode.substr(0,1) !== "2") {
-        transaction.skip = true;
-        return done();
+    // inject login credentials if necessary
+    switch (transaction.expected.statusCode) {
+        case '200':
+            changeAuthToken(transaction,{at: stash.authToken});
+            break;
+        case '401':
+            changeAuthToken(transaction,{});
+            break;
+        case '403':
+            changeAuthToken(transaction,{at: '__invalid_token__'});
+            break;
+        default:
+            dreddHooks.log("IA HAVE TO SKIIIIIP");
+            transaction.skip = true;
+            return done();
     }
 
     // make sure, sample files are available
@@ -37,13 +58,6 @@ dreddHooks.beforeEach(function(transaction, done) {
             fs.chmodSync(copyFile.target, '777');
         }
     });
-
-    // inject login credentials
-    if (typeof transaction.request.headers['AuthToken'] !== "undefined") {
-        const authToken = transaction.request.headers['AuthToken'];
-        authToken.at = stash.authToken;
-        transaction.request.headers['AuthToken'] = JSON.stringify(authToken);
-    }
 
     transaction.request.headers['Accept'] = "*/*";
 
