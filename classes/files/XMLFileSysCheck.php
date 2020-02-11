@@ -46,16 +46,20 @@ class XMLFileSysCheck extends XMLFile {
         return strlen($myUnitId) > 0;
     }
 
-
-    public function getQuestionsOnlyMode() {
-        $myreturn = false;
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
+    // ####################################################
+    public function getCustomTexts()
+    {
+        $myreturn = [];
+        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
-                $qomAttr = $configNode['questionsonlymode'];
-                if (isset($qomAttr)) {
-                    $qom = (string) $qomAttr;
-                    $myreturn = ($qom == 'true');
+                foreach($configNode->children() as $ct) {
+                    if ($ct->getName() === 'CustomText') {
+                        array_push($myreturn, [
+                            'key' => (string) $ct['key'],
+                            'value' => (string) $ct
+                        ]);
+                    }
                 }
             }
         }
@@ -92,6 +96,7 @@ class XMLFileSysCheck extends XMLFile {
                             'id' => (string) $q['id'],
                             'type' => (string) $q['type'],
                             'prompt' => (string) $q['prompt'],
+                            'required' => (boolean) $q['required'],
                             'value' => (string) $q
                         ]);
                     }
@@ -101,21 +106,84 @@ class XMLFileSysCheck extends XMLFile {
         return $myreturn;
     }
 
+    // ####################################################
+    public function getSpeedtestUploadParams()
+    {
+        $myreturn = [
+            'min' => 0,
+            'good' => 0,
+            'maxDevianceBytesPerSecond' => 0,
+            'maxErrorsPerSequence' => 0,
+            'maxSequenceRepetitions' => 0,
+            'sequenceSizes' >= []
+        ];
+        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+            $configNode = $this->xmlfile->Config[0];
+            if (isset($configNode)) {
+                $speedDefNode = $configNode->UploadSpeed[0];
+                if (isset($speedDefNode)) {
+                    if (isset($speedDefNode['min'])) {
+                        $myreturn['min'] = (integer) $speedDefNode['min'];
+                    }
+                    if (isset($speedDefNode['good'])) {
+                        $myreturn['good'] = (integer) $speedDefNode['good'];
+                    }
+                    if (isset($speedDefNode['maxDevianceBytesPerSecond'])) {
+                        $myreturn['maxDevianceBytesPerSecond'] = (integer) $speedDefNode['maxDevianceBytesPerSecond'];
+                    }
+                    if (isset($speedDefNode['maxErrorsPerSequence'])) {
+                        $myreturn['maxErrorsPerSequence'] = (integer) $speedDefNode['maxErrorsPerSequence'];
+                    }
+                    if (isset($speedDefNode['maxSequenceRepetitions'])) {
+                        $myreturn['maxSequenceRepetitions'] = (integer) $speedDefNode['maxSequenceRepetitions'];
+                    }
+                    $sequenceSizesString = (string) $speedDefNode;
+                    $matches = [];
+                    if ((strlen($sequenceSizesString) > 0) && (preg_match_all("/[0-9]+/",
+                                $sequenceSizesString,$matches) > 0)) {
+                        $myreturn['sequenceSizes'] = $matches[0];
+                    }
+                }
+            }
+        }
+        return $myreturn;
+    }
 
-    public function getRatings() {
-
-        $myreturn = [];
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
-            $ratingsNode = $this->xmlfile->Ratings[0];
-            if (isset($ratingsNode)) {
-                foreach($ratingsNode->children() as $r) { 
-                    if ($r->getName() === 'R') {
-                        array_push($myreturn, [
-                            'type' => (string) $r['type'],
-                            'min' => (string) $r['min'],
-                            'good' => (string) $r['good'],
-                            'value' => (string) $r
-                        ]);
+    public function getSpeedtestDownloadParams()
+    {
+        $myreturn = [
+            'min' => 0,
+            'good' => 0,
+            'maxDevianceBytesPerSecond' => 0,
+            'maxErrorsPerSequence' => 0,
+            'maxSequenceRepetitions' => 0,
+            'sequenceSizes' >= []
+        ];
+        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+            $configNode = $this->xmlfile->Config[0];
+            if (isset($configNode)) {
+                $speedDefNode = $configNode->DownloadSpeed[0];
+                if (isset($speedDefNode)) {
+                    if (isset($speedDefNode['min'])) {
+                        $myreturn['min'] = (integer) $speedDefNode['min'];
+                    }
+                    if (isset($speedDefNode['good'])) {
+                        $myreturn['good'] = (integer) $speedDefNode['good'];
+                    }
+                    if (isset($speedDefNode['maxDevianceBytesPerSecond'])) {
+                        $myreturn['maxDevianceBytesPerSecond'] = (integer) $speedDefNode['maxDevianceBytesPerSecond'];
+                    }
+                    if (isset($speedDefNode['maxErrorsPerSequence'])) {
+                        $myreturn['maxErrorsPerSequence'] = (integer) $speedDefNode['maxErrorsPerSequence'];
+                    }
+                    if (isset($speedDefNode['maxSequenceRepetitions'])) {
+                        $myreturn['maxSequenceRepetitions'] = (integer) $speedDefNode['maxSequenceRepetitions'];
+                    }
+                    $sequenceSizesString = (string) $speedDefNode;
+                    $matches = [];
+                    if ((strlen($sequenceSizesString) > 0) && (preg_match_all("/[0-9]+/",
+                                $sequenceSizesString,$matches) > 0)) {
+                        $myreturn['sequenceSizes'] = $matches[0];
                     }
                 }
             }

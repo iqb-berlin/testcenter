@@ -1,6 +1,6 @@
 <Booklet
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.3.1/vo_code/vo_Booklet.xsd"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.4.1/vo_code/vo_Booklet.xsd"
 >
   <Metadata>
     <Id>BOOKLET.SAMPLE</Id>
@@ -36,7 +36,7 @@
         <TimeMax parameter="1" />
       </Restrictions>
 
-      <Unit id="UNIT.SAMPLE" label="the great sample unit" labelshort="sample unit" alias="UNIT.SAMLPE" />
+      <Unit id="UNIT.SAMPLE" label="the great sample unit" labelshort="sample unit" alias="example unit" />
     </Testlet>
 
   </Units>
