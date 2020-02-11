@@ -7,12 +7,6 @@ Options +FollowSymLinks
 Options -Indexes
 
 RewriteEngine on
-#RewriteCond %{REQUEST_URI} !/admin/
-#RewriteCond %{REQUEST_URI} !/php_tc/
-#RewriteCond %{REQUEST_URI} !/specs/
-#RewriteCond %{REQUEST_URI} !/docs/
-#RewriteCond %{REQUEST_URI} !/integration/node_modules/redoc
-#RewriteRule (.*) - [L,R=404]
 
-RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !/docs/
 RewriteRule ^ index.php [QSA,L]
