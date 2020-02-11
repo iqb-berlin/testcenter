@@ -3,6 +3,7 @@ info:
     title: 'IQB Testcenter API - Backend'
     description: 'This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
     version: 2.0.0
+
 paths:
     /php/login.php/login:
         post:
@@ -12,6 +13,7 @@ paths:
                     application/json:
                         schema:
                             $ref: '#/components/schemas/login_request'
+
             responses:
                 '200':
                     description: OK
@@ -19,12 +21,14 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/login_response'
+
                             example:
                                 admintoken: 1337ymca1337666.xxx13370
                                 name: super
                                 workspaces:
                                     - {id: '1', name: example_workspace, role: RW}
                                 is_superadmin: true
+
     /list/routes:
         get:
             summary: 'Lists all available endpoints'
@@ -2256,7 +2260,7 @@ paths:
                 '401':
                     description: 'Not authenticated'
                 '403':
-                    description: Forbidden
+                    description: 'Forbidden'
                 '404':
                     description: 'Workspace not found'
                 '500':
@@ -2328,6 +2332,7 @@ components:
             description: 'List of Workspaces'
             items:
                 $ref: '#/components/schemas/workspace'
+
         user_list:
             type: array
             description: 'List of Users'
