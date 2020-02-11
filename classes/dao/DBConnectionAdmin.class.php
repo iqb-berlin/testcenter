@@ -144,14 +144,14 @@ class DBConnectionAdmin extends DBConnection {
 	}
 
 
-	public function deleteData(int $workspace_id, string $group_name): void { // TODO write unit test // TODO check if this is needed
+	public function deleteResultData(int $workspaceId, string $groupName): void { // TODO write unit test
 
 		$this->_(
 			'DELETE FROM logins
 			WHERE logins.workspace_id=:workspace_id and logins.groupname = :groupname',
 			array(
-				':workspace_id' => $workspace_id,
-				':groupname' => $group_name
+				':workspace_id' => $workspaceId,
+				':groupname' => $groupName
 			)
 		);
 	}
