@@ -13,10 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 		'label' => '',
 		'cansave' => false,
 		'hasunit' => false,
-		'questionsonlymode' => false,
+		'questionsintro' => '',
 		'skipnetwork' => false,
 		'questions' => [],
-		'ratings' => []
+		'downloadspeed' => [],
+		'uploadspeed' => []
 	];
 
 	$data = json_decode(file_get_contents('php://input'), true);
@@ -37,9 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 						'cansave' => $xFile->hasSaveKey(),
 						'hasunit' => $xFile->hasUnit(),
 						'questions' => $xFile->getQuestions(),
-						'questionsonlymode' => $xFile->getQuestionsOnlyMode(),
+						'customtexts' => $xFile->getCustomTexts(),
 						'skipnetwork' => $xFile->getSkipNetwork(),
-						'ratings' => $xFile->getRatings()
+						'downloadspeed' => $xFile->getSpeedtestDownloadParams(),
+						'uploadspeed' => $xFile->getSpeedtestUploadParams()
 					];
 				}
 			}
