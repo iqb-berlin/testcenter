@@ -42,7 +42,7 @@ $app->group('/user', function(App $app) {
 
         $dbConnection->addUser($requestBody->n, $requestBody->p);
 
-        return $response;
+        return $response; // TODO return 201
     });
 
 
@@ -52,7 +52,7 @@ $app->group('/user', function(App $app) {
         $userId = $request->getAttribute('user_id');
 
         if (!isset($requestBody->p)) {
-            throw new HttpBadRequestException($request, "Password missing"); // TODO original function took name?!
+            throw new HttpBadRequestException($request, "Password missing");
         }
 
         $dbConnection->setPassword($userId, $requestBody->p);

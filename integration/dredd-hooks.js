@@ -34,6 +34,7 @@ dreddHooks.beforeEach(function(transaction, done) {
     // inject login credentials if necessary
     switch (transaction.expected.statusCode) {
         case '200':
+        case '207':
             changeAuthToken(transaction,{at: stash.authToken});
             break;
         case '401':

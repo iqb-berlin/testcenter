@@ -1,12 +1,6 @@
 <?php
 
-/**
- * status: new endpoints, refactored and new routes. old endpoint exist and point to here
- * TODO describe those new routes
- */
-
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Stream;
 use Slim\App;
@@ -166,30 +160,8 @@ $app->group('/workspace', function(App $app) {
         $workspaceController = new WorkspaceController($workspaceId);
 
         $deletionReport = $workspaceController->deleteFiles($filesToDelete);
-        $deleted = count($deletionReport['did_not_exist']) + count($deletionReport['deleted']);
 
-        if ($deleted == 0) {
-            throw new HttpInternalServerErrorException($request, "Konnte keine Dateien löschen." . print_r(scandir($workspaceController->getWorkspacePath() . '/SysCheck'),1));
-        }
-
-        // TODO return full report and generate these messages in frontend
-
-        $returnMessage = "";
-
-        if ($deleted == count($filesToDelete)) {
-            $returnMessage = "Erfolgreich $deletionReport gelöscht.";
-        }
-
-        if ($deleted == 1) {
-            $returnMessage = 'Eine Datei gelöscht.';
-        }
-
-        if ($deleted < count($filesToDelete)) { // TODO check if it makes sense that this still returns 200
-            $returnMessage = 'Konnte ' . (count($filesToDelete) - $deleted) . ' Dateien nicht löschen.';
-        }
-
-        $response->getBody()->write($returnMessage);
-        return $response->withHeader('Content-type', 'application/json;charset=UTF-8');
+        return $response->withJson($deletionReport)->withStatus(207);
     });
 
     $app->post('/{ws_id}/unlock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
@@ -239,7 +211,7 @@ $app->group('/workspace', function(App $app) {
 
         $dbConnectionSuperAdmin->addWorkspace($requestBody->name);
 
-        return $response;
+        return $response; // TODO return 201
     });
 
     $app->patch('/{ws_id}', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {

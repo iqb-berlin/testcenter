@@ -1266,14 +1266,12 @@ paths:
                                     type: array
                                     description: 'array of file names'
                                     items: {type: string}
-                        examples:
-                            a:
-                                value:
-                                    f: [SysCheck/SAMPLE_SYSCHECK.XML]
-                            b:
-                                description: 'include some non-existant or forbidden files'
-                                value:
-                                    f: [SysCheck/SAMPLE_SYSCHECK.XML, 'some rubbish', a/b, ../../README.md]
+                        example:
+                            f:
+                                - SysCheck/SAMPLE_SYSCHECK.XML
+                                - 'some rubbish'
+                                - a/b
+                                - ../../README.md
             parameters:
                 -
                     in: header
@@ -1292,15 +1290,18 @@ paths:
                     schema:
                         type: integer
             responses:
-                '200':
-                    description: 'OK, roles has been updated'
+                '207':
+                    description: 'OK, a list of files'
                     content:
-                        text/plain:
-                            examples:
-                                a:
-                                    value: 'Eine Datei gelöscht.'
-                                b:
-                                    value: 'Konnte 3 Dateien nicht löschen.'
+                        application/json:
+                            example:
+                                deleted:
+                                    - SysCheck/SAMPLE_SYSCHECK.XML
+                                did_not_exist:
+                                    - 'some rubbish'
+                                    - a/b
+                                not_allowed:
+                                    - ../../README.md
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1468,9 +1469,6 @@ paths:
             responses:
                 '200':
                     description: 'OK, workspace has been renamed'
-                    content:
-                        text/plain:
-                            example: 'true'
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -2057,55 +2055,6 @@ paths:
                                     filedatetimestr: 04.09.2019
                                     type: SysCheck
                                     typelabel: SysCheck
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '500':
-                    description: 'Server Error'
-    /php/ws.php/delete:
-        post:
-            summary: 'delete files'
-            description: 'deletes files from a workspace'
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            properties:
-                                f:
-                                    type: array
-                                    description: 'array of file names. path delimiters have to be replaced by `::`'
-                                    items: {type: string}
-                        examples:
-                            a:
-                                value:
-                                    f: ['SysCheck::SAMPLE_SYSCHECK.XML']
-                            b:
-                                description: 'include some non-existant or forbidden files'
-                                value:
-                                    f: ['SysCheck::SAMPLE_SYSCHECK.XML', 'some rubbish', a/b, ../../README.md]
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token with wokspace number'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: 1337ymca1337666.xxx13370
-                        ws: 1
-            responses:
-                '200':
-                    description: 'OK, roles has been updated'
-                    content:
-                        text/plain:
-                            examples:
-                                a:
-                                    value: 'Eine Datei gelöscht.'
-                                b:
-                                    value: 'Konnte 3 Dateien nicht löschen.'
                 '401':
                     description: 'Not authenticated'
                 '403':

@@ -651,64 +651,6 @@ paths:
         "500":
           description: Server Error
 
-  /php/ws.php/delete:
-    post:
-      summary: delete files
-      description: deletes files from a workspace
-
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                f:
-                  type: array
-                  description: array of file names. path delimiters have to be replaced by `::`
-                  items:
-                    type: string
-            examples:
-              a:
-                value:
-                  f:
-                    - "SysCheck::SAMPLE_SYSCHECK.XML"
-              b:
-                description: include some non-existant or forbidden files
-                value:
-                  f:
-                    - "SysCheck::SAMPLE_SYSCHECK.XML"
-                    - "some rubbish"
-                    - "a/b"
-                    - "../../README.md"
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token with wokspace number
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: 1337ymca1337666.xxx13370
-            ws: 1
-
-      responses:
-        "200":
-          description: OK, roles has been updated
-          content:
-            text/plain:
-              examples:
-                a:
-                  value: "Eine Datei gelöscht."
-                b:
-                  value: "Konnte 3 Dateien nicht löschen."
-
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "404":
-          description: Workspace not found
-        "500":
-          description: Server Error
-
   /php/ws.php/lock:
     post:
       summary: lock workspace

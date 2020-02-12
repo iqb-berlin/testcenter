@@ -99,29 +99,6 @@ $app->group('/php', function(App $app) {
         return $response->withHeader("Warning", "endpoint deprecated");
     });
 
-    $app->post('/ws.php/delete', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
-
-        $workspaceId = $_SESSION['workspace'];
-
-        $requestBody = JSON::decode($request->getBody());
-        $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
-        $filesToDelete = array_map(function($fileAndFolderName) {
-            return str_replace('::', '/', $fileAndFolderName);
-        }, $filesToDelete);
-        $requestBody->f = $filesToDelete;
-
-        $response = $app->subRequest(
-            'DELETE',
-            "/workspace/$workspaceId/files",
-            '',
-            $request->getHeaders(),
-            $request->getCookieParams(),
-            json_encode($requestBody, JSON_UNESCAPED_UNICODE)
-        );
-
-        return $response->withHeader("Warning", "endpoint deprecated");
-    });
-
     $app->post('/ws.php/unlock', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
         $requestBody = JSON::decode($request->getBody());

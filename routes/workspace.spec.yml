@@ -760,19 +760,12 @@ paths:
                   description: array of file names
                   items:
                     type: string
-            examples:
-              a:
-                value:
-                  f:
-                    - "SysCheck/SAMPLE_SYSCHECK.XML"
-              b:
-                description: include some non-existant or forbidden files
-                value:
-                  f:
-                    - "SysCheck/SAMPLE_SYSCHECK.XML"
-                    - "some rubbish"
-                    - "a/b"
-                    - "../../README.md"
+            example:
+              f:
+                - "SysCheck/SAMPLE_SYSCHECK.XML"
+                - "some rubbish"
+                - "a/b"
+                - "../../README.md"
       parameters:
         - in: header
           name: AuthToken
@@ -790,16 +783,18 @@ paths:
             type: integer
 
       responses:
-        "200":
-          description: OK, roles has been updated
+        "207":
+          description: OK, a list of files
           content:
-            text/plain:
-              examples:
-                a:
-                  value: "Eine Datei gelöscht."
-                b:
-                  value: "Konnte 3 Dateien nicht löschen."
-
+            application/json:
+              example:
+                deleted:
+                  - "SysCheck/SAMPLE_SYSCHECK.XML"
+                did_not_exist:
+                  - "some rubbish"
+                  - "a/b"
+                not_allowed:
+                  - "../../README.md"
         "401":
           description: Not authenticated
         "403":
