@@ -19,7 +19,7 @@ $app->group('/php/sys.php', function(App $app) {
 
         return $response->withHeader("Warning", "endpoint deprecated");
     });
-    
+
 
     $app->post('/workspaces/delete', function (Request $request,  /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
