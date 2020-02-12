@@ -248,14 +248,12 @@ $app->group('/workspace', function(App $app) {
         $workspaceId = $request->getAttribute('ws_id');
 
         if (!isset($requestBody->name) or (!$requestBody->name)) {
-            throw new HttpBadRequestException($request, "New name (n) is missing");
+            throw new HttpBadRequestException($request, "New name (name) is missing");
         }
 
         $dbConnectionSuperAdmin->setWorkspaceName($workspaceId, $requestBody->name);
 
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+        return $response;
     });
 
     $app->patch('/{ws_id}/users', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
