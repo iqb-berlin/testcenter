@@ -841,10 +841,6 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            text/plain:
-              example:
-                "true"
         "401":
           description: Not authenticated
         "403":
@@ -891,10 +887,6 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            text/plain:
-              example:
-                "true"
         "401":
           description: Not authenticated
         "403":

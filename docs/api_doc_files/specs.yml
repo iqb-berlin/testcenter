@@ -1345,9 +1345,6 @@ paths:
             responses:
                 '200':
                     description: OK
-                    content:
-                        text/plain:
-                            example: 'true'
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1391,9 +1388,6 @@ paths:
             responses:
                 '200':
                     description: OK
-                    content:
-                        text/plain:
-                            example: 'true'
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -2055,84 +2049,6 @@ paths:
                                     filedatetimestr: 04.09.2019
                                     type: SysCheck
                                     typelabel: SysCheck
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '500':
-                    description: 'Server Error'
-    /php/ws.php/lock:
-        post:
-            summary: 'lock workspace'
-            description: 'locks a group of booklets in a workspace'
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            properties:
-                                g:
-                                    type: array
-                                    description: 'array of group names'
-                                    items: {type: string}
-                        example:
-                            g:
-                                - group1
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: 1337ymca1337666.xxx13370
-                        ws: 1
-            responses:
-                '200':
-                    description: OK
-                    content:
-                        text/plain:
-                            example: 'true'
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '500':
-                    description: 'Server Error'
-    /php/ws.php/unlock:
-        post:
-            summary: 'unlock workspace'
-            description: 'unlocks a group of bookltes in a workspace'
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            properties:
-                                g:
-                                    type: array
-                                    description: 'array of group names'
-                                    items: {type: string}
-                        example:
-                            g:
-                                - group1
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: 1337ymca1337666.xxx13370
-                        ws: 1
-            responses:
-                '200':
-                    description: OK
-                    content:
-                        text/plain:
-                            example: 'true'
                 '401':
                     description: 'Not authenticated'
                 '403':

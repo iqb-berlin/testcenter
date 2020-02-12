@@ -154,8 +154,7 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
-        $requestBody = JSON::decode($request->getBody());
-        $filesToDelete = isset($requestBody->f) ? $requestBody->f : [];
+        $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
 
         $workspaceController = new WorkspaceController($workspaceId);
 
@@ -166,32 +165,27 @@ $app->group('/workspace', function(App $app) {
 
     $app->post('/{ws_id}/unlock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
-        $requestBody = JSON::decode($request->getBody());
-        $groups = (isset($requestBody->groups)) ? $requestBody->groups : [];
+        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = $request->getAttribute('ws_id');
 
         foreach($groups as $groupName) {
-            $dbConnectionAdmin->changeBookletLockStatus($workspaceId, $groupName, true);
+            $dbConnectionAdmin->changeBookletLockStatus($workspaceId, $groupName, false);
         }
 
-        $response->getBody()->write('true'); // TODO don't give anything back except for status
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+        return $response;
     });
 
 
     $app->post('/{ws_id}/lock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
-        $requestBody = JSON::decode($request->getBody());
-        $groups = (isset($requestBody->groups)) ? $requestBody->groups : [];
+        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = $request->getAttribute('ws_id');
 
         foreach($groups as $groupName) {
             $dbConnectionAdmin->changeBookletLockStatus($workspaceId, $groupName, true);
         }
 
-        $response->getBody()->write('true'); // TODO don't give anything back except for status
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+        return $response;
     });
 
 })
