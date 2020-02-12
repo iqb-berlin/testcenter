@@ -233,15 +233,13 @@ $app->group('/workspace', function(App $app) {
     $app->put('', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
 
         $requestBody = JSON::decode($request->getBody());
-        if (!isset($requestBody->name)) { // TODO I made them required. is that okay?
+        if (!isset($requestBody->name)) {
             throw new HttpBadRequestException($request, "New workspace name missing");
         }
 
         $dbConnectionSuperAdmin->addWorkspace($requestBody->name);
 
-        $response->getBody()->write('true'); // TODO don't give anything back
-
-        return $response->withHeader('Content-type', 'text/plain;charset=UTF-8'); // TODO don't give anything back
+        return $response;
     });
 
     $app->patch('/{ws_id}', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {

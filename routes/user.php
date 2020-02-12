@@ -13,7 +13,7 @@ $app->group('/user', function(App $app) {
     $app->get('/{user_id}/workspaces', function(Request $request, Response $response) use ($dbConnection) {
 
         $userId = $request->getAttribute('user_id');
-        $workspaces = $dbConnection->getWorkspacesByUser($userId);  // TODO original function took name?!
+        $workspaces = $dbConnection->getWorkspacesByUser($userId);
         return $response->withJson($workspaces);
     });
 
@@ -24,7 +24,7 @@ $app->group('/user', function(App $app) {
         $userId = $request->getAttribute('user_id');
 
         if (!isset($requestBody->ws) or (!count($requestBody->ws))) {
-            throw new HttpBadRequestException($request, "Workspace-list (ws) is missing."); // TODO original function took name?!
+            throw new HttpBadRequestException($request, "Workspace-list (ws) is missing.");
         }
 
         $dbConnection->setWorkspaceRightsByUser($userId, $requestBody->ws);

@@ -19,45 +19,7 @@ $app->group('/php/sys.php', function(App $app) {
 
         return $response->withHeader("Warning", "endpoint deprecated");
     });
-
-    $app->post('/workspace/add', function (Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
-
-        $requestBody = JSON::decode($request->getBody());
-        $name = isset($requestBody->n) ? $requestBody->n : "";
-
-        $response = $app->subRequest(
-            'PUT',
-            "/workspace",
-            '',
-            $request->getHeaders(),
-            $request->getCookieParams(),
-            json_encode(array('name' => $name))
-        );
-
-        return $response->withHeader("Warning", "endpoint deprecated");
-    });
-
-    $app->post('/workspace/rename', function (Request $request, Response $response) use ($app) {
-
-        $requestBody = JSON::decode($request->getBody());
-        $name = isset($requestBody->n) ? $requestBody->n : '';
-        $workspaceId = isset($requestBody->ws) ? $requestBody->ws : '';
-
-        if (!$workspaceId) {
-            throw new NotFoundException($request, $response);
-        }
-
-        $response = $app->subRequest(
-            'PATCH',
-            "/workspace/$workspaceId",
-            '',
-            $request->getHeaders(),
-            $request->getCookieParams(),
-            json_encode(array('name' => $name))
-        );
-
-        return $response->withHeader("Warning", "endpoint deprecated");
-    });
+    
 
     $app->post('/workspaces/delete', function (Request $request,  /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app) {
 
