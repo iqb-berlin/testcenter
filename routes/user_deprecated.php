@@ -47,21 +47,6 @@ $app->group('/php/sys.php', function(App $app) {
     });
 
 
-    $app->post('/users/delete', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app, $dbConnection) {
-
-        $response = $app->subRequest(
-            'DELETE',
-            "/users",
-            '',
-            $request->getHeaders(),
-            $request->getCookieParams(),
-            $request->getBody()
-        );
-        $response->getBody()->write('true');
-        return $response->withHeader("Warning", "endpoint deprecated");
-    });
-
-
     $app->post('/user/workspaces', function(Request $request, /** @noinspection PhpUnusedParameterInspection */ Response $response) use ($app, $dbConnection) {
 
         $requestBody = JSON::decode($request->getBody());

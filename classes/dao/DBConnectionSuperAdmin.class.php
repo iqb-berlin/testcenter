@@ -149,10 +149,10 @@ class DBConnectionSuperAdmin extends DBConnection {
     }
 
 
-    public function deleteUsers($usernames) { // TODO take ids, not names // TODO add unit test
+    public function deleteUsers(array $userIds): void { // TODO add unit test
 
-        foreach ($usernames as $username) {
-            $this->_('DELETE FROM users WHERE users.name = :user_name', array(':user_name' => $username));
+        foreach ($userIds as $userId) {
+            $this->_('DELETE FROM users WHERE users.id = :user_id', array(':user_id' => $userId));
         }
     }
 

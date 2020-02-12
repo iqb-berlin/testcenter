@@ -80,48 +80,6 @@ paths:
         "500":
           description: Server Error
 
-  /php/sys.php/users/delete:
-    post:
-      summary: delete some users
-      description: deletes a list of given user-names (not ids!). if the list containes unexistant users, nothing happens.
-
-      parameters:
-        - in: header
-          name: AuthToken
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: 1337ymca1337666.xxx13370
-
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                u:
-                  type: array
-                  items:
-                    type: string
-                    description: user-name (not id)
-            example:
-              u:
-                - secondUser
-
-
-      responses:
-        "200":
-          description: OK, users has been deleted
-          content:
-            text/plain:
-              example:
-                "true"
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "500":
-          description: Server Error
 
   /php/sys.php/user/workspaces:
     post:

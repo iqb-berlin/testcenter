@@ -173,7 +173,8 @@ paths:
 
     delete:
       summary: delete some users
-      description: deletes a list of given user-names (not ids!). if the list containes unexistant users, nothing happens.
+      description: deletes a list of given user-ids. ids wich did not exist get skipped; in other words there is no
+        check if the user existed beforeheand.
 
       parameters:
         - in: header
@@ -193,12 +194,14 @@ paths:
                   type: array
                   items:
                     type: string
-                    description: user-name (not id)
+                    description: user-id
             example:
               u:
-                - secondUser
+                - 2
 
       responses:
+        "200":
+          description: ok
         "401":
           description: Not authenticated
         "403":
