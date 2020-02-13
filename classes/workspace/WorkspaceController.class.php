@@ -405,4 +405,82 @@ class WorkspaceController {
         return $bookletName;
     }
 
+
+    function collectSysCheckReports(array $checkIds) {
+
+        $reportFolderName = $this->_getSysCheckReportsPath();
+        $reportDir = opendir($reportFolderName);
+        $reports = [];
+
+        while (($reportFileName = readdir($reportDir)) !== false) {
+
+            $reportFilePath = $reportFolderName . '/' . $reportFileName;
+
+            if (!is_file($reportFilePath) or !(strtoupper(substr($reportFileName, -5)) == '.JSON')) {
+                continue;
+            }
+
+            $file = file_get_contents($reportFilePath);
+
+            if ($file === false) {
+                throw new HttpError("Could not read File: $reportFilePath", 500);
+            }
+
+            $report = JSON::decode($file, true);
+
+            $sysCheckId = $report['checkId'];
+
+            if (strlen($sysCheckId) == 0) {
+                $sysCheckId = '--';
+                $report['checkId'] = '--';
+            }
+
+            if (in_array($sysCheckId, $checkIds)) {
+
+                $report['fileData'] = array(
+                    'date' => filemtime($reportFilePath),
+                    'datestr' => date('Y-m-d H:i:s', filemtime($reportFilePath)),
+                    'filename' => $reportFilePath
+                );
+
+                $reports[] = $report;
+            }
+        }
+
+        return $reports;
+    }
+
+
+    static function flattenReport(array $report): array {
+
+        $reportSections = ['envData', 'netData', 'questData', 'unitData'];
+        $flatReport = [];
+
+        foreach ($reportSections as $section) {
+
+            if (!isset($report[$section])) {
+                continue;
+            }
+
+            foreach ($report[$section] as $id => $entry) {
+                $flatReport[$entry['label']] = $entry['value'];
+            }
+        }
+
+        return $flatReport;
+    }
+
+
+    private function _getSysCheckReportsPath(): string {
+
+        $sysCheckPath = $this->_workspacePath . '/SysCheck';
+        if (!file_exists($sysCheckPath)) {
+            mkdir($sysCheckPath);
+        }
+        $sysCheckReportsPath = $sysCheckPath . '/reports';
+        if (!file_exists($sysCheckReportsPath)) {
+            mkdir($sysCheckReportsPath);
+        }
+        return $sysCheckReportsPath;
+    }
 }
