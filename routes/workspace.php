@@ -48,7 +48,7 @@ $app->group('/workspace', function(App $app) {
     $app->delete('/{ws_id}/responses', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id');
-        $groups = explode(",", $request->getParam('groups'));
+        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
 
         foreach ($groups as $group) {
             $dbConnectionAdmin->deleteResultData($workspaceId, $group);
