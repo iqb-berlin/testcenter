@@ -188,13 +188,12 @@ $app->group('/workspace', function(App $app) {
         return $response;
     });
 
+    $app->get('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
-    $app->get('/{ws_id}/syscheck/report', function(Request $request, Response $response) use ($dbConnectionAdmin) {
-
-        $checkIds = RequestBodyParser::getRequiredElement($request, 'checkIds');
-        $delimiter = RequestBodyParser::getElementWithDefault($request, 'delimiter', ';');
-        $lineEnding = RequestBodyParser::getElementWithDefault($request, 'lineEnding', '\n');
-        $enclosure = RequestBodyParser::getElementWithDefault($request, 'enclosure', '"');
+        $checkIds = explode(',', $request->getParam('checkIds', ''));
+        $delimiter = $request->getParam('delimiter', ';');
+        $lineEnding = $request->getParam('lineEnding', '\n');
+        $enclosure = $request->getParam('enclosure', '"');
 
         $workspaceId = $request->getAttribute('ws_id');
 
@@ -203,13 +202,25 @@ $app->group('/workspace', function(App $app) {
 
         if ($request->getHeaderLine('Accept') == 'text/csv') {
 
-            $reports = array_map('WorkspaceController::flattenReport', $reports);
-            $response->getBody()->write(CSV::build($reports, array(), $delimiter, $enclosure, $lineEnding));
+            $flatReports = array_map(function(SysCheckReport $report) {return $report->getFlat();}, $reports);
+            $response->getBody()->write(CSV::build($flatReports, array(), $delimiter, $enclosure, $lineEnding));
             return $response->withHeader('Content-type', 'text/csv;charset=UTF-8');
         }
 
+        $reportsArrays = array_map(function(SysCheckReport $report) {return $report->get();}, $reports);
+
+        return $response->withJson($reportsArrays);
+    });
+
+
+    $app->get('/{ws_id}/syscheck-reports/overview', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+
+        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceController = new WorkspaceController($workspaceId);
+        $reports = $workspaceController->getSysCheckReportList();
         return $response->withJson($reports);
     });
+
 
 })
     ->add(new IsWorkspacePermitted())

@@ -406,7 +406,32 @@ class WorkspaceController {
     }
 
 
-    function collectSysCheckReports(array $checkIds) {
+    function getSysCheckReportList() {
+
+        $allReports = $this->collectSysCheckReports();
+
+        $allReportsByCheckIds = array_reduce($allReports, function($agg, SysCheckReport $report) {
+            if (!isset($agg[$report->getCheckId()])) {
+                $agg[$report->getCheckId()] = [$report];
+            } else {
+                $agg[$report->getCheckId()][] = $report;
+            }
+            return $agg;
+        }, []);
+
+        return array_map(function(array $reportSet, string $checkId) {
+
+            return [
+                'id' => $checkId,
+                'count' => count($reportSet),
+                'label' => $reportSet[0]->getCheckLabel(),
+                'details' => SysCheckReport::getStatistics($reportSet)
+            ];
+        }, $allReportsByCheckIds, array_keys($allReportsByCheckIds));
+    }
+
+
+    function collectSysCheckReports(array $filterCheckIds = null): array {
 
         $reportFolderName = $this->_getSysCheckReportsPath();
         $reportDir = opendir($reportFolderName);
@@ -420,54 +445,15 @@ class WorkspaceController {
                 continue;
             }
 
-            $file = file_get_contents($reportFilePath);
+            $report = new SysCheckReport($reportFilePath);
 
-            if ($file === false) {
-                throw new HttpError("Could not read File: $reportFilePath", 500);
-            }
-
-            $report = JSON::decode($file, true);
-
-            $sysCheckId = $report['checkId'];
-
-            if (strlen($sysCheckId) == 0) {
-                $sysCheckId = '--';
-                $report['checkId'] = '--';
-            }
-
-            if (in_array($sysCheckId, $checkIds)) {
-
-                $report['fileData'] = array(
-                    'date' => filemtime($reportFilePath),
-                    'datestr' => date('Y-m-d H:i:s', filemtime($reportFilePath)),
-                    'filename' => $reportFilePath
-                );
+            if (($filterCheckIds === null) or (in_array($report->getCheckId(), $filterCheckIds))) {
 
                 $reports[] = $report;
             }
         }
 
         return $reports;
-    }
-
-
-    static function flattenReport(array $report): array {
-
-        $reportSections = ['envData', 'netData', 'questData', 'unitData'];
-        $flatReport = [];
-
-        foreach ($reportSections as $section) {
-
-            if (!isset($report[$section])) {
-                continue;
-            }
-
-            foreach ($report[$section] as $id => $entry) {
-                $flatReport[$entry['label']] = $entry['value'];
-            }
-        }
-
-        return $flatReport;
     }
 
 
