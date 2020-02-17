@@ -48,7 +48,7 @@ class CSV {
             : CSV::collectColumnNamesFromHeterogeneousObjects($data);
         $enclosure = in_array($enclosure, CSV::allowedEnclosures) ? $enclosure : '"';
         $delimiter = in_array($delimiter, CSV::allowedDelimiters) ? $delimiter : ',';
-        $lineDelimiter = in_array($lineDelimiter, CSV::allowedLineEndings) ? $delimiter : "\n";
+        $lineDelimiter = in_array($lineDelimiter, CSV::allowedLineEndings) ? $lineDelimiter : "\n";
 
         $csvRows = array();
 
@@ -77,7 +77,7 @@ class CSV {
             array_map(
                 function($cell) use ($enclosure, $delimiter) {
 //                    return $cell;
-                    return preg_replace('#' . $enclosure . '#', '\\' . $enclosure, $cell);
+                    return $enclosure . preg_replace('#(\\' . $enclosure . ')#', '`', $cell) . $enclosure;
                 },
                 $row
             )

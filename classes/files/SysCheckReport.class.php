@@ -7,6 +7,7 @@ class SysCheckReport {
     private $_report = array();
     private $_checkId = '--';
     private $_checkLabel = '--';
+    private $_fileName = '';
 
     function __construct($reportFilePath) {
 
@@ -30,9 +31,11 @@ class SysCheckReport {
             $this->_checkLabel = $this->_report['checkLabel'];
         }
 
+        $this->_fileName = basename($reportFilePath);
+
         $this->addEntry('fileData', 'date', 'DatumTS', (string) filemtime($reportFilePath));
         $this->addEntry('fileData', 'datestr', 'Datum', date('Y-m-d H:i:s', filemtime($reportFilePath)));
-        $this->addEntry('fileData', 'filename', 'FileName', $reportFilePath);
+        $this->addEntry('fileData', 'filename', 'FileName', basename($reportFilePath));
     }
 
 
@@ -90,7 +93,8 @@ class SysCheckReport {
     function getDigest(): array {
 
         return [
-            'os' =>  $this->_getValueIfExists('envData', 'Betriebssystem'),
+            'os' =>  $this->_getValueIfExists('envData', 'Betriebssystem') . ' '
+                . $this->_getValueIfExists('envData', 'Betriebssystem-Version'),
             'browser' => $this->_getValueIfExists('envData', 'Browser') . ' '
                 . $this->_getValueIfExists('envData', 'Browser-Version'),
         ];
@@ -130,6 +134,12 @@ class SysCheckReport {
             }
             return $agg;
         }, []);
+    }
+
+
+    public function getFileName(): string {
+
+        return $this->_fileName;
     }
 
 }

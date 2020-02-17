@@ -81,7 +81,7 @@ class WorkspaceController {
 
 
     /**
-     * @param $filesToDelete - array containing file names
+     * @param $filesToDelete - array containing file paths local relative to this workspace
      * @return array
      */
     function deleteFiles(array $filesToDelete): array {
@@ -468,5 +468,17 @@ class WorkspaceController {
             mkdir($sysCheckReportsPath);
         }
         return $sysCheckReportsPath;
+    }
+
+
+    public function deleteSysCheckReports(array $checkIds) : array {
+
+        $reports = $this->collectSysCheckReports($checkIds);
+
+        $filesToDelete = array_map(function(SysCheckReport $report) {
+            return 'SysCheck/reports/' . $report->getFileName();
+        }, $reports);
+
+        return $this->deleteFiles($filesToDelete);
     }
 }

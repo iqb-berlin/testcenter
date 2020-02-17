@@ -222,6 +222,17 @@ $app->group('/workspace', function(App $app) {
     });
 
 
+    $app->delete('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+
+        $workspaceId = $request->getAttribute('ws_id');
+        $checkIds = RequestBodyParser::getElementWithDefault($request,'checkIds', []);
+
+        $workspaceController = new WorkspaceController($workspaceId);
+        $fileDeletionReport = $workspaceController->deleteSysCheckReports($checkIds);
+        return $response->withJson($fileDeletionReport)->withStatus(207);
+    });
+
+
 })
     ->add(new IsWorkspacePermitted())
     ->add(new RequireAdminToken());
