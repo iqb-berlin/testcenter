@@ -11,14 +11,14 @@
     <Project>sample</Project>
   </Metadata>
 
-  <Config unit="UNIT.SAMPLE" savekey="saveme" skipnetwork="true">
+  <Config unit="UNIT.SAMPLE" savekey="saveme" skipnetwork="false">
     <UploadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="10000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">100000, 200000, 400000, 800000</UploadSpeed>
     <DownloadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="200000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">400000, 800000, 1600000, 3200000</DownloadSpeed>
     <Q id="1" type="header" prompt="A questionaire"/>
     <Q id="2" type="string" prompt="Name"/>
     <Q id="3" type="select" prompt="Who am I?">Harvy Dent#Two-Face</Q>
     <Q id="4" type="text" prompt="Why so serious?" />
-    <Q id="5" type="check" prompt="Check thi out" />
-    <Q id="6" type="radio" prompt="All we here is">Radui Gaga#Radio Gugu</Q>
+    <Q id="5" type="check" prompt="Check this out" />
+    <Q id="6" type="radio" prompt="All we here is">Radio Gaga#Radio Gugu</Q>
   </Config>
 </SysCheck>

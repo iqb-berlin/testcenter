@@ -32,17 +32,16 @@ class WorkspaceInitializer {
     }
 
     /**
-     * @param $workspaceId
-     * @param $filename - Filename in sampledata directory. For resources with extension.
+     * @param int $workspaceId
+     * @param string $filename - Filename in sampledata directory.
      * @param array $vars - key-value list to replace placeholders in sample files
-     * @param bool $isResource - set true if it's a unitplayer or voud file
+     * @param string|null $destination - destination folder like "SysCheck/Reports" or "Resource". Null for auto.
      * @throws Exception
      */
-    private function _importSampleFile(int $workspaceId, string $filename, array $vars = array(), bool $isResource = false) {
+    private function _importSampleFile(int $workspaceId, string $filename, array $vars = array(), string $destination = null) {
 
         $path = ROOT_DIR;
-        $ext = $isResource ? '' : '.xml';
-        $importFileName = "$path/sampledata/$filename$ext";
+        $importFileName = "$path/sampledata/$filename";
         $sampleFileContent = file_get_contents($importFileName);
 
         if (!$sampleFileContent) {
@@ -53,8 +52,8 @@ class WorkspaceInitializer {
             $sampleFileContent = str_replace('__' . strtoupper($key) . '__', $value, $sampleFileContent);
         }
 
-        $destinationSubDir = $isResource ? 'Resource' : $filename;
-        $fileNameToWrite = $this->_createSubdirectories("$path/vo_data/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename$ext");
+        $destinationSubDir = $destination ? $destination : basename($filename, '.xml');
+        $fileNameToWrite = $this->_createSubdirectories("$path/vo_data/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
 
         if (!file_put_contents($fileNameToWrite, $sampleFileContent)) {
             throw new Exception("Could not write file: $fileNameToWrite");
@@ -93,11 +92,12 @@ class WorkspaceInitializer {
      */
     public function importSampleData(int $workspaceId, array $parameters) {
 
-        $this->_importSampleFile($workspaceId, 'Booklet', $parameters);
-        $this->_importSampleFile($workspaceId, 'Testtakers', $parameters);
-        $this->_importSampleFile($workspaceId, 'SysCheck', $parameters);
-        $this->_importSampleFile($workspaceId, 'Unit', $parameters);
-        $this->_importSampleFile($workspaceId, 'Player.html', $parameters, true);
+        $this->_importSampleFile($workspaceId, 'Booklet.xml', $parameters);
+        $this->_importSampleFile($workspaceId, 'Testtakers.xml', $parameters);
+        $this->_importSampleFile($workspaceId, 'SysCheck.xml', $parameters);
+        $this->_importSampleFile($workspaceId, 'Unit.xml', $parameters);
+        $this->_importSampleFile($workspaceId, 'Player.html', $parameters, 'Resource');
+        $this->_importSampleFile($workspaceId, 'SysCheck-Report.json', $parameters, 'SysCheck/reports');
     }
 
     /**
