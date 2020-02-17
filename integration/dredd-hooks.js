@@ -113,7 +113,7 @@ dreddHooks.before('/php/uploadFile.php > upload file > 200 > application/json', 
 dreddHooks.before('/workspace/{ws_id}/file > upload file > 200 > application/json', attachUnitFile);
 
 dreddHooks.after('get reports > GET > 200 > text/csv', function(transaction, done) {
-    
+
     //because of timestamps in the end
     transaction.expected.body = transaction.expected.body.substring(0, transaction.expected.body.length - 64);
     transaction.real.body = transaction.real.body.substring(0, transaction.real.body.length - 64);
