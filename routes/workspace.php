@@ -109,7 +109,7 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/file/{type}/{filename}', function(Request $request, Response $response) use ($dbConnectionAdmin) {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
-        $fileType = $request->getAttribute('type', '[type missing]'); // TODO basename
+        $fileType = $request->getAttribute('type', '[type missing]');
         $filename = $request->getAttribute('filename', '[filename missing]');
 
         $fullFilename = ROOT_DIR . "/vo_data/ws_$workspaceId/$fileType/$filename";
@@ -138,7 +138,7 @@ $app->group('/workspace', function(App $app) {
 
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
 
-        return $response->withJson($importedFiles);
+        return $response->withJson($importedFiles); // TODO return 201
     });
 
     $app->get('/{ws_id}/files', function(Request $request, Response $response) {
@@ -200,7 +200,10 @@ $app->group('/workspace', function(App $app) {
         $workspaceController = new WorkspaceController($workspaceId);
         $reports = $workspaceController->collectSysCheckReports($checkIds);
 
-        if ($request->getHeaderLine('Accept') == 'text/csv') {
+        # TODO remove $acceptWorkaround if https://github.com/apiaryio/api-elements.js/issues/413 is resolved
+        $acceptWorkaround = $request->getParam('format', 'json') == 'csv';
+
+        if (($request->getHeaderLine('Accept') == 'text/csv') or $acceptWorkaround) {
 
             $flatReports = array_map(function(SysCheckReport $report) {return $report->getFlat();}, $reports);
             $response->getBody()->write(CSV::build($flatReports, array(), $delimiter, $enclosure, $lineEnding));

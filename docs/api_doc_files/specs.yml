@@ -1552,8 +1552,119 @@ paths:
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/syscheck-reports':
-        summary: 'get reports from selected syschecks'
-        description: 'return a compilation of reports from given syschecks'
+        summary: 'get reports'
+        description: 'return a compilation of reports from given syschecks in JSON or CSV format.'
+        get:
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token with wokspace number'
+                    schema:
+                        $ref: '#/components/schemas/auth'
+                    example:
+                        at: 1337ymca1337666.xxx13370
+                -
+                    in: header
+                    name: Accept
+                    description: 'Response format: application/json or text/csv'
+                    example: text/csv
+                -
+                    in: query
+                    name: format
+                    description: 'Response format: json or csv. This is implemented because of a Bug in Dredd and will be removed'
+                    example: csv
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+                -
+                    in: query
+                    name: checkIds
+                    description: 'a comma separated list of sys-check-ids'
+                    example: SYSCHECK.SAMPLE
+                -
+                    in: query
+                    name: delimiter
+                    description: '(optional) for CSV output only - delimiter character for cells. Allowed Values: '','', '';'', ''|'', ''\t'', ''\s''. Defaults to '',''.'
+                    example: ','
+                -
+                    in: query
+                    name: lineEnding
+                    description: "(optional) for CSV output only - character for line endings. Allowed Values: '\\r\\n' (Windows), '\\r' (Mac), '\\n' (Unix) Defaults to '\n'."
+                    example: ""
+                -
+                    in: query
+                    name: enclosure
+                    description: '(optional) for CSV output only - quotation character for cell enclosure. Allowed Values: " and ''. Defaults to ".'
+                    example: '"'
+            responses:
+                '200':
+                    description: 'compiled data of all reports from selected sys-checks'
+                    content:
+                        text/csv:
+                            schema:
+                                type: string
+                            example: "\"Betriebssystem\",\"Betriebssystem-Version\",\"Bildschirm-Auflösung\",\"Browser\",\"Browser-Cookies aktiviert\",\"Browser-Plugins:\",\"Browser-Sprache\",\"Browser-Version\",\"CPU-Architektur\",\"CPU-Kerne\",\"Fenster-Größe\",\"Downloadgeschwindigkeit\",\"Downloadgeschwindigkeit benötigt\",\"Downloadbewertung\",\"Uploadgeschwindigkeit\",\"Uploadgeschwindigkeit benötigt\",\"Uploadbewertung\",\"Gesamtbewertung\",\"RoundTrip in Ms\",\"Netzwerktyp nach Leistung\",\"Downlink MB/s\",\"Name\",\"Who am I?\",\"Why so serious?\",\"Check this out\",\"All we here is\",\"loading time\",\"DatumTS\",\"Datum\",\"FileName\"\n\"Linux\",\"x86_64\",\"1680 x 1050\",\"Chrome\",\"1\",\"Chromium PDF Plugin, Chromium PDF Viewer\",\"en-US\",\"79\",\"amd64\",\"8\",\"1680 x 914\",\"75.72 Mbit/s\",\"8.19 kbit/s\",\"good\",\"2.84 Mbit/s\",\"8.19 kbit/s\",\"good\",\"good\",\"100\",\"4g\",\"1.45\",\"Sam Sample\",\"Harvy Dent\",\"Because.\",\"1\",\"Radio Gaga\",\"1594.295166015625\",\"1581956313\",\"2020-02-17 17:18:33\",\"SAMPLE_SYSCHECK-REPORT.JSON\""
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+        delete:
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token with wokspace number'
+                    schema:
+                        $ref: '#/components/schemas/auth'
+                    example:
+                        at: 1337ymca1337666.xxx13370
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                checkIds:
+                                    type: array
+                                    description: 'array of sys-check-Ids'
+                                    items: {type: string}
+                            required:
+                                - checkIds
+                        example:
+                            checkIds:
+                                - SYSCHECK.SAMPLE
+            responses:
+                '207':
+                    description: 'OK, a list of deleted files'
+                    content:
+                        application/json:
+                            example:
+                                deleted:
+                                    - SysCheck/SAMPLE_SYSCHECK.XML
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/workspace/{ws_id}/syscheck-reports/overview':
+        summary: 'get a list of all sys-check-reports'
+        description: 'returns a lista a list of all sys-check-reports with most important features grouped by the sys-checks.'
         get:
             parameters:
                 -
@@ -1572,24 +1683,11 @@ paths:
                     required: true
                     schema:
                         type: integer
-                -
-                    in: query
-                    name: groups
-                    schema:
-                        type: object
-                        properties:
-                            checkIds:
-                                type: string
-                                description: 'a comma separated list of ids of syscheck-configs.'
-                    example:
-                        checkIds: SYSCHECK.SAMPLE
             responses:
                 '200':
-                    description: JSON
+                    description: 'List of Sys-Checks'
                     content:
                         application/json:
-                            schema:
-                                $ref: '#/components/schemas/user_list'
                             example:
                                 -
                                     name: super
