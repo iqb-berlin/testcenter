@@ -1,5 +1,8 @@
 <?php
+
+
 class ResourceFile {
+
     private $isXml = false;
     private $size = 0;
     private $filedate;

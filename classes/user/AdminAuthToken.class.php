@@ -1,5 +1,6 @@
 <?php
 
+
 class AdminAuthToken extends AuthToken {
 
     const type = "admin";

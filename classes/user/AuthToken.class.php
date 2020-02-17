@@ -1,5 +1,6 @@
 <?php
 
+
 abstract class AuthToken {
 
     const type = 'abstract token';

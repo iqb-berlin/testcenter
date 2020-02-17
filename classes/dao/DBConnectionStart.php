@@ -1,9 +1,4 @@
 <?php
-// www.IQB.hu-berlin.de
-// Bărbulescu, Mechtel
-// 2018, 2019
-// license: MIT
-
 
 
 class DBConnectionStart extends DBConnection {

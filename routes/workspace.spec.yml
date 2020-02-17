@@ -121,7 +121,6 @@ paths:
       responses:
         "200":
           description: File contents
-
         "404":
           description: workspace or file not found
         "401":
@@ -1068,3 +1067,105 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
+
+  /workspace/{ws_id}/syscheck-reports:
+
+    summary: get reports from selected syschecks
+    description: return a compilation of reports from given syschecks
+
+    get:
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: checkIds
+          schema:
+            type: object
+            properties:
+              checkIds:
+                type: string
+                description: a comma separated list of ids of syscheck-configs.
+          example:
+            checkIds: "SYSCHECK.SAMPLE"
+      responses:
+        "200":
+          description: JSON
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/user_list'
+              example:
+                - name: super
+                  id: '1'
+                  selected: true
+                  role: 'RW'
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+    delete:
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token with wokspace number
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth'
+          example:
+            at: 1337ymca1337666.xxx13370
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: checkIds
+          schema:
+            type: object
+            properties:
+              checkIds:
+                type: string
+                description: a comma separated list of ids of syscheck-configs.
+          example:
+            checkIds: "SYSCHECK.SAMPLE"
+      responses:
+        "207":
+          description: OK, a list of deleted files
+          content:
+            application/json:
+              example:
+                deleted:
+                  - "SysCheck/SAMPLE_SYSCHECK.XML"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+
+
+
+
+
+
+
+
+
+

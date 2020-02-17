@@ -1,5 +1,6 @@
 <?php
 
+
 class SpecCollector {
 
     static function collectSpecs($dir) {

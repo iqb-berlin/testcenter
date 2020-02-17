@@ -44,7 +44,6 @@ dreddHooks.beforeEach(function(transaction, done) {
             changeAuthToken(transaction,{at: '__invalid_token__'});
             break;
         default:
-            dreddHooks.log("IA HAVE TO SKIIIIIP");
             transaction.skip = true;
             return done();
     }
