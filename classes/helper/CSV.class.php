@@ -1,5 +1,6 @@
 <?php
 
+// TODO unit Test
 
 class CSV {
 
@@ -76,7 +77,6 @@ class CSV {
             $delimiter,
             array_map(
                 function($cell) use ($enclosure, $delimiter) {
-//                    return $cell;
                     return $enclosure . preg_replace('#(\\' . $enclosure . ')#', '`', $cell) . $enclosure;
                 },
                 $row
