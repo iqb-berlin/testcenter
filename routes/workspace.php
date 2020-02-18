@@ -207,7 +207,7 @@ $app->group('/workspace', function(App $app) {
 
             $flatReports = array_map(function(SysCheckReport $report) {return $report->getFlat();}, $reports);
             $response->getBody()->write(CSV::build($flatReports, array(), $delimiter, $enclosure, $lineEnding));
-            return $response->withHeader('Content-type', 'text/csv;charset=UTF-8');
+            return $response->withHeader('Content-type', 'text/csv');
         }
 
         $reportsArrays = array_map(function(SysCheckReport $report) {return $report->get();}, $reports);

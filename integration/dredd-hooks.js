@@ -51,7 +51,8 @@ dreddHooks.beforeEach(function(transaction, done) {
     // make sure, sample files are available
     [
         {src: '../sampledata/Unit.xml', target: '../vo_data/ws_1/Unit/SAMPLE_UNIT.XML'},
-        {src: '../sampledata/SysCheck.xml', target: '../vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML'}
+        {src: '../sampledata/SysCheck.xml', target: '../vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML'},
+        {src: '../sampledata/SysCheck-Report.json', target: '../vo_data/ws_1/SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON'}
     ].forEach(copyFile => {
         if (!fs.existsSync(copyFile.target)) {
             fs.copyFileSync(copyFile.src, copyFile.target);
@@ -111,11 +112,3 @@ const attachUnitFile = async function(transaction, done) {
 
 dreddHooks.before('/php/uploadFile.php > upload file > 200 > application/json', attachUnitFile);
 dreddHooks.before('/workspace/{ws_id}/file > upload file > 200 > application/json', attachUnitFile);
-
-dreddHooks.after('get reports > GET > 200 > text/csv', function(transaction, done) {
-
-    //because of timestamps in the end
-    transaction.expected.body = transaction.expected.body.substring(0, transaction.expected.body.length - 64);
-    transaction.real.body = transaction.real.body.substring(0, transaction.real.body.length - 64);
-    done();
-});
