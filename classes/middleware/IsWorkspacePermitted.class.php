@@ -7,6 +7,16 @@ use Slim\Http\Response;
 
 class IsWorkspacePermitted {
 
+
+    private $_necessaryRole = "";
+
+
+    function __construct(string $necessaryRole = '') {
+
+        $this->_necessaryRole = $necessaryRole;
+    }
+
+
     /**
      * @param Request $request
      * @param Response $response
@@ -31,6 +41,11 @@ class IsWorkspacePermitted {
 
         if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($authToken->getToken(), $params['ws_id'])) {
             throw new HttpForbiddenException($request,"Access to workspace ws_{$params['ws_id']} is not provided.");
+        }
+
+        $userRoleOnWorkspace = $role = $dbConnectionAdmin->getWorkspaceRole($authToken->getToken(), $params['ws_id']);
+        if ($this->_necessaryRole and (in_array($this->_necessaryRole, Role::withChildren($userRoleOnWorkspace)))) {
+            throw new HttpForbiddenException($request,"Access to workspace ws_{$params['ws_id']} is not allowed with role `{$role}`.");
         }
 
         return $next($request, $response);
