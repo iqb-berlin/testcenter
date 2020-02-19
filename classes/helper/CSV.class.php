@@ -28,10 +28,6 @@ class CSV {
      * green,circle,
      * blue,,dotted
      *
-     * Stand
-     * TODO test escape sequence
-     * write unit test
-     * write spec
      *
      * @param array $data - array of (assoc) arrays. keys are columns names, values are cell values
      * @param array $columnNames - names of columns to be written in csv. if empty, it will take all keys from the
