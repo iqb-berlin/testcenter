@@ -9,6 +9,7 @@ class ErrorHandler {
         $errorMessage = $throwable->getMessage();
         $errorPlace = $throwable->getFile() . ' | line ' . $throwable->getLine();
         $trace = $throwable->getTraceAsString();
+        $errorUniqueId = uniqid('error-', true);
 
         if (!is_a($throwable, "Slim\Exception\HttpException")) {
             if (is_a($throwable, 'HttpError')) {
@@ -18,10 +19,10 @@ class ErrorHandler {
             }
         }
 
-        $log = array_merge(
-            array($throwable->getTitle(), $throwable->getDescription(), $errorMessage, $errorPlace),
-            explode("\n", $trace)
-        );
+        $log = array($errorUniqueId, $throwable->getTitle(), $throwable->getDescription(), $errorMessage, $errorPlace);
+        if ($throwable->getCode() >= 500) {
+            $log = array_merge($log, explode("\n", $trace));
+        }
 
         foreach ($log as $errorText) {
             if ($errorText) {
@@ -32,6 +33,7 @@ class ErrorHandler {
         return $response
             ->withStatus($throwable->getCode())
             ->withHeader('Content-Type', 'text/html')
+            ->withHeader('Error-ID', $errorUniqueId)
             ->write($throwable->getMessage() ? $throwable->getMessage() : $throwable->getDescription());
     }
 }
