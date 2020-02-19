@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+/** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
 require_once "classes/helper/Role.class.php";

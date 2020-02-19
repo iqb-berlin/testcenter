@@ -91,9 +91,9 @@ class CSV {
      */
     static function collectColumnNamesFromHeterogeneousObjects(array $data): array {
 
-        return array_unique(array_reduce($data, function($agg, $array) {
+        return array_values(array_unique(array_reduce($data, function($agg, $array) {
             return array_merge($agg, array_keys($array));
-        }, array()));
+        }, array())));
     }
 
 }
