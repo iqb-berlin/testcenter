@@ -7,7 +7,7 @@ try {
 
     define('ROOT_DIR', dirname(__FILE__));
 
-    require_once ROOT_DIR . "/vendor/autoload.php";
+    require_once "vendor/autoload.php";
     require_once "autoload.php";
 
     session_start();
@@ -25,11 +25,6 @@ try {
     include_once 'routes/system.php';
     include_once 'routes/workspace.php';
     include_once 'routes/user.php';
-
-    include_once 'routes/user_deprecated.php';
-    include_once 'routes/login_deprecated.php';
-    include_once 'routes/workspace_deprecated.php';
-    include_once 'routes/system_deprecated.php';
 
     include_once 'routes/php_tc_deprecated.php';
 
