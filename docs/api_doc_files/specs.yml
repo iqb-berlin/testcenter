@@ -16,7 +16,7 @@ paths:
                                 - '[GET] /list/routes'
     /specstatus:
         get:
-            summary: 'temporaray helper endpoint'
+            summary: 'temporary helper endpoint'
             responses:
                 '200':
                     description: OK
@@ -49,13 +49,13 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/login_response'
                             example:
-                                admintoken: 1337ymca1337666.xxx13370
+                                admintoken: user000000000.0000000000
                                 name: super
                                 workspaces:
                                     - {id: '1', name: example_workspace, role: RW}
                                 is_superadmin: true
                 '202':
-                    description: 'User has account but neither workspace nor admin priviliges'
+                    description: 'User has account but neither workspace nor super-admin privilige'
                 '400':
                     description: 'Insufficent Crendetials'
                 '500':
@@ -68,10 +68,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: __super_admin_token__
+                        at: user000000000.superadmin0
             responses:
                 '200':
                     description: 'List of Workspaces'
@@ -96,10 +97,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
             requestBody:
                 content:
                     application/json:
@@ -129,11 +131,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
             responses:
                 '200':
                     description: 'List of users'
@@ -160,10 +162,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
             requestBody:
                 content:
                     application/json:
@@ -193,10 +196,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
                 -
                     in: path
                     name: user_id
@@ -231,10 +235,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
                 -
                     in: path
                     name: user_id
@@ -276,10 +281,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
             requestBody:
                 content:
                     application/json:
@@ -289,7 +295,7 @@ paths:
                             n: thirdUser
                             p: thirdUsersPassword
             responses:
-                '200':
+                '201':
                     description: 'OK, user has been added'
                 '401':
                     description: 'Not authenticated'
@@ -305,10 +311,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
                 -
                     in: path
                     name: user_id
@@ -1125,7 +1132,7 @@ paths:
                         example:
                             name: 'new work space'
             responses:
-                '200':
+                '201':
                     description: 'OK, workspace has been added'
                 '401':
                     description: 'Not authenticated'
@@ -1411,7 +1418,7 @@ components:
                 at:
                     type: string
                     description: authtoken
-                    example: 1337ymca1337666.xxx13370
+                    example: user000000000.superadmin0
             required:
                 - at
         login_request:

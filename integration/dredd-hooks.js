@@ -4,6 +4,8 @@ const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
 
 const stash = {};
+
+const skipAfterFirstFail = true; // change this to debug
 let skipTheRest = false;
 
 
@@ -26,7 +28,7 @@ dreddHooks.beforeEachValidation(function(transaction) {
 dreddHooks.beforeEach(function(transaction, done) {
 
     // skip everything after first failed test
-    if (skipTheRest) {
+    if (skipTheRest && skipAfterFirstFail) {
         transaction.skip = true;
         return done();
     }
@@ -34,6 +36,7 @@ dreddHooks.beforeEach(function(transaction, done) {
     // inject login credentials if necessary
     switch (transaction.expected.statusCode) {
         case '200':
+        case '201':
         case '207':
             changeAuthToken(transaction,{at: stash.authToken});
             break;

@@ -122,7 +122,7 @@ paths:
               p: thirdUsersPassword
 
       responses:
-        "200":
+        "201":
           description: OK, user has been added
         "401":
           description: Not authenticated

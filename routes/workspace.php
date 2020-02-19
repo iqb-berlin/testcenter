@@ -283,7 +283,7 @@ $app->group('/workspace', function(App $app) {
 
         $dbConnectionSuperAdmin->addWorkspace($requestBody->name);
 
-        return $response; // TODO return 201
+        return $response->withStatus(201);
     });
 
     $app->patch('/{ws_id}', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {

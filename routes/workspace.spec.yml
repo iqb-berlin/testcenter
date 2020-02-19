@@ -919,7 +919,7 @@ paths:
               name: "new work space"
 
       responses:
-        "200":
+        "201":
           description: OK, workspace has been added
         "401":
           description: Not authenticated

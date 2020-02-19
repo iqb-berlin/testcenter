@@ -42,7 +42,7 @@ $app->group('/user', function(App $app) {
 
         $dbConnection->addUser($requestBody->n, $requestBody->p);
 
-        return $response; // TODO return 201
+        return $response->withStatus(201);
     });
 
 
