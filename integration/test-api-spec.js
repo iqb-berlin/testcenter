@@ -218,3 +218,10 @@ exports.repeat_dredd_test = gulp.series(
     'prepare_spec_for_dredd',
     'run_dredd'
 );
+
+exports.update_specs = gulp.series(
+    'start',
+    'compile_spec_files',
+    'prepare_spec_for_dredd',
+    'update_docs'
+);
