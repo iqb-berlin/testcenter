@@ -638,11 +638,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "MO" for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.mo00000000
                 -
                     in: path
                     name: ws_id
@@ -700,11 +700,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -743,16 +743,16 @@ paths:
     '/workspace/{ws_id}/logs':
         get:
             summary: 'get logs'
-            description: 'retrieves unit and bookltes logs from this workspace'
+            description: 'retrieves unit and booklet logs from this workspace'
             parameters:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -818,11 +818,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -872,11 +872,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.rw00000000
                 -
                     in: path
                     name: ws_id
@@ -916,11 +916,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -964,11 +964,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -1038,11 +1038,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: auth-token
+                    description: 'auth-token for admin-user with role at least "MO" (monitor only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.mo00000000
                 -
                     in: path
                     name: ws_id
@@ -1087,11 +1087,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -1138,11 +1138,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.rw00000000
                 -
                     in: path
                     name: ws_id
@@ -1185,11 +1185,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -1255,6 +1255,23 @@ paths:
         delete:
             summary: 'delete files'
             description: 'deletes files from a workspace'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
+                    schema:
+                        $ref: '#/components/schemas/auth'
+                    example:
+                        at: user000000000.rw00000000
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
             requestBody:
                 content:
                     application/json:
@@ -1270,23 +1287,6 @@ paths:
                                 - 'some rubbish'
                                 - a/b
                                 - ../../README.md
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: auth-token
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: 1337ymca1337666.xxx13370
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
             responses:
                 '207':
                     description: 'OK, a list of files'
@@ -1312,6 +1312,23 @@ paths:
         post:
             summary: 'lock workspace'
             description: 'locks a group of booklets in a workspace'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
+                    schema:
+                        $ref: '#/components/schemas/auth'
+                    example:
+                        at: user000000000.rw00000000
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
             requestBody:
                 content:
                     application/json:
@@ -1324,22 +1341,6 @@ paths:
                         example:
                             groups:
                                 - group1
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: 1337ymca1337666.xxx13370
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
             responses:
                 '200':
                     description: OK
@@ -1355,6 +1356,23 @@ paths:
         post:
             summary: 'unlock workspace'
             description: 'unlocks a group of bookltes in a workspace'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
+                    schema:
+                        $ref: '#/components/schemas/auth'
+                    example:
+                        at: user000000000.rw00000000
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
             requestBody:
                 content:
                     application/json:
@@ -1367,22 +1385,6 @@ paths:
                         example:
                             groups:
                                 - group1
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: 1337ymca1337666.xxx13370
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
             responses:
                 '200':
                     description: OK
@@ -1402,10 +1404,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
             requestBody:
                 content:
                     application/json:
@@ -1433,11 +1436,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
                 -
                     in: path
                     name: ws_id
@@ -1475,10 +1478,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
                 -
                     in: path
                     name: ws_id
@@ -1519,11 +1523,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with super-admin privilege'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.superadmin0
                 -
                     in: path
                     name: ws_id
@@ -1559,11 +1563,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: query
                     name: format
@@ -1611,11 +1615,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.rw00000000
                 -
                     in: path
                     name: ws_id
@@ -1660,11 +1664,11 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token with wokspace number'
+                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
                     example:
-                        at: 1337ymca1337666.xxx13370
+                        at: user000000000.ro00000000
                 -
                     in: path
                     name: ws_id
@@ -2209,9 +2213,6 @@ components:
                     type: string
                     description: authtoken
                     example: 1337ymca1337666.xxx13370
-                ws:
-                    type: integer
-                    description: workspace-id
             required:
                 - at
         login_request:

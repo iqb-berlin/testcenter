@@ -44,8 +44,9 @@ class IsWorkspacePermitted {
         }
 
         $userRoleOnWorkspace = $role = $dbConnectionAdmin->getWorkspaceRole($authToken->getToken(), $params['ws_id']);
-        if ($this->_necessaryRole and (in_array($this->_necessaryRole, Role::withChildren($userRoleOnWorkspace)))) {
-            throw new HttpForbiddenException($request,"Access to workspace ws_{$params['ws_id']} is not allowed with role `{$role}`.");
+
+        if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Role::withChildren($userRoleOnWorkspace)))) {
+            throw new HttpForbiddenException($request,"Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");
         }
 
         return $next($request, $response);

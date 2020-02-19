@@ -17,9 +17,6 @@ components:
           type: string
           description: authtoken
           example: 1337ymca1337666.xxx13370
-        ws:
-          type: integer
-          description: workspace-id
       required:
         - at
 
