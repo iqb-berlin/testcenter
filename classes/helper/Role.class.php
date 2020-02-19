@@ -1,7 +1,6 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-// TODO unit Test
 
 class Role {
 
