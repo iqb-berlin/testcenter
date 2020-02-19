@@ -11,15 +11,14 @@ class WorkspaceController {
 
     function __construct(int $workspaceId) {
 
-        // TODO check here if ws exists could be found
         $this->_workspaceId = $workspaceId;
 
         $this->_dataPath = ROOT_DIR . '/vo_data';
-        $this->_workspacePath = $this->_createWorkspaceFolderIfNotExistant();
+        $this->_workspacePath = $this->_createWorkspaceFolderIfNotExisting();
     }
 
 
-    private function _createWorkspaceFolderIfNotExistant() {
+    private function _createWorkspaceFolderIfNotExisting() {
 
         $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
         if (file_exists($workspacePath) and !is_dir($workspacePath)) {
@@ -314,12 +313,12 @@ class WorkspaceController {
         $extractionPath = "{$this->_workspacePath}/$extractionFolder";
 
         if (!mkdir($extractionPath)) {
-            throw new Exception('e:Interner Fehler: Konnte Verzeichnis für ZIP-Ziel nicht anlegen: ' . $extractionPath);
+            throw new Exception('Konnte Verzeichnis für ZIP-Ziel nicht anlegen: ' . $extractionPath);
         }
 
         $zip = new ZipArchive;
         if ($zip->open($filePath) !== TRUE) {
-            throw new Exception('e:Interner Fehler: Konnte ZIP-Datei nicht entpacken.');
+            throw new Exception('Konnte ZIP-Datei nicht entpacken.');
         }
 
         $zip->extractTo($extractionPath . '/');
