@@ -13,10 +13,11 @@ paths:
       parameters:
         - in: header
           name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
           example:
-            at: 1337ymca1337666.xxx13370
+            at: user000000000.superadmin0
         - in: path
           name: user_id
           description: user-id
@@ -51,10 +52,11 @@ paths:
       parameters:
         - in: header
           name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
           example:
-            at: 1337ymca1337666.xxx13370
+            at: user000000000.superadmin0
         - in: path
           name: user_id
           description: user-id
@@ -104,10 +106,11 @@ paths:
       parameters:
         - in: header
           name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
           example:
-            at: 1337ymca1337666.xxx13370
+            at: user000000000.superadmin0
 
       requestBody:
         content:
@@ -136,10 +139,11 @@ paths:
       parameters:
         - in: header
           name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
           example:
-            at: 1337ymca1337666.xxx13370
+            at: user000000000.superadmin0
         - in: path
           name: user_id
           description: user-id

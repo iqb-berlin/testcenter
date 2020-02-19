@@ -16,7 +16,7 @@ components:
         at:
           type: string
           description: authtoken
-          example: 1337ymca1337666.xxx13370
+          example: user000000000.superadmin0
       required:
         - at
 
