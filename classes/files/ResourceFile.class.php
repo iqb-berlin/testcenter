@@ -7,18 +7,28 @@ class ResourceFile {
     private $size = 0;
     private $filedate;
 
-    public function __construct($filename, $unixtimestamp, $filesize) {
-        $this->name = $filename;
-        $this->filedate = date(DATE_ATOM, $unixtimestamp);
-        $this->size = $filesize;
-        $this->isXml = preg_match("/\.(XML|xml|Xml)$/", $filename) == true;
+    private $_content = '';
+
+
+    public function __construct(string $fullFilePath, bool $infoOnly = false) {
+
+        $this->name = basename($fullFilePath);
+        $this->filedate = date(DATE_ATOM, filemtime($fullFilePath));
+        $this->size = filesize($fullFilePath);
+        $this->isXml = preg_match("/\.(XML|xml|Xml)$/", basename($fullFilePath)) == true;
+        if (!$infoOnly) {
+            $this->_content = file_get_contents($fullFilePath);
+        }
     }
 
+
     public function getFileName() {
+
         return $this->name;
     }
 
     public function getFileDateTime() {
+
         if (isset($this->filedate) && (strlen($this->filedate) > 0)) {
             return strtotime ( $this->filedate );
         } else {
@@ -26,7 +36,9 @@ class ResourceFile {
         }
     }
 
+
     public function getFileDateTimeString() {
+
         $filedatevalue = $this->getFileDateTime();
         if ($filedatevalue == 0) {
             return 'n/a';
@@ -35,15 +47,27 @@ class ResourceFile {
         }
     }
 
+
     public function getFileSize() {
+
         return $this->size;
     }
 
+
     public function getFileSizeString() {
+
         return FileSize::asString($this->size);
     }
 
+
     public function getIsXml() {
+
         return $this->isXml;
+    }
+
+
+    public function getContent() {
+
+        return $this->_content;
     }
 }

@@ -98,20 +98,6 @@ class WorkspaceValidator extends WorkspaceController {
         $this->_validationReport = ['errors' => [], 'warnings' => [], 'infos' => []];
     }
 
-    private function normaliseFileName($fn, $v) {
-
-        $normalizedFilename = strtoupper($fn);
-        if ($v) {
-            $firstDotPos = strpos($normalizedFilename, '.');
-            if ($firstDotPos) {
-                $lastDotPos = strrpos($normalizedFilename, '.');
-                if ($lastDotPos > $firstDotPos) {
-                    $normalizedFilename = substr($normalizedFilename, 0, $firstDotPos) . substr($normalizedFilename, $lastDotPos);
-                }
-            }
-        }
-        return $normalizedFilename;
-    }
 
     private function resourceExists($r, $v) {
 

@@ -27,6 +27,7 @@ try {
     include_once 'routes/user.php';
 
     include_once 'routes/php_tc_deprecated.php';
+    include_once 'routes/testcenter.php';
 
     $app->run();
 

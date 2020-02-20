@@ -110,25 +110,34 @@ class DBConnection {
 
     public function getWorkspaceId($loginToken) { // TODO add unit test
 
-        $logindata = $this->_(
+        $login = $this->_(
             'SELECT logins.workspace_id 
             FROM logins
             WHERE logins.token = :token',
             array(':token' => $loginToken)
         );
-        return $logindata['workspace_id'];
+
+        if ($login === null) {
+            throw new HttpError("No workspace for {$loginToken} found.", 404); // TODO overthink 404
+        }
+
+        return $login['workspace_id'];
     }
 
 
     public function getBookletName($bookletDbId) { // TODO add unit test. is used in TC.
 
-        $bookletdata = $this->_(
+        $booklet = $this->_(
         'SELECT booklets.name FROM booklets
             WHERE booklets.id=:bookletId',
             array(':bookletId' => $bookletDbId)
         );
 
-        return $bookletdata['name'];
+        if ($booklet === null) {
+            throw new HttpError("No booklet with id `{$bookletDbId}` found in db.", 404); // TODO overthink 404
+        }
+
+        return $booklet['name'];
     }
 
 

@@ -32,6 +32,17 @@ class WorkspaceController {
         return $workspacePath;
     }
 
+
+    private function _getSubFolderFullPath(string $type): string {
+
+        $subFolderFullPath = $this->_workspacePath . '/' . ucfirst($type);
+        if (!file_exists($subFolderFullPath)) {
+            throw new HttpError("Folder not found: $subFolderFullPath", 404);
+        }
+        return $subFolderFullPath;
+    }
+
+
     function getWorkspacePath() {
 
         return $this->_workspacePath;
@@ -61,7 +72,7 @@ class WorkspaceController {
                     continue;
                 }
 
-                $rs = new ResourceFile($entry, filemtime($fullFilePath), filesize($fullFilePath));
+                $rs = new ResourceFile($fullFilePath, true);
 
                 array_push($fileList, [
                     'filename' => $rs->getFileName(),
@@ -481,5 +492,61 @@ class WorkspaceController {
         }, $reports);
 
         return $this->deleteFiles($filesToDelete);
+    }
+
+
+    public function getXMLFileByName(string $type, string $findName): XMLFile {
+
+        $dirToSearch = $this->_getSubFolderFullPath($type);
+
+        foreach ($this->_globStreamSafe($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
+
+            $xmlFile = new XMLFile($fullFilePath);
+            if ($xmlFile->isValid()) {
+                $itemName = $xmlFile->getId();
+                if ($itemName == $findName) {
+                    return $xmlFile;
+                }
+            }
+        }
+
+        throw new HttpError("No $type with name `$findName` found!", 404);
+    }
+
+
+    public function getResourceFileByName(string $resourceName, bool $skipSubVersions): ResourceFile {
+
+        $resourceFolder = $this->_getSubFolderFullPath('Resource');
+
+        $resourceFileName = $this->normaliseFileName(basename($resourceName), $skipSubVersions);
+
+        foreach ($this->_globStreamSafe($resourceFolder, "*.*") as $fullFilePath) {
+
+            $normalizedFilename = $this->normaliseFileName(basename($fullFilePath), $skipSubVersions);
+
+            if ($normalizedFilename == $resourceFileName) {
+                return new ResourceFile($fullFilePath);
+            }
+        }
+
+        throw new HttpError("No resource with name `$resourceName` found!", 404);
+    }
+
+
+    protected function normaliseFileName(string $fileName, bool $skipSubVersions) {
+
+        $normalizedFilename = strtoupper($fileName);
+
+        if ($skipSubVersions) {
+            $firstDotPos = strpos($normalizedFilename, '.');
+            if ($firstDotPos) {
+                $lastDotPos = strrpos($normalizedFilename, '.');
+                if ($lastDotPos > $firstDotPos) {
+                    $normalizedFilename = substr($normalizedFilename, 0, $firstDotPos) . substr($normalizedFilename, $lastDotPos);
+                }
+            }
+        }
+
+        return $normalizedFilename;
     }
 }
