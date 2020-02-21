@@ -1,7 +1,10 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 
 class DBConnectionTC extends DBConnection {
+
     private $idletimeSession = 60 * 30;
 
     // =================================================================
@@ -95,28 +98,18 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // =================================================================
-    public function getBookletLastState($bookletDbId) {
-        $myreturn = [];
-        if ($this->pdoDBhandle != false) {
-            $booklet_select = $this->pdoDBhandle->prepare(
-                'SELECT booklets.laststate FROM booklets
-                    WHERE booklets.id=:bookletId');
-                
-            if ($booklet_select->execute(array(
-                ':bookletId' => $bookletDbId
-                ))) {
 
-                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                if ($bookletdata !== false) {
-                    $myreturn = JSON::decode($bookletdata['laststate'], true);
-                }
-            }
-        }
-        return $myreturn;
+    public function getBookletLastState($bookletDbId) {
+
+        $booklet = $this->_(
+            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:bookletId', array(
+            ':bookletId' => $bookletDbId
+        ));
+
+        return  ($booklet) ? [] : JSON::decode($booklet['laststate'], true);
     }
 
-    // =================================================================
+
     public function isBookletLocked($bookletDbId) {
         $myreturn = false;
         if ($this->pdoDBhandle != false) {

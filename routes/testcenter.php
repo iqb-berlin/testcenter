@@ -30,6 +30,7 @@ $app->group('', function(App $app) {
         return $response->withJson($bookletContainer);
     }); // checked in original for $personToken != '' although it's not used at all
 
+
     // was /unitdata/{unit_id}
     $app->get('/booklet/{booklet_id}/unit/{unit_name}', function (Request $request, Response $response) use ($dbConnectionTC) {
 
