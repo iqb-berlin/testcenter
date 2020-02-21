@@ -15,10 +15,25 @@ components:
       properties:
         at:
           type: string
-          description: authtoken
+          description: authtoken für admin and maybe super admin modules
           example: user000000000.superadmin0
       required:
         - at
+
+    auth_test:
+      type: object
+      properties:
+        p:
+          type: string
+          description: authtoken für test module - person
+          example: person00000000.test0000000
+        l:
+          type: string
+          description: authtoken für test module - login
+          example: person00000000.test0000000
+      required:
+        - p
+        - l
 
 
     login_request:

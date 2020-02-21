@@ -68,6 +68,7 @@ $app->group('', function(App $app) {
         $resourceFile = $workspaceController->getResourceFileByName($resourceName, $skipSubVersions);
 
         $response->getBody()->write($resourceFile->getContent());
+        // TODO wrap into JSOn object analogous to other endpoints
         return $response->withHeader('Content-type', 'text/plain');
     }); // checked in original for $loginToken != ''
 

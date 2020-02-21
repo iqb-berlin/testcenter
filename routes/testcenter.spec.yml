@@ -1,0 +1,115 @@
+openapi: 3.0.0
+
+info:
+  title: IQB Testcenter API - Backend
+  version: "2.0.0"
+
+paths:
+
+  /booklet/{booklet_id}:
+    get:
+      summary: get booklet by id
+      description: retrieves a booklet-file by its id (in database). File contents are wrapped in an JSON object,
+        containing also the last state and lock status
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: booklet_id
+          description: booklet_id (not filename, but numeric id)
+          example: 1
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of Workspaces
+#          content: TODO - include sample file!
+#            application/json:
+#              example:
+#                laststate: []
+#                locked: false
+#                xml: ""
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /booklet/{booklet_id}/unit/{unit_name}:
+    get:
+      summary: get unit by name
+      description: retrieves a unit-file by its name (filename without XML-extension). File contents are wrapped in an JSON object,
+        containing also the last state and lock status
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: unit_name
+          description: unit-name (filename without XML-extension)
+          example: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of Workspaces
+#          content: TODO - include sample file!
+#            application/json:
+#              example:
+#                laststate: []
+#                locked: false
+#                xml: ""
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /resource/{resource_name}:
+    get:
+      summary: get resource by name
+      description: retrieves a resource-file by its name (filename without XML-extension). File contents are warpped in an JSON object,
+        containing also the last state and lock status
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: resource_name
+          description: resource_name (filename without XML-extension)
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of Workspaces
+        #          content: TODO - include sample file!
+        #           text/plain:
+        #              example:
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error

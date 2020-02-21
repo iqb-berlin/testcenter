@@ -20,7 +20,7 @@ class RequireToken {
 
         $authToken = JSON::decode($request->getHeaderLine('AuthToken'));
         $personToken = $authToken->p;
-        $loginToken = $authToken->l; // TODO check this too?
+        $loginToken = $authToken->l ?? ''; // TODO check this too?
 
         if (!isset($authToken->p) or strlen($personToken) == 0) {
             throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: p missing');
