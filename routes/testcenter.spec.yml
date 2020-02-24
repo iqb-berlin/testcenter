@@ -6,11 +6,10 @@ info:
 
 paths:
 
-  /booklet/{booklet_id}:
+  /test/{test_id}:
     get:
-      summary: get booklet by id
-      description: retrieves a booklet-file by its id (in database). File contents are wrapped in an JSON object,
-        containing also the last state and lock status
+      summary: get a test
+      description: retrieves a certain executed test - the booklet-file XML, last state and lock status
       parameters:
         - in: header
           name: AuthToken
@@ -21,8 +20,8 @@ paths:
             l: user000000000.test0000000
             p: 0000000000000.00000000000
         - in: path
-          name: booklet_id
-          description: booklet_id (not filename, but numeric id)
+          name: test_id
+          description: id of a executed test
           example: 1
           required: true
           schema:
@@ -43,11 +42,10 @@ paths:
         "500":
           description: Server Error
 
-  /booklet/{booklet_id}/unit/{unit_name}:
+  /test/{test_id}/unit/{unit_name}:
     get:
-      summary: get unit by name
-      description: retrieves a unit-file by its name (filename without XML-extension). File contents are wrapped in an JSON object,
-        containing also the last state and lock status
+      summary: get a unit of a test
+      description: retrieves a certain unit from a certain executed test - the booklet-file XML, last state and lock status
       parameters:
         - in: header
           name: AuthToken
@@ -58,8 +56,15 @@ paths:
             l: user000000000.test0000000
             p: 0000000000000.00000000000
         - in: path
+          name: test_id
+          description: id of a executed test
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: path
           name: unit_name
-          description: unit-name (filename without XML-extension)
+          description: unit-name (not alias!) as defined in booklet
           example: ''
           required: true
           schema:
@@ -83,8 +88,7 @@ paths:
   /resource/{resource_name}:
     get:
       summary: get resource by name
-      description: retrieves a resource-file by its name (filename without XML-extension). File contents are warpped in an JSON object,
-        containing also the last state and lock status
+      description: retrieves a resource-file by its name (filename without extension)
       parameters:
         - in: header
           name: AuthToken
@@ -107,6 +111,73 @@ paths:
         #          content: TODO - include sample file!
         #           text/plain:
         #              example:
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/review:
+    put:
+      summary: add review to unit
+      description: add a review item to unit in a test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: OK, created
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/review:
+    put:
+      summary: add review to booklet
+      description: add a review item to a certain booklet
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: OK, created
         "401":
           description: Not authenticated
         "403":

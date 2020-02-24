@@ -23,4 +23,10 @@
     </Login>
   </Group>
 
+  <Group mode="review" name="review_group">
+    <Login name="__TEST_LOGIN_NAME__-review" pw="__TEST_LOGIN_PASSWORD__">
+      <Booklet>BOOKLET.SAMPLE</Booklet>
+    </Login>
+  </Group>
+
 </Testtakers>

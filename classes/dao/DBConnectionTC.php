@@ -5,7 +5,6 @@
 
 class DBConnectionTC extends DBConnection {
 
-    private $idletimeSession = 60 * 30;
 
     // =================================================================
     // used as entry check in tc_post.php
@@ -29,73 +28,39 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // =================================================================
-    public function addBookletReview($bookletDbId, $priority, $categories, $entry) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            if (is_numeric($priority)) {
-                $priority = intval($priority);
-                if (($priority <= 0) or ($priority > 3)) {
-                    $priority = 0;
-                }
-            } else {
-                $priority = 0;
-            }
 
-            $bookletreview_insert = $this->pdoDBhandle->prepare(
-                'INSERT INTO bookletreviews (booklet_id, reviewtime, reviewer, priority, categories, entry) 
-                    VALUES(:b, :t, :r, :p, :c, :e)');
+    public function addBookletReview(int $bookletDbId, int $priority, string $categories, string $entry): void {
 
-            if ($bookletreview_insert->execute(array(
+        $this->_(
+            'INSERT INTO bookletreviews (booklet_id, reviewtime, reviewer, priority, categories, entry) 
+            VALUES(:b, :t, :r, :p, :c, :e)',
+            array(
                 ':b' => $bookletDbId,
                 ':t' => date('Y-m-d H:i:s', time()),
-                ':r' => '-',
+                ':r' => '-', // field is deprecated, reviewer is identified by bookelet. TODO remove field from DB
                 ':p' => $priority,
                 ':c' => $categories,
                 ':e' => $entry
-                ))) {
-                    $myreturn = true;
-            }
-        }
-        return $myreturn;
+            )
+        );
     }
 
-    // =================================================================
-    public function addUnitReview($bookletDbId, $unit, $priority, $categories, $entry) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            try {
-                $this->pdoDBhandle->beginTransaction();
-                $unitDbId = $this->findOrAddUnit($bookletDbId, $unit);
-                if (is_numeric($priority)) {
-                    $priority = intval($priority);
-                    if (($priority <= 0) or ($priority > 3)) {
-                        $priority = 0;
-                    }
-                } else {
-                    $priority = 0;
-                }
-                $unitreview_insert = $this->pdoDBhandle->prepare(
-                    'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
-                        VALUES(:u, :t, :r, :p, :c, :e)');
 
-                $unitreview_insert->execute(array(
-                    ':u' => $unitDbId,
-                    ':t' => date('Y-m-d H:i:s', time()),
-                    ':r' => '-',
-                    ':p' => $priority,
-                    ':c' => $categories,
-                    ':e' => $entry));
+    public function addUnitReview(int $bookletDbId, string $unit, int $priority, string $categories, string $entry): void {
 
-                $this->pdoDBhandle->commit();
-                $myreturn = true;
-            } 
-
-            catch(Exception $e){
-                $this->pdoDBhandle->rollBack();
-            }
-        }
-        return $myreturn;
+        $unitDbId = $this->findOrAddUnit($bookletDbId, $unit);
+        $this->_(
+            'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
+            VALUES(:u, :t, :r, :p, :c, :e)',
+            array(
+                ':u' => $unitDbId,
+                ':t' => date('Y-m-d H:i:s', time()),
+                ':r' => '-', // field is deprecated, reviewer is identified by bookelet. TODO remove field from DB
+                ':p' => $priority,
+                ':c' => $categories,
+                ':e' => $entry
+            )
+        );
     }
 
 
@@ -274,37 +239,33 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/
-    // the caller should check $this->pdoDBhandle and try/catch
+
     private function findOrAddUnit($bookletDbId, $unitname) {
-        $myreturn = 0;
-        $unit_select = $this->pdoDBhandle->prepare(
+
+        $unit = $this->_(
             'SELECT units.id FROM units
-                WHERE units.name = :unitname and units.booklet_id = :bookletId');
-            
-        if ($unit_select->execute(array(
-            ':unitname' => $unitname,
-            ':bookletId' => $bookletDbId
-            ))) {
-            
-            $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
-            if ($unitdata === false) {
-                $unit_insert = $this->pdoDBhandle->prepare(
-                    'INSERT INTO units (booklet_id, name) 
-                        VALUES(:bookletId, :name)');
-        
-                if ($unit_insert->execute(array(
+            WHERE units.name = :unitname and units.booklet_id = :bookletId',
+            array(
+                ':unitname' => $unitname,
+                ':bookletId' => $bookletDbId
+            )
+        );
+
+        if (!$unit) {
+
+            $this->_(
+                'INSERT INTO units (booklet_id, name) 
+                VALUES(:bookletId, :name)',
+                array(
                     ':bookletId' => $bookletDbId,
                     ':name' => $unitname
-                    ))) {
-                        $myreturn = $this->pdoDBhandle->lastInsertId();;
-                }
-            } else {
-                $myreturn = $unitdata['id'];
-            }
+                )
+            );
+            return $this->pdoDBhandle->lastInsertId();
+
         }
 
-        return $myreturn;
+        return $unit['id'];
     }
 
     // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/

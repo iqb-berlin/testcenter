@@ -26,4 +26,17 @@ class RequestBodyParser {
 
         return isset($requestBody->$elementName) ? $requestBody->$elementName : $default;
     }
+
+    static function getElementsWithDefaults(Request $request, array $elements2defaults) {
+
+        $requestBody = JSON::decode($request->getBody());
+
+        $elements = [];
+
+        foreach ($elements2defaults as $elementName => $default) {
+            $elements[$elementName] = isset($requestBody->$elementName) ? $requestBody->$elementName : $default;
+        }
+
+        return $elements;
+    }
 }
