@@ -36,7 +36,7 @@
         <TimeMax parameter="1" />
       </Restrictions>
 
-      <Unit id="UNIT.SAMPLE" label="the great sample unit" labelshort="sample unit" alias="example unit" />
+      <Unit id="UNIT.SAMPLE" label="the great sample unit" labelshort="sample unit" />
     </Testlet>
 
   </Units>
