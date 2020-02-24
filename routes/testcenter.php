@@ -79,10 +79,10 @@ $app->group('', function(App $app) {
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
-        $review = RequestBodyParser::getElementsWithDefaults($request, [
+        $review = RequestBodyParser::getElements($request, [
             'priority' => 0, // was: p
             'categories' => 0, // was: c
-            'entry' => '' // was: e
+            'entry' => null // was: e
         ]);
 
         // TODO check if a) test exists and b) unit exists there and c) user is allowed to review
@@ -102,10 +102,10 @@ $app->group('', function(App $app) {
 
         $testId = $request->getAttribute('test_id');
 
-        $review = RequestBodyParser::getElementsWithDefaults($request, [
+        $review = RequestBodyParser::getElements($request, [
             'priority' => 0, // was: p
             'categories' => 0, // was: c
-            'entry' => '' // was: e
+            'entry' => null // was: e
         ]);
 
         // TODO check if a) test exists and b) unit exists there and c) user is allowed to review
@@ -119,6 +119,23 @@ $app->group('', function(App $app) {
         $dbConnectionTC->addBookletReview($testId, $priority, $review['categories'], $review['entry']);
 
         return $response->withStatus(201);
+    });
+
+
+    $app->put('/test/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($dbConnectionTC) {
+
+        $testId = $request->getAttribute('test_id');
+        $unitName = $request->getAttribute('unit_name');
+
+        $review = RequestBodyParser::getElements($request, [
+            'timestamp' => null,
+            'response' => null,
+            'responseType' => 'unknown'
+        ]);
+
+        $g = $dbConnectionTC->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
+
+        return $response->withStatus(201)->withJson($g);
     });
 
 

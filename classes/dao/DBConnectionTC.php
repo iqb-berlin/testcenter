@@ -296,35 +296,22 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/
-    public function newResponses($bookletDbId, $unitname, $responses, $responseType, $time) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            try {
-                $this->pdoDBhandle->beginTransaction();
-                $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
-                $unit_update = $this->pdoDBhandle->prepare(
-                    'UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt
-                    WHERE id = :unitId and responses_ts < :ts');
-                if ($unit_update -> execute(array(
-                    ':ts' => $time,
-                    ':r' => $responses,
-                    ':r_ts' => $time,
-                    ':rt' => $responseType,
-                    ':unitId' => $unitDbId))) {
-                    $myreturn = true;
-                }
-                $this->pdoDBhandle->commit();
-                $myreturn = true;
-            } 
 
-            catch(Exception $e){
-                $this->pdoDBhandle->rollBack();
-            }
-        }
+    public function addResponse(int $testId, string $unitName, string $responses, string $responseType, int $timestamp) {
 
-        return $myreturn;
+        $unitDbId = $this->findOrAddUnit($testId, $unitName);
+        $this->_('UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt
+                WHERE id = :unitId and responses_ts < :ts',
+            [
+                ':ts' => $timestamp,
+                ':r' => $responses,
+                ':r_ts' => $timestamp,
+                ':rt' => $responseType,
+                ':unitId' => $unitDbId
+            ]
+        );return [$testId, $unitName, $responses, $responseType, $timestamp, $unitDbId];
     }
+
 
     // =================================================================
     public function addUnitLog($bookletDbId, $unitname, $logentry, $time) {

@@ -145,6 +145,26 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                priority:
+                  description: priority, 1=critical, 2=medium, 3=optional
+                  type: integer
+                entry:
+                  description: text of the review entry
+                  type: text
+                categories:
+                  description: whitespace separated list of categories
+                  type: text
+              required:
+                - entry
+            example:
+              entry: I am a critical review item for unit 1
+              priority: 1
+              categories: content whatever
       responses:
         "201":
           description: OK, created
@@ -175,6 +195,85 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                priority:
+                  description: priority, 1=critical, 2=medium, 3=optional
+                  type: integer
+                entry:
+                  description: text of the review entry
+                  type: text
+                categories:
+                  description: whitespace separated list of categories
+                  type: text
+              required:
+                - entry
+            example:
+              entry: I am a critical review item for booklet 1
+              priority: 1
+              categories: content whatever
+      responses:
+        "201":
+          description: OK, created
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/response:
+    put:
+      summary: add response to a unit
+      description: when running a test this endpoint is used to store given responses. format and content of responses
+        are business of the corresponding player, the endpoints takes everything as raw, may it be JSON or XML or
+        whatever.
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                response:
+                  description: response data
+                  type: string
+                timestamp:
+                  description: timestamp of the response
+                  type: integer
+                responseType:
+                  description: TODO what is this?
+                  type: text
+              required:
+                - response
+                - timestamp
+            example:
+              response: I am the answers to your questions.
+              timestamp: 1582550888563
       responses:
         "201":
           description: OK, created
