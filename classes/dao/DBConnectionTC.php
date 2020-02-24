@@ -29,13 +29,13 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    public function addBookletReview(int $bookletDbId, int $priority, string $categories, string $entry): void {
+    public function addBookletReview(int $testId, int $priority, string $categories, string $entry): void {
 
         $this->_(
             'INSERT INTO bookletreviews (booklet_id, reviewtime, reviewer, priority, categories, entry) 
             VALUES(:b, :t, :r, :p, :c, :e)',
             array(
-                ':b' => $bookletDbId,
+                ':b' => $testId,
                 ':t' => date('Y-m-d H:i:s', time()),
                 ':r' => '-', // field is deprecated, reviewer is identified by bookelet. TODO remove field from DB
                 ':p' => $priority,
@@ -46,9 +46,9 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    public function addUnitReview(int $bookletDbId, string $unit, int $priority, string $categories, string $entry): void {
+    public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry): void {
 
-        $unitDbId = $this->findOrAddUnit($bookletDbId, $unit);
+        $unitDbId = $this->findOrAddUnit($testId, $unit);
         $this->_(
             'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
             VALUES(:u, :t, :r, :p, :c, :e)',
@@ -240,14 +240,14 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    private function findOrAddUnit($bookletDbId, $unitname) {
+    private function findOrAddUnit($testId, $unitname) {
 
         $unit = $this->_(
             'SELECT units.id FROM units
             WHERE units.name = :unitname and units.booklet_id = :bookletId',
             array(
                 ':unitname' => $unitname,
-                ':bookletId' => $bookletDbId
+                ':bookletId' => $testId
             )
         );
 
@@ -257,7 +257,7 @@ class DBConnectionTC extends DBConnection {
                 'INSERT INTO units (booklet_id, name) 
                 VALUES(:bookletId, :name)',
                 array(
-                    ':bookletId' => $bookletDbId,
+                    ':bookletId' => $testId,
                     ':name' => $unitname
                 )
             );
