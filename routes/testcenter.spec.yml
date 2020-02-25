@@ -337,3 +337,59 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/state:
+    patch:
+      summary: save a state for a unit
+      description: saved a state (a key-value pair) for a unit in a running test -
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                key:
+                  description: key of the state information
+                  type: string
+                value:
+                  description: value of the state
+                  type: string
+              required:
+                - key
+                - value
+            example:
+              response: "PRESENTATIONCOMPLETE"
+              timestamp: "yes"
+      responses:
+        "200":
+          description: OK, created
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+    /test/{test_id}/unit/: TODO

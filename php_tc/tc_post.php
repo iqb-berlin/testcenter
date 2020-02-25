@@ -229,7 +229,7 @@ $app->post('/state', function (ServerRequestInterface $request, ResponseInterfac
             if (strlen($unit) > 0) {
                 $myreturn = $myDBConnection->updateUnitLastState($bookletDbId, $unit, $statekey, $statevalue);
             } else {
-                $myreturn = $myDBConnection->setBookletLastState($bookletDbId, $statekey, $statevalue);
+                $myreturn = $myDBConnection->updateTestLastState($bookletDbId, $statekey, $statevalue);
             }
         }
         unset($myDBConnection);

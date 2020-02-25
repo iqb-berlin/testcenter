@@ -97,42 +97,26 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // =================================================================
-    public function setBookletLastState($bookletDbId, $stateKey, $stateValue) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            try {
-                $this->pdoDBhandle->beginTransaction();
-                $booklet_select = $this->pdoDBhandle->prepare(
-                    'SELECT booklets.laststate FROM booklets
-                        WHERE booklets.id=:bookletId FOR UPDATE');
-                    
-                $booklet_select->execute(array(':bookletId' => $bookletDbId));
-                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
 
-                $stateStr = $bookletdata['laststate'];
-                $state = [];
-                if (isset($stateStr)) {
-                    if(strlen($stateStr) > 0) {
-                        $state = JSON::decode($stateStr, true);
-                    }
-                }
-                $state[$stateKey] = $stateValue;
-                $booklet_update = $this->pdoDBhandle->prepare(
-                    'UPDATE booklets SET laststate = :laststate WHERE id = :id');
-                $booklet_update -> execute(array(
-                    ':laststate' => json_encode($state),
-                    ':id' => $bookletDbId));
-                $this->pdoDBhandle->commit();
-                $myreturn = true;
-            } 
+    public function updateTestLastState($testId, $stateKey, $stateValue): void {
 
-            catch(Exception $e){
-                $this->pdoDBhandle->rollBack();
-            }
+        $testData = $this->_(
+            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:testId FOR UPDATE',
+            [
+                ':testId' => $testId
+            ]
+        );
 
-        }
-        return $myreturn;
+        $state = (strlen($testData['laststate']) > 0) ? JSON::decode($testData['laststate'], true) : [];
+        $state[$stateKey] = $stateValue;
+
+         $this->_(
+             'UPDATE booklets SET laststate = :laststate WHERE id = :id',
+             [
+                 ':laststate' => json_encode($state),
+                 ':id' => $testId
+             ]
+         );
     }
 
 
@@ -147,7 +131,7 @@ class DBConnectionTC extends DBConnection {
             ]
         );
 
-        $state =(strlen($unitData['laststate']) > 0) ? JSON::decode($unitData['laststate'], true) : [];
+        $state = (strlen($unitData['laststate']) > 0) ? JSON::decode($unitData['laststate'], true) : [];
         $state[$stateKey] = $stateValue;
 
         $this->_(

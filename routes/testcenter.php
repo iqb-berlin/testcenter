@@ -171,6 +171,20 @@ $app->group('', function(App $app) {
     });
 
 
+    $app->patch('/test/{test_id}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
+
+        $testId = $request->getAttribute('test_id');
+
+        $body = RequestBodyParser::getElements($request, [
+            'key' => null,
+            'value' => null
+        ]);
+
+        $dbConnectionTC->updateTestLastState($testId, $body['key'], $body['value']);
+
+        return $response->withStatus(200);
+    });
+
 
 
 })
