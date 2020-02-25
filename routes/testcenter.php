@@ -149,13 +149,26 @@ $app->group('', function(App $app) {
             'restorePoint' => null
         ]);
 
-        $dbConnectionTC->addRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
+        $dbConnectionTC->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
 
-        return $response->withStatus(201);
+        return $response->withStatus(200);
     });
 
 
+    $app->patch('/test/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
 
+        $testId = $request->getAttribute('test_id');
+        $unitName = $request->getAttribute('unit_name');
+
+        $body = RequestBodyParser::getElements($request, [
+            'key' => null,
+            'value' => null
+        ]);
+
+        $dbConnectionTC->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
+
+        return $response->withStatus(200);
+    });
 
 
 

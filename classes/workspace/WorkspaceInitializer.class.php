@@ -119,7 +119,7 @@ class WorkspaceInitializer {
         $dbc->addUnitLog($bookletDbId, 'UNIT.SAMPLE', "sample unit log", $timestamp);
         $dbc->addBookletLog($bookletDbId, "sample log entry", $timestamp);
         $dbc->addResponse($bookletDbId, 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
-        $dbc->setUnitLastState($bookletDbId, "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
+        $dbc->updateUnitLastState($bookletDbId, "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
 
 
     }

@@ -329,7 +329,7 @@ paths:
               response: "{\"string_example\":\"something\",\"color_example\":\"#ffa200\",\"number_example\":\"36\"}"
               timestamp: 1582550888563
       responses:
-        "201":
+        "200":
           description: OK, created
         "401":
           description: Not authenticated

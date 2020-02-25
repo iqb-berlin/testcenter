@@ -135,43 +135,28 @@ class DBConnectionTC extends DBConnection {
         return $myreturn;
     }
 
-    // =================================================================
-    public function setUnitLastState($bookletDbId, $unitname, $stateKey, $stateValue) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            try {
-                $this->pdoDBhandle->beginTransaction();
-                $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
-                $unit_select = $this->pdoDBhandle->prepare(
-                    'SELECT units.laststate FROM units
-                        WHERE units.id=:unitId FOR UPDATE');
-                    
-                $unit_select->execute(array(':unitId' => $unitDbId));
-                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
 
-                $stateStr = $unitdata['laststate'];
-                $state = [];
-                if (isset($stateStr)) {
-                    if(strlen($stateStr) > 0) {
-                        $state = JSON::decode($stateStr, true);
-                    }
-                }
-                $state[$stateKey] = $stateValue;
-                $unit_update = $this->pdoDBhandle->prepare(
-                    'UPDATE units SET laststate = :laststate WHERE id = :id');
-                $unit_update -> execute(array(
-                    ':laststate' => json_encode($state),
-                    ':id' => $unitDbId));
-                $this->pdoDBhandle->commit();
-                $myreturn = true;
-            } 
+    public function updateUnitLastState($testId, $unitName, $stateKey, $stateValue): void {
 
-            catch(Exception $e){
-                $this->pdoDBhandle->rollBack();
-            }
+        $unitDbId = $this->findOrAddUnit($testId, $unitName);
 
-        }
-        return $myreturn;
+        $unitData = $this->_(
+            'SELECT units.laststate FROM units WHERE units.id=:unitId FOR UPDATE',
+            [
+                ':unitId' => $unitDbId
+            ]
+        );
+
+        $state =(strlen($unitData['laststate']) > 0) ? JSON::decode($unitData['laststate'], true) : [];
+        $state[$stateKey] = $stateValue;
+
+        $this->_(
+            'UPDATE units SET laststate = :laststate WHERE id = :id',
+            [
+                ':laststate' => json_encode($state),
+                ':id' => $unitDbId
+            ]
+        );
     }
 
     // =================================================================
@@ -190,7 +175,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    public function getUnitLastState(int $testId, string $unitName): object {
+    public function getUnitLastState(int $testId, string $unitName): stdClass {
 
         $unitData = $this->_(
             'SELECT units.laststate FROM units
@@ -248,7 +233,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    public function addRestorePoint(int $testId, string $unitName, string $restorePoint, int$timestamp): void {
+    public function updateRestorePoint(int $testId, string $unitName, string $restorePoint, int$timestamp): void {
 
         $unitDbId = $this->findOrAddUnit($testId, $unitName);
         $this->_(
