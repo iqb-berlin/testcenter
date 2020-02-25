@@ -283,3 +283,57 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/restorepoint:
+    patch:
+      summary: save a restorepoint
+      description: saved a restorepoint - a data blob indicating the sate of unit player. what is in this blob is business of teh player.
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                restorePoint:
+                  description: restore point data
+                  type: string
+                timestamp:
+                  description: timestamp of the snapshot
+                  type: integer
+              required:
+                - response
+                - timestamp
+            example:
+              response: "{\"string_example\":\"something\",\"color_example\":\"#ffa200\",\"number_example\":\"36\"}"
+              timestamp: 1582550888563
+      responses:
+        "201":
+          description: OK, created
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error

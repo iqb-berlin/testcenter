@@ -139,7 +139,7 @@ $app->group('', function(App $app) {
     });
 
 
-    $app->put('/test/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->patch('/test/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
