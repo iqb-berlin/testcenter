@@ -133,10 +133,31 @@ $app->group('', function(App $app) {
             'responseType' => 'unknown'
         ]);
 
-        $g = $dbConnectionTC->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
+        $dbConnectionTC->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
 
-        return $response->withStatus(201)->withJson($g);
+        return $response->withStatus(201);
     });
+
+
+    $app->put('/test/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($dbConnectionTC) {
+
+        $testId = $request->getAttribute('test_id');
+        $unitName = $request->getAttribute('unit_name');
+
+        $body = RequestBodyParser::getElements($request, [
+            'timestamp' => null,
+            'restorePoint' => null
+        ]);
+
+        $dbConnectionTC->addRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
+
+        return $response->withStatus(201);
+    });
+
+
+
+
+
 
 
 })

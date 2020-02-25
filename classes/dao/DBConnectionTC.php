@@ -190,53 +190,32 @@ class DBConnectionTC extends DBConnection {
     }
 
 
+    public function getUnitLastState(int $testId, string $unitName): object {
 
-
-    // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-    //  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-
-    // =================================================================
-    public function getUnitLastState($bookletDbId, $unit) {
-        $myreturn = [];
-        if ($this->pdoDBhandle != false) {
-            $unit_select = $this->pdoDBhandle->prepare(
-                'SELECT units.laststate FROM units
-                    WHERE units.name = :unitname and units.booklet_id = :bookletId');
-                
-            if ($unit_select->execute(array(
-                ':unitname' => $unit,
-                ':bookletId' => $bookletDbId
-                ))) {
-                
-                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
-                if ($unitdata !== false) {
-                    $myreturn = JSON::decode($unitdata['laststate'], true);
-                }
-            }
-        }
-        return $myreturn;
+        $unitData = $this->_(
+            'SELECT units.laststate FROM units
+            WHERE units.name = :unitname and units.booklet_id = :testId',
+            array(
+                ':unitname' => $unitName,
+                ':testId' => $testId
+            )
+        );
+        return ($unitData === null) ? new stdClass() : JSON::decode($unitData['laststate']);
     }
+
  
-    // =================================================================
-    public function getUnitRestorePoint($bookletDbId, $unit) {
-        $myreturn = '';
-        if ($this->pdoDBhandle != false) {
-            $unit_select = $this->pdoDBhandle->prepare(
-                'SELECT units.restorepoint FROM units
-                    WHERE units.name = :unitname and units.booklet_id = :bookletId');
-                
-            if ($unit_select->execute(array(
-                ':unitname' => $unit,
-                ':bookletId' => $bookletDbId
-                ))) {
-                
-                $unitdata = $unit_select->fetch(PDO::FETCH_ASSOC);
-                if ($unitdata !== false) {
-                    $myreturn = $unitdata['restorepoint'];
-                }
-            }
-        }
-        return $myreturn;
+
+    public function getUnitRestorePoint($testId, $unitName) {
+
+        $unitData = $this->_(
+            'SELECT units.restorepoint FROM units
+            WHERE units.name = :unitname and units.booklet_id = :testId',
+            array(
+                ':unitname' => $unitName,
+                ':testId' => $testId
+            )
+        );
+        return ($unitData === null) ? '' : $unitData['restorepoint'];
     }
 
 
@@ -268,36 +247,24 @@ class DBConnectionTC extends DBConnection {
         return $unit['id'];
     }
 
-    // °\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/°\o/
-    public function newRestorePoint($bookletDbId, $unitname, $restorepoint, $time) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            try {
-                $this->pdoDBhandle->beginTransaction();
-                $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
-                $unit_update = $this->pdoDBhandle->prepare(
-                    'UPDATE units SET restorepoint=:rp, restorepoint_ts=:rp_ts
-                    WHERE id = :unitId and restorepoint_ts < :ts');
-                if ($unit_update -> execute(array(
-                    ':ts' => $time,
-                    ':rp' => $restorepoint,
-                    ':rp_ts' => $time,
-                    ':unitId' => $unitDbId))) {
-                    $myreturn = true;
-                }
-                $this->pdoDBhandle->commit();
-                $myreturn = true;
-            } 
 
-            catch(Exception $e){
-                $this->pdoDBhandle->rollBack();
-            }
-        }
-        return $myreturn;
+    public function addRestorePoint(int $testId, string $unitName, string $restorePoint, int$timestamp): void {
+
+        $unitDbId = $this->findOrAddUnit($testId, $unitName);
+        $this->_(
+            'UPDATE units SET restorepoint=:rp, restorepoint_ts=:rp_ts
+             WHERE id = :unitId and restorepoint_ts < :ts',
+            [
+                ':ts' => $timestamp,
+                ':rp' => $restorePoint,
+                ':rp_ts' => $timestamp,
+                ':unitId' => $unitDbId
+            ]
+        );
     }
 
 
-    public function addResponse(int $testId, string $unitName, string $responses, string $responseType, int $timestamp) {
+    public function addResponse(int $testId, string $unitName, string $responses, string $type, int $timestamp) : void {
 
         $unitDbId = $this->findOrAddUnit($testId, $unitName);
         $this->_('UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt
@@ -306,10 +273,10 @@ class DBConnectionTC extends DBConnection {
                 ':ts' => $timestamp,
                 ':r' => $responses,
                 ':r_ts' => $timestamp,
-                ':rt' => $responseType,
+                ':rt' => $type,
                 ':unitId' => $unitDbId
             ]
-        );return [$testId, $unitName, $responses, $responseType, $timestamp, $unitDbId];
+        );
     }
 
 
