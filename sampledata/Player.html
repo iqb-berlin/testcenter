@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Sample Unit Player</title>
-    <link  rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/spectrum-colorpicker@1.8.0/spectrum.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/underscore@1.9.1/underscore-min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsonform@2.1.5/lib/jsonform.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/spectrum-colorpicker@1.8.0/spectrum.min.js"></script>
     <script>
 
         let sessionId = "";
@@ -16,7 +18,7 @@
 
             const messages = {
 
-                "ChangedDataTransfer": (values) => {
+                "ChangedDataTransfer-ready": (values) => {
                     return {
                         type: 'vo.FromPlayer.ChangedDataTransfer',
                         sessionId: sessionId,
@@ -24,7 +26,17 @@
                         responseType: 'JSON',
                         responseComplete: true,
                         presentationComplete: 'yes',
-                        responsesGiven: 'all'
+                        responsesGiven: 'all',
+                        restorePoint: values
+                    }
+                },
+
+                "ChangedDataTransfer-save-restore-point": (restorePoint) => {
+                    return {
+                        type: 'vo.FromPlayer.ChangedDataTransfer',
+                        sessionId: sessionId,
+                        responseType: 'JSON',
+                        restorePoint: restorePoint
                     }
                 },
 
@@ -52,13 +64,15 @@
             const callbacks = {
 
                 "vo.ToPlayer.DataTransfer": (data) => {
+
                     $('form').jsonForm({
-                        'schema': JSON.parse(data.unitDefinition),
+                        'schema': JSON.parse(data.unitDefinition).schema,
+                        'form': JSON.parse(data.unitDefinition).form,
                         'onSubmit': (errors, values) => {
                             if (errors) {
                                 alert('Something went wrong.');
                             } else {
-                                send("ChangedDataTransfer", values);
+                                send("ChangedDataTransfer-ready", values);
                                 send("NavigationRequestedNotification", '#last');
                             }
                         }
@@ -76,6 +90,12 @@
         window.addEventListener('message', event => {receive(event.data.type, event.data);}, false);
         // send ready notification if loaded
         document.addEventListener("DOMContentLoaded", () => send("ReadyNotification"));
+        // store restore point when sth changed
+        $(document).on('change', "form :input", (() => {
+            const restorePoint = $('form').serializeArray().reduce((o, p) => ({...o, [p.name]: p.value}), {});
+            send("ChangedDataTransfer-save-restore-point", restorePoint);
+        }));
+
     </script>
 </head>
 <body>
@@ -83,8 +103,8 @@
 <div style="margin: 10em;">
     <div class="well">
         <h1>This is a sample unit player</h1>
-        <p>... anyway usable: define some forms, using the schema of <a href='' target='_blank'>jsonforms</a> in your Unit."</p>
-        <form></form>
+        <p>... anyway usable: define some forms, using the schema of <a href='' target='_blank'>jsonforms</a> in your Unit.</p>
+        <form> will be filled automatically </form>
     </div>
 </div>
 

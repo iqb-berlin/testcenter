@@ -13,15 +13,42 @@
 
   <Definition player="SAMPLE_PLAYER">
     {
-      "name": {
-        "type": "string",
-        "title": "Insert Your Name",
-        "required": true
+      "schema": {
+
+        "string_example": {
+          "type": "string",
+          "title": "Text answers",
+          "required": true
+        },
+        "number_example": {
+          "type": "integer",
+          "title": "Numeric answers",
+          "description": "Numeric values can be displayed as a slider!",
+          "default": 25,
+          "minimum": 5,
+          "exclusiveMinimum": true,
+          "maximum": 85
+        },
+        "color_example": {
+          "type": "string",
+          "title": "Even exotic form elements like colorpicker are possible",
+          "format": "color"
+        }
       },
-      "age": {
-        "type": "number",
-        "title": "Insert Your Age"
-      }
+
+      "form": [
+        "string_example",
+        "color_example",
+        {
+          "key": "number_example",
+          "type": "range",
+          "step": 1
+        },
+        {
+          "type": "submit",
+          "title": "Submit"
+        }
+      ]
     }
   </Definition>
 
