@@ -198,7 +198,7 @@ $app->group('', function(App $app) {
 
         $dbConnectionTC->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
-        return $response->withStatus(200);
+        return $response->withStatus(201);
     });
 
 
@@ -213,9 +213,17 @@ $app->group('', function(App $app) {
 
         $dbConnectionTC->addBookletLog($testId, $body['entry'], $body['timestamp']);
 
-        return $response->withStatus(200);
+        return $response->withStatus(201);
     });
 
 
+    $app->post('/test/{test_id}/lock', function (Request $request, Response $response) use ($dbConnectionTC) {
+
+        $testId = $request->getAttribute('test_id');
+
+        $dbConnectionTC->lockBooklet($testId);
+
+        return $response->withStatus(200);
+    });
 })
     ->add(new RequireToken());

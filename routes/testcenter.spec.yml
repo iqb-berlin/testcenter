@@ -487,7 +487,7 @@ paths:
               entry: 'PAGENAVIGATIONSTART: "#first"'
               timestamp: 1582230020
       responses:
-        "200":
+        "201":
           description: OK, log saved
         "401":
           description: Not authenticated
@@ -501,7 +501,7 @@ paths:
       summary: save a log-entry  for a runnign test
       description: saves a log-entry for a running test
         a log entry consists of a keyword and optionally, separated by a colon, a JSON-encoded value
-        currently used lognetry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE
+        currently used lognetry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE, BOOKLETLOCKEDbyTESTEE
       parameters:
         - in: header
           name: AuthToken
@@ -536,8 +536,39 @@ paths:
               entry: 'BOOKLETLOADSTART: {Browser:"Dredd"}'
               timestamp: 1582230020
       responses:
-        "200":
+        "201":
           description:  OK, log saved
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+
+  /test/{test_id}/lock:
+    put:
+      summary: finish a test
+      description: locks (finishes) a runnin test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description:  OK, locked
         "401":
           description: Not authenticated
         "403":

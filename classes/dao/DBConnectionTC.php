@@ -143,19 +143,15 @@ class DBConnectionTC extends DBConnection {
         );
     }
 
-    // =================================================================
-    public function lockBooklet($bookletDbId) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            $booklet_update = $this->pdoDBhandle->prepare(
-                'UPDATE booklets SET locked = :locked WHERE id = :id');
-            if ($booklet_update -> execute(array(
+
+    public function lockBooklet($bookletDbId): void {
+
+        $this->_('UPDATE booklets SET locked = :locked WHERE id = :id',
+            [
                 ':locked' => '1',
-                ':id' => $bookletDbId))) {
-                $myreturn = true;
-            }
-        }
-        return $myreturn;
+                ':id' => $bookletDbId
+            ]
+        );
     }
 
 
@@ -173,7 +169,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    public function getUnitRestorePoint($testId, $unitName) {
+    public function getUnitRestorePoint(int $testId, string $unitName): string {
 
         $unitData = $this->_(
             'SELECT units.restorepoint FROM units
@@ -183,17 +179,17 @@ class DBConnectionTC extends DBConnection {
                 ':testId' => $testId
             )
         );
-        return ($unitData === null) ? '' : $unitData['restorepoint'];
+        return (!$unitData or !$unitData['restorepoint']) ? '' : $unitData['restorepoint'];
     }
 
 
-    private function findOrAddUnit($testId, $unitname) {
+    private function findOrAddUnit(int $testId, string $unitName): string {
 
         $unit = $this->_(
             'SELECT units.id FROM units
             WHERE units.name = :unitname and units.booklet_id = :bookletId',
             array(
-                ':unitname' => $unitname,
+                ':unitname' => $unitName,
                 ':bookletId' => $testId
             )
         );
@@ -205,7 +201,7 @@ class DBConnectionTC extends DBConnection {
                 VALUES(:bookletId, :name)',
                 array(
                     ':bookletId' => $testId,
-                    ':name' => $unitname
+                    ':name' => $unitName
                 )
             );
             return $this->pdoDBhandle->lastInsertId();
