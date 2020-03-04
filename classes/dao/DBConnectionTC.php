@@ -169,10 +169,9 @@ class DBConnectionTC extends DBConnection {
                 ':testId' => $testId
             )
         );
-        return ($unitData === null) ? new stdClass() : JSON::decode($unitData['laststate']);
+        return JSON::decode($unitData['laststate']);
     }
 
- 
 
     public function getUnitRestorePoint($testId, $unitName) {
 
@@ -249,60 +248,34 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    // =================================================================
-    public function addUnitLog($bookletDbId, $unitname, $logentry, $time) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            try {
-                $this->pdoDBhandle->beginTransaction();
-                $unitDbId = $this->findOrAddUnit($bookletDbId, $unitname);
-                $unitlog_insert = $this->pdoDBhandle->prepare(
-                    'INSERT INTO unitlogs (unit_id, logentry, timestamp) 
-                        VALUES(:unitId, :logentry, :timestamp)');
-    
-                if ($unitlog_insert->execute(array(
-                    ':unitId' => $unitDbId,
-                    ':logentry' => $logentry,
-                    ':timestamp' => $time))) {
-                    $myreturn = true;
-                };
-                $this->pdoDBhandle->commit();
-            } 
+    public function addUnitLog($testId, $unitName, $logEntry, $timestamp) {
 
-            catch(Exception $e){
-                $this->pdoDBhandle->rollBack();
-            }
-        }
-
-        return $myreturn;
+        $this->_(
+            'INSERT INTO unitlogs (unit_id, logentry, timestamp) 
+            VALUES(
+                (SELECT id FROM units WHERE name=:unitName AND booklet_id=:testId),
+                :logentry, 
+                :timestamp
+            )',
+            [
+                ':testId' => $testId,
+                ':unitName' => $unitName,
+                ':logentry' => $logEntry,
+                ':timestamp' => $timestamp
+            ]
+        );
     }
 
-    // =================================================================
-    public function addBookletLog($bookletDbId, $logentry, $time) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            try {
-                $this->pdoDBhandle->beginTransaction();
-                $bookletlog_insert = $this->pdoDBhandle->prepare(
-                    'INSERT INTO bookletlogs (booklet_id, logentry, timestamp) 
-                        VALUES(:bookletId, :logentry, :timestamp)');
-    
-                if ($bookletlog_insert->execute(array(
-                    ':bookletId' => $bookletDbId,
-                    ':logentry' => $logentry,
-                    ':timestamp' => $time))) {
 
-                    $myreturn = true;
-                }
-                $this->pdoDBhandle->commit();
-            } 
+    public function addBookletLog($testId, $logEntry, $timestamp) {
 
-            catch(Exception $e){
-                $this->pdoDBhandle->rollBack();
-            }
-        }
-
-        return $myreturn;
+        $this->_('INSERT INTO bookletlogs (booklet_id, logentry, timestamp) VALUES (:bookletId, :logentry, :timestamp)',
+            [
+                ':bookletId' => $testId,
+                ':logentry' => $logEntry,
+                ':timestamp' => $timestamp
+            ]
+        );
     }
 }
 

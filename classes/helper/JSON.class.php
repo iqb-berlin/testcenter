@@ -3,7 +3,11 @@
 
 class JSON {
 
-    static function decode(string $json, bool $assoc = false) {
+    static function decode(?string $json, bool $assoc = false) {
+
+        if (is_null($json)) {
+            return $assoc ? [] : new stdClass();
+        }
 
         $decoded = json_decode($json, $assoc,512, JSON_UNESCAPED_UNICODE);
 

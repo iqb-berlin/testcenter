@@ -186,6 +186,36 @@ $app->group('', function(App $app) {
     });
 
 
+    $app->put('/test/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
+
+        $testId = $request->getAttribute('test_id');
+        $unitName = $request->getAttribute('unit_name');
+
+        $body = RequestBodyParser::getElements($request, [
+            'entry' => null, // was e
+            'timestamp' => null // was t
+        ]);
+
+        $dbConnectionTC->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
+
+        return $response->withStatus(200);
+    });
+
+
+    $app->put('/test/{test_id}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
+
+        $testId = $request->getAttribute('test_id');
+
+        $body = RequestBodyParser::getElements($request, [
+            'entry' => null, // was e
+            'timestamp' => null // was t
+        ]);
+
+        $dbConnectionTC->addBookletLog($testId, $body['entry'], $body['timestamp']);
+
+        return $response->withStatus(200);
+    });
+
 
 })
     ->add(new RequireToken());
