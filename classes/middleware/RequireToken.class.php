@@ -19,18 +19,18 @@ class RequireToken {
         }
 
         $authToken = JSON::decode($request->getHeaderLine('AuthToken'));
-        $personToken = $authToken->p;
-        $loginToken = $authToken->l ?? ''; // TODO check this too?
 
-        if (!isset($authToken->p) or strlen($personToken) == 0) {
+        if (!isset($authToken->l) or strlen($authToken->l) == 0) {
             throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: p missing');
         }
 
+        $loginToken = $authToken->l;
+        $personToken = $authToken->p ?? '';
+
         //$dbConnectionTC = new DBConnectionTC();
+        //$tokenInfo = $dbConnectionTC->validateToken($personToken, $loginToken); // TODO implement
 
-//        $tokenInfo = $dbConnectionTC->validateToken($personToken, $loginToken); // TODO implement
-
-        $authToken = new TestAuthToken($personToken, $loginToken);
+        $authToken = new TestAuthToken($loginToken, $personToken);
         $request = $request->withAttribute('AuthToken', $authToken);
 
         return $next($request, $response);

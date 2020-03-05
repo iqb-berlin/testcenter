@@ -48,7 +48,7 @@ class DBConnectionTC extends DBConnection {
 
     public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry): void {
 
-        $unitDbId = $this->findOrAddUnit($testId, $unit);
+        $unitDbId = $this->getOrCreateUnitId($testId, $unit);
         $this->_(
             'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
             VALUES(:u, :t, :r, :p, :c, :e)',
@@ -122,7 +122,7 @@ class DBConnectionTC extends DBConnection {
 
     public function updateUnitLastState($testId, $unitName, $stateKey, $stateValue): void {
 
-        $unitDbId = $this->findOrAddUnit($testId, $unitName);
+        $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
 
         $unitData = $this->_(
             'SELECT units.laststate FROM units WHERE units.id=:unitId FOR UPDATE',
@@ -183,7 +183,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    private function findOrAddUnit(int $testId, string $unitName): string {
+    private function getOrCreateUnitId(int $testId, string $unitName): string {
 
         $unit = $this->_(
             'SELECT units.id FROM units
@@ -214,7 +214,7 @@ class DBConnectionTC extends DBConnection {
 
     public function updateRestorePoint(int $testId, string $unitName, string $restorePoint, int$timestamp): void {
 
-        $unitDbId = $this->findOrAddUnit($testId, $unitName);
+        $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
         $this->_(
             'UPDATE units SET restorepoint=:rp, restorepoint_ts=:rp_ts
              WHERE id = :unitId and restorepoint_ts < :ts',
@@ -230,7 +230,7 @@ class DBConnectionTC extends DBConnection {
 
     public function addResponse(int $testId, string $unitName, string $responses, string $type, int $timestamp) : void {
 
-        $unitDbId = $this->findOrAddUnit($testId, $unitName);
+        $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
         $this->_('UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt
                 WHERE id = :unitId and responses_ts < :ts',
             [
@@ -244,7 +244,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    public function addUnitLog($testId, $unitName, $logEntry, $timestamp) {
+    public function addUnitLog($testId, $unitName, $logEntry, $timestamp) { // TODO manchmal wird die subquery 0 ?!
 
         $this->_(
             'INSERT INTO unitlogs (unit_id, logentry, timestamp) 

@@ -1,6 +1,8 @@
 <?php
 
 use Slim\App;
+use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -13,7 +15,7 @@ $app->group('', function(App $app) {
 
         /* @var $authToken TestAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getLoginToken();
+        $loginToken = $authToken->getToken();
         $testId = $request->getAttribute('test_id');
 
         $bookletName = $dbConnectionTC->getBookletName($testId);
@@ -31,12 +33,63 @@ $app->group('', function(App $app) {
     }); // checked in original for $personToken != '' although it's not used at all
 
 
-    // was /unitdata/{unit_id}
-    $app->get('/test/{test_id}/unit/{unit_name}', function (Request $request, Response $response) use ($dbConnectionTC) {
+    // was /startbooklet
+    // TODO change to /test if https://stackoverflow.com/questions/60548400/mod-rewrite-tries-to-redirect-if-folder-exists resolved
+    $app->put('/test_tmp', function(Request $request, Response $response) use ($dbConnectionTC) {
 
         /* @var $authToken TestAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getLoginToken();
+        $loginToken = $authToken->getToken();
+        $personToken = $authToken->getPersonToken();
+
+        $body = RequestBodyParser::getElements($request, [
+            'code' => 0, // was: c
+            'bookletLabel' => '¿Testheft?', // was: bl
+            'bookletName' => null // was: b
+        ]);
+
+        $dbConnectionStart = new DBConnectionStart();
+
+        // CASE A: start by persontoken
+        if (strlen($personToken) > 0) {
+
+            $person = $dbConnectionStart->getPerson($personToken);
+
+            if ($person == null) {
+                throw new HttpForbiddenException($request);
+            }
+
+        // CASE B: start by login and (in case) code
+        } else {
+
+            $loginId = $dbConnectionStart->getLoginId($loginToken);
+
+            if ($loginId == null) {
+                throw new HttpForbiddenException($request);
+            }
+
+            $person = $dbConnectionStart->registerPerson($loginId, $body['code']);
+        }
+
+        $test = $dbConnectionStart->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
+
+        if ($test['locked'] == '1') {
+            throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
+        }
+
+        return $response->withJson([
+            'testId' => $test['id'],
+            'personToken' => $person['token'] // person token
+        ])->withStatus(201);
+    });
+
+
+    // was /unitdata/{unit_id}
+    $app->get('/test/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($dbConnectionTC) {
+
+        /* @var $authToken TestAuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+        $loginToken = $authToken->getToken();
         $unitName = $request->getAttribute('unit_name');
         $testId = $request->getAttribute('test_id');
 
@@ -58,7 +111,7 @@ $app->group('', function(App $app) {
 
         /* @var $authToken TestAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getLoginToken();
+        $loginToken = $authToken->getToken();
 
         $resourceName = $request->getAttribute('resource_name');
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename

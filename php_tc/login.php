@@ -303,11 +303,11 @@ $app->post('/startbooklet', function (ServerRequestInterface $request, ResponseI
         
                 // CASE A: start by persontoken
                 if (strlen($personToken) > 0) {
-                    $myreturn = $myDBConnection->startBookletByPersonToken($personToken, $bookletid, $bookletLabel);
+                    $myreturn = $myDBConnection->getOrCreateTest($personToken, $bookletid, $bookletLabel);
 
                 // CASE B: start by login and (in case) code
                 } elseif (strlen($loginToken) > 0) {
-                    $myreturn = $myDBConnection->startBookletByLoginToken($loginToken, $code, $bookletid, $bookletLabel);
+                    $myreturn = $myDBConnection->startBookletByLoginId($loginToken, $code, $bookletid, $bookletLabel);
 
                 }
                 if (isset($myreturn['bookletDbId'])) {

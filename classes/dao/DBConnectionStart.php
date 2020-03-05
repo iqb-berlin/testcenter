@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnhandledExceptionInspection */
+
 
 class DBConnectionStart extends DBConnection {
     private $idletimeSession = 60 * 30;
@@ -293,158 +295,112 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-    // #######################################################################################
-    // #######################################################################################
-    public function startBookletByLoginToken($logintoken, $code, $booklet, $bookletLabel) {
-        $myreturn = [];
-        if ($this->pdoDBhandle != false) {
-            $login_select = $this->pdoDBhandle->prepare(
-                'SELECT logins.id FROM logins
-                    WHERE logins.token=:token');
-                
-            if ($login_select->execute(array(
-                ':token' => $logintoken
-                ))) {
+    public function getLoginId(string $loginToken): int {
 
-                $logindata = $login_select->fetch(PDO::FETCH_ASSOC);
-                if ($logindata !== false) {
-                    // ++++++++++++++++++++++++++++++++++++++++++++++
-                    // logintoken ok
-                    // delete old persontoken and get new one
-
-                    $personToken = '';
-                    $tempToken = uniqid('a', true);
-
-                    $persons_select = $this->pdoDBhandle->prepare(
-                        'SELECT persons.id FROM persons
-                            WHERE persons.login_id=:id and persons.code=:code');
-                    if ($persons_select->execute(array(
-                        ':id' => $logindata['id'],
-                        ':code' => $code
-                        ))) {
-        
-                        $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
-                        if ($persondata !== false) {
-                            // overwrite token
-                            $booklet_update = $this->pdoDBhandle->prepare(
-                                'UPDATE persons SET valid_until =:valid_until, token=:token WHERE id = :id');
-                            if ($booklet_update -> execute(array(
-                                ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
-                                ':token' => $tempToken,
-                                ':id' => $persondata['id']))) {
-                                $personToken = $tempToken;
-                            }
-                        }
-                    }
-
-                    if (strlen($personToken) === 0) {
-                        $booklet_insert = $this->pdoDBhandle->prepare(
-                            'INSERT INTO persons (token, code, login_id, valid_until) 
-                                VALUES(:token, :code, :login_id, :valid_until)');
-    
-                        if ($booklet_insert->execute(array(
-                            ':token' => $tempToken,
-                            ':code' => $code,
-                            ':login_id' => $logindata['id'],
-                            ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession)
-                            ))) {
-                                $personToken = $tempToken;
-                        }
-                    }
-
-                    // ++++++++++++++++++++++++++++++++++++++++++++++
-                    // start booklet
-                    if (strlen($personToken) > 0) {
-                        $myreturn = $this->startBookletByPersonToken($personToken, $booklet, $bookletLabel);
-                    }
-                }
-            }
-        }
-        return $myreturn;
+        return $this->_('SELECT logins.id FROM logins WHERE logins.token=:token', [':token' => $loginToken])['id'];
     }
 
-    // #######################################################################################
-    // #######################################################################################
-    public function startBookletByPersonToken($persontoken, $booklet, $bookletLabel) {
-        $myreturn = [];
-        if ($this->pdoDBhandle != false) {
-            $persons_select = $this->pdoDBhandle->prepare(
-                'SELECT persons.id FROM persons
-                    WHERE persons.token=:token');
-                
-            if ($persons_select->execute(array(
-                ':token' => $persontoken
-                ))) {
 
-                $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
-                if ($persondata !== false) {
-                    // ++++++++++++++++++++++++++++++++++++++++++++++
-                    // persontoken ok
+    public function registerPerson(int $loginId, string $code): array {
 
-                    $bookletDbId = 0;
-                    $isLocked = false;
+        $newPersonToken = uniqid('a', true);
 
-                    $booklet_select = $this->pdoDBhandle->prepare(
-                        'SELECT booklets.locked, booklets.id, booklets.laststate FROM booklets
-                            WHERE booklets.person_id=:personId and booklets.name=:bookletname');
-                        
-                    if ($booklet_select->execute(array(
-                        ':personId' => $persondata['id'],
-                        ':bookletname' => $booklet
-                        ))) {
-        
-                        $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                        if ($bookletdata !== false) {
-                            if ($bookletdata['locked'] == '1') {
-                                $isLocked = true;
-                            } else {
-                                $booklet_update = $this->pdoDBhandle->prepare(
-                                    'UPDATE booklets SET label = :label WHERE id = :id');
-                                if ($booklet_update -> execute(array(
-                                    ':label' => $bookletLabel,
-                                    ':id' => $bookletdata['id']))) {
-                                    $bookletDbId = $bookletdata['id'];
-                                }
-                            }
-                        }
-                    }
+        $person = $this->_(
+            'SELECT persons.id FROM persons WHERE persons.login_id=:id and persons.code=:code',
+            [
+                ':id' => $loginId,
+                ':code' => $code
+            ]
+        );
 
-                    if (($bookletDbId === 0) && !$isLocked) {
-                        // create new booklet record
-                        try{
-                            $this->pdoDBhandle->beginTransaction();
-                            $booklet_insert = $this->pdoDBhandle->prepare(
-                                'INSERT INTO booklets (person_id, name, label) 
-                                    VALUES(:person_id, :name, :label)');
-        
-                            if ($booklet_insert->execute(array(
-                                ':person_id' => $persondata['id'],
-                                ':name' => $booklet,
-                                ':label' => $bookletLabel
-                                ))) {
-    
-                                $bookletDbId = $this->pdoDBhandle->lastInsertId();
-                            }
-    
-                            $this->pdoDBhandle->commit();
-                        } 
+        if ($person !== null) {
 
-                        catch(Exception $e){
-                            $this->pdoDBhandle->rollBack();
-                            $bookletDbId = 0;
-                        }
-                    }
-                }
+            $this->_(
+                'UPDATE persons SET valid_until =:valid_until, token=:token WHERE id = :id',
+                [
+                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
+                    ':token' => $newPersonToken,
+                    ':id' => $person['id']
+                ]
+            );
+            $newPersonId = $person['id'];
+
+        } else {
+
+            $this->_(
+                'INSERT INTO persons (token, code, login_id, valid_until) 
+                VALUES(:token, :code, :login_id, :valid_until)',
+                [
+                    ':token' => $newPersonToken,
+                    ':code' => $code,
+                    ':login_id' => $loginId,
+                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession)
+                ]
+            );
+            $newPersonId = $this->pdoDBhandle->lastInsertId();
+
+        }
+
+        return [
+            'token' => $newPersonToken,
+            'id' => $newPersonId
+        ];
+    }
+
+
+    public function getPerson(string $personToken): array {
+
+        return $this->_('SELECT * FROM persons WHERE persons.token=:token', [':token' => $personToken]);
+        // TODO check valid_until
+    }
+
+
+    public function getOrCreateTest(string $personId, string $bookletName, string $bookletLabel) {
+
+        $test = $this->_(
+            'SELECT booklets.locked, booklets.id, booklets.laststate, booklets.label FROM booklets
+            WHERE booklets.person_id=:personId and booklets.name=:bookletname',
+            [
+                ':personId' => $personId,
+                ':bookletname' => $bookletName
+            ]
+        );
+
+        if ($test !== null) {
+
+            if ($test['locked'] != '1') {
+
+                $this->_( // TODO is this necessary?
+                    'UPDATE booklets SET label = :label WHERE id = :id',
+                    [
+                        ':label' => $bookletLabel,
+                        ':id' => $test['id']
+                    ]
+                );
+
             }
-        }
-        if ($bookletDbId > 0) {
-            $myreturn = [
-                'bookletDbId' => $bookletDbId,
-                'persontoken' => $persontoken
-            ];
+
+            return $test;
+
         }
 
-        return $myreturn;
+        $this->_(
+            'INSERT INTO booklets (person_id, name, label) VALUES(:person_id, :name, :label)',
+                [
+                    ':person_id' => $personId,
+                    ':name' => $bookletName,
+                    ':label' => $bookletLabel
+                ]
+        );
+
+        return [
+            'id' => $this->pdoDBhandle->lastInsertId(),
+            'label' => $bookletLabel,
+            'name' => $bookletName,
+            'person_id' => $personId,
+            'locked' => '0',
+            'lastState' => ''
+        ];
     }
 } 
 ?>

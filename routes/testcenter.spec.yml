@@ -575,3 +575,35 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
+
+  /test_tmp:
+    put:
+      summary: start a test
+      description: creates a new test or continues a running one for given person and testlet-name.
+        it also generates a person token if there is none, so this is part II od two-factor authentication
+        returns the (new) test-id and peron-token.
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+      responses:
+        "201":
+          description:  OK, started
+          content:
+            application/json:
+              example:
+                testId: 1
+                personToken: 0000000000000.00000000000
+        "401":
+          description: Not authenticated - auth token header is missing or not containing at least a login token
+        "403":
+          description: Forbidden
+        "423":
+          description: Test is locked!
+        "500":
+          description: Server Error

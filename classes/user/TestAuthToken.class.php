@@ -3,17 +3,17 @@
 
 class TestAuthToken extends AuthToken {
 
-    private $_loginToken = '';
+    private $_personToken = '';
 
-    function __construct(string $personToken, string $loginToken) {
+    function __construct(string $loginToken, string $personToken) {
 
-        $this->_token = $personToken;
-        $this->_loginToken = $loginToken;
+        $this->_token = $loginToken;
+        $this->_personToken = $personToken;
     }
 
 
-    public function getLoginToken(): string {
+    public function getPersonToken(): string {
 
-        return $this->_loginToken;
+        return $this->_personToken;
     }
 }
