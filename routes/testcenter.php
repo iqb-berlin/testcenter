@@ -51,7 +51,7 @@ $app->group('', function(App $app) {
         $dbConnectionStart = new DBConnectionStart();
 
         // CASE A: start by persontoken
-        if (strlen($personToken) > 0) {
+        if (strlen($personToken) > 0) { // TODO currently only this is used. after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved, onyl ecase B is used and A can be deleted
 
             $person = $dbConnectionStart->getPerson($personToken);
 
@@ -222,9 +222,6 @@ $app->group('', function(App $app) {
 
         return $response->withStatus(200);
     });
-
-
-
 
 
     $app->patch('/test/{test_id}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
