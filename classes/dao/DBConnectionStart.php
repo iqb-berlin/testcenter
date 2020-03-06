@@ -121,177 +121,178 @@ class DBConnectionStart extends DBConnection {
         return $myreturn;
     }
 
-    // #######################################################################################
-    // #######################################################################################
-    // if the booklet is not found in the database, the booklet label will be empty and
-    // the bookletid will be 0
-    public function getBookletStatus($logintoken, $code, $persontoken, $bookletid, $bookletDbId) {
-        $myreturn = []; // if not valid query then this will be the return
 
-        if ($this->pdoDBhandle != false) {
-            $logintoken = isset($logintoken) ? $logintoken : '';
-            $code = isset($code) ? $code : '';
-            $persontoken = isset($persontoken) ? $persontoken : '';
-            $bookletid = isset($bookletid) ? $bookletid : '';
-            $bookletDbId = isset($bookletDbId) ? $bookletDbId : 0;
+    public function getBookletStatusAfterStart($personToken, $testId) {
 
-            // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            // persontoken and bookletDbId (after start)
-            if ((strlen($persontoken) > 0) && ($bookletDbId > 0)) {
-                $booklet_select = $this->pdoDBhandle->prepare(
-                    'SELECT booklets.laststate, booklets.locked, booklets.label FROM booklets
-                        INNER JOIN persons on persons.id = booklets.person_id
-                        WHERE persons.token = :token 
-                            and booklets.id = :bookletId');
-                    
-                if ($booklet_select->execute(array(
-                    ':token' => $persontoken,
-                    ':bookletId' => $bookletDbId
-                    ))) {
-    
-                    $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                    if ($bookletdata !== false) {
-                        $myreturn['canStart'] = true;
-                        $myreturn['statusLabel'] = 'Zum Starten hier klicken';
-                        $myreturn['label'] = $bookletdata['label'];
-                        $myreturn['id'] = $bookletDbId;
-                        $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
+        $myreturn = [];
 
-                        if ($bookletdata['locked'] == '1') {
+        $bookletdata = $this->_(
+            'SELECT booklets.laststate, booklets.locked, booklets.label FROM booklets
+                INNER JOIN persons ON persons.id = booklets.person_id
+                WHERE persons.token = :token 
+                    AND booklets.id = :bookletId',
+            [
+                ':token' => $personToken,
+                ':bookletId' => $testId
+            ]
+        );
+
+        if ($bookletdata === null) {
+            return $myreturn;
+        }
+
+        $myreturn['canStart'] = true;
+        $myreturn['statusLabel'] = 'Zum Starten hier klicken';
+        $myreturn['label'] = $bookletdata['label'];
+        $myreturn['id'] = $testId;
+        $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
+
+        if ($bookletdata['locked'] == '1') {
+            $myreturn['canStart'] = false;
+            $myreturn['statusLabel'] = 'Beendet';
+        } else {
+            $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
+        }
+
+        return $myreturn;
+    }
+
+    public function getBookletStatusBeforeStartAfterHavingStartedAnother(string $personToken, string $bookletName) {
+
+        $myreturn = [];
+
+        $logindata = $this->_(
+            'SELECT logins.booklet_def, persons.id, persons.code FROM persons
+            INNER JOIN logins ON logins.id = persons.login_id
+            WHERE persons.token = :token',
+            [
+                ':token' => $personToken
+            ]
+        );
+
+
+        if ($logindata !== null) {
+            $myBooklets = JSON::decode($logindata['booklet_def'], true);
+            $code = $logindata['code'];
+            $personId = $logindata['id'];
+
+            if (count($myBooklets) > 0) {
+                // check whether code and booklet are part of login
+                $bookletValid = false;
+                if (isset($myBooklets[$code])) {
+                    $bookletValid = in_array($bookletName, $myBooklets[$code]);
+                }
+
+                if ($bookletValid) {
+                    $myreturn = [
+                        'canStart' => true,
+                        'statusLabel' => 'Zum Starten hier klicken',
+                        'label' => '',
+                        'id' => 0,
+                        'lastUnit' => 0
+                    ];
+
+                    $bookletData= $this->_(
+                        'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
+                        WHERE booklets.person_id = :personid and booklets.name = :bookletname',
+                        [
+                            ':personid' => $personId,
+                            ':bookletname' => $bookletName
+                        ]
+                    );
+
+                    if ($bookletData !== null) {
+                        $myreturn['label'] = $bookletData['label'];
+                        $myreturn['id'] = $bookletData['id'];
+                        $myreturn['laststate'] = JSON::decode($bookletData['laststate'], true);
+
+                        if ($bookletData['locked'] == '1') {
                             $myreturn['canStart'] = false;
                             $myreturn['statusLabel'] = 'Beendet';
                         } else {
                             $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
                         }
                     }
-                }
 
-            // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            // persontoken and bookletid (before start, after having started another booklet)
-            } elseif ((strlen($persontoken) > 0) && (strlen($bookletid) > 0)) {
-                $sql_select = $this->pdoDBhandle->prepare(
-                    'SELECT logins.booklet_def, persons.id, persons.code FROM persons
-                        INNER JOIN logins ON logins.id = persons.login_id
-                        WHERE persons.token = :token');
-                    
-                if ($sql_select->execute(array(
-                    ':token' => $persontoken))) {
-    
-                    $logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
-                    if ($logindata !== false) {
-                        $myBooklets = JSON::decode($logindata['booklet_def'], true);
-                        $code = $logindata['code'];
-                        $personId = $logindata['id'];
-    
-                        if (count($myBooklets) > 0) {
-                            // check whether code and booklet are part of login
-                            $bookletValid = false;
-                            if (isset($myBooklets[$code])) {
-                                $bookletValid = in_array($bookletid, $myBooklets[$code]);
-                            }
-    
-                            if ($bookletValid) {
-                                $myreturn = [
-                                    'canStart' => true,
-                                    'statusLabel' => 'Zum Starten hier klicken',
-                                    'label' => '',
-                                    'id' => 0,
-                                    'lastUnit' => 0
-                                ];
-
-                                $booklet_select = $this->pdoDBhandle->prepare(
-                                    'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
-                                        WHERE booklets.person_id = :personid and booklets.name = :bookletname');
-                                    
-                                if ($booklet_select->execute(array(
-                                    ':personid' => $personId,
-                                    ':bookletname' => $bookletid
-                                    ))) {
-                    
-                                    $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                    if ($bookletdata !== false) {
-                                        $myreturn['label'] = $bookletdata['label'];
-                                        $myreturn['id'] = $bookletdata['id'];
-                                        $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
-
-                                        if ($bookletdata['locked'] == '1') {
-                                            $myreturn['canStart'] = false;
-                                            $myreturn['statusLabel'] = 'Beendet';
-                                        } else {
-                                            $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }    
-            // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-            // logintoken, code and bookletid (before start)
-            } elseif ((strlen($logintoken) > 0) && (strlen($bookletid) > 0)) {
-                $sql_select = $this->pdoDBhandle->prepare(
-                    'SELECT logins.booklet_def, logins.id FROM logins
-                        WHERE logins.token = :token');
-                    
-                if ($sql_select->execute(array(
-                    ':token' => $logintoken))) {
-    
-                    $logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
-                    if ($logindata !== false) {
-                        $myBookletData = JSON::decode($logindata['booklet_def'], true);
-                        if (isset($myBookletData[$code])) {
-                            if (in_array($bookletid, $myBookletData[$code])) {
-                                $myreturn = [
-                                    'canStart' => true,
-                                    'statusLabel' => 'Zum Starten hier klicken',
-                                    'label' => '',
-                                    'id' => 0,
-                                    'lastUnit' => 0
-                                ];
-                    
-                                $persons_select = $this->pdoDBhandle->prepare(
-                                    'SELECT persons.id FROM persons
-                                        WHERE persons.login_id = :loginid and persons.code = :code');
-                                    
-                                if ($persons_select->execute(array(
-                                    ':loginid' => $logindata['id'],
-                                    ':code' => $code
-                                    ))) {
-                    
-                                    $persondata = $persons_select->fetch(PDO::FETCH_ASSOC);
-                                    if ($persondata !== false) {
-                                        $booklet_select = $this->pdoDBhandle->prepare(
-                                            'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
-                                                WHERE booklets.person_id = :personid and booklets.name = :bookletname');
-                                            
-                                        if ($booklet_select->execute(array(
-                                            ':personid' => $persondata['id'],
-                                            ':bookletname' => $bookletid
-                                            ))) {
-                            
-                                            $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                                            if ($bookletdata !== false) {
-                                                $myreturn['label'] = $bookletdata['label'];
-                                                $myreturn['id'] = $bookletdata['id'];
-                                                $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
-
-                                                if ($bookletdata['locked'] == '1') {
-                                                    $myreturn['canStart'] = false;
-                                                    $myreturn['statusLabel'] = 'Beendet';
-                                                } else {
-                                                    $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
+
         return $myreturn;
+    }
+
+
+    public function getBookletStatusBeforeStart(string $loginToken, string $code, string $bookletName) {
+
+        $bookletStatus = [];
+
+        $logindata = $this->_('SELECT logins.booklet_def, logins.id FROM logins WHERE logins.token = :token', [':token' => $loginToken]);
+
+        $myBookletData = JSON::decode($logindata['booklet_def'], true);
+
+        if (isset($myBookletData[$code])) {
+
+            if (in_array($bookletName, $myBookletData[$code])) {
+                $bookletStatus = [
+                    'canStart' => true,
+                    'statusLabel' => 'Zum Starten hier klicken',
+                    'label' => '',
+                    'id' => 0,
+                    'lastUnit' => 0
+                ];
+
+                $persondata = $this->_(
+                    'SELECT persons.id FROM persons
+                    WHERE persons.login_id = :loginid and persons.code = :code',
+                    [
+                        ':loginid' => $logindata['id'],
+                        ':code' => $code
+                    ]
+                );
+
+                if ($persondata !== null) {
+
+                    $bookletdata = $this->_(
+                        'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
+                        WHERE booklets.person_id = :personid and booklets.name = :bookletname',
+                        [
+                            ':personid' => $persondata['id'],
+                            ':bookletname' => $bookletName
+                        ]
+                    );
+
+                    if ($bookletdata !== null) {
+                        $bookletStatus['label'] = $bookletdata['label'];
+                        $bookletStatus['id'] = $bookletdata['id'];
+                        $bookletStatus['laststate'] = JSON::decode($bookletdata['laststate'], true);
+
+                        if ($bookletdata['locked'] == '1') {
+                            $bookletStatus['canStart'] = false;
+                            $bookletStatus['statusLabel'] = 'Beendet';
+                        } else {
+                            $bookletStatus['statusLabel'] = 'Zum Fortsetzen hier klicken';
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+        return $bookletStatus;
+    }
+
+
+    // #######################################################################################
+    // #######################################################################################
+    // if the booklet is not found in the database, the booklet label will be empty and
+    // the bookletid will be 0
+    public function getBookletStatus($loginToken, $code, $personToken, $bookletName, $testId) {
+
+
+
+        return [];
     }
 
 
