@@ -8,12 +8,14 @@ class WorkspaceController {
     protected $_workspacePath = '';
     protected $_dataPath = '';
 
+    const dataDirName = 'vo_data';
 
     function __construct(int $workspaceId) {
 
         $this->_workspaceId = $workspaceId;
 
-        $this->_dataPath = ROOT_DIR . '/vo_data';
+        $this->_dataPath = ROOT_DIR . '/' . WorkspaceController::dataDirName;
+
         $this->_workspacePath = $this->_createWorkspaceFolderIfNotExisting();
     }
 
@@ -131,7 +133,7 @@ class WorkspaceController {
         }
         $preparedBooklets = [];
 
-        foreach ($this->_globStreamSafe($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
 
             $testTakersFile = new XMLFileTesttakers($fullFilePath);
             if (!$testTakersFile->isValid()) {
@@ -154,25 +156,6 @@ class WorkspaceController {
             }
         }
         return $this->_sortPreparedBooklets($preparedBooklets);
-    }
-
-
-    private function _globStreamSafe(string $dir, string $filePattern): array {
-
-        $files = scandir($dir);
-        $found = [];
-
-        foreach ($files as $filename) {
-            if (in_array($filename, ['.', '..'])) {
-                continue;
-            }
-
-            if (fnmatch($filePattern, $filename)) {
-                $found[] = "{$dir}/{$filename}";
-            }
-        }
-
-        return $found;
     }
 
 
@@ -499,7 +482,7 @@ class WorkspaceController {
 
         $dirToSearch = $this->_getSubFolderFullPath($type);
 
-        foreach ($this->_globStreamSafe($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xmlFile = new XMLFile($fullFilePath);
             if ($xmlFile->isValid()) {
@@ -520,7 +503,7 @@ class WorkspaceController {
 
         $resourceFileName = $this->normaliseFileName(basename($resourceName), $skipSubVersions);
 
-        foreach ($this->_globStreamSafe($resourceFolder, "*.*") as $fullFilePath) {
+        foreach (Folder::glob($resourceFolder, "*.*") as $fullFilePath) {
 
             $normalizedFilename = $this->normaliseFileName(basename($fullFilePath), $skipSubVersions);
 
@@ -533,7 +516,7 @@ class WorkspaceController {
     }
 
 
-    protected function normaliseFileName(string $fileName, bool $skipSubVersions) {
+    protected function normaliseFileName(string $fileName, bool $skipSubVersions): string {
 
         $normalizedFilename = strtoupper($fileName);
 
@@ -548,5 +531,27 @@ class WorkspaceController {
         }
 
         return $normalizedFilename;
+    }
+
+
+    public function findAvailableBookletsForLogin(string $name, string $password): array {
+
+        foreach (Folder::glob($this->_getSubFolderFullPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+
+            $xFile = new XMLFileTesttakers($fullFilePath);
+
+            if ($xFile->isValid()) {
+                if ($xFile->getRoottagName() == 'Testtakers') {
+                    $myBooklets = $xFile->getLoginData($name, $password);
+                    if (count($myBooklets['booklets']) > 0) {
+                        $myBooklets['workspaceId'] = $this->_workspaceId;
+                        $myBooklets['customTexts'] = $xFile->getCustomTexts();
+                        return $myBooklets;
+                    }
+                }
+            }
+        }
+
+        return [];
     }
 }

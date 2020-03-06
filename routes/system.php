@@ -1,7 +1,6 @@
 <?php
 
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpException;
 use Slim\Route;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -127,34 +126,5 @@ $app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspect
 });
 
 
-$app->post('/login', function(Request $request, Response $response) use ($app) {
 
-    $dbConnection = new DBConnectionAdmin();
-
-    $requestBody = JSON::decode($request->getBody());
-
-    if (isset($requestBody->n) and isset($requestBody->p)) {
-        $token = $dbConnection->login($requestBody->n, $requestBody->p);
-    } else if (isset($requestBody->at)) {
-        $token = $requestBody->at;
-    } else {
-        throw new HttpBadRequestException($request, "Authentication credentials missing.");
-    }
-
-    $tokenInfo = $dbConnection->validateToken($token);
-
-    $workspaces = $dbConnection->getWorkspaces($token);
-
-    if ((count($workspaces) == 0) and !$tokenInfo['user_is_superadmin']) {
-        throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 202);
-    }
-
-    return $response->withJson([
-        'admintoken' => $token,
-        'user_id' => $tokenInfo['user_id'],
-        'name' => $tokenInfo['user_name'],
-        'workspaces' => $workspaces,
-        'is_superadmin' => $tokenInfo['user_is_superadmin']
-    ]);
-});
 

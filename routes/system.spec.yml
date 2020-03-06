@@ -40,38 +40,6 @@ paths:
               example:
                 version: "2.0.0-beta"
 
-  /login:
-    post:
-      summary: Login
-
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: './components.spec.yml#/components/schemas/login_request'
-
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: './components.spec.yml#/components/schemas/login_response'
-              example:
-                admintoken: user000000000.0000000000
-                name: super
-                workspaces:
-                  - id: '1'
-                    name: example_workspace
-                    role: RW
-                is_superadmin: true
-        "202":
-          description: User has account but neither workspace nor super-admin privilige
-        "400":
-          description: Insufficent Crendetials
-        "500":
-          description: Server Error
-
   /workspaces:
     get:
       summary: get a list of workspaces
