@@ -10,7 +10,7 @@ try {
     require_once "vendor/autoload.php";
     require_once "autoload.php";
 
-    session_start();
+    session_start(); // TODO remove
 
     $container = new Container();
     $container['errorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
@@ -27,6 +27,7 @@ try {
     include_once 'routes/user.php';
 
     include_once 'routes/testcenter.php';
+    include_once 'routes/booklet.php';
 
     $app->run();
 

@@ -382,12 +382,12 @@ class WorkspaceController {
 
         $lookupFolder = $this->_workspacePath . '/Booklet';
         if (!file_exists($lookupFolder)) {
-            throw new Exception("Folder does not exists: `$lookupFolder`");
+            throw new HttpError("Folder does not exist: `$lookupFolder`", 500);
         }
 
         $lookupDir = opendir($lookupFolder);
         if ($lookupDir === false) {
-            throw new Exception("Could not open: `$lookupFolder`");
+            throw new HttpError("Could not open: `$lookupFolder`", 404);
         }
 
         while (($entry = readdir($lookupDir)) !== false) {

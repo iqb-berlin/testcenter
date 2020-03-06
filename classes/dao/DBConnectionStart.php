@@ -122,192 +122,88 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-    public function getBookletStatusAfterStart($personToken, $testId) {
+    public function loginHasBooklet(string $loginToken, string $bookletName, string $code = '') {
 
-        $myreturn = [];
+        $bookletDef = $this->_('SELECT logins.booklet_def, logins.id FROM logins WHERE logins.token = :token', [':token' => $loginToken]);
 
-        $bookletdata = $this->_(
-            'SELECT booklets.laststate, booklets.locked, booklets.label FROM booklets
-                INNER JOIN persons ON persons.id = booklets.person_id
-                WHERE persons.token = :token 
-                    AND booklets.id = :bookletId',
+        $booklet = JSON::decode($bookletDef['booklet_def'], true);
+
+        return $booklet and isset($booklet[$code]) and in_array($bookletName, $booklet[$code]);
+    }
+
+
+    public function getBookletStatus(string $loginToken, string $bookletName, string $code = '') {
+
+        $person = $this->getOrCreatePerson($this->getLoginId($loginToken), $code); // TODO work with personToken instead
+
+        $test = $this->_(
+            'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
+            WHERE booklets.person_id = :personid and booklets.name = :bookletname',
             [
-                ':token' => $personToken,
-                ':bookletId' => $testId
+                ':personid' => $person['id'],
+                ':bookletname' => $bookletName
             ]
         );
 
-        if ($bookletdata === null) {
-            return $myreturn;
-        }
+        if ($test !== null) {
 
-        $myreturn['canStart'] = true;
-        $myreturn['statusLabel'] = 'Zum Starten hier klicken';
-        $myreturn['label'] = $bookletdata['label'];
-        $myreturn['id'] = $testId;
-        $myreturn['laststate'] = JSON::decode($bookletdata['laststate'], true);
+            $bookletStatus = [
+                'running' => true,
+                'canStart' => true,
+                'statusLabel' => 'Zum Fortsetzen hier klicken',
+                'label' => $test['label'],
+                'id' => $test['id'],
+                'locked' => $test['locked'],
+                'lastState' => JSON::decode($test['laststate'], true)
+            ];
 
-        if ($bookletdata['locked'] == '1') {
-            $myreturn['canStart'] = false;
-            $myreturn['statusLabel'] = 'Beendet';
+            if ($test['locked'] == '1') {
+                $bookletStatus['canStart'] = false;
+                $bookletStatus['statusLabel'] = 'Beendet';
+            }
+
+            return $bookletStatus;
+
         } else {
-            $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
+
+            return [
+                'running' => false,
+                'canStart' => true,
+                'statusLabel' => 'Zum Starten hier klicken'
+            ];
         }
-
-        return $myreturn;
-    }
-
-    public function getBookletStatusBeforeStartAfterHavingStartedAnother(string $personToken, string $bookletName) {
-
-        $myreturn = [];
-
-        $logindata = $this->_(
-            'SELECT logins.booklet_def, persons.id, persons.code FROM persons
-            INNER JOIN logins ON logins.id = persons.login_id
-            WHERE persons.token = :token',
-            [
-                ':token' => $personToken
-            ]
-        );
-
-
-        if ($logindata !== null) {
-            $myBooklets = JSON::decode($logindata['booklet_def'], true);
-            $code = $logindata['code'];
-            $personId = $logindata['id'];
-
-            if (count($myBooklets) > 0) {
-                // check whether code and booklet are part of login
-                $bookletValid = false;
-                if (isset($myBooklets[$code])) {
-                    $bookletValid = in_array($bookletName, $myBooklets[$code]);
-                }
-
-                if ($bookletValid) {
-                    $myreturn = [
-                        'canStart' => true,
-                        'statusLabel' => 'Zum Starten hier klicken',
-                        'label' => '',
-                        'id' => 0,
-                        'lastUnit' => 0
-                    ];
-
-                    $bookletData= $this->_(
-                        'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
-                        WHERE booklets.person_id = :personid and booklets.name = :bookletname',
-                        [
-                            ':personid' => $personId,
-                            ':bookletname' => $bookletName
-                        ]
-                    );
-
-                    if ($bookletData !== null) {
-                        $myreturn['label'] = $bookletData['label'];
-                        $myreturn['id'] = $bookletData['id'];
-                        $myreturn['laststate'] = JSON::decode($bookletData['laststate'], true);
-
-                        if ($bookletData['locked'] == '1') {
-                            $myreturn['canStart'] = false;
-                            $myreturn['statusLabel'] = 'Beendet';
-                        } else {
-                            $myreturn['statusLabel'] = 'Zum Fortsetzen hier klicken';
-                        }
-                    }
-
-                }
-            }
-        }
-
-        return $myreturn;
-    }
-
-
-    public function getBookletStatusBeforeStart(string $loginToken, string $code, string $bookletName) {
-
-        $bookletStatus = [];
-
-        $logindata = $this->_('SELECT logins.booklet_def, logins.id FROM logins WHERE logins.token = :token', [':token' => $loginToken]);
-
-        $myBookletData = JSON::decode($logindata['booklet_def'], true);
-
-        if (isset($myBookletData[$code])) {
-
-            if (in_array($bookletName, $myBookletData[$code])) {
-                $bookletStatus = [
-                    'canStart' => true,
-                    'statusLabel' => 'Zum Starten hier klicken',
-                    'label' => '',
-                    'id' => 0,
-                    'lastUnit' => 0
-                ];
-
-                $persondata = $this->_(
-                    'SELECT persons.id FROM persons
-                    WHERE persons.login_id = :loginid and persons.code = :code',
-                    [
-                        ':loginid' => $logindata['id'],
-                        ':code' => $code
-                    ]
-                );
-
-                if ($persondata !== null) {
-
-                    $bookletdata = $this->_(
-                        'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
-                        WHERE booklets.person_id = :personid and booklets.name = :bookletname',
-                        [
-                            ':personid' => $persondata['id'],
-                            ':bookletname' => $bookletName
-                        ]
-                    );
-
-                    if ($bookletdata !== null) {
-                        $bookletStatus['label'] = $bookletdata['label'];
-                        $bookletStatus['id'] = $bookletdata['id'];
-                        $bookletStatus['laststate'] = JSON::decode($bookletdata['laststate'], true);
-
-                        if ($bookletdata['locked'] == '1') {
-                            $bookletStatus['canStart'] = false;
-                            $bookletStatus['statusLabel'] = 'Beendet';
-                        } else {
-                            $bookletStatus['statusLabel'] = 'Zum Fortsetzen hier klicken';
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
-        return $bookletStatus;
-    }
-
-
-    // #######################################################################################
-    // #######################################################################################
-    // if the booklet is not found in the database, the booklet label will be empty and
-    // the bookletid will be 0
-    public function getBookletStatus($loginToken, $code, $personToken, $bookletName, $testId) {
-
-
-
-        return [];
     }
 
 
     public function getLoginId(string $loginToken): int {
 
-        return $this->_('SELECT logins.id FROM logins WHERE logins.token=:token', [':token' => $loginToken])['id'];
+        $login = $this->_('SELECT logins.id FROM logins WHERE logins.token=:token', [':token' => $loginToken]);
+        if ($login == null ){
+            throw new HttpError("LoginToken invalid: `$loginToken`", 401);
+        }
+        return $login['id'];
     }
 
 
-    public function registerPerson(int $loginId, string $code): array {
+    public function getPersonId(string $personToken, string $code = ''): int {
 
-        $newPersonToken = uniqid('a', true);
+        $person = $this->_('SELECT person.id FROM persons WHERE persons.token=:token and persons.code=:code',
+            [
+                ':token' => $personToken,
+                ':code' => $code
+            ]
+        );
+        if ($person == null ){
+            throw new HttpError("PersonToken invalid: `$personToken`", 401);
+        }
+        return $person['id'];
+    }
+
+
+    public function getOrCreatePerson(int $loginId, string $code): array {
 
         $person = $this->_(
-            'SELECT persons.id FROM persons WHERE persons.login_id=:id and persons.code=:code',
+            'SELECT * FROM persons WHERE persons.login_id=:id and persons.code=:code',
             [
                 ':id' => $loginId,
                 ':code' => $code
@@ -316,37 +212,34 @@ class DBConnectionStart extends DBConnection {
 
         if ($person !== null) {
 
-            $this->_(
-                'UPDATE persons SET valid_until =:valid_until, token=:token WHERE id = :id',
-                [
-                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession),
-                    ':token' => $newPersonToken,
-                    ':id' => $person['id']
-                ]
-            );
-            $newPersonId = $person['id'];
-
-        } else {
-
-            $this->_(
-                'INSERT INTO persons (token, code, login_id, valid_until) 
-                VALUES(:token, :code, :login_id, :valid_until)',
-                [
-                    ':token' => $newPersonToken,
-                    ':code' => $code,
-                    ':login_id' => $loginId,
-                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idletimeSession)
-                ]
-            );
-            $newPersonId = $this->pdoDBhandle->lastInsertId();
+            return $person;
 
         }
 
+        $newPersonToken = uniqid('a', true);
+        $validUntil = date('Y-m-d H:i:s', time() + $this->idletimeSession);
+
+        $this->_(
+            'INSERT INTO persons (token, code, login_id, valid_until) 
+            VALUES(:token, :code, :login_id, :valid_until)',
+            [
+                ':token' => $newPersonToken,
+                ':code' => $code,
+                ':login_id' => $loginId,
+                ':valid_until' => $validUntil
+            ]
+        );
+
         return [
+            'id' => $this->pdoDBhandle->lastInsertId(),
             'token' => $newPersonToken,
-            'id' => $newPersonId
+            'login_id' => $loginId,
+            'code' => $code,
+            'valid_until' => $validUntil,
+            'laststate' => null
         ];
     }
+
 
 
     public function getPerson(string $personToken): array {

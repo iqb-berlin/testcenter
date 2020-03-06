@@ -111,7 +111,7 @@ class WorkspaceInitializer {
         $dbc = new DBConnectionStart();
         $loginToken = $dbc->login(1, 'sample_group', 'test', 'hot', "");
         $loginId = $dbc->getLoginId($loginToken);
-        $person = $dbc->registerPerson($loginId, 'SAMPLE');
+        $person = $dbc->getOrCreatePerson($loginId, $loginCode);
         $bookletDbIdAndPersonToken = $dbc->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
         $bookletDbId = $bookletDbIdAndPersonToken['bookletDbId'];
 

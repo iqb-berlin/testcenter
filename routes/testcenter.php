@@ -68,7 +68,7 @@ $app->group('', function(App $app) {
                 throw new HttpForbiddenException($request);
             }
 
-            $person = $dbConnectionStart->registerPerson($loginId, $body['code']);
+            $person = $dbConnectionStart->getOrCreatePerson($loginId, $body['code']);
         }
 
         $test = $dbConnectionStart->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
@@ -224,50 +224,7 @@ $app->group('', function(App $app) {
     });
 
 
-    $app->get('/test/{test_id}/state', function (Request $request, Response $response) {
 
-        /* @var $authToken TestAuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getToken();
-        $personToken = $authToken->getPersonToken();
-
-        $testId = $request->getAttribute('test_id');
-
-        $code = $request->getQueryParam('code', '');
-        $bookletName = $request->getQueryParam('bookletName', '');
-
-        $dbConnectionStart = new DBConnectionStart();
-
-
-        $myerrorcode = 401;
-
-        $bookletStatus = $dbConnectionStart->getBookletStatusBeforeStart($loginToken, $code, $bookletName);
-
-
-        if ($bookletStatus !== []) {
-            $myerrorcode = 0;
-            if (strlen($bookletStatus['label']) === 0) {
-                // booklet not found in database, so look at xml
-                $workspaceController = new WorkspaceController($dbConnectionStart->getWorkspaceId($loginToken));
-                $bookletStatus['label'] = $workspaceController->getBookletName($bookletName);
-            }
-        }
-
-
-        if ($myerrorcode == 0) {
-            $responseData = jsonencode($bookletStatus);
-            $response->getBody()->write($responseData);
-
-            $responseToReturn = $response->withHeader('Content-type', 'application/json;charset=UTF-8');
-        } else {
-            $responseToReturn = $response->withStatus($myerrorcode)
-                ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong!');
-        }
-
-        return $responseToReturn;
-
-    });
 
 
     $app->patch('/test/{test_id}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
