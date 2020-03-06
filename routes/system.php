@@ -112,6 +112,21 @@ $app->get('/version', function(/** @noinspection PhpUnusedParameterInspection */
 });
 
 
+// TODO write spec
+$app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+
+    $customTextsFilePath = ROOT_DIR . '/config/customTexts.json';
+
+    if (file_exists($customTextsFilePath)) {
+        $customTexts = JSON::decode(file_get_contents($customTextsFilePath));
+    } else {
+        $customTexts = [];
+    }
+
+    return $response->withJson(['version' => Version::get(), 'customTexts' => $customTexts]);
+});
+
+
 $app->post('/login', function(Request $request, Response $response) use ($app) {
 
     $dbConnection = new DBConnectionAdmin();
