@@ -5,8 +5,14 @@ Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
 
 Options +FollowSymLinks
 Options -Indexes
+DirectorySlash Off
 
 RewriteEngine on
 
-RewriteCond %{REQUEST_URI} !/docs/
+# add a trailing slash to directories
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule [^/]$ %{REQUEST_URI}/ [L]
+
+# rewrite all calls except docs to index.php
+RewriteCond %{REQUEST_URI} !/docs
 RewriteRule ^ index.php [QSA,L]

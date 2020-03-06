@@ -34,8 +34,7 @@ $app->group('', function(App $app) {
 
 
     // was /startbooklet
-    // TODO change to /test if https://stackoverflow.com/questions/60548400/mod-rewrite-tries-to-redirect-if-folder-exists resolved
-    $app->put('/test_tmp', function(Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/test', function(Request $request, Response $response) use ($dbConnectionTC) {
 
         /* @var $authToken TestAuthToken */
         $authToken = $request->getAttribute('AuthToken');
