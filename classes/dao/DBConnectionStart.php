@@ -58,67 +58,64 @@ class DBConnectionStart extends DBConnection {
         return $myreturn;
     }
 
-    // #######################################################################################
-    // #######################################################################################
-    public function getAllBookletsByLoginToken($logintoken) {
-        $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => []];
 
-        if (($this->pdoDBhandle != false) and (strlen($logintoken) > 0)) {
-			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname,
-                        logins.id, logins.name as lname, workspaces.name as wname FROM logins
-                    INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-					WHERE logins.token = :token');
+    public function getAllBookletsByLoginToken($loginToken) {
+
+        $logindata = $this->_(
+            'SELECT 
+                logins.booklet_def, 
+                logins.workspace_id as workspaceId, 
+                logins.mode, 
+                logins.groupname as groupName,
+                logins.id as loginId, 
+                logins.name as loginName, 
+                workspaces.name as workspaceName 
+            FROM logins
+                INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+			WHERE logins.token = :token',
+            [':token' => $loginToken]
+        );
 				
-			if ($sql_select->execute(array(
-				':token' => $logintoken))) {
 
-				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
-				if ($logindata !== false) {
-                    $myreturn['booklets'] = JSON::decode($logindata['booklet_def'], true);
-                    $myreturn['workspaceName'] = $logindata['wname'];
-                    $myreturn['loginname'] = $logindata['lname'];
-                    $myreturn['groupname'] = $logindata['groupname'];
-                    $myreturn['ws'] = $logindata['workspace_id'];
-                    $myreturn['mode'] = $logindata['mode'];
-                    $myreturn['login_id'] = $logindata['id'];
-                }
-            }
+        if ($logindata !== null) {
+            $logindata['booklets'] = JSON::decode($logindata['booklet_def'], true);
+            unset($logindata['booklet_def']);
         }
-        return $myreturn;
+
+        return $logindata;
     }
 
-    // #######################################################################################
-    // #######################################################################################
-    public function getAllBookletsByPersonToken($persontoken) {
-        $myreturn = ['mode' => '', 'groupname' => '', 'loginname' => '', 'workspaceName' => '', 'booklets' => [], 'code' => ''];
 
-        if (($this->pdoDBhandle != false) and (strlen($persontoken) > 0)) {
-			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.booklet_def, logins.workspace_id, logins.mode, logins.groupname, logins.token as logintoken,
-                        logins.id, logins.name as lname, workspaces.name as wname, persons.code FROM persons
-                    INNER JOIN logins ON logins.id = persons.login_id
-                    INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-					WHERE persons.token = :token');
-				
-			if ($sql_select->execute(array(
-				':token' => $persontoken))) {
+    public function getAllBookletsByPersonToken($personToken) {
 
-				$logindata = $sql_select->fetch(PDO::FETCH_ASSOC);
-				if ($logindata !== false) {
-                    $myreturn['booklets'] = JSON::decode($logindata['booklet_def'], true);
-                    $myreturn['workspaceName'] = $logindata['wname'];
-                    $myreturn['loginname'] = $logindata['lname'];
-                    $myreturn['logintoken'] = $logindata['logintoken'];
-                    $myreturn['groupname'] = $logindata['groupname'];
-                    $myreturn['ws'] = $logindata['workspace_id'];
-                    $myreturn['mode'] = $logindata['mode'];
-                    $myreturn['login_id'] = $logindata['id'];
-                    $myreturn['code'] = $logindata['code'];
-                }
-            }
+        $logindata = $this->_(
+            'SELECT 
+               logins.booklet_def,
+               logins.workspace_id as workspaceId,
+               logins.mode,
+               logins.groupname as groupName,
+               logins.token    as loginToken,
+               logins.id       as loginId,
+               logins.name     as loginName,
+               workspaces.name as workspaceName,
+               persons.code,
+               booklets.id     as testId,
+               booklets.label  as bookletLabel
+            FROM persons
+                 INNER JOIN logins ON logins.id = persons.login_id
+                 INNER JOIN workspaces ON workspaces.id = logins.workspace_id
+                 INNER JOIN booklets ON booklets.person_id = persons.id
+            WHERE persons.token =  :token',
+            [':token' => $personToken]
+        );
+
+
+        if ($logindata !== null) {
+            $logindata['booklets'] = JSON::decode($logindata['booklet_def'], true);
+            unset($logindata['booklet_def']);
         }
-        return $myreturn;
+
+        return $logindata;
     }
 
 

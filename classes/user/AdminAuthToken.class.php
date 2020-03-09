@@ -10,12 +10,13 @@ class AdminAuthToken extends AuthToken {
 
     function __construct($token, $isSuperAdmin) {
 
-        $this->_token = $token;
         $this->_isSuperAdmin = $isSuperAdmin;
+        parent::__construct($token);
     }
 
 
     public function isSuperAdmin(): bool {
+
         return $this->_isSuperAdmin;
     }
 

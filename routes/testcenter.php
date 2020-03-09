@@ -13,7 +13,7 @@ $app->group('', function(App $app) {
     // was: [GET] /bookletdata
     $app->get('/test/{test_id}', function (Request $request, Response $response) use ($dbConnectionTC) {
 
-        /* @var $authToken TestAuthToken */
+        /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $loginToken = $authToken->getToken();
         $testId = $request->getAttribute('test_id');
@@ -33,60 +33,10 @@ $app->group('', function(App $app) {
     }); // checked in original for $personToken != '' although it's not used at all
 
 
-    // was /startbooklet
-    $app->put('/test', function(Request $request, Response $response) use ($dbConnectionTC) {
-
-        /* @var $authToken TestAuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getToken();
-        $personToken = $authToken->getPersonToken();
-
-        $body = RequestBodyParser::getElements($request, [
-            'code' => 0, // was: c
-            'bookletLabel' => '¿Testheft?', // was: bl
-            'bookletName' => null // was: b
-        ]);
-
-        $dbConnectionStart = new DBConnectionStart();
-
-        // CASE A: start by persontoken
-        if (strlen($personToken) > 0) { // TODO currently only this is used. after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved, onyl ecase B is used and A can be deleted
-
-            $person = $dbConnectionStart->getPerson($personToken);
-
-            if ($person == null) {
-                throw new HttpForbiddenException($request);
-            }
-
-        // CASE B: start by login and (in case) code
-        } else {
-
-            $loginId = $dbConnectionStart->getLoginId($loginToken);
-
-            if ($loginId == null) {
-                throw new HttpForbiddenException($request);
-            }
-
-            $person = $dbConnectionStart->getOrCreatePerson($loginId, $body['code']);
-        }
-
-        $test = $dbConnectionStart->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
-
-        if ($test['locked'] == '1') {
-            throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
-        }
-
-        return $response->withJson([
-            'testId' => $test['id'],
-            'personToken' => $person['token'] // person token
-        ])->withStatus(201);
-    });
-
-
     // was /unitdata/{unit_id}
     $app->get('/test/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($dbConnectionTC) {
 
-        /* @var $authToken TestAuthToken */
+        /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $loginToken = $authToken->getToken();
         $unitName = $request->getAttribute('unit_name');
@@ -108,7 +58,7 @@ $app->group('', function(App $app) {
 
     $app->get('/resource/{resource_name}', function (Request $request, Response $response) use ($dbConnectionTC) {
 
-        /* @var $authToken TestAuthToken */
+        /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $loginToken = $authToken->getToken();
 
@@ -278,4 +228,56 @@ $app->group('', function(App $app) {
         return $response->withStatus(200);
     });
 })
-    ->add(new RequireToken());
+    ->add(new RequirePersonToken());
+
+// was /startbooklet
+
+/**
+ * TODO this should as well RequirePersonToken instead of RequireGroupToken
+ * after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
+ * remove PersonTokenCreation from here
+ */
+
+$app->put('/test', function(Request $request, Response $response) {
+
+    /* @var $authToken GroupAuthToken */
+    $authToken = $request->getAttribute('AuthToken');
+    $loginToken = $authToken->getToken();
+
+    $body = RequestBodyParser::getElements($request, [
+        'code' => 0, // was: c
+        'bookletLabel' => '¿Testheft?', // was: bl
+        'bookletName' => null // was: b
+    ]);
+
+    $dbConnectionStart = new DBConnectionStart();
+
+    /* TODO instead work with personToken and delete from here ... */
+    $loginId = $dbConnectionStart->getLoginId($loginToken);
+
+    if ($loginId == null) {
+        throw new HttpForbiddenException($request);
+    }
+
+    $person = $dbConnectionStart->getOrCreatePerson($loginId, $body['code']);
+    /* ... to here ... */
+
+    $person = $dbConnectionStart->getPerson($person['token']);
+
+    if ($person == null) {
+        throw new HttpForbiddenException($request);
+    }
+
+
+    $test = $dbConnectionStart->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
+
+    if ($test['locked'] == '1') {
+        throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
+    }
+
+    return $response->withJson([
+        'testId' => $test['id'],
+        'personToken' => $person['token'] // person token
+    ])->withStatus(201);
+})
+    ->add(new RequireGroupToken());

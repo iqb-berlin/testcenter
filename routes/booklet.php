@@ -12,7 +12,7 @@ $app->group('/booklet', function(App $app) {
 
     $app->get('/{booklet_name}/state', function (Request $request, Response $response) use ($dbConnectionStart) {
 
-        /* @var $authToken TestAuthToken */
+        /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $loginToken = $authToken->getToken();
 
@@ -36,4 +36,4 @@ $app->group('/booklet', function(App $app) {
         return $response->withJson($bookletStatus);
     });
 })
-    ->add(new RequireToken());
+    ->add(new RequireGroupToken());

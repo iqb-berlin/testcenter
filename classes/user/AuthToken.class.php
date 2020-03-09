@@ -7,7 +7,13 @@ abstract class AuthToken {
 
     protected $_token = "";
 
+    public function __construct($token) {
+
+        $this->_token = $token;
+    }
+
     public function getToken(): string {
+
         return $this->_token;
     }
 }
