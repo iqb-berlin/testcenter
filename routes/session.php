@@ -93,11 +93,13 @@ $app->put('/session/group', function(Request $request, Response $response) use (
      * # login/group and login/person Auseinanderziehung vorbereiten
      * # fall ordner ohne teststaker subfolder abfangen (muss net error)
      * # falsche credentials
-     * custom texts in [GET] session ?!
+     * # custom texts in [GET] session ?!
      * # DB connection login fn überarbeiten
      * passwortloeses login
+     * neue modes
      * ordnen wo welche DB klasse
      * groupToken guter Name?
+
      */
 
 

@@ -49,10 +49,14 @@ class DBConnectionStart extends DBConnection {
             ]
         );
 
+        // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 store customTexts as well
+
         return $oldLogin['token'];
     }
 
 
+    // TODO unit-test
+    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
     public function getAllBookletsByLoginToken($loginToken) {
 
         $logindata = $this->_(
@@ -80,6 +84,8 @@ class DBConnectionStart extends DBConnection {
     }
 
 
+    // TODO unit-test
+    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
     public function getAllBookletsByPersonToken($personToken) {
 
         $logindata = $this->_(
