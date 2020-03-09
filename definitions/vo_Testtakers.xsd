@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="vo_Testtakers"
-    elementFormDefault="qualified"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema id="vo_Testtakers" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-<xs:include schemaLocation="vo_Common.xsd"/>
+  <xs:include schemaLocation="vo_Common.xsd"/>
 
- 
-  <!-- ###################################################################-->
-  <!-- ###################################################################-->
+
   <xs:element name="Testtakers" >
     <xs:complexType>
       <xs:sequence>
@@ -30,19 +26,81 @@
                     </xs:element>
                   </xs:sequence>
                   <xs:attribute name="name" type="xs:string" use="required"/>
-                  <xs:attribute name="pw" type="xs:string" use="required"/>
+                  <xs:attribute name="pw" type="xs:string"/>
+                  <xs:attribute name="type">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="run-hot-return">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Default. Execute the test with all restrictions set by booklet definition. If the
+                              test execution stops for any reason and the login is used again, return to the former
+                              state: Restore the responses and and continue execution.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-hot-restart">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with all restrictions set by booklet definition. If the
+                              test execution stops for any reason and the login is used again, assume another testee:
+                              Ignore all former states and restart the test.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-trial">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with most of the restrictions set by booklet definition,
+                              store responses
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-review">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with no restrictions, do not save responses permanently,
+                              allow review comments for the test in general and every unit
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="monitor-group">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Monitor of test execution: For the group
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="monitor-study">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Monitor of test execution: For the whole workspace (i. e. study)
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="monitor-login">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Monitor of test execution: For this specific login. This requires codes for every
+                              booklet to get a group of testees. In addition, the attribute 'monitorcode' must
+                              be set.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="monitorcode" type="xs:string">
+                    <xs:annotation>
+                      <xs:documentation>
+                        If login type is set to 'monitor-login', this attribute specifies the code the monitoring
+                        person 'proctor' must use for the second step of login.
+                      </xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="mode" use="required">
-              <xs:simpleType>
-                <xs:restriction base="xs:string">
-                  <xs:enumeration value="hot" />
-                  <xs:enumeration value="trial" />
-                  <xs:enumeration value="review" />
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:attribute>
             <xs:attribute name="name" type="xs:string" use="required"/>
           </xs:complexType>
         </xs:element>
@@ -52,5 +110,5 @@
       <xs:selector xpath="Login"/>
       <xs:field xpath="@name"/>
     </xs:unique>
- </xs:element>
+  </xs:element>
 </xs:schema>

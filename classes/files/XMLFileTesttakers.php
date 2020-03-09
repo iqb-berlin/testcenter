@@ -3,7 +3,7 @@
 
 class XMLFileTesttakers extends XMLFile {
 
-    private function getCodesFromBookletElement($bookletElement) {
+    private function getCodesFromBookletElement(SimpleXMLElement $bookletElement) {
 
         $myreturn = [];
         if ($bookletElement->getName() == 'Booklet') {
@@ -143,7 +143,6 @@ class XMLFileTesttakers extends XMLFile {
                 if ($groupNode->getName() == 'Group') {
                     $groupnameAttr = $groupNode['name'];
                     if (isset($groupnameAttr)) {
-                        $groupname = (string) $groupnameAttr;
 
                         foreach($groupNode->children() as $loginNode) {
                             if ($loginNode->getName() == 'Login') {
@@ -176,7 +175,6 @@ class XMLFileTesttakers extends XMLFile {
                 if ($groupNode->getName() == 'Group') {
                     $groupnameAttr = $groupNode['name'];
                     if (isset($groupnameAttr)) {
-                        $groupname = (string) $groupnameAttr;
 
                         foreach($groupNode->children() as $loginNode) {
                             if ($loginNode->getName() == 'Login') {
@@ -213,13 +211,12 @@ class XMLFileTesttakers extends XMLFile {
                         foreach($groupNode->children() as $loginNode) {
                             if ($loginNode->getName() == 'Login') {
                                 $loginNameAttr = $loginNode['name'];
-                                $loginPwAttr = $loginNode['pw'];
+                                $loginPwAttr = $loginNode['pw'] ?? '';
                                 if (isset($loginNameAttr) and isset($loginPwAttr)) {
                                     $loginName = (string) $loginNameAttr;
                                     if ((strlen($loginName) > 2) and ($loginName == $givenLoginName)) {
                                         $loginPw = (string) $loginPwAttr;
-                
-                                        if ((strlen($loginPw) > 2) and ($loginPw == $givenPassword)) {
+                                        if ($loginPw == $givenPassword) {
    
                                             // collect all codes
                                             $allCodes = [];

@@ -41,18 +41,19 @@ $app->post('/login/admin', function(Request $request, Response $response) use ($
 $app->put('/session/group', function(Request $request, Response $response) use ($app) {
 
     $body = RequestBodyParser::getElements($request, [
-        "name" => '',
+        "name" => null,
         "password" => ''
     ]);
 
     $myDBConnection = new DBConnectionStart();
 
-    if (!$body['name'] or !$body['password']) {
+    if (!$body['name']) {
 
         throw new HttpBadRequestException($request, "Authentication credentials missing.");
     }
 
     $dataDirPath = ROOT_DIR . '/' . WorkspaceController::dataDirName;
+    $availableBookletsForLogin = [];
 
     foreach (Folder::glob($dataDirPath, 'ws_*') as $workspaceDir) {
 
@@ -96,6 +97,7 @@ $app->put('/session/group', function(Request $request, Response $response) use (
      * # custom texts in [GET] session ?!
      * # DB connection login fn überarbeiten
      * passwortloeses login
+     *  --> SUB-STAND geht soweit, jetzt müsste man im richtigen mode keine/eine neue personTokejn kriegen
      * neue modes
      * ordnen wo welche DB klasse
      * groupToken guter Name?

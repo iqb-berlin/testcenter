@@ -21,7 +21,7 @@ $app->group('', function(App $app) {
         $bookletName = $dbConnectionTC->getBookletName($testId);
         $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
         $workspaceController = new WorkspaceController($workspaceId);
-        $bookletFile = $workspaceController->getXMLFileByName('booklet', $bookletName);
+        $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
 
         $test = [
             'laststate' => $dbConnectionTC->getBookletLastState($testId),
@@ -44,7 +44,7 @@ $app->group('', function(App $app) {
 
         $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
         $workspaceController = new WorkspaceController($workspaceId);
-        $unitFile = $workspaceController->getXMLFileByName('unit', $unitName);
+        $unitFile = $workspaceController->getXMLFileByName('Unit', $unitName);
 
         $unit = [
             'laststate' => $dbConnectionTC->getUnitLastState($testId, $unitName),
