@@ -6,30 +6,50 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+/**
+ * TODO this should as well RequirePersonToken instead of RequireGroupToken
+ * after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
+ * remove lines marked below from here
+ */
 $app->group('/booklet', function(App $app) {
 
     $dbConnectionStart = new DBConnectionStart();
 
     $app->get('/{booklet_name}/state', function (Request $request, Response $response) use ($dbConnectionStart) {
 
-        /* @var $authToken PersonAuthToken */
+        /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getToken();
+        $personToken = $authToken->getToken();
+
+        /* TODO instead work with personToken and delete from here ... */
+        if ($authToken::type == "group") {
+
+            $code = $request->getParam('code', '');
+
+            $loginId = $dbConnectionStart->getLoginId($authToken->getToken());
+
+            if ($loginId == null) {
+                throw new HttpForbiddenException($request);
+            }
+            $person = $dbConnectionStart->getOrCreatePerson($loginId, $code);
+
+            $personToken = $person['token'];
+
+        }
+        /* ... to here ... */
 
         $bookletName = $request->getAttribute('booklet_name');
 
-        $code = $request->getQueryParam('code', '');
+        if (!$dbConnectionStart->personHasBooklet($personToken, $bookletName)) {
 
-        if (!$dbConnectionStart->loginHasBooklet($loginToken, $bookletName, $code)) {
-
-            throw new HttpForbiddenException($request, "Booklet `$bookletName` is not allowed for $loginToken/$code");
+            throw new HttpForbiddenException($request, "Booklet `$bookletName` is not allowed for $personToken");
         }
 
-        $bookletStatus = $dbConnectionStart->getBookletStatus($loginToken, $bookletName, $code);
+        $bookletStatus = $dbConnectionStart->getBookletStatus($personToken, $bookletName);
 
         if (!$bookletStatus['running']) {
 
-            $workspaceController = new WorkspaceController($dbConnectionStart->getWorkspaceId($loginToken));
+            $workspaceController = new WorkspaceController($dbConnectionStart->getWorkspaceId($personToken));
             $bookletStatus['label'] = $workspaceController->getBookletName($bookletName);
         }
 

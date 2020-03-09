@@ -9,6 +9,7 @@ class WorkspaceController {
     protected $_dataPath = '';
 
     const dataDirName = 'vo_data';
+    const subFolders = ['Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource'];
 
     function __construct(int $workspaceId) {
 
@@ -16,11 +17,11 @@ class WorkspaceController {
 
         $this->_dataPath = ROOT_DIR . '/' . WorkspaceController::dataDirName;
 
-        $this->_workspacePath = $this->_createWorkspaceFolderIfNotExisting();
+        $this->_workspacePath = $this->_getOrCreateWorkspacePath();
     }
 
 
-    private function _createWorkspaceFolderIfNotExisting() {
+    private function _getOrCreateWorkspacePath() {
 
         $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
         if (file_exists($workspacePath) and !is_dir($workspacePath)) {
@@ -35,13 +36,21 @@ class WorkspaceController {
     }
 
 
-    private function _getSubFolderFullPath(string $type): string {
+    private function _getOrCreateSubFolderPath(string $type): string {
 
-        $subFolderFullPath = $this->_workspacePath . '/' . ucfirst($type);
-        if (!file_exists($subFolderFullPath)) {
-            throw new HttpError("Folder not found: $subFolderFullPath", 404);
+        $subFolderPath = $this->_workspacePath . '/' . $type;
+        if (!in_array($type, $this::subFolders)) {
+            throw new Exception("Invalid SubFolder type {$type}!");
         }
-        return $subFolderFullPath;
+        if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
+            throw new Exception("Workspace dir `{$subFolderPath}` seems not to be a proper directory!");
+        }
+        if (!file_exists($subFolderPath)) {
+            if (!mkdir($subFolderPath)) {
+                throw new Exception("Could not create workspace dir `$subFolderPath`");
+            }
+        }
+        return $subFolderPath;
     }
 
 
@@ -480,7 +489,7 @@ class WorkspaceController {
 
     public function getXMLFileByName(string $type, string $findName): XMLFile {
 
-        $dirToSearch = $this->_getSubFolderFullPath($type);
+        $dirToSearch = $this->_getOrCreateSubFolderPath($type);
 
         foreach (Folder::glob($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
 
@@ -499,7 +508,7 @@ class WorkspaceController {
 
     public function getResourceFileByName(string $resourceName, bool $skipSubVersions): ResourceFile {
 
-        $resourceFolder = $this->_getSubFolderFullPath('Resource');
+        $resourceFolder = $this->_getOrCreateSubFolderPath('Resource');
 
         $resourceFileName = $this->normaliseFileName(basename($resourceName), $skipSubVersions);
 
@@ -536,7 +545,7 @@ class WorkspaceController {
 
     public function findAvailableBookletsForLogin(string $name, string $password): array {
 
-        foreach (Folder::glob($this->_getSubFolderFullPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($this->_getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
 

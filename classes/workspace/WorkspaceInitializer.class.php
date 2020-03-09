@@ -109,7 +109,7 @@ class WorkspaceInitializer {
         $timestamp = microtime(true) * 1000;
 
         $dbc = new DBConnectionStart();
-        $loginToken = $dbc->login(1, 'sample_group', 'test', 'hot', "");
+        $loginToken = $dbc->getOrCreateLoginToken(1, 'sample_group', 'test', 'hot', []);
         $loginId = $dbc->getLoginId($loginToken);
         $person = $dbc->getOrCreatePerson($loginId, $loginCode);
         $bookletDbIdAndPersonToken = $dbc->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");

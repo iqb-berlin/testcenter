@@ -7,7 +7,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Exception\HttpException;
 
-$app->post('/login/admin', function(Request $request, Response $response) use ($app) {
+$app->post('/login/admin', function(Request $request, Response $response) use ($app) { // TODO rename to put session admin
 
     $dbConnection = new DBConnectionAdmin();
 
@@ -38,67 +38,75 @@ $app->post('/login/admin', function(Request $request, Response $response) use ($
     ]);
 });
 
-$app->post('/login/group', function(Request $request, Response $response) use ($app) {
+$app->put('/session/group', function(Request $request, Response $response) use ($app) {
 
     $body = RequestBodyParser::getElements($request, [
         "name" => '',
         "password" => ''
     ]);
 
-
     $myDBConnection = new DBConnectionStart();
 
-    if (strlen($body['name']) > 0 && strlen($body['password']) > 0) {
+    if (!$body['name'] or !$body['password']) {
 
-        $dataDirPath = ROOT_DIR . '/' . WorkspaceController::dataDirName;
+        throw new HttpBadRequestException($request, "Authentication credentials missing.");
+    }
 
-        foreach (Folder::glob($dataDirPath, 'ws_*') as $workspaceDir) {
+    $dataDirPath = ROOT_DIR . '/' . WorkspaceController::dataDirName;
 
-            $workspaceId = array_pop(explode('_', $workspaceDir));
-            $workspaceController = new WorkspaceController((int)$workspaceId);
-            $availableBookletsForLogin = $workspaceController->findAvailableBookletsForLogin($body['name'], $body['password']);
-            if (count($availableBookletsForLogin)) {
-                break;
-            }
-        }
+    foreach (Folder::glob($dataDirPath, 'ws_*') as $workspaceDir) {
 
+        $workspaceId = array_pop(explode('_', $workspaceDir));
+        $workspaceController = new WorkspaceController((int)$workspaceId);
+        $availableBookletsForLogin = $workspaceController->findAvailableBookletsForLogin($body['name'], $body['password']);
         if (count($availableBookletsForLogin)) {
-            $loginToken = $myDBConnection->login(
-                $availableBookletsForLogin['workspaceId'],
-                $availableBookletsForLogin['groupname'],
-                $availableBookletsForLogin['loginname'],
-                $availableBookletsForLogin['mode'],
-                $availableBookletsForLogin['booklets']
-            );
-            if (strlen($loginToken) > 0) {
-                $loginData = new TestSession([
-                    'loginToken' => $loginToken,
-                    'mode' => $availableBookletsForLogin['mode'],
-                    'groupName' => $availableBookletsForLogin['groupname'],
-                    'loginName' => $availableBookletsForLogin['loginname'],
-                    'workspaceName' => $myDBConnection->getWorkspaceName($availableBookletsForLogin['workspaceId']),
-                    'booklets' => $availableBookletsForLogin['booklets'],
-                    'customTexts' => $availableBookletsForLogin['customTexts']
-                ]);
-            }
+            break;
         }
+    }
+
+    if (!count($availableBookletsForLogin)) {
+
+        throw new HttpUnauthorizedException($request, "No Login for `{$body['name']}` with `{$body['password']}`");
+    }
+
+    $loginToken = $myDBConnection->getOrCreateLoginToken(
+        $availableBookletsForLogin['workspaceId'],
+        $availableBookletsForLogin['groupname'],
+        $availableBookletsForLogin['loginname'],
+        $availableBookletsForLogin['mode'],
+        $availableBookletsForLogin['booklets']
+    );
+
+    $loginData = new TestSession([
+        'loginToken' => $loginToken,
+        'mode' => $availableBookletsForLogin['mode'],
+        'groupName' => $availableBookletsForLogin['groupname'],
+        'loginName' => $availableBookletsForLogin['loginname'],
+        'workspaceName' => $myDBConnection->getWorkspaceName($availableBookletsForLogin['workspaceId']),
+        'booklets' => $availableBookletsForLogin['booklets'],
+        'customTexts' => $availableBookletsForLogin['customTexts']
+    ]);
 
     /**
      * STAND:
      * # case B und C
-     * login/group and login/person Auseinanderziehung vorbereiten
-     * fall ordner ohne teststaker subfolder abfangen (muss net error)
-     * DB connection login fn überarbeiten
+     * # login/group and login/person Auseinanderziehung vorbereiten
+     * # fall ordner ohne teststaker subfolder abfangen (muss net error)
+     * # falsche credentials
+     * custom texts in [GET] session ?!
+     * # DB connection login fn überarbeiten
      * passwortloeses login
+     * ordnen wo welche DB klasse
+     * groupToken guter Name?
      */
 
-    }
+
 
     return $response->withJson($loginData);
 
 });
 
-$app->post('/login/person', function(Request $request, Response $response) use ($app) {
+$app->put('/session/person', function(Request $request, Response $response) use ($app) {
 
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
@@ -106,7 +114,7 @@ $app->post('/login/person', function(Request $request, Response $response) use (
     $dbConnectionStart = new DBConnectionStart();
 
     $body = RequestBodyParser::getElements($request, [
-        'code' => 0, // was: c
+        'code' => 0
     ]);
 
     $loginId = $dbConnectionStart->getLoginId($authToken->getToken());
@@ -137,7 +145,6 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
             return $response->withJson($session);
         }
     }
-
 
     if ($authToken::type == "person") {
 

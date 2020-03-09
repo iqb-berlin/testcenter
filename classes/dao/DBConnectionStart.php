@@ -4,58 +4,52 @@
 
 
 class DBConnectionStart extends DBConnection {
-    private $idletimeSession = 60 * 30;
 
-    // #######################################################################################
-    // #######################################################################################
-    public function login($workspace, $groupname, $name, $mode, $bookletdef) {
-        $myreturn = '';
-        if (($this->pdoDBhandle != false) and 
-                isset($workspace) and isset($name) > 0) {
+    private $idleTimeSession = 60 * 30;
 
-			$sql_select = $this->pdoDBhandle->prepare(
-				'SELECT logins.id, logins.token FROM logins
-					WHERE logins.name = :name AND logins.workspace_id = :ws');
-				
-			if ($sql_select->execute(array(
-				':name' => $name, 
-				':ws' => $workspace))) {
+    public function getOrCreateLoginToken(int $workspaceId, string $groupName,
+                                          string $loginName, string $mode, array $codes2Booklets): string {
 
-                $old_login = $sql_select->fetch(PDO::FETCH_ASSOC);
-				if ($old_login === false) {
-                    $mytoken = uniqid('a', true);
-					$sql_insert = $this->pdoDBhandle->prepare(
-						'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
-							VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)');
+        $oldLogin = $this->_(
+            'SELECT logins.id, logins.token FROM logins
+			WHERE logins.name = :name AND logins.workspace_id = :ws', [
+                ':name' => $loginName,
+                ':ws' => $workspaceId
+            ]
+        );
 
-					if ($sql_insert->execute(array(
-						':token' => $mytoken,
-						':sd' => json_encode($bookletdef),
-                        ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTime),
-                        ':name' => $name,
-                        ':mode' => $mode,
-                        ':ws' => $workspace,
-                        ':groupname' => $groupname
-                        ))) {
-                            $myreturn = $mytoken;
-                    }
-                } else {
-                    $sql_update = $this->pdoDBhandle->prepare(
-                        'UPDATE logins
-                            SET valid_until =:value, booklet_def =:sd, groupname =:groupname
-                            WHERE id =:loginid');
-            
-                    $sql_update->execute(array(
-                        ':value' => date('Y-m-d H:i:s', time() + $this->idleTime),
-                        ':sd'=> json_encode($bookletdef),
-                        ':loginid'=>$old_login['id'],
-                        ':groupname'=>$groupname
-                    ));
-                    $myreturn = $old_login['token'];
-                }
-            }
+        if ($oldLogin === null) {
+
+            $loginToken = uniqid('a', true);
+            $this->_(
+                'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
+                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
+                [
+                    ':token' => $loginToken,
+                    ':sd' => json_encode($codes2Booklets),
+                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTimeSession),
+                    ':name' => $loginName,
+                    ':mode' => $mode,
+                    ':ws' => $workspaceId,
+                    ':groupname' => $groupName
+                ]
+            );
+            return $loginToken;
         }
-        return $myreturn;
+
+        $this->_(
+            'UPDATE logins
+            SET valid_until =:value, booklet_def =:sd, groupname =:groupname
+            WHERE id =:loginid',
+            [
+                ':value' => date('Y-m-d H:i:s', time() + $this->idleTimeSession),
+                ':sd' => json_encode($codes2Booklets),
+                ':loginid' => $oldLogin['id'],
+                ':groupname' => $groupName
+            ]
+        );
+
+        return $oldLogin['token'];
     }
 
 
@@ -119,25 +113,34 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-    public function loginHasBooklet(string $loginToken, string $bookletName, string $code = '') {
+    public function personHasBooklet(string $personToken, string $bookletName) {
 
-        $bookletDef = $this->_('SELECT logins.booklet_def, logins.id FROM logins WHERE logins.token = :token', [':token' => $loginToken]);
+        $bookletDef = $this->_('
+            SELECT logins.booklet_def, logins.id, persons.code
+            FROM logins
+                     left join persons on (logins.id = persons.login_id)
+            WHERE persons.token = :token',
+            [
+                ':token' => $personToken
+            ]
+        );
 
-        $booklet = JSON::decode($bookletDef['booklet_def'], true);
+        $code = $bookletDef['code'];
+        $codes2booklets = JSON::decode($bookletDef['booklet_def'], true);
 
-        return $booklet and isset($booklet[$code]) and in_array($bookletName, $booklet[$code]);
+        return $codes2booklets and isset($codes2booklets[$code]) and in_array($bookletName, $codes2booklets[$code]);
     }
 
 
-    public function getBookletStatus(string $loginToken, string $bookletName, string $code = '') {
+    public function getBookletStatus(string $personToken, string $bookletName) {
 
-        $person = $this->getOrCreatePerson($this->getLoginId($loginToken), $code); // TODO work with personToken instead
+        $personId = $this->getPersonId($personToken);
 
         $test = $this->_(
             'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
             WHERE booklets.person_id = :personid and booklets.name = :bookletname',
             [
-                ':personid' => $person['id'],
+                ':personid' => $personId,
                 ':bookletname' => $bookletName
             ]
         );
@@ -182,12 +185,11 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-    public function getPersonId(string $personToken, string $code = ''): int {
+    public function getPersonId(string $personToken): int {
 
-        $person = $this->_('SELECT person.id FROM persons WHERE persons.token=:token and persons.code=:code',
+        $person = $this->_('SELECT persons.id FROM persons WHERE persons.token=:token',
             [
-                ':token' => $personToken,
-                ':code' => $code
+                ':token' => $personToken
             ]
         );
         if ($person == null ){
@@ -214,7 +216,7 @@ class DBConnectionStart extends DBConnection {
         }
 
         $newPersonToken = uniqid('a', true);
-        $validUntil = date('Y-m-d H:i:s', time() + $this->idletimeSession);
+        $validUntil = date('Y-m-d H:i:s', time() + $this->idleTimeSession);
 
         $this->_(
             'INSERT INTO persons (token, code, login_id, valid_until) 

@@ -15,11 +15,11 @@ $app->group('', function(App $app) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getToken();
+        $personToken = $authToken->getToken();
         $testId = $request->getAttribute('test_id');
 
         $bookletName = $dbConnectionTC->getBookletName($testId);
-        $workspaceId = $dbConnectionTC->getWorkspaceId($loginToken);
+        $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
         $workspaceController = new WorkspaceController($workspaceId);
         $bookletFile = $workspaceController->getXMLFileByName('booklet', $bookletName);
 
@@ -38,11 +38,11 @@ $app->group('', function(App $app) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getToken();
+        $personToken = $authToken->getToken();
         $unitName = $request->getAttribute('unit_name');
         $testId = $request->getAttribute('test_id');
 
-        $workspaceId = $dbConnectionTC->getWorkspaceId($loginToken);
+        $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
         $workspaceController = new WorkspaceController($workspaceId);
         $unitFile = $workspaceController->getXMLFileByName('unit', $unitName);
 
@@ -60,12 +60,12 @@ $app->group('', function(App $app) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $loginToken = $authToken->getToken();
+        $personToken = $authToken->getToken();
 
         $resourceName = $request->getAttribute('resource_name');
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
-        $workspaceId = $dbConnectionTC->getWorkspaceId($loginToken);
+        $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
         $workspaceController = new WorkspaceController($workspaceId);
         $resourceFile = $workspaceController->getResourceFileByName($resourceName, $skipSubVersions);
 

@@ -95,7 +95,7 @@ class DBConnection {
     }
 
 
-	public function getWorkspaceName($workspaceId) { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
+	public function getWorkspaceName($workspaceId): string { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
 
         $data = $this->_(
             'SELECT workspaces.name 
@@ -108,33 +108,34 @@ class DBConnection {
 	}
 
 
-    public function getWorkspaceId($loginToken) { // TODO add unit test
+    public function getWorkspaceId(string $personToken): int { // TODO add unit test
 
         $login = $this->_(
-            'SELECT logins.workspace_id 
+            'SELECT *
             FROM logins
-            WHERE logins.token = :token',
-            array(':token' => $loginToken)
+                     left join persons on (persons.login_id = logins.id)
+            WHERE persons.token = :token',
+            array(':token' => $personToken)
         );
 
         if ($login === null) {
-            throw new HttpError("No workspace for `{$loginToken}` found.", 404); // TODO overthink 404
+            throw new HttpError("No workspace for personToken `{$personToken}` found.", 404); // TODO overthink 404
         }
 
         return $login['workspace_id'];
     }
 
 
-    public function getBookletName($bookletDbId) { // TODO add unit test. is used in TC.
+    public function getBookletName(int $testId): string { // TODO add unit test. is used in TC.
 
         $booklet = $this->_(
         'SELECT booklets.name FROM booklets
             WHERE booklets.id=:bookletId',
-            array(':bookletId' => $bookletDbId)
+            array(':bookletId' => $testId)
         );
 
         if ($booklet === null) {
-            throw new HttpError("No booklet with id `{$bookletDbId}` found in db.", 404); // TODO overthink 404
+            throw new HttpError("No test with id `{$testId}` found in db.", 404); // TODO overthink 404
         }
 
         return $booklet['name'];

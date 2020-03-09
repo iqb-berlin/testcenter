@@ -22,7 +22,7 @@ try {
     $container['settings']['displayErrorDetails'] = true;
     $app = new App($container);
 
-    include_once 'routes/login.php';
+    include_once 'routes/session.php';
     include_once 'routes/system.php';
     include_once 'routes/workspace.php';
     include_once 'routes/user.php';

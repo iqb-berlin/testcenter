@@ -6,7 +6,7 @@ use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class RequirePersonToken {
+class RequireGroupToken {
 
     function __invoke(Request $request, Response $response, $next) {
 
@@ -20,18 +20,20 @@ class RequirePersonToken {
 
         $authToken = JSON::decode($request->getHeaderLine('AuthToken'));
 
-        if (!isset($authToken->p) or strlen($authToken->p) == 0) {
+        if (!isset($authToken->l) or strlen($authToken->l) == 0) {
             throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: p missing');
         }
 
-        $personToken = $authToken->p;
+        $loginToken = $authToken->l;
+        $personToken = $authToken->p ?? '';
 
         //$dbConnectionTC = new DBConnectionTC();
         //$tokenInfo = $dbConnectionTC->validateToken($personToken, $loginToken); // TODO implement
 
-        $authToken = new PersonAuthToken($personToken);
-        $request = $request->withAttribute('AuthToken', $authToken);
 
+        $authToken = $personToken ? new PersonAuthToken($personToken) : new GroupAuthToken($loginToken);
+
+        $request = $request->withAttribute('AuthToken', $authToken);
         return $next($request, $response);
     }
 }

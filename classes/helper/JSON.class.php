@@ -5,7 +5,7 @@ class JSON {
 
     static function decode(?string $json, bool $assoc = false) {
 
-        if (is_null($json)) {
+        if (!$json) {
             return $assoc ? [] : new stdClass();
         }
 
