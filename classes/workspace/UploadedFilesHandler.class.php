@@ -9,14 +9,14 @@ use Slim\Http\UploadedFile;
 
 class UploadedFilesHandler {
 
-    const errorMessages = array(
+    const errorMessages = [
         'UPLOAD_ERR_INI_SIZE' => 'The uploaded file exceeds the maximum.', // php.ini max_file_size
         'UPLOAD_ERR_FORM_SIZE' => 'The uploaded file exceeds the form maximum.', // html form max file size
         'UPLOAD_ERR_PARTIAL' => 'The uploaded file was only partially uploaded.',
         'UPLOAD_ERR_NO_FILE' => 'No file was uploaded.',
         'UPLOAD_ERR_NO_TMP_DIR' => 'Missing a temporary folder.',
         'UPLOAD_ERR_CANT_WRITE' => 'Failed to write file to disk.'
-    );
+    ];
 
     /**
      * @param Request $request
@@ -47,10 +47,10 @@ class UploadedFilesHandler {
         $uploadedFiles = $allUploadedFiles[$fieldName];
 
         if (!is_array($uploadedFiles)) {
-            $uploadedFiles = array($uploadedFiles);
+            $uploadedFiles = [$uploadedFiles];
         }
 
-        $importedFiles = array();
+        $importedFiles = [];
 
         $workspaceController = new WorkspaceController($workspaceId);
 

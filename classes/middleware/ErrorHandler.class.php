@@ -19,7 +19,7 @@ class ErrorHandler {
             }
         }
 
-        $log = array($errorUniqueId, $throwable->getTitle(), $throwable->getDescription(), $errorMessage, $errorPlace);
+        $log = [$errorUniqueId, $throwable->getTitle(), $throwable->getDescription(), $errorMessage, $errorPlace];
         if ($throwable->getCode() >= 500) {
             $log = array_merge($log, explode("\n", $trace));
         }

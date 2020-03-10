@@ -8,7 +8,7 @@ use Slim\Http\Response;
 
 $app->get('/', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
-    return $response->withJson(array('version' => Version::get()));
+    return $response->withJson(['version' => Version::get()]);
 });
 
 
@@ -89,25 +89,25 @@ $app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection
     $specs = SpecCollector::collectSpecs(ROOT_DIR . '/routes');
     $routes = SpecCollector::collectRoutes(ROOT_DIR . '/routes');
 
-    $status = array();
+    $status = [];
 
     $allRoutes = array_unique(array_merge(array_keys($specs), array_keys($routes), $routesRegistered));
     sort($allRoutes);
 
     foreach ($allRoutes as $route) {
-        $status[$route] = array(
+        $status[$route] = [
             "spec" => isset($specs[$route]) ? $specs[$route] : "(spec missing)",
             "code" => isset($routes[$route]) ? $routes[$route] : "(code missing)"
-        );
+        ];
     }
 
-    return $response->withJson(array('status'=>$status, 'specs'=>$routesRegistered));
+    return $response->withJson(['status'=>$status, 'specs'=>$routesRegistered]);
 });
 
 
 $app->get('/version', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
-    return $response->withJson(array('version' => Version::get()));
+    return $response->withJson(['version' => Version::get()]);
 });
 
 

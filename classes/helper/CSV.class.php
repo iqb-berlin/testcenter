@@ -4,9 +4,9 @@
 
 class CSV {
 
-    const allowedDelimiters = array(',', ';', '|', '\t', '\s');
-    const allowedEnclosures = array('"', "'");
-    const allowedLineEndings = array("\r\n", "\r", "\n"); // Win / Mac / Unix
+    const allowedDelimiters = [',', ';', '|', '\t', '\s'];
+    const allowedEnclosures = ['"', "'"];
+    const allowedLineEndings = ["\r\n", "\r", "\n"]; // Win / Mac / Unix
 
 
     /**
@@ -37,7 +37,7 @@ class CSV {
      * @param string $lineDelimiter - line-delimiter. falls back to default if not allowed
      * @return string
      */
-    static function build(array $data, array $columnNames = array(),
+    static function build(array $data, array $columnNames = [],
                           string $delimiter = ',', string $enclosure = '"', string $lineDelimiter = '\n') {
 
         $columns = (is_array($columnNames) and count($columnNames))
@@ -47,13 +47,13 @@ class CSV {
         $delimiter = in_array($delimiter, CSV::allowedDelimiters) ? $delimiter : ',';
         $lineDelimiter = in_array($lineDelimiter, CSV::allowedLineEndings) ? $lineDelimiter : "\n";
 
-        $csvRows = array();
+        $csvRows = [];
 
         $csvRows[] = CSV::_stringifyRow($columns, $delimiter, $enclosure);
 
         foreach($data as $set) {
 
-            $row = array();
+            $row = [];
 
             foreach ($columns as $column) {
 
@@ -89,7 +89,7 @@ class CSV {
 
         return array_values(array_unique(array_reduce($data, function($agg, $array) {
             return array_merge($agg, array_keys($array));
-        }, array())));
+        }, [])));
     }
 
 }

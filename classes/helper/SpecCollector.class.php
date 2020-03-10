@@ -5,7 +5,7 @@ class SpecCollector {
 
     static function collectSpecs($dir) {
 
-        $routes = array();
+        $routes = [];
 
         foreach (glob($dir . '/*.spec.yml') as $file) {
 

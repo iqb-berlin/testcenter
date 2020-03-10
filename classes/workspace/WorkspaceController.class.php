@@ -62,7 +62,7 @@ class WorkspaceController {
 
     function getAllFiles(): array {
 
-        $fileList = array();
+        $fileList = [];
 
         $workspaceDirHandle = opendir($this->_workspacePath);
         while (($subDir = readdir($workspaceDirHandle)) !== false) {
@@ -109,11 +109,11 @@ class WorkspaceController {
      */
     function deleteFiles(array $filesToDelete): array {
 
-        $report = array(
-            'deleted' => array(),
-            'did_not_exist' => array(),
-            'not_allowed' => array()
-        );
+        $report = [
+            'deleted' => [],
+            'did_not_exist' => [],
+            'not_allowed' => []
+        ];
         foreach($filesToDelete as $fileToDelete) {
             $fileToDeletePath = $this->_workspacePath . '/' . $fileToDelete;
             if (!file_exists($fileToDeletePath)) {
@@ -256,9 +256,9 @@ class WorkspaceController {
 
         $this->_fileAndValidateUnfiledResource($fileName);
 
-        return  array(
+        return [
             $fileName => true
-        );
+        ];
     }
 
     /**
@@ -309,7 +309,7 @@ class WorkspaceController {
      */
     private function _importUnfiledZipArchive($fileName) {
 
-        $extractedFiles = array();
+        $extractedFiles = [];
 
         $extractionFolder = "{$fileName}_Extract";
         $filePath = "{$this->_workspacePath}/$fileName";

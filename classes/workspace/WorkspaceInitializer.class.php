@@ -38,7 +38,7 @@ class WorkspaceInitializer {
      * @param string|null $destination - destination folder like "SysCheck/Reports" or "Resource". Null for auto.
      * @throws Exception
      */
-    private function _importSampleFile(int $workspaceId, string $filename, array $vars = array(), string $destination = null) {
+    private function _importSampleFile(int $workspaceId, string $filename, array $vars = [], string $destination = null) {
 
         $path = ROOT_DIR;
         $importFileName = "$path/sampledata/$filename";
@@ -81,7 +81,7 @@ class WorkspaceInitializer {
      */
     public function getLoginCodes() {
 
-        return array_map(array($this, '_generateLogin'), range(0, 9));
+        return array_map([$this, '_generateLogin'], range(0, 9));
     }
 
     /**

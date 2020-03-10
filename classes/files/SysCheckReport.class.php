@@ -7,7 +7,7 @@ class SysCheckReport {
 
     const reportSections = ['envData', 'netData', 'questData', 'unitData', 'fileData'];
 
-    private $_report = array();
+    private $_report = [];
     private $_checkId = '--';
     private $_checkLabel = '--';
     private $_fileName = '';

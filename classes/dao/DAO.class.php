@@ -40,7 +40,7 @@ class DAO {
     }
 
 
-    public function _(string $sql, array $replacements = array(), $multiRow = false): ?array {
+    public function _(string $sql, array $replacements = [], $multiRow = false): ?array {
 
         $sqlStatement = $this->pdoDBhandle->prepare($sql);
         $sqlStatement->execute($replacements);

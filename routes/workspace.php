@@ -92,7 +92,7 @@ $app->group('/workspace', function(App $app) {
         $workspaceId = $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
-        $bookletsStarted = array();
+        $bookletsStarted = [];
         foreach($adminDAO->getBookletsStarted($workspaceId) as $booklet) {
             if (in_array($booklet['groupname'], $groups)) {
                 if ($booklet['locked'] == '1') {
@@ -231,7 +231,7 @@ $app->group('/workspace', function(App $app) {
         if (($request->getHeaderLine('Accept') == 'text/csv') or $acceptWorkaround) {
 
             $flatReports = array_map(function(SysCheckReport $report) {return $report->getFlat();}, $reports);
-            $response->getBody()->write(CSV::build($flatReports, array(), $delimiter, $enclosure, $lineEnding));
+            $response->getBody()->write(CSV::build($flatReports, [], $delimiter, $enclosure, $lineEnding));
             return $response->withHeader('Content-type', 'text/csv');
         }
 

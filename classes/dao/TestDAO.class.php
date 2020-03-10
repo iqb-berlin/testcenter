@@ -11,7 +11,7 @@ class TestDAO extends DAO {
         $booklet = $this->_(
             'SELECT booklets.name FROM booklets
             WHERE booklets.id=:bookletId',
-            array(':bookletId' => $testId)
+            [':bookletId' => $testId]
         );
 
         if ($booklet === null) {
@@ -97,14 +97,14 @@ class TestDAO extends DAO {
         $this->_(
             'INSERT INTO bookletreviews (booklet_id, reviewtime, reviewer, priority, categories, entry) 
             VALUES(:b, :t, :r, :p, :c, :e)',
-            array(
+            [
                 ':b' => $testId,
                 ':t' => date('Y-m-d H:i:s', time()),
                 ':r' => '-', // field is deprecated, reviewer is identified by bookelet. TODO remove field from DB
                 ':p' => $priority,
                 ':c' => $categories,
                 ':e' => $entry
-            )
+            ]
         );
     }
 
@@ -254,10 +254,10 @@ class TestDAO extends DAO {
         $unitData = $this->_(
             'SELECT units.restorepoint FROM units
             WHERE units.name = :unitname and units.booklet_id = :testId',
-            array(
+            [
                 ':unitname' => $unitName,
                 ':testId' => $testId
-            )
+            ]
         );
         return (!$unitData or !$unitData['restorepoint']) ? '' : $unitData['restorepoint'];
     }

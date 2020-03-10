@@ -32,13 +32,13 @@ if (php_sapi_name() !== 'cli') {
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 require_once(realpath(dirname(__FILE__)) . '/../autoload.php');
 
-$args = getopt("", array(
+$args = getopt("", [
     'user_name:',
     'user_password:',
     'workspace:',
     'test_login_name:',
     'test_login_password:'
-));
+]);
 
 try  {
 

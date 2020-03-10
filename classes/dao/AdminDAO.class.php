@@ -12,10 +12,10 @@ class AdminDAO extends DAO {
             'UPDATE admintokens 
             SET valid_until =:value
             WHERE id =:token',
-            array(
+            [
                 ':value' => date('Y-m-d H:i:s', time() + $this->idleTime),
                 ':token'=> $token
-            )
+            ]
         );
     }
 
@@ -49,10 +49,10 @@ class AdminDAO extends DAO {
 		return $this->_(
 			'SELECT * FROM users
 			WHERE users.name = :name AND users.password = :password',
-			array(
+			[
 				':name' => $userName,
 				':password' => $passwordHash
-			)
+			]
 		);
 	}
 
@@ -62,9 +62,9 @@ class AdminDAO extends DAO {
 		$this->_(
 			'DELETE FROM admintokens 
 			WHERE admintokens.user_id = :id',
-			array(
+			[
 				':id' => $userId
-			)
+			]
 		);
 	}
 
@@ -80,11 +80,11 @@ class AdminDAO extends DAO {
 		$this->_(
 			'INSERT INTO admintokens (id, user_id, valid_until) 
 			VALUES(:id, :user_id, :valid_until)',
-			array(
+			[
 				':id' => $token,
 				':user_id' => $userId,
 				':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTime)
-			)
+			]
 		);
 	}
 
@@ -94,7 +94,7 @@ class AdminDAO extends DAO {
 		$this->_(
 			'DELETE FROM admintokens 
 			WHERE admintokens.id=:token',
-			array(':token' => $token)
+			[':token' => $token]
 		);
 		// TODO check this functions carefully
 		// original description was "deletes all tokens of this user", what is not what this function does
@@ -115,7 +115,7 @@ class AdminDAO extends DAO {
             FROM users
 			INNER JOIN admintokens ON users.id = admintokens.user_id
 			WHERE admintokens.id=:token',
-			array(':token' => $token)
+			[':token' => $token]
 		);
 
 		if (!$tokenInfo) {
@@ -149,11 +149,11 @@ class AdminDAO extends DAO {
                         WHERE workspaces.id=:workspace_id AND logins.groupname=:groupname
                     ) as inner_select
                 )',
-			array(
+			[
 				':locked' => $lockStr,
 				':workspace_id' => $workspace_id,
 				':groupname' => $group_name
-            )
+            ]
 		);
 	}
 
@@ -163,10 +163,10 @@ class AdminDAO extends DAO {
 		$this->_(
 			'DELETE FROM logins
 			WHERE logins.workspace_id=:workspace_id and logins.groupname = :groupname',
-			array(
+			[
 				':workspace_id' => $workspaceId,
 				':groupname' => $groupName
-			)
+			]
 		);
 	}
 
@@ -179,7 +179,7 @@ class AdminDAO extends DAO {
 				INNER JOIN users ON workspace_users.user_id = users.id
 				INNER JOIN admintokens ON  users.id = admintokens.user_id
 				WHERE admintokens.id =:token',
-			array(':token' => $token),
+			[':token' => $token],
 			true
 		);
 
@@ -197,10 +197,10 @@ class AdminDAO extends DAO {
 				INNER JOIN users ON workspace_users.user_id = users.id
 				INNER JOIN admintokens ON  users.id = admintokens.user_id
 				WHERE admintokens.id =:token and workspaces.id = :wsId',
-			array(
+			[
 				':token' => $token,
 				':wsId' => $workspaceId
-			)
+			]
 		);
 
 		return $data != false;
@@ -215,10 +215,10 @@ class AdminDAO extends DAO {
 				INNER JOIN users ON workspace_users.user_id = users.id
 				INNER JOIN admintokens ON  users.id = admintokens.user_id
 				WHERE admintokens.id =:token and workspaces.id = :wsId',
-			array(
+			[
 				':token' => $token,
 				':wsId' => $requestedWorkspaceId
-            )
+            ]
 		);
 
 		return $user['role'];
@@ -237,9 +237,9 @@ class AdminDAO extends DAO {
 				INNER JOIN units ON units.booklet_id = booklets.id
 			WHERE logins.workspace_id =:workspaceId
 			GROUP BY booklets.name, logins.groupname, logins.name, persons.code',
-			array(
+			[
 				':workspaceId' => $workspaceId
-			),
+			],
 			true
 		);
 	}
@@ -255,9 +255,9 @@ class AdminDAO extends DAO {
 				INNER JOIN persons ON persons.id = booklets.person_id
 				INNER JOIN logins ON logins.id = persons.login_id
 				WHERE logins.workspace_id =:workspaceId',
-			array(
+			[
 				':workspaceId' => $workspaceId
-			),
+			],
 			true
 		);
 	}
@@ -275,9 +275,9 @@ class AdminDAO extends DAO {
             WHERE workspace_id =:workspaceId			
             ORDER BY logins.groupname, logins.name, persons.code, booklets.name
 			',
-			array(
+			[
 				':workspaceId' => $workspaceId
-			),
+			],
 			true
 		);
 	}
@@ -295,9 +295,9 @@ class AdminDAO extends DAO {
 			INNER JOIN persons ON persons.id = booklets.person_id 
 			INNER JOIN logins ON logins.id = persons.login_id
 			WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('$groupsString')",
-			array(
+			[
 				':workspaceId' => $workspaceId,
-			),
+			],
 			true
 		);
 	}
@@ -317,9 +317,9 @@ class AdminDAO extends DAO {
 			INNER JOIN persons ON persons.id = booklets.person_id 
 			INNER JOIN logins ON logins.id = persons.login_id
 			WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('$groupsString')",
-			array(
+			[
 				':workspaceId' => $workspaceId
-			),
+			],
 			true
 		);
 
@@ -332,9 +332,9 @@ class AdminDAO extends DAO {
 			INNER JOIN persons ON persons.id = booklets.person_id 
 			INNER JOIN logins ON logins.id = persons.login_id
 			WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('$groupsString')",
-			array(
+			[
 				':workspaceId' => $workspaceId
-			),
+			],
 			true
 		);
 
@@ -362,9 +362,9 @@ class AdminDAO extends DAO {
 			INNER JOIN persons ON persons.id = booklets.person_id 
 			INNER JOIN logins ON logins.id = persons.login_id
 			WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('$groupsString')",
-			array(
+			[
 				':workspaceId' => $workspaceId
-			),
+			],
 			true
 		);
 
@@ -378,9 +378,9 @@ class AdminDAO extends DAO {
 			INNER JOIN persons ON persons.id = booklets.person_id 
 			INNER JOIN logins ON logins.id = persons.login_id
 			WHERE logins.workspace_id =:workspaceId AND logins.groupname IN ('$groupsString')",
-			array(
+			[
 				':workspaceId' => $workspaceId
-			),
+			],
 			true
 		);
 
@@ -423,7 +423,7 @@ class AdminDAO extends DAO {
             }
         }
 
-        $returner = array();
+        $returner = [];
 
         // get rid of the key and calculate mean
         foreach($keyedReturn as $group => $groupData) {

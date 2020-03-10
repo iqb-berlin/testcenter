@@ -30,10 +30,10 @@ class InitDAO extends SuperAdminDAO {
         }
 
         $sql = $this->pdoDBhandle->prepare('INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, true)');
-        $params = array(
+        $params = [
             ':user_name' => $username,
             ':user_password' => $this->encryptPassword($userpassword)
-        );
+        ];
 
         if (!$sql->execute($params)) {
             throw new Exception('Could not insert into table `users`');
@@ -57,7 +57,7 @@ class InitDAO extends SuperAdminDAO {
         }
 
         $sql = $this->pdoDBhandle->prepare("SELECT workspaces.id FROM workspaces WHERE `name` = :ws_name");
-        $sql->execute(array(':ws_name' => $name));
+        $sql->execute([':ws_name' => $name]);
 
         $workspaces_names = $sql->fetchAll(PDO::FETCH_ASSOC);
 
@@ -80,10 +80,10 @@ class InitDAO extends SuperAdminDAO {
 
         $user = $this->getUserByName($userName);
 
-        $this->setWorkspaceRightsByUser($user['id'], array((object) array(
+        $this->setWorkspaceRightsByUser($user['id'], [(object) [
             "id" => $workspaceId,
             "role" => "RW"
-        )));
+        ]]);
     }
 
 

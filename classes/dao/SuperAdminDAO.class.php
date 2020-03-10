@@ -10,7 +10,7 @@ class SuperAdminDAO extends DAO {
 
         return $this->_(
             'SELECT workspaces.id, workspaces.name FROM workspaces ORDER BY workspaces.name',
-            array(),
+            [],
             true
         );
     }
@@ -21,7 +21,7 @@ class SuperAdminDAO extends DAO {
 
         return $this->_(
             'SELECT users.name, users.id, users.email, users.is_superadmin FROM users ORDER BY users.name',
-            array(),
+            [],
             true
         );
     }
@@ -31,7 +31,7 @@ class SuperAdminDAO extends DAO {
 
         return $this->_(
             'SELECT users.name, users.id, users.email, users.is_superadmin FROM users WHERE users.name=:user_name',
-            array(':user_name' => $userName)
+            [':user_name' => $userName]
         );
     }
 
@@ -42,7 +42,7 @@ class SuperAdminDAO extends DAO {
 
         $allWorkspaces = $this->_(
             'SELECT workspaces.id, workspaces.name FROM workspaces ORDER BY workspaces.name',
-            array(),
+            [],
             true
         );
 
@@ -70,11 +70,11 @@ class SuperAdminDAO extends DAO {
                 INNER JOIN users ON users.id = workspace_users.user_id
             WHERE 
                 users.id = :user_id',
-            array(':user_id' => $userId),
+            [':user_id' => $userId],
             true
         );
 
-        $mapWorkspaceToRole= array();
+        $mapWorkspaceToRole= [];
         foreach ($userWorkspaces as $userWorkspace) {
             $mapWorkspaceToRole[$userWorkspace['id']] = $userWorkspace['role'];
         }
@@ -84,16 +84,16 @@ class SuperAdminDAO extends DAO {
 
     public function setWorkspaceRightsByUser(int $userId, array $listOfWorkspaceIdsAndRoles) {
 
-        $this->_('DELETE FROM workspace_users WHERE workspace_users.user_id=:user_id', array(':user_id' => $userId));
+        $this->_('DELETE FROM workspace_users WHERE workspace_users.user_id=:user_id', [':user_id' => $userId]);
         foreach($listOfWorkspaceIdsAndRoles as $workspaceIdAndRole) {
             if (strlen($workspaceIdAndRole->role) > 0) {
                 $this->_(
                     'INSERT INTO workspace_users (workspace_id, user_id, role) VALUES(:workspaceId, :userId, :role)',
-                    array(
+                    [
                         ':workspaceId' => $workspaceIdAndRole->id,
                         ':role' => $workspaceIdAndRole->role,
                         ':userId' => $userId
-                    )
+                    ]
                 );
             }
         }
@@ -104,10 +104,10 @@ class SuperAdminDAO extends DAO {
 
         $this->_(
             'UPDATE users SET password = :password WHERE id = :user_id',
-            array(
+            [
                 ':user_id' => $userId,
                 ':password' => $this->encryptPassword($password)
-            )
+            ]
         );
     }
 
@@ -117,10 +117,10 @@ class SuperAdminDAO extends DAO {
         $user = $this->_(
             'SELECT * FROM users
 			WHERE users.id = :id AND users.password = :password',
-            array(
+            [
                 ':id' => $userId,
                 ':password' => $password
-            )
+            ]
         );
         return !!$user;
     }
@@ -132,7 +132,7 @@ class SuperAdminDAO extends DAO {
 
         $user = $this->_(
             'SELECT users.name FROM users WHERE users.name=:user_name',
-            array(':user_name' => $userName)
+            [':user_name' => $userName]
         );
 
         if($user) {
@@ -141,10 +141,10 @@ class SuperAdminDAO extends DAO {
 
         $this->_(
             'INSERT INTO users (name, password) VALUES (:user_name, :user_password)',
-            array(
+            [
                 ':user_name' => $userName,
                 ':user_password' => $this->encryptPassword($password)
-            )
+            ]
         );
     }
 
@@ -152,7 +152,7 @@ class SuperAdminDAO extends DAO {
     public function deleteUsers(array $userIds): void { // TODO add unit test
 
         foreach ($userIds as $userId) {
-            $this->_('DELETE FROM users WHERE users.id = :user_id', array(':user_id' => $userId));
+            $this->_('DELETE FROM users WHERE users.id = :user_id', [':user_id' => $userId]);
         }
     }
 
@@ -162,7 +162,7 @@ class SuperAdminDAO extends DAO {
         $workspace = $this->_(
             'SELECT workspaces.id FROM workspaces 
             WHERE workspaces.name=:ws_name',
-            array(':ws_name' => $name)
+            [':ws_name' => $name]
         );
 
         if ($workspace) {
@@ -171,7 +171,7 @@ class SuperAdminDAO extends DAO {
 
         $this->_(
             'INSERT INTO workspaces (name) VALUES (:ws_name)',
-            array(':ws_name' => $name)
+            [':ws_name' => $name]
         );
     }
 
@@ -181,7 +181,7 @@ class SuperAdminDAO extends DAO {
         $workspace = $this->_(
             'SELECT workspaces.id FROM workspaces 
             WHERE workspaces.id=:ws_id',
-            array(':ws_id' => $wsId)
+            [':ws_id' => $wsId]
         );
 
         if (!$workspace) {
@@ -190,10 +190,10 @@ class SuperAdminDAO extends DAO {
 
         $this->_(
             'UPDATE workspaces SET name = :name WHERE id = :id',
-            array(
+            [
                 ':name' => $newName,
                 ':id' => $wsId
-            )
+            ]
         );
     }
 
@@ -204,7 +204,7 @@ class SuperAdminDAO extends DAO {
             $this->_(
                 'DELETE FROM workspaces
                 WHERE workspaces.id = :ws_id',
-                array(':ws_id' => $wsId)
+                [':ws_id' => $wsId]
             );
         }
         // TODO ROLLBACK if one fails!
@@ -215,9 +215,9 @@ class SuperAdminDAO extends DAO {
 
         $workspaceRolesPerUser = $this->getMapUserToRoleByWorkspace($workspaceId);
 
-        $allUsers = $this->_('SELECT users.id, users.name FROM users ORDER BY users.name', array(), true);
+        $allUsers = $this->_('SELECT users.id, users.name FROM users ORDER BY users.name', [], true);
 
-        $allUsersWithTheirRolesOnWorkspace = array();
+        $allUsersWithTheirRolesOnWorkspace = [];
         foreach ($allUsers as $user) {
             array_push($allUsersWithTheirRolesOnWorkspace, [
                 'id' => $user['id'],
@@ -238,7 +238,7 @@ class SuperAdminDAO extends DAO {
                 workspace_users.role as role 
             FROM workspace_users
             WHERE workspace_users.workspace_id=:ws_id',
-            array(':ws_id' => $workspaceId),
+            [':ws_id' => $workspaceId],
             true
         );
         $workspaceRolesPerUser = [];
@@ -252,18 +252,18 @@ class SuperAdminDAO extends DAO {
 
     public function setUserRightsForWorkspace(int $wsId, array $listOfUserIdsAndRoles): void {
 
-        $this->_('DELETE FROM workspace_users WHERE workspace_users.workspace_id=:ws_id', array(':ws_id' => $wsId));
+        $this->_('DELETE FROM workspace_users WHERE workspace_users.workspace_id=:ws_id', [':ws_id' => $wsId]);
 
         foreach ($listOfUserIdsAndRoles as $userIdAndRole) {
             if (strlen($userIdAndRole->role) > 0) {
                 $this->_(
                     'INSERT INTO workspace_users (workspace_id, user_id, role) 
                     VALUES(:workspaceId, :userId, :role)',
-                    array(
+                    [
                         ':workspaceId' => $wsId,
                         ':role' => $userIdAndRole->role,
                         ':userId' => $userIdAndRole->id
-                    )
+                    ]
                 );
             }
         }
@@ -276,7 +276,7 @@ class SuperAdminDAO extends DAO {
             'SELECT workspaces.name 
             FROM workspaces
             WHERE workspaces.id=:workspace_id',
-            array(':workspace_id' => $workspaceId)
+            [':workspace_id' => $workspaceId]
         );
 
         return $data['name'];
