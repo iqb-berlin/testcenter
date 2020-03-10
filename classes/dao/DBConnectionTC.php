@@ -21,7 +21,7 @@ class DBConnectionTC extends DBConnection {
 
         // TODO check for mode?!
 
-        return !$test or ($test['locked'] == '1');
+        return $test and ($test['locked'] != '1');
     }
 
 
