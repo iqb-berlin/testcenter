@@ -233,14 +233,14 @@ $app->group('', function(App $app) {
 // was /startbooklet
 
 /**
- * TODO this should as well RequirePersonToken instead of RequireGroupToken
+ * TODO this should as well RequirePersonToken instead of RequireLoginToken
  * after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
  * remove PersonTokenCreation from here
  */
 
 $app->put('/test', function(Request $request, Response $response) {
 
-    /* @var $authToken GroupAuthToken */
+    /* @var $authToken LoginAuthToken */
     $authToken = $request->getAttribute('AuthToken');
     $loginToken = $authToken->getToken();
 
@@ -280,4 +280,4 @@ $app->put('/test', function(Request $request, Response $response) {
         'personToken' => $person['token'] // person token
     ])->withStatus(201);
 })
-    ->add(new RequireGroupToken());
+    ->add(new RequireLoginToken());

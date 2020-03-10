@@ -6,7 +6,7 @@ use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class RequireGroupToken {
+class RequireLoginToken {
 
     function __invoke(Request $request, Response $response, $next) {
 
@@ -31,7 +31,7 @@ class RequireGroupToken {
         //$tokenInfo = $dbConnectionTC->validateToken($personToken, $loginToken); // TODO implement
 
 
-        $authToken = $personToken ? new PersonAuthToken($personToken) : new GroupAuthToken($loginToken);
+        $authToken = $personToken ? new PersonAuthToken($personToken) : new LoginAuthToken($loginToken);
 
         $request = $request->withAttribute('AuthToken', $authToken);
         return $next($request, $response);

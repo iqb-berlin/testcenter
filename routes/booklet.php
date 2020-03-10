@@ -7,7 +7,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 /**
- * TODO this should as well RequirePersonToken instead of RequireGroupToken
+ * TODO this should as well RequirePersonToken instead of RequireLoginToken
  * after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
  * remove lines marked below from here
  */
@@ -56,4 +56,4 @@ $app->group('/booklet', function(App $app) {
         return $response->withJson($bookletStatus);
     });
 })
-    ->add(new RequireGroupToken());
+    ->add(new RequireLoginToken());

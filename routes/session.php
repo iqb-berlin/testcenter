@@ -88,8 +88,12 @@ $app->put('/session/group', function(Request $request, Response $response) use (
      * # DB connection login fn überarbeiten
      * # passwortloeses login
      * # neue modes
-     * ordnen wo welche DB klasse
+
      * groupToken guter Name?
+     * implement personmtoken auth
+     * db klasse dutrchghen
+     *
+     * * ordnen wo welche DB klasse
 
      */
 
@@ -120,7 +124,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     return $response->withJson($person);
 
-})->add(new RequireGroupToken());
+})->add(new RequireLoginToken());
 
 
 $app->get('/session', function(Request $request, Response $response) use ($app) {
@@ -150,4 +154,4 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     throw new HttpUnauthorizedException($request);
 
-})->add(new RequireGroupToken());
+})->add(new RequireLoginToken());
