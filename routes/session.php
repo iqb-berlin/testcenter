@@ -71,8 +71,6 @@ $app->put('/session/group', function(Request $request, Response $response) use (
     }
 
     $testSession = new TestSession($availableBookletsForLogin);
-    error_log(print_r($availableBookletsForLogin['mode'],1));
-    error_log(print_r($testSession->mode,1));
     $loginToken = $myDBConnection->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
 
     $testSession->loginToken = $loginToken;
@@ -93,8 +91,8 @@ $app->put('/session/group', function(Request $request, Response $response) use (
      * # implement personmtoken auth
      * db klasse durchgehen
      *
-     *
-     * * ordnen wo welche DB klasse
+     * admin login nachziehen
+     * ordnen wo welche DB klasse
 
      */
 
@@ -122,7 +120,6 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $person = $dbConnectionStart->getOrCreatePerson($loginId, $body['code']);
 
-
     return $response->withJson($person);
 
 })->add(new RequireLoginToken());
@@ -135,7 +132,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     $myDBConnection = new DBConnectionStart();
 
-    if ($authToken::type == "group") {
+    if ($authToken::type == "login") {
 
         $session = $myDBConnection->getSessionByLoginToken($authToken->getToken());
         if (count($session->booklets) > 0 ) {

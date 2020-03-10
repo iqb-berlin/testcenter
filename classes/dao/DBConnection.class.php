@@ -119,7 +119,7 @@ class DBConnection {
         );
 
         if ($login === null) {
-            throw new HttpError("No workspace for personToken `{$personToken}` found.", 404); // TODO overthink 404
+            throw new HttpError("PersonToken invalid, no workspace found: `$personToken`", 401);
         }
 
         return $login['workspace_id'];

@@ -97,7 +97,8 @@ class DBConnectionStart extends DBConnection {
                logins.name     as loginName,
                workspaces.name as workspaceName,
                booklets.id     as testId,
-               booklets.label  as bookletLabel
+               booklets.label  as bookletLabel,
+               persons.code
             FROM persons
                  INNER JOIN logins ON logins.id = persons.login_id
                  INNER JOIN workspaces ON workspaces.id = logins.workspace_id

@@ -6,26 +6,23 @@
 class DBConnectionTC extends DBConnection {
 
 
-    // =================================================================
-    // used as entry check in tc_post.php
-    public function canWriteBookletData($persontoken, $bookletDbId) {
-        $myreturn = false;
-        $booklet_select = $this->pdoDBhandle->prepare(
+    public function canWriteTestData(string $personToken, string $testId): bool {
+
+        $test = $this->_(
             'SELECT booklets.locked FROM booklets
                 INNER JOIN persons ON persons.id = booklets.person_id
-                WHERE persons.token=:token and booklets.id=:bookletId');
-            
-        if ($booklet_select->execute(array(
-            ':token' => $persontoken,
-            ':bookletId' => $bookletDbId
-            ))) {
+                WHERE persons.token=:token and booklets.id=:bookletId',
+            [
+                ':token' => $personToken,
+                ':bookletId' => $testId
+            ]
+        );
 
-            $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-            if ($bookletdata !== false) {
-                $myreturn = $bookletdata['locked'] != '1';
-            }
+        if ($test == null) {
+            return false;
         }
-        return $myreturn;
+
+        return $test['locked'] != '1';
     }
 
 
@@ -275,5 +272,3 @@ class DBConnectionTC extends DBConnection {
     }
 
 }
-
-?>

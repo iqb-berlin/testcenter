@@ -10,7 +10,6 @@ $app->group('', function(App $app) {
 
     $dbConnectionTC = new DBConnectionTC();
 
-    // was: [GET] /bookletdata
     $app->get('/test/{test_id}', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         /* @var $authToken PersonAuthToken */
@@ -30,10 +29,9 @@ $app->group('', function(App $app) {
         ];
 
         return $response->withJson($test);
-    }); // checked in original for $personToken != '' although it's not used at all
+    });
 
 
-    // was /unitdata/{unit_id}
     $app->get('/test/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($dbConnectionTC) {
 
         /* @var $authToken PersonAuthToken */
@@ -53,7 +51,7 @@ $app->group('', function(App $app) {
         ];
 
         return $response->withJson($unit);
-    }); // checked in original for $personToken != '' although it's not used at all
+    });
 
 
     $app->get('/resource/{resource_name}', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -72,10 +70,9 @@ $app->group('', function(App $app) {
         $response->getBody()->write($resourceFile->getContent());
 
         return $response->withHeader('Content-type', 'text/plain');
-    }); // checked in original for $loginToken != ''
+    });
 
 
-    // was: [POST] /review
     $app->put('/test/{test_id}/unit/{unit_name}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
@@ -87,8 +84,7 @@ $app->group('', function(App $app) {
             'entry' => null // was: e
         ]);
 
-        // TODO check if a) test exists and b) unit exists there and c) user is allowed to review
-        // a) leads to SQLerror at least, b) review gets written
+        // TODO check if unit exists in this booklet
 
         $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
             ? $review['priority']
@@ -97,7 +93,8 @@ $app->group('', function(App $app) {
         $dbConnectionTC->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry']);
 
         return $response->withStatus(201);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->put('/test/{test_id}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -110,18 +107,15 @@ $app->group('', function(App $app) {
             'entry' => null // was: e
         ]);
 
-        // TODO check if a) test exists and b) unit exists there and c) user is allowed to review
-        // a) leads to SQLerror at least, b) review gets written
-
         $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
             ? $review['priority']
             : 0;
 
-
         $dbConnectionTC->addBookletReview($testId, $priority, $review['categories'], $review['entry']);
 
         return $response->withStatus(201);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->put('/test/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -138,7 +132,8 @@ $app->group('', function(App $app) {
         $dbConnectionTC->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
 
         return $response->withStatus(201);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->patch('/test/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -151,10 +146,13 @@ $app->group('', function(App $app) {
             'restorePoint' => null
         ]);
 
+        // TODO check if unit exists in this booklet
+
         $dbConnectionTC->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
 
         return $response->withStatus(200);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->patch('/test/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -170,7 +168,8 @@ $app->group('', function(App $app) {
         $dbConnectionTC->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
         return $response->withStatus(200);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->patch('/test/{test_id}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -185,7 +184,8 @@ $app->group('', function(App $app) {
         $dbConnectionTC->updateTestLastState($testId, $body['key'], $body['value']);
 
         return $response->withStatus(200);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->put('/test/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -198,10 +198,13 @@ $app->group('', function(App $app) {
             'timestamp' => null // was t
         ]);
 
+        // TODO check if unit exists in this booklet
+
         $dbConnectionTC->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
         return $response->withStatus(201);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->put('/test/{test_id}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -216,7 +219,8 @@ $app->group('', function(App $app) {
         $dbConnectionTC->addBookletLog($testId, $body['entry'], $body['timestamp']);
 
         return $response->withStatus(201);
-    });
+    })
+        ->add(new IsTestWritable());
 
 
     $app->post('/test/{test_id}/lock', function (Request $request, Response $response) use ($dbConnectionTC) {
@@ -226,7 +230,8 @@ $app->group('', function(App $app) {
         $dbConnectionTC->lockBooklet($testId);
 
         return $response->withStatus(200);
-    });
+    })
+        ->add(new IsTestWritable());
 })
     ->add(new RequirePersonToken());
 
