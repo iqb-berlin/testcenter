@@ -27,7 +27,7 @@ try {
     include_once 'routes/workspace.php';
     include_once 'routes/user.php';
 
-    include_once 'routes/testcenter.php';
+    include_once 'routes/test.php';
     include_once 'routes/booklet.php';
 
 

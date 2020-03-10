@@ -6,11 +6,11 @@ use Slim\Exception\HttpException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-$app->group('', function(App $app) {
+$app->group('/test', function(App $app) {
 
     $dbConnectionTC = new DBConnectionTC();
 
-    $app->get('/test/{test_id}', function(Request $request, Response $response) use ($dbConnectionTC) {
+    $app->get('/{test_id}', function(Request $request, Response $response) use ($dbConnectionTC) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -32,7 +32,7 @@ $app->group('', function(App $app) {
     });
 
 
-    $app->get('/test/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($dbConnectionTC) {
+    $app->get('/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($dbConnectionTC) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -73,7 +73,7 @@ $app->group('', function(App $app) {
     });
 
 
-    $app->put('/test/{test_id}/unit/{unit_name}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/unit/{unit_name}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -97,7 +97,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->put('/test/{test_id}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
 
@@ -118,7 +118,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->put('/test/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -136,7 +136,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->patch('/test/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->patch('/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -155,7 +155,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->patch('/test/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->patch('/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -172,7 +172,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->patch('/test/{test_id}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->patch('/{test_id}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
 
@@ -188,7 +188,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->put('/test/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -207,7 +207,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->put('/test/{test_id}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
 
@@ -223,7 +223,7 @@ $app->group('', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->post('/test/{test_id}/lock', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->post('/{test_id}/lock', function (Request $request, Response $response) use ($dbConnectionTC) {
 
         $testId = $request->getAttribute('test_id');
 
