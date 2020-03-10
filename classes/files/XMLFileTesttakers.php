@@ -197,7 +197,7 @@ class XMLFileTesttakers extends XMLFile {
 
 
     public function getLoginData($givenLoginName, $givenPassword) {
-        $myreturn = ['groupname' => '', 'mode' => '', 'loginname' => '', 'booklets' => []];
+        $myreturn = ['groupName' => '', 'mode' => '', 'loginName' => '', 'booklets' => []];
 
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             foreach($this->xmlfile->children() as $groupNode) {
@@ -269,16 +269,16 @@ class XMLFileTesttakers extends XMLFile {
                                                 }
 
                                                 $myreturn = [
-                                                    'groupname' => $groupname,
-                                                    'loginname' => $loginName,
+                                                    'groupName' => $groupname,
+                                                    'loginName' => $loginName,
                                                     'mode' => $mode,
                                                     'booklets' => $codeBooklets
                                                 ];
                                             } else {
                                                 if (count($noCodeBooklets) > 0) {
                                                     $myreturn = [
-                                                        'groupname' => $groupname,
-                                                        'loginname' => $loginName,
+                                                        'groupName' => $groupname,
+                                                        'loginName' => $loginName,
                                                         'mode' => $mode,
                                                         'booklets' => ['' => $noCodeBooklets]
                                                     ];

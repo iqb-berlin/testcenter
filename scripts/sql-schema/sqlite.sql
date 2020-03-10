@@ -36,7 +36,7 @@ CREATE TABLE `booklets` (
 CREATE TABLE `logins` (
   `id` integer  NOT NULL PRIMARY KEY AUTOINCREMENT
 ,  `name` varchar(50) NOT NULL
-,  `mode` varchar(10) NOT NULL
+,  `mode` varchar(20) NOT NULL
 ,  `workspace_id` integer  NOT NULL
 ,  `valid_until` timestamp NOT NULL DEFAULT current_timestamp 
 ,  `token` varchar(50) NOT NULL

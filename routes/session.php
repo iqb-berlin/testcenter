@@ -70,23 +70,13 @@ $app->put('/session/group', function(Request $request, Response $response) use (
         throw new HttpUnauthorizedException($request, "No Login for `{$body['name']}` with `{$body['password']}`");
     }
 
-    $loginToken = $myDBConnection->getOrCreateLoginToken(
-        $availableBookletsForLogin['workspaceId'],
-        $availableBookletsForLogin['groupname'],
-        $availableBookletsForLogin['loginname'],
-        $availableBookletsForLogin['mode'],
-        $availableBookletsForLogin['booklets']
-    );
+    $testSession = new TestSession($availableBookletsForLogin);
+    error_log(print_r($availableBookletsForLogin['mode'],1));
+    error_log(print_r($testSession->mode,1));
+    $loginToken = $myDBConnection->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
 
-    $loginData = new TestSession([
-        'loginToken' => $loginToken,
-        'mode' => $availableBookletsForLogin['mode'],
-        'groupName' => $availableBookletsForLogin['groupname'],
-        'loginName' => $availableBookletsForLogin['loginname'],
-        'workspaceName' => $myDBConnection->getWorkspaceName($availableBookletsForLogin['workspaceId']),
-        'booklets' => $availableBookletsForLogin['booklets'],
-        'customTexts' => $availableBookletsForLogin['customTexts']
-    ]);
+    $testSession->loginToken = $loginToken;
+    $testSession->workspaceName = $myDBConnection->getWorkspaceName($availableBookletsForLogin['workspaceId']);
 
     /**
      * STAND:
@@ -96,17 +86,15 @@ $app->put('/session/group', function(Request $request, Response $response) use (
      * # falsche credentials
      * # custom texts in [GET] session ?!
      * # DB connection login fn überarbeiten
-     * passwortloeses login
-     *  --> SUB-STAND geht soweit, jetzt müsste man im richtigen mode keine/eine neue personTokejn kriegen
-     * neue modes
+     * # passwortloeses login
+     * # neue modes
      * ordnen wo welche DB klasse
      * groupToken guter Name?
 
      */
 
 
-
-    return $response->withJson($loginData);
+    return $response->withJson($testSession);
 
 });
 
@@ -129,6 +117,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $person = $dbConnectionStart->getOrCreatePerson($loginId, $body['code']);
 
+
     return $response->withJson($person);
 
 })->add(new RequireGroupToken());
@@ -143,18 +132,16 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     if ($authToken::type == "group") {
 
-        $dbReturn = $myDBConnection->getAllBookletsByLoginToken($authToken->getToken());
-        if (count($dbReturn['booklets']) > 0 ) {
-            $session = new TestSession($dbReturn);
+        $session = $myDBConnection->getSessionByLoginToken($authToken->getToken());
+        if (count($session->booklets) > 0 ) {
             return $response->withJson($session);
         }
     }
 
     if ($authToken::type == "person") {
 
-        $dbReturn = $myDBConnection->getAllBookletsByPersonToken($authToken->getToken());
-        if (count($dbReturn['booklets']) > 0 ) {
-            $session = new TestSession($dbReturn);
+        $session = $myDBConnection->getSessionByPersonToken($authToken->getToken());
+        if (count($session->booklets) > 0 ) {
             return $response->withJson($session);
         }
     }

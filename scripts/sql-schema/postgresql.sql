@@ -68,7 +68,7 @@ CREATE TABLE public.logins
 (
     id serial,
     name character varying(50) NOT NULL,
-    mode character varying(10) NOT NULL,
+    mode character varying(20) NOT NULL,
     workspace_id integer NOT NULL,
     valid_until timestamp without time zone NOT NULL,
     token character varying(50) NOT NULL,

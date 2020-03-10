@@ -85,7 +85,7 @@ CREATE TABLE `booklets` (
 CREATE TABLE `logins` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(50) COLLATE utf8_german2_ci NOT NULL,
-  `mode` varchar(10) COLLATE utf8_german2_ci NOT NULL,
+  `mode` varchar(20) COLLATE utf8_german2_ci NOT NULL,
   `workspace_id` bigint(20) UNSIGNED NOT NULL,
   `valid_until` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `token` varchar(50) COLLATE utf8_german2_ci NOT NULL,

@@ -7,18 +7,17 @@ class DBConnectionStart extends DBConnection {
 
     private $idleTimeSession = 60 * 30;
 
-    public function getOrCreateLoginToken(int $workspaceId, string $groupName,
-                                          string $loginName, string $mode, array $codes2Booklets): string {
+    public function getOrCreateLoginToken(TestSession $session, bool $forceCreate = false): string {
 
         $oldLogin = $this->_(
             'SELECT logins.id, logins.token FROM logins
 			WHERE logins.name = :name AND logins.workspace_id = :ws', [
-                ':name' => $loginName,
-                ':ws' => $workspaceId
+                ':name' => $session->loginName,
+                ':ws' => $session->workspaceId
             ]
         );
 
-        if ($oldLogin === null) {
+        if ($forceCreate or ($oldLogin === null)) {
 
             $loginToken = uniqid('a', true);
             $this->_(
@@ -26,12 +25,12 @@ class DBConnectionStart extends DBConnection {
                 VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
                 [
                     ':token' => $loginToken,
-                    ':sd' => json_encode($codes2Booklets),
+                    ':sd' => json_encode($session->booklets),
                     ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTimeSession),
-                    ':name' => $loginName,
-                    ':mode' => $mode,
-                    ':ws' => $workspaceId,
-                    ':groupname' => $groupName
+                    ':name' => $session->loginName,
+                    ':mode' => $session->mode,
+                    ':ws' => $session->workspaceId,
+                    ':groupname' => $session->groupName
                 ]
             );
             return $loginToken;
@@ -43,9 +42,9 @@ class DBConnectionStart extends DBConnection {
             WHERE id =:loginid',
             [
                 ':value' => date('Y-m-d H:i:s', time() + $this->idleTimeSession),
-                ':sd' => json_encode($codes2Booklets),
+                ':sd' => json_encode($session->booklets),
                 ':loginid' => $oldLogin['id'],
-                ':groupname' => $groupName
+                ':groupname' => $session->groupName
             ]
         );
 
@@ -57,16 +56,16 @@ class DBConnectionStart extends DBConnection {
 
     // TODO unit-test
     // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-    public function getAllBookletsByLoginToken($loginToken) {
+    public function getSessionByLoginToken($loginToken): TestSession {
 
         $logindata = $this->_(
             'SELECT 
-                logins.booklet_def, 
-                logins.workspace_id as workspaceId, 
-                logins.mode, 
-                logins.groupname as groupName,
+                logins.booklet_def, #
+                logins.workspace_id as workspaceId, #
+                logins.mode, #
+                logins.groupname as groupName, #
                 logins.id as loginId, 
-                logins.name as loginName, 
+                logins.name as loginName, #
                 workspaces.name as workspaceName 
             FROM logins
                 INNER JOIN workspaces ON workspaces.id = logins.workspace_id
@@ -80,13 +79,13 @@ class DBConnectionStart extends DBConnection {
             unset($logindata['booklet_def']);
         }
 
-        return $logindata;
+        return new TestSession($logindata);
     }
 
 
     // TODO unit-test
     // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-    public function getAllBookletsByPersonToken($personToken) {
+    public function getSessionByPersonToken($personToken): TestSession {
 
         $logindata = $this->_(
             'SELECT 
@@ -95,10 +94,8 @@ class DBConnectionStart extends DBConnection {
                logins.mode,
                logins.groupname as groupName,
                logins.token    as loginToken,
-               logins.id       as loginId,
                logins.name     as loginName,
                workspaces.name as workspaceName,
-               persons.code,
                booklets.id     as testId,
                booklets.label  as bookletLabel
             FROM persons
@@ -115,11 +112,11 @@ class DBConnectionStart extends DBConnection {
             unset($logindata['booklet_def']);
         }
 
-        return $logindata;
+        return new TestSession($logindata);
     }
 
 
-    public function personHasBooklet(string $personToken, string $bookletName) {
+    public function personHasBooklet(string $personToken, string $bookletName): bool {
 
         $bookletDef = $this->_('
             SELECT logins.booklet_def, logins.id, persons.code
@@ -138,7 +135,7 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-    public function getBookletStatus(string $personToken, string $bookletName) {
+    public function getBookletStatus(string $personToken, string $bookletName): array {
 
         $personId = $this->getPersonId($personToken);
 
