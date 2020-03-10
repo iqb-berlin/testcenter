@@ -90,6 +90,7 @@ $app->put('/session/group', function(Request $request, Response $response) use (
      * # groupToken guter Name?
      * # implement personmtoken auth
      * db klasse durchgehen
+     * repair put bug
      *
      * admin login nachziehen
      * ordnen wo welche DB klasse

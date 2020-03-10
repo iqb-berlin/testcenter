@@ -109,14 +109,21 @@ class WorkspaceInitializer {
         $timestamp = microtime(true) * 1000;
 
         $dbc = new DBConnectionStart();
-        $loginToken = $dbc->getOrCreateLoginToken(1, 'sample_group', 'test', 'hot', []);
+        $testSession = new TestSession(
+            [
+                'sessionId' => 1,
+                'groupName' => 'sample_group',
+                'mode' => 'run-hot-return',
+            ]
+        );
+        $loginToken = $dbc->getOrCreateLoginToken($testSession);
         $loginId = $dbc->getLoginId($loginToken);
         $person = $dbc->getOrCreatePerson($loginId, $loginCode);
         $bookletDbIdAndPersonToken = $dbc->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
         $bookletDbId = $bookletDbIdAndPersonToken['bookletDbId'];
 
         $dbc = new DBConnectionTC();
-        $dbc->addBookletReview($bookletDbId, 1, "", "sample booklet review");
+        $dbc->addTestReview($bookletDbId, 1, "", "sample booklet review");
         $dbc->addUnitReview($bookletDbId, "UNIT.SAMPLE", 1, "", "this is a sample unit review");
         $dbc->addUnitLog($bookletDbId, 'UNIT.SAMPLE', "sample unit log", $timestamp);
         $dbc->addBookletLog($bookletDbId, "sample log entry", $timestamp);

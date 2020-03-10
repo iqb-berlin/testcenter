@@ -6,14 +6,32 @@
 class DBConnectionTC extends DBConnection {
 
 
+    // TODO unit test
     public function canWriteTestData(string $personToken, string $testId): bool {
 
         $test = $this->_(
             'SELECT booklets.locked FROM booklets
                 INNER JOIN persons ON persons.id = booklets.person_id
-                WHERE persons.token=:token and booklets.id=:bookletId',
+                WHERE persons.token=:token and booklets.id=:testId',
             [
                 ':token' => $personToken,
+                ':testId' => $testId
+            ]
+        );
+
+        // TODO check for mode?!
+
+        return !$test or ($test['locked'] == '1');
+    }
+
+
+    // TODO unit test
+    public function isTestLocked(int $testId) {
+
+        $test = $this->_(
+            'SELECT booklets.locked FROM booklets
+                WHERE booklets.id=:bookletId',
+            [
                 ':bookletId' => $testId
             ]
         );
@@ -22,11 +40,12 @@ class DBConnectionTC extends DBConnection {
             return false;
         }
 
-        return $test['locked'] != '1';
+        return !$test or ($test['locked'] == '1');
     }
 
 
-    public function addBookletReview(int $testId, int $priority, string $categories, string $entry): void {
+    // TODO unit test
+    public function addTestReview(int $testId, int $priority, string $categories, string $entry): void {
 
         $this->_(
             'INSERT INTO bookletreviews (booklet_id, reviewtime, reviewer, priority, categories, entry) 
@@ -43,58 +62,40 @@ class DBConnectionTC extends DBConnection {
     }
 
 
+    // TODO unit test
     public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry): void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unit);
         $this->_(
             'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
             VALUES(:u, :t, :r, :p, :c, :e)',
-            array(
+            [
                 ':u' => $unitDbId,
                 ':t' => date('Y-m-d H:i:s', time()),
                 ':r' => '-', // field is deprecated, reviewer is identified by bookelet. TODO remove field from DB
                 ':p' => $priority,
                 ':c' => $categories,
                 ':e' => $entry
-            )
+            ]
         );
     }
 
 
-    public function getBookletLastState($bookletDbId) {
+    // TODO unit test
+    public function getTestLastState(int $testId): array {
 
         $booklet = $this->_(
-            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:bookletId', array(
-            ':bookletId' => $bookletDbId
-        ));
+            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:testId',
+            [
+                ':testId' => $testId
+            ]
+        );
 
         return  ($booklet) ? [] : JSON::decode($booklet['laststate'], true);
     }
 
 
-    public function isBookletLocked($bookletDbId) {
-        $myreturn = false;
-        if ($this->pdoDBhandle != false) {
-            $booklet_select = $this->pdoDBhandle->prepare(
-                'SELECT booklets.locked FROM booklets
-                    WHERE booklets.id=:bookletId');
-                
-            if ($booklet_select->execute(array(
-                ':bookletId' => $bookletDbId
-                ))) {
-
-                $bookletdata = $booklet_select->fetch(PDO::FETCH_ASSOC);
-                if ($bookletdata !== false) {
-                    if ($bookletdata['locked'] == '1') {
-                        $myreturn = true;
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-
-
+    // TODO unit test
     public function updateTestLastState($testId, $stateKey, $stateValue): void {
 
         $testData = $this->_(
@@ -117,6 +118,22 @@ class DBConnectionTC extends DBConnection {
     }
 
 
+    // TODO unit test
+    public function getUnitLastState(int $testId, string $unitName): stdClass {
+
+        $unitData = $this->_(
+            'SELECT units.laststate FROM units
+            WHERE units.name = :unitname and units.booklet_id = :testId',
+            [
+                ':unitname' => $unitName,
+                ':testId' => $testId
+            ]
+        );
+        return JSON::decode($unitData['laststate']);
+    }
+
+
+    // TODO unit test
     public function updateUnitLastState($testId, $unitName, $stateKey, $stateValue): void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
@@ -141,6 +158,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
+    // TODO unit test
     public function lockBooklet($bookletDbId): void {
 
         $this->_('UPDATE booklets SET locked = :locked WHERE id = :id',
@@ -152,21 +170,38 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    public function getUnitLastState(int $testId, string $unitName): stdClass {
+    // TODO unit test
+    private function getOrCreateUnitId(int $testId, string $unitName): string {
 
-        $unitData = $this->_(
-            'SELECT units.laststate FROM units
+        $unit = $this->_(
+            'SELECT units.id FROM units
             WHERE units.name = :unitname and units.booklet_id = :testId',
-            array(
+            [
                 ':unitname' => $unitName,
                 ':testId' => $testId
-            )
+            ]
         );
-        return JSON::decode($unitData['laststate']);
+
+        if (!$unit) {
+
+            $this->_(
+                'INSERT INTO units (booklet_id, name) 
+                VALUES(:testId, :name)',
+                [
+                    ':testId' => $testId,
+                    ':name' => $unitName
+                ]
+            );
+            return $this->pdoDBhandle->lastInsertId();
+
+        }
+
+        return $unit['id'];
     }
 
 
-    public function getUnitRestorePoint(int $testId, string $unitName): string {
+    // TODO unit test
+    public function getRestorePoint(int $testId, string $unitName): string {
 
         $unitData = $this->_(
             'SELECT units.restorepoint FROM units
@@ -180,36 +215,8 @@ class DBConnectionTC extends DBConnection {
     }
 
 
-    private function getOrCreateUnitId(int $testId, string $unitName): string {
-
-        $unit = $this->_(
-            'SELECT units.id FROM units
-            WHERE units.name = :unitname and units.booklet_id = :bookletId',
-            array(
-                ':unitname' => $unitName,
-                ':bookletId' => $testId
-            )
-        );
-
-        if (!$unit) {
-
-            $this->_(
-                'INSERT INTO units (booklet_id, name) 
-                VALUES(:bookletId, :name)',
-                array(
-                    ':bookletId' => $testId,
-                    ':name' => $unitName
-                )
-            );
-            return $this->pdoDBhandle->lastInsertId();
-
-        }
-
-        return $unit['id'];
-    }
-
-
-    public function updateRestorePoint(int $testId, string $unitName, string $restorePoint, int$timestamp): void {
+    // TODO unit test
+    public function updateRestorePoint(int $testId, string $unitName, string $restorePoint, int $timestamp): void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
         $this->_(
@@ -225,6 +232,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
+    // TODO unit test
     public function addResponse(int $testId, string $unitName, string $responses, string $type, int $timestamp) : void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
@@ -241,6 +249,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
+    // TODO unit test
     public function addUnitLog($testId, $unitName, $logEntry, $timestamp) { // TODO manchmal wird die subquery 0 ?!
 
         $this->_(
@@ -260,6 +269,7 @@ class DBConnectionTC extends DBConnection {
     }
 
 
+    // TODO unit test
     public function addBookletLog($testId, $logEntry, $timestamp) {
 
         $this->_('INSERT INTO bookletlogs (booklet_id, logentry, timestamp) VALUES (:bookletId, :logentry, :timestamp)',

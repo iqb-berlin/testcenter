@@ -5,8 +5,9 @@
 
 class DBConnectionStart extends DBConnection {
 
-    private $idleTimeSession = 60 * 30;
+    private $idleTimeTestSession = 60 * 30;
 
+    // TODO add unit-test
     public function getOrCreateLoginToken(TestSession $session, bool $forceCreate = false): string {
 
         $oldLogin = $this->_(
@@ -26,7 +27,7 @@ class DBConnectionStart extends DBConnection {
                 [
                     ':token' => $loginToken,
                     ':sd' => json_encode($session->booklets),
-                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTimeSession),
+                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTimeTestSession),
                     ':name' => $session->loginName,
                     ':mode' => $session->mode,
                     ':ws' => $session->workspaceId,
@@ -41,7 +42,7 @@ class DBConnectionStart extends DBConnection {
             SET valid_until =:value, booklet_def =:sd, groupname =:groupname
             WHERE id =:loginid',
             [
-                ':value' => date('Y-m-d H:i:s', time() + $this->idleTimeSession),
+                ':value' => date('Y-m-d H:i:s', time() + $this->idleTimeTestSession),
                 ':sd' => json_encode($session->booklets),
                 ':loginid' => $oldLogin['id'],
                 ':groupname' => $session->groupName
@@ -54,9 +55,9 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-    // TODO unit-test
+    // TODO add unit-test
     // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-    public function getSessionByLoginToken($loginToken): TestSession {
+    public function getSessionByLoginToken(string $loginToken): TestSession {
 
         $logindata = $this->_(
             'SELECT 
@@ -83,9 +84,9 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-    // TODO unit-test
+    // TODO add unit-test
     // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-    public function getSessionByPersonToken($personToken): TestSession {
+    public function getSessionByPersonToken(string $personToken): TestSession {
 
         $logindata = $this->_(
             'SELECT 
@@ -117,6 +118,7 @@ class DBConnectionStart extends DBConnection {
     }
 
 
+    // TODO add unit-test
     public function personHasBooklet(string $personToken, string $bookletName): bool {
 
         $bookletDef = $this->_('
@@ -136,6 +138,7 @@ class DBConnectionStart extends DBConnection {
     }
 
 
+    // TODO add unit-test
     public function getBookletStatus(string $personToken, string $bookletName): array {
 
         $personId = $this->getPersonId($personToken);
@@ -204,6 +207,7 @@ class DBConnectionStart extends DBConnection {
     }
 
 
+    // TODO unit test
     public function getOrCreatePerson(int $loginId, string $code): array {
 
         $person = $this->_(
@@ -221,7 +225,7 @@ class DBConnectionStart extends DBConnection {
         }
 
         $newPersonToken = uniqid('a', true);
-        $validUntil = date('Y-m-d H:i:s', time() + $this->idleTimeSession);
+        $validUntil = date('Y-m-d H:i:s', time() + $this->idleTimeTestSession);
 
         $this->_(
             'INSERT INTO persons (token, code, login_id, valid_until) 
@@ -245,7 +249,7 @@ class DBConnectionStart extends DBConnection {
     }
 
 
-
+    // TODO unit test
     public function getPerson(string $personToken): array {
 
         return $this->_('SELECT * FROM persons WHERE persons.token=:token', [':token' => $personToken]);
@@ -253,6 +257,7 @@ class DBConnectionStart extends DBConnection {
     }
 
 
+    // TODO unit test
     public function getOrCreateTest(string $personId, string $bookletName, string $bookletLabel) {
 
         $test = $this->_(
@@ -300,5 +305,4 @@ class DBConnectionStart extends DBConnection {
             'lastState' => ''
         ];
     }
-} 
-?>
+}

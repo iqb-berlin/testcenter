@@ -10,7 +10,7 @@ $app->group('', function(App $app) {
 
     $dbConnectionTC = new DBConnectionTC();
 
-    $app->get('/test/{test_id}', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->get('/test/{test_id}', function(Request $request, Response $response) use ($dbConnectionTC) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -23,8 +23,8 @@ $app->group('', function(App $app) {
         $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
 
         $test = [
-            'laststate' => $dbConnectionTC->getBookletLastState($testId),
-            'locked' => $dbConnectionTC->isBookletLocked($testId),
+            'laststate' => $dbConnectionTC->getTestLastState($testId),
+            'locked' => $dbConnectionTC->isTestLocked($testId),
             'xml' => $bookletFile->xmlfile->asXML()
         ];
 
@@ -46,7 +46,7 @@ $app->group('', function(App $app) {
 
         $unit = [
             'laststate' => $dbConnectionTC->getUnitLastState($testId, $unitName),
-            'restorepoint' => $dbConnectionTC->getUnitRestorePoint($testId, $unitName),
+            'restorepoint' => $dbConnectionTC->getRestorePoint($testId, $unitName),
             'xml' => $unitFile->xmlfile->asXML()
         ];
 
@@ -111,7 +111,7 @@ $app->group('', function(App $app) {
             ? $review['priority']
             : 0;
 
-        $dbConnectionTC->addBookletReview($testId, $priority, $review['categories'], $review['entry']);
+        $dbConnectionTC->addTestReview($testId, $priority, $review['categories'], $review['entry']);
 
         return $response->withStatus(201);
     })
