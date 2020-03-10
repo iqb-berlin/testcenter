@@ -177,10 +177,10 @@ class DBConnectionStart extends DBConnection {
         }
     }
 
-
+    // TODO unit test
     public function getLoginId(string $loginToken): int {
 
-        $login = $this->_('SELECT logins.id FROM logins WHERE logins.token=:token', [':token' => $loginToken]);
+        $login = $this->_('SELECT logins.id FROM logins WHERE logins.token=:token', [':token' => $loginToken]); // TODO check valid_to
         if ($login == null ){
             throw new HttpError("LoginToken invalid: `$loginToken`", 401);
         }
@@ -188,9 +188,10 @@ class DBConnectionStart extends DBConnection {
     }
 
 
+    // TODO unit test
     public function getPersonId(string $personToken): int {
 
-        $person = $this->_('SELECT persons.id FROM persons WHERE persons.token=:token',
+        $person = $this->_('SELECT persons.id FROM persons WHERE persons.token=:token', // TODO check valid_to
             [
                 ':token' => $personToken
             ]

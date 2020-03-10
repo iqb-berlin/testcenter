@@ -22,7 +22,7 @@ $app->group('/booklet', function(App $app) {
         $personToken = $authToken->getToken();
 
         /* TODO instead work with personToken and delete from here ... */
-        if ($authToken::type == "group") {
+        if ($authToken::type == "login") {
 
             $code = $request->getParam('code', '');
 

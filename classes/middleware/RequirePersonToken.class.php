@@ -26,8 +26,8 @@ class RequirePersonToken {
 
         $personToken = $authToken->p;
 
-        //$dbConnectionTC = new DBConnectionTC();
-        //$tokenInfo = $dbConnectionTC->validateToken($personToken, $loginToken); // TODO implement
+        $dbConnection = new DBConnectionStart();
+        $dbConnection->getPersonId($personToken);
 
         $authToken = new PersonAuthToken($personToken);
         $request = $request->withAttribute('AuthToken', $authToken);

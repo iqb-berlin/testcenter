@@ -89,9 +89,10 @@ $app->put('/session/group', function(Request $request, Response $response) use (
      * # passwortloeses login
      * # neue modes
 
-     * groupToken guter Name?
+     * # groupToken guter Name?
      * implement personmtoken auth
-     * db klasse dutrchghen
+     * db klasse durchgehen
+     *
      *
      * * ordnen wo welche DB klasse
 

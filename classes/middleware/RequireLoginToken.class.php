@@ -27,11 +27,18 @@ class RequireLoginToken {
         $loginToken = $authToken->l;
         $personToken = $authToken->p ?? '';
 
-        //$dbConnectionTC = new DBConnectionTC();
-        //$tokenInfo = $dbConnectionTC->validateToken($personToken, $loginToken); // TODO implement
+        $dbConnection = new DBConnectionStart();
 
+        if ($personToken) {
 
-        $authToken = $personToken ? new PersonAuthToken($personToken) : new LoginAuthToken($loginToken);
+            $dbConnection->getPersonId($personToken);
+            $authToken = new PersonAuthToken($personToken);
+
+        } else {
+
+            $dbConnection->getLoginId($loginToken);
+            $authToken = new LoginAuthToken($loginToken);
+        }
 
         $request = $request->withAttribute('AuthToken', $authToken);
         return $next($request, $response);
