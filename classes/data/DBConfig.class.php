@@ -3,7 +3,7 @@
 
 // TODO unit test
 
-class DBConfig {
+class DBConfig extends AbstractDataCollection {
 
     public $host = "localhost";
     public $port = "3306";
@@ -12,14 +12,6 @@ class DBConfig {
     public $password = "pw";
     public $salt = "t";
     public $type = "mysql";
-
-
-    public function __construct($configObject) {
-
-        foreach ($configObject as $param => $value) {
-            $this->$param = $value;
-        }
-    }
 
 
     static function fromFile(?string $path = null): DBConfig {
