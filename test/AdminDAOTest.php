@@ -2,20 +2,20 @@
 
 use PHPUnit\Framework\TestCase;
 require_once "classes/exception/HttpError.class.php";
-require_once "classes/dao/DBConfig.class.php";
-require_once "classes/dao/DBConnection.class.php";
-require_once "classes/dao/DBConnectionAdmin.class.php";
+require_once "classes/data/DBConfig.class.php";
+require_once "classes/dao/DAO.class.php";
+require_once "classes/dao/AdminDAO.class.php";
 
-class DBConnectionAdminTest extends TestCase {
+class AdminDAOTest extends TestCase {
 
     private $dbc;
-    /* @type DBConnection
+    /* @type DAO
      * @throws Exception
      */
 
     function setUp() {
 
-        $this->dbc = new DBConnectionAdmin(new DBConfig(array("type" => "temp")));
+        $this->dbc = new AdminDAO(new DBConfig(array("type" => "temp")));
         $this->dbc->runFile('scripts/sql-schema/sqlite.sql'); // TODO split database schema and test data
     }
 

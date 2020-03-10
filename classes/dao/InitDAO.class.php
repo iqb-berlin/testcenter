@@ -1,8 +1,9 @@
 <?php
 
 // TODO unit test
+// use $this-_ instead of pdoDBhandle function directly
 
-class DBConnectionInit extends DBConnectionSuperAdmin {
+class InitDAO extends SuperAdminDAO {
 
 
     /**

@@ -20,9 +20,9 @@ class IsTestWritable {
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
-        $dbConnection = new DBConnectionTC();
+        $sessionDAO = new SessionDAO();
 
-        if (!$dbConnection->canWriteTestData($authToken->getToken(), $params['test_id'])) {
+        if (!$sessionDAO->canWriteTestData($authToken->getToken(), $params['test_id'])) {
             throw new HttpForbiddenException($request,"Access to test {$params['test_id']} is not provided.");
         }
 

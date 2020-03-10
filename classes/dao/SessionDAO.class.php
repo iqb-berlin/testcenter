@@ -3,7 +3,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class DBConnectionStart extends DBConnection {
+class SessionDAO extends DAO {
 
     private $idleTimeTestSession = 60 * 30;
 
@@ -250,59 +250,49 @@ class DBConnectionStart extends DBConnection {
 
 
     // TODO unit test
-    public function getPerson(string $personToken): array {
+    public function canWriteTestData(string $personToken, string $testId): bool {
 
-        return $this->_('SELECT * FROM persons WHERE persons.token=:token', [':token' => $personToken]);
-        // TODO check valid_until
+        $test = $this->_(
+            'SELECT booklets.locked FROM booklets
+                INNER JOIN persons ON persons.id = booklets.person_id
+                WHERE persons.token=:token and booklets.id=:testId',
+            [
+                ':token' => $personToken,
+                ':testId' => $testId
+            ]
+        );
+
+        // TODO check for mode?!
+
+        return $test and ($test['locked'] != '1');
     }
 
 
     // TODO unit test
-    public function getOrCreateTest(string $personId, string $bookletName, string $bookletLabel) {
+    public function getPerson(string $personToken): array {
 
-        $test = $this->_(
-            'SELECT booklets.locked, booklets.id, booklets.laststate, booklets.label FROM booklets
-            WHERE booklets.person_id=:personId and booklets.name=:bookletname',
+        return $this->_(
+            'SELECT 
+                *
+            FROM logins
+                     left join persons on (persons.login_id = logins.id)
+            WHERE persons.token = :token',
             [
-                ':personId' => $personId,
-                ':bookletname' => $bookletName
+                ':token' => $personToken
             ]
         );
+        // TODO check valid_until
+    }
 
-        if ($test !== null) {
+    public function getWorkspaceName($workspaceId): string {
 
-            if ($test['locked'] != '1') {
-
-                $this->_( // TODO is this necessary?
-                    'UPDATE booklets SET label = :label WHERE id = :id',
-                    [
-                        ':label' => $bookletLabel,
-                        ':id' => $test['id']
-                    ]
-                );
-
-            }
-
-            return $test;
-
-        }
-
-        $this->_(
-            'INSERT INTO booklets (person_id, name, label) VALUES(:person_id, :name, :label)',
-                [
-                    ':person_id' => $personId,
-                    ':name' => $bookletName,
-                    ':label' => $bookletLabel
-                ]
+        $data = $this->_(
+            'SELECT workspaces.name 
+            FROM workspaces
+            WHERE workspaces.id=:workspace_id',
+            [':workspace_id' => $workspaceId]
         );
 
-        return [
-            'id' => $this->pdoDBhandle->lastInsertId(),
-            'label' => $bookletLabel,
-            'name' => $bookletName,
-            'person_id' => $personId,
-            'locked' => '0',
-            'lastState' => ''
-        ];
+        return $data['name'];
     }
 }

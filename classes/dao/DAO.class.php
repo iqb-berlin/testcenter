@@ -1,7 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-class DBConnection {
+class DAO {
 
     protected $pdoDBhandle = false;
     protected $idleTime = 60 * 30;
@@ -65,83 +65,6 @@ class DBConnection {
     }
 
 
-    protected function refreshAdminToken(string $token): void {
-
-        $this->_(
-            'UPDATE admintokens 
-            SET valid_until =:value
-            WHERE id =:token',
-            array(
-                ':value' => date('Y-m-d H:i:s', time() + $this->idleTime),
-                ':token'=> $token
-            )
-        );
-    }
-
-
-    public function isSuperAdmin(string $token): bool { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
-
-        $first = $this->_(
-            'SELECT users.is_superadmin 
-            FROM users
-            INNER JOIN admintokens ON users.id = admintokens.user_id
-            WHERE admintokens.id = :token',
-            array(':token' => $token)
-        );
-
-        $this->refreshAdminToken($token); // TODO separation of concerns
-
-        return ($first['is_superadmin'] == true);
-    }
-
-
-	public function getWorkspaceName($workspaceId): string { // TODO move to DBConnectionAdmin or SuperAdmin? // TODO add unit test
-
-        $data = $this->_(
-            'SELECT workspaces.name 
-            FROM workspaces
-            WHERE workspaces.id=:workspace_id',
-            array(':workspace_id' => $workspaceId)
-        );
-			
-		return $data['name'];
-	}
-
-
-    public function getWorkspaceId(string $personToken): int { // TODO add unit test
-
-        $login = $this->_(
-            'SELECT *
-            FROM logins
-                     left join persons on (persons.login_id = logins.id)
-            WHERE persons.token = :token',
-            array(':token' => $personToken)
-        );
-
-        if ($login === null) {
-            throw new HttpError("PersonToken invalid, no workspace found: `$personToken`", 401);
-        }
-
-        return $login['workspace_id'];
-    }
-
-
-    public function getBookletName(int $testId): string { // TODO add unit test. is used in TC.
-
-        $booklet = $this->_(
-        'SELECT booklets.name FROM booklets
-            WHERE booklets.id=:bookletId',
-            array(':bookletId' => $testId)
-        );
-
-        if ($booklet === null) {
-            throw new HttpError("No test with id `{$testId}` found in db.", 404); // TODO overthink 404
-        }
-
-        return $booklet['name'];
-    }
-
-
     public function runFile(string $path) {
 
         if (!file_exists($path)) {
@@ -158,5 +81,3 @@ class DBConnection {
     }
 
 }
-
-?>

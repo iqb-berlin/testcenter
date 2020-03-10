@@ -502,7 +502,7 @@ class WorkspaceController {
             }
         }
 
-        throw new HttpError("No $type with name `$findName` found!", 404);
+        throw new HttpError("No $type with name `$findName` found on Workspace`{$this->_workspaceId}`!", 404);
     }
 
 

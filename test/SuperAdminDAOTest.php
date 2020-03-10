@@ -2,21 +2,21 @@
 
 use PHPUnit\Framework\TestCase;
 require_once "classes/exception/HttpError.class.php";
-require_once "classes/dao/DBConfig.class.php";
-require_once "classes/dao/DBConnection.class.php";
-require_once "classes/dao/DBConnectionSuperAdmin.class.php";
+require_once "classes/data/DBConfig.class.php";
+require_once "classes/dao/DAO.class.php";
+require_once "classes/dao/SuperAdminDAO.class.php";
 
 
-class DBConnectionSuperAdminTest extends TestCase {
+class SuperAdminDAOTest extends TestCase {
 
     private $dbc;
-    /* @type DBConnection
+    /* @type DAO
      * @throws Exception
      */
 
     function setUp() {
 
-        $this->dbc = new DBConnectionSuperAdmin(new DBConfig(array("type" => "temp")));
+        $this->dbc = new SuperAdminDAO(new DBConfig(array("type" => "temp")));
         $this->dbc->runFile('scripts/sql-schema/sqlite.sql'); // TODO split database schema and test data
     }
 
@@ -236,6 +236,11 @@ class DBConnectionSuperAdminTest extends TestCase {
     }
 
 
+    public function test_getWorkspaceName() {
 
+        $result = $this->dbc->getWorkspaceName(1);
+        $expectation = 'example_workspace';
+        $this->assertEquals($expectation, $result);
+    }
 
 }

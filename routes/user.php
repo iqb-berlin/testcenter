@@ -8,17 +8,17 @@ use Slim\Http\Response;
 
 $app->group('/user', function(App $app) {
 
-    $dbConnection = new DBConnectionSuperAdmin();
+    $superAdminDAO = new SuperAdminDAO();
 
-    $app->get('/{user_id}/workspaces', function(Request $request, Response $response) use ($dbConnection) {
+    $app->get('/{user_id}/workspaces', function(Request $request, Response $response) use ($superAdminDAO) {
 
         $userId = $request->getAttribute('user_id');
-        $workspaces = $dbConnection->getWorkspacesByUser($userId);
+        $workspaces = $superAdminDAO->getWorkspacesByUser($userId);
         return $response->withJson($workspaces);
     });
 
 
-    $app->patch('/{user_id}/workspaces', function(Request $request, Response $response) use ($dbConnection) {
+    $app->patch('/{user_id}/workspaces', function(Request $request, Response $response) use ($superAdminDAO) {
 
         $requestBody = JSON::decode($request->getBody());
         $userId = $request->getAttribute('user_id');
@@ -27,26 +27,26 @@ $app->group('/user', function(App $app) {
             throw new HttpBadRequestException($request, "Workspace-list (ws) is missing.");
         }
 
-        $dbConnection->setWorkspaceRightsByUser($userId, $requestBody->ws);
+        $superAdminDAO->setWorkspaceRightsByUser($userId, $requestBody->ws);
 
         return $response;
     });
 
 
-    $app->put('', function(Request $request, Response $response) use ($dbConnection) {
+    $app->put('', function(Request $request, Response $response) use ($superAdminDAO) {
 
         $requestBody = JSON::decode($request->getBody());
         if (!isset($requestBody->p) or !isset($requestBody->n)) {
             throw new HttpBadRequestException($request, "Username or Password missing");
         }
 
-        $dbConnection->addUser($requestBody->n, $requestBody->p);
+        $superAdminDAO->addUser($requestBody->n, $requestBody->p);
 
         return $response->withStatus(201);
     });
 
 
-    $app->patch('/{user_id}/password', function(Request $request, Response $response) use ($dbConnection) {
+    $app->patch('/{user_id}/password', function(Request $request, Response $response) use ($superAdminDAO) {
 
         $requestBody = JSON::decode($request->getBody());
         $userId = $request->getAttribute('user_id');
@@ -55,7 +55,7 @@ $app->group('/user', function(App $app) {
             throw new HttpBadRequestException($request, "Password missing");
         }
 
-        $dbConnection->setPassword($userId, $requestBody->p);
+        $superAdminDAO->setPassword($userId, $requestBody->p);
 
         return $response;
     });

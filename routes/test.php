@@ -8,23 +8,21 @@ use Slim\Http\Response;
 
 $app->group('/test', function(App $app) {
 
-    $dbConnectionTC = new DBConnectionTC();
+    $testDAO = new TestDAO();
 
-    $app->get('/{test_id}', function(Request $request, Response $response) use ($dbConnectionTC) {
+    $app->get('/{test_id}', function(Request $request, Response $response) use ($testDAO) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $personToken = $authToken->getToken();
         $testId = $request->getAttribute('test_id');
 
-        $bookletName = $dbConnectionTC->getBookletName($testId);
-        $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
-        $workspaceController = new WorkspaceController($workspaceId);
+        $bookletName = $testDAO->getBookletName($testId);
+        $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
         $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
 
         $test = [
-            'laststate' => $dbConnectionTC->getTestLastState($testId),
-            'locked' => $dbConnectionTC->isTestLocked($testId),
+            'laststate' => $testDAO->getTestLastState($testId),
+            'locked' => $testDAO->isTestLocked($testId),
             'xml' => $bookletFile->xmlfile->asXML()
         ];
 
@@ -32,21 +30,19 @@ $app->group('/test', function(App $app) {
     });
 
 
-    $app->get('/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($dbConnectionTC) {
+    $app->get('/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($testDAO) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $personToken = $authToken->getToken();
         $unitName = $request->getAttribute('unit_name');
         $testId = $request->getAttribute('test_id');
 
-        $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
-        $workspaceController = new WorkspaceController($workspaceId);
+        $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
         $unitFile = $workspaceController->getXMLFileByName('Unit', $unitName);
 
         $unit = [
-            'laststate' => $dbConnectionTC->getUnitLastState($testId, $unitName),
-            'restorepoint' => $dbConnectionTC->getRestorePoint($testId, $unitName),
+            'laststate' => $testDAO->getUnitLastState($testId, $unitName),
+            'restorepoint' => $testDAO->getRestorePoint($testId, $unitName),
             'xml' => $unitFile->xmlfile->asXML()
         ];
 
@@ -54,17 +50,15 @@ $app->group('/test', function(App $app) {
     });
 
 
-    $app->get('/resource/{resource_name}', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->get('/{test_id}/resource/{resource_name}', function (Request $request, Response $response) use ($testDAO) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $personToken = $authToken->getToken();
 
         $resourceName = $request->getAttribute('resource_name');
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
-        $workspaceId = $dbConnectionTC->getWorkspaceId($personToken);
-        $workspaceController = new WorkspaceController($workspaceId);
+        $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
         $resourceFile = $workspaceController->getResourceFileByName($resourceName, $skipSubVersions);
 
         $response->getBody()->write($resourceFile->getContent());
@@ -73,7 +67,7 @@ $app->group('/test', function(App $app) {
     });
 
 
-    $app->put('/{test_id}/unit/{unit_name}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/unit/{unit_name}/review', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -90,14 +84,14 @@ $app->group('/test', function(App $app) {
             ? $review['priority']
             : 0;
 
-        $dbConnectionTC->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry']);
+        $testDAO->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry']);
 
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
-    $app->put('/{test_id}/review', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/review', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
 
@@ -111,14 +105,14 @@ $app->group('/test', function(App $app) {
             ? $review['priority']
             : 0;
 
-        $dbConnectionTC->addTestReview($testId, $priority, $review['categories'], $review['entry']);
+        $testDAO->addTestReview($testId, $priority, $review['categories'], $review['entry']);
 
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
-    $app->put('/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -129,14 +123,14 @@ $app->group('/test', function(App $app) {
             'responseType' => 'unknown'
         ]);
 
-        $dbConnectionTC->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
+        $testDAO->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
 
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
-    $app->patch('/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->patch('/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -148,14 +142,14 @@ $app->group('/test', function(App $app) {
 
         // TODO check if unit exists in this booklet
 
-        $dbConnectionTC->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
+        $testDAO->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
 
         return $response->withStatus(200);
     })
         ->add(new IsTestWritable());
 
 
-    $app->patch('/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->patch('/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -165,14 +159,14 @@ $app->group('/test', function(App $app) {
             'value' => null
         ]);
 
-        $dbConnectionTC->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
+        $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
         return $response->withStatus(200);
     })
         ->add(new IsTestWritable());
 
 
-    $app->patch('/{test_id}/state', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->patch('/{test_id}/state', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
 
@@ -181,14 +175,14 @@ $app->group('/test', function(App $app) {
             'value' => null
         ]);
 
-        $dbConnectionTC->updateTestLastState($testId, $body['key'], $body['value']);
+        $testDAO->updateTestLastState($testId, $body['key'], $body['value']);
 
         return $response->withStatus(200);
     })
         ->add(new IsTestWritable());
 
 
-    $app->put('/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -200,14 +194,14 @@ $app->group('/test', function(App $app) {
 
         // TODO check if unit exists in this booklet
 
-        $dbConnectionTC->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
+        $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
-    $app->put('/{test_id}/log', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->put('/{test_id}/log', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
 
@@ -216,18 +210,18 @@ $app->group('/test', function(App $app) {
             'timestamp' => null // was t
         ]);
 
-        $dbConnectionTC->addBookletLog($testId, $body['entry'], $body['timestamp']);
+        $testDAO->addBookletLog($testId, $body['entry'], $body['timestamp']);
 
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
-    $app->post('/{test_id}/lock', function (Request $request, Response $response) use ($dbConnectionTC) {
+    $app->post('/{test_id}/lock', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
 
-        $dbConnectionTC->lockBooklet($testId);
+        $testDAO->lockBooklet($testId);
 
         return $response->withStatus(200);
     })
@@ -255,26 +249,27 @@ $app->put('/test', function(Request $request, Response $response) {
         'bookletName' => null // was: b
     ]);
 
-    $dbConnectionStart = new DBConnectionStart();
+    $testDAO = new TestDAO();
+    $sessionDAO = new SessionDAO();
 
     /* TODO instead work with personToken and delete from here ... */
-    $loginId = $dbConnectionStart->getLoginId($loginToken);
+    $loginId = $sessionDAO->getLoginId($loginToken);
 
     if ($loginId == null) {
         throw new HttpForbiddenException($request);
     }
 
-    $person = $dbConnectionStart->getOrCreatePerson($loginId, $body['code']);
+    $person = $sessionDAO->getOrCreatePerson($loginId, $body['code']);
     /* ... to here ... */
 
-    $person = $dbConnectionStart->getPerson($person['token']);
+    $person = $sessionDAO->getPerson($person['token']);
 
     if ($person == null) {
         throw new HttpForbiddenException($request);
     }
 
 
-    $test = $dbConnectionStart->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
+    $test = $testDAO->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
 
     if ($test['locked'] == '1') {
         throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);

@@ -27,16 +27,16 @@ class RequireLoginToken {
         $loginToken = $authToken->l;
         $personToken = $authToken->p ?? '';
 
-        $dbConnection = new DBConnectionStart();
+        $sessionDAO = new SessionDAO();
 
         if ($personToken) {
 
-            $dbConnection->getPersonId($personToken);
-            $authToken = new PersonAuthToken($personToken);
+            $person = $sessionDAO->getPerson($personToken);
+            $authToken = new PersonAuthToken($personToken, $person['workspace_id'], $person['id'], $person['login_id']);
 
         } else {
 
-            $dbConnection->getLoginId($loginToken);
+            $sessionDAO->getLoginId($loginToken);
             $authToken = new LoginAuthToken($loginToken);
         }
 

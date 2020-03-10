@@ -3,7 +3,21 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class DBConnectionAdmin extends DBConnection {
+class AdminDAO extends DAO {
+
+
+    private function refreshAdminToken(string $token): void {
+
+        $this->_(
+            'UPDATE admintokens 
+            SET valid_until =:value
+            WHERE id =:token',
+            array(
+                ':value' => date('Y-m-d H:i:s', time() + $this->idleTime),
+                ':token'=> $token
+            )
+        );
+    }
 
 
 	public function login($username, $password): string {

@@ -14,8 +14,8 @@ $app->get('/', function(/** @noinspection PhpUnusedParameterInspection */ Reques
 
 $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
-    $workspaces = $dbConnectionSuperAdmin->getWorkspaces();
+    $superAdminDAO = new SuperAdminDAO();
+    $workspaces = $superAdminDAO->getWorkspaces();
     return $response->withJson($workspaces);
 })
     ->add(new IsSuperAdmin())
@@ -24,7 +24,7 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
 
 $app->delete('/workspaces', function (Request $request, Response $response) {
 
-    $dbConnection = new DBConnectionSuperAdmin();
+    $superAdminDAO = new SuperAdminDAO();
     $bodyData = JSON::decode($request->getBody());
     $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
 
@@ -32,7 +32,7 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
         throw new HttpBadRequestException($request);
     }
 
-    $dbConnection->deleteWorkspaces($workspaceList);
+    $superAdminDAO->deleteWorkspaces($workspaceList);
 
     return $response;
 })
@@ -42,9 +42,9 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
 
 $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
+    $superAdminDAO = new SuperAdminDAO();
 
-    return $response->withJson($dbConnectionSuperAdmin->getUsers());
+    return $response->withJson($superAdminDAO->getUsers());
 })
     ->add(new IsSuperAdmin())
     ->add(new RequireAdminToken());
@@ -52,11 +52,11 @@ $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ R
 
 $app->delete('/users', function(Request $request, Response $response) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
+    $superAdminDAO = new SuperAdminDAO();
     $bodyData = JSON::decode($request->getBody());
     $userList = isset($bodyData->u) ? $bodyData->u : [];
 
-    $dbConnectionSuperAdmin->deleteUsers($userList);
+    $superAdminDAO->deleteUsers($userList);
 
     return $response;
 })

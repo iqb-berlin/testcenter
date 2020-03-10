@@ -108,7 +108,8 @@ class WorkspaceInitializer {
 
         $timestamp = microtime(true) * 1000;
 
-        $dbc = new DBConnectionStart();
+        $sessionDAO = new SessionDAO();
+        $testDAO = new TestDAO();
         $testSession = new TestSession(
             [
                 'sessionId' => 1,
@@ -116,19 +117,19 @@ class WorkspaceInitializer {
                 'mode' => 'run-hot-return',
             ]
         );
-        $loginToken = $dbc->getOrCreateLoginToken($testSession);
-        $loginId = $dbc->getLoginId($loginToken);
-        $person = $dbc->getOrCreatePerson($loginId, $loginCode);
-        $bookletDbIdAndPersonToken = $dbc->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
+        $loginToken = $sessionDAO->getOrCreateLoginToken($testSession);
+        $loginId = $sessionDAO->getLoginId($loginToken);
+        $person = $sessionDAO->getOrCreatePerson($loginId, $loginCode);
+        $bookletDbIdAndPersonToken = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
         $bookletDbId = $bookletDbIdAndPersonToken['bookletDbId'];
 
-        $dbc = new DBConnectionTC();
-        $dbc->addTestReview($bookletDbId, 1, "", "sample booklet review");
-        $dbc->addUnitReview($bookletDbId, "UNIT.SAMPLE", 1, "", "this is a sample unit review");
-        $dbc->addUnitLog($bookletDbId, 'UNIT.SAMPLE', "sample unit log", $timestamp);
-        $dbc->addBookletLog($bookletDbId, "sample log entry", $timestamp);
-        $dbc->addResponse($bookletDbId, 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
-        $dbc->updateUnitLastState($bookletDbId, "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
+        $sessionDAO = new TestDAO();
+        $sessionDAO->addTestReview($bookletDbId, 1, "", "sample booklet review");
+        $sessionDAO->addUnitReview($bookletDbId, "UNIT.SAMPLE", 1, "", "this is a sample unit review");
+        $sessionDAO->addUnitLog($bookletDbId, 'UNIT.SAMPLE', "sample unit log", $timestamp);
+        $sessionDAO->addBookletLog($bookletDbId, "sample log entry", $timestamp);
+        $sessionDAO->addResponse($bookletDbId, 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
+        $sessionDAO->updateUnitLastState($bookletDbId, "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
     }
 
     /**

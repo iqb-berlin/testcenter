@@ -37,13 +37,13 @@ class IsWorkspacePermitted {
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
-        $dbConnectionAdmin = new DBConnectionAdmin();
+        $adminDAO = new AdminDAO();
 
-        if (!$dbConnectionAdmin->hasAdminAccessToWorkspace($authToken->getToken(), $params['ws_id'])) {
+        if (!$adminDAO->hasAdminAccessToWorkspace($authToken->getToken(), $params['ws_id'])) {
             throw new HttpForbiddenException($request,"Access to workspace ws_{$params['ws_id']} is not provided.");
         }
 
-        $userRoleOnWorkspace = $role = $dbConnectionAdmin->getWorkspaceRole($authToken->getToken(), $params['ws_id']);
+        $userRoleOnWorkspace = $role = $adminDAO->getWorkspaceRole($authToken->getToken(), $params['ws_id']);
 
         if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Role::withChildren($userRoleOnWorkspace)))) {
             throw new HttpForbiddenException($request,"Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");

@@ -3,7 +3,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class DBConnectionSuperAdmin extends DBConnection {
+class SuperAdminDAO extends DAO {
 
 
     public function getWorkspaces(): array {
@@ -268,5 +268,19 @@ class DBConnectionSuperAdmin extends DBConnection {
             }
         }
     }
+
+
+    public function getWorkspaceName($workspaceId): string {
+
+        $data = $this->_(
+            'SELECT workspaces.name 
+            FROM workspaces
+            WHERE workspaces.id=:workspace_id',
+            array(':workspace_id' => $workspaceId)
+        );
+
+        return $data['name'];
+    }
+
 
 }

@@ -25,9 +25,9 @@ class RequireAdminToken {
             throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: at missing');
         }
 
-        $dbConnectionAdmin = new DBConnectionAdmin();
+        $adminDAO = new AdminDAO();
 
-        $tokenInfo = $dbConnectionAdmin->validateToken($adminToken);
+        $tokenInfo = $adminDAO->validateToken($adminToken);
 
         $authToken = new AdminAuthToken($adminToken, $tokenInfo['user_is_superadmin']);
         $request = $request->withAttribute('AuthToken', $authToken);

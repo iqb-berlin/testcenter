@@ -13,9 +13,9 @@ use Slim\Http\Response;
  */
 $app->group('/booklet', function(App $app) {
 
-    $dbConnectionStart = new DBConnectionStart();
+    $sessionDAO = new SessionDAO();
 
-    $app->get('/{booklet_name}/state', function (Request $request, Response $response) use ($dbConnectionStart) {
+    $app->get('/{booklet_name}/state', function (Request $request, Response $response) use ($sessionDAO) {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -26,30 +26,37 @@ $app->group('/booklet', function(App $app) {
 
             $code = $request->getParam('code', '');
 
-            $loginId = $dbConnectionStart->getLoginId($authToken->getToken());
+            $loginId = $sessionDAO->getLoginId($authToken->getToken());
 
             if ($loginId == null) {
                 throw new HttpForbiddenException($request);
             }
-            $person = $dbConnectionStart->getOrCreatePerson($loginId, $code);
+            $person = $sessionDAO->getOrCreatePerson($loginId, $code);
 
             $personToken = $person['token'];
+            $personFull = $sessionDAO->getPerson($personToken);
+            $workspaceId = $personFull['workspace_id'];
+
+        } else {
+
+            /* @var $authToken PersonAuthToken */
+            $workspaceId = $authToken->getWorkspaceId();
 
         }
         /* ... to here ... */
 
         $bookletName = $request->getAttribute('booklet_name');
 
-        if (!$dbConnectionStart->personHasBooklet($personToken, $bookletName)) {
+        if (!$sessionDAO->personHasBooklet($personToken, $bookletName)) {
 
             throw new HttpForbiddenException($request, "Booklet `$bookletName` is not allowed for $personToken");
         }
 
-        $bookletStatus = $dbConnectionStart->getBookletStatus($personToken, $bookletName);
+        $bookletStatus = $sessionDAO->getBookletStatus($personToken, $bookletName);
 
         if (!$bookletStatus['running']) {
 
-            $workspaceController = new WorkspaceController($dbConnectionStart->getWorkspaceId($personToken));
+            $workspaceController = new WorkspaceController($workspaceId);
             $bookletStatus['label'] = $workspaceController->getBookletName($bookletName);
         }
 

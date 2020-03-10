@@ -9,21 +9,21 @@ use Slim\Exception\HttpException;
 
 $app->post('/login/admin', function(Request $request, Response $response) use ($app) { // TODO rename to put session admin
 
-    $dbConnection = new DBConnectionAdmin();
+    $adminDAO = new AdminDAO();
 
     $requestBody = JSON::decode($request->getBody()); // TODO call them name and password
 
     if (isset($requestBody->n) and isset($requestBody->p)) {
-        $token = $dbConnection->login($requestBody->n, $requestBody->p);
+        $token = $adminDAO->login($requestBody->n, $requestBody->p);
     } else if (isset($requestBody->at)) {
         $token = $requestBody->at;
     } else {
         throw new HttpBadRequestException($request, "Authentication credentials missing.");
     }
 
-    $tokenInfo = $dbConnection->validateToken($token);
+    $tokenInfo = $adminDAO->validateToken($token);
 
-    $workspaces = $dbConnection->getWorkspaces($token);
+    $workspaces = $adminDAO->getWorkspaces($token);
 
     if ((count($workspaces) == 0) and !$tokenInfo['user_is_superadmin']) {
         throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 202);
@@ -45,7 +45,7 @@ $app->put('/session/group', function(Request $request, Response $response) use (
         "password" => ''
     ]);
 
-    $myDBConnection = new DBConnectionStart();
+    $sessionDAO = new SessionDAO();
 
     if (!$body['name']) {
 
@@ -71,10 +71,10 @@ $app->put('/session/group', function(Request $request, Response $response) use (
     }
 
     $testSession = new TestSession($availableBookletsForLogin);
-    $loginToken = $myDBConnection->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
+    $loginToken = $sessionDAO->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
 
     $testSession->loginToken = $loginToken;
-    $testSession->workspaceName = $myDBConnection->getWorkspaceName($availableBookletsForLogin['workspaceId']);
+    $testSession->workspaceName = $sessionDAO->getWorkspaceName($availableBookletsForLogin['workspaceId']);
 
     /**
      * STAND:
@@ -107,19 +107,19 @@ $app->put('/session/person', function(Request $request, Response $response) use 
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
 
-    $dbConnectionStart = new DBConnectionStart();
+    $sessionDAO = new SessionDAO();
 
     $body = RequestBodyParser::getElements($request, [
         'code' => 0
     ]);
 
-    $loginId = $dbConnectionStart->getLoginId($authToken->getToken());
+    $loginId = $sessionDAO->getLoginId($authToken->getToken());
 
     if ($loginId == null) {
         throw new HttpForbiddenException($request);
     }
 
-    $person = $dbConnectionStart->getOrCreatePerson($loginId, $body['code']);
+    $person = $sessionDAO->getOrCreatePerson($loginId, $body['code']);
 
     return $response->withJson($person);
 
@@ -131,11 +131,11 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
 
-    $myDBConnection = new DBConnectionStart();
+    $sessionDAO = new SessionDAO();
 
     if ($authToken::type == "login") {
 
-        $session = $myDBConnection->getSessionByLoginToken($authToken->getToken());
+        $session = $sessionDAO->getSessionByLoginToken($authToken->getToken());
         if (count($session->booklets) > 0 ) {
             return $response->withJson($session);
         }
@@ -143,7 +143,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     if ($authToken::type == "person") {
 
-        $session = $myDBConnection->getSessionByPersonToken($authToken->getToken());
+        $session = $sessionDAO->getSessionByPersonToken($authToken->getToken());
         if (count($session->booklets) > 0 ) {
             return $response->withJson($session);
         }

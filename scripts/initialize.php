@@ -21,7 +21,14 @@
 
  */
 
-include('index.php');
+
+if (php_sapi_name() !== 'cli') {
+
+    header('HTTP/1.0 403 Forbidden');
+    echo "This is only for usage from command line.";
+    exit(1);
+}
+
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 require_once(realpath(dirname(__FILE__)) . '/../autoload.php');
 
@@ -64,7 +71,7 @@ try  {
     $initializer = new WorkspaceInitializer();
 
     try {
-        $DBConnectionInit = new DBConnectionInit();
+        $initDAO = new InitDAO();
     } catch (Throwable $t) {
         $retries = 5;
         $error = true;
@@ -80,15 +87,15 @@ try  {
         }
     }
 
-    if ($DBConnectionInit->addSuperuser($args['user_name'], $args['user_password'])) {
+    if ($initDAO->addSuperuser($args['user_name'], $args['user_password'])) {
         echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.\n";
     }
 
     if (isset($args['workspace'])) {
 
-        $workspaceId = $DBConnectionInit->getWorkspace($args['workspace']);
+        $workspaceId = $initDAO->getWorkspace($args['workspace']);
 
-        $DBConnectionInit->grantRights($args['user_name'], $workspaceId);
+        $initDAO->grantRights($args['user_name'], $workspaceId);
 
         $loginCodes = $initializer->getLoginCodes();
         $args['test_person_codes'] = implode(" ", $loginCodes);

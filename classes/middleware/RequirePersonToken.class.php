@@ -26,10 +26,10 @@ class RequirePersonToken {
 
         $personToken = $authToken->p;
 
-        $dbConnection = new DBConnectionStart();
-        $dbConnection->getPersonId($personToken);
+        $sessionDAO = new SessionDAO();
+        $person = $sessionDAO->getPerson($personToken);
 
-        $authToken = new PersonAuthToken($personToken);
+        $authToken = new PersonAuthToken($personToken, $person['workspace_id'], $person['id'], $person['login_id']);
         $request = $request->withAttribute('AuthToken', $authToken);
 
         return $next($request, $response);

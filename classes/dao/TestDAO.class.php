@@ -3,25 +3,72 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class DBConnectionTC extends DBConnection {
+class TestDAO extends DAO {
+
+
+    public function getBookletName(int $testId): string { // TODO add unit test.
+
+        $booklet = $this->_(
+            'SELECT booklets.name FROM booklets
+            WHERE booklets.id=:bookletId',
+            array(':bookletId' => $testId)
+        );
+
+        if ($booklet === null) {
+            throw new HttpError("No test with id `{$testId}` found in db.", 404);
+        }
+
+        return $booklet['name'];
+    }
 
 
     // TODO unit test
-    public function canWriteTestData(string $personToken, string $testId): bool {
+    public function getOrCreateTest(string $personId, string $bookletName, string $bookletLabel) {
 
         $test = $this->_(
-            'SELECT booklets.locked FROM booklets
-                INNER JOIN persons ON persons.id = booklets.person_id
-                WHERE persons.token=:token and booklets.id=:testId',
+            'SELECT booklets.locked, booklets.id, booklets.laststate, booklets.label FROM booklets
+            WHERE booklets.person_id=:personId and booklets.name=:bookletname',
             [
-                ':token' => $personToken,
-                ':testId' => $testId
+                ':personId' => $personId,
+                ':bookletname' => $bookletName
             ]
         );
 
-        // TODO check for mode?!
+        if ($test !== null) {
 
-        return $test and ($test['locked'] != '1');
+            if ($test['locked'] != '1') {
+
+                $this->_( // TODO is this necessary?
+                    'UPDATE booklets SET label = :label WHERE id = :id',
+                    [
+                        ':label' => $bookletLabel,
+                        ':id' => $test['id']
+                    ]
+                );
+
+            }
+
+            return $test;
+
+        }
+
+        $this->_(
+            'INSERT INTO booklets (person_id, name, label) VALUES(:person_id, :name, :label)',
+            [
+                ':person_id' => $personId,
+                ':name' => $bookletName,
+                ':label' => $bookletLabel
+            ]
+        );
+
+        return [
+            'id' => $this->pdoDBhandle->lastInsertId(),
+            'label' => $bookletLabel,
+            'name' => $bookletName,
+            'person_id' => $personId,
+            'locked' => '0',
+            'lastState' => ''
+        ];
     }
 
 
@@ -129,6 +176,7 @@ class DBConnectionTC extends DBConnection {
                 ':testId' => $testId
             ]
         );
+        // TODO Exception if not found
         return JSON::decode($unitData['laststate']);
     }
 
@@ -250,20 +298,21 @@ class DBConnectionTC extends DBConnection {
 
 
     // TODO unit test
-    public function addUnitLog($testId, $unitName, $logEntry, $timestamp) { // TODO manchmal wird die subquery 0 ?!
+    public function addUnitLog(int $testId, string $unitName, string $logEntry, int $timestamp): void { // TODO manchmal wird die subquery 0 ?!
+
+        $unitId = $this->getOrCreateUnitId($testId, $unitName);
 
         $this->_(
             'INSERT INTO unitlogs (unit_id, logentry, timestamp) 
             VALUES(
-                (SELECT id FROM units WHERE name=:unitName AND booklet_id=:testId),
+                :unitId,
                 :logentry, 
-                :timestamp
+                :ts
             )',
             [
-                ':testId' => $testId,
-                ':unitName' => $unitName,
+                ':unitId' => $unitId,
                 ':logentry' => $logEntry,
-                ':timestamp' => $timestamp
+                ':ts' => $timestamp
             ]
         );
     }
@@ -280,5 +329,6 @@ class DBConnectionTC extends DBConnection {
             ]
         );
     }
+
 
 }

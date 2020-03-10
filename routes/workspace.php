@@ -10,10 +10,9 @@ use Slim\Http\Response;
 
 $app->group('/workspace', function(App $app) {
 
-    $dbConnectionAdmin = new DBConnectionAdmin();
+    $adminDAO = new AdminDAO();
 
-
-    $app->get('/{ws_id}/reviews', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/reviews', function(Request $request, Response $response) use ($adminDAO) {
 
         $groups = explode(",", $request->getParam('groups'));
         $workspaceId = $request->getAttribute('ws_id');
@@ -22,43 +21,43 @@ $app->group('/workspace', function(App $app) {
             throw new HttpBadRequestException($request, "Parameter groups is missing");
         }
 
-        $reviews = $dbConnectionAdmin->getReviews($workspaceId, $groups);
+        $reviews = $adminDAO->getReviews($workspaceId, $groups);
 
         return $response->withJson($reviews);
 
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->get('/{ws_id}/results', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/results', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
-        $results = $dbConnectionAdmin->getAssembledResults($workspaceId);
+        $results = $adminDAO->getAssembledResults($workspaceId);
 
         return $response->withJson($results);
 
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->get('/{ws_id}/responses', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/responses', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
-        $results = $dbConnectionAdmin->getResponses($workspaceId, $groups);
+        $results = $adminDAO->getResponses($workspaceId, $groups);
 
         return $response->withJson($results);
 
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->delete('/{ws_id}/responses', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->delete('/{ws_id}/responses', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
 
         foreach ($groups as $group) {
-            $dbConnectionAdmin->deleteResultData($workspaceId, $group);
+            $adminDAO->deleteResultData($workspaceId, $group);
         }
 
         return $response;
@@ -66,35 +65,35 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $workspaceController = new WorkspaceController($workspaceId);
 
-        return $response->withJson($workspaceController->getTestStatusOverview($dbConnectionAdmin->getBookletsStarted($workspaceId)));
+        return $response->withJson($workspaceController->getTestStatusOverview($adminDAO->getBookletsStarted($workspaceId)));
 
     })->add(new IsWorkspacePermitted('MO'));
 
 
-    $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
-        $results = $dbConnectionAdmin->getLogs($workspaceId, $groups);
+        $results = $adminDAO->getLogs($workspaceId, $groups);
 
         return $response->withJson($results);
 
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->get('/{ws_id}/booklets/started', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/booklets/started', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
         $bookletsStarted = array();
-        foreach($dbConnectionAdmin->getBookletsStarted($workspaceId) as $booklet) {
+        foreach($adminDAO->getBookletsStarted($workspaceId) as $booklet) {
             if (in_array($booklet['groupname'], $groups)) {
                 if ($booklet['locked'] == '1') {
                     $booklet['locked'] = true;
@@ -110,7 +109,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('MO'));
 
 
-    $app->get('/{ws_id}/validation', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/validation', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
@@ -122,7 +121,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->get('/{ws_id}/file/{type}/{filename}', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/file/{type}/{filename}', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
         $fileType = $request->getAttribute('type', '[type missing]');
@@ -186,13 +185,13 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->post('/{ws_id}/unlock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->post('/{ws_id}/unlock', function(Request $request, Response $response) use ($adminDAO) {
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = $request->getAttribute('ws_id');
 
         foreach($groups as $groupName) {
-            $dbConnectionAdmin->changeBookletLockStatus($workspaceId, $groupName, false);
+            $adminDAO->changeBookletLockStatus($workspaceId, $groupName, false);
         }
 
         return $response;
@@ -200,13 +199,13 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->post('/{ws_id}/lock', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->post('/{ws_id}/lock', function(Request $request, Response $response) use ($adminDAO) {
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = $request->getAttribute('ws_id');
 
         foreach($groups as $groupName) {
-            $dbConnectionAdmin->changeBookletLockStatus($workspaceId, $groupName, true);
+            $adminDAO->changeBookletLockStatus($workspaceId, $groupName, true);
         }
 
         return $response;
@@ -214,7 +213,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->get('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($adminDAO) {
 
         $checkIds = explode(',', $request->getParam('checkIds', ''));
         $delimiter = $request->getParam('delimiter', ';');
@@ -243,7 +242,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->get('/{ws_id}/syscheck-reports/overview', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->get('/{ws_id}/syscheck-reports/overview', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
@@ -255,7 +254,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->delete('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($dbConnectionAdmin) {
+    $app->delete('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $checkIds = RequestBodyParser::getElementWithDefault($request,'checkIds', []);
@@ -272,21 +271,21 @@ $app->group('/workspace', function(App $app) {
 
 $app->group('/workspace', function(App $app) {
 
-    $dbConnectionSuperAdmin = new DBConnectionSuperAdmin();
+    $superAdminDAO = new SuperAdminDAO();
 
-    $app->put('', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
+    $app->put('', function (Request $request, Response $response) use ($superAdminDAO) {
 
         $requestBody = JSON::decode($request->getBody());
         if (!isset($requestBody->name)) {
             throw new HttpBadRequestException($request, "New workspace name missing");
         }
 
-        $dbConnectionSuperAdmin->addWorkspace($requestBody->name);
+        $superAdminDAO->addWorkspace($requestBody->name);
 
         return $response->withStatus(201);
     });
 
-    $app->patch('/{ws_id}', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
+    $app->patch('/{ws_id}', function (Request $request, Response $response) use ($superAdminDAO) {
 
         $requestBody = JSON::decode($request->getBody());
         $workspaceId = $request->getAttribute('ws_id');
@@ -295,12 +294,12 @@ $app->group('/workspace', function(App $app) {
             throw new HttpBadRequestException($request, "New name (name) is missing");
         }
 
-        $dbConnectionSuperAdmin->setWorkspaceName($workspaceId, $requestBody->name);
+        $superAdminDAO->setWorkspaceName($workspaceId, $requestBody->name);
 
         return $response;
     });
 
-    $app->patch('/{ws_id}/users', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
+    $app->patch('/{ws_id}/users', function (Request $request, Response $response) use ($superAdminDAO) {
 
         $requestBody = JSON::decode($request->getBody());
         $workspaceId = $request->getAttribute('ws_id');
@@ -309,16 +308,16 @@ $app->group('/workspace', function(App $app) {
             throw new HttpBadRequestException($request, "User-list (u) is missing");
         }
 
-        $dbConnectionSuperAdmin->setUserRightsForWorkspace($workspaceId, $requestBody->u);
+        $superAdminDAO->setUserRightsForWorkspace($workspaceId, $requestBody->u);
 
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8');
     });
 
-    $app->get('/{ws_id}/users', function (Request $request, Response $response) use ($dbConnectionSuperAdmin) {
+    $app->get('/{ws_id}/users', function (Request $request, Response $response) use ($superAdminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
-        return $response->withJson($dbConnectionSuperAdmin->getUsersByWorkspace($workspaceId));
+        return $response->withJson($superAdminDAO->getUsersByWorkspace($workspaceId));
     });
 
 })
