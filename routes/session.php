@@ -7,38 +7,51 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Exception\HttpException;
 
-$app->post('/login/admin', function(Request $request, Response $response) use ($app) { // TODO rename to put session admin
+/**
+ * STAND:
+ * # case B und C
+ * # login/group and login/person Auseinanderziehung vorbereiten
+ * # fall ordner ohne teststaker subfolder abfangen (muss net error)
+ * # falsche credentials
+ * # custom texts in [GET] session ?!
+ * # DB connection login fn überarbeiten
+ * # passwortloeses login
+ * # neue modes
+
+ * # groupToken guter Name?
+ * # implement personmtoken auth
+ * # db klasse durchgehen
+ * # repair put bug
+ *
+ * admin login nachziehen
+ * # ordnen wo welche DB klasse
+
+ */
+
+$app->put('/session/admin', function(Request $request, Response $response) use ($app) { // TODO rename to put session admin
 
     $adminDAO = new AdminDAO();
 
-    $requestBody = JSON::decode($request->getBody()); // TODO call them name and password
+    $body = RequestBodyParser::getElements($request, [
+        "name" => null,
+        "password" => null
+    ]);
 
-    if (isset($requestBody->n) and isset($requestBody->p)) {
-        $token = $adminDAO->login($requestBody->n, $requestBody->p);
-    } else if (isset($requestBody->at)) {
-        $token = $requestBody->at;
-    } else {
-        throw new HttpBadRequestException($request, "Authentication credentials missing.");
-    }
-
+    $token = $adminDAO->createAdminToken($body['name'], $body['password']);
     $tokenInfo = $adminDAO->validateToken($token);
-
     $workspaces = $adminDAO->getWorkspaces($token);
 
-    if ((count($workspaces) == 0) and !$tokenInfo['user_is_superadmin']) {
+    if ((count($workspaces) == 0) and !$tokenInfo['isSuperadmin']) {
         throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 202);
     }
 
-    return $response->withJson([
-        'admintoken' => $token,
-        'user_id' => $tokenInfo['user_id'],
-        'name' => $tokenInfo['user_name'],
-        'workspaces' => $workspaces,
-        'is_superadmin' => $tokenInfo['user_is_superadmin']
-    ]);
+    $session = new AdminSession($tokenInfo);
+    $session->workspaces = $workspaces;
+
+    return $response->withJson($session);
 });
 
-$app->put('/session/group', function(Request $request, Response $response) use ($app) {
+$app->put('/session/login', function(Request $request, Response $response) use ($app) {
 
     $body = RequestBodyParser::getElements($request, [
         "name" => null,
@@ -75,28 +88,6 @@ $app->put('/session/group', function(Request $request, Response $response) use (
 
     $testSession->loginToken = $loginToken;
     $testSession->workspaceName = $sessionDAO->getWorkspaceName($availableBookletsForLogin['workspaceId']);
-
-    /**
-     * STAND:
-     * # case B und C
-     * # login/group and login/person Auseinanderziehung vorbereiten
-     * # fall ordner ohne teststaker subfolder abfangen (muss net error)
-     * # falsche credentials
-     * # custom texts in [GET] session ?!
-     * # DB connection login fn überarbeiten
-     * # passwortloeses login
-     * # neue modes
-
-     * # groupToken guter Name?
-     * # implement personmtoken auth
-     * # db klasse durchgehen
-     * # repair put bug
-     *
-     * admin login nachziehen
-     * ordnen wo welche DB klasse
-
-     */
-
 
     return $response->withJson($testSession);
 
@@ -149,8 +140,15 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
         }
     }
 
+    if ($authToken::type == "admin") {
+
+        echo "!!!!!!!!!!!!!!!!!!";
+    }
+
     // TODO add type admin !
 
     throw new HttpUnauthorizedException($request);
 
-})->add(new RequireLoginToken());
+})
+    ->add(new RequireAdminToken())
+    ->add(new RequireLoginToken());

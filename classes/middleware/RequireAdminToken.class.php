@@ -29,7 +29,7 @@ class RequireAdminToken {
 
         $tokenInfo = $adminDAO->validateToken($adminToken);
 
-        $authToken = new AdminAuthToken($adminToken, $tokenInfo['user_is_superadmin']);
+        $authToken = new AdminAuthToken($adminToken, $tokenInfo['isSuperadmin']);
         $request = $request->withAttribute('AuthToken', $authToken);
 
         return $next($request, $response);

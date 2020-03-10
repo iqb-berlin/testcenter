@@ -28,28 +28,28 @@ class AdminDAOTest extends TestCase {
 
     function test_login() {
 
-        $token = $this->dbc->login('super', 'user123');
+        $token = $this->dbc->createAdminToken('super', 'user123');
         $this->assertNotNull($token);
 
         $this->expectException("HttpError");
-        $this->dbc->login('peter', 'lustig');
+        $this->dbc->createAdminToken('peter', 'lustig');
     }
 
 
     function test_validateToken() {
 
-        $token = $this->dbc->login('super', 'user123');
+        $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->validateToken($token);
-        $this->assertEquals($result['user_id'], '1');
-        $this->assertEquals($result['user_name'], 'super');
-        $this->assertEquals($result['user_is_superadmin'], '1');
+        $this->assertEquals($result['userId'], '1');
+        $this->assertEquals($result['userName'], 'super');
+        $this->assertEquals($result['isSuperadmin'], '1');
         $this->assertEquals(isset($result['valid_until']), true);
     }
 
 
     function test_getWorkspaces() {
 
-        $token = $this->dbc->login('super', 'user123');
+        $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->getWorkspaces($token);
         $expect = array(
             array(
@@ -60,7 +60,7 @@ class AdminDAOTest extends TestCase {
         );
         $this->assertEquals($result, $expect);
 
-        $token = $this->dbc->login('i_exist_but_am_not_allowed_anything', 'user123');
+        $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
         $result = $this->dbc->getWorkspaces($token);
         $this->assertEquals($result, array());
     }
@@ -68,11 +68,11 @@ class AdminDAOTest extends TestCase {
 
     function test_hasAdminAccessToWorkspace() {
 
-        $token = $this->dbc->login('super', 'user123');
+        $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
         $this->assertEquals($result, true);
 
-        $token = $this->dbc->login('i_exist_but_am_not_allowed_anything', 'user123');
+        $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
         $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
         $this->assertEquals($result, false);
     }
@@ -80,11 +80,11 @@ class AdminDAOTest extends TestCase {
 
     function test_getWorkspaceRole() {
 
-        $token = $this->dbc->login('super', 'user123');
+        $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->getWorkspaceRole($token, 1);
         $this->assertEquals($result, "RW");
 
-        $token = $this->dbc->login('i_exist_but_am_not_allowed_anything', 'user123');
+        $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
         $result = $this->dbc->getWorkspaceRole($token, 1);
         $this->assertEquals($result, "");
     }

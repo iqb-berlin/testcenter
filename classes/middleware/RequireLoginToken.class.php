@@ -8,9 +8,15 @@ use Slim\Http\Response;
 
 class RequireLoginToken {
 
+
     function __invoke(Request $request, Response $response, $next) {
 
         if ($request->isOptions()) {
+            return $next($request, $response);
+        }
+
+        $tokenFromOtherMiddleWare = $request->getAttribute('AuthToken');
+        if ($tokenFromOtherMiddleWare and (is_a($tokenFromOtherMiddleWare, 'AuthToken'))) {
             return $next($request, $response);
         }
 

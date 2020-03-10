@@ -20,7 +20,7 @@ class AdminDAO extends DAO {
     }
 
 
-	public function login($username, $password): string {
+	public function createAdminToken($username, $password): string {
 
 		if ((strlen($username) == 0) or (strlen($username) > 50)) {
 			throw new Exception("Invalid Username `$username`");
@@ -107,11 +107,12 @@ class AdminDAO extends DAO {
 
 		$tokenInfo = $this->_(
 			'SELECT 
-                users.id as user_id,
-                users.name  as user_name,
-                users.email as user_email,
-                users.is_superadmin as user_is_superadmin,
-                admintokens.valid_until
+                users.id as userId,
+                users.name  as userName,
+                users.email as userEmail,
+                users.is_superadmin as isSuperadmin,
+                admintokens.valid_until,
+                admintokens.id as adminToken
             FROM users
 			INNER JOIN admintokens ON users.id = admintokens.user_id
 			WHERE admintokens.id=:token',
@@ -130,6 +131,10 @@ class AdminDAO extends DAO {
         }
 
         $this->refreshAdminToken($token); // TODO separation of concerns
+
+        unset($tokenInfo['valid_until']);
+
+        $tokenInfo['userEmail'] = $tokenInfo['userEmail'] ?? '';
 
         return $tokenInfo;
 	}
