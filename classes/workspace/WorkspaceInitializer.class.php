@@ -110,26 +110,26 @@ class WorkspaceInitializer {
 
         $sessionDAO = new SessionDAO();
         $testDAO = new TestDAO();
+
         $testSession = new TestSession(
             [
-                'sessionId' => 1,
                 'groupName' => 'sample_group',
                 'mode' => 'run-hot-return',
+                'workspaceId' => 1,
+                'name' => 'sample_user',
+                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']]
             ]
         );
         $loginToken = $sessionDAO->getOrCreateLoginToken($testSession);
         $loginId = $sessionDAO->getLoginId($loginToken);
         $person = $sessionDAO->getOrCreatePerson($loginId, $loginCode);
-        $bookletDbIdAndPersonToken = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
-        $bookletDbId = $bookletDbIdAndPersonToken['bookletDbId'];
-
-        $sessionDAO = new TestDAO();
-        $sessionDAO->addTestReview($bookletDbId, 1, "", "sample booklet review");
-        $sessionDAO->addUnitReview($bookletDbId, "UNIT.SAMPLE", 1, "", "this is a sample unit review");
-        $sessionDAO->addUnitLog($bookletDbId, 'UNIT.SAMPLE', "sample unit log", $timestamp);
-        $sessionDAO->addBookletLog($bookletDbId, "sample log entry", $timestamp);
-        $sessionDAO->addResponse($bookletDbId, 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
-        $sessionDAO->updateUnitLastState($bookletDbId, "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
+        $test = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
+        $testDAO->addTestReview($test['id'], 1, "", "sample booklet review");
+        $testDAO->addUnitReview($test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
+        $testDAO->addUnitLog($test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
+        $testDAO->addBookletLog($test['id'], "sample log entry", $timestamp);
+        $testDAO->addResponse($test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
+        $testDAO->updateUnitLastState($test['id'], "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
     }
 
     /**
