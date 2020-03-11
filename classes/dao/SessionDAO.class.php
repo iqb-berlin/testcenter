@@ -13,7 +13,7 @@ class SessionDAO extends DAO {
         $oldLogin = $this->_(
             'SELECT logins.id, logins.token FROM logins
 			WHERE logins.name = :name AND logins.workspace_id = :ws', [
-                ':name' => $session->loginName,
+                ':name' => $session->name,
                 ':ws' => $session->workspaceId
             ]
         );
@@ -28,7 +28,7 @@ class SessionDAO extends DAO {
                     ':token' => $loginToken,
                     ':sd' => json_encode($session->booklets),
                     ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTimeTestSession),
-                    ':name' => $session->loginName,
+                    ':name' => $session->name,
                     ':mode' => $session->mode,
                     ':ws' => $session->workspaceId,
                     ':groupname' => $session->groupName
@@ -61,12 +61,11 @@ class SessionDAO extends DAO {
 
         $logindata = $this->_(
             'SELECT 
-                logins.booklet_def, #
-                logins.workspace_id as workspaceId, #
-                logins.mode, #
-                logins.groupname as groupName, #
-                logins.id as loginId, 
-                logins.name as loginName, #
+                logins.booklet_def,
+                logins.workspace_id as workspaceId,
+                logins.mode,
+                logins.groupname as groupName,
+                logins.name as name,
                 workspaces.name as workspaceName 
             FROM logins
                 INNER JOIN workspaces ON workspaces.id = logins.workspace_id
@@ -95,7 +94,7 @@ class SessionDAO extends DAO {
                logins.mode,
                logins.groupname as groupName,
                logins.token    as loginToken,
-               logins.name     as loginName,
+               logins.name     as name,
                workspaces.name as workspaceName,
                booklets.id     as testId,
                booklets.label  as bookletLabel,

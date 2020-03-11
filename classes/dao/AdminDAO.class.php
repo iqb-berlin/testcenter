@@ -6,6 +6,14 @@
 class AdminDAO extends DAO {
 
 
+    public function getAdminSession(string $adminToken): AdminSession {
+
+        $tokenInfo = $this->validateToken($adminToken);
+        $tokenInfo->workspaces = $this->getWorkspaces($adminToken);
+        return new AdminSession($tokenInfo);
+    }
+
+
     private function refreshAdminToken(string $token): void {
 
         $this->_(
@@ -20,7 +28,7 @@ class AdminDAO extends DAO {
     }
 
 
-	public function createAdminToken($username, $password): string {
+	public function createAdminToken(string $username, string $password): string {
 
 		if ((strlen($username) == 0) or (strlen($username) > 50)) {
 			throw new Exception("Invalid Username `$username`");
@@ -108,7 +116,7 @@ class AdminDAO extends DAO {
 		$tokenInfo = $this->_(
 			'SELECT 
                 users.id as userId,
-                users.name  as userName,
+                users.name  as name,
                 users.email as userEmail,
                 users.is_superadmin as isSuperadmin,
                 admintokens.valid_until,

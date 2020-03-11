@@ -63,4 +63,4 @@ $app->group('/booklet', function(App $app) {
         return $response->withJson($bookletStatus);
     });
 })
-    ->add(new RequireLoginToken());
+    ->add(new RequireAnyToken());

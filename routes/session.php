@@ -9,23 +9,8 @@ use Slim\Exception\HttpException;
 
 /**
  * STAND:
- * # case B und C
- * # login/group and login/person Auseinanderziehung vorbereiten
- * # fall ordner ohne teststaker subfolder abfangen (muss net error)
- * # falsche credentials
- * # custom texts in [GET] session ?!
- * # DB connection login fn überarbeiten
- * # passwortloeses login
- * # neue modes
-
- * # groupToken guter Name?
- * # implement personmtoken auth
- * # db klasse durchgehen
- * # repair put bug
- *
- * admin login nachziehen
- * # ordnen wo welche DB klasse
-
+ * unit test reparieren
+ * e2e tests...
  */
 
 $app->put('/session/admin', function(Request $request, Response $response) use ($app) { // TODO rename to put session admin
@@ -38,15 +23,12 @@ $app->put('/session/admin', function(Request $request, Response $response) use (
     ]);
 
     $token = $adminDAO->createAdminToken($body['name'], $body['password']);
-    $tokenInfo = $adminDAO->validateToken($token);
-    $workspaces = $adminDAO->getWorkspaces($token);
 
-    if ((count($workspaces) == 0) and !$tokenInfo['isSuperadmin']) {
+    $session = $adminDAO->getAdminSession($token);
+
+    if ((count($session->workspaces) == 0) and !$session->isSuperadmin) {
         throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 202);
     }
-
-    $session = new AdminSession($tokenInfo);
-    $session->workspaces = $workspaces;
 
     return $response->withJson($session);
 });
@@ -142,7 +124,9 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     if ($authToken::type == "admin") {
 
-        echo "!!!!!!!!!!!!!!!!!!";
+        $adminDAO = new AdminDAO();
+        $session = $adminDAO->getAdminSession($authToken->getToken());
+        return $response->withJson($session);
     }
 
     // TODO add type admin !
@@ -150,5 +134,4 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
     throw new HttpUnauthorizedException($request);
 
 })
-    ->add(new RequireAdminToken())
-    ->add(new RequireLoginToken());
+    ->add(new RequireAnyToken());

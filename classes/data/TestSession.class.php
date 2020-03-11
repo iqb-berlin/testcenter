@@ -17,7 +17,7 @@ class TestSession extends AbstractDataCollection {
     // construction time
     public $workspaceId = null;
     public $groupName = null;
-    public $loginName = null;
+    public $name = null;
     public $mode = null;
     public $booklets = null;
 
