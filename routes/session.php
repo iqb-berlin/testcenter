@@ -94,7 +94,11 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $person = $sessionDAO->getOrCreatePerson($loginId, $body['code']);
 
-    return $response->withJson($person);
+    return $response->withJson([
+        'personId' => $person['id'],
+        'personToken' => $person['token'],
+        'code' => $person['code']
+    ]);
 
 })->add(new RequireLoginToken());
 

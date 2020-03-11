@@ -32,26 +32,25 @@ components:
           description: authtoken für test module - login
           example: person00000000.test0000000
       required:
-        - p
         - l
 
 
     login_request:
       type: object
       properties:
-        n:
+        name:
           type: string
           description: Username
           example: super
-        p:
+        password:
           type: string
           description: Password
           example: user123
 
-    login_response:
+    admin_session:
       type: object
       properties:
-        admintoken:
+        adminToken:
           type: string
           description: "Token for session authentication"
         name:
@@ -63,12 +62,86 @@ components:
           description: "List of workspaces wich are open to this user"
           items:
             $ref: '#/components/schemas/workspace'
-        is_superadmin:
+        isSuperadmin:
           type: boolean
           description: "Flag that tells, if this user is a superadmin"
           example: true
 
+    login_session:
+      type: object
+      properties:
+        workspaceId:
+          type: number
+          description: this session belongs to workspace with this Id
+          example: 1
+        groupName:
+          type: string
+          description: name of loginGroup to this belongs to
+          example: "sample_group"
+        name:
+          type: string
+          description: name of the login
+          example: "sample_login"
+        mode:
+          type: string
+          description: |-
+            mode of the current login-group
+            currently known modes are
+             * run-hot-return - hot run of testLet, can save answers etc.,
+                session gets stored and can be revoked
+             * run-hot-restart - hot run of testLet, can save answers etc.,
+                every session starts all tests again and have unique Tokens
+             * run-review - run a review round of testLet, reviewes can be saved, but no answers
+                At the moment we distinguish between hot, trial and review in the GUI and there are no real
+                checks for the mode in this backend, except for the difference between `run-hot-return` and
+                `run-hot-restart`.
+             * run-trial - run a trial round
+             * monitor-study - TBA
+             * monitor-login - TBA
+          example: "run-hot-return"
+        booklets:
+          type: object
+          description: An object containing information of login codes and available booklets for this group.
+          example:
+            xxx:
+              - BOOKLET.SAMPLE
+            yyy:
+              - BOOKLET.SAMPLE
+        customTexts:
+          type: object
+          description: An Object containing customtext-strings for the UI as key-value-pairs
+          example:
+            somestr: string
 
+        loginToken:
+          type: string
+          description: the token for this session (available after two-factor-authorization part I)
+          example: "login00000000.test0000000"
+
+        workspaceName:
+          type: string
+          description: name of the current workspace
+          example: "example workspace"
+
+        personToken:
+          type: string
+          description: the token for this person (available after two-factor-authorization part II)
+          example: "person00000000.test0000000"
+
+        code:
+          type: string
+          description: login-code this person (available after two-factor-authorization part II)
+          example: "person00000000.test0000000"
+
+        testId:
+          type: number
+          description: number of currently running test, 0 if none
+          example: 0
+
+        bookletLabel:
+          type: string
+          description: label of booklet of currently running test if any
+          example: ""
 
     workspace:
       type: object

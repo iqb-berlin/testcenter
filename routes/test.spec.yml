@@ -65,7 +65,7 @@ paths:
         - in: path
           name: unit_name
           description: unit-name (not alias!) as defined in booklet
-          example: ''
+          example: 'UNIT.SAMPLE'
           required: true
           schema:
             type: string
@@ -85,7 +85,7 @@ paths:
         "500":
           description: Server Error
 
-  /resource/{resource_name}:
+  /test/{test_id}/resource/{resource_name}:
     get:
       summary: get resource by name
       description: retrieves a resource-file by its name (filename without extension)
@@ -99,9 +99,16 @@ paths:
             l: user000000000.test0000000
             p: 0000000000000.00000000000
         - in: path
+          name: test_id
+          description: id of a executed test
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: path
           name: resource_name
           description: resource_name (filename without XML-extension)
-          example: 1
+          example: SAMPLE_PLAYER.HTML
           required: true
           schema:
             type: string
@@ -118,6 +125,11 @@ paths:
         "500":
           description: Server Error
 
+  # stand, alle, die Schreibrechte brauchen gehen nicht, weil die test-session mit einem anderen token erstellt wurde
+  # als die e2e-test haben
+  # - wie kann man das lösen? nur die e2e-session verwenden?
+  # - testdaten per SQL und dann token fix bennenen
+  # - ?
   /test/{test_id}/unit/{unit_name}/review:
     put:
       summary: add review to unit
@@ -155,10 +167,10 @@ paths:
                   type: integer
                 entry:
                   description: text of the review entry
-                  type: text
+                  type: string
                 categories:
                   description: whitespace separated list of categories
-                  type: text
+                  type: string
               required:
                 - entry
             example:
@@ -205,10 +217,10 @@ paths:
                   type: integer
                 entry:
                   description: text of the review entry
-                  type: text
+                  type: string
                 categories:
                   description: whitespace separated list of categories
-                  type: text
+                  type: string
               required:
                 - entry
             example:
@@ -267,7 +279,7 @@ paths:
                   type: integer
                 responseType:
                   description: TODO what is this?
-                  type: text
+                  type: string
               required:
                 - response
                 - timestamp

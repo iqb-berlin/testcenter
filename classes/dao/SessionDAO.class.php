@@ -270,7 +270,7 @@ class SessionDAO extends DAO {
     // TODO unit test
     public function getPerson(string $personToken): array {
 
-        return $this->_(
+        $person = $this->_(
             'SELECT 
                 *
             FROM logins
@@ -280,7 +280,14 @@ class SessionDAO extends DAO {
                 ':token' => $personToken
             ]
         );
+
+        if ($person == null) {
+            throw new HttpError("Invalid Person token: `$personToken`", 403);
+        }
+
         // TODO check valid_until
+
+        return $person;
     }
 
     public function getWorkspaceName($workspaceId): string {

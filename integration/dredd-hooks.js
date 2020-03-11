@@ -3,7 +3,11 @@ const fs = require('fs');
 const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
 
-const stash = {};
+const stash = {
+    adminToken: '',
+    loginToken: '',
+    personToken: ''
+};
 
 const skipAfterFirstFail = true; // change this to debug
 let skipTheRest = false;
@@ -11,10 +15,25 @@ let skipTheRest = false;
 
 const changeAuthToken = (transaction, newAuthTokenData) => {
 
+    let authToken = {};
+
     if (typeof transaction.request.headers['AuthToken'] !== "undefined") {
-        newAuthTokenData.ws = transaction.request.headers['AuthToken'].ws; // for depricated endpoints
-        transaction.request.headers['AuthToken'] = JSON.stringify(newAuthTokenData);
+        authToken = transaction.request.headers['AuthToken'];
     }
+
+    if (typeof authToken['at'] !== "undefined") {
+        authToken['at'] = newAuthTokenData.adminToken;
+    }
+
+    if (typeof authToken['p'] !== "undefined") {
+        authToken['p'] = newAuthTokenData.personToken;
+    }
+
+    if (typeof authToken['l'] !== "undefined") {
+        authToken['l'] = newAuthTokenData.loginToken;
+    }
+
+    transaction.request.headers['AuthToken'] = JSON.stringify(authToken);
 };
 
 dreddHooks.beforeEachValidation(function(transaction) {
@@ -38,13 +57,17 @@ dreddHooks.beforeEach(function(transaction, done) {
         case '200':
         case '201':
         case '207':
-            changeAuthToken(transaction,{at: stash.authToken});
+            changeAuthToken(transaction, stash);
             break;
         case '401':
             changeAuthToken(transaction,{});
             break;
         case '403':
-            changeAuthToken(transaction,{at: '__invalid_token__'});
+            changeAuthToken(transaction,{
+                adminToken: '__invalid_token__',
+                loginToken: '__invalid_token__',
+                personToken: '__invalid_token__'
+            });
             break;
         default:
             transaction.skip = true;
@@ -73,12 +96,20 @@ dreddHooks.afterEach(function(transaction, done) {
         skipTheRest = true;
     }
 
-    // store login credentials if we come from any login endpoint
+    // store login credentials if we come from any endpoint providing some
     try {
         const responseBody = JSON.parse(transaction.real.body);
-        if (typeof responseBody.admintoken !== "undefined") {
-            stash.authToken = JSON.parse(transaction.real.body).admintoken;
-            dreddHooks.log("stashing auth token:" + stash.authToken);
+        if (typeof responseBody.adminToken !== "undefined") {
+            stash.adminToken = JSON.parse(transaction.real.body).adminToken;
+            dreddHooks.log("stashing AdminAuthToken:" + stash.adminToken);
+        }
+        if (typeof responseBody.personToken !== "undefined") {
+            stash.personToken = JSON.parse(transaction.real.body).personToken;
+            dreddHooks.log("stashing PersonAuthToken:" + stash.personToken);
+        }
+        if (typeof responseBody.loginToken !== "undefined") {
+            stash.loginToken = JSON.parse(transaction.real.body).loginToken;
+            dreddHooks.log("stashing LoginAuthToken:" + stash.loginToken);
         }
     } catch (e) {
         // do nothing, this is most likely not a JSON request
@@ -87,22 +118,8 @@ dreddHooks.afterEach(function(transaction, done) {
     done();
 });
 
-dreddHooks.before('/php/getFile.php > get file > 200', function(transaction, done) {
 
-    const atParameterRegex = /at=[\w\\.]+/gm;
-    dreddHooks.log("replacing auth token:" + stash.authToken);
-    transaction.fullPath = transaction.fullPath.replace(atParameterRegex, 'at=' + stash.authToken);
-    transaction.expected.body = fs.readFileSync('../vo_data/ws_1/Unit/SAMPLE_UNIT.XML', 'utf-8').toString();
-    done();
-});
-
-dreddHooks.before('/php/getFile.php > get file > 200 > application/octet-stream', function(transaction, done) {
-
-    transaction.skip = true;
-    done();
-});
-
-const attachUnitFile = async function(transaction, done) {
+dreddHooks.before(async function(transaction, done) {
 
     const form = new Multipart();
 
@@ -111,7 +128,4 @@ const attachUnitFile = async function(transaction, done) {
     transaction.request.body = await streamToString(form.stream());
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
     done();
-};
-
-dreddHooks.before('/php/uploadFile.php > upload file > 200 > application/json', attachUnitFile);
-dreddHooks.before('/workspace/{ws_id}/file > upload file > 200 > application/json', attachUnitFile);
+});

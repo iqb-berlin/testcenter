@@ -15,6 +15,8 @@
  * --test_login_name=(login for the sample test booklet)
  * --test_login_password=(login for the sample test booklet)
  *
+ * you may add, otherwise they will be random person codes
+ * --test_person_codes=one,two,three
  *
  * Note: run this script as a user who can create files which can be read by the webserver or change file rights after wards
  * for example: sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
@@ -37,7 +39,8 @@ $args = getopt("", [
     'user_password:',
     'workspace:',
     'test_login_name:',
-    'test_login_password:'
+    'test_login_password:',
+    'test_person_codes::'
 ]);
 
 try  {
@@ -91,14 +94,19 @@ try  {
         echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.\n";
     }
 
+    if (!isset($args['test_person_codes']) or !$args['test_person_codes']) {
+        $loginCodes = $initializer->getLoginCodes();
+    } else {
+        $loginCodes = explode(',', $args['test_person_codes']);
+    }
+
+    $args['test_person_codes'] = implode(" ", $loginCodes);
+
     if (isset($args['workspace'])) {
 
         $workspaceId = $initDAO->getWorkspace($args['workspace']);
 
         $initDAO->grantRights($args['user_name'], $workspaceId);
-
-        $loginCodes = $initializer->getLoginCodes();
-        $args['test_person_codes'] = implode(" ", $loginCodes);
 
         $initializer->importSampleData($workspaceId, $args);
         echo "Sample data parameters: \n";

@@ -5,9 +5,10 @@ info:
   version: "2.0.0"
 
 paths:
-  /login:
-    post:
-      summary: Login
+  /session/admin:
+    put:
+      summary: Start Admin Session
+      description: Starts a Session as Admin by Username and password
 
       requestBody:
         content:
@@ -21,17 +22,76 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/login_response'
+                $ref: './components.spec.yml#/components/schemas/admin_session'
               example:
-                admintoken: user000000000.0000000000
+                adminToken: user000000000.0000000000
                 name: super
                 workspaces:
                   - id: '1'
                     name: example_workspace
                     role: RW
-                is_superadmin: true
+                isSuperadmin: true
+                userEmail: ''
         "202":
           description: User has account but neither workspace nor super-admin privilige
+        "400":
+          description: Insufficent Crendetials
+        "500":
+          description: Server Error
+
+  /session/login:
+    put:
+      summary: Start Login Session
+      description: Starts a Session as Login by Username and password
+        This is Part I of the Two-Factor Authentication. Get a token for a login, defined in a `Testtakers.xml`-file,
+        together with some session information like running tests etc.
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/login_request'
+            example:
+              name: test
+              password: user123
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/login_session'
+        "400":
+          description: Insufficent Crendetials
+        "500":
+          description: Server Error
+
+  /session/person:
+    put:
+      summary: Start Person Session
+      description: Starts a Session for a Person, on the basis of LoginToken (!)
+        which is Part II of the Two-Factor Authentication. Get a token for a person belonging to a login, as defined in
+        a `Testtakers.xml`-file, together with some information about this person
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              example:
+                personId: '2'
+                personToken: a5e690e51b931a3.29393583
+                code: '0'
         "400":
           description: Insufficent Crendetials
         "500":

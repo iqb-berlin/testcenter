@@ -144,6 +144,7 @@ gulp.task('init_backend', done => {
             `--workspace=example_workspace`,
             `--test_login_name=test`,
             `--test_login_password=user123`,
+            `--test_person_codes=xxx,yyy`
         ]
     );
     done(exitCode);
