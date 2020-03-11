@@ -109,27 +109,22 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
     if ($authToken::type == "login") {
 
         $session = $sessionDAO->getSessionByLoginToken($authToken->getToken());
-        if (count($session->booklets) > 0 ) {
-            return $response->withJson($session);
-        }
+        return $response->withJson($session);
     }
 
     if ($authToken::type == "person") {
 
         $session = $sessionDAO->getSessionByPersonToken($authToken->getToken());
-        if (count($session->booklets) > 0 ) {
-            return $response->withJson($session);
-        }
-    }
-
-    if ($authToken::type == "admin") {
-
-        $adminDAO = new AdminDAO();
-        $session = $adminDAO->getAdminSession($authToken->getToken());
         return $response->withJson($session);
     }
 
-    // TODO add type admin !
+    $adminDAO = new AdminDAO();
+
+    if ($authToken::type == "admin") {
+
+        $session = $adminDAO->getAdminSession($authToken->getToken());
+        return $response->withJson($session);
+    }
 
     throw new HttpUnauthorizedException($request);
 
