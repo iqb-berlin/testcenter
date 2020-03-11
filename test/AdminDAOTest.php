@@ -40,7 +40,7 @@ class AdminDAOTest extends TestCase {
     function test_validateToken() {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
-        $result = $this->dbc->validateToken($token);
+        $result = $this->dbc->getAdmin($token);
         $this->assertEquals($result['userId'], '1');
         $this->assertEquals($result['name'], 'super');
         $this->assertEquals($result['isSuperadmin'], '1');

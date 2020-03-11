@@ -8,9 +8,9 @@ class AdminDAO extends DAO {
 
     public function getAdminSession(string $adminToken): AdminSession {
 
-        $tokenInfo = $this->validateToken($adminToken);
-        $tokenInfo->workspaces = $this->getWorkspaces($adminToken);
-        return new AdminSession($tokenInfo);
+        $admin = $this->getAdmin($adminToken);
+        $admin['workspaces'] = $this->getWorkspaces($adminToken);
+        return new AdminSession($admin);
     }
 
 
@@ -111,7 +111,7 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function validateToken(string $token): array {
+	public function getAdmin(string $token): array {
 
 		$tokenInfo = $this->_(
 			'SELECT 

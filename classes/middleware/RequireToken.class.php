@@ -32,7 +32,7 @@ abstract class RequireToken {
         $authToken = JSON::decode($request->getHeaderLine('AuthToken'));
 
         if (!isset($authToken->$tokenName) or strlen($authToken->$tokenName) == 0) {
-            throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: `$tokenName` missing');
+            throw new HttpUnauthorizedException($request, "Auth Header not sufficient: `$tokenName` missing");
         }
 
         return $authToken->$tokenName;

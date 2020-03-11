@@ -13,7 +13,7 @@ class RequireAdminToken extends RequireToken {
 
         $adminDAO = new AdminDAO();
 
-        $tokenInfo = $adminDAO->validateToken($tokenString);
+        $tokenInfo = $adminDAO->getAdmin($tokenString);
 
         return new AdminAuthToken($tokenString, $tokenInfo['isSuperadmin']);
     }
