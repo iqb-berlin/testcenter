@@ -7,6 +7,7 @@ require_once "classes/workspace/WorkspaceInitializer.class.php";
 require_once "classes/workspace/WorkspaceController.class.php";
 require_once "classes/files/XMLFile.php";
 require_once "classes/helper/FileSize.class.php";
+require_once "classes/helper/Folder.class.php";
 require_once "classes/files/ResourceFile.class.php";
 require_once "classes/files/XMLFileTesttakers.php";
 
@@ -203,12 +204,12 @@ class WorkspaceControllerTest extends TestCase {
         $this->assertEquals(2, $result[0]['bookletsPrepared']);
         $this->assertEquals(2, $result[0]['bookletsStarted']);
         $this->assertEquals(1, $result[0]['bookletsLocked']);
-        $this->assertEquals('fake_group', $result[1]['groupname']);
-        $this->assertEquals(0, $result[1]['loginsPrepared']);
-        $this->assertEquals(0, $result[1]['personsPrepared']);
-        $this->assertEquals(0, $result[1]['bookletsPrepared']);
-        $this->assertEquals(1, $result[1]['bookletsStarted']);
-        $this->assertEquals(1, $result[0]['bookletsLocked']);
+        $this->assertEquals('fake_group', $result[2]['groupname']);
+        $this->assertEquals(0, $result[2]['loginsPrepared']);
+        $this->assertEquals(0, $result[2]['personsPrepared']);
+        $this->assertEquals(0, $result[2]['bookletsPrepared']);
+        $this->assertEquals(1, $result[2]['bookletsStarted']);
+        $this->assertEquals(1, $result[2]['bookletsLocked']);
 
     }
 

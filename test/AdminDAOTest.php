@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 require_once "classes/exception/HttpError.class.php";
+require_once "classes/data/AbstractDataCollection.class.php";
 require_once "classes/data/DBConfig.class.php";
 require_once "classes/dao/DAO.class.php";
 require_once "classes/dao/AdminDAO.class.php";
@@ -43,7 +44,6 @@ class AdminDAOTest extends TestCase {
         $this->assertEquals($result['userId'], '1');
         $this->assertEquals($result['name'], 'super');
         $this->assertEquals($result['isSuperadmin'], '1');
-        $this->assertEquals(isset($result['valid_until']), true);
     }
 
 
