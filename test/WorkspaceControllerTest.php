@@ -22,6 +22,7 @@ class WorkspaceControllerTest extends TestCase {
 
         ini_set('max_execution_time', 3);
         define('ROOT_DIR', vfsStream::url('root'));
+        define('DATA_DIR', vfsStream::url('root/vo_data'));
     }
 
     function setUp() {

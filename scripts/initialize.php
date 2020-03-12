@@ -32,7 +32,9 @@ if (php_sapi_name() !== 'cli') {
 }
 
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
-require_once(realpath(dirname(__FILE__)) . '/../autoload.php');
+define('CONFIG_DIR', ROOT_DIR . '/config');
+
+require_once(ROOT_DIR . '/autoload.php');
 
 $args = getopt("", [
     'user_name:',
@@ -61,7 +63,7 @@ try  {
         throw new Exception("Password must have at least 7 characters!");
     }
 
-    $config_file_path = ROOT_DIR . '/config/DBConnectionData.json';
+    $config_file_path = CONFIG_DIR . '/DBConnectionData.json';
 
     if (!file_exists($config_file_path)) {
         throw new Exception("DB-config file is missing!");
@@ -109,10 +111,11 @@ try  {
         $initDAO->grantRights($args['user_name'], $workspaceId);
 
         $initializer->importSampleData($workspaceId, $args);
-        echo "Sample data parameters: \n";
-        echo implode("\n", array_map(function($param_key) use ($args) {return "$param_key: {$args[$param_key]}";}, array_keys($args)));
 
         $initializer->createSampleLoginsReviewsLogs($loginCodes[0]);
+
+        echo "Sample data parameters: \n";
+        echo implode("\n", array_map(function($param_key) use ($args) {return "$param_key: {$args[$param_key]}";}, array_keys($args)));
     }
 
 } catch (Exception $e) {

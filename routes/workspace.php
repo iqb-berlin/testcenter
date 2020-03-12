@@ -127,7 +127,7 @@ $app->group('/workspace', function(App $app) {
         $fileType = $request->getAttribute('type', '[type missing]');
         $filename = $request->getAttribute('filename', '[filename missing]');
 
-        $fullFilename = ROOT_DIR . "/vo_data/ws_$workspaceId/$fileType/$filename";
+        $fullFilename = DATA_DIR . "/ws_$workspaceId/$fileType/$filename";
         if (!file_exists($fullFilename)) {
             throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
         }

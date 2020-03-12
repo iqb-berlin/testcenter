@@ -14,6 +14,7 @@ class InitDAO extends SuperAdminDAO {
      * @param $userpassword  - password for the super user to create
      * @return bool - true if user was created, false if not (but no error occurred)
      * @throws Exception - if error occurs during connection
+     * // TODO use $this->_
      */
     public function addSuperuser(string $username, string $userpassword): bool {
 
@@ -75,6 +76,7 @@ class InitDAO extends SuperAdminDAO {
      * grants RW rights to a given workspace( by id) to a user
      * @param $userName
      * @param $workspaceId
+     * @throws Exception
      */
     public function grantRights(string $userName, int $workspaceId) {
 

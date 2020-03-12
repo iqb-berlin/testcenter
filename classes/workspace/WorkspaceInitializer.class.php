@@ -40,8 +40,7 @@ class WorkspaceInitializer {
      */
     private function _importSampleFile(int $workspaceId, string $filename, array $vars = [], string $destination = null) {
 
-        $path = ROOT_DIR;
-        $importFileName = "$path/sampledata/$filename";
+        $importFileName = ROOT_DIR . "/sampledata/$filename";
         $sampleFileContent = file_get_contents($importFileName);
 
         if (!$sampleFileContent) {
@@ -53,7 +52,7 @@ class WorkspaceInitializer {
         }
 
         $destinationSubDir = $destination ? $destination : basename($filename, '.xml');
-        $fileNameToWrite = $this->_createSubdirectories("$path/vo_data/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
+        $fileNameToWrite = $this->_createSubdirectories(DATA_DIR . "/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
 
         if (!file_put_contents($fileNameToWrite, $sampleFileContent)) {
             throw new Exception("Could not write file: $fileNameToWrite");
@@ -131,28 +130,4 @@ class WorkspaceInitializer {
         $testDAO->addResponse($test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
         $testDAO->updateUnitLastState($test['id'], "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
     }
-
-    /**
-     * sets all files and subdirectories of datadir to 777. this is needed by the Dredd test for example.
-     */
-    public function openPermissionsOnDataDir() {
-
-        $path = realpath(dirname(__FILE__) . "/../vo_data");
-        $this->_openPermissionsOnDir($path);
-    }
-
-    /**
-     * @param $path
-     */
-    private function _openPermissionsOnDir(string $path) {
-
-        $dir = new DirectoryIterator($path);
-        foreach ($dir as $item) {
-            chmod($item->getPathname(), 0777);
-            if ($item->isDir() && !$item->isDot()) {
-                $this->_openPermissionsOnDir($item->getPathname());
-            }
-        }
-    }
-
 }

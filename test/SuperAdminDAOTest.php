@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 require_once "classes/exception/HttpError.class.php";
 require_once "classes/data/DBConfig.class.php";
+require_once "classes/helper/DB.class.php";
 require_once "classes/dao/DAO.class.php";
 require_once "classes/dao/SuperAdminDAO.class.php";
 
@@ -16,7 +17,8 @@ class SuperAdminDAOTest extends TestCase {
 
     function setUp() {
 
-        $this->dbc = new SuperAdminDAO(new DBConfig(array("type" => "temp")));
+        DB::connect(new DBConfig(["type" => "temp"]));
+        $this->dbc = new SuperAdminDAO();
         $this->dbc->runFile('scripts/sql-schema/sqlite.sql'); // TODO split database schema and test data
     }
 

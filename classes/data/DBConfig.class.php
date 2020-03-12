@@ -1,30 +1,14 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-// TODO unit test
 
 class DBConfig extends AbstractDataCollection {
 
     public $host = "localhost";
     public $port = "3306";
-    public $dbname = "tba";
-    public $user = "user";
-    public $password = "pw";
+    public $dbname = "";
+    public $user = "";
+    public $password = "";
     public $salt = "t";
-    public $type = "mysql";
-
-
-    static function fromFile(?string $path = null): DBConfig {
-
-        $configFileName = !$path ? ROOT_DIR . '/config/DBConnectionData.json' : $path;
-
-        if (!file_exists($configFileName)) {
-            throw new Exception("DB config file not found: `$configFileName`");
-        }
-
-        $connectionData = JSON::decode(file_get_contents($configFileName));
-
-        return new DBConfig($connectionData);
-    }
-
+    public $type = null;
 }

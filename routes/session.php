@@ -47,10 +47,9 @@ $app->put('/session/login', function(Request $request, Response $response) use (
         throw new HttpBadRequestException($request, "Authentication credentials missing.");
     }
 
-    $dataDirPath = ROOT_DIR . '/' . WorkspaceController::dataDirName;
     $availableBookletsForLogin = [];
 
-    foreach (Folder::glob($dataDirPath, 'ws_*') as $workspaceDir) {
+    foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
 
         $workspaceId = array_pop(explode('_', $workspaceDir));
         $workspaceController = new WorkspaceController((int)$workspaceId);

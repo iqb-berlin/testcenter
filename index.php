@@ -10,7 +10,16 @@ try {
     require_once "vendor/autoload.php";
     require_once "autoload.php";
 
-    session_start(); // TODO remove
+    if (isset($_SERVER['HTTP_TESTMODE'])) {
+
+        include_once 'initVirtualEnvironment.php';
+
+    } else {
+
+        define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
+        define('CONFIG_DIR', ROOT_DIR . '/config');
+        DB::connect();
+    }
 
     $container = new Container();
     $container['errorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
@@ -29,7 +38,6 @@ try {
 
     include_once 'routes/test.php';
     include_once 'routes/booklet.php';
-
 
     $app->run();
 

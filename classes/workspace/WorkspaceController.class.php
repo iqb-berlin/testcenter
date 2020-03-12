@@ -8,14 +8,13 @@ class WorkspaceController {
     protected $_workspacePath = '';
     protected $_dataPath = '';
 
-    const dataDirName = 'vo_data';
     const subFolders = ['Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource'];
 
     function __construct(int $workspaceId) {
 
         $this->_workspaceId = $workspaceId;
 
-        $this->_dataPath = ROOT_DIR . '/' . WorkspaceController::dataDirName;
+        $this->_dataPath = DATA_DIR;
 
         $this->_workspacePath = $this->_getOrCreateWorkspacePath();
     }

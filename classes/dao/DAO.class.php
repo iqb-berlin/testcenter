@@ -7,25 +7,13 @@ class DAO {
     protected $idleTime = 60 * 30;
     protected $passwordSalt = 't';
 
-    public function __construct(?DBConfig $connectionData = null) {
+    public function __construct() {
 
-        if (!$connectionData) {
-            $connectionData = DBConfig::fromFile();
-        }
-
-        if ($connectionData->type === 'mysql') {
-            $this->pdoDBhandle = new PDO("mysql:host=" . $connectionData->host . ";port=" . $connectionData->port . ";dbname=" . $connectionData->dbname, $connectionData->user, $connectionData->password);
-        } elseif ($connectionData->type === 'pgsql') {
-            $this->pdoDBhandle = new PDO("pgsql:host=" . $connectionData->host . ";port=" . $connectionData->port . ";dbname=" . $connectionData->dbname . ";user=" . $connectionData->user . ";password=" . $connectionData->password);
-        } elseif ($connectionData->type === 'temp') {
-            $this->pdoDBhandle = new PDO('sqlite::memory:');
-        } else {
-            throw new Exception("DB type `{$connectionData->type}` not supported");
-        }
-
-        $this->passwordSalt = $connectionData->salt;
+        $this->pdoDBhandle = DB::getConnection();
 
         $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $this->passwordSalt = DB::getConfig()->salt;
 
         date_default_timezone_set('Europe/Berlin'); // TODO store timestamps instead of formatted dates in db
     }

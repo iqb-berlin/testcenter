@@ -61,7 +61,7 @@ sudo --user=www-data php scripts/initialize.php --user_name=super --user_passwor
 
 ## API tests
 
-Tests the In/Output of all Endpoints againt the API Specification.
+Tests the In/Output of all Endpoints against the API Specification.
 
 ```
  npm --prefix=integration run dredd_test

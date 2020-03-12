@@ -29,10 +29,14 @@ class SuperAdminDAO extends DAO {
     // name, id, email, is_superadmin
     public function getUserByName(string $userName): array {
 
-        return $this->_(
+        $user = $this->_(
             'SELECT users.name, users.id, users.email, users.is_superadmin FROM users WHERE users.name=:user_name',
             [':user_name' => $userName]
         );
+        if ($user == null) {
+            throw new Exception("User `$userName` does not exist");
+        }
+        return $user;
     }
 
     // id, name, selected, role

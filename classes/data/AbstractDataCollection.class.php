@@ -2,6 +2,8 @@
 
 /** @noinspection PhpUnhandledExceptionInspection */
 
+// TODO unit test
+
 class AbstractDataCollection {
 
     function __construct($initData) {
@@ -20,5 +22,18 @@ class AbstractDataCollection {
                 throw new Exception("TestSession creation error: `$key` is shall not be null after creation");
             }
         }
+    }
+
+    static function fromFile(string $path = null): AbstractDataCollection {
+
+        if (!file_exists($path)) {
+            throw new Exception("JSON file not found: `$path`");
+        }
+
+        $connectionData = JSON::decode(file_get_contents($path));
+
+        $class = get_called_class();
+
+        return new $class($connectionData);
     }
 }
