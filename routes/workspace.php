@@ -155,7 +155,7 @@ $app->group('/workspace', function(App $app) {
 
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
 
-        return $response->withJson($importedFiles); // TODO return 201
+        return $response->withJson($importedFiles)->withStatus(201);
 
     })->add(new IsWorkspacePermitted('RW'));
 
@@ -185,7 +185,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->post('/{ws_id}/unlock', function(Request $request, Response $response) use ($adminDAO) {
+    $app->patch('/{ws_id}/tests/unlock', function(Request $request, Response $response) use ($adminDAO) {
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = $request->getAttribute('ws_id');
@@ -199,7 +199,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->post('/{ws_id}/lock', function(Request $request, Response $response) use ($adminDAO) {
+    $app->patch('/{ws_id}/tests/lock', function(Request $request, Response $response) use ($adminDAO) {
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = $request->getAttribute('ws_id');

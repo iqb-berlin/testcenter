@@ -127,9 +127,17 @@ paths:
 
   # stand, alle, die Schreibrechte brauchen gehen nicht, weil die test-session mit einem anderen token erstellt wurde
   # als die e2e-test haben
+
   # - wie kann man das lösen? nur die e2e-session verwenden?
   # - testdaten per SQL und dann token fix bennenen
-  # - ?
+  # - [GET] /session verwenden und  Reihenfolge der tests festlegen
+  # -- über --sorted param: https://dredd.readthedocs.io/en/latest/usage-cli.html#-sorted-s
+  # -- händisch im beforeAllHook sortieren: https://github.com/apiaryio/dredd/issues/456#issuecomment-247545197
+  # -- mehrere YMLs statt einer und dann Reihenfolge hard codieren
+  # - tmp DB statt dessen nutzen
+  #  -->(wäre nice, aber! sollte auch trotzdem ohne gehen)
+
+
   /test/{test_id}/unit/{unit_name}/review:
     put:
       summary: add review to unit

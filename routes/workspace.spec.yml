@@ -661,7 +661,7 @@ paths:
                 - fileforvo
 
       responses:
-        "200":
+        "201":
           description: upload susccessfull
           content:
             application/json:
@@ -803,9 +803,9 @@ paths:
         "500":
           description: Server Error
 
-  /workspace/{ws_id}/lock:
-    post:
-      summary: lock workspace
+  /workspace/{ws_id}/tests/lock:
+    patch:
+      summary: lock tests
       description: locks a group of booklets in a workspace
       parameters:
         - in: header
@@ -847,10 +847,10 @@ paths:
         "500":
           description: Server Error
 
-  /workspace/{ws_id}/unlock:
-    post:
-      summary: unlock workspace
-      description: unlocks a group of bookltes in a workspace
+  /workspace/{ws_id}/tests/unlock:
+    patch:
+      summary: unlock tests
+      description: unlocks a group of booklets in a workspace
       parameters:
         - in: header
           name: AuthToken
