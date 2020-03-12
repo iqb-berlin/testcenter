@@ -1,7 +1,6 @@
 const fs = require("fs");
 const Dredd = require('dredd');
 const fsExtra = require('fs-extra');
-const {spawnSync} = require('child_process');
 const gulp = require('gulp');
 const yamlMerge = require('gulp-yaml-merge');
 const jsonTransform = require('./helper/json-transformer');
@@ -16,24 +15,6 @@ const apiUrl = process.env.TC_API_URL || 'http://localhost';
 const printHeadline = text => console.log(`\x1b[37m\x1b[44m${text}\x1b[0m`);
 
 const getError = text => new Error(`\x1B[31m${text}\x1B[34m`);
-
-const shellExec = (command, params = []) => {
-
-    const process = spawnSync(command, params);
-
-    if (process.status == null) {
-        return getError(`Could not execute command: ${command}`);
-    }
-
-    if (process.status > 0) {
-        console.log(process.stdout.toString());
-        return getError(`in command ${command}:\n ${process.stderr.toString()}`);
-    }
-
-    console.log(process.stdout.toString());
-    return process.status;
-};
-
 
 // tasks
 
@@ -120,7 +101,7 @@ gulp.task('run_dredd', done => {
         hookfiles: ['dredd-hooks.js'],
         output: [`tmp/report.${dreddFileName}.html`],
         reporter: ['html'],
-        names: false
+        names: false,
     }).run(function(err, stats) {
         console.log(stats);
         if (err) {
@@ -131,44 +112,6 @@ gulp.task('run_dredd', done => {
         }
         done();
     });
-});
-
-gulp.task('init_backend', done => {
-
-    printHeadline('run init script');
-    const exitCode = shellExec('php',
-        [
-            '../scripts/initialize.php',
-            `--user_name=super`,
-            `--user_password=user123`,
-            `--workspace=example_workspace`,
-            `--test_login_name=test`,
-            `--test_login_password=user123`,
-            `--test_person_codes=xxx,yyy`
-        ]
-    );
-    done(exitCode);
-});
-
-
-gulp.task('db_clean', done => {
-
-    printHeadline('wipe out db and set up a clean one');
-    const sqlConfig = require('../config/DBConnectionData');
-    const sql =
-        `DROP DATABASE IF EXISTS ${sqlConfig.dbname};` +
-        `CREATE DATABASE ${sqlConfig.dbname};`  +
-        `USE ${sqlConfig.dbname};` +
-        `SOURCE ../scripts/sql-schema/mysql.sql;`;
-        //`GRANT ALL PRIVILEGES ON \`${sqlConfig.dbname}\`.* TO '${sqlConfig.user}'@'${sqlConfig.host}';`;*/
-    const exitCode = shellExec('mysql',
-        [
-            `--user=${sqlConfig.user}`,
-            `--password=${sqlConfig.password}`,
-            `--execute=${sql}`
-        ]
-    );
-    done(exitCode);
 });
 
 
@@ -206,8 +149,6 @@ exports.run_dredd_test = gulp.series(
     'start',
     'clear_tmp_dir',
     'compile_spec_files',
-    'db_clean',
-    'init_backend',
     'prepare_spec_for_dredd',
     'run_dredd',
     'update_docs'

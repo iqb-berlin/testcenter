@@ -3,13 +3,8 @@ const fs = require('fs');
 const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
 
-const stash = {
-    adminToken: '',
-    loginToken: '',
-    personToken: ''
-};
 
-const skipAfterFirstFail = true; // change this to debug
+const skipAfterFirstFail = false; // change this to debug
 let skipTheRest = false;
 
 
@@ -36,6 +31,7 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
     transaction.request.headers['AuthToken'] = JSON.stringify(authToken);
 };
 
+
 dreddHooks.beforeEachValidation(function(transaction) {
 
     // don't compare headers
@@ -52,12 +48,18 @@ dreddHooks.beforeEach(function(transaction, done) {
         return done();
     }
 
+    transaction.request.headers['TestMode'] = true; // use virtual environment
+
     // inject login credentials if necessary
     switch (transaction.expected.statusCode) {
         case '200':
         case '201':
         case '207':
-            changeAuthToken(transaction, stash);
+            changeAuthToken(transaction, {
+                adminToken: 'admin_token',
+                loginToken: 'login_token',
+                personToken: 'person_token'
+            });
             break;
         case '401':
             changeAuthToken(transaction,{});
@@ -73,18 +75,6 @@ dreddHooks.beforeEach(function(transaction, done) {
             transaction.skip = true;
             return done();
     }
-
-    // make sure, sample files are available
-    [
-        {src: '../sampledata/Unit.xml', target: '../vo_data/ws_1/Unit/SAMPLE_UNIT.XML'},
-        {src: '../sampledata/SysCheck.xml', target: '../vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML'},
-        {src: '../sampledata/SysCheck-Report.json', target: '../vo_data/ws_1/SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON'}
-    ].forEach(copyFile => {
-        if (!fs.existsSync(copyFile.target)) {
-            fs.copyFileSync(copyFile.src, copyFile.target);
-            fs.chmodSync(copyFile.target, '777');
-        }
-    });
 
     done();
 });
