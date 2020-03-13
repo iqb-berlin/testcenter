@@ -1070,10 +1070,8 @@ paths:
           description: Server Error
 
   /workspace/{ws_id}/syscheck-reports:
-
     summary: get reports
     description: return a compilation of reports from given syschecks in JSON or CSV format.
-
     get:
       parameters:
         - in: header
