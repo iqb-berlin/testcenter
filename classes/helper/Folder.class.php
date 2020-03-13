@@ -23,4 +23,27 @@ class Folder {
 
         return $found;
     }
+
+
+    static function getContentsRecursive(string $path): array {
+
+        $list = [];
+
+        if ($handle = opendir($path)) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
+                    if (is_file("$path/$entry")) {
+                        $list[] = $entry;
+                    }
+                    if (is_dir("$path/$entry")) {
+                        $list[$entry] = Folder::getContentsRecursive("$path/$entry");
+                    }
+                }
+            }
+            closedir($handle);
+        }
+
+        return $list;
+    }
+
 }

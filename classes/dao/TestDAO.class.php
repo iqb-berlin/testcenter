@@ -187,7 +187,7 @@ class TestDAO extends DAO {
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
 
         $unitData = $this->_(
-            'SELECT units.laststate FROM units WHERE units.id=:unitId FOR UPDATE',
+            'SELECT units.laststate FROM units WHERE units.id=:unitId',
             [
                 ':unitId' => $unitDbId
             ]

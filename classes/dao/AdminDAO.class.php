@@ -44,7 +44,7 @@ class AdminDAO extends DAO {
 
 		$this->_deleteTokensByUser($user['id']);
 
-		$token = $this->_createToken();
+		$token = $this->_randomToken('admin');
 
 		$this->_storeToken($user['id'], $token);
 
@@ -77,12 +77,6 @@ class AdminDAO extends DAO {
 	}
 
 
-	private function _createToken(): string {
-
-		return uniqid('a', true);
-	}
-
-
 	private function _storeToken(int $userId, string $token): void {
 
 		$this->_(
@@ -104,7 +98,7 @@ class AdminDAO extends DAO {
 			WHERE admintokens.id=:token',
 			[':token' => $token]
 		);
-		// TODO check this functions carefully
+		// TODO check this function carefully
 		// original description was "deletes all tokens of this user", what is not what this function does
 		// check where this is used at all and which behavior exactly was intended
         // then: write unit test

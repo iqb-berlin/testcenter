@@ -89,4 +89,33 @@ class InitDAO extends SuperAdminDAO {
     }
 
 
+    // TODO unit-test
+    public function getDBContentDump(): string {
+
+        $tables = [ // because we use different types of DB is difficult to get table list by command
+            'admintokens',
+            'bookletlogs',
+            'bookletreviews',
+            'booklets',
+            'logins',
+            'persons',
+            'unitlogs',
+            'unitreviews',
+            'units',
+            'users',
+            'workspace_users',
+            'workspaces'
+        ];
+
+        $report = "";
+
+        foreach ($tables as $table) {
+
+            $report .= "\n## $table\n";
+            $entries = $this->_("SELECT * FROM $table", [], true);
+            $report .= CSV::build($entries);
+        }
+
+        return $report;
+    }
 }

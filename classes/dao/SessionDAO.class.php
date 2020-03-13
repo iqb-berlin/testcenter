@@ -5,7 +5,7 @@
 
 class SessionDAO extends DAO {
 
-    private $idleTimeTestSession = 60 * 30;
+    private $idleTimeTestSession = 60 * 30; // TODO move to DB config
 
     // TODO add unit-test
     public function getOrCreateLoginToken(TestSession $session, bool $forceCreate = false): string {
@@ -20,7 +20,7 @@ class SessionDAO extends DAO {
 
         if ($forceCreate or ($oldLogin === null)) {
 
-            $loginToken = uniqid('a', true);
+            $loginToken = $this->_randomToken('login');
             $this->_(
                 'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
                 VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
@@ -223,7 +223,7 @@ class SessionDAO extends DAO {
 
         }
 
-        $newPersonToken = uniqid('a', true);
+        $newPersonToken = $this->_randomToken('person');
         $validUntil = date('Y-m-d H:i:s', time() + $this->idleTimeTestSession);
 
         $this->_(

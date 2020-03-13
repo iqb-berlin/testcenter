@@ -9,6 +9,7 @@ class DBConfig extends AbstractDataCollection {
     public $dbname = "";
     public $user = "";
     public $password = "";
-    public $salt = "t";
-    public $type = null;
+    public $salt = "t"; // for passwords
+    public $type = null; // mysql,
+    public $staticTokens = false; // relevant for unit- and e2e-tests
 }

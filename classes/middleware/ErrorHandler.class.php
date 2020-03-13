@@ -4,30 +4,61 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 class ErrorHandler {
+
+
+    static function logException(Throwable $throwable, bool $logTrace = false): string {
+
+        $errorUniqueId = uniqid('error-', true);
+        $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
+
+        $log = [];
+
+        $log[] = $errorUniqueId;
+
+        if (method_exists($throwable, 'getTitle')) {
+            $log[] =  $throwable->getTitle();
+        }
+
+        if (method_exists($throwable, 'getDescription')) {
+            $log[] =  $throwable->getDescription();
+        }
+
+        $log[] = $throwable->getMessage();
+
+        if ($logTrace) {
+            $trace = explode("\n", $throwable->getTraceAsString());
+            $log = array_merge($log, $trace);
+        } else {
+            $log[] = $throwable->getFile() . ' | line ' . $throwable->getLine();
+        }
+
+        foreach ($log as $logLine) {
+            if ($logLine) {
+                error_log("[Error: $code] $logLine");
+            }
+        }
+
+        return $errorUniqueId;
+    }
+
+
+    static function getHTTPSaveExceptionCode(Throwable $throwable): int {
+
+        if (is_a($throwable, "Slim\Exception\HttpException") or is_a($throwable, 'HttpError')) {
+            return $throwable->getCode();
+        }
+
+        return 500;
+    }
+
+
     public function __invoke(Request $request, Response $response, Throwable $throwable) {
 
-        $errorMessage = $throwable->getMessage();
-        $errorPlace = $throwable->getFile() . ' | line ' . $throwable->getLine();
-        $trace = $throwable->getTraceAsString();
-        $errorUniqueId = uniqid('error-', true);
+        $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
+        $errorUniqueId = ErrorHandler::logException($throwable, $throwable->getCode() >= 500);
 
         if (!is_a($throwable, "Slim\Exception\HttpException")) {
-            if (is_a($throwable, 'HttpError')) {
-                $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), $throwable->getCode(), $throwable);
-            } else {
-                $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), 500, $throwable);
-            }
-        }
-
-        $log = [$errorUniqueId, $throwable->getTitle(), $throwable->getDescription(), $errorMessage, $errorPlace];
-        if ($throwable->getCode() >= 500) {
-            $log = array_merge($log, explode("\n", $trace));
-        }
-
-        foreach ($log as $errorText) {
-            if ($errorText) {
-                error_log("[Error: " . $throwable->getCode() . "] " . $errorText);
-            }
+            $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), $code, $throwable);
         }
 
         return $response

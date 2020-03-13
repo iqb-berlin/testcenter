@@ -4,7 +4,7 @@
 class DAO {
 
     protected $pdoDBhandle = false;
-    protected $idleTime = 60 * 30;
+    protected $idleTime = 60 * 30; // TODO move to DBconfig
     protected $passwordSalt = 't';
 
     public function __construct() {
@@ -53,9 +53,21 @@ class DAO {
     }
 
 
+    protected function _randomToken(string $type) {
+
+        if (DB::getConfig()->staticTokens) {
+
+            return "static_token_$type";
+        }
+
+        return uniqid('a', true);
+    }
+
+
     public function runFile(string $path) {
 
         if (!file_exists($path)) {
+
             throw New HttpError("File does not exist: `$path`");
         }
 
