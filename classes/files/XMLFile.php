@@ -77,7 +77,7 @@ class XMLFile {
 
                     if ($validate) {
                         if (strlen($this->_label) > 0) {
-                            $myReader = new \XMLReader();
+                            $myReader = new XMLReader();
                             $myReader->open($xmlfilename);
                             $myReader->setSchema($mySchemaFilename);
         

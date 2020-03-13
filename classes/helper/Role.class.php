@@ -1,16 +1,12 @@
 <?php
-/** @noinspection PhpUnhandledExceptionInspection */
-
 
 class Role {
-
 
     const list = [
         'RW' => ['RO'],
         'RO' => ['MO'],
         'MO' => []
     ];
-
 
     static function withChildren(string $role) {
 

@@ -1,6 +1,4 @@
 <?php
-/** @noinspection PhpUnhandledExceptionInspection */
-
 
 class DBConfig extends AbstractDataCollection {
 

@@ -52,7 +52,7 @@ class WorkspaceValidator extends WorkspaceController {
             $this->reportInfo('booklet loaded (bytes, sorted):');
         } else {
             $this->reportInfo('booklet loaded (bytes, not sorted):');
-        };
+        }
 
         foreach(array_keys($this->_allBookletsFilesize) as $b) {
             $this->reportInfo('    ' . $b . ': ' .  number_format($this->_allBookletsFilesize[$b], 0, "," , "." ));

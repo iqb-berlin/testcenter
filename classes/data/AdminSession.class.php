@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUnhandledExceptionInspection */
-
 
 class AdminSession extends AbstractDataCollection {
 
