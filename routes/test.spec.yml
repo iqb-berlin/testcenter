@@ -584,7 +584,7 @@ paths:
         "500":
           description: Server Error
 
-  /test_tmp:
+  /test:
     put:
       summary: start a test
       description: creates a new test or continues a running one for given person and testlet-name.
