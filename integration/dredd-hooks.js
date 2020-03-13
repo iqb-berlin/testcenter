@@ -112,12 +112,8 @@ dreddHooks.before('/workspace/{ws_id}/file > upload file > 201 > application/jso
 
     const form = new Multipart();
 
-    dreddHooks.log('A');
-
     form.append('fileforvo', fs.createReadStream('../sampledata/Unit.xml', 'utf-8'));
-
-    dreddHooks.log('B');
-
+    
     transaction.request.body = await streamToString(form.stream());
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
     done();
