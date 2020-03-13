@@ -16,6 +16,33 @@ paths:
             application/json:
               example:
                 - "[GET] /list/routes"
+        "500":
+          description: Server Error
+
+  /system/config:
+    get:
+      summary: get system config
+      description: returns publicy avaialable parts of system config
+        - version number
+        - customTexts for UI
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: "2.0.0"
+                  customTexts:
+                    type: object
+                required:
+                  - version
+                  - customTexts
+        "500":
+          description: Server Error
 
   /specstatus:
     get:
