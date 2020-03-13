@@ -41,11 +41,12 @@ try {
 
     $initializer->createSampleLoginsReviewsLogs('xxx');
 
-    $fullState = "# State of DATA_DIR\n\n";
-    $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), 1);
-    $fullState .= "\n\n# State of DB\n";
-    $fullState .= $initDAO->getDBContentDump();
-    file_put_contents(ROOT_DIR . '/integration/tmp/lastVEState.md', $fullState);
+//    TODO this is interessting for debugging sometimes... find a good place to put it
+//    $fullState = "# State of DATA_DIR\n\n";
+//    $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), 1);
+//    $fullState .= "\n\n# State of DB\n";
+//    $fullState .= $initDAO->getDBContentDump();
+//    file_put_contents(ROOT_DIR . '/integration/tmp/lastVEState.md', $fullState);
 
 } catch (Exception $e) {
 
