@@ -29,12 +29,12 @@ paths:
       responses:
         "200":
           description: List of Workspaces
-#          content: TODO - include sample file!
-#            application/json:
-#              example:
-#                laststate: []
-#                locked: false
-#                xml: ""
+          content:
+            application/json:
+              example:
+                laststate: []
+                locked: false
+                xml: "(contents of a booklet.xml)"
         "401":
           description: Not authenticated
         "403":
@@ -72,12 +72,12 @@ paths:
       responses:
         "200":
           description: List of Workspaces
-#          content: TODO - include sample file!
-#            application/json:
-#              example:
-#                laststate: []
-#                locked: false
-#                xml: ""
+          content:
+            application/json:
+              example:
+                "laststate": {"PRESENTATIONCOMPLETE": "yes"}
+                "restorepoint": "whatever this player needs"
+                "xml": "(contents of a unit.xml)"
         "401":
           description: Not authenticated
         "403":
@@ -85,7 +85,7 @@ paths:
         "500":
           description: Server Error
 
-  /test/{test_id}/resource/{resource_name}:
+  /test/{test_id}/resource/{resource_name}: # gets manipulated in hooks.file, change summary carefully
     get:
       summary: get resource by name
       description: retrieves a resource-file by its name (filename without extension)
@@ -115,9 +115,9 @@ paths:
       responses:
         "200":
           description: List of Workspaces
-        #          content: TODO - include sample file!
-        #           text/plain:
-        #              example:
+          content:
+            text/plain:
+              example: "(HTML code containing player)"
         "401":
           description: Not authenticated
         "403":
@@ -618,7 +618,7 @@ paths:
                 - entry
                 - timestamp
             example:
-              bookletName: 'BOOKLET.SAMPL'
+              bookletName: 'BOOKLET.SAMPLE'
               BookletLabel: 'A sample booklet'
               code: 'xxx'
       responses:

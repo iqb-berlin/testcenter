@@ -42,6 +42,8 @@ dreddHooks.beforeEachValidation(function(transaction) {
 
 dreddHooks.beforeEach(function(transaction, done) {
 
+    dreddHooks.log(transaction.name);
+
     // skip everything after first failed test
     if (skipTheRest && skipAfterFirstFail) {
         transaction.skip = true;
@@ -86,35 +88,23 @@ dreddHooks.afterEach(function(transaction, done) {
         skipTheRest = true;
     }
 
-    // store login credentials if we come from any endpoint providing some
-    try {
-        const responseBody = JSON.parse(transaction.real.body);
-        if (typeof responseBody.adminToken !== "undefined") {
-            stash.adminToken = JSON.parse(transaction.real.body).adminToken;
-            dreddHooks.log("stashing AdminAuthToken:" + stash.adminToken);
-        }
-        if (typeof responseBody.personToken !== "undefined") {
-            stash.personToken = JSON.parse(transaction.real.body).personToken;
-            dreddHooks.log("stashing PersonAuthToken:" + stash.personToken);
-        }
-        if (typeof responseBody.loginToken !== "undefined") {
-            stash.loginToken = JSON.parse(transaction.real.body).loginToken;
-            dreddHooks.log("stashing LoginAuthToken:" + stash.loginToken);
-        }
-    } catch (e) {
-        // do nothing, this is most likely not a JSON request
-    }
-
     done();
 });
+
 
 dreddHooks.before('/workspace/{ws_id}/file > upload file > 201 > application/json', async function(transaction, done) {
 
     const form = new Multipart();
 
     form.append('fileforvo', fs.createReadStream('../sampledata/Unit.xml', 'utf-8'));
-    
+
     transaction.request.body = await streamToString(form.stream());
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
+    done();
+});
+
+dreddHooks.beforeValidation('/test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
+
+    transaction.expected.body = fs.readFileSync('../sampledata/Player.html').toString();
     done();
 });

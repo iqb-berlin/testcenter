@@ -10,14 +10,15 @@ use org\bovigo\vfs\vfsStream;
 * STAND umbau
 * # Root dir überall gegen conf, data und Code ersetzen
 * # Beim Aufruf  vm conf und root virtualisieren (damit wird auch die DB virtualisiert)
-* testdaten einfügen
- * -> über die funktionen? dann kennt man das token nicht
- * -> über die Datenbank? dann muss man mit den test files synchron halten, was blöd ist.
- * => forceToken funktion einbauen einfach // token generation in setup ablegen
+* #testdaten einfügen
+ * #-> über die funktionen? dann kennt man das token nicht
+ * #-> über die Datenbank? dann muss man mit den test files synchron halten, was blöd ist.
+ * #=> forceToken funktion einbauen einfach // token generation in setup ablegen
 * Sicherstellen, dass keine c-level fs Funktionen erlaubt sind - was passiert überhaupt, wenn sie benutzt werden
 * Init SQL und data trennen für unit Tests
-* Dredd den test Header mit schicken lassen und Copy files löschen
-*
+ * nachziehen unit tests
+* # Dredd den test Header mit schicken lassen und Copy files löschen
+* Dredd file upload verbesserung
 *
 */
 
