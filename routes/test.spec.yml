@@ -295,7 +295,8 @@ paths:
   /test/{test_id}/unit/{unit_name}/restorepoint:
     patch:
       summary: save a restorepoint
-      description: saved a restorepoint - a data blob indicating the sate of unit player. what is in this blob is business of teh player.
+      description: saves a restorepoint - a data blob indicating the sate of unit player.
+        what is in this blob is business of the player.
       parameters:
         - in: header
           name: AuthToken
@@ -334,7 +335,7 @@ paths:
                 - response
                 - timestamp
             example:
-              response: "{\"string_example\":\"something\",\"color_example\":\"#ffa200\",\"number_example\":\"36\"}"
+              restorePoint: "{\"string_example\":\"something\",\"color_example\":\"#ffa200\",\"number_example\":\"36\"}"
               timestamp: 1582550888563
       responses:
         "200":
