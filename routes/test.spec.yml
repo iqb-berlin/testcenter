@@ -389,8 +389,8 @@ paths:
                 - key
                 - value
             example:
-              response: "PRESENTATIONCOMPLETE"
-              timestamp: "yes"
+              key: "PRESENTATIONCOMPLETE"
+              value: "1"
       responses:
         "200":
           description: OK, updated
@@ -436,8 +436,8 @@ paths:
                 - key
                 - value
             example:
-              response: "LASTUNIT"
-              timestamp: "1"
+              key: "LASTUNIT"
+              value: "1"
       responses:
         "200":
           description: OK, updated

@@ -146,7 +146,7 @@ class TestDAO extends DAO {
     public function updateTestLastState($testId, $stateKey, $stateValue): void {
 
         $testData = $this->_(
-            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:testId FOR UPDATE',
+            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:testId',
             [
                 ':testId' => $testId
             ]
