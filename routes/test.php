@@ -217,7 +217,7 @@ $app->group('/test', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    $app->post('/{test_id}/lock', function (Request $request, Response $response) use ($testDAO) {
+    $app->patch('/{test_id}/lock', function (Request $request, Response $response) use ($testDAO) {
 
         $testId = $request->getAttribute('test_id');
 
@@ -267,7 +267,6 @@ $app->put('/test', function(Request $request, Response $response) {
     if ($person == null) {
         throw new HttpForbiddenException($request);
     }
-
 
     $test = $testDAO->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
 

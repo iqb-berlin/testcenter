@@ -555,7 +555,7 @@ paths:
 
 
   /test/{test_id}/lock:
-    put:
+    patch:
       summary: finish a test
       description: locks (finishes) a runnin test
       parameters:
