@@ -245,7 +245,7 @@ $app->put('/test', function(Request $request, Response $response) {
 
     $body = RequestBodyParser::getElements($request, [
         'code' => 0, // was: c
-        'bookletLabel' => '¿Testheft?', // was: bl
+        'bookletLabel' => '¿Testheft?', // was: bl // TODO overthink this. maybe we better fetch it new here from file?
         'bookletName' => null // was: b
     ]);
 

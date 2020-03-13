@@ -600,6 +600,27 @@ paths:
           example:
             l: user000000000.test0000000
             p: 0000000000000.00000000000
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                bookletName:
+                  description: name of the booklet to start
+                  type: string
+                BookletLabel:
+                  description: label of the booklet
+                  type: string
+                code:
+                  description: login code (maybe "", will be depricated after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52)
+                  type: string
+              required:
+                - entry
+                - timestamp
+            example:
+              bookletName: 'BOOKLET.SAMPL'
+              BookletLabel: 'A sample booklet'
+              code: 'xxx'
       responses:
         "201":
           description:  OK, started
