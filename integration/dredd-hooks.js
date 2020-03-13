@@ -41,9 +41,7 @@ dreddHooks.beforeEachValidation(function(transaction) {
 
 
 dreddHooks.beforeEach(function(transaction, done) {
-
-    dreddHooks.log(transaction.name);
-
+    
     // skip everything after first failed test
     if (skipTheRest && skipAfterFirstFail) {
         transaction.skip = true;
