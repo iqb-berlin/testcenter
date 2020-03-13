@@ -19,7 +19,8 @@ class AdminDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new AdminDAO();
-        $this->dbc->runFile('scripts/sql-schema/sqlite.sql'); // TODO split database schema and test data
+        $this->dbc->runFile('scripts/sql-schema/sqlite.sql');
+        $this->dbc->runFile('test/testdata.sql');
     }
 
 

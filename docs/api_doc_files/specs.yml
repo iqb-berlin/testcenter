@@ -2009,8 +2009,6 @@ paths:
                     example: '"'
             responses:
                 '200':
-                    description: 'compiled data of all reports from selected sys-checks'
-                '401':
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
