@@ -77,34 +77,6 @@ $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspectio
 });
 
 
-$app->get('/specstatus', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
-
-    $routesRegistered = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
-        foreach ($route->getMethods() as $method) {
-            $target[] = "[$method] " . $route->getPattern();
-        }
-        return $target;
-    }, []);
-
-    $specs = SpecCollector::collectSpecs(ROOT_DIR . '/routes');
-    $routes = SpecCollector::collectRoutes(ROOT_DIR . '/routes');
-
-    $status = [];
-
-    $allRoutes = array_unique(array_merge(array_keys($specs), array_keys($routes), $routesRegistered));
-    sort($allRoutes);
-
-    foreach ($allRoutes as $route) {
-        $status[$route] = [
-            "spec" => isset($specs[$route]) ? $specs[$route] : "(spec missing)",
-            "code" => isset($routes[$route]) ? $routes[$route] : "(code missing)"
-        ];
-    }
-
-    return $response->withJson(['status'=>$status, 'specs'=>$routesRegistered]);
-});
-
-
 $app->get('/version', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
     return $response->withJson(['version' => Version::get()]);
