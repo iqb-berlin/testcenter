@@ -5,6 +5,55 @@ info:
   version: "2.0.0"
 
 paths:
+
+  /session:
+    get:
+      summary: get a session
+      description: returns session data according to a AuthToken.
+        Type of the session is deteced by the type of the token. The AuthToken is a JSOn array in dthe Header
+        `AuthToken`, containing the field `l` with a login-session-token (tow factor authentication part I only),
+        `p` with a person token (authenticated as testee or test-commander), or `at` with an admin (authenticated as
+        administrator).
+        If there are several Token in the Header, only one session can be returned. Existance of sessions to the tokens
+        are proved in the order `login`, `person`, `admin`.
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          schema:
+            $ref: './components.spec.yml#/components/schemas/auth_test'
+          example:
+            l: user000000000.test0000000
+            p: 0000000000000.00000000000
+            at: user000000000.rw00000000
+      responses:
+        "200":
+          description: OK, get session data
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/login_session'
+              example:
+                workspaceId: '1'
+                groupName: sample_group
+                name: sample_user
+                mode: run-hot-return
+                booklets:
+                  xxx:
+                    - BOOKLET.SAMPLE
+                customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
+                loginToken: ''
+                workspaceName: sample_workspace
+                personToken: ''
+                code: ''
+                testId: 0
+                bookletLabel: ''
+        "401":
+          description: No token qualifies for authentication
+        "500":
+          description: Server Error
+
+
   /session/admin:
     put:
       summary: Start Admin Session

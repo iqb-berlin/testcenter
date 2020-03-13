@@ -21,7 +21,7 @@ class TestSession extends AbstractDataCollection {
     public $mode = null;
     public $booklets = null;
 
-    public $customTexts = []; // TODO after https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 make null
+    public $customTexts; // TODO after https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 make null
 
     // if log-in part I is done
     public $loginToken = '';
@@ -36,6 +36,8 @@ class TestSession extends AbstractDataCollection {
     public $bookletLabel = '';
 
     function __construct($initData) {
+
+        $this->customTexts = new stdClass();
 
         parent::__construct($initData);
 

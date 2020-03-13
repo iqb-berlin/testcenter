@@ -44,14 +44,6 @@ paths:
         "500":
           description: Server Error
 
-  /specstatus:
-    get:
-      summary: temporary helper endpoint
-
-      responses:
-        "200":
-          description: OK
-
   /version:
     get:
       summary: get API version
