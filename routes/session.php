@@ -7,12 +7,6 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Exception\HttpException;
 
-/**
- * STAND:
- * unit test reparieren
- * e2e tests...
- */
-
 $app->put('/session/admin', function(Request $request, Response $response) use ($app) {
 
     $adminDAO = new AdminDAO();
