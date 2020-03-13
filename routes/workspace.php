@@ -282,6 +282,7 @@ $app->group('/workspace', function(App $app) {
 
         $superAdminDAO->addWorkspace($requestBody->name);
 
+
         return $response->withStatus(201);
     });
 

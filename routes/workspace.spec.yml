@@ -666,7 +666,7 @@ paths:
           content:
             application/json:
               example:
-                "SAMPLE_UNIT.XML": true
+                "Unit.xml": true
         "404":
           description: workspace or file not found
         "401":

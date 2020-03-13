@@ -108,12 +108,15 @@ dreddHooks.afterEach(function(transaction, done) {
     done();
 });
 
-
-dreddHooks.before(async function(transaction, done) {
+dreddHooks.before('/workspace/{ws_id}/file > upload file > 201 > application/json', async function(transaction, done) {
 
     const form = new Multipart();
 
-    form.append('fileforvo', fs.createReadStream('../sampledata/SAMPLE_UNIT.XML', 'utf-8'));
+    dreddHooks.log('A');
+
+    form.append('fileforvo', fs.createReadStream('../sampledata/Unit.xml', 'utf-8'));
+
+    dreddHooks.log('B');
 
     transaction.request.body = await streamToString(form.stream());
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];

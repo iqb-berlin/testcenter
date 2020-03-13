@@ -1,9 +1,87 @@
 openapi: 3.0.0
 info:
     title: 'IQB Testcenter API - Backend'
-    description: 'This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
     version: 2.0.0
+    description: 'This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
 paths:
+    /session/admin:
+        put:
+            summary: 'Start Admin Session'
+            description: 'Starts a Session as Admin by Username and password'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/login_request'
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/admin_session'
+                            example:
+                                adminToken: user000000000.0000000000
+                                name: super
+                                workspaces:
+                                    - {id: '1', name: example_workspace, role: RW}
+                                isSuperadmin: true
+                                userEmail: ""
+                '202':
+                    description: 'User has account but neither workspace nor super-admin privilige'
+                '400':
+                    description: 'Insufficent Crendetials'
+                '500':
+                    description: 'Server Error'
+    /session/login:
+        put:
+            summary: 'Start Login Session'
+            description: 'Starts a Session as Login by Username and password This is Part I of the Two-Factor Authentication. Get a token for a login, defined in a `Testtakers.xml`-file, together with some session information like running tests etc.'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/login_request'
+                        example:
+                            name: test
+                            password: user123
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/login_session'
+                '400':
+                    description: 'Insufficent Crendetials'
+                '500':
+                    description: 'Server Error'
+    /session/person:
+        put:
+            summary: 'Start Person Session'
+            description: 'Starts a Session for a Person, on the basis of LoginToken (!) which is Part II of the Two-Factor Authentication. Get a token for a person belonging to a login, as defined in a `Testtakers.xml`-file, together with some information about this person'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            example:
+                                personId: '2'
+                                personToken: a5e690e51b931a3.29393583
+                                code: '0'
+                '400':
+                    description: 'Insufficent Crendetials'
+                '500':
+                    description: 'Server Error'
     /list/routes:
         get:
             summary: 'Lists all available endpoints'
@@ -33,33 +111,6 @@ paths:
                                     version: {type: string}
                             example:
                                 version: 2.0.0-beta
-    /login:
-        post:
-            summary: Login
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/login_request'
-            responses:
-                '200':
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/login_response'
-                            example:
-                                admintoken: user000000000.0000000000
-                                name: super
-                                workspaces:
-                                    - {id: '1', name: example_workspace, role: RW}
-                                is_superadmin: true
-                '202':
-                    description: 'User has account but neither workspace nor super-admin privilige'
-                '400':
-                    description: 'Insufficent Crendetials'
-                '500':
-                    description: 'Server Error'
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -186,6 +237,631 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}':
+        get:
+            summary: 'get a test'
+            description: 'retrieves a certain executed test - the booklet-file XML, last state and lock status'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'id of a executed test'
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+            responses:
+                '200':
+                    description: 'List of Workspaces'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/unit/{unit_name}':
+        get:
+            summary: 'get a unit of a test'
+            description: 'retrieves a certain unit from a certain executed test - the booklet-file XML, last state and lock status'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'id of a executed test'
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+                -
+                    in: path
+                    name: unit_name
+                    description: 'unit-name (not alias!) as defined in booklet'
+                    example: UNIT.SAMPLE
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'List of Workspaces'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/resource/{resource_name}':
+        get:
+            summary: 'get resource by name'
+            description: 'retrieves a resource-file by its name (filename without extension)'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'id of a executed test'
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+                -
+                    in: path
+                    name: resource_name
+                    description: 'resource_name (filename without XML-extension)'
+                    example: SAMPLE_PLAYER.HTML
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'List of Workspaces'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/unit/{unit_name}/review':
+        put:
+            summary: 'add review to unit'
+            description: 'add a review item to unit in a test'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: unit_name
+                    description: 'unit-name (or alias) as defined in booklet'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                priority:
+                                    description: 'priority, 1=critical, 2=medium, 3=optional'
+                                    type: integer
+                                entry:
+                                    description: 'text of the review entry'
+                                    type: string
+                                categories:
+                                    description: 'whitespace separated list of categories'
+                                    type: string
+                            required:
+                                - entry
+                        example:
+                            entry: 'I am a critical review item for unit 1'
+                            priority: 1
+                            categories: 'content whatever'
+            responses:
+                '201':
+                    x-dredd-test-order: 1
+                    description: 'OK, created'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/review':
+        put:
+            summary: 'add review to booklet'
+            description: 'add a review item to a certain booklet'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                priority:
+                                    description: 'priority, 1=critical, 2=medium, 3=optional'
+                                    type: integer
+                                entry:
+                                    description: 'text of the review entry'
+                                    type: string
+                                categories:
+                                    description: 'whitespace separated list of categories'
+                                    type: string
+                            required:
+                                - entry
+                        example:
+                            entry: 'I am a critical review item for booklet 1'
+                            priority: 1
+                            categories: 'content whatever'
+            responses:
+                '201':
+                    description: 'OK, created'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/unit/{unit_name}/response':
+        put:
+            summary: 'add response to a unit'
+            description: 'when running a test this endpoint is used to store given responses. format and content of responses are business of the corresponding player, the endpoints takes everything as raw, may it be JSON or XML or whatever.'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: unit_name
+                    description: 'unit-name (or alias) as defined in booklet'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                response:
+                                    description: 'response data'
+                                    type: string
+                                timestamp:
+                                    description: 'timestamp of the response'
+                                    type: integer
+                                responseType:
+                                    description: 'TODO what is this?'
+                                    type: string
+                            required:
+                                - response
+                                - timestamp
+                        example:
+                            response: 'I am the answers to your questions.'
+                            timestamp: 1582550888563
+            responses:
+                '201':
+                    description: 'OK, created'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/unit/{unit_name}/restorepoint':
+        patch:
+            summary: 'save a restorepoint'
+            description: 'saves a restorepoint - a data blob indicating the sate of unit player. what is in this blob is business of the player.'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: unit_name
+                    description: 'unit-name (or alias) as defined in booklet'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                restorePoint:
+                                    description: 'restore point data'
+                                    type: string
+                                timestamp:
+                                    description: 'timestamp of the snapshot'
+                                    type: integer
+                            required:
+                                - response
+                                - timestamp
+                        example:
+                            restorePoint: '{"string_example":"something","color_example":"#ffa200","number_example":"36"}'
+                            timestamp: 1582550888563
+            responses:
+                '200':
+                    description: 'OK, updated'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/unit/{unit_name}/state':
+        patch:
+            summary: 'save a state for a unit'
+            description: 'saved a state (a key-value pair) for a unit in a running test -'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: unit_name
+                    description: 'unit-name (or alias) as defined in booklet'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                key:
+                                    description: 'key of the state information'
+                                    type: string
+                                value:
+                                    description: 'value of the state'
+                                    type: string
+                            required:
+                                - key
+                                - value
+                        example:
+                            key: PRESENTATIONCOMPLETE
+                            value: '1'
+            responses:
+                '200':
+                    description: 'OK, updated'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/state':
+        patch:
+            summary: 'save a state for a runnign test'
+            description: 'saved a state (a key-value pair) for a running test'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                key:
+                                    description: 'key of the state information'
+                                    type: string
+                                value:
+                                    description: 'value of the state'
+                                    type: string
+                            required:
+                                - key
+                                - value
+                        example:
+                            key: LASTUNIT
+                            value: '1'
+            responses:
+                '200':
+                    description: 'OK, updated'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/unit/{unit_name}/log':
+        put:
+            summary: 'save a log-entry for a unit'
+            description: 'saves a log-entry for a unit in a running test - a log entry consists of a keyword and optionally, separated by a colon, a JSON-encoded value currently used lognetry key words for units are- UNITENTER, UNITTRYLEAVE, PRESENTATIONCOMPLETE, RESPONSESCOMPLETE, PAGENAVIGATIONSTART, PAGENAVIGATIONCOMPLETE'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: unit_name
+                    description: 'unit-name (or alias) as defined in booklet'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                entry:
+                                    description: log-entry
+                                    type: string
+                                timestamp:
+                                    description: 'unix timestamp'
+                                    type: number
+                            required:
+                                - entry
+                                - timestamp
+                        example:
+                            entry: 'PAGENAVIGATIONSTART: "#first"'
+                            timestamp: 1582230020
+            responses:
+                '201':
+                    description: 'OK, log saved'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/log':
+        put:
+            summary: 'save a log-entry  for a runnign test'
+            description: 'saves a log-entry for a running test a log entry consists of a keyword and optionally, separated by a colon, a JSON-encoded value currently used lognetry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE, BOOKLETLOCKEDbyTESTEE'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                entry:
+                                    description: log-entry
+                                    type: string
+                                timestamp:
+                                    description: 'unix timestamp'
+                                    type: number
+                            required:
+                                - entry
+                                - timestamp
+                        example:
+                            entry: 'BOOKLETLOADSTART: {Browser:"Dredd"}'
+                            timestamp: 1582230020
+            responses:
+                '201':
+                    description: 'OK, log saved'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/lock':
+        patch:
+            summary: 'finish a test'
+            description: 'locks (finishes) a runnin test'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'OK, locked'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
+    /test:
+        put:
+            summary: 'start a test'
+            description: 'creates a new test or continues a running one for given person and testlet-name. it also generates a person token if there is none, so this is part II od two-factor authentication returns the (new) test-id and peron-token.'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    schema:
+                        $ref: '#/components/schemas/auth_test'
+                    example:
+                        l: user000000000.test0000000
+                        p: 0
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                bookletName:
+                                    description: 'name of the booklet to start'
+                                    type: string
+                                BookletLabel:
+                                    description: 'label of the booklet'
+                                    type: string
+                                code:
+                                    description: 'login code (maybe "", will be depricated after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52)'
+                                    type: string
+                            required:
+                                - entry
+                                - timestamp
+                        example:
+                            bookletName: BOOKLET.SAMPL
+                            BookletLabel: 'A sample booklet'
+                            code: xxx
+            responses:
+                '201':
+                    description: 'OK, started'
+                    content:
+                        application/json:
+                            example:
+                                testId: 1
+                                personToken: 0
+                '401':
+                    description: 'Not authenticated - auth token header is missing or not containing at least a login token'
+                '403':
+                    description: Forbidden
+                '423':
+                    description: 'Test is locked!'
                 '500':
                     description: 'Server Error'
     '/user/{user_id}/workspaces':
@@ -873,12 +1549,12 @@ paths:
                             required:
                                 - fileforvo
             responses:
-                '200':
+                '201':
                     description: 'upload susccessfull'
                     content:
                         application/json:
                             example:
-                                SAMPLE_UNIT.XML: true
+                                Unit.xml: true
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1018,9 +1694,9 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/lock':
-        post:
-            summary: 'lock workspace'
+    '/workspace/{ws_id}/tests/lock':
+        patch:
+            summary: 'lock tests'
             description: 'locks a group of booklets in a workspace'
             parameters:
                 -
@@ -1062,10 +1738,10 @@ paths:
                     description: 'Workspace not found'
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/unlock':
-        post:
-            summary: 'unlock workspace'
-            description: 'unlocks a group of bookltes in a workspace'
+    '/workspace/{ws_id}/tests/unlock':
+        patch:
+            summary: 'unlock tests'
+            description: 'unlocks a group of booklets in a workspace'
             parameters:
                 -
                     in: header
@@ -1417,25 +2093,38 @@ components:
             properties:
                 at:
                     type: string
-                    description: authtoken
+                    description: 'authtoken für admin and maybe super admin modules'
                     example: user000000000.superadmin0
             required:
                 - at
+        auth_test:
+            type: object
+            properties:
+                p:
+                    type: string
+                    description: 'authtoken für test module - person'
+                    example: person00000000.test0000000
+                l:
+                    type: string
+                    description: 'authtoken für test module - login'
+                    example: person00000000.test0000000
+            required:
+                - l
         login_request:
             type: object
             properties:
-                n:
+                name:
                     type: string
                     description: Username
                     example: super
-                p:
+                password:
                     type: string
                     description: Password
                     example: user123
-        login_response:
+        admin_session:
             type: object
             properties:
-                admintoken:
+                adminToken:
                     type: string
                     description: 'Token for session authentication'
                 name:
@@ -1447,10 +2136,66 @@ components:
                     description: 'List of workspaces wich are open to this user'
                     items:
                         $ref: '#/components/schemas/workspace'
-                is_superadmin:
+                isSuperadmin:
                     type: boolean
                     description: 'Flag that tells, if this user is a superadmin'
                     example: true
+        login_session:
+            type: object
+            properties:
+                workspaceId:
+                    type: number
+                    description: 'this session belongs to workspace with this Id'
+                    example: 1
+                groupName:
+                    type: string
+                    description: 'name of loginGroup to this belongs to'
+                    example: sample_group
+                name:
+                    type: string
+                    description: 'name of the login'
+                    example: sample_login
+                mode:
+                    type: string
+                    description: "mode of the current login-group\ncurrently known modes are\n * run-hot-return - hot run of testLet, can save answers etc.,\n    session gets stored and can be revoked\n * run-hot-restart - hot run of testLet, can save answers etc.,\n    every session starts all tests again and have unique Tokens\n * run-review - run a review round of testLet, reviewes can be saved, but no answers\n    At the moment we distinguish between hot, trial and review in the GUI and there are no real\n    checks for the mode in this backend, except for the difference between `run-hot-return` and\n    `run-hot-restart`.\n * run-trial - run a trial round\n * monitor-study - TBA\n * monitor-login - TBA"
+                    example: run-hot-return
+                booklets:
+                    type: object
+                    description: 'An object containing information of login codes and available booklets for this group.'
+                    example:
+                        xxx:
+                            - BOOKLET.SAMPLE
+                        yyy:
+                            - BOOKLET.SAMPLE
+                customTexts:
+                    type: object
+                    description: 'An Object containing customtext-strings for the UI as key-value-pairs'
+                    example:
+                        somestr: string
+                loginToken:
+                    type: string
+                    description: 'the token for this session (available after two-factor-authorization part I)'
+                    example: login00000000.test0000000
+                workspaceName:
+                    type: string
+                    description: 'name of the current workspace'
+                    example: 'example workspace'
+                personToken:
+                    type: string
+                    description: 'the token for this person (available after two-factor-authorization part II)'
+                    example: person00000000.test0000000
+                code:
+                    type: string
+                    description: 'login-code this person (available after two-factor-authorization part II)'
+                    example: person00000000.test0000000
+                testId:
+                    type: number
+                    description: 'number of currently running test, 0 if none'
+                    example: 0
+                bookletLabel:
+                    type: string
+                    description: 'label of booklet of currently running test if any'
+                    example: ""
         workspace:
             type: object
             properties:

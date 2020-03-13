@@ -27,7 +27,7 @@ class UploadedFilesHandler {
      * @throws HttpInternalServerErrorException
      * @throws Exception
      */
-    static function handleUploadedFiles(Request $request, $fieldName, $workspaceId) {
+    static function handleUploadedFiles(Request $request, string $fieldName, int $workspaceId) {
 
         $allUploadedFiles = $request->getUploadedFiles();
 

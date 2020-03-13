@@ -33,6 +33,7 @@ if (php_sapi_name() !== 'cli') {
 
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 define('CONFIG_DIR', ROOT_DIR . '/config');
+define('DATA_DIR', ROOT_DIR . '/vo_data');
 
 require_once(ROOT_DIR . '/autoload.php');
 
@@ -71,7 +72,9 @@ try  {
 
     $config = file_get_contents($config_file_path);
 
-    JSON::decode($config);
+    $config = JSON::decode($config, true);
+
+    DB::connect(new DBConfig($config));
 
     $initializer = new WorkspaceInitializer();
 
