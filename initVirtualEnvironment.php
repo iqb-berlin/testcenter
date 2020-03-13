@@ -15,6 +15,7 @@ use org\bovigo\vfs\vfsStream;
  * #-> über die Datenbank? dann muss man mit den test files synchron halten, was blöd ist.
  * #=> forceToken funktion einbauen einfach // token generation in setup ablegen
 * Sicherstellen, dass keine c-level fs Funktionen erlaubt sind - was passiert überhaupt, wenn sie benutzt werden
+ * remove CONF_DIR again
 * Init SQL und data trennen für unit Tests
  * nachziehen unit tests
 * # Dredd den test Header mit schicken lassen und Copy files löschen
@@ -25,12 +26,9 @@ use org\bovigo\vfs\vfsStream;
 try {
 
     $vfs = vfsStream::setup('root', 0777);
-    vfsStream::newDirectory('config', 0777)->at($vfs);
     vfsStream::newDirectory('vo_data', 0777)->at($vfs);
-    file_put_contents(vfsStream::url('root/config/customTexts.json'), '{"aCustomText_key": "a Custom Text Value"}');
 
     define('DATA_DIR', vfsStream::url('root/vo_data'));
-    define('CONFIG_DIR', vfsStream::url('root/config'));
 
     DB::connect(new DBConfig([
         'type' => 'temp',

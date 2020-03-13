@@ -17,8 +17,7 @@ try {
     } else {
 
         define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
-        define('CONFIG_DIR', ROOT_DIR . '/config');
-        DB::connect();
+        DB::connect(DBConfig::fromFile(ROOT_DIR . '/config/DBConnectionData.json'));
     }
 
     $container = new Container();

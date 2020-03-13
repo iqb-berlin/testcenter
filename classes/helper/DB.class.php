@@ -14,7 +14,7 @@ class DB {
     static function connect(?DBConfig $config = null): void {
 
         if (!$config) {
-            $config = DBConfig::fromFile(CONFIG_DIR . '/DBConnectionData.json');
+            $config = DBConfig::fromFile(ROOT_DIR . '/config/DBConnectionData.json');
         }
 
         self::$config = $config;

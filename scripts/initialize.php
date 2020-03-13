@@ -32,7 +32,6 @@ if (php_sapi_name() !== 'cli') {
 }
 
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
-define('CONFIG_DIR', ROOT_DIR . '/config');
 define('DATA_DIR', ROOT_DIR . '/vo_data');
 
 require_once(ROOT_DIR . '/autoload.php');
@@ -64,7 +63,7 @@ try  {
         throw new Exception("Password must have at least 7 characters!");
     }
 
-    $config_file_path = CONFIG_DIR . '/DBConnectionData.json';
+    $config_file_path = ROOT_DIR . '/config/DBConnectionData.json';
 
     if (!file_exists($config_file_path)) {
         throw new Exception("DB-config file is missing!");
