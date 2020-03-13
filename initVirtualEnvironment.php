@@ -6,23 +6,6 @@ use org\bovigo\vfs\vfsStream;
  * set up virtual file system and DB - for e2e tests
  */
 
-/*
-* STAND umbau
-* # Root dir überall gegen conf, data und Code ersetzen
-* # Beim Aufruf  vm conf und root virtualisieren (damit wird auch die DB virtualisiert)
-* #testdaten einfügen
- * #-> über die funktionen? dann kennt man das token nicht
- * #-> über die Datenbank? dann muss man mit den test files synchron halten, was blöd ist.
- * #=> forceToken funktion einbauen einfach // token generation in setup ablegen
-* Sicherstellen, dass keine c-level fs Funktionen erlaubt sind - was passiert überhaupt, wenn sie benutzt werden
- * remove CONF_DIR again
-* Init SQL und data trennen für unit Tests
- * nachziehen unit tests
-* # Dredd den test Header mit schicken lassen und Copy files löschen
-* Dredd file upload verbesserung
-*
-*/
-
 try {
 
     $vfs = vfsStream::setup('root', 0777);
@@ -45,7 +28,7 @@ try {
     ];
 
     $initDAO = new InitDAO();
-    $initDAO->runFile('scripts/sql-schema/sqlite.sql'); // TODO split database schema and test data
+    $initDAO->runFile('scripts/sql-schema/sqlite.sql');
     $adminDAO = new AdminDAO();
 
     $initializer = new WorkspaceInitializer();

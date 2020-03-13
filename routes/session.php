@@ -13,7 +13,7 @@ use Slim\Exception\HttpException;
  * e2e tests...
  */
 
-$app->put('/session/admin', function(Request $request, Response $response) use ($app) { // TODO rename to put session admin
+$app->put('/session/admin', function(Request $request, Response $response) use ($app) {
 
     $adminDAO = new AdminDAO();
 
