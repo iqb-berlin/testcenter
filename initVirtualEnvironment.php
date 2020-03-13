@@ -47,12 +47,16 @@ try {
 
     $initDAO = new InitDAO();
     $initDAO->runFile('scripts/sql-schema/sqlite.sql'); // TODO split database schema and test data
+    $adminDAO = new AdminDAO();
 
     $initializer = new WorkspaceInitializer();
     $initializer->importSampleData(1, $initArgs);
 
     $initDAO->addSuperuser($initArgs['user_name'], $initArgs['user_password']);
+    $adminDAO->createAdminToken($initArgs['user_name'], $initArgs['user_password']);
+    $initDAO->addWorkspace('sample_workspace');
     $initDAO->grantRights($initArgs['user_name'], 1);
+
     $initializer->createSampleLoginsReviewsLogs('xxx');
 
     $fullState = "# State of DATA_DIR\n\n";

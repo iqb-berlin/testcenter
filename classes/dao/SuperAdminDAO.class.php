@@ -276,14 +276,18 @@ class SuperAdminDAO extends DAO {
 
     public function getWorkspaceName($workspaceId): string {
 
-        $data = $this->_(
+        $workspace = $this->_(
             'SELECT workspaces.name 
             FROM workspaces
             WHERE workspaces.id=:workspace_id',
             [':workspace_id' => $workspaceId]
         );
 
-        return $data['name'];
+        if ($workspace == null) {
+            throw new HttpError("Workspace `$workspaceId` not found", 404);
+        }
+
+        return $workspace['name'];
     }
 
 

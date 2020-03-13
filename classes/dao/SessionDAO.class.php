@@ -185,7 +185,7 @@ class SessionDAO extends DAO {
 
         $login = $this->_('SELECT logins.id FROM logins WHERE logins.token=:token', [':token' => $loginToken]); // TODO check valid_to
         if ($login == null ){
-            throw new HttpError("LoginToken invalid: `$loginToken`", 401);
+            throw new HttpError("LoginToken invalid: `$loginToken`", 403);
         }
         return $login['id'];
     }
@@ -200,7 +200,7 @@ class SessionDAO extends DAO {
             ]
         );
         if ($person == null ){
-            throw new HttpError("PersonToken invalid: `$personToken`", 401);
+            throw new HttpError("PersonToken invalid: `$personToken`", 403);
         }
         return $person['id'];
     }
@@ -292,13 +292,17 @@ class SessionDAO extends DAO {
 
     public function getWorkspaceName($workspaceId): string {
 
-        $data = $this->_(
+        $workspace = $this->_(
             'SELECT workspaces.name 
             FROM workspaces
             WHERE workspaces.id=:workspace_id',
             [':workspace_id' => $workspaceId]
         );
 
-        return $data['name'];
+        if ($workspace == null) {
+            throw new HttpError("Workspace `$workspaceId` not found", 404);
+        }
+
+        return $workspace['name'];
     }
 }

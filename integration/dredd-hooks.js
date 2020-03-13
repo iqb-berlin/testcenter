@@ -4,7 +4,7 @@ const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
 
 
-const skipAfterFirstFail = false; // change this to debug
+const skipAfterFirstFail = true; // change this to debug
 let skipTheRest = false;
 
 
@@ -56,9 +56,9 @@ dreddHooks.beforeEach(function(transaction, done) {
         case '201':
         case '207':
             changeAuthToken(transaction, {
-                adminToken: 'admin_token',
-                loginToken: 'login_token',
-                personToken: 'person_token'
+                adminToken: 'static_token_admin',
+                loginToken: 'static_token_login',
+                personToken: 'static_token_person'
             });
             break;
         case '401':
@@ -113,7 +113,7 @@ dreddHooks.before(async function(transaction, done) {
 
     const form = new Multipart();
 
-    form.append('fileforvo', fs.createReadStream('../vo_data/ws_1/Unit/SAMPLE_UNIT.XML', 'utf-8'));
+    form.append('fileforvo', fs.createReadStream('../sampledata/SAMPLE_UNIT.XML', 'utf-8'));
 
     transaction.request.body = await streamToString(form.stream());
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];

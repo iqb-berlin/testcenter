@@ -8,7 +8,7 @@ CREATE TABLE `admintokens` (
 ,  PRIMARY KEY (`id`)
 ,  CONSTRAINT `fk_users_admintokens` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
-INSERT INTO admintokens (id, user_id, valid_until) VALUES('admin_token', 1, '2222-01-01 00:00:00');
+
 CREATE TABLE `bookletlogs` (
   `booklet_id` integer  NOT NULL
 ,  `timestamp` integer NOT NULL DEFAULT 0
@@ -87,8 +87,7 @@ CREATE TABLE `users` (
 ,  `email` varchar(100) DEFAULT NULL
 ,  `is_superadmin` integer NOT NULL DEFAULT 0
 );
-INSERT INTO `users` VALUES (1,'super','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,1);
-INSERT INTO `users` VALUES (2,'i_exist_but_am_not_allowed_anything','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,0);
+
 CREATE TABLE `workspace_users` (
   `workspace_id` integer  NOT NULL
 ,  `user_id` integer  NOT NULL
@@ -97,12 +96,12 @@ CREATE TABLE `workspace_users` (
 ,  CONSTRAINT `fk_workspace_users_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ,  CONSTRAINT `fk_workspace_users_workspace` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
-INSERT INTO `workspace_users` VALUES (1,1,'RW');
+
 CREATE TABLE `workspaces` (
   `id` integer  NOT NULL PRIMARY KEY AUTOINCREMENT
 ,  `name` varchar(50) NOT NULL
 );
-INSERT INTO `workspaces` VALUES (1,'example_workspace');
+
 CREATE INDEX "idx_admintokens_index_fk_users_admintokens" ON "admintokens" (`user_id`);
 CREATE INDEX "idx_unitlogs_index_fk_log_unit" ON "unitlogs" (`unit_id`);
 CREATE INDEX "idx_bookletlogs_index_fk_log_booklet" ON "bookletlogs" (`booklet_id`);
