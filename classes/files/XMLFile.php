@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 
 class XMLFile {
@@ -16,6 +16,31 @@ class XMLFile {
     protected $_customTexts;
 
     public $xmlfile;
+
+
+    static function get(string $xmlfilename, bool $validate = false): XMLFile {
+
+        if (!file_exists($xmlfilename)) {
+
+            throw new HttpError("File not found: `{$xmlfilename}`");
+        }
+
+        $xml = simplexml_load_file($xmlfilename);
+
+        if (!$xml) {
+
+            throw new HttpError("Could not open XML-File: `{$xmlfilename}`");
+        }
+
+        switch ($xml->getName()) {
+            case 'Testtakers': return new XMLFileTesttakers($xmlfilename, $validate);
+            case 'SysCheck': return new XMLFileSysCheck($xmlfilename, $validate);
+            case 'SysBooklet': return new XMLFileBooklet($xmlfilename, $validate);
+            case 'Unit': return new XMLFileUnit($xmlfilename, $validate);
+        }
+
+        return new XMLFile($xmlfilename, $validate);
+    }
 
 
     public function __construct($xmlfilename, $validate = false) {

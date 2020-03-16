@@ -43,11 +43,10 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
     $availableBookletsForLogin = [];
 
-    foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
+    foreach (WorkspaceController::getAll() as $workspaceController) { /* @var WorkspaceController $workspaceController */
 
-        $workspaceId = array_pop(explode('_', $workspaceDir));
-        $workspaceController = new WorkspaceController((int)$workspaceId);
         $availableBookletsForLogin = $workspaceController->findAvailableBookletsForLogin($body['name'], $body['password']);
+
         if (count($availableBookletsForLogin)) {
             break;
         }

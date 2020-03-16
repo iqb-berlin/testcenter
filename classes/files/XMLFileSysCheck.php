@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 
 class XMLFileSysCheck extends XMLFile {
@@ -19,7 +19,7 @@ class XMLFileSysCheck extends XMLFile {
     }
 
 
-    private function getSaveKey() {
+    public function getSaveKey() {
         
         $myreturn = '';
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
@@ -50,7 +50,7 @@ class XMLFileSysCheck extends XMLFile {
     public function getCustomTexts()
     {
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 foreach($configNode->children() as $ct) {
@@ -97,7 +97,7 @@ class XMLFileSysCheck extends XMLFile {
                             'type' => (string) $q['type'],
                             'prompt' => (string) $q['prompt'],
                             'required' => (boolean) $q['required'],
-                            'value' => (string) $q
+                            'options' => explode('#', (string) $q)
                         ]);
                     }
                 }
@@ -117,7 +117,7 @@ class XMLFileSysCheck extends XMLFile {
             'maxSequenceRepetitions' => 0,
             'sequenceSizes' >= []
         ];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $speedDefNode = $configNode->UploadSpeed[0];
@@ -159,7 +159,7 @@ class XMLFileSysCheck extends XMLFile {
             'maxSequenceRepetitions' => 0,
             'sequenceSizes' >= []
         ];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $speedDefNode = $configNode->DownloadSpeed[0];
@@ -301,43 +301,50 @@ class XMLFileSysCheck extends XMLFile {
     }
 
 
-    public function saveReport($key, $title, $envData, $netData, $questData, $unitData) {
+    public function saveReport($key, $title, $envData, $netData, $questData, $unitData): void {
 
-        $myreturn = false;
+        if (strlen($key) <= 0) {
 
-        if (strlen($key) > 0) {
-            if (strtoupper($key) == strtoupper($this->getSaveKey())) {
-                $workspaceDirName = dirname(dirname($this->_filename));
-                if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
-                
-                    $sysCheckFolder = $workspaceDirName . '/' . $this->getRoottagName();
-                    if (file_exists($sysCheckFolder)) {
-                        $reportFolder = $sysCheckFolder . '/reports';
-                        if (!file_exists($reportFolder)) {
-                            if (!mkdir($reportFolder)) {
-                                $reportFolder = '';
-                            }
-                        }
-                        if (strlen($reportFolder) > 0) {																	
-                            $reportFilename = $reportFolder . '/' . uniqid('report_', true) . '.json';
-                            $reportData = [
-                                'date' => date('Y-m-d H:i:s', time()),
-                                'checkId' => $this->getId(),
-                                'checkLabel' => $this->getLabel(),
-                                'title' => $title,
-                                'envData' => $envData,
-                                'netData' => $netData,
-                                'questData' => $questData,
-                                'unitData' => $unitData
-                            ];
-                            if (file_put_contents($reportFilename, json_encode($reportData)) !== false) {
-                                $myreturn = true;
-                            }
-                        }
-                    }
+            throw new HttpError("No key `$key`", 400);
+        }
+
+        if (strtoupper($key) == strtoupper($this->getSaveKey())) {
+
+            throw new HttpError("Wrong key `$key`", 400);
+        }
+
+        $workspaceDirName = dirname(dirname($this->_filename));
+
+        if (!isset($workspaceDirName) or !is_dir($workspaceDirName)) {
+
+            throw new Exception("Directory not found `$workspaceDirName`");
+        }
+
+        $sysCheckFolder = $workspaceDirName . '/' . $this->getRoottagName();
+
+        if (file_exists($sysCheckFolder)) {
+            $reportFolder = $sysCheckFolder . '/reports';
+            if (!file_exists($reportFolder)) {
+                if (!mkdir($reportFolder)) {
+                    $reportFolder = '';
+                }
+            }
+            if (strlen($reportFolder) > 0) {
+                $reportFilename = $reportFolder . '/' . uniqid('report_', true) . '.json';
+                $reportData = [
+                    'date' => date('Y-m-d H:i:s', time()),
+                    'checkId' => $this->getId(),
+                    'checkLabel' => $this->getLabel(),
+                    'title' => $title,
+                    'envData' => $envData,
+                    'netData' => $netData,
+                    'questData' => $questData,
+                    'unitData' => $unitData
+                ];
+                if (file_put_contents($reportFilename, json_encode($reportData)) !== false) {
+                    throw new Exception("Could not write to file `$reportData`");
                 }
             }
         }
-        return $myreturn;
     }
 }

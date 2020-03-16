@@ -2016,10 +2016,10 @@ paths:
                     description: Forbidden
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/syscheck-reports':
-        summary: 'get reports'
-        description: 'return a compilation of reports from given syschecks in JSON or CSV format.'
+    '/workspace/{ws_id}/sys-check/reports':
         get:
+            summary: 'get reports'
+            description: 'return a compilation of reports from given syschecks in JSON or CSV format.'
             parameters:
                 -
                     in: header
@@ -2070,6 +2070,8 @@ paths:
                 '500':
                     description: 'Server Error'
         delete:
+            summary: 'delete reports'
+            description: 'delete some SysCheck-reports'
             parameters:
                 -
                     in: header
@@ -2115,10 +2117,10 @@ paths:
                     description: Forbidden
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/syscheck-reports/overview':
-        summary: 'get a list of all sys-check-reports'
-        description: 'returns a lista a list of all sys-check-reports with most important features grouped by the sys-checks.'
+    '/workspace/{ws_id}/sys-check/reports/overview':
         get:
+            summary: 'get a list of all sys-check-reports'
+            description: 'returns a list of all sys-check-reports with most important features grouped by the sys-checks.'
             parameters:
                 -
                     in: header
@@ -2157,6 +2159,121 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '500':
+                    description: 'Server Error'
+    '/workspace/{ws_id}/sys-check/{sys_check_name}':
+        get:
+            summary: 'get sysCheck'
+            description: 'returns a specific SysCheck configuation **this endpoint does not need any authetication!**'
+            parameters:
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+                -
+                    in: path
+                    name: sys_check_name
+                    description: 'name of the SysCheck (as stored in the XML)'
+                    example: SYSCHECK.SAMPLE
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'Configuation of a SysCheck (as JSON, not as plain XML)'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/sys_check'
+                '404':
+                    description: 'No SysCheck with that name found on Workspace'
+                '500':
+                    description: 'Server Error'
+    '/workspace/{ws_id}/sys-check/{sys_check_name}/unit-and-player':
+        get:
+            summary: 'get SysCheck Unit and Player'
+            description: 'returns a container with the unit and it''s player according to a SysCheck'
+            parameters:
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+                -
+                    in: path
+                    name: sys_check_name
+                    description: 'name of the SysCheck (as stored in the XML)'
+                    example: SYSCHECK.SAMPLE
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'A container with the unit and it''s player'
+                '404':
+                    description: 'No SysCheck with that name found on Workspace'
+                '500':
+                    description: 'Server Error'
+    '/workspace/{ws_id}/sys-check/{sys_check_name}/report':
+        put:
+            summary: 'new SysCheck-report'
+            description: 'save the results of a performed SysCheck'
+            parameters:
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+                -
+                    in: path
+                    name: sys_check_name
+                    description: 'name of the SysCheck (as stored in the XML)'
+                    example: SYSCHECK.SAMPLE
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        example:
+                            keyPhrase: saveme
+                            title: dsk
+                            environment:
+                                -
+                                    id: '0'
+                                    type: environment
+                                    label: Betriebsystem
+                                    value: Linux
+                                    warning: false
+                                -
+                                    id: '0'
+                                    type: network
+                                    label: Downloadgeschwindigkeit
+                                    value: '68.01 Mbit/s'
+                                    warning: false
+                            questionnaire: []
+                            unit:
+                                -
+                                    id: '0'
+                                    type: unit/player
+                                    label: 'loading time'
+                                    value: '27'
+                                    warning: false
+            responses:
+                '201':
+                    description: 'Ok, Report saved'
+                '404':
+                    description: 'No SysCheck with that name found on Workspace'
                 '500':
                     description: 'Server Error'
 components:
@@ -2357,3 +2474,99 @@ components:
             description: 'List of Files'
             items:
                 $ref: '#/components/schemas/file'
+        sys_check:
+            type: object
+            description: 'Configuration of a SysCheck'
+            properties:
+                name:
+                    description: 'name of the SysCheck as defiend in the XML-file'
+                    type: string
+                label:
+                    description: 'label to display'
+                    type: string
+                questions:
+                    description: 'set of questions for the questionaire'
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/question_def'
+                hasUnit:
+                    description: 'is there a unit for this SysCheck?'
+                    type: boolean
+                canSave:
+                    description: 'is saving SysCheck-Report allowed?'
+                    type: boolean
+                customTexts:
+                    description: CustomTexts
+                    type: object
+                skipNetwork:
+                    description: 'skip the network test?'
+                    type: boolean
+                downloadSpeed:
+                    $ref: '#/components/schemas/speed_params'
+                uploadSpeed:
+                    $ref: '#/components/schemas/speed_params'
+                workspaceId:
+                    description: 'on which workspace is this SysCheck?'
+                    type: number
+        speed_params:
+            type: object
+            description: 'paramaters of a speed-check'
+            properties:
+                min:
+                    description: 'minimal speed to get a `sufficient` rating in **Bytes per second**'
+                    type: number
+                    example: 1875000
+                good:
+                    description: 'minimal speed to get a `good` rating in **Bytes per second**'
+                    type: number
+                    example: 3750000
+                maxDevianceBytesPerSecond:
+                    description: 'maximal deviance allowed to pass one round of regeression test in **Bytes per second**'
+                    type: number
+                    example: 100000
+                maxErrorsPerSequence:
+                    description: 'allow this number of errors in one sequence and still pass, normally 0'
+                    type: integer
+                    example: 0
+                maxSequenceRepetitions:
+                    description: 'how many test sequences should be run (if they exceedmax deviance), minimum is 3'
+                    type: integer
+                    example: 15
+                sequenceSizes:
+                    description: 'array of numbers describing the packagae sized for each sequence'
+                    type: array
+                    items:
+                        type: integer
+                    example:
+                        - 400000
+                        - 800000
+                        - 1600000
+                        - 3200000
+        question_def:
+            type: object
+            description: 'definition of a SysCheck-questionaire'
+            properties:
+                id:
+                    type: number
+                    description: 'identifier of the question'
+                    example: 1
+                type:
+                    description: 'type of the questions, like ''header'', ''string'', ''select'', ''text'', ''check'', ''radio'''
+                    type: string
+                    example: select
+                prompt:
+                    description: 'Question text'
+                    type: string
+                    example: 'What is the capital of Switzerland?'
+                options:
+                    description: 'list of options for type `check` or `select`'
+                    type: array
+                    items:
+                        type: string
+                    example:
+                        - Bern
+                        - Zurich
+                required:
+                    description: 'is this question required'
+                    type: boolean
+                    example: false

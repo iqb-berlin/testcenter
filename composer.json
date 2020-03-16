@@ -25,7 +25,8 @@
     "ext-zip": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
-    "ext-xmlreader": "*"
+    "ext-xmlreader": "*",
+    "ext-apache": "*"
   },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",

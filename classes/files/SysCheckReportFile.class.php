@@ -3,7 +3,7 @@
 
 // TODO unit Test
 
-class SysCheckReport {
+class SysCheckReportFile {
 
     const reportSections = ['envData', 'netData', 'questData', 'unitData', 'fileData'];
 
@@ -78,7 +78,7 @@ class SysCheckReport {
 
         $flatReport = [];
 
-        foreach (SysCheckReport::reportSections as $section) {
+        foreach (SysCheckReportFile::reportSections as $section) {
 
             if (!isset($this->_report[$section])) {
                 continue;
@@ -122,7 +122,7 @@ class SysCheckReport {
 
     static function getStatistics(array $reportSet): array {
 
-        $digests = array_map(function(SysCheckReport $report) {return $report->getDigest();}, $reportSet);
+        $digests = array_map(function(SysCheckReportFile $report) {return $report->getDigest();}, $reportSet);
 
         return array_reduce($digests, function ($agg, $item) {
             foreach ($item as $key => $value) {

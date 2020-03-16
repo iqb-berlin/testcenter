@@ -213,7 +213,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->get('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($adminDAO) {
+    $app->get('/{ws_id}/sys-check/reports', function(Request $request, Response $response) use ($adminDAO) {
 
         $checkIds = explode(',', $request->getParam('checkIds', ''));
         $delimiter = $request->getParam('delimiter', ';');
@@ -230,19 +230,19 @@ $app->group('/workspace', function(App $app) {
 
         if (($request->getHeaderLine('Accept') == 'text/csv') or $acceptWorkaround) {
 
-            $flatReports = array_map(function(SysCheckReport $report) {return $report->getFlat();}, $reports);
+            $flatReports = array_map(function(SysCheckReportFile $report) {return $report->getFlat();}, $reports);
             $response->getBody()->write(CSV::build($flatReports, [], $delimiter, $enclosure, $lineEnding));
             return $response->withHeader('Content-type', 'text/csv');
         }
 
-        $reportsArrays = array_map(function(SysCheckReport $report) {return $report->get();}, $reports);
+        $reportsArrays = array_map(function(SysCheckReportFile $report) {return $report->get();}, $reports);
 
         return $response->withJson($reportsArrays);
 
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->get('/{ws_id}/syscheck-reports/overview', function(Request $request, Response $response) use ($adminDAO) {
+    $app->get('/{ws_id}/sys-check/reports/overview', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
 
@@ -254,7 +254,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RO'));
 
 
-    $app->delete('/{ws_id}/syscheck-reports', function(Request $request, Response $response) use ($adminDAO) {
+    $app->delete('/{ws_id}/sys-check/reports', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = $request->getAttribute('ws_id');
         $checkIds = RequestBodyParser::getElementWithDefault($request,'checkIds', []);
@@ -324,3 +324,67 @@ $app->group('/workspace', function(App $app) {
 })
     ->add(new IsSuperAdmin())
     ->add(new RequireAdminToken());
+
+
+$app->get('/workspace/{ws_id}/sys-check/{sys-check_name}', function(Request $request, Response $response) use ($app) {
+
+    $workspaceId = $request->getAttribute('ws_id');
+    $sysCheckName = $request->getAttribute('sys-check_name');
+
+    $workspaceController = new WorkspaceController($workspaceId);
+    /* @var XMLFileSysCheck $xmlFile */
+    $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
+
+    return $response->withJson(new SysCheck([
+        'name' => $xmlFile->getId(),
+        'label' => $xmlFile->getLabel(),
+        'canSave' => $xmlFile->hasSaveKey(),
+        'hasUnit' => $xmlFile->hasUnit(),
+        'questions' => $xmlFile->getQuestions(),
+        'customTexts' => (object) $xmlFile->getCustomTexts(),
+        'skipNetwork' => $xmlFile->getSkipNetwork(),
+        'downloadSpeed' => $xmlFile->getSpeedtestDownloadParams(),
+        'uploadSpeed' => $xmlFile->getSpeedtestUploadParams(),
+        'workspaceId' => $workspaceId
+    ]));
+});
+
+
+$app->get('/workspace/{ws_id}/sys-check/{sys-check_name}/unit-and-player', function(Request $request, Response $response) use ($app) {
+
+    $workspaceId = $request->getAttribute('ws_id');
+    $sysCheckName = $request->getAttribute('sys-check_name');
+
+    $workspaceController = new WorkspaceController($workspaceId);
+    /* @var XMLFileSysCheck $xmlFile */
+    $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
+
+    return $response->withJson($xmlFile->getUnitData());
+});
+
+
+$app->put('/workspace/{ws_id}/sys-check/{sys-check_name}/report', function(Request $request, Response $response) {
+
+    $workspaceId = $request->getAttribute('ws_id');
+    $sysCheckName = $request->getAttribute('sys-check_name');
+    $report = new SysCheckReport(JSON::decode($request->getBody()));
+
+    $workspaceController = new WorkspaceController($workspaceId);
+
+    /* @var XMLFileSysCheck $xmlFile */
+    $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
+
+    if (strlen($report->keyPhrase) <= 0) {
+
+        throw new HttpBadRequestException($request,"No key `$report->keyPhrase`");
+    }
+
+    if (strtoupper($report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
+
+        throw new HttpError("Wrong key `$report->keyPhrase`", 400);
+    }
+
+    $workspaceController->saveSysCheckReport($report);
+
+    return $response->withStatus(201);
+});

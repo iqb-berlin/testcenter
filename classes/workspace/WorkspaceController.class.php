@@ -409,11 +409,11 @@ class WorkspaceController {
     }
 
 
-    function getSysCheckReportList() {
+    function getSysCheckReportList(): array {
 
         $allReports = $this->collectSysCheckReports();
 
-        $allReportsByCheckIds = array_reduce($allReports, function($agg, SysCheckReport $report) {
+        $allReportsByCheckIds = array_reduce($allReports, function($agg, SysCheckReportFile $report) {
             if (!isset($agg[$report->getCheckId()])) {
                 $agg[$report->getCheckId()] = [$report];
             } else {
@@ -428,7 +428,7 @@ class WorkspaceController {
                 'id' => $checkId,
                 'count' => count($reportSet),
                 'label' => $reportSet[0]->getCheckLabel(),
-                'details' => SysCheckReport::getStatistics($reportSet)
+                'details' => SysCheckReportFile::getStatistics($reportSet)
             ];
         }, $allReportsByCheckIds, array_keys($allReportsByCheckIds));
     }
@@ -448,7 +448,7 @@ class WorkspaceController {
                 continue;
             }
 
-            $report = new SysCheckReport($reportFilePath);
+            $report = new SysCheckReportFile($reportFilePath);
 
             if (($filterCheckIds === null) or (in_array($report->getCheckId(), $filterCheckIds))) {
 
@@ -478,11 +478,21 @@ class WorkspaceController {
 
         $reports = $this->collectSysCheckReports($checkIds);
 
-        $filesToDelete = array_map(function(SysCheckReport $report) {
+        $filesToDelete = array_map(function(SysCheckReportFile $report) {
             return 'SysCheck/reports/' . $report->getFileName();
         }, $reports);
 
         return $this->deleteFiles($filesToDelete);
+    }
+
+
+    public function saveSysCheckReport(SysCheckReport $report): void {
+
+        $reportFilename = $this->_getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
+
+        if (!file_put_contents($reportFilename, json_encode((array) $report))) {
+            throw new Exception("Could not write to file `$reportFilename`");
+        }
     }
 
 
@@ -492,7 +502,7 @@ class WorkspaceController {
 
         foreach (Folder::glob($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
 
-            $xmlFile = new XMLFile($fullFilePath);
+            $xmlFile = XMLFile::get($fullFilePath);
             if ($xmlFile->isValid()) {
                 $itemName = $xmlFile->getId();
                 if ($itemName == $findName) {
@@ -542,7 +552,7 @@ class WorkspaceController {
     }
 
 
-    public function findAvailableBookletsForLogin(string $name, string $password): array {
+    public function findAvailableBookletsForLogin(string $name, string $password): array { // TODO unit-test
 
         foreach (Folder::glob($this->_getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
@@ -561,5 +571,43 @@ class WorkspaceController {
         }
 
         return [];
+    }
+
+
+    public function findAvailableSysChecks() {
+
+        $sysChecks = [];
+
+        foreach (Folder::glob($this->_getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
+
+            $xFile = new XMLFileSysCheck($fullFilePath);
+
+            if ($xFile->isValid()) {
+                if ($xFile->getRoottagName()  == 'SysCheck') {
+                    $sysChecks[] = [
+                        'workspaceId' => $this->_workspaceId,
+                        'name' => $xFile->getId(),
+                        'label' => $xFile->getLabel(),
+                        'description' => $xFile->getDescription()
+                    ];
+                }
+            }
+        }
+
+        return $sysChecks;
+    }
+
+
+    static function getAll(): array {
+
+        $workspaceControllers = [];
+
+        foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
+
+            $workspaceId = array_pop(explode('_', $workspaceDir));
+            $workspaceControllers[$workspaceId] = new WorkspaceController((int) $workspaceId);
+        }
+
+        return $workspaceControllers;
     }
 }

@@ -32,4 +32,4 @@ while ($length-- > 1) {
 }
 echo '=';
 $time_elapsed_secs = microtime(true) - $start;
-//echo $time_elapsed_secs;
+echo $time_elapsed_secs;

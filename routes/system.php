@@ -97,5 +97,21 @@ $app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspect
 });
 
 
+// TODO write spec
+$app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
+    $availableSysChecks = [];
+
+    foreach (WorkspaceController::getAll() as $workspaceController) { /* @var WorkspaceController $workspaceController */
+
+        $availableSysChecks = array_merge($availableSysChecks, $workspaceController->findAvailableSysChecks());
+    }
+
+    if (!count($availableSysChecks)) {
+
+        return $response->withStatus(204, "No SysChecks found.");
+    }
+
+    return $response->withJson($availableSysChecks);
+});
 

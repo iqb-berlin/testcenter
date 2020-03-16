@@ -1069,10 +1069,11 @@ paths:
         "500":
           description: Server Error
 
-  /workspace/{ws_id}/syscheck-reports:
-    summary: get reports
-    description: return a compilation of reports from given syschecks in JSON or CSV format.
+  /workspace/{ws_id}/sys-check/reports:
+
     get:
+      summary: get reports
+      description: return a compilation of reports from given syschecks in JSON or CSV format.
       parameters:
         - in: header
           name: AuthToken
@@ -1135,6 +1136,8 @@ paths:
           description: Server Error
 
     delete:
+      summary: delete reports
+      description: delete some SysCheck-reports
       parameters:
         - in: header
           name: AuthToken
@@ -1181,12 +1184,11 @@ paths:
           description: Server Error
 
 
-  /workspace/{ws_id}/syscheck-reports/overview:
-
-    summary: get a list of all sys-check-reports
-    description: returns a lista a list of all sys-check-reports with most important features grouped by the sys-checks.
+  /workspace/{ws_id}/sys-check/reports/overview:
 
     get:
+      summary: get a list of all sys-check-reports
+      description: returns a list of all sys-check-reports with most important features grouped by the sys-checks.
       parameters:
         - in: header
           name: AuthToken
@@ -1238,5 +1240,115 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "500":
+          description: Server Error
+
+  /workspace/{ws_id}/sys-check/{sys_check_name}:
+    get:
+      summary: get sysCheck
+      description: returns a specific SysCheck configuation **this endpoint does not need any authetication!**
+      parameters:
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: sys_check_name
+          description: name of the SysCheck (as stored in the XML)
+          example: 'SYSCHECK.SAMPLE'
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Configuation of a SysCheck (as JSON, not as plain XML)
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/sys_check'
+        "404":
+          description: No SysCheck with that name found on Workspace
+        "500":
+          description: Server Error
+
+  /workspace/{ws_id}/sys-check/{sys_check_name}/unit-and-player:
+    get:
+      summary: get SysCheck Unit and Player
+      description: "returns a container with the unit and it's player according to a SysCheck"
+      parameters:
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: sys_check_name
+          description: name of the SysCheck (as stored in the XML)
+          example: 'SYSCHECK.SAMPLE'
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A container with the unit and it's player
+          # TODO load files into example data
+        "404":
+          description: No SysCheck with that name found on Workspace
+        "500":
+          description: Server Error
+
+  /workspace/{ws_id}/sys-check/{sys_check_name}/report:
+    put:
+      summary: new SysCheck-report
+      description: save the results of a performed SysCheck
+      parameters:
+      - in: path
+        name: ws_id
+        description: workspace-id
+        example: 1
+        required: true
+        schema:
+          type: integer
+      - in: path
+        name: sys_check_name
+        description: name of the SysCheck (as stored in the XML)
+        example: 'SYSCHECK.SAMPLE'
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+              keyPhrase: saveme
+              title: dsk
+              environment:
+              - id: '0'
+                type: environment
+                label: Betriebsystem
+                value: Linux
+                warning: false
+              - id: '0'
+                type: network
+                label: Downloadgeschwindigkeit
+                value: 68.01 Mbit/s
+                warning: false
+              questionnaire: []
+              unit:
+                - id: '0'
+                  type: unit/player
+                  label: loading time
+                  value: '27'
+                  warning: false
+      responses:
+        "201":
+          description: Ok, Report saved
+        "404":
+          description: No SysCheck with that name found on Workspace
         "500":
           description: Server Error
