@@ -11,6 +11,7 @@
     <Project>sample</Project>
   </Metadata>
 
+
   <Config unit="UNIT.SAMPLE" savekey="saveme" skipnetwork="false">
     <UploadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="10000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">100000, 200000, 400000, 800000</UploadSpeed>
     <DownloadSpeed min="1024" good="2048" maxDevianceBytesPerSecond="200000" maxErrorsPerSequence="0" maxSequenceRepetitions="15">400000, 800000, 1600000, 3200000</DownloadSpeed>

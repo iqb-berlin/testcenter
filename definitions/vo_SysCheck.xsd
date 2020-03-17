@@ -41,8 +41,9 @@
     </xs:simpleContent>
   </xs:complexType>
 
+
   <!-- ###################################################################-->
-   <xs:element name="SysCheck" >
+  <xs:element name="SysCheck" >
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType"/>

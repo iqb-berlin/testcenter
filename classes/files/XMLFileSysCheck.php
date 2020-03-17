@@ -149,8 +149,7 @@ class XMLFileSysCheck extends XMLFile {
         return $myreturn;
     }
 
-    public function getSpeedtestDownloadParams()
-    {
+    public function getSpeedtestDownloadParams() {
         $myreturn = [
             'min' => 0,
             'good' => 0,
