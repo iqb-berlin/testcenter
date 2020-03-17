@@ -9,10 +9,24 @@ DirectorySlash Off
 
 RewriteEngine on
 
+# can be installed in subdir or not
+RewriteBase /
+
 # add a trailing slash to directories
+# repents DirectorySlash Off but
+# circumvents the problem with endpoint `test` und dir `test`
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule [^/]$ %{REQUEST_URI}/ [L]
 
 # rewrite all calls except docs to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# exclude certain directories, which can be accessed directly
 RewriteCond %{REQUEST_URI} !/docs
-RewriteRule ^ index.php [QSA,L]
+
+# find real base
+RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
+
+# redirect everything to index.php
+RewriteRule ^.*$ %2index.php [QSA,L]
+
