@@ -15,4 +15,5 @@ RewriteRule [^/]$ %{REQUEST_URI}/ [L]
 
 # rewrite all calls except docs to index.php
 RewriteCond %{REQUEST_URI} !/docs
+RewriteCond %{REQUEST_URI} !/php_tc
 RewriteRule ^ index.php [QSA,L]
