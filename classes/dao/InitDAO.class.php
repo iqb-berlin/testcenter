@@ -30,7 +30,7 @@ class InitDAO extends SuperAdminDAO {
             return false;
         }
 
-        $sql = $this->pdoDBhandle->prepare('INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, true)');
+        $sql = $this->pdoDBhandle->prepare('INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, 1)');
         $params = [
             ':user_name' => $username,
             ':user_password' => $this->encryptPassword($userpassword)
