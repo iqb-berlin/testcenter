@@ -1,12 +1,18 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-iqb-php?style=flat-square)](https://travis-ci.com/iqb-berlin/textcenter-iqb-php)
+
 # IQB Testcenter Backend
 
 These are the backend applications for the applications
 - iqb testcenter
-- iqb testcenter-admin
+- iqb testcenter-admin (deprecated)
 
 You can find frontends for those applications [here](https://github.com/iqb-berlin/testcenter-iqb-ng) 
 and [here](https://github.com/iqb-berlin/testcenter-admin-iqb-ng).
 
+# Documentation
+
+Find API documentation [here](https://iqb-berlin.github.io/testcenter-iqb-php/).
 
 # Installation
 
@@ -49,11 +55,17 @@ sudo --user=www-data php scripts/initialize.php --user_name=super --user_passwor
   
 ### Prerequisites
 
-* Webserver, for Example Apache2 
-  * mod_rewrite 
+* Apache2 (other Webservers possible, but untested) with
+  * mod_rewrite extension
   * header extension
 * php > 7.1 
-  * pdo_extension
+  * pdo extension
+  * json extension
+  * zip extension
+  * libxml extension
+  * simplexml extension
+  * xmlreader extension
+  * apache
 * MySQL or PostgreSQL
 * for tests / doc-building: NPM
 
@@ -96,3 +108,7 @@ Most important:
 * Files MUST use only UTF-8 without BOM for PHP code. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 * Files SHOULD either declare symbols (classes, functions, constants, etc.) or cause side-effects (e.g. generate output, change .ini settings, etc.) but SHOULD NOT do both. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 
+### various rules
+
+* always a white line below function signature
+* use typed function signature as of php 7.1, arrays can be used as type, but will be replaced by typed array classes once 
