@@ -62,11 +62,11 @@ class SessionDAO extends DAO {
         $logindata = $this->_(
             'SELECT 
                 logins.booklet_def,
-                logins.workspace_id as workspaceId,
+                logins.workspace_id as "workspaceId",
                 logins.mode,
-                logins.groupname as groupName,
+                logins.groupname as "groupName",
                 logins.name as name,
-                workspaces.name as workspaceName 
+                workspaces.name as "workspaceName"
             FROM logins
                 INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 			WHERE logins.token = :token',
@@ -90,14 +90,14 @@ class SessionDAO extends DAO {
         $logindata = $this->_(
             'SELECT 
                logins.booklet_def,
-               logins.workspace_id as workspaceId,
+               logins.workspace_id as "workspaceId",
                logins.mode,
-               logins.groupname as groupName,
-               logins.token    as loginToken,
-               logins.name     as name,
-               workspaces.name as workspaceName,
-               booklets.id     as testId,
-               booklets.label  as bookletLabel,
+               logins.groupname as "groupName",
+               logins.token    as "loginToken",
+               logins.name,
+               workspaces.name as "workspaceName",
+               booklets.id     as "testId",
+               booklets.label  as "bookletLabel",
                persons.code
             FROM persons
                  INNER JOIN logins ON logins.id = persons.login_id

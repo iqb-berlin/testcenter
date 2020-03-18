@@ -110,10 +110,10 @@ class AdminDAO extends DAO {
 
 		$tokenInfo = $this->_(
 			'SELECT 
-                users.id as userId,
-                users.name  as name,
-                users.email as userEmail,
-                users.is_superadmin as isSuperadmin,
+                users.id as "userId",
+                users.name,
+                users.email as "userEmail",
+                users.is_superadmin as "isSuperadmin",
                 admintokens.valid_until,
                 admintokens.id as adminToken
             FROM users
