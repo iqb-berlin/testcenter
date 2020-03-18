@@ -55,7 +55,7 @@ class ErrorHandler {
     public function __invoke(Request $request, Response $response, Throwable $throwable) {
 
         $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
-        $errorUniqueId = ErrorHandler::logException($throwable, $throwable->getCode() >= 500);
+        $errorUniqueId = ErrorHandler::logException($throwable, $code >= 500);
 
         if (!is_a($throwable, "Slim\Exception\HttpException")) {
             $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), $code, $throwable);
