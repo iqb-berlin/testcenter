@@ -95,7 +95,9 @@ try  {
     }
 
     if ($initDAO->addSuperuser($args['user_name'], $args['user_password'])) {
-        echo "Superuser `{$args['user_name']}`` with password `" . substr($args['user_password'],0 ,4) . "***` created successfully.\n";
+
+        $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $args['user_password']);
+        echo "Superuser `{$args['user_name']}`` with password `$shortPW` created successfully.\n";
     }
 
     if (!isset($args['test_person_codes']) or !$args['test_person_codes']) {

@@ -54,7 +54,8 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
     if (!count($availableBookletsForLogin)) {
 
-        throw new HttpUnauthorizedException($request, "No Login for `{$body['name']}` with `{$body['password']}`");
+        $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $body['user_password']);
+        throw new HttpUnauthorizedException($request, "No Login for `{$body['name']}` with `{$shortPW}`");
     }
 
     $testSession = new TestSession($availableBookletsForLogin);

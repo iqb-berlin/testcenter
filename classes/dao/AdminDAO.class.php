@@ -39,7 +39,8 @@ class AdminDAO extends DAO {
 		$user = $this->_getUserByNameAndPasswordHash($username, $passwordSha);
 
 		if ($user === null) {
-            throw new HttpError("Invalid Password `$password`", 401);
+		    $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
+            throw new HttpError("Invalid Password `$shortPW`", 401);
         }
 
 		$this->_deleteTokensByUser($user['id']);
