@@ -3,7 +3,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class TestSession extends AbstractDataCollection {
+class TestSession extends DataCollection {
 
     const availableModes = [
         'run-hot-return',

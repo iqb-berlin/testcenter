@@ -4,7 +4,7 @@
 
 // TODO unit test
 
-class AbstractDataCollection {
+class DataCollection {
 
     function __construct($initData) {
 
@@ -26,7 +26,7 @@ class AbstractDataCollection {
         }
     }
 
-    static function fromFile(string $path = null): AbstractDataCollection {
+    static function fromFile(string $path = null): DataCollection {
 
         if (!file_exists($path)) {
             throw new Exception("JSON file not found: `$path`");

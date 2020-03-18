@@ -1,6 +1,6 @@
 <?php
 
-class SysCheck extends AbstractDataCollection {
+class SysCheck extends DataCollection {
 
     public $name = '';
     public $label = '';

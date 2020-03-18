@@ -1,7 +1,7 @@
 <?php
 
 
-class AdminSession extends AbstractDataCollection {
+class AdminSession extends DataCollection {
 
     // construction time
     public $adminToken = null;

@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUnhandledExceptionInspection */
 
-class SysCheckReport extends AbstractDataCollection {
+class SysCheckReport extends DataCollection {
 
     public $keyPhrase =  null;
     public $title = null;

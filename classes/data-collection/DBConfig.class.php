@@ -1,6 +1,6 @@
 <?php
 
-class DBConfig extends AbstractDataCollection {
+class DBConfig extends DataCollection {
 
     public $host = "localhost";
     public $port = "3306";

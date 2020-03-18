@@ -93,7 +93,7 @@ export TC_API_URL=http://localhost/testcenter-iqb-php
 vendor/bin/phpunit test
 ```
 
-# Dev
+# Development
 ## Coding Standards
 
 Following [PSR-12](https://www.php-fig.org/psr/psr-12/)
@@ -110,5 +110,9 @@ Most important:
 
 ### various rules
 
-* always a white line below function signature
+* always put a white line below function signature
 * use typed function signature as of php 7.1, arrays can be used as type, but will be replaced by typed array classes once 
+* dont't use require or include anywhere, program uses autoload for all classes from the `classes`-dir. 
+Exception: Unit-tests, where we want to define dependencies explicit in the test-file itself (and nowhere else).
+ 
+

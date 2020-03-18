@@ -2,9 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 require_once "classes/exception/HttpError.class.php";
-require_once "classes/data/AbstractDataCollection.class.php";
+require_once "classes/data-collection/DataCollection.class.php";
 require_once "classes/helper/DB.class.php";
-require_once "classes/data/DBConfig.class.php";
+require_once "classes/data-collection/DBConfig.class.php";
 require_once "classes/dao/DAO.class.php";
 require_once "classes/dao/AdminDAO.class.php";
 
