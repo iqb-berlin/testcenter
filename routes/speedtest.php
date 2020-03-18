@@ -15,7 +15,9 @@ $app->group('/speed-test', function(App $app) { // TODO write spec
 
         $size = (int) $request->getAttribute('size');
 
-        apache_setenv('no-gzip', '1');
+        if (function_exists('apache_setenv')) { // for OCBA server
+            apache_setenv('no-gzip', '1');
+        }
 
         if (($size > 8388608 * 8) or ($size < 16)) {
 
