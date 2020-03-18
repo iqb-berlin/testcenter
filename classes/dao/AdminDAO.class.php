@@ -115,7 +115,7 @@ class AdminDAO extends DAO {
                 users.email as "userEmail",
                 users.is_superadmin as "isSuperadmin",
                 admintokens.valid_until,
-                admintokens.id as adminToken
+                admintokens.id as "adminToken"
             FROM users
 			INNER JOIN admintokens ON users.id = admintokens.user_id
 			WHERE admintokens.id=:token',
