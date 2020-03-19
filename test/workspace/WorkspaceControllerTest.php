@@ -29,7 +29,7 @@ class WorkspaceControllerTest extends TestCase {
 
         $this->vfs = vfsStream::setup('root', 0777);
         $sampledataDir = vfsStream::newDirectory('sampledata', 0777)->at($this->vfs);
-        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../sampledata'), $sampledataDir);
+        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../../sampledata'), $sampledataDir);
         $this->vfsData = vfsStream::newDirectory('vo_data', 0777)->at($this->vfs);
 
         $initializer = new WorkspaceInitializer();
