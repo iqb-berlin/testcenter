@@ -1,6 +1,8 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+// TODO unit test
+
 
 class RequirePersonToken extends RequireToken {
 
@@ -9,7 +11,7 @@ class RequirePersonToken extends RequireToken {
         $sessionDAO = new SessionDAO();
         $person = $sessionDAO->getPerson($tokenString);
 
-        return new PersonAuthToken($tokenString, $person['workspace_id'], $person['id'], $person['login_id']);
+        return new PersonAuthToken($tokenString, (int) $person['workspace_id'], (int) $person['id'], (int) $person['login_id']);
     }
 
     function getTokenName(): string {

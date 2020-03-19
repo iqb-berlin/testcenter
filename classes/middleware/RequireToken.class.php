@@ -1,9 +1,12 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+// TODO unit test
 
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Request;
 use Slim\Http\Response;
+
 
 abstract class RequireToken {
 
@@ -21,7 +24,7 @@ abstract class RequireToken {
     }
 
 
-    function getTokenFromHeader(Request $request): string { // TODO unit-test
+    function getTokenFromHeader(Request $request): string {
 
         $tokenName = $this->getTokenName();
 

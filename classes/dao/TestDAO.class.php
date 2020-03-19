@@ -281,7 +281,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function addResponse(int $testId, string $unitName, string $responses, string $type, int $timestamp) : void {
+    public function addResponse(int $testId, string $unitName, string $responses, string $type, float $timestamp) : void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
         $this->_('UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt
@@ -298,7 +298,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function addUnitLog(int $testId, string $unitName, string $logEntry, int $timestamp): void { // TODO manchmal wird die subquery 0 ?!
+    public function addUnitLog(int $testId, string $unitName, string $logEntry, float $timestamp): void {
 
         $unitId = $this->getOrCreateUnitId($testId, $unitName);
 

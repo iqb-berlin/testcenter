@@ -1,6 +1,7 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+// TODO unit test
 
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpInternalServerErrorException;

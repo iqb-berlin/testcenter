@@ -1,4 +1,7 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+// TODO unit test
 
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -52,7 +55,7 @@ class ErrorHandler {
     }
 
 
-    public function __invoke(Request $request, Response $response, Throwable $throwable) {
+    public function __invoke(Request $request, Response $response, Throwable $throwable): Response {
 
         $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
         $errorUniqueId = ErrorHandler::logException($throwable, $code >= 500);

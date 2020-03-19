@@ -1,6 +1,8 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+// TODO unit test
+
 
 class RequireLoginToken extends RequireToken {
 

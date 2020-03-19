@@ -215,7 +215,7 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function getWorkspaceRole($token, $requestedWorkspaceId) {
+	public function getWorkspaceRole(string $token, int $requestedWorkspaceId): string {
 
 		$user = $this->_(
 			'SELECT workspace_users.role FROM workspaces
@@ -229,7 +229,7 @@ class AdminDAO extends DAO {
             ]
 		);
 
-		return $user['role'];
+		return $user['role'] ?? '';
 	}
 
 

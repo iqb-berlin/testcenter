@@ -1,8 +1,7 @@
 <?php
-
-// TODO unit Test
-
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+// TODO unit test
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Request;
@@ -11,7 +10,7 @@ class RequestBodyParser {
 
     static function getRequiredElement(Request $request, string $elementName) {
 
-        $requestBody = JSON::decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody()->getContents());
 
         if (!isset($requestBody->$elementName)) {
             throw new HttpBadRequestException($request, "Required body-parameter is missing: `$elementName`");
@@ -23,7 +22,7 @@ class RequestBodyParser {
 
     static function getElementWithDefault(Request $request, string $elementName, $default) {
 
-        $requestBody = JSON::decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody()->getContents());
 
         return isset($requestBody->$elementName) ? $requestBody->$elementName : $default;
     }
@@ -38,7 +37,7 @@ class RequestBodyParser {
      */
     static function getElements(Request $request, array $elements2defaults) {
 
-        $requestBody = JSON::decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody()->getContents());
 
         $elements = [];
 

@@ -1,5 +1,6 @@
 <?php
-
+/** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 // TODO unit test
 
 class WorkspaceInitializer {
@@ -123,11 +124,11 @@ class WorkspaceInitializer {
         $loginId = $sessionDAO->getLoginId($loginToken);
         $person = $sessionDAO->getOrCreatePerson($loginId, $loginCode);
         $test = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
-        $testDAO->addTestReview($test['id'], 1, "", "sample booklet review");
-        $testDAO->addUnitReview($test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
-        $testDAO->addUnitLog($test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
-        $testDAO->addBookletLog($test['id'], "sample log entry", $timestamp);
-        $testDAO->addResponse($test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
-        $testDAO->updateUnitLastState($test['id'], "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
+        $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
+        $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
+        $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
+        $testDAO->addBookletLog((int) $test['id'], "sample log entry", $timestamp);
+        $testDAO->addResponse((int) $test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
+        $testDAO->updateUnitLastState((int) $test['id'], "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
     }
 }

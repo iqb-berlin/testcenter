@@ -1,4 +1,7 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+// TODO unit test
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
@@ -39,11 +42,11 @@ class IsWorkspacePermitted {
 
         $adminDAO = new AdminDAO();
 
-        if (!$adminDAO->hasAdminAccessToWorkspace($authToken->getToken(), $params['ws_id'])) {
+        if (!$adminDAO->hasAdminAccessToWorkspace($authToken->getToken(), (int) $params['ws_id'])) {
             throw new HttpForbiddenException($request,"Access to workspace ws_{$params['ws_id']} is not provided.");
         }
 
-        $userRoleOnWorkspace = $role = $adminDAO->getWorkspaceRole($authToken->getToken(), $params['ws_id']);
+        $userRoleOnWorkspace = $role = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
 
         if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Role::withChildren($userRoleOnWorkspace)))) {
             throw new HttpForbiddenException($request,"Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");

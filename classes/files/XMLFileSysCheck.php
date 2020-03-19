@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+/** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 
 class XMLFileSysCheck extends XMLFile {
