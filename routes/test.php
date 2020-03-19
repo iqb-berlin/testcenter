@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Slim\App;
 use Slim\Exception\HttpForbiddenException;
@@ -14,7 +15,7 @@ $app->group('/test', function(App $app) {
 
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
 
         $bookletName = $testDAO->getBookletName($testId);
         $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
@@ -35,7 +36,7 @@ $app->group('/test', function(App $app) {
         /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $unitName = $request->getAttribute('unit_name');
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
 
         $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
         $unitFile = $workspaceController->getXMLFileByName('Unit', $unitName);
@@ -69,7 +70,7 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/unit/{unit_name}/review', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
         $review = RequestBodyParser::getElements($request, [
@@ -93,7 +94,7 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/review', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
 
         $review = RequestBodyParser::getElements($request, [
             'priority' => 0, // was: p
@@ -114,7 +115,7 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
         $review = RequestBodyParser::getElements($request, [
@@ -132,7 +133,7 @@ $app->group('/test', function(App $app) {
 
     $app->patch('/{test_id}/unit/{unit_name}/restorepoint', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
         $body = RequestBodyParser::getElements($request, [
@@ -151,7 +152,7 @@ $app->group('/test', function(App $app) {
 
     $app->patch('/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
         $body = RequestBodyParser::getElements($request, [
@@ -168,7 +169,7 @@ $app->group('/test', function(App $app) {
 
     $app->patch('/{test_id}/state', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
 
         $body = RequestBodyParser::getElements($request, [
             'key' => null,
@@ -184,7 +185,7 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
         $body = RequestBodyParser::getElements($request, [
@@ -203,7 +204,7 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/log', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
 
         $body = RequestBodyParser::getElements($request, [
             'entry' => null, // was e
@@ -219,7 +220,7 @@ $app->group('/test', function(App $app) {
 
     $app->patch('/{test_id}/lock', function (Request $request, Response $response) use ($testDAO) {
 
-        $testId = $request->getAttribute('test_id');
+        $testId = (int) $request->getAttribute('test_id');
 
         $testDAO->lockBooklet($testId);
 

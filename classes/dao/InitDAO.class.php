@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 // TODO unit test
 // use $this-_ instead of pdoDBhandle function directly
@@ -82,7 +83,7 @@ class InitDAO extends SuperAdminDAO {
 
         $user = $this->getUserByName($userName);
 
-        $this->setWorkspaceRightsByUser($user['id'], [(object) [
+        $this->setWorkspaceRightsByUser((int) $user['id'], [(object) [
             "id" => $workspaceId,
             "role" => "RW"
         ]]);

@@ -1,6 +1,6 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 
 class SessionDAO extends DAO {
@@ -187,7 +187,7 @@ class SessionDAO extends DAO {
         if ($login == null ){
             throw new HttpError("LoginToken invalid: `$loginToken`", 403);
         }
-        return $login['id'];
+        return (int) $login['id'];
     }
 
 
@@ -202,7 +202,7 @@ class SessionDAO extends DAO {
         if ($person == null ){
             throw new HttpError("PersonToken invalid: `$personToken`", 403);
         }
-        return $person['id'];
+        return (int) $person['id'];
     }
 
 

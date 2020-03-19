@@ -1,6 +1,6 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 
 class AdminDAO extends DAO {
@@ -43,11 +43,11 @@ class AdminDAO extends DAO {
             throw new HttpError("Invalid Password `$shortPW`", 401);
         }
 
-		$this->_deleteTokensByUser($user['id']);
+		$this->_deleteTokensByUser((int) $user['id']);
 
 		$token = $this->_randomToken('admin');
 
-		$this->_storeToken($user['id'], $token);
+		$this->_storeToken((int) $user['id'], $token);
 
 		return $token;
 	}

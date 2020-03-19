@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpNotFoundException;
@@ -15,7 +16,7 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/reviews', function(Request $request, Response $response) use ($adminDAO) {
 
         $groups = explode(",", $request->getParam('groups'));
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         if (!$groups) {
             throw new HttpBadRequestException($request, "Parameter groups is missing");
@@ -30,7 +31,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/results', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         $results = $adminDAO->getAssembledResults($workspaceId);
 
@@ -41,7 +42,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/responses', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
         $results = $adminDAO->getResponses($workspaceId, $groups);
@@ -53,7 +54,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->delete('/{ws_id}/responses', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
 
         foreach ($groups as $group) {
@@ -67,7 +68,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $workspaceController = new WorkspaceController($workspaceId);
 
         return $response->withJson($workspaceController->getTestStatusOverview($adminDAO->getBookletsStarted($workspaceId)));
@@ -77,7 +78,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
         $results = $adminDAO->getLogs($workspaceId, $groups);
@@ -89,7 +90,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/booklets/started', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
         $bookletsStarted = [];
@@ -111,7 +112,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/validation', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         $workspaceValidator = new WorkspaceValidator($workspaceId);
         $report = $workspaceValidator->validate();
@@ -151,7 +152,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->post('/{ws_id}/file', function(Request $request, Response $response) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
 
@@ -162,7 +163,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/files', function(Request $request, Response $response) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         $workspaceController = new WorkspaceController($workspaceId);
         $files = $workspaceController->getAllFiles();
@@ -174,7 +175,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->delete('/{ws_id}/files', function(Request $request, Response $response) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
 
         $workspaceController = new WorkspaceController($workspaceId);
@@ -188,7 +189,7 @@ $app->group('/workspace', function(App $app) {
     $app->patch('/{ws_id}/tests/unlock', function(Request $request, Response $response) use ($adminDAO) { // TODO name more RESTful
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         foreach($groups as $groupName) {
             $adminDAO->changeBookletLockStatus($workspaceId, $groupName, false);
@@ -202,7 +203,7 @@ $app->group('/workspace', function(App $app) {
     $app->patch('/{ws_id}/tests/lock', function(Request $request, Response $response) use ($adminDAO) { // TODO name more RESTful
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         foreach($groups as $groupName) {
             $adminDAO->changeBookletLockStatus($workspaceId, $groupName, true);
@@ -220,7 +221,7 @@ $app->group('/workspace', function(App $app) {
         $lineEnding = $request->getParam('lineEnding', '\n');
         $enclosure = $request->getParam('enclosure', '"');
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         $workspaceController = new WorkspaceController($workspaceId);
         $reports = $workspaceController->collectSysCheckReports($checkIds);
@@ -244,7 +245,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/sys-check/reports/overview', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         $workspaceController = new WorkspaceController($workspaceId);
         $reports = $workspaceController->getSysCheckReportList();
@@ -256,7 +257,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->delete('/{ws_id}/sys-check/reports', function(Request $request, Response $response) use ($adminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $checkIds = RequestBodyParser::getElementWithDefault($request,'checkIds', []);
 
         $workspaceController = new WorkspaceController($workspaceId);
@@ -275,7 +276,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->put('', function (Request $request, Response $response) use ($superAdminDAO) {
 
-        $requestBody = JSON::decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody()->getContents());
         if (!isset($requestBody->name)) {
             throw new HttpBadRequestException($request, "New workspace name missing");
         }
@@ -288,8 +289,8 @@ $app->group('/workspace', function(App $app) {
 
     $app->patch('/{ws_id}', function (Request $request, Response $response) use ($superAdminDAO) {
 
-        $requestBody = JSON::decode($request->getBody());
-        $workspaceId = $request->getAttribute('ws_id');
+        $requestBody = JSON::decode($request->getBody()->getContents());
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         if (!isset($requestBody->name) or (!$requestBody->name)) {
             throw new HttpBadRequestException($request, "New name (name) is missing");
@@ -302,8 +303,8 @@ $app->group('/workspace', function(App $app) {
 
     $app->patch('/{ws_id}/users', function (Request $request, Response $response) use ($superAdminDAO) {
 
-        $requestBody = JSON::decode($request->getBody());
-        $workspaceId = $request->getAttribute('ws_id');
+        $requestBody = JSON::decode($request->getBody()->getContents());
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         if (!isset($requestBody->u) or (!count($requestBody->u))) {
             throw new HttpBadRequestException($request, "User-list (u) is missing");
@@ -316,7 +317,7 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/users', function (Request $request, Response $response) use ($superAdminDAO) {
 
-        $workspaceId = $request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         return $response->withJson($superAdminDAO->getUsersByWorkspace($workspaceId));
     });
@@ -328,7 +329,7 @@ $app->group('/workspace', function(App $app) {
 
 $app->get('/workspace/{ws_id}/sys-check/{sys-check_name}', function(Request $request, Response $response) use ($app) {
 
-    $workspaceId = $request->getAttribute('ws_id');
+    $workspaceId = (int) $request->getAttribute('ws_id');
     $sysCheckName = $request->getAttribute('sys-check_name');
 
     $workspaceController = new WorkspaceController($workspaceId);
@@ -352,7 +353,7 @@ $app->get('/workspace/{ws_id}/sys-check/{sys-check_name}', function(Request $req
 
 $app->get('/workspace/{ws_id}/sys-check/{sys-check_name}/unit-and-player', function(Request $request, Response $response) use ($app) {
 
-    $workspaceId = $request->getAttribute('ws_id');
+    $workspaceId = (int) $request->getAttribute('ws_id');
     $sysCheckName = $request->getAttribute('sys-check_name');
 
     $workspaceController = new WorkspaceController($workspaceId);
@@ -365,9 +366,9 @@ $app->get('/workspace/{ws_id}/sys-check/{sys-check_name}/unit-and-player', funct
 
 $app->put('/workspace/{ws_id}/sys-check/{sys-check_name}/report', function(Request $request, Response $response) {
 
-    $workspaceId = $request->getAttribute('ws_id');
+    $workspaceId = (int) $request->getAttribute('ws_id');
     $sysCheckName = $request->getAttribute('sys-check_name');
-    $report = new SysCheckReport(JSON::decode($request->getBody()));
+    $report = new SysCheckReport(JSON::decode($request->getBody()->getContents()));
 
     $workspaceController = new WorkspaceController($workspaceId);
 

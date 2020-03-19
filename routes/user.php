@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Slim\App;
 use Slim\Exception\HttpBadRequestException;
@@ -12,7 +13,7 @@ $app->group('/user', function(App $app) {
 
     $app->get('/{user_id}/workspaces', function(Request $request, Response $response) use ($superAdminDAO) {
 
-        $userId = $request->getAttribute('user_id');
+        $userId = (int) $request->getAttribute('user_id');
         $workspaces = $superAdminDAO->getWorkspacesByUser($userId);
         return $response->withJson($workspaces);
     });
@@ -20,8 +21,8 @@ $app->group('/user', function(App $app) {
 
     $app->patch('/{user_id}/workspaces', function(Request $request, Response $response) use ($superAdminDAO) {
 
-        $requestBody = JSON::decode($request->getBody());
-        $userId = $request->getAttribute('user_id');
+        $requestBody = JSON::decode($request->getBody()->getContents());
+        $userId = (int) $request->getAttribute('user_id');
 
         if (!isset($requestBody->ws) or (!count($requestBody->ws))) {
             throw new HttpBadRequestException($request, "Workspace-list (ws) is missing.");
@@ -35,7 +36,7 @@ $app->group('/user', function(App $app) {
 
     $app->put('', function(Request $request, Response $response) use ($superAdminDAO) {
 
-        $requestBody = JSON::decode($request->getBody());
+        $requestBody = JSON::decode($request->getBody()->getContents());
         if (!isset($requestBody->p) or !isset($requestBody->n)) {
             throw new HttpBadRequestException($request, "Username or Password missing");
         }
@@ -48,8 +49,8 @@ $app->group('/user', function(App $app) {
 
     $app->patch('/{user_id}/password', function(Request $request, Response $response) use ($superAdminDAO) {
 
-        $requestBody = JSON::decode($request->getBody());
-        $userId = $request->getAttribute('user_id');
+        $requestBody = JSON::decode($request->getBody()->getContents());
+        $userId = (int) $request->getAttribute('user_id');
 
         if (!isset($requestBody->p)) {
             throw new HttpBadRequestException($request, "Password missing");

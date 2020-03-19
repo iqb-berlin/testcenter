@@ -144,7 +144,7 @@ paths:
                                 type: string
                             example: lrOI/JLFOAPBOHt=
                 '400':
-                    description: 'bas package size'
+                    description: 'bad package size'
                 '500':
                     description: 'server error'
     /speed-test/random-package:

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Route;
@@ -25,7 +26,7 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
 $app->delete('/workspaces', function (Request $request, Response $response) {
 
     $superAdminDAO = new SuperAdminDAO();
-    $bodyData = JSON::decode($request->getBody());
+    $bodyData = JSON::decode($request->getBody()->getContents());
     $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
 
     if (!is_array($workspaceList)) {
@@ -53,7 +54,7 @@ $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ R
 $app->delete('/users', function(Request $request, Response $response) {
 
     $superAdminDAO = new SuperAdminDAO();
-    $bodyData = JSON::decode($request->getBody());
+    $bodyData = JSON::decode($request->getBody()->getContents());
     $userList = isset($bodyData->u) ? $bodyData->u : [];
 
     $superAdminDAO->deleteUsers($userList);

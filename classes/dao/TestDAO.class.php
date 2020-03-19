@@ -1,6 +1,6 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 
 class TestDAO extends DAO {
@@ -152,7 +152,7 @@ class TestDAO extends DAO {
             ]
         );
 
-        $state = (strlen($testData['laststate']) > 0) ? JSON::decode($testData['laststate'], true) : [];
+        $state = $testData['laststate'] ? JSON::decode($testData['laststate'], true) : [];
         $state[$stateKey] = $stateValue;
 
          $this->_(
@@ -182,7 +182,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function updateUnitLastState($testId, $unitName, $stateKey, $stateValue): void {
+    public function updateUnitLastState(int $testId, string $unitName, string $stateKey, string $stateValue): void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
 
@@ -193,7 +193,7 @@ class TestDAO extends DAO {
             ]
         );
 
-        $state = (strlen($unitData['laststate']) > 0) ? JSON::decode($unitData['laststate'], true) : [];
+        $state = $unitData['laststate'] ? JSON::decode($unitData['laststate'], true) : [];
         $state[$stateKey] = $stateValue;
 
         $this->_(
@@ -207,12 +207,12 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function lockBooklet($bookletDbId): void {
+    public function lockBooklet(int $testId): void {
 
         $this->_('UPDATE booklets SET locked = :locked WHERE id = :id',
             [
                 ':locked' => '1',
-                ':id' => $bookletDbId
+                ':id' => $testId
             ]
         );
     }

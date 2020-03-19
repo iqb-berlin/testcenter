@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
@@ -76,7 +77,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
     $sessionDAO = new SessionDAO();
 
     $body = RequestBodyParser::getElements($request, [
-        'code' => 0
+        'code' => ''
     ]);
 
     $loginId = $sessionDAO->getLoginId($authToken->getToken());
