@@ -41,6 +41,10 @@ try {
 
     $initializer->createSampleLoginsReviewsLogs('xxx');
 
+    // init random generator
+    srand(1);
+
+
 //    TODO this is interessting for debugging sometimes... find a good place to put it
 //    $fullState = "# State of DATA_DIR\n\n";
 //    $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), 1);

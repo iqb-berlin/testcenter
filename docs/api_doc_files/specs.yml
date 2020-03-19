@@ -7,7 +7,7 @@ paths:
     /session:
         get:
             summary: 'get a session'
-            description: 'returns session data according to a AuthToken. Type of the session is deteced by the type of the token. The AuthToken is a JSOn array in dthe Header `AuthToken`, containing the field `l` with a login-session-token (tow factor authentication part I only), `p` with a person token (authenticated as testee or test-commander), or `at` with an admin (authenticated as administrator). If there are several Token in the Header, only one session can be returned. Existance of sessions to the tokens are proved in the order `login`, `person`, `admin`.'
+            description: 'returns session data according to a AuthToken. Type of the session is deteced by the type of the token. The AuthToken is a JSON-array in the header `AuthToken`, containing the field `l` with a login-session-token (tow factor authentication part I only), `p` with a person token (authenticated as testee or test-commander), or `at` with an admin (authenticated as administrator). If there are several tokens in the header, only one session can be returned. Existance of sessions to the tokens are proved in the order `login`, `person`, `admin`.'
             parameters:
                 -
                     in: header
@@ -122,6 +122,53 @@ paths:
                     description: 'Insufficent Crendetials'
                 '500':
                     description: 'Server Error'
+    '/speed-test/random-package/{size}':
+        get:
+            summary: 'download speedtest package'
+            description: 'returns a random byte package - for speedtests'
+            parameters:
+                -
+                    in: path
+                    name: size
+                    description: 'number of bytes to bedelivered - between 16 and 67108864'
+                    example: 16
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'a object containg information about booklet'
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                            example: lrOI/JLFOAPBOHt=
+                '400':
+                    description: 'bas package size'
+                '500':
+                    description: 'server error'
+    /speed-test/random-package:
+        post:
+            summary: 'upload speedtest package'
+            description: 'receives any package and returns information about size and time - for speedtests'
+            requestBody:
+                content:
+                    text/plain:
+                        schema:
+                            type: string
+                        example: '1324567890123456'
+            responses:
+                '200':
+                    description: 'a object containg information about booklet'
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    requestTime: {type: number}
+                                    packageReceivedSize: {type: number, example: 16}
+                '500':
+                    description: 'server error'
     /list/routes:
         get:
             summary: 'Lists all available endpoints'
