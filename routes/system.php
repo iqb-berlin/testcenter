@@ -103,9 +103,9 @@ $app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection
 
     $availableSysChecks = [];
 
-    foreach (WorkspaceController::getAll() as $workspaceController) { /* @var WorkspaceController $workspaceController */
+    foreach (SysChecksFolder::getAll() as $sysChecksFolder) { /* @var SysChecksFolder $sysChecksFolder */
 
-        $availableSysChecks = array_merge($availableSysChecks, $workspaceController->findAvailableSysChecks());
+        $availableSysChecks = array_merge($availableSysChecks, $sysChecksFolder->findAvailableSysChecks());
     }
 
     if (!count($availableSysChecks)) {

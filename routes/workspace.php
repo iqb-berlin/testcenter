@@ -69,9 +69,9 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
-        $workspaceController = new WorkspaceController($workspaceId);
+        $bookletsFolder = new BookletsFolder($workspaceId);
 
-        return $response->withJson($workspaceController->getTestStatusOverview($adminDAO->getBookletsStarted($workspaceId)));
+        return $response->withJson($bookletsFolder->getTestStatusOverview($adminDAO->getBookletsStarted($workspaceId)));
 
     })->add(new IsWorkspacePermitted('MO'));
 
@@ -223,8 +223,8 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
-        $workspaceController = new WorkspaceController($workspaceId);
-        $reports = $workspaceController->collectSysCheckReports($checkIds);
+        $sysChecks = new SysChecksFolder($workspaceId);
+        $reports = $sysChecks->collectSysCheckReports($checkIds);
 
         # TODO remove $acceptWorkaround if https://github.com/apiaryio/api-elements.js/issues/413 is resolved
         $acceptWorkaround = $request->getParam('format', 'json') == 'csv';
@@ -247,8 +247,8 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
-        $workspaceController = new WorkspaceController($workspaceId);
-        $reports = $workspaceController->getSysCheckReportList();
+        $sysChecksFolder = new SysChecksFolder($workspaceId);
+        $reports = $sysChecksFolder->getSysCheckReportList();
 
         return $response->withJson($reports);
 
@@ -260,8 +260,8 @@ $app->group('/workspace', function(App $app) {
         $workspaceId = (int) $request->getAttribute('ws_id');
         $checkIds = RequestBodyParser::getElementWithDefault($request,'checkIds', []);
 
-        $workspaceController = new WorkspaceController($workspaceId);
-        $fileDeletionReport = $workspaceController->deleteSysCheckReports($checkIds);
+        $sysChecksFolder = new SysChecksFolder($workspaceId);
+        $fileDeletionReport = $sysChecksFolder->deleteSysCheckReports($checkIds);
 
         return $response->withJson($fileDeletionReport)->withStatus(207);
 
@@ -370,10 +370,10 @@ $app->put('/workspace/{ws_id}/sys-check/{sys-check_name}/report', function(Reque
     $sysCheckName = $request->getAttribute('sys-check_name');
     $report = new SysCheckReport(JSON::decode($request->getBody()->getContents()));
 
-    $workspaceController = new WorkspaceController($workspaceId);
+    $sysChecksFolder = new SysChecksFolder($workspaceId);
 
     /* @var XMLFileSysCheck $xmlFile */
-    $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
+    $xmlFile = $sysChecksFolder->getXMLFileByName('SysCheck', $sysCheckName);
 
     if (strlen($report->keyPhrase) <= 0) {
 
@@ -385,7 +385,7 @@ $app->put('/workspace/{ws_id}/sys-check/{sys-check_name}/report', function(Reque
         throw new HttpError("Wrong key `$report->keyPhrase`", 400);
     }
 
-    $workspaceController->saveSysCheckReport($report);
+    $sysChecksFolder->saveSysCheckReport($report);
 
     return $response->withStatus(201);
 });

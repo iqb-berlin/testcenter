@@ -11,6 +11,22 @@ class WorkspaceController {
 
     const subFolders = ['Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource'];
 
+
+    static function getAll(): array {
+
+        $workspaceControllers = [];
+        $class = get_called_class();
+
+        foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
+
+            $workspaceId = array_pop(explode('_', $workspaceDir));
+            $workspaceControllers[$workspaceId] = new $class((int) $workspaceId);
+        }
+
+        return $workspaceControllers;
+    }
+
+
     function __construct(int $workspaceId) {
 
         $this->_workspaceId = $workspaceId;
@@ -21,7 +37,7 @@ class WorkspaceController {
     }
 
 
-    private function _getOrCreateWorkspacePath() {
+    protected function _getOrCreateWorkspacePath() {
 
         $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
         if (file_exists($workspacePath) and !is_dir($workspacePath)) {
@@ -36,7 +52,7 @@ class WorkspaceController {
     }
 
 
-    private function _getOrCreateSubFolderPath(string $type): string {
+    protected function _getOrCreateSubFolderPath(string $type): string {
 
         $subFolderPath = $this->_workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
@@ -54,13 +70,13 @@ class WorkspaceController {
     }
 
 
-    function getWorkspacePath() {
+    public function getWorkspacePath() {
 
         return $this->_workspacePath;
     }
 
 
-    function getAllFiles(): array {
+    public function getAllFiles(): array {
 
         $fileList = [];
 
@@ -107,7 +123,7 @@ class WorkspaceController {
      * @param $filesToDelete - array containing file paths local relative to this workspace
      * @return array
      */
-    function deleteFiles(array $filesToDelete): array {
+    public function deleteFiles(array $filesToDelete): array {
 
         $report = [
             'deleted' => [],
@@ -128,115 +144,9 @@ class WorkspaceController {
     }
 
 
-    private function _isPathLegal(string $path): bool {
+    protected function _isPathLegal(string $path): bool {
 
         return substr_count($path, '..') == 0;
-    }
-
-    
-    function assemblePreparedBookletsFromFiles(): array {
-
-        $testTakerDirPath = $this->_workspacePath . '/Testtakers';
-        if (!file_exists($testTakerDirPath)) {
-            throw new Exception("Folder not found: $testTakerDirPath");
-        }
-        $preparedBooklets = [];
-
-        foreach (Folder::glob($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
-
-            $testTakersFile = new XMLFileTesttakers($fullFilePath);
-            if (!$testTakersFile->isValid()) {
-                continue;
-            }
-
-            if ($testTakersFile->getRoottagName() != 'Testtakers') {
-                continue;
-            }
-
-            foreach ($testTakersFile->getAllTesttakers() as $prepared) {
-
-                $localGroupName = $prepared['groupname'];
-                $localLoginData = $prepared;
-                // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-                if (!isset($preparedBooklets[$localGroupName])) {
-                    $preparedBooklets[$localGroupName] = [];
-                }
-                array_push($preparedBooklets[$localGroupName], $localLoginData);
-            }
-        }
-        return $this->_sortPreparedBooklets($preparedBooklets);
-    }
-
-
-    private function _sortPreparedBooklets(array $preparedBooklets): array {
-
-        $preparedBookletsSorted = [];
-        // error_log(print_r($preparedBooklets, true));
-        // !! no cross checking, so it's not checked whether a prepared booklet is started or a started booklet has been prepared // TODO overthink this
-        foreach($preparedBooklets as $group => $preparedData) {
-            $alreadyCountedLogins = [];
-            foreach($preparedData as $pd) {
-                // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-                if (!isset($preparedBookletsSorted[$group])) {
-                    $preparedBookletsSorted[$group] = [
-                        'groupname' => $group,
-                        'loginsPrepared' => 0,
-                        'personsPrepared' => 0,
-                        'bookletsPrepared' => 0,
-                        'bookletsStarted' => 0,
-                        'bookletsLocked' => 0,
-                        'laststart' => strtotime("1/1/2000"),
-                        'laststartStr' => ''
-                    ];
-                }
-                if (!in_array($pd['loginname'], $alreadyCountedLogins)) {
-                    array_push($alreadyCountedLogins, $pd['loginname']);
-                    $preparedBookletsSorted[$group]['loginsPrepared'] += 1;
-                }
-                $preparedBookletsSorted[$group]['personsPrepared'] += 1;
-                $preparedBookletsSorted[$group]['bookletsPrepared'] += count($pd['booklets']);
-            }
-        }
-        return $preparedBookletsSorted;
-    }
-
-
-    function getTestStatusOverview(array $bookletsStarted): array {
-
-        $preparedBooklets = $this->assemblePreparedBookletsFromFiles();
-
-        foreach($bookletsStarted as $startedBooklet) {
-            // groupname, loginname, code, bookletname, locked
-            if (!isset($preparedBooklets[$startedBooklet['groupname']])) {
-                $preparedBooklets[$startedBooklet['groupname']] = [
-                    'groupname' => $startedBooklet['groupname'],
-                    'loginsPrepared' => 0,
-                    'personsPrepared' => 0,
-                    'bookletsPrepared' => 0,
-                    'bookletsStarted' => 0,
-                    'bookletsLocked' => 0,
-                    'laststart' => strtotime("1/1/2000"),
-                    'laststartStr' => ''
-                ];
-            }
-            $preparedBooklets[$startedBooklet['groupname']]['bookletsStarted'] += 1;
-            if ($startedBooklet['locked'] == '1') {
-                $preparedBooklets[$startedBooklet['groupname']]['bookletsLocked'] += 1;
-            }
-            $tmpTime = strtotime($startedBooklet['laststart']);
-            if ($tmpTime > $preparedBooklets[$startedBooklet['groupname']]['laststart']) {
-                $preparedBooklets[$startedBooklet['groupname']]['laststart'] = $tmpTime;
-                $preparedBooklets[$startedBooklet['groupname']]['laststartStr'] = strftime('%d.%m.%Y',$tmpTime);
-            }
-        }
-
-        // get rid of the key
-        $returner = [];
-        foreach($preparedBooklets as $group => $groupData) {
-            array_push($returner, $groupData);
-        }
-
-        return $returner;
     }
 
 
@@ -248,24 +158,21 @@ class WorkspaceController {
      * @return array - keys: imported files; value true or error message
      * @throws Exception
      */
-    function importUnfiledResource($fileName) {
+    public function importUnsortedResource($fileName) {
 
         if (strtoupper(substr($fileName, -4)) == '.ZIP') {
-            return $this->_importUnfiledZipArchive($fileName);
+            return $this->_importUnsortedZipArchive($fileName);
         }
 
-        $this->_fileAndValidateUnfiledResource($fileName);
+        $this->_sortAndValidateUnsortedResource($fileName);
 
         return [
             $fileName => true
         ];
     }
 
-    /**
-     * @param $fileName
-     * @throws Exception
-     */
-    private function _fileAndValidateUnfiledResource($fileName) {
+
+    protected function _sortAndValidateUnsortedResource($fileName) {
 
         $targetFolder = $this->_workspacePath . '/Resource';
 
@@ -302,12 +209,8 @@ class WorkspaceController {
         }
     }
 
-    /**
-     * @param $fileName
-     * @return array - keys: imported files; value true or error message
-     * @throws Exception
-     */
-    private function _importUnfiledZipArchive($fileName) {
+
+    protected function _importUnsortedZipArchive($fileName) {
 
         $extractedFiles = [];
 
@@ -332,7 +235,7 @@ class WorkspaceController {
             while (($entry = readdir($zipFolderDir)) !== false) {
                 if (is_file($extractionPath . '/' .  $entry)) {
                     try { // we don't want to fail if one file fails
-                        $this->_fileAndValidateUnfiledResource("$extractionFolder/$entry");
+                        $this->_sortAndValidateUnsortedResource("$extractionFolder/$entry");
                         $extractedFiles["$extractionFolder/$entry"] = true;
                     } catch (Exception $e) {
                         $extractedFiles["$extractionFolder/$entry"] = $e->getMessage();
@@ -348,7 +251,7 @@ class WorkspaceController {
     }
 
 
-    private function _emptyAndDeleteFolder($folder) {
+    protected function _emptyAndDeleteFolder($folder) {
         if (file_exists($folder)) {
             $folderDir = opendir($folder);
             if ($folderDir !== false) {
@@ -364,135 +267,6 @@ class WorkspaceController {
                 }
                 rmdir($folder);
             }
-        }
-    }
-
-
-    function getBookletName(string $bookletId): string {
-
-        $bookletName = '';
-
-        $lookupFolder = $this->_workspacePath . '/Booklet';
-        if (!file_exists($lookupFolder)) {
-            throw new HttpError("Folder does not exist: `$lookupFolder`", 500);
-        }
-
-        $lookupDir = opendir($lookupFolder);
-        if ($lookupDir === false) {
-            throw new HttpError("Could not open: `$lookupFolder`", 404);
-        }
-
-        while (($entry = readdir($lookupDir)) !== false) {
-
-            $fullFileName = $lookupFolder . '/' . $entry;
-
-            if (is_file($fullFileName) && (strtoupper(substr($entry, -4)) == '.XML')) {
-
-                $xFile = new XMLFile($fullFileName);
-
-                if ($xFile->isValid()) {
-
-                    if ($xFile->getRoottagName()  == 'Booklet') {
-
-                        $myBookletId = $xFile->getId();
-
-                        if ($myBookletId === $bookletId) {
-
-                            $bookletName = $xFile->getLabel();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        return $bookletName;
-    }
-
-
-    function getSysCheckReportList(): array {
-
-        $allReports = $this->collectSysCheckReports();
-
-        $allReportsByCheckIds = array_reduce($allReports, function($agg, SysCheckReportFile $report) {
-            if (!isset($agg[$report->getCheckId()])) {
-                $agg[$report->getCheckId()] = [$report];
-            } else {
-                $agg[$report->getCheckId()][] = $report;
-            }
-            return $agg;
-        }, []);
-
-        return array_map(function(array $reportSet, string $checkId) {
-
-            return [
-                'id' => $checkId,
-                'count' => count($reportSet),
-                'label' => $reportSet[0]->getCheckLabel(),
-                'details' => SysCheckReportFile::getStatistics($reportSet)
-            ];
-        }, $allReportsByCheckIds, array_keys($allReportsByCheckIds));
-    }
-
-
-    function collectSysCheckReports(array $filterCheckIds = null): array {
-
-        $reportFolderName = $this->_getSysCheckReportsPath();
-        $reportDir = opendir($reportFolderName);
-        $reports = [];
-
-        while (($reportFileName = readdir($reportDir)) !== false) {
-
-            $reportFilePath = $reportFolderName . '/' . $reportFileName;
-
-            if (!is_file($reportFilePath) or !(strtoupper(substr($reportFileName, -5)) == '.JSON')) {
-                continue;
-            }
-
-            $report = new SysCheckReportFile($reportFilePath);
-
-            if (($filterCheckIds === null) or (in_array($report->getCheckId(), $filterCheckIds))) {
-
-                $reports[] = $report;
-            }
-        }
-
-        return $reports;
-    }
-
-
-    private function _getSysCheckReportsPath(): string {
-
-        $sysCheckPath = $this->_workspacePath . '/SysCheck';
-        if (!file_exists($sysCheckPath)) {
-            mkdir($sysCheckPath);
-        }
-        $sysCheckReportsPath = $sysCheckPath . '/reports';
-        if (!file_exists($sysCheckReportsPath)) {
-            mkdir($sysCheckReportsPath);
-        }
-        return $sysCheckReportsPath;
-    }
-
-
-    public function deleteSysCheckReports(array $checkIds) : array {
-
-        $reports = $this->collectSysCheckReports($checkIds);
-
-        $filesToDelete = array_map(function(SysCheckReportFile $report) {
-            return 'SysCheck/reports/' . $report->getFileName();
-        }, $reports);
-
-        return $this->deleteFiles($filesToDelete);
-    }
-
-
-    public function saveSysCheckReport(SysCheckReport $report): void {
-
-        $reportFilename = $this->_getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
-
-        if (!file_put_contents($reportFilename, json_encode((array) $report))) {
-            throw new Exception("Could not write to file `$reportFilename`");
         }
     }
 
@@ -550,65 +324,5 @@ class WorkspaceController {
         }
 
         return $normalizedFilename;
-    }
-
-
-    public function findAvailableBookletsForLogin(string $name, string $password): array { // TODO unit-test
-
-        foreach (Folder::glob($this->_getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
-
-            $xFile = new XMLFileTesttakers($fullFilePath);
-
-            if ($xFile->isValid()) {
-                if ($xFile->getRoottagName() == 'Testtakers') {
-                    $myBooklets = $xFile->getLoginData($name, $password);
-                    if (count($myBooklets['booklets']) > 0) {
-                        $myBooklets['workspaceId'] = $this->_workspaceId;
-                        $myBooklets['customTexts'] = $xFile->getCustomTexts();
-                        return $myBooklets;
-                    }
-                }
-            }
-        }
-
-        return [];
-    }
-
-
-    public function findAvailableSysChecks() {
-
-        $sysChecks = [];
-
-        foreach (Folder::glob($this->_getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
-
-            $xFile = new XMLFileSysCheck($fullFilePath);
-
-            if ($xFile->isValid()) {
-                if ($xFile->getRoottagName()  == 'SysCheck') {
-                    $sysChecks[] = [
-                        'workspaceId' => $this->_workspaceId,
-                        'name' => $xFile->getId(),
-                        'label' => $xFile->getLabel(),
-                        'description' => $xFile->getDescription()
-                    ];
-                }
-            }
-        }
-
-        return $sysChecks;
-    }
-
-
-    static function getAll(): array {
-
-        $workspaceControllers = [];
-
-        foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
-
-            $workspaceId = array_pop(explode('_', $workspaceDir));
-            $workspaceControllers[$workspaceId] = new WorkspaceController((int) $workspaceId);
-        }
-
-        return $workspaceControllers;
     }
 }

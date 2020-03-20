@@ -44,9 +44,9 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
     $availableBookletsForLogin = [];
 
-    foreach (WorkspaceController::getAll() as $workspaceController) { /* @var WorkspaceController $workspaceController */
+    foreach (BookletsFolder::getAll() as $booklets) { /* @var BookletsFolder $booklets */
 
-        $availableBookletsForLogin = $workspaceController->findAvailableBookletsForLogin($body['name'], $body['password']);
+        $availableBookletsForLogin = $booklets->findAvailableBookletsForLogin($body['name'], $body['password']);
 
         if (count($availableBookletsForLogin)) {
             break;

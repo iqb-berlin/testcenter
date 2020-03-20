@@ -63,7 +63,7 @@ class UploadedFilesHandler {
 
             $originalFileName = $uploadedFile->getClientFilename();
             $uploadedFile->moveTo($workspaceController->getWorkspacePath() . '/' . $originalFileName);
-            $importedFiles = array_merge($importedFiles, $workspaceController->importUnfiledResource($originalFileName));
+            $importedFiles = array_merge($importedFiles, $workspaceController->importUnsortedResource($originalFileName));
         }
 
         return $importedFiles;

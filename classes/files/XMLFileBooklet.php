@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 class XMLFileBooklet extends XMLFile {
 
-    private function getUnitIds($node) {
+    private function getUnitIds(SimpleXMLElement $node): array {
 
         $myreturn = [];
         foreach($node->children() as $element) {

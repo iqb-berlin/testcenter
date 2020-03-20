@@ -3,45 +3,28 @@
 
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
-require_once "classes/workspace/WorkspaceInitializer.class.php";
-require_once "classes/workspace/WorkspaceController.class.php";
-require_once "classes/files/XMLFile.php";
+
 require_once "classes/helper/FileSize.class.php";
 require_once "classes/helper/Folder.class.php";
 require_once "classes/files/ResourceFile.class.php";
+require_once "classes/files/XMLFile.php";
 require_once "classes/files/XMLFileTesttakers.php";
+require_once "VfsForTest.class.php";
 
 
 class WorkspaceControllerTest extends TestCase {
 
     private $vfs;
-    private $vfsData;
     private $workspaceController;
 
     public static function setUpBeforeClass(): void {
 
-        ini_set('max_execution_time', 3);
-        define('ROOT_DIR', vfsStream::url('root'));
-        define('DATA_DIR', vfsStream::url('root/vo_data'));
+        VfsForTest::setUpBeforeClass();
     }
 
     function setUp() {
 
-        $this->vfs = vfsStream::setup('root', 0777);
-        $sampledataDir = vfsStream::newDirectory('sampledata', 0777)->at($this->vfs);
-        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../../sampledata'), $sampledataDir);
-        $this->vfsData = vfsStream::newDirectory('vo_data', 0777)->at($this->vfs);
-
-        $initializer = new WorkspaceInitializer();
-        $initializer->importSampleData(1, array(
-            'user_name' => 'unit_test_user',
-            'user_password' => 'unit_test_user_password',
-            'workspace' => '1',
-            'test_login_name' => 'unit_test_login',
-            'test_login_password' => 'unit_test_password',
-            'test_person_codes' => 'abc def'
-        ));
-
+        $this->vfs = VfsForTest::setUp();
         $this->workspaceController = new WorkspaceController(1);
     }
 
@@ -52,38 +35,13 @@ class WorkspaceControllerTest extends TestCase {
     }
 
 
-    function listDir($dir, $depth) {
-
-        if ($handle = opendir($dir)) {
-            while (false !== ($sub = readdir($handle))) {
-
-                if (in_array($sub, array('.', '..'))) {
-                    continue;
-                }
-
-                $line = str_repeat('-', $depth);
-                $fullPath = ($dir ?  $dir . '/' : '') . $sub;
-
-                if (is_dir($fullPath)) {
-                    echo "\n $line [$sub]";
-                    $this->listDir($fullPath,  $depth + 1);
-                } else {
-                    echo "\n $line $sub";
-                }
-
-            }
-            closedir($handle);
-        }
-
-    }
-
     function test___construct() {
 
-        $workspaceDirectories = scandir($this->vfsData->url());
+        $workspaceDirectories = scandir(vfsStream::url('root/vo_data'));
         $expectation = array('.', '..', 'ws_1');
         $this->assertEquals($expectation, $workspaceDirectories);
 
-        $workspace1Directories = scandir($this->vfsData->url() . '/ws_1');
+        $workspace1Directories = scandir(vfsStream::url('root/vo_data/ws_1'));
         $expectation = array('.', '..', 'Booklet', 'Resource', 'SysCheck', 'Testtakers', 'Unit');
         $this->assertEquals($expectation, $workspace1Directories);
     }
@@ -146,83 +104,5 @@ class WorkspaceControllerTest extends TestCase {
 
         $this->assertEquals($expectation, $result);
         $this->assertEquals($resources, array('.', '..'));
-    }
-
-
-    function test_assemblePreparedBookletsFromFiles() {
-
-        $result = $this->workspaceController->assemblePreparedBookletsFromFiles();
-
-        $this->assertArrayHasKey('sample_group', $result);
-        $this->assertEquals('sample_group', $result['sample_group']['groupname']);
-        $this->assertEquals(1, $result['sample_group']['loginsPrepared']);
-        $this->assertEquals(2, $result['sample_group']['personsPrepared']);
-        $this->assertEquals(2, $result['sample_group']['bookletsPrepared']);
-        $this->assertArrayHasKey('bookletsStarted', $result['sample_group']);
-        $this->assertArrayHasKey('bookletsLocked', $result['sample_group']);
-        $this->assertArrayHasKey('laststart', $result['sample_group']);
-        $this->assertArrayHasKey('laststartStr', $result['sample_group']);
-    }
-
-
-    function test_getTestStatusOverview() {
-
-        $result = $this->workspaceController->getTestStatusOverview(
-            array(
-                array(
-                    'groupname' => 'sample_group',
-                    'loginname' => 'test',
-                    'code' => 'abc',
-                    'bookletname' => 'BOOKLET.SAMPLE',
-                    'locked' => 0,
-                    'lastlogin' => '2003-03-33 03:33:33',
-                    'laststart' => '2003-03-33 03:33:33'
-                ),
-                array(
-                    'groupname' => 'sample_group',
-                    'loginname' => 'test',
-                    'code' => 'abc',
-                    'bookletname' => 'BOOKLET.SAMPLE',
-                    'locked' => 1,
-                    'lastlogin' => '2003-03-33 03:33:33',
-                    'laststart' => '2003-03-33 03:33:33'
-                ),
-                array(
-                    'groupname' => 'fake_group',
-                    'loginname' => 'test',
-                    'code' => 'abc',
-                    'bookletname' => 'BOOKLET.SAMPLE',
-                    'locked' => 1,
-                    'lastlogin' => '2003-03-33 03:33:33',
-                    'laststart' => '2003-03-33 03:33:33'
-                )
-            )
-        );
-
-        $this->assertEquals('sample_group', $result[0]['groupname']);
-        $this->assertEquals(1, $result[0]['loginsPrepared']);
-        $this->assertEquals(2, $result[0]['personsPrepared']);
-        $this->assertEquals(2, $result[0]['bookletsPrepared']);
-        $this->assertEquals(2, $result[0]['bookletsStarted']);
-        $this->assertEquals(1, $result[0]['bookletsLocked']);
-        $this->assertEquals('fake_group', $result[2]['groupname']);
-        $this->assertEquals(0, $result[2]['loginsPrepared']);
-        $this->assertEquals(0, $result[2]['personsPrepared']);
-        $this->assertEquals(0, $result[2]['bookletsPrepared']);
-        $this->assertEquals(1, $result[2]['bookletsStarted']);
-        $this->assertEquals(1, $result[2]['bookletsLocked']);
-
-    }
-
-
-    function test_getBookletName() {
-
-        $result = $this->workspaceController->getBookletName('BOOKLET.SAMPLE');
-        $expectation = 'Sample booklet';
-        $this->assertEquals($expectation, $result);
-
-        $result = $this->workspaceController->getBookletName('inexistent.BOOKLET');
-        $expectation = '';
-        $this->assertEquals($expectation, $result);
     }
 }
