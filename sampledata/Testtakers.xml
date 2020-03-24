@@ -29,12 +29,12 @@
   </Group>
 
   <Group mode="run-trial" name="trial_group">
-    <Login name="__TEST_LOGIN_NAME__-review" pw="__TEST_LOGIN_PASSWORD__">
+    <Login name="__TEST_LOGIN_NAME__-trial" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
-  <Group mode="run-hot-restart" name="passwordless__group">
+  <Group mode="run-hot-restart" name="passwordless_group">
     <Login name="__TEST_LOGIN_NAME__">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>

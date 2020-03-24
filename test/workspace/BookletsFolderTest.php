@@ -80,12 +80,12 @@ class BookletsFolderTest extends TestCase {
         $this->assertEquals(2, $result[0]['bookletsPrepared']);
         $this->assertEquals(2, $result[0]['bookletsStarted']);
         $this->assertEquals(1, $result[0]['bookletsLocked']);
-        $this->assertEquals('fake_group', $result[2]['groupname']);
-        $this->assertEquals(0, $result[2]['loginsPrepared']);
-        $this->assertEquals(0, $result[2]['personsPrepared']);
-        $this->assertEquals(0, $result[2]['bookletsPrepared']);
-        $this->assertEquals(1, $result[2]['bookletsStarted']);
-        $this->assertEquals(1, $result[2]['bookletsLocked']);
+        $this->assertEquals('fake_group', $result[3]['groupname']);
+        $this->assertEquals(0, $result[3]['loginsPrepared']);
+        $this->assertEquals(0, $result[3]['personsPrepared']);
+        $this->assertEquals(0, $result[3]['bookletsPrepared']);
+        $this->assertEquals(1, $result[3]['bookletsStarted']);
+        $this->assertEquals(1, $result[3]['bookletsLocked']);
 
     }
 
