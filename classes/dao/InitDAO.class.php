@@ -64,7 +64,7 @@ class InitDAO extends SuperAdminDAO {
         $workspaces_names = $sql->fetchAll(PDO::FETCH_ASSOC);
 
         if (count($workspaces_names)) {
-            return $workspaces_names[0]['id'];
+            return (int) $workspaces_names[0]['id'];
         }
 
         $this->addWorkspace($name);
