@@ -87,7 +87,7 @@ class WorkspaceControllerTest extends TestCase {
 
     function test_deleteFiles() {
 
-        $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
+        $wsFolder = $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
 
         $result = $this->workspaceController->deleteFiles(array(
             'Resource/SAMPLE_PLAYER.HTML',
@@ -104,5 +104,32 @@ class WorkspaceControllerTest extends TestCase {
 
         $this->assertEquals($expectation, $result);
         $this->assertEquals($resources, array('.', '..'));
+    }
+
+
+    function test_countFiles() {
+
+        $result = $this->workspaceController->countFiles('Testtakers');
+        $this->assertEquals(1, $result);
+
+        unlink('vfs://root/vo_data/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
+
+        $result = $this->workspaceController->countFiles('Testtakers');
+        $this->assertEquals(0, $result);
+    }
+
+
+    function test_countFilesOfAllSubFolders() {
+
+        $expectation = [
+            "Testtakers" => 1,
+            "SysCheck" => 1,
+            "Booklet" => 1,
+            "Unit" => 1,
+            "Resource" => 1
+        ];
+
+        $result = $this->workspaceController->countFilesOfAllSubFolders();
+        $this->assertEquals($expectation, $result);
     }
 }

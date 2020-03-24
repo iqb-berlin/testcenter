@@ -325,4 +325,24 @@ class WorkspaceController {
 
         return $normalizedFilename;
     }
+
+
+    public function countFiles(string $type): int {
+
+        $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+        return count(Folder::glob($this->_getOrCreateSubFolderPath($type), $pattern));
+    }
+
+
+    public function countFilesOfAllSubFolders(): array {
+
+        $result = [];
+
+        foreach ($this::subFolders as $type) {
+
+            $result[$type] = $this->countFiles($type);
+        }
+
+        return $result;
+    }
 }

@@ -1985,6 +1985,46 @@ paths:
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}':
+        get:
+            summary: 'get workspace'
+            description: 'returns basic information about a workspace'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
+                    schema:
+                        $ref: '#/components/schemas/auth'
+                    example:
+                        at: user000000000.superadmin0
+                -
+                    in: path
+                    name: ws_id
+                    description: workspace-id
+                    example: 1
+                    required: true
+                    schema:
+                        type: integer
+            responses:
+                '200':
+                    description: 'OK, workspace info'
+                    content:
+                        application/json:
+                            example:
+                                id: 1
+                                name: example_workspace
+                                files:
+                                    Testtakers: 1
+                                    SysCheck: 1
+                                    Booklet: 1
+                                    Unit: 1
+                                    Resource: 1
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
         patch:
             summary: 'rename a workspace'
             description: 'renames a workspace with given id'

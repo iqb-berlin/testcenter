@@ -289,20 +289,4 @@ class SessionDAO extends DAO {
 
         return $person;
     }
-
-    public function getWorkspaceName($workspaceId): string {
-
-        $workspace = $this->_(
-            'SELECT workspaces.name 
-            FROM workspaces
-            WHERE workspaces.id=:workspace_id',
-            [':workspace_id' => $workspaceId]
-        );
-
-        if ($workspace == null) {
-            throw new HttpError("Workspace `$workspaceId` not found", 404);
-        }
-
-        return $workspace['name'];
-    }
 }

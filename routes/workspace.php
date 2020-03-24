@@ -13,6 +13,21 @@ $app->group('/workspace', function(App $app) {
 
     $adminDAO = new AdminDAO();
 
+    $app->get('/{ws_id}', function(Request $request, Response $response) use ($adminDAO) {
+
+        $workspaceId = (int) $request->getAttribute('ws_id');
+
+        $workspaceController = new WorkspaceController($workspaceId);
+
+        return $response->withJson([
+            "id" => $workspaceId,
+            "name" => $adminDAO->getWorkspaceName($workspaceId),
+            "files" => $workspaceController->countFilesOfAllSubFolders()
+        ]);
+
+    })->add(new IsWorkspacePermitted('MO'));
+
+
     $app->get('/{ws_id}/reviews', function(Request $request, Response $response) use ($adminDAO) {
 
         $groups = explode(",", $request->getParam('groups'));
