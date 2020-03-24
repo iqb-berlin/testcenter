@@ -21,6 +21,10 @@ class TestSession extends DataCollection {
     public $mode = null;
     public $booklets = null;
 
+    public $validFrom = 0;
+    public $validTo = 0;
+    public $validForMinutes = "";
+
     public $customTexts; // TODO after https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 make null
 
     // if log-in part I is done

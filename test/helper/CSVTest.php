@@ -11,7 +11,6 @@ class CSVTest extends TestCase {
         ['d' => 'D']
     ];
 
-
     function test_collectColumnNamesFromHeterogeneousObjects() {
 
         $expected = ['a', 'b', 'c', 'd'];

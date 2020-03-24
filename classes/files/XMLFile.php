@@ -180,4 +180,13 @@ class XMLFile {
 
         return $this->_customTexts;
     }
+
+
+    protected function dateToTimestamp(string $date) {
+
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        $format = "d/m/Y H:i";
+        $timestamp = DateTime::createFromFormat($format, $date, $timeZone);
+        return $timestamp ? $timestamp->getTimestamp() : -1;
+    }
 }

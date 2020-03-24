@@ -60,6 +60,13 @@ $app->put('/session/login', function(Request $request, Response $response) use (
     }
 
     $testSession = new TestSession($availableBookletsForLogin);
+
+    Expiration::check($testSession->validFrom, $testSession->validTo);
+
+    /*
+     * stand: nun: expiration_date storen... ist validTo oder now + validForMinutes
+     * dann muss das persontoken das erben (!)
+     */
     $loginToken = $sessionDAO->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
 
     $testSession->loginToken = $loginToken;

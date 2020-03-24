@@ -199,7 +199,15 @@ class XMLFileTesttakers extends XMLFile {
 
 
     public function getLoginData($givenLoginName, $givenPassword) {
-        $myreturn = ['groupName' => '', 'mode' => '', 'name' => '', 'booklets' => []];
+        $myreturn = [
+            'groupName' => '',
+            'mode' => '',
+            'name' => '',
+            'booklets' => [],
+            'validFrom' => '',
+            'validTo' => '',
+            'validForMinutes' => ''
+        ];
 
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             foreach($this->xmlfile->children() as $groupNode) {
@@ -209,6 +217,10 @@ class XMLFileTesttakers extends XMLFile {
                     if (isset($groupnameAttr) and isset($modeAttr)) {
                         $groupname = (string) $groupnameAttr;
                         $mode = (string) $modeAttr;
+
+                        $validFrom = $this->dateToTimestamp((string) $groupNode['validFrom']);
+                        $validTo = isset($groupNode['validTo']) ? $this->dateToTimestamp((string) $groupNode['validTo']) : 0;
+                        $validForMinutes = (int) ($groupNode['validFor'] ?? -1);
 
                         foreach($groupNode->children() as $loginNode) {
                             if ($loginNode->getName() == 'Login') {
@@ -274,7 +286,10 @@ class XMLFileTesttakers extends XMLFile {
                                                     'groupName' => $groupname,
                                                     'name' => $loginName,
                                                     'mode' => $mode,
-                                                    'booklets' => $codeBooklets
+                                                    'booklets' => $codeBooklets,
+                                                    'validFrom' => $validFrom,
+                                                    'validTo' => $validTo,
+                                                    'validForMinutes' => $validForMinutes
                                                 ];
                                             } else {
                                                 if (count($noCodeBooklets) > 0) {
@@ -282,7 +297,10 @@ class XMLFileTesttakers extends XMLFile {
                                                         'groupName' => $groupname,
                                                         'name' => $loginName,
                                                         'mode' => $mode,
-                                                        'booklets' => ['' => $noCodeBooklets]
+                                                        'booklets' => ['' => $noCodeBooklets],
+                                                        'validFrom' => $validFrom,
+                                                        'validTo' => $validTo,
+                                                        'validForMinutes' => $validForMinutes
                                                     ];
                                                 }
                                             }
