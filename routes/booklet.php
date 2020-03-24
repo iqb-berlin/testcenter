@@ -57,7 +57,7 @@ $app->group('/booklet', function(App $app) {
 
         if (!$bookletStatus['running']) {
 
-            $workspaceController = new WorkspaceController($workspaceId);
+            $workspaceController = new BookletsFolder((int) $workspaceId);
             $bookletStatus['label'] = $workspaceController->getBookletName($bookletName);
         }
 
