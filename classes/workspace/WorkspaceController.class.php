@@ -280,7 +280,7 @@ class WorkspaceController {
             $xmlFile = XMLFile::get($fullFilePath);
             if ($xmlFile->isValid()) {
                 $itemName = $xmlFile->getId();
-                if ($itemName == $findName) {
+                if ($itemName == strtoupper($findName)) {
                     return $xmlFile;
                 }
             }
