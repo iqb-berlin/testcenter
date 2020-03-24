@@ -33,6 +33,11 @@ $app->group('/user', function(App $app) {
         return $response;
     });
 
+    /**
+     * TODO change p to password
+     * TODO validate old password by changing
+     */
+
 
     $app->put('', function(Request $request, Response $response) use ($superAdminDAO) {
 
@@ -60,6 +65,32 @@ $app->group('/user', function(App $app) {
 
         return $response;
     });
+
+
+    $app->patch('/{user_id}/super-admin/{to_status}',
+        function(Request $request, Response $response) use ($superAdminDAO) {
+
+            $requestBody = JSON::decode($request->getBody()->getContents());
+            $userId = (int) $request->getAttribute('user_id');
+            $toStatusString = $request->getAttribute('to_status');
+            $toBeSuperAdmin = in_array($toStatusString, ['on', 'true', 1, '1', 'TRUE', 'True', 'ON', 'On'], true);
+            $NotToBeSuperAdmin = in_array($toStatusString, ['off', 'false', 0, '0', 'FALSE', 'False', 'OFF', 'Off'], true);
+
+            if (!($toBeSuperAdmin xor $NotToBeSuperAdmin)) {
+                throw new HttpBadRequestException($request, "New Status `$toStatusString` is undefined!");
+            }
+
+            if (!isset($requestBody->p)) {
+                throw new HttpBadRequestException($request, "Provide Password for security reasons!");
+            }
+
+            $superAdminDAO->checkPassword($userId, $requestBody->p);
+
+            $superAdminDAO->setSuperAdminStatus($userId, ($toStatusString == 'on'));
+
+            return $response;
+    });
+
 
 })
     ->add(new IsSuperAdmin())

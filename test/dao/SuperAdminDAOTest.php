@@ -246,4 +246,30 @@ class SuperAdminDAOTest extends TestCase {
         $this->assertEquals($expectation, $result);
     }
 
+
+    public function test_setSuperAdminStatus() {
+
+        $this->dbc->setSuperAdminStatus(2, true);
+
+        $result = $this->dbc->getUserByName("i_exist_but_am_not_allowed_anything");
+        $expectation = array(
+            "id" => "2",
+            "name" => "i_exist_but_am_not_allowed_anything",
+            "email" => null,
+            "is_superadmin" => '1'
+        );
+        $this->assertEquals($expectation, $result);
+
+        $this->dbc->setSuperAdminStatus(2, false);
+
+        $result = $this->dbc->getUserByName("i_exist_but_am_not_allowed_anything");
+        $expectation = array(
+            "id" => "2",
+            "name" => "i_exist_but_am_not_allowed_anything",
+            "email" => null,
+            "is_superadmin" => '0'
+        );
+        $this->assertEquals($expectation, $result);
+    }
+
 }

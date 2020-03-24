@@ -1134,6 +1134,54 @@ paths:
                     description: Forbidden
                 '500':
                     description: 'Server Error'
+    '/user/{user_id}/super-admin/{new_status}':
+        patch:
+            summary: 'change super-admin status'
+            description: 'changes the super-admin status of a given user. * **requires a super-admin** * **requires the password of the performing user for security reasons** * `new_status` is `on` or `off`'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for admin-user with super-admin privilege'
+                    schema:
+                        $ref: '#/components/schemas/auth'
+                    example:
+                        at: user000000000.superadmin0
+                -
+                    in: path
+                    name: user_id
+                    description: user-id
+                    example: 2
+                    required: true
+                    schema:
+                        type: integer
+                -
+                    in: path
+                    name: new_status
+                    description: 'super-user status of the given user `on` or `off`'
+                    example: on
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                p:
+                                    type: string
+                                    description: 'performing user''s password'
+                                    example: user123
+            responses:
+                '200':
+                    description: 'password has changed / user did not exist'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '500':
+                    description: 'Server Error'
     '/workspace/{ws_id}/booklets/started':
         get:
             summary: 'get started booklets'

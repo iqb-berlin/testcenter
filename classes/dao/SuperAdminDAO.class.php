@@ -274,6 +274,18 @@ class SuperAdminDAO extends DAO {
     }
 
 
+    public function setSuperAdminStatus(int $userId, bool $isSuperAdmin): void {
+
+        $this->_(
+            'UPDATE users SET is_superadmin = :is_superadmin WHERE id = :user_id',
+            [
+                ':user_id' => $userId,
+                ':is_superadmin' => $isSuperAdmin ? 1 : 0
+            ]
+        );
+    }
+
+
     public function getWorkspaceName($workspaceId): string {
 
         $workspace = $this->_(
@@ -289,6 +301,5 @@ class SuperAdminDAO extends DAO {
 
         return $workspace['name'];
     }
-
 
 }
