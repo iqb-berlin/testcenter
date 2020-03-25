@@ -5,29 +5,32 @@ declare(strict_types=1);
 
 class SessionDAO extends DAO {
 
-    private $idleTimeTestSession = 60 * 30; // TODO move to DB config
-
     // TODO add unit-test
     public function getOrCreateLoginToken(TestSession $session, bool $forceCreate = false): string {
 
         $oldLogin = $this->_(
-            'SELECT logins.id, logins.token FROM logins
+            'SELECT logins.id, logins.token, logins.valid_until as "validUntil" FROM logins
 			WHERE logins.name = :name AND logins.workspace_id = :ws', [
                 ':name' => $session->name,
                 ':ws' => $session->workspaceId
             ]
         );
 
-        if ($forceCreate or ($oldLogin === null)) {
+        if ($forceCreate or ($oldLogin == null)) {
+
+            TimeStamp::checkExpiration($session->_validFrom, $session->_validTo);
+
+            $validUntil = TimeStamp::expirationFromNow($session->_validTo, $session->_validForMinutes);
 
             $loginToken = $this->_randomToken('login');
+
             $this->_(
                 'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
                 VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
                 [
                     ':token' => $loginToken,
                     ':sd' => json_encode($session->booklets),
-                    ':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTimeTestSession),
+                    ':valid_until' => TimeStamp::toSQLFormat($validUntil),
                     ':name' => $session->name,
                     ':mode' => $session->mode,
                     ':ws' => $session->workspaceId,
@@ -37,18 +40,20 @@ class SessionDAO extends DAO {
             return $loginToken;
         }
 
+        TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['validUntil']));
+
         $this->_(
             'UPDATE logins
-            SET valid_until =:value, booklet_def =:sd, groupname =:groupname
+            SET booklet_def =:sd, groupname =:groupname
             WHERE id =:loginid',
             [
-                ':value' => date('Y-m-d H:i:s', time() + $this->idleTimeTestSession),
                 ':sd' => json_encode($session->booklets),
                 ':loginid' => $oldLogin['id'],
                 ':groupname' => $session->groupName
             ]
         );
 
+        // TODO when https://github.com/iqb-berlin/testcenter-iqb-php/issues/48 is resolved, check here for changes and renew valid_to at least
         // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 store customTexts as well
 
         return $oldLogin['token'];
@@ -66,18 +71,20 @@ class SessionDAO extends DAO {
                 logins.mode,
                 logins.groupname as "groupName",
                 logins.name as name,
+                logins.valid_until as "_validTo",
                 workspaces.name as "workspaceName"
             FROM logins
                 INNER JOIN workspaces ON workspaces.id = logins.workspace_id
 			WHERE logins.token = :token',
             [':token' => $loginToken]
         );
-				
 
         if ($logindata !== null) {
             $logindata['booklets'] = JSON::decode($logindata['booklet_def'], true);
             unset($logindata['booklet_def']);
         }
+
+        TimeStamp::checkExpiration(0, Timestamp::fromSQLFormat($logindata['_validTo']));
 
         return new TestSession($logindata);
     }
@@ -181,33 +188,34 @@ class SessionDAO extends DAO {
     }
 
     // TODO unit test
-    public function getLoginId(string $loginToken): int {
+    public function getLogin(string $loginToken): array {
 
-        $login = $this->_('SELECT logins.id FROM logins WHERE logins.token=:token', [':token' => $loginToken]); // TODO check valid_to
+        $login = $this->_(
+            'SELECT logins.id, logins.valid_until FROM logins WHERE logins.token=:token',
+            [':token' => $loginToken]
+        );
+
         if ($login == null ){
             throw new HttpError("LoginToken invalid: `$loginToken`", 403);
         }
-        return (int) $login['id'];
+
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['valid_until']));
+
+        return [
+            'id' => (int) $login['id'],
+            'validTo' => TimeStamp::fromSQLFormat($login['valid_until'])
+        ];
+    }
+
+
+    public function getLoginId(string $loginToken): int {
+
+        return $this->getLogin($loginToken)['id'];
     }
 
 
     // TODO unit test
-    public function getPersonId(string $personToken): int {
-
-        $person = $this->_('SELECT persons.id FROM persons WHERE persons.token=:token', // TODO check valid_to
-            [
-                ':token' => $personToken
-            ]
-        );
-        if ($person == null ){
-            throw new HttpError("PersonToken invalid: `$personToken`", 403);
-        }
-        return (int) $person['id'];
-    }
-
-
-    // TODO unit test
-    public function getOrCreatePerson(int $loginId, string $code): array {
+    public function getOrCreatePerson(int $loginId, string $code, int $validTo): array {
 
         $person = $this->_(
             'SELECT * FROM persons WHERE persons.login_id=:id and persons.code=:code',
@@ -218,13 +226,13 @@ class SessionDAO extends DAO {
         );
 
         if ($person !== null) {
+            TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
 
             return $person;
-
         }
 
         $newPersonToken = $this->_randomToken('person');
-        $validUntil = date('Y-m-d H:i:s', time() + $this->idleTimeTestSession);
+        $validUntil = TimeStamp::toSQLFormat($validTo);
 
         $this->_(
             'INSERT INTO persons (token, code, login_id, valid_until) 
@@ -242,7 +250,7 @@ class SessionDAO extends DAO {
             'token' => $newPersonToken,
             'login_id' => $loginId,
             'code' => $code,
-            'valid_until' => $validUntil,
+            'validTo' => $validTo,
             'laststate' => null
         ];
     }
@@ -285,8 +293,16 @@ class SessionDAO extends DAO {
             throw new HttpError("Invalid Person token: `$personToken`", 403);
         }
 
-        // TODO check valid_until
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
 
         return $person;
+    }
+
+
+    // TODO unit test
+    public function getPersonId(string $personToken): int {
+
+        $person = $this->getPerson($personToken);
+        return (int) $person['id'];
     }
 }

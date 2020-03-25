@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -42,35 +41,39 @@ $app->put('/session/login', function(Request $request, Response $response) use (
         throw new HttpBadRequestException($request, "Authentication credentials missing.");
     }
 
-    $availableBookletsForLogin = [];
+    $loginData = null;
 
     foreach (BookletsFolder::getAll() as $booklets) { /* @var BookletsFolder $booklets */
 
-        $availableBookletsForLogin = $booklets->findAvailableBookletsForLogin($body['name'], $body['password']);
+        $loginData = $booklets->findLoginData($body['name'], $body['password']);
 
-        if (count($availableBookletsForLogin)) {
+        if ($loginData != null) {
             break;
         }
     }
 
-    if (!count($availableBookletsForLogin)) {
+    if ($loginData == null) {
 
         $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $body['user_password']);
         throw new HttpUnauthorizedException($request, "No Login for `{$body['name']}` with `{$shortPW}`");
     }
 
-    $testSession = new TestSession($availableBookletsForLogin);
+    $testSession = new TestSession($loginData);
 
-    Expiration::check($testSession->validFrom, $testSession->validTo);
+
 
     /*
-     * stand: nun: expiration_date storen... ist validTo oder now + validForMinutes
-     * dann muss das persontoken das erben (!)
+     * # dann muss das persontoken das erben (!)
+     * XSDs erweitern
+     * + spec erweitern um neue felder oder nicht mitschicken (bzw. nur validTo ist in dem Zusammenhang interessant)
+     * auch bei get session muss das herauskommen -> sollte mittels requiretoken geprüft werden. prüfen.
+     * bei der booklet-übersicht noch nicht aktive und abgelaufene dennoch anzeigen mit marker?
+     * tests
      */
     $loginToken = $sessionDAO->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
 
     $testSession->loginToken = $loginToken;
-    $testSession->workspaceName = $sessionDAO->getWorkspaceName($availableBookletsForLogin['workspaceId']);
+    $testSession->workspaceName = $sessionDAO->getWorkspaceName($loginData['workspaceId']);
 
     return $response->withJson($testSession);
 
@@ -87,13 +90,9 @@ $app->put('/session/person', function(Request $request, Response $response) use 
         'code' => ''
     ]);
 
-    $loginId = $sessionDAO->getLoginId($authToken->getToken());
+    $login = $sessionDAO->getLogin($authToken->getToken());
 
-    if ($loginId == null) {
-        throw new HttpForbiddenException($request);
-    }
-
-    $person = $sessionDAO->getOrCreatePerson($loginId, $body['code']);
+    $person = $sessionDAO->getOrCreatePerson($login['id'], $body['code'], $login['validTo']);
 
     return $response->withJson([
         'personId' => $person['id'],

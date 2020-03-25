@@ -187,6 +187,6 @@ class XMLFile {
         $timeZone = new DateTimeZone('Europe/Berlin');
         $format = "d/m/Y H:i";
         $timestamp = DateTime::createFromFormat($format, $date, $timeZone);
-        return $timestamp ? $timestamp->getTimestamp() : -1;
+        return $timestamp ? $timestamp->getTimestamp() : 0;
     }
 }

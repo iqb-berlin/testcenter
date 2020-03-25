@@ -4,7 +4,7 @@ declare(strict_types=1);
 // TODO unit test
 
 
-class DataCollection {
+class DataCollection implements JsonSerializable {
 
     function __construct($initData) {
 
@@ -26,6 +26,7 @@ class DataCollection {
         }
     }
 
+
     static function fromFile(string $path = null): DataCollection {
 
         if (!file_exists($path)) {
@@ -37,5 +38,20 @@ class DataCollection {
         $class = get_called_class();
 
         return new $class($connectionData);
+    }
+
+
+    public function jsonSerialize() {
+
+        $jsonData = [];
+
+        foreach ($this as $key => $value) {
+
+            if (substr($key,0 ,1) != '_') {
+                $jsonData[$key] = $value;
+            }
+        }
+
+        return $jsonData;
     }
 }

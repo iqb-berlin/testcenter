@@ -13,33 +13,33 @@ class ExpirationTest extends TestCase {
         $past = (new DateTime('1.1.2000 12:00'))->getTimestamp();
         $future = (new DateTime('1.1.2030 12:00'))->getTimestamp();
 
-        Expiration::check($past, $future);
+        TimeStamp::checkExpiration($past, $future);
 
-        Expiration::check(0, 0);
+        TimeStamp::checkExpiration(0, 0);
 
         try {
-            Expiration::check($future, $today);
+            TimeStamp::checkExpiration($future, $today);
             $this->fail("Exception expected.");
         } catch (HttpError $exception) {
             $this->assertEquals($exception->getCode(), 401);
         }
 
         try {
-            Expiration::check($today, $past);
+            TimeStamp::checkExpiration($today, $past);
             $this->fail("Exception expected.");
         } catch (HttpError $exception) {
             $this->assertEquals($exception->getCode(), 401);
         }
 
         try {
-            Expiration::check($future, 0);
+            TimeStamp::checkExpiration($future, 0);
             $this->fail("Exception expected.");
         } catch (HttpError $exception) {
             $this->assertEquals($exception->getCode(), 401);
         }
 
         try {
-            Expiration::check(0, $past);
+            TimeStamp::checkExpiration(0, $past);
             $this->fail("Exception expected.");
         } catch (HttpError $exception) {
             $this->assertEquals($exception->getCode(), 401);

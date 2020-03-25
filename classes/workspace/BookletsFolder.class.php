@@ -154,7 +154,7 @@ class BookletsFolder extends WorkspaceController {
     }
 
 
-    public function findAvailableBookletsForLogin(string $name, string $password): array { // TODO unit-test
+    public function findLoginData(string $name, string $password): ?array { // TODO unit-test // TODO is in wrong class
 
         foreach (Folder::glob($this->_getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
@@ -162,16 +162,16 @@ class BookletsFolder extends WorkspaceController {
 
             if ($xFile->isValid()) {
                 if ($xFile->getRoottagName() == 'Testtakers') {
-                    $myBooklets = $xFile->getLoginData($name, $password);
-                    if (count($myBooklets['booklets']) > 0) {
-                        $myBooklets['workspaceId'] = $this->_workspaceId;
-                        $myBooklets['customTexts'] = $xFile->getCustomTexts();
-                        return $myBooklets;
+                    $loginData = $xFile->getLoginData($name, $password);
+                    if (count($loginData['booklets']) > 0) {
+                        $loginData['workspaceId'] = $this->_workspaceId;
+                        $loginData['customTexts'] = $xFile->getCustomTexts();
+                        return $loginData;
                     }
                 }
             }
         }
 
-        return [];
+        return null;
     }
 }

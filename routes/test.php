@@ -245,7 +245,7 @@ $app->put('/test', function(Request $request, Response $response) {
     $loginToken = $authToken->getToken();
 
     $body = RequestBodyParser::getElements($request, [
-        'code' => 0, // was: c
+        'code' => "", // was: c
         'bookletLabel' => '¿Testheft?', // was: bl // TODO overthink this. maybe we better fetch it new here from file?
         'bookletName' => null // was: b
     ]);
@@ -254,13 +254,9 @@ $app->put('/test', function(Request $request, Response $response) {
     $sessionDAO = new SessionDAO();
 
     /* TODO instead work with personToken and delete from here ... */
-    $loginId = $sessionDAO->getLoginId($loginToken);
+    $login = $sessionDAO->getLogin($loginToken);
 
-    if ($loginId == null) {
-        throw new HttpForbiddenException($request);
-    }
-
-    $person = $sessionDAO->getOrCreatePerson($loginId, $body['code']);
+    $person = $sessionDAO->getOrCreatePerson($login['id'], $body['code'], $login['validTo']);
     /* ... to here ... */
 
     $person = $sessionDAO->getPerson($person['token']);

@@ -204,9 +204,9 @@ class XMLFileTesttakers extends XMLFile {
             'mode' => '',
             'name' => '',
             'booklets' => [],
-            'validFrom' => '',
-            'validTo' => '',
-            'validForMinutes' => ''
+            '_validFrom' => '',
+            '_validTo' => '',
+            '_validForMinutes' => ''
         ];
 
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
@@ -220,7 +220,7 @@ class XMLFileTesttakers extends XMLFile {
 
                         $validFrom = $this->dateToTimestamp((string) $groupNode['validFrom']);
                         $validTo = isset($groupNode['validTo']) ? $this->dateToTimestamp((string) $groupNode['validTo']) : 0;
-                        $validForMinutes = (int) ($groupNode['validFor'] ?? -1);
+                        $validForMinutes = (int) ($groupNode['validFor'] ?? 0);
 
                         foreach($groupNode->children() as $loginNode) {
                             if ($loginNode->getName() == 'Login') {
@@ -287,9 +287,9 @@ class XMLFileTesttakers extends XMLFile {
                                                     'name' => $loginName,
                                                     'mode' => $mode,
                                                     'booklets' => $codeBooklets,
-                                                    'validFrom' => $validFrom,
-                                                    'validTo' => $validTo,
-                                                    'validForMinutes' => $validForMinutes
+                                                    '_validFrom' => $validFrom,
+                                                    '_validTo' => $validTo,
+                                                    '_validForMinutes' => $validForMinutes
                                                 ];
                                             } else {
                                                 if (count($noCodeBooklets) > 0) {
@@ -298,9 +298,9 @@ class XMLFileTesttakers extends XMLFile {
                                                         'name' => $loginName,
                                                         'mode' => $mode,
                                                         'booklets' => ['' => $noCodeBooklets],
-                                                        'validFrom' => $validFrom,
-                                                        'validTo' => $validTo,
-                                                        'validForMinutes' => $validForMinutes
+                                                        '_validFrom' => $validFrom,
+                                                        '_validTo' => $validTo,
+                                                        '_validForMinutes' => $validForMinutes
                                                     ];
                                                 }
                                             }

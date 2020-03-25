@@ -27,12 +27,9 @@ $app->group('/booklet', function(App $app) {
 
             $code = $request->getParam('code', '');
 
-            $loginId = $sessionDAO->getLoginId($authToken->getToken());
+            $login = $sessionDAO->getLogin($authToken->getToken());
 
-            if ($loginId == null) {
-                throw new HttpForbiddenException($request);
-            }
-            $person = $sessionDAO->getOrCreatePerson($loginId, $code);
+            $person = $sessionDAO->getOrCreatePerson($login['id'], $code, $login['validTo']);
 
             $personToken = $person['token'];
             $personFull = $sessionDAO->getPerson($personToken);

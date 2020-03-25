@@ -35,7 +35,7 @@
   </Group>
 
   <Group mode="run-hot-restart" name="passwordless_group">
-    <Login name="__TEST_LOGIN_NAME__">
+    <Login name="__TEST_LOGIN_NAME__-no-pw">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
