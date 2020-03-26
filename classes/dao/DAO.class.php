@@ -16,8 +16,6 @@ class DAO {
         $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->passwordSalt = DB::getConfig()->salt;
-
-        date_default_timezone_set('Europe/Berlin'); // TODO store timestamps instead of formatted dates in db
     }
 
 
@@ -55,11 +53,11 @@ class DAO {
     }
 
 
-    protected function _randomToken(string $type) {
+    protected function _randomToken(string $type, string $name) {
 
         if (DB::getConfig()->staticTokens) {
 
-            return "static_token_$type";
+            return "static_token_{$type}_$name";
         }
 
         return uniqid('a', true);

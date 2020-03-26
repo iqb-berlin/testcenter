@@ -61,16 +61,16 @@ class ErrorHandler {
         $errorUniqueId = ErrorHandler::logException($throwable, $code >= 500);
 
         if (!is_a($throwable, "Slim\Exception\HttpException")) {
-            $httpException = new \Slim\Exception\HttpException($request, $throwable->getMessage(), $code, $throwable);
+            $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), $code, $throwable);
             if (method_exists($throwable, 'getTitle')) {
-                $httpException->setTitle($throwable->getTitle());
+                $throwable->setTitle($throwable->getTitle());
             }
         }
 
         return $response
-            ->withStatus($httpException->getCode(), $httpException->getTitle())
+            ->withStatus($throwable->getCode(), $throwable->getTitle())
             ->withHeader('Content-Type', 'text/html')
             ->withHeader('Error-ID', $errorUniqueId)
-            ->write($httpException->getMessage() ? $httpException->getMessage() : $httpException->getDescription());
+            ->write($throwable->getMessage() ? $throwable->getMessage() : $throwable->getDescription());
     }
 }

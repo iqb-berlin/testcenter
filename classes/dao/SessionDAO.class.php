@@ -18,46 +18,54 @@ class SessionDAO extends DAO {
 
         if ($forceCreate or ($oldLogin == null)) {
 
-            TimeStamp::checkExpiration($session->_validFrom, $session->_validTo);
-
-            $validUntil = TimeStamp::expirationFromNow($session->_validTo, $session->_validForMinutes);
-
-            $loginToken = $this->_randomToken('login');
-
-            $this->_(
-                'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
-                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
-                [
-                    ':token' => $loginToken,
-                    ':sd' => json_encode($session->booklets),
-                    ':valid_until' => TimeStamp::toSQLFormat($validUntil),
-                    ':name' => $session->name,
-                    ':mode' => $session->mode,
-                    ':ws' => $session->workspaceId,
-                    ':groupname' => $session->groupName
-                ]
-            );
-            return $loginToken;
+            $newLogin = $this->createLogin($session);
+            return $newLogin['token'];
         }
 
         TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['validUntil']));
 
-        $this->_(
-            'UPDATE logins
-            SET booklet_def =:sd, groupname =:groupname
-            WHERE id =:loginid',
-            [
-                ':sd' => json_encode($session->booklets),
-                ':loginid' => $oldLogin['id'],
-                ':groupname' => $session->groupName
-            ]
-        );
-
-        // TODO when https://github.com/iqb-berlin/testcenter-iqb-php/issues/48 is resolved, check here for changes and renew valid_to at least
         // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 store customTexts as well
 
         return $oldLogin['token'];
     }
+
+
+    public function createLogin(TestSession $session, bool $allowExpired = false): array {
+
+        if (!$allowExpired) {
+            TimeStamp::checkExpiration($session->_validFrom, $session->_validTo);
+        }
+
+        $validUntil = TimeStamp::expirationFromNow($session->_validTo, $session->_validForMinutes);
+
+        $loginToken = $this->_randomToken('login', (string) $session->name);
+
+        $this->_(
+            'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
+                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
+            [
+                ':token' => $loginToken,
+                ':sd' => json_encode($session->booklets),
+                ':valid_until' => TimeStamp::toSQLFormat($validUntil),
+                ':name' => $session->name,
+                ':mode' => $session->mode,
+                ':ws' => $session->workspaceId,
+                ':groupname' => $session->groupName
+            ]
+        );
+
+        return [
+            'id' => (int) $this->pdoDBhandle->lastInsertId(),
+            'token' => $loginToken,
+            'booklets' => json_encode($session->booklets),
+            'validTo' => $validUntil,
+            'name' => $session->name,
+            'mode' => $session->mode,
+            'workspaceId' => $session->workspaceId,
+            'groupName' => $session->groupName
+        ];
+    }
+
 
 
     // TODO add unit-test
@@ -226,16 +234,27 @@ class SessionDAO extends DAO {
         );
 
         if ($person !== null) {
-            TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
 
+            TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
             return $person;
         }
 
-        $newPersonToken = $this->_randomToken('person');
+        return $this->createPerson($loginId, $code, $validTo);
+    }
+
+
+    // TODO unit test
+    public function createPerson(int $loginId, string $code, int $validTo, bool $allowExpired = false): array { // TODO maybe use TestSession here as param
+
+        if (!$allowExpired) {
+            TimeStamp::checkExpiration(0, $validTo);
+        }
+
+        $newPersonToken = $this->_randomToken('person', $code);
         $validUntil = TimeStamp::toSQLFormat($validTo);
 
         $this->_(
-            'INSERT INTO persons (token, code, login_id, valid_until) 
+            'INSERT INTO persons (token, code, login_id, valid_until)
             VALUES(:token, :code, :login_id, :valid_until)',
             [
                 ':token' => $newPersonToken,
