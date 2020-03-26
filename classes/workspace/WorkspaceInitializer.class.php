@@ -137,6 +137,8 @@ class WorkspaceInitializer {
     public function createSampleExpiredLogin(string $loginCode): void {
 
         $sessionDAO = new SessionDAO();
+        $initDAO = new InitDAO();
+        $adminDAO = new AdminDAO();
 
         $testSession = new TestSession(
             [
@@ -149,6 +151,10 @@ class WorkspaceInitializer {
             ]
         );
         $login = $sessionDAO->createLogin($testSession, true);
+
         $sessionDAO->createPerson($login['id'], $loginCode, TimeStamp::fromXMLFormat('1/1/2000 12:00'), true);
+
+        $initDAO->addUser("expired_user", "whatever", true);
+        $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
     }
 }

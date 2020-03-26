@@ -11,4 +11,6 @@ class AdminSession extends DataCollection {
 
     public $workspaces = [];
     public $userEmail = '';
+
+    public $_validTo = 0;
 }

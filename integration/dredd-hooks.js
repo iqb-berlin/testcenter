@@ -73,7 +73,7 @@ dreddHooks.beforeEach(function(transaction, done) {
             break;
         case '410':
             changeAuthToken(transaction,{
-                adminToken: '__invalid_token__',
+                adminToken: 'static_token_admin_expired_user',
                 loginToken: 'static_token_login_expired_user',
                 personToken: 'static_token_person_yyy'
             });

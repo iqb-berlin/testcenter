@@ -130,7 +130,7 @@ class SuperAdminDAO extends DAO {
     }
 
 
-    public function addUser(string $userName, string $password): void {
+    public function addUser(string $userName, string $password, bool $isSuperadmin = false): void {
 
         // TODO maybe prove $userName and $password for validity
 
@@ -144,10 +144,11 @@ class SuperAdminDAO extends DAO {
         }
 
         $this->_(
-            'INSERT INTO users (name, password) VALUES (:user_name, :user_password)',
+            'INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, :is_superadmin)',
             [
                 ':user_name' => $userName,
-                ':user_password' => $this->encryptPassword($password)
+                ':user_password' => $this->encryptPassword($password),
+                ':is_superadmin' => $isSuperadmin ? 1 : 0
             ]
         );
     }

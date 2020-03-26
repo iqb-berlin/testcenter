@@ -1356,8 +1356,6 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/sys_check'
         "404":
           description: No SysCheck with that name found on Workspace
-        "410":
-          description: Session Expired
         "500":
           description: Server Error
 
@@ -1386,8 +1384,6 @@ paths:
           # TODO load files into example data
         "404":
           description: No SysCheck with that name found on Workspace
-        "410":
-          description: Session Expired
         "500":
           description: Server Error
 
@@ -1439,7 +1435,5 @@ paths:
           description: Ok, Report saved
         "404":
           description: No SysCheck with that name found on Workspace
-        "410":
-          description: Session Expired
         "500":
           description: Server Error

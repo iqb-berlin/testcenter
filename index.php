@@ -8,6 +8,8 @@ use Slim\Container;
 
 try {
 
+    date_default_timezone_set('Europe/Berlin');
+
     define('ROOT_DIR', dirname(__FILE__));
 
     require_once "vendor/autoload.php";

@@ -6,7 +6,7 @@ declare(strict_types=1);
 class DAO {
 
     protected $pdoDBhandle = false;
-    protected $idleTime = 60 * 30; // TODO move to DBconfig
+    protected $timeUserIsAllowedInMinutes = 30;
     protected $passwordSalt = 't';
 
     public function __construct() {

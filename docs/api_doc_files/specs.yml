@@ -42,6 +42,8 @@ paths:
                                 bookletLabel: ""
                 '401':
                     description: 'No token qualifies for authentication'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     /session/admin:
@@ -120,6 +122,8 @@ paths:
                                 code: '0'
                 '400':
                     description: 'Insufficent Crendetials'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/speed-test/random-package/{size}':
@@ -241,6 +245,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
         delete:
@@ -274,6 +280,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     /users:
@@ -306,6 +314,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
         delete:
@@ -339,6 +349,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/test/{test_id}':
@@ -1020,6 +1032,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
         patch:
@@ -1065,6 +1079,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     /user:
@@ -1095,6 +1111,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/user/{user_id}/password':
@@ -1132,6 +1150,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/user/{user_id}/super-admin/{new_status}':
@@ -1180,6 +1200,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/booklets/started':
@@ -1242,6 +1264,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/file/{type}/{filename}':
@@ -1290,6 +1314,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'workspace or file not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/logs':
@@ -1360,6 +1386,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/responses':
@@ -1415,6 +1443,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
         delete:
@@ -1458,6 +1488,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'workspace or file not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/results':
@@ -1506,6 +1538,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/reviews':
@@ -1580,6 +1614,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/status':
@@ -1629,6 +1665,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/validation':
@@ -1680,6 +1718,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/file':
@@ -1731,6 +1771,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'workspace or file not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/files':
@@ -1808,6 +1850,10 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
         delete:
             summary: 'delete files'
             description: 'deletes files from a workspace'
@@ -1862,6 +1908,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/tests/lock':
@@ -1906,6 +1954,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/tests/unlock':
@@ -1950,6 +2000,8 @@ paths:
                     description: Forbidden
                 '404':
                     description: 'Workspace not found'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     /workspace:
@@ -1982,6 +2034,8 @@ paths:
                     description: 'OK, workspace has been added'
                 '401':
                     description: 'Not authenticated'
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}':
@@ -2023,6 +2077,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
         patch:
@@ -2064,6 +2120,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/users':
@@ -2110,6 +2168,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
         get:
@@ -2149,6 +2209,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/sys-check/reports':
@@ -2202,6 +2264,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
         delete:
@@ -2250,6 +2314,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/sys-check/reports/overview':
@@ -2294,6 +2360,8 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/sys-check/{sys_check_name}':

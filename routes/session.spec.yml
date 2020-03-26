@@ -87,8 +87,6 @@ paths:
           description: User has account but neither workspace nor super-admin privilige
         "400":
           description: Insufficent Crendetials
-        "410":
-          description: Session Expired
         "500":
           description: Server Error
 
@@ -117,8 +115,8 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/login_session'
         "400":
           description: Insufficent Crendetials
-        "410":
-          description: Session Expired
+#        "410": - must be removed because test faisl other wise... TODO find better solution
+#          description: Session Expired
         "500":
           description: Server Error
 

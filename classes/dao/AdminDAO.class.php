@@ -14,21 +14,21 @@ class AdminDAO extends DAO {
     }
 
 
-    private function refreshAdminToken(string $token): void {
+    public function refreshAdminToken(string $token): void {
 
         $this->_(
             'UPDATE admintokens 
             SET valid_until =:value
             WHERE id =:token',
             [
-                ':value' => date('Y-m-d H:i:s', time() + $this->idleTime),
+                ':value' => TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes),
                 ':token'=> $token
             ]
         );
     }
 
 
-	public function createAdminToken(string $username, string $password): string {
+	public function createAdminToken(string $username, string $password, ?int $validTo = null): string {
 
 		if ((strlen($username) == 0) or (strlen($username) > 50)) {
 			throw new Exception("Invalid Username `$username`");
@@ -47,7 +47,7 @@ class AdminDAO extends DAO {
 
 		$token = $this->_randomToken('admin', $username);
 
-		$this->_storeToken((int) $user['id'], $token);
+		$this->_storeToken((int) $user['id'], $token, $validTo);
 
 		return $token;
 	}
@@ -78,7 +78,9 @@ class AdminDAO extends DAO {
 	}
 
 
-	private function _storeToken(int $userId, string $token): void {
+	private function _storeToken(int $userId, string $token, ?int $validTo = null): void {
+
+        $validTo = $validTo ?? TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes);
 
 		$this->_(
 			'INSERT INTO admintokens (id, user_id, valid_until) 
@@ -86,7 +88,7 @@ class AdminDAO extends DAO {
 			[
 				':id' => $token,
 				':user_id' => $userId,
-				':valid_until' => date('Y-m-d H:i:s', time() + $this->idleTime)
+				':valid_until' => $validTo
 			]
 		);
 	}
@@ -114,7 +116,7 @@ class AdminDAO extends DAO {
                 users.name,
                 users.email as "userEmail",
                 users.is_superadmin as "isSuperadmin",
-                admintokens.valid_until,
+                admintokens.valid_until as "_validTo",
                 admintokens.id as "adminToken"
             FROM users
 			INNER JOIN admintokens ON users.id = admintokens.user_id
@@ -126,16 +128,7 @@ class AdminDAO extends DAO {
             throw new HttpError("Token not valid! ($token)", 403);
         }
 
-        $tokenDate = $dateTime = new DateTime($tokenInfo['valid_until'], new DateTimeZone('Europe/Berlin'));
-
-		if ($tokenDate < new DateTime('',new  DateTimeZone('Europe/Berlin'))) {
-
-		    throw new HttpError("Token expired since {$tokenInfo['valid_until']}", 403);
-        }
-
-        $this->refreshAdminToken($token); // TODO separation of concerns
-
-        unset($tokenInfo['valid_until']);
+        TimeStamp::checkExpiration(0, (int) $tokenInfo['_validTo']);
 
         $tokenInfo['userEmail'] = $tokenInfo['userEmail'] ?? '';
 
@@ -190,8 +183,6 @@ class AdminDAO extends DAO {
 			[':token' => $token],
 			true
 		);
-
-		$this->refreshAdminToken($token); // TODO separation of concerns
 
 		return $data;
 	}
