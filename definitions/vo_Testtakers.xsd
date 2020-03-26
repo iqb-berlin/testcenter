@@ -27,7 +27,7 @@
                   </xs:sequence>
                   <xs:attribute name="name" type="xs:string" use="required"/>
                   <xs:attribute name="pw" type="xs:string"/>
-                  <xs:attribute name="type">
+                  <xs:attribute name="mode">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:enumeration value="run-hot-return">
@@ -102,6 +102,44 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="validTo" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  Login-/Person-Token of this group are valid until the specified date and can not be created after.
+                  Provide the date in the format `dd\mm\yyyy hh:mm`.
+                  If omitted, they are valid forever or, if provided, until `validFor` is reached.
+                </xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:pattern value="\d{1,2}/\d{1,2}/\d{2,4}\W\d{1,2}:\d{2}" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="validFrom" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  If provided, Login-/Person-Token are only valid and can only be created *after* this date.
+                  Provide the date in the format `dd\mm\yyyy hh:mm`.
+                </xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:pattern value="\d{1,2}/\d{1,2}/\d{2,4}\W\d{1,2}:\d{2}" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="validFor" type="xs:integer">
+              <xs:annotation>
+                <xs:documentation>
+                  Login-/Person-Token of this group are valid for the specified timespan (in minutes)
+                  after their creation.
+                  If omitted, they are valid forever or, if provided until `validTo` is reached.
+                  If both is provided, `validFor` and `validTo`, the Login-/Person-Token is valid to whatever comes
+                  first, the specified moment of `validTo` or the expiration of `validFor` minutes.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
