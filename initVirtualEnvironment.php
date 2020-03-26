@@ -30,6 +30,7 @@ try {
 
     $initDAO = new InitDAO();
     $initDAO->runFile('scripts/sql-schema/sqlite.sql');
+    $initDAO->runFile('scripts/sql-schema/patches.sql');
     $adminDAO = new AdminDAO();
 
     $initializer = new WorkspaceInitializer();
