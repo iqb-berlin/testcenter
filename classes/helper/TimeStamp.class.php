@@ -52,7 +52,11 @@ class TimeStamp {
             $validTo = new DateTime('now', $timeZone);
             $validTo->setTimestamp($validToTimestamp);
             if ($validTo < $now) {
-                throw new HttpError("Testing Period for this login is over since {$validTo->format($format)}", 401);
+                throw new HttpError(
+                    "Testing Period for this login is over since {$validTo->format($format)}",
+                    410,
+                    "test period expired"
+                );
             }
         }
 
@@ -62,7 +66,11 @@ class TimeStamp {
             $validFrom->setTimestamp($validFromTimestamp);
 
             if ($validFrom > $now) {
-                throw new HttpError("Testing Period for this login has not yet started adn will begin at {$validFrom->format($format)}", 401);
+                throw new HttpError(
+                    "Testing Period for this login has not yet started and will begin at {$validFrom->format($format)}",
+                    401,
+                    "test period not started"
+                );
             }
         }
     }

@@ -64,11 +64,14 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
     /*
      * # dann muss das persontoken das erben (!)
+     * null statt 0 überdenken
      * XSDs erweitern
+     * sample data erweitern
      * + spec erweitern um neue felder oder nicht mitschicken (bzw. nur validTo ist in dem Zusammenhang interessant)
      * # auch bei get session muss das herauskommen -> sollte mittels requiretoken geprüft werden. prüfen.
      * + bei der booklet-übersicht noch nicht aktive und abgelaufene dennoch anzeigen mit marker?
-     * tests
+     * # unit-tests
+     * e2e tests (mit anderem statuscode?!)
      */
     $loginToken = $sessionDAO->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
 
