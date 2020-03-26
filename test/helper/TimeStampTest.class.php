@@ -21,14 +21,14 @@ class TimeStampTest extends TestCase {
             TimeStamp::checkExpiration($future, $today);
             $this->fail("Exception expected.");
         } catch (HttpError $exception) {
-            $this->assertEquals($exception->getCode(), 401);
+            $this->assertEquals($exception->getCode(), 410);
         }
 
         try {
             TimeStamp::checkExpiration($today, $past);
             $this->fail("Exception expected.");
         } catch (HttpError $exception) {
-            $this->assertEquals($exception->getCode(), 401);
+            $this->assertEquals($exception->getCode(), 410);
         }
 
         try {
@@ -42,7 +42,7 @@ class TimeStampTest extends TestCase {
             TimeStamp::checkExpiration(0, $past);
             $this->fail("Exception expected.");
         } catch (HttpError $exception) {
-            $this->assertEquals($exception->getCode(), 401);
+            $this->assertEquals($exception->getCode(), 410);
         }
     }
 
