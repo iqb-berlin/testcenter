@@ -218,8 +218,8 @@ class XMLFileTesttakers extends XMLFile {
                         $groupname = (string) $groupnameAttr;
                         $mode = (string) $modeAttr;
 
-                        $validFrom = $this->dateToTimestamp((string) $groupNode['validFrom']);
-                        $validTo = isset($groupNode['validTo']) ? $this->dateToTimestamp((string) $groupNode['validTo']) : 0;
+                        $validFrom = Timestamp::fromXMLFormat((string) $groupNode['validFrom']);
+                        $validTo = isset($groupNode['validTo']) ? Timestamp::fromXMLFormat((string) $groupNode['validTo']) : 0;
                         $validForMinutes = (int) ($groupNode['validFor'] ?? 0);
 
                         foreach($groupNode->children() as $loginNode) {

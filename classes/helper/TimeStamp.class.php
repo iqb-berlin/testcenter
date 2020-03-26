@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 class TimeStamp {
 
-    // TODO unit-test
     static public function expirationFromNow(int $validToTimestamp = 0, int $validForMinutes = 0): int {
 
         $timeZone = new DateTimeZone('Europe/Berlin');
@@ -77,14 +76,13 @@ class TimeStamp {
 
         $timeZone = new DateTimeZone('Europe/Berlin');
         $dateTime = DateTime::createFromFormat("Y-m-d H:i:s", $sqlFormatTimestamp, $timeZone);
-        return $dateTime->getTimestamp();
+        return $dateTime ? $dateTime->getTimestamp() : 0;
     }
 
 
     static public function toSQLFormat(int $timestamp): ?string {
 
         if ($timestamp <= 0) {
-
             return null;
         }
 
@@ -92,6 +90,18 @@ class TimeStamp {
         $dateTime = new DateTime('now', $timeZone);
         $dateTime->setTimestamp($timestamp);
         return $dateTime->format("Y-m-d H:i:s");
+    }
+
+
+    static public function fromXMLFormat(?string $xmlFormatTimestamp): int {
+
+        if (!$xmlFormatTimestamp) {
+            return 0;
+        }
+
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        $dateTime = DateTime::createFromFormat("d/m/Y H:i", $xmlFormatTimestamp, $timeZone);
+        return $dateTime ? $dateTime->getTimestamp() : 0;
     }
 
 }
