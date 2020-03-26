@@ -42,6 +42,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -95,6 +97,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -128,6 +132,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -167,6 +173,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -219,5 +227,7 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error

@@ -80,6 +80,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -127,6 +129,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -209,6 +213,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -299,6 +305,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
     delete:
@@ -343,6 +351,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -406,6 +416,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -495,6 +507,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -563,6 +577,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -624,6 +640,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -679,6 +697,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -752,7 +772,10 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
-
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
     delete:
       summary: delete files
       description: deletes files from a workspace
@@ -806,6 +829,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -850,6 +875,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -894,6 +921,8 @@ paths:
           description: Forbidden
         "404":
           description: Workspace not found
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -929,6 +958,8 @@ paths:
           description: OK, workspace has been added
         "401":
           description: Not authenticated
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -969,6 +1000,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1013,6 +1046,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1067,6 +1102,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1106,6 +1143,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1172,6 +1211,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1220,6 +1261,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1280,6 +1323,8 @@ paths:
           description: Not authenticated
         "403":
           description: Forbidden
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1311,6 +1356,8 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/sys_check'
         "404":
           description: No SysCheck with that name found on Workspace
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1339,6 +1386,8 @@ paths:
           # TODO load files into example data
         "404":
           description: No SysCheck with that name found on Workspace
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -1390,5 +1439,7 @@ paths:
           description: Ok, Report saved
         "404":
           description: No SysCheck with that name found on Workspace
+        "410":
+          description: Session Expired
         "500":
           description: Server Error

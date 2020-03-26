@@ -38,7 +38,7 @@ CREATE TABLE `logins` (
 ,  `name` varchar(50) NOT NULL
 ,  `mode` varchar(20) NOT NULL
 ,  `workspace_id` integer  NOT NULL
-,  `valid_until` timestamp NOT NULL DEFAULT current_timestamp 
+,  `valid_until` timestamp
 ,  `token` varchar(50) NOT NULL
 ,  `booklet_def` text DEFAULT NULL
 ,  `groupname` varchar(100) NOT NULL
@@ -48,7 +48,7 @@ CREATE TABLE `persons` (
   `id` integer  NOT NULL PRIMARY KEY AUTOINCREMENT
 ,  `code` varchar(50) NOT NULL
 ,  `login_id` integer  NOT NULL
-,  `valid_until` timestamp NOT NULL DEFAULT current_timestamp 
+,  `valid_until` timestamp
 ,  `token` varchar(50) NOT NULL
 ,  `laststate` text DEFAULT NULL
 ,  CONSTRAINT `fk_person_login` FOREIGN KEY (`login_id`) REFERENCES `logins` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION

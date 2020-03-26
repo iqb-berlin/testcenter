@@ -45,6 +45,8 @@ paths:
                 label: "BLA"
         "401":
           description: Not authenticated
+        "410":
+          description: Session Expired
         "403":
           description: Forbidden
         "500":

@@ -104,9 +104,9 @@ class WorkspaceInitializer {
      * @param $loginCode
      * @throws Exception
      */
-    public function createSampleLoginsReviewsLogs(string $loginCode) {
+    public function createSampleLoginsReviewsLogs(string $loginCode): void {
 
-        $timestamp = microtime(true) * 1000;
+        $timestamp = microtime(true) * 1000; // TODO use TimeStamp helper for this
 
         $sessionDAO = new SessionDAO();
         $testDAO = new TestDAO();
@@ -117,12 +117,13 @@ class WorkspaceInitializer {
                 'mode' => 'run-hot-return',
                 'workspaceId' => 1,
                 'name' => 'sample_user',
-                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']]
+                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']],
+                '_validTo' => TimeStamp::fromXMLFormat('1/1/2030 12:00')
             ]
         );
         $loginToken = $sessionDAO->getOrCreateLoginToken($testSession);
         $loginId = $sessionDAO->getLoginId($loginToken);
-        $person = $sessionDAO->getOrCreatePerson($loginId, $loginCode);
+        $person = $sessionDAO->getOrCreatePerson($loginId, $loginCode, TimeStamp::fromXMLFormat('1/1/2030 12:00'));
         $test = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
@@ -130,5 +131,24 @@ class WorkspaceInitializer {
         $testDAO->addBookletLog((int) $test['id'], "sample log entry", $timestamp);
         $testDAO->addResponse((int) $test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
         $testDAO->updateUnitLastState((int) $test['id'], "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
+    }
+
+
+    public function createSampleExpiredLogin(string $loginCode): void {
+
+        $sessionDAO = new SessionDAO();
+
+        $testSession = new TestSession(
+            [
+                'groupName' => 'sample_group',
+                'mode' => 'run-hot-return',
+                'workspaceId' => 1,
+                'name' => 'expired_user',
+                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']],
+                '_validTo' => TimeStamp::fromXMLFormat('1/1/2000 12:00')
+            ]
+        );
+        $login = $sessionDAO->createLogin($testSession, true);
+        $sessionDAO->createPerson($login['id'], $loginCode, TimeStamp::fromXMLFormat('1/1/2000 12:00'), true);
     }
 }

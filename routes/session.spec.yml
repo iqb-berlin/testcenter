@@ -50,6 +50,8 @@ paths:
                 bookletLabel: ''
         "401":
           description: No token qualifies for authentication
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -85,6 +87,8 @@ paths:
           description: User has account but neither workspace nor super-admin privilige
         "400":
           description: Insufficent Crendetials
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -113,6 +117,8 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/login_session'
         "400":
           description: Insufficent Crendetials
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
 
@@ -143,5 +149,7 @@ paths:
                 code: '0'
         "400":
           description: Insufficent Crendetials
+        "410":
+          description: Session Expired
         "500":
           description: Server Error
