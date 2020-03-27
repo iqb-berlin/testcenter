@@ -60,10 +60,12 @@ class BookletsFolder extends WorkspaceController {
 
             $testTakersFile = new XMLFileTesttakers($fullFilePath);
             if (!$testTakersFile->isValid()) {
+
                 continue;
             }
 
             if ($testTakersFile->getRoottagName() != 'Testtakers') {
+
                 continue;
             }
 

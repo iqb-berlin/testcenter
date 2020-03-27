@@ -48,9 +48,8 @@ class XMLFileTesttakers extends XMLFile {
                             if ($loginNode->getName() == 'Login') {
 
                                 $loginNameAttr = $loginNode['name'];
-                                $loginPwAttr = $loginNode['pw'];
 
-                                if (isset($loginNameAttr) and isset($loginPwAttr)) {
+                                if (isset($loginNameAttr)) {
 
                                     $loginName = (string) $loginNameAttr;
 

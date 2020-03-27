@@ -28,6 +28,8 @@ class BookletsFolderTest extends TestCase {
 
         $result = $this->bookletsFolder->assemblePreparedBookletsFromFiles();
 
+        print_r($result);
+
         $this->assertArrayHasKey('sample_group', $result);
         $this->assertEquals('sample_group', $result['sample_group']['groupname']);
         $this->assertEquals(1, $result['sample_group']['loginsPrepared']);
