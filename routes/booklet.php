@@ -29,7 +29,7 @@ $app->group('/booklet', function(App $app) {
 
             $login = $sessionDAO->getLogin($authToken->getToken());
 
-            $person = $sessionDAO->getOrCreatePerson($login['id'], $code, $login['validTo']);
+            $person = $sessionDAO->getOrCreatePerson($login, $code);
 
             $personToken = $person['token'];
             $personFull = $sessionDAO->getPerson($personToken);

@@ -83,7 +83,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $login = $sessionDAO->getLogin($authToken->getToken());
 
-    $person = $sessionDAO->getOrCreatePerson($login['id'], $body['code'], $login['validTo']);
+    $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
 
     return $response->withJson([
         'personId' => $person['id'],

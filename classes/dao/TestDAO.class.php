@@ -23,7 +23,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function getOrCreateTest(string $personId, string $bookletName, string $bookletLabel) {
+    public function getOrCreateTest(int $personId, string $bookletName, string $bookletLabel): array {
 
         $test = $this->_(
             'SELECT booklets.locked, booklets.id, booklets.laststate, booklets.label FROM booklets

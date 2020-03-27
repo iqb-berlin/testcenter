@@ -5,6 +5,7 @@ require_once "classes/exception/HttpError.class.php";
 require_once "classes/data-collection/DataCollection.class.php";
 require_once "classes/helper/DB.class.php";
 require_once "classes/data-collection/DBConfig.class.php";
+require_once "classes/data-collection/LoginSession.class.php";
 require_once "classes/helper/TimeStamp.class.php";
 require_once "classes/dao/DAO.class.php";
 require_once "classes/dao/SessionDAO.class.php";
@@ -34,7 +35,11 @@ class SessionDAOTest extends TestCase {
 
     function test_createPerson() {
 
-        $result = $this->dbc->createPerson(1, 'xxx', TimeStamp::fromXMLFormat('1/1/2030 12:00'));
+        $login = new LoginSession([
+            "id" => 1,
+            "_validTo" => TimeStamp::fromXMLFormat('1/1/2030 12:00')
+        ]);
+        $result = $this->dbc->createPerson($login, 'xxx');
         $expect = [
             'id' => 1,
             'token' => 'static_token_person_xxx',

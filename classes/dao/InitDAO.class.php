@@ -23,8 +23,9 @@ class InitDAO extends SuperAdminDAO {
             ]
         );
         $loginToken = $sessionDAO->getOrCreateLoginToken($testSession);
-        $loginId = $sessionDAO->getLoginId($loginToken);
-        $person = $sessionDAO->getOrCreatePerson($loginId, $loginCode, TimeStamp::fromXMLFormat('1/1/2030 12:00'));
+        $login = $sessionDAO->getLogin($loginToken);
+        $login->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00');
+        $person = $sessionDAO->getOrCreatePerson($login, $loginCode);
         $test = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
@@ -53,9 +54,9 @@ class InitDAO extends SuperAdminDAO {
                 '_validTo' => TimeStamp::fromXMLFormat('1/1/2000 12:00')
             ]
         );
-        $login = $sessionDAO->createLogin($testSession, true);
 
-        $sessionDAO->createPerson($login['id'], $loginCode, TimeStamp::fromXMLFormat('1/1/2000 12:00'), true);
+        $login = $sessionDAO->createLogin($testSession, true);
+        $sessionDAO->createPerson($login, $loginCode, true);
 
         $this->createUser("expired_user", "whatever", true);
         $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));

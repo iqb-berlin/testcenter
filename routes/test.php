@@ -255,8 +255,7 @@ $app->put('/test', function(Request $request, Response $response) {
 
     /* TODO instead work with personToken and delete from here ... */
     $login = $sessionDAO->getLogin($loginToken);
-
-    $person = $sessionDAO->getOrCreatePerson($login['id'], $body['code'], $login['validTo']);
+    $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
     /* ... to here ... */
 
     $person = $sessionDAO->getPerson($person['token']);
@@ -265,7 +264,7 @@ $app->put('/test', function(Request $request, Response $response) {
         throw new HttpForbiddenException($request);
     }
 
-    $test = $testDAO->getOrCreateTest($person['id'], $body['bookletName'], $body['bookletLabel']);
+    $test = $testDAO->getOrCreateTest((int) $person['id'], $body['bookletName'], $body['bookletLabel']);
 
     if ($test['locked'] == '1') {
         throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);

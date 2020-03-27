@@ -9,7 +9,7 @@ class SessionDAO extends DAO {
     public function getOrCreateLoginToken(TestSession $session, bool $forceCreate = false): string {
 
         $oldLogin = $this->_(
-            'SELECT logins.id, logins.token, logins.valid_until as "validUntil" FROM logins
+            'SELECT logins.id, logins.token, logins.valid_until as "_validTo" FROM logins
 			WHERE logins.name = :name AND logins.workspace_id = :ws', [
                 ':name' => $session->name,
                 ':ws' => $session->workspaceId
@@ -19,10 +19,10 @@ class SessionDAO extends DAO {
         if ($forceCreate or ($oldLogin == null)) {
 
             $newLogin = $this->createLogin($session);
-            return $newLogin['token'];
+            return $newLogin->token;
         }
 
-        TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['validUntil']));
+        TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['_validTo']));
 
         // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 store customTexts as well
 
@@ -30,7 +30,7 @@ class SessionDAO extends DAO {
     }
 
 
-    public function createLogin(TestSession $session, bool $allowExpired = false): array {
+    public function createLogin(TestSession $session, bool $allowExpired = false): LoginSession {
 
         if (!$allowExpired) {
             TimeStamp::checkExpiration($session->_validFrom, $session->_validTo);
@@ -54,22 +54,23 @@ class SessionDAO extends DAO {
             ]
         );
 
-        return [
+        return new LoginSession([
             'id' => (int) $this->pdoDBhandle->lastInsertId(),
             'token' => $loginToken,
             'booklets' => json_encode($session->booklets),
-            'validTo' => $validUntil,
+            '_validTo' => $validUntil,
             'name' => $session->name,
             'mode' => $session->mode,
             'workspaceId' => $session->workspaceId,
             'groupName' => $session->groupName
-        ];
+        ]);
     }
 
 
 
     // TODO add unit-test
     // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
+    // TODO merge with getLogin
     public function getSessionByLoginToken(string $loginToken): TestSession {
 
         $logindata = $this->_(
@@ -196,10 +197,22 @@ class SessionDAO extends DAO {
     }
 
     // TODO unit test
-    public function getLogin(string $loginToken): array {
+    public function getLogin(string $loginToken): LoginSession {
 
         $login = $this->_(
-            'SELECT logins.id, logins.valid_until FROM logins WHERE logins.token=:token',
+            'SELECT 
+                    logins.id, 
+                    logins.name,
+                    logins.workspace_id as "workspaceId",             
+                    logins.valid_until as "_validTo",
+                    logins.token,
+                    logins.mode,
+                    logins.booklet_def as "booklets",
+                    logins.groupname as "groupName"
+                FROM 
+                    logins 
+                WHERE 
+                    logins.token=:token',
             [':token' => $loginToken]
         );
 
@@ -207,28 +220,28 @@ class SessionDAO extends DAO {
             throw new HttpError("LoginToken invalid: `$loginToken`", 403);
         }
 
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['valid_until']));
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['_validTo']));
 
-        return [
-            'id' => (int) $login['id'],
-            'validTo' => TimeStamp::fromSQLFormat($login['valid_until'])
-        ];
+        $login['_validTo'] = TimeStamp::fromSQLFormat($login['_validTo']);
+        $login['booklets'] = JSON::decode($login['booklets'], true);
+
+        return new LoginSession($login);
     }
 
 
     public function getLoginId(string $loginToken): int {
 
-        return $this->getLogin($loginToken)['id'];
+        return (int) $this->getLogin($loginToken)->id;
     }
 
 
     // TODO unit test
-    public function getOrCreatePerson(int $loginId, string $code, int $validTo): array {
+    public function getOrCreatePerson(LoginSession $loginSession, string $code): array {
 
         $person = $this->_(
             'SELECT * FROM persons WHERE persons.login_id=:id and persons.code=:code',
             [
-                ':id' => $loginId,
+                ':id' => $loginSession->id,
                 ':code' => $code
             ]
         );
@@ -239,18 +252,22 @@ class SessionDAO extends DAO {
             return $person;
         }
 
-        return $this->createPerson($loginId, $code, $validTo);
+        return $this->createPerson($loginSession, $code);
     }
 
 
-    public function createPerson(int $loginId, string $code, int $validTo, bool $allowExpired = false): array { // TODO maybe use TestSession here as param
+    public function createPerson(LoginSession $loginSession, string $code, bool $allowExpired = false): array {
+
+//        $login = $this->getLogin($loginId);
+
+
 
         if (!$allowExpired) {
-            TimeStamp::checkExpiration(0, $validTo);
+            TimeStamp::checkExpiration(0, $loginSession->_validTo);
         }
 
         $newPersonToken = $this->_randomToken('person', $code);
-        $validUntil = TimeStamp::toSQLFormat($validTo);
+        $validUntil = TimeStamp::toSQLFormat($loginSession->_validTo);
 
         $this->_(
             'INSERT INTO persons (token, code, login_id, valid_until)
@@ -258,17 +275,17 @@ class SessionDAO extends DAO {
             [
                 ':token' => $newPersonToken,
                 ':code' => $code,
-                ':login_id' => $loginId,
+                ':login_id' => $loginSession->id,
                 ':valid_until' => $validUntil
             ]
         );
 
         return [
-            'id' => $this->pdoDBhandle->lastInsertId(),
+            'id' => (int) $this->pdoDBhandle->lastInsertId(),
             'token' => $newPersonToken,
-            'login_id' => $loginId,
+            'login_id' => $loginSession->id,
             'code' => $code,
-            'validTo' => $validTo,
+            'validTo' => TimeStamp::fromSQLFormat($validUntil),
             'laststate' => null
         ];
     }
