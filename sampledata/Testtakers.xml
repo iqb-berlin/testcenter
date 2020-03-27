@@ -1,7 +1,5 @@
 <Testtakers
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="../definitions/vo_Testtakers.xsd"
-  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/2.0.0/vo_code/vo_Testtakers.xsd"
 >
 
   <Metadata>
