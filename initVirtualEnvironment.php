@@ -35,13 +35,16 @@ try {
     $initializer = new WorkspaceInitializer();
     $initializer->importSampleData(1, $initArgs);
 
-    $initDAO->addSuperuser($initArgs['user_name'], $initArgs['user_password']);
+    $adminUser = $initDAO->createUser($initArgs['user_name'], $initArgs['user_password'], true);
     $adminDAO->createAdminToken($initArgs['user_name'], $initArgs['user_password']);
-    $initDAO->addWorkspace('sample_workspace');
-    $initDAO->grantRights($initArgs['user_name'], 1);
+    $initDAO->createWorkspace('sample_workspace');
+    $initDAO->setWorkspaceRightsByUser(1, [(object) [
+        "id" => 1,
+        "role" => "RW"
+    ]]);
 
-    $initializer->createSampleLoginsReviewsLogs('xxx');
-    $initializer->createSampleExpiredLogin('yyy');
+    $initDAO->createSampleLoginsReviewsLogs('xxx');
+    $initDAO->createSampleExpiredLogin('yyy');
 
     // init random generator
     srand(1);

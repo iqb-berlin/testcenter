@@ -51,13 +51,13 @@ class SuperAdminDAOTest extends TestCase {
                 "id" => "2",
                 "name" => "i_exist_but_am_not_allowed_anything",
                 "email" => null,
-                "is_superadmin" => '0'
+                "isSuperadmin" => '0'
             ),
             array(
                 "id" => "1",
                 "name" => "super",
                 "email" => null,
-                "is_superadmin" => '1'
+                "isSuperadmin" => '1'
             )
         );
         $this->assertEquals($expectation, $result);
@@ -71,7 +71,7 @@ class SuperAdminDAOTest extends TestCase {
             "id" => "2",
             "name" => "i_exist_but_am_not_allowed_anything",
             "email" => null,
-            "is_superadmin" => '0'
+            "isSuperadmin" => '0'
         );
         $this->assertEquals($expectation, $result);
     }
@@ -149,22 +149,20 @@ class SuperAdminDAOTest extends TestCase {
 
     public function test_addUser() {
 
-        $this->dbc->addUser("a_third_user", "somepw");
-        $result = $this->dbc->getUserByName("a_third_user");
-        $expectation = array(
+        $result = $this->dbc->createUser("a_third_user", "somepw");
+        $expectation = [
             "id" => "3",
             "name" => "a_third_user",
             "email" => null,
-            "is_superadmin" => '0'
-        );
+            "isSuperadmin" => '0'
+        ];
         $this->assertEquals($expectation, $result);
 
-        $this->expectException('HttpError');
-        $this->dbc->addUser("a_third_user", "again");
+        $result2 = $this->dbc->getUserByName("a_third_user");
+        $this->assertEquals($expectation, $result2);
 
-
         $this->expectException('HttpError');
-        $this->dbc->addUser("a_third_user", "again");
+        $this->dbc->createUser("a_third_user", "again");
     }
 
 
@@ -256,7 +254,7 @@ class SuperAdminDAOTest extends TestCase {
             "id" => "2",
             "name" => "i_exist_but_am_not_allowed_anything",
             "email" => null,
-            "is_superadmin" => '1'
+            "isSuperadmin" => '1'
         );
         $this->assertEquals($expectation, $result);
 
@@ -267,8 +265,57 @@ class SuperAdminDAOTest extends TestCase {
             "id" => "2",
             "name" => "i_exist_but_am_not_allowed_anything",
             "email" => null,
-            "is_superadmin" => '0'
+            "isSuperadmin" => '0'
         );
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_createWorkspace() {
+
+        $expectation = [
+          "id" => 2,
+          "name" => 'new_workspace'
+        ];
+        $result = $this->dbc->createWorkspace('new_workspace');
+        $this->assertEquals($expectation, $result);
+
+        try {
+            $this->dbc->createWorkspace('new_workspace');
+            $this->fail("Exception expected.");
+        } catch (HttpError $exception) {
+            $this->assertEquals($exception->getCode(), 400);
+        }
+
+        $result = $this->dbc->getWorkspaces();
+        $expectation = [
+            [
+                "id" => 1,
+                "name" => "example_workspace"
+            ],
+            [
+                "id" => 2,
+                "name" => "new_workspace"
+            ],
+
+        ];
+        $this->assertEquals($expectation, $result);
+    }
+
+    public function test_getOrCreateWorkspace() {
+
+        $result = $this->dbc->getOrCreateWorkspace("example_workspace");
+        $expectation = [
+            "id" => 1,
+            "name" => "example_workspace"
+        ];
+        $this->assertEquals($expectation, $result);
+
+        $result = $this->dbc->getOrCreateWorkspace("new_workspace");
+        $expectation = [
+            "id" => 2,
+            "name" => "new_workspace"
+        ];
         $this->assertEquals($expectation, $result);
     }
 

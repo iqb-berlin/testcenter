@@ -1,122 +1,63 @@
 <?php
 declare(strict_types=1);
-
-// TODO unit test
-// use $this-_ instead of pdoDBhandle function directly
+// TODO unit tests
 
 class InitDAO extends SuperAdminDAO {
 
 
-    /**
-     *
-     * adds a new super user to db, if user table is empty (!)
-     *
-     * @param $username - name for the super user to create
-     * @param $userpassword  - password for the super user to create
-     * @return bool - true if user was created, false if not (but no error occurred)
-     * @throws Exception - if error occurs during connection
-     * // TODO use $this->_
-     */
-    public function addSuperuser(string $username, string $userpassword): bool {
+    public function createSampleLoginsReviewsLogs(string $loginCode): void {
 
-        $sql = $this->pdoDBhandle->prepare('SELECT users.name FROM users');
+        $timestamp = microtime(true) * 1000; // TODO use TimeStamp helper for this
 
-        if (!$sql->execute()) {
-            throw new Exception('Could not select from table `users` - database not initialized correctly?');
-        }
+        $sessionDAO = new SessionDAO();
+        $testDAO = new TestDAO();
 
-        $data = $sql->fetchAll(PDO::FETCH_ASSOC);
-
-        if (count($data)) {
-            return false;
-        }
-
-        $sql = $this->pdoDBhandle->prepare('INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, 1)');
-        $params = [
-            ':user_name' => $username,
-            ':user_password' => $this->encryptPassword($userpassword)
-        ];
-
-        if (!$sql->execute($params)) {
-            throw new Exception('Could not insert into table `users`');
-        }
-
-        return true;
-    }
-
-
-    /**
-     * creates a new workspace with $name, if it does not exist
-     *
-     * @param $name - name for the new workspace
-     * @return int - workspace id
-     * @throws Exception - if error occurs
-     */
-    public function getWorkspace(string $name): int {
-
-        if (!$this->pdoDBhandle) {
-            throw new Exception('no database connection');
-        }
-
-        $sql = $this->pdoDBhandle->prepare("SELECT workspaces.id FROM workspaces WHERE `name` = :ws_name");
-        $sql->execute([':ws_name' => $name]);
-
-        $workspaces_names = $sql->fetchAll(PDO::FETCH_ASSOC);
-
-        if (count($workspaces_names)) {
-            return (int) $workspaces_names[0]['id'];
-        }
-
-        $this->addWorkspace($name);
-
-        return $this->getWorkspace($name);
+        $testSession = new TestSession(
+            [
+                'groupName' => 'sample_group',
+                'mode' => 'run-hot-return',
+                'workspaceId' => 1,
+                'name' => 'sample_user',
+                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']],
+                '_validTo' => TimeStamp::fromXMLFormat('1/1/2030 12:00')
+            ]
+        );
+        $loginToken = $sessionDAO->getOrCreateLoginToken($testSession);
+        $loginId = $sessionDAO->getLoginId($loginToken);
+        $person = $sessionDAO->getOrCreatePerson($loginId, $loginCode, TimeStamp::fromXMLFormat('1/1/2030 12:00'));
+        $test = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
+        $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
+        $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
+        $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
+        $testDAO->addBookletLog((int) $test['id'], "sample log entry", $timestamp);
+        $testDAO->addResponse((int) $test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
+        $testDAO->updateUnitLastState((int) $test['id'], "UNIT.SAMPLE", "PRESENTATIONCOMPLETE", "yes");
     }
 
     /**
-     *
-     * grants RW rights to a given workspace( by id) to a user
-     * @param $userName
-     * @param $workspaceId
-     * @throws Exception
+     * @param string $loginCode
+     * @throws HttpError
      */
-    public function grantRights(string $userName, int $workspaceId) {
+    public function createSampleExpiredLogin(string $loginCode): void {
 
-        $user = $this->getUserByName($userName);
+        $sessionDAO = new SessionDAO();
+        $adminDAO = new AdminDAO();
 
-        $this->setWorkspaceRightsByUser((int) $user['id'], [(object) [
-            "id" => $workspaceId,
-            "role" => "RW"
-        ]]);
-    }
+        $testSession = new TestSession(
+            [
+                'groupName' => 'sample_group',
+                'mode' => 'run-hot-return',
+                'workspaceId' => 1,
+                'name' => 'expired_user',
+                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']],
+                '_validTo' => TimeStamp::fromXMLFormat('1/1/2000 12:00')
+            ]
+        );
+        $login = $sessionDAO->createLogin($testSession, true);
 
+        $sessionDAO->createPerson($login['id'], $loginCode, TimeStamp::fromXMLFormat('1/1/2000 12:00'), true);
 
-    // TODO unit-test
-    public function getDBContentDump(): string {
-
-        $tables = [ // because we use different types of DB is difficult to get table list by command
-            'admintokens',
-            'bookletlogs',
-            'bookletreviews',
-            'booklets',
-            'logins',
-            'persons',
-            'unitlogs',
-            'unitreviews',
-            'units',
-            'users',
-            'workspace_users',
-            'workspaces'
-        ];
-
-        $report = "";
-
-        foreach ($tables as $table) {
-
-            $report .= "\n## $table\n";
-            $entries = $this->_("SELECT * FROM $table", [], true);
-            $report .= CSV::build($entries);
-        }
-
-        return $report;
+        $this->createUser("expired_user", "whatever", true);
+        $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
     }
 }

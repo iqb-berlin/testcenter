@@ -5,9 +5,25 @@ declare(strict_types=1);
 
 class DAO {
 
+    const tables = [ // because we use different types of DB is difficult to get table list by command
+        'admintokens',
+        'bookletlogs',
+        'bookletreviews',
+        'booklets',
+        'logins',
+        'persons',
+        'unitlogs',
+        'unitreviews',
+        'units',
+        'users',
+        'workspace_users',
+        'workspaces'
+    ];
+
     protected $pdoDBhandle = false;
     protected $timeUserIsAllowedInMinutes = 30;
     protected $passwordSalt = 't';
+
 
     public function __construct() {
 
@@ -78,6 +94,22 @@ class DAO {
     public function getDBType(): string {
 
         return $this->pdoDBhandle->getAttribute(PDO::ATTR_DRIVER_NAME);
+    }
+
+
+    // TODO unit-test
+    public function getDBContentDump(): string {
+
+        $report = "";
+
+        foreach ($this::tables as $table) {
+
+            $report .= "\n## $table\n";
+            $entries = $this->_("SELECT * FROM $table", [], true);
+            $report .= CSV::build($entries);
+        }
+
+        return $report;
     }
 
 

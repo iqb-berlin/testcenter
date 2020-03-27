@@ -296,8 +296,7 @@ $app->group('/workspace', function(App $app) {
             throw new HttpBadRequestException($request, "New workspace name missing");
         }
 
-        $superAdminDAO->addWorkspace($requestBody->name);
-
+        $superAdminDAO->createWorkspace($requestBody->name);
 
         return $response->withStatus(201);
     });

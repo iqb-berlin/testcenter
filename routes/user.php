@@ -46,7 +46,7 @@ $app->group('/user', function(App $app) {
             throw new HttpBadRequestException($request, "Username or Password missing");
         }
 
-        $superAdminDAO->addUser($requestBody->n, $requestBody->p);
+        $superAdminDAO->createUser($requestBody->n, $requestBody->p);
 
         return $response->withStatus(201);
     });

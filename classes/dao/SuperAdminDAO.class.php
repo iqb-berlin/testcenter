@@ -16,21 +16,26 @@ class SuperAdminDAO extends DAO {
     }
 
 
-    // name, id, email, is_superadmin
     public function getUsers(): array {
 
         return $this->_(
-            'SELECT users.name, users.id, users.email, users.is_superadmin FROM users ORDER BY users.name',
+            'SELECT users.name, users.id, users.email, users.is_superadmin as "isSuperadmin" FROM users ORDER BY users.name',
             [],
             true
         );
     }
 
-    // name, id, email, is_superadmin
+
     public function getUserByName(string $userName): array {
 
         $user = $this->_(
-            'SELECT users.name, users.id, users.email, users.is_superadmin FROM users WHERE users.name=:user_name',
+            'SELECT 
+                    users.name, 
+                    users.id, 
+                    users.email, 
+                    users.is_superadmin as "isSuperadmin" 
+                FROM users 
+                WHERE users.name=:user_name',
             [':user_name' => $userName]
         );
         if ($user == null) {
@@ -130,7 +135,7 @@ class SuperAdminDAO extends DAO {
     }
 
 
-    public function addUser(string $userName, string $password, bool $isSuperadmin = false): void {
+    public function createUser(string $userName, string $password, bool $isSuperadmin = false): array {
 
         // TODO maybe prove $userName and $password for validity
 
@@ -151,6 +156,13 @@ class SuperAdminDAO extends DAO {
                 ':is_superadmin' => $isSuperadmin ? 1 : 0
             ]
         );
+
+        return [
+            'id' => $this->pdoDBhandle->lastInsertId(),
+            'name' => $userName,
+            'email' => null,
+            'isSuperadmin' => $isSuperadmin ? 1 : 0
+        ];
     }
 
 
@@ -162,7 +174,23 @@ class SuperAdminDAO extends DAO {
     }
 
 
-    public function addWorkspace($name) {
+    public function getOrCreateWorkspace(string $name): array {
+
+        $workspace = $this->_(
+            "SELECT workspaces.id, workspaces.name FROM workspaces WHERE `name` = :ws_name",
+            [':ws_name' => $name]
+        );
+
+        if ($workspace != null) {
+
+            return $workspace;
+        }
+
+        return $this->createWorkspace($name);
+    }
+
+
+    public function createWorkspace($name): array {
 
         $workspace = $this->_(
             'SELECT workspaces.id FROM workspaces 
@@ -178,6 +206,11 @@ class SuperAdminDAO extends DAO {
             'INSERT INTO workspaces (name) VALUES (:ws_name)',
             [':ws_name' => $name]
         );
+
+        return [
+            'id' => $this->pdoDBhandle->lastInsertId(),
+            'name' => $name
+        ];
     }
 
 
@@ -252,7 +285,6 @@ class SuperAdminDAO extends DAO {
         }
         return $workspaceRolesPerUser;
     }
-
 
 
     public function setUserRightsForWorkspace(int $wsId, array $listOfUserIdsAndRoles): void {
