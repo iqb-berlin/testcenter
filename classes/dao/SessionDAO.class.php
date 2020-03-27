@@ -242,8 +242,7 @@ class SessionDAO extends DAO {
         return $this->createPerson($loginId, $code, $validTo);
     }
 
-
-    // TODO unit test
+    
     public function createPerson(int $loginId, string $code, int $validTo, bool $allowExpired = false): array { // TODO maybe use TestSession here as param
 
         if (!$allowExpired) {
