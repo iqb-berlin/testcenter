@@ -101,7 +101,19 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     if ($authToken::type == "login") {
 
-        $session = $sessionDAO->getSessionByLoginToken($authToken->getToken());
+        $loginSession = $sessionDAO->getLogin($authToken->getToken());
+
+        // TODO remove workaround with https://github.com/iqb-berlin/testcenter-iqb-php/issues/76
+        $session = new TestSession([
+            'booklets' => $loginSession->booklets,
+            '_validTo' => $loginSession->_validTo,
+            'name' => $loginSession->name,
+            'loginToken' => $loginSession->token,
+            'mode' => $loginSession->mode,
+            'workspaceId' => $loginSession->workspaceId,
+            'groupName' => $loginSession->groupName
+        ]);
+
         return $response->withJson($session);
     }
 

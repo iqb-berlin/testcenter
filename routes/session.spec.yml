@@ -43,7 +43,6 @@ paths:
                     - BOOKLET.SAMPLE
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
                 loginToken: ''
-                workspaceName: sample_workspace
                 personToken: ''
                 code: ''
                 testId: 0

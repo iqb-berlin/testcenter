@@ -67,38 +67,6 @@ class SessionDAO extends DAO {
     }
 
 
-
-    // TODO add unit-test
-    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-    // TODO merge with getLogin
-    public function getSessionByLoginToken(string $loginToken): TestSession {
-
-        $logindata = $this->_(
-            'SELECT 
-                logins.booklet_def,
-                logins.workspace_id as "workspaceId",
-                logins.mode,
-                logins.groupname as "groupName",
-                logins.name as name,
-                logins.valid_until as "_validTo",
-                workspaces.name as "workspaceName"
-            FROM logins
-                INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-			WHERE logins.token = :token',
-            [':token' => $loginToken]
-        );
-
-        if ($logindata !== null) {
-            $logindata['booklets'] = JSON::decode($logindata['booklet_def'], true);
-            unset($logindata['booklet_def']);
-        }
-
-        TimeStamp::checkExpiration(0, Timestamp::fromSQLFormat($logindata['_validTo']));
-
-        return new TestSession($logindata);
-    }
-
-
     // TODO add unit-test
     // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
     public function getSessionByPersonToken(string $personToken): TestSession {
@@ -196,7 +164,8 @@ class SessionDAO extends DAO {
         }
     }
 
-    // TODO unit test
+
+    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
     public function getLogin(string $loginToken): LoginSession {
 
         $login = $this->_(

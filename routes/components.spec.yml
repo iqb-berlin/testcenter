@@ -120,10 +120,6 @@ components:
           type: string
           description: the token for this session (available after two-factor-authorization part I)
           example: "login00000000.test0000000"
-        workspaceName:
-          type: string
-          description: name of the current workspace
-          example: "example workspace"
         personToken:
           type: string
           description: the token for this person (available after two-factor-authorization part II)
