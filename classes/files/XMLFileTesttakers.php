@@ -28,26 +28,32 @@ class XMLFileTesttakers extends XMLFile {
 
 
     // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-    public function getAllTesttakers($onlyMode = '') {
+    public function getAllTesttakers() {
         $myreturn = [];
 
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             $allLoginNames = []; // double logins are ignored
             foreach($this->xmlfile->children() as $groupNode) {
-                if ($groupNode->getName() == 'Group') {
-                    $groupnameAttr = $groupNode['name'];
-                    $modeAttr = $groupNode['mode'];
 
-                    if (isset($groupnameAttr) and isset($modeAttr) and (($onlyMode == '') or ($onlyMode == (string) $modeAttr))) {
+                if ($groupNode->getName() == 'Group') {
+
+                    $groupnameAttr = $groupNode['name'];
+
+                    if (isset($groupnameAttr)) {
 
                         $groupname = (string) $groupnameAttr;
 
                         foreach($groupNode->children() as $loginNode) {
+
                             if ($loginNode->getName() == 'Login') {
+
                                 $loginNameAttr = $loginNode['name'];
                                 $loginPwAttr = $loginNode['pw'];
+
                                 if (isset($loginNameAttr) and isset($loginPwAttr)) {
+
                                     $loginName = (string) $loginNameAttr;
+
                                     if (!in_array($loginName, $allLoginNames)) {
                                         array_push($allLoginNames, $loginName);
 
