@@ -111,6 +111,16 @@ paths:
                         $ref: '#/components/schemas/auth_test'
                     example:
                         l: user000000000.test0000000
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                code:
+                                    type: string
+                        example:
+                            code: xxx
             responses:
                 '200':
                     description: OK
@@ -119,7 +129,7 @@ paths:
                             example:
                                 personId: '2'
                                 personToken: a5e690e51b931a3.29393583
-                                code: '0'
+                                code: xxx
                 '400':
                     description: 'Insufficent Crendetials'
                 '410':

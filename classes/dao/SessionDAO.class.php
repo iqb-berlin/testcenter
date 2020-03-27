@@ -57,7 +57,7 @@ class SessionDAO extends DAO {
         return new LoginSession([
             'id' => (int) $this->pdoDBhandle->lastInsertId(),
             'token' => $loginToken,
-            'booklets' => json_encode($session->booklets),
+            'booklets' => $session->booklets,
             '_validTo' => $validUntil,
             'name' => $session->name,
             'mode' => $session->mode,
@@ -258,9 +258,9 @@ class SessionDAO extends DAO {
 
     public function createPerson(LoginSession $loginSession, string $code, bool $allowExpired = false): array {
 
-//        $login = $this->getLogin($loginId);
-
-
+        if (!array_key_exists($code, $loginSession->booklets)) {
+            throw new HttpError("`$code` is no valid code for `{$loginSession->name}`", 401);
+        }
 
         if (!$allowExpired) {
             TimeStamp::checkExpiration(0, $loginSession->_validTo);

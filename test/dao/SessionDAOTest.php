@@ -37,17 +37,31 @@ class SessionDAOTest extends TestCase {
 
         $login = new LoginSession([
             "id" => 1,
-            "_validTo" => TimeStamp::fromXMLFormat('1/1/2030 12:00')
+            "_validTo" => TimeStamp::fromXMLFormat('1/1/2030 12:00'),
+            "booklets" => [
+                "existing_code" => []
+            ]
         ]);
-        $result = $this->dbc->createPerson($login, 'xxx');
+        $result = $this->dbc->createPerson($login, 'existing_code');
         $expect = [
             'id' => 1,
-            'token' => 'static_token_person_xxx',
+            'token' => 'static_token_person_existing_code',
             'login_id' => 1,
-            'code' => 'xxx',
+            'code' => 'existing_code',
             'validTo' => 1893495600,
             'laststate' => null
         ];
         $this->assertEquals($result, $expect);
+
+        try {
+
+            $this->dbc->createPerson($login, 'wrong_code');
+            $this->fail("Exception expected");
+
+        } catch (HttpError $exception) {
+
+            $this->assertEquals($exception->getCode(), 401);
+        }
+
     }
 }
