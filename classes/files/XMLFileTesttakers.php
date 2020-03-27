@@ -37,7 +37,9 @@ class XMLFileTesttakers extends XMLFile {
                 if ($groupNode->getName() == 'Group') {
                     $groupnameAttr = $groupNode['name'];
                     $modeAttr = $groupNode['mode'];
+
                     if (isset($groupnameAttr) and isset($modeAttr) and (($onlyMode == '') or ($onlyMode == (string) $modeAttr))) {
+
                         $groupname = (string) $groupnameAttr;
 
                         foreach($groupNode->children() as $loginNode) {
@@ -49,8 +51,7 @@ class XMLFileTesttakers extends XMLFile {
                                     if (!in_array($loginName, $allLoginNames)) {
                                         array_push($allLoginNames, $loginName);
 
-                                        $loginPw = (string) $loginPwAttr;
-                                        if ((strlen($loginName) > 2) and (strlen($loginPw) > 2)) {
+                                        if (strlen($loginName) > 2) {
 
                                             // only valid logins are taken //////////////////////////////////
                                             
@@ -213,10 +214,9 @@ class XMLFileTesttakers extends XMLFile {
             foreach($this->xmlfile->children() as $groupNode) {
                 if ($groupNode->getName() == 'Group') {
                     $groupnameAttr = $groupNode['name'];
-                    $modeAttr = $groupNode['mode'];
-                    if (isset($groupnameAttr) and isset($modeAttr)) {
+
+                    if (isset($groupnameAttr)) {
                         $groupname = (string) $groupnameAttr;
-                        $mode = (string) $modeAttr;
 
                         $validFrom = TimeStamp::fromXMLFormat((string) $groupNode['validFrom']);
                         $validTo = isset($groupNode['validTo']) ? TimeStamp::fromXMLFormat((string) $groupNode['validTo']) : 0;
@@ -226,6 +226,7 @@ class XMLFileTesttakers extends XMLFile {
                             if ($loginNode->getName() == 'Login') {
                                 $loginNameAttr = $loginNode['name'];
                                 $loginPwAttr = $loginNode['pw'] ?? '';
+                                $mode = (string) $loginNode['mode'] ?? 'run-hot-return';
                                 if (isset($loginNameAttr) and isset($loginPwAttr)) {
                                     $loginName = (string) $loginNameAttr;
                                     if ((strlen($loginName) > 2) and ($loginName == $givenLoginName)) {

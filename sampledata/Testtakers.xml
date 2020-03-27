@@ -16,38 +16,38 @@
     <Text key="somestr">string</Text>
   </CustomTexts>
 
-  <Group mode="run-hot-return" name="sample_group" validFor="45" validFrom="1/3/2020 10:00">
-    <Login name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
+  <Group name="sample_group" validFor="45" validFrom="1/3/2020 10:00">
+    <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet codes="__TEST_PERSON_CODES__">BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
-  <Group mode="run-review" name="review_group">
-    <Login name="__TEST_LOGIN_NAME__-review" pw="__TEST_LOGIN_PASSWORD__">
+  <Group name="review_group">
+    <Login mode="run-review" name="__TEST_LOGIN_NAME__-review" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
-  <Group mode="run-trial" name="trial_group">
-    <Login name="__TEST_LOGIN_NAME__-trial" pw="__TEST_LOGIN_PASSWORD__">
+  <Group name="trial_group">
+    <Login mode="run-trial" name="__TEST_LOGIN_NAME__-trial" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
-  <Group mode="run-hot-restart" name="passwordless_group">
-    <Login name="__TEST_LOGIN_NAME__-no-pw">
+  <Group name="passwordless_group">
+    <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-no-pw">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
-  <Group mode="run-hot-restart" name="expired_group" validTo="1/3/2020 19:30">
-    <Login name="test-expired">
+  <Group name="expired_group" validTo="1/3/2020 19:30">
+    <Login mode="run-hot-restart" name="test-expired">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
-  <Group mode="run-hot-restart" name="future_group" validFrom="26/3/2020 9:00">
-    <Login name="test-future">
+  <Group name="future_group" validFrom="26/3/2020 9:00">
+    <Login mode="run-hot-restart" name="test-future">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>

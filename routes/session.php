@@ -47,6 +47,8 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
         $loginData = $booklets->findLoginData($body['name'], $body['password']);
 
+        error_log(print_r($loginData, true));
+
         if ($loginData != null) {
             break;
         }
