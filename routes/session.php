@@ -20,7 +20,7 @@ $app->put('/session/admin', function(Request $request, Response $response) use (
 
     $session = $adminDAO->getAdminSession($token);
 
-    if ((count($session->workspaces) == 0) and !$session->isSuperadmin) {
+    if (($session->getAccessWorkspaceAdmin()) and ($session->getAccessSuperAdmin() == null)) {
         throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 202);
     }
 
@@ -34,8 +34,6 @@ $app->put('/session/login', function(Request $request, Response $response) use (
         "password" => ''
     ]);
 
-    $sessionDAO = new SessionDAO();
-
     if (!$body['name']) {
 
         throw new HttpBadRequestException($request, "Authentication credentials missing.");
@@ -43,9 +41,9 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
     $loginData = null;
 
-    foreach (BookletsFolder::getAll() as $booklets) { /* @var BookletsFolder $booklets */
+    foreach (TesttakersFolder::getAll() as $testtakersFolder) { /* @var TesttakersFolder $testtakersFolder */
 
-        $loginData = $booklets->findLoginData($body['name'], $body['password']);
+        $loginData = $testtakersFolder->findLoginData($body['name'], $body['password']);
 
         if ($loginData != null) {
             break;
@@ -58,14 +56,29 @@ $app->put('/session/login', function(Request $request, Response $response) use (
         throw new HttpUnauthorizedException($request, "No Login for `{$body['name']}` with `{$shortPW}`");
     }
 
-    $testSession = new TestSession($loginData);
+    $sessionDAO = new SessionDAO();
 
-    $loginToken = $sessionDAO->getOrCreateLoginToken($testSession, ($testSession->mode == 'run-hot-restart'));
+    $loginSession = $sessionDAO->getOrCreateLogin($loginData, ($loginData->mode == 'run-hot-restart'));
 
-    $testSession->loginToken = $loginToken;
-    $testSession->workspaceName = $sessionDAO->getWorkspaceName($loginData['workspaceId']);
+    if (array_keys($loginData->booklets) == ['']) {
 
-    return $response->withJson($testSession);
+        $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
+
+        $session = new Session(
+            $person['token'],
+            "{$login->name}/{$person['code']}",
+            [],
+            (object) [] // TODO restore customTexts
+        );
+        $session->setAccessTest($login->booklets[$person['code']] ?? []);
+
+
+    } else {
+
+        $session = $loginSession;
+    }
+
+    return $response->withJson($session);
 });
 
 $app->put('/session/person', function(Request $request, Response $response) use ($app) {
@@ -83,11 +96,15 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
 
-    return $response->withJson([
-        'personId' => $person['id'],
-        'personToken' => $person['token'],
-        'code' => $person['code']
-    ]);
+    $session = new Session(
+        $person['token'],
+        "{$login->name}/{$person['code']}",
+        [],
+        (object) [] // TODO restore customTexts
+    );
+    $session->setAccessTest($login->booklets[$person['code']] ?? []);
+
+    return $response->withJson($session);
 
 })->add(new RequireLoginToken());
 
@@ -102,24 +119,30 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
     if ($authToken::type == "login") {
 
         $loginSession = $sessionDAO->getLogin($authToken->getToken());
+        $codeRequired = (array_keys($loginSession->booklets) == ['']);
 
         // TODO remove workaround with https://github.com/iqb-berlin/testcenter-iqb-php/issues/76
-        $session = new TestSession([
-            'booklets' => $loginSession->booklets,
-            '_validTo' => $loginSession->_validTo,
-            'name' => $loginSession->name,
-            'loginToken' => $loginSession->token,
-            'mode' => $loginSession->mode,
-            'workspaceId' => $loginSession->workspaceId,
-            'groupName' => $loginSession->groupName
-        ]);
+        $session = new Session(
+            $loginSession->token,
+            $loginSession->name,
+            $codeRequired ? ['codeRequired'] : []
+        );
 
         return $response->withJson($session);
     }
 
     if ($authToken::type == "person") {
 
-        $session = $sessionDAO->getSessionByPersonToken($authToken->getToken());
+        $oldSession = $sessionDAO->getSessionByPersonToken($authToken->getToken());
+
+        $session = new Session(
+            $oldSession->personToken,
+            "{$oldSession->groupName}/{$oldSession->name}/{$oldSession->code}",
+            [],
+            $oldSession->customTexts
+        );
+        $session->setAccessTest($oldSession->booklets);
+
         return $response->withJson($session);
     }
 
@@ -128,6 +151,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
     if ($authToken::type == "admin") {
 
         $session = $adminDAO->getAdminSession($authToken->getToken());
+
         return $response->withJson($session);
     }
 

@@ -32,21 +32,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/login_session'
+                $ref: './components.spec.yml#/components/schemas/session'
               example:
-                workspaceId: '1'
-                groupName: sample_group
-                name: sample_user
-                mode: run-hot-return
-                booklets:
-                  xxx:
+                displayName: sample_user
+                access:
+                  booklets:
                     - BOOKLET.SAMPLE
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-                loginToken: ''
-                personToken: ''
-                code: ''
-                testId: 0
-                bookletLabel: ''
+                flags:
+                  - requireCode
+
         "401":
           description: No token qualifies for authentication
         "410":

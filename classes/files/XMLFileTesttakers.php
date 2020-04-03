@@ -295,7 +295,8 @@ class XMLFileTesttakers extends XMLFile {
                                                     'booklets' => $codeBooklets,
                                                     '_validFrom' => $validFrom,
                                                     '_validTo' => $validTo,
-                                                    '_validForMinutes' => $validForMinutes
+                                                    '_validForMinutes' => $validForMinutes,
+                                                    '_codeRequired' => true
                                                 ];
                                             } else {
                                                 if (count($noCodeBooklets) > 0) {
@@ -306,7 +307,8 @@ class XMLFileTesttakers extends XMLFile {
                                                         'booklets' => ['' => $noCodeBooklets],
                                                         '_validFrom' => $validFrom,
                                                         '_validTo' => $validTo,
-                                                        '_validForMinutes' => $validForMinutes
+                                                        '_validForMinutes' => $validForMinutes,
+                                                        '_codeRequired' => false
                                                     ];
                                                 }
                                             }

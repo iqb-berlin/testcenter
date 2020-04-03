@@ -3,7 +3,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class TestSession extends DataCollection {
+class LoginData extends DataCollection {
 
     const availableModes = [
         'run-hot-return',
@@ -13,6 +13,9 @@ class TestSession extends DataCollection {
         'monitor-study',
         'monitor-login'
     ];
+
+    public $id = 0;
+    public $token = "";
 
     // construction time
     public $workspaceId = null;
@@ -27,17 +30,10 @@ class TestSession extends DataCollection {
 
     public $customTexts; // TODO after https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 make null
 
-    // if log-in part I is done
-    public $loginToken = '';
-    public $workspaceName = '';
-
     // if log-in part II is done
     public $personToken = '';
     public $code = '';
 
-    // if test is running
-    public $testId = 0;
-    public $bookletLabel = '';
 
     function __construct($initData) {
 

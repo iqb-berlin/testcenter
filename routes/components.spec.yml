@@ -47,6 +47,65 @@ components:
           description: Password
           example: user123
 
+
+    session:
+      description: content of a session
+      type: object
+      properties:
+        token:
+          type: string
+          description: "Token for session authentication"
+        displayName:
+          type: string
+          description: name to be displayed
+          example: super
+        customTexts:
+          type: object
+          description: An Object containing customtext-strings for the UI as key-value-pairs
+          example:
+            somestr: string
+        flags:
+          type: array
+          description: |-
+            flags with additonal information.
+              * `codeRequired` that says indicated that a second part of authentication is required
+        access:
+          description: a collection of available obejcts. keys are type of object.
+          type: object
+          properties:
+            workspaceAdmin:
+              type: array
+              items:
+                $ref: '#/components/schemas/access_item'
+            superAdmin:
+              type: array
+              items:
+                $ref: '#/components/schemas/access_item'
+            test:
+              type: array
+              items:
+                $ref: '#/components/schemas/access_item'
+            workspaceMonitor:
+              type: array
+              items:
+                $ref: '#/components/schemas/access_item'
+            testGroupMonitor:
+              type: array
+              items:
+                $ref: '#/components/schemas/access_item'
+
+    access_item:
+      description: an item a user may have access to. may be a test or a workspace
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        enabled:
+          type: boolean
+
+
     admin_session:
       type: object
       properties:
@@ -55,7 +114,7 @@ components:
           description: "Token for session authentication"
         name:
           type: string
-          description: Username repetition
+          description: Username
           example: super
         workspaces:
           type: array

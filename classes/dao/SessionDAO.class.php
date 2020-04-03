@@ -5,71 +5,116 @@ declare(strict_types=1);
 
 class SessionDAO extends DAO {
 
+
     // TODO add unit-test
-    public function getOrCreateLoginToken(TestSession $session, bool $forceCreate = false): string {
+    public function getOrCreateLogin(LoginData $loginData, bool $forceCreate = false): LoginData {
 
         $oldLogin = $this->_(
-            'SELECT logins.id, logins.token, logins.valid_until as "_validTo" FROM logins
+            'SELECT
+                    logins.id, 
+                    logins.name,
+                    logins.workspace_id as "workspaceId",             
+                    logins.valid_until as "_validTo",
+                    logins.token,
+                    logins.mode,
+                    logins.booklet_def as "booklets",
+                    logins.groupname as "groupName"
+            FROM logins
 			WHERE logins.name = :name AND logins.workspace_id = :ws', [
-                ':name' => $session->name,
-                ':ws' => $session->workspaceId
+                ':name' => $loginData->name,
+                ':ws' => $loginData->workspaceId
             ]
         );
 
         if ($forceCreate or ($oldLogin == null)) {
 
-            $newLogin = $this->createLogin($session);
-            return $newLogin->token;
+            return $this->createLogin($loginData);
         }
 
         TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['_validTo']));
 
-        // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 store customTexts as well
+        $oldLogin['_validTo'] = TimeStamp::fromSQLFormat($login['_validTo']);
+        $oldLogin['booklets'] = JSON::decode($login['booklets'], true);
 
-        return $oldLogin['token'];
+        // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 restore customTexts as well
+
+        return new LoginData($oldLogin);
     }
 
 
-    public function createLogin(TestSession $session, bool $allowExpired = false): LoginSession {
+    public function createLogin(LoginData $loginData, bool $allowExpired = false): LoginData {
 
         if (!$allowExpired) {
-            TimeStamp::checkExpiration($session->_validFrom, $session->_validTo);
+            TimeStamp::checkExpiration($loginData->_validFrom, $loginData->_validTo);
         }
 
-        $validUntil = TimeStamp::expirationFromNow($session->_validTo, $session->_validForMinutes);
+        $validUntil = TimeStamp::expirationFromNow($loginData->_validTo, $loginData->_validForMinutes);
 
-        $loginToken = $this->_randomToken('login', (string) $session->name);
+        $loginToken = $this->_randomToken('login', (string) $loginData->name);
 
         $this->_(
             'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
                 VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
             [
                 ':token' => $loginToken,
-                ':sd' => json_encode($session->booklets),
+                ':sd' => json_encode($loginData->booklets),
                 ':valid_until' => TimeStamp::toSQLFormat($validUntil),
-                ':name' => $session->name,
-                ':mode' => $session->mode,
-                ':ws' => $session->workspaceId,
-                ':groupname' => $session->groupName
+                ':name' => $loginData->name,
+                ':mode' => $loginData->mode,
+                ':ws' => $loginData->workspaceId,
+                ':groupname' => $loginData->groupName
             ]
         );
 
-        return new LoginSession([
+        return new LoginData([
             'id' => (int) $this->pdoDBhandle->lastInsertId(),
             'token' => $loginToken,
-            'booklets' => $session->booklets,
+            'booklets' => $loginData->booklets,
             '_validTo' => $validUntil,
-            'name' => $session->name,
-            'mode' => $session->mode,
-            'workspaceId' => $session->workspaceId,
-            'groupName' => $session->groupName
+            'name' => $loginData->name,
+            'mode' => $loginData->mode,
+            'workspaceId' => $loginData->workspaceId,
+            'groupName' => $loginData->groupName
         ]);
+    }
+
+
+    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
+    public function getLogin(string $loginToken): LoginData {
+
+        $login = $this->_(
+            'SELECT 
+                    logins.id, 
+                    logins.name,
+                    logins.workspace_id as "workspaceId",             
+                    logins.valid_until as "_validTo",
+                    logins.token,
+                    logins.mode,
+                    logins.booklet_def as "booklets",
+                    logins.groupname as "groupName"
+                FROM 
+                    logins 
+                WHERE 
+                    logins.token=:token',
+            [':token' => $loginToken]
+        );
+
+        if ($login == null ){
+            throw new HttpError("LoginToken invalid: `$loginToken`", 403);
+        }
+
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['_validTo']));
+
+        $login['_validTo'] = TimeStamp::fromSQLFormat($login['_validTo']);
+        $login['booklets'] = JSON::decode($login['booklets'], true);
+
+        return new LoginData($login['id']);
     }
 
 
     // TODO add unit-test
     // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-    public function getSessionByPersonToken(string $personToken): TestSession {
+    public function getSessionByPersonToken(string $personToken): LoginData {
 
         $logindata = $this->_(
             'SELECT 
@@ -97,7 +142,7 @@ class SessionDAO extends DAO {
             unset($logindata['booklet_def']);
         }
 
-        return new TestSession($logindata);
+        return new LoginData($logindata);
     }
 
 
@@ -165,39 +210,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-    public function getLogin(string $loginToken): LoginSession {
-
-        $login = $this->_(
-            'SELECT 
-                    logins.id, 
-                    logins.name,
-                    logins.workspace_id as "workspaceId",             
-                    logins.valid_until as "_validTo",
-                    logins.token,
-                    logins.mode,
-                    logins.booklet_def as "booklets",
-                    logins.groupname as "groupName"
-                FROM 
-                    logins 
-                WHERE 
-                    logins.token=:token',
-            [':token' => $loginToken]
-        );
-
-        if ($login == null ){
-            throw new HttpError("LoginToken invalid: `$loginToken`", 403);
-        }
-
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['_validTo']));
-
-        $login['_validTo'] = TimeStamp::fromSQLFormat($login['_validTo']);
-        $login['booklets'] = JSON::decode($login['booklets'], true);
-
-        return new LoginSession($login);
-    }
-
-
     public function getLoginId(string $loginToken): int {
 
         return (int) $this->getLogin($loginToken)->id;
@@ -205,7 +217,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit test
-    public function getOrCreatePerson(LoginSession $loginSession, string $code): array {
+    public function getOrCreatePerson(LoginData $loginSession, string $code): array {
 
         $person = $this->_(
             'SELECT * FROM persons WHERE persons.login_id=:id and persons.code=:code',
@@ -225,7 +237,7 @@ class SessionDAO extends DAO {
     }
 
 
-    public function createPerson(LoginSession $loginSession, string $code, bool $allowExpired = false): array {
+    public function createPerson(LoginData $loginSession, string $code, bool $allowExpired = false): array {
 
         if (!array_key_exists($code, $loginSession->booklets)) {
             throw new HttpError("`$code` is no valid code for `{$loginSession->name}`", 401);

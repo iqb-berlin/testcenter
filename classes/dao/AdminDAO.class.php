@@ -6,11 +6,18 @@ declare(strict_types=1);
 class AdminDAO extends DAO {
 
 
-    public function getAdminSession(string $adminToken): AdminSession {
+    public function getAdminSession(string $adminToken): Session {
 
         $admin = $this->getAdmin($adminToken);
-        $admin['workspaces'] = $this->getWorkspaces($adminToken);
-        return new AdminSession($admin);
+        $session = new Session(
+            $admin['adminToken'],
+            $admin['name']
+        );
+        $session->setAccessWorkspaceAdmin($this->getWorkspaces($adminToken));
+        if ($admin["isSuperadmin"]) {
+            $session->setAccessSuperAdmin();
+        }
+        return $session;
     }
 
 

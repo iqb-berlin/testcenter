@@ -12,7 +12,7 @@ class InitDAO extends SuperAdminDAO {
         $sessionDAO = new SessionDAO();
         $testDAO = new TestDAO();
 
-        $testSession = new TestSession(
+        $testSession = new LoginData(
             [
                 'groupName' => 'sample_group',
                 'mode' => 'run-hot-return',
@@ -22,8 +22,7 @@ class InitDAO extends SuperAdminDAO {
                 '_validTo' => TimeStamp::fromXMLFormat('1/1/2030 12:00')
             ]
         );
-        $loginToken = $sessionDAO->getOrCreateLoginToken($testSession);
-        $login = $sessionDAO->getLogin($loginToken);
+        $login = $sessionDAO->getOrCreateLogin($testSession);
         $login->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00');
         $person = $sessionDAO->getOrCreatePerson($login, $loginCode);
         $test = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
@@ -44,7 +43,7 @@ class InitDAO extends SuperAdminDAO {
         $sessionDAO = new SessionDAO();
         $adminDAO = new AdminDAO();
 
-        $testSession = new TestSession(
+        $testSession = new LoginData(
             [
                 'groupName' => 'sample_group',
                 'mode' => 'run-hot-return',
