@@ -155,7 +155,7 @@ class SessionDAO extends DAO {
             throw new HttpError("LoginToken invalid: `$loginToken`", 403);
         }
 
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['_validTo']));
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['validTo']));
 
         return new Login(
             (int) $login["id"],
@@ -165,7 +165,7 @@ class SessionDAO extends DAO {
             $login["groupName"],
             JSON::decode($login['booklets'], true),
             (int) $login["workspaceId"],
-            TimeStamp::fromSQLFormat($login['_validTo'])
+            TimeStamp::fromSQLFormat($login['validTo'])
         );
     }
 
