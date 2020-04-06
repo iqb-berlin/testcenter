@@ -204,16 +204,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getLoginData($givenLoginName, $givenPassword) {
-        $myreturn = [
-            'groupName' => '',
-            'mode' => '',
-            'name' => '',
-            'booklets' => [],
-            '_validFrom' => '',
-            '_validTo' => '',
-            '_validForMinutes' => ''
-        ];
+    public function getLoginData(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLogin {
 
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
             foreach($this->xmlfile->children() as $groupNode) {
@@ -288,29 +279,30 @@ class XMLFileTesttakers extends XMLFile {
                                                     }
                                                 }
 
-                                                $myreturn = [
-                                                    'groupName' => $groupname,
-                                                    'name' => $loginName,
-                                                    'mode' => $mode,
-                                                    'booklets' => $codeBooklets,
-                                                    '_validFrom' => $validFrom,
-                                                    '_validTo' => $validTo,
-                                                    '_validForMinutes' => $validForMinutes,
-                                                    '_codeRequired' => true
-                                                ];
+
+                                                return new PotentialLogin(
+                                                    $loginName,
+                                                    $mode,
+                                                    $groupname,
+                                                    $codeBooklets,
+                                                    $workspaceId,
+                                                    $validTo,
+                                                    $validFrom,
+                                                    $validForMinutes,
+                                                    $this->getCustomTexts()
+                                                );
                                             } else {
-                                                if (count($noCodeBooklets) > 0) {
-                                                    $myreturn = [
-                                                        'groupName' => $groupname,
-                                                        'name' => $loginName,
-                                                        'mode' => $mode,
-                                                        'booklets' => ['' => $noCodeBooklets],
-                                                        '_validFrom' => $validFrom,
-                                                        '_validTo' => $validTo,
-                                                        '_validForMinutes' => $validForMinutes,
-                                                        '_codeRequired' => false
-                                                    ];
-                                                }
+                                                return new PotentialLogin(
+                                                    $loginName,
+                                                    $mode,
+                                                    $groupname,
+                                                    ['' => $noCodeBooklets],
+                                                    $workspaceId,
+                                                    $validTo,
+                                                    $validFrom,
+                                                    $validForMinutes,
+                                                    $this->getCustomTexts()
+                                                );
                                             }
 
                                             // //////////////////////////////////////////////////////////////
@@ -324,6 +316,6 @@ class XMLFileTesttakers extends XMLFile {
                 }
             }
         }
-        return $myreturn;
+        return null;
     }
 }

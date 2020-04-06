@@ -55,6 +55,7 @@ components:
         token:
           type: string
           description: "Token for session authentication"
+          example: "person00000000.test0000000"
         displayName:
           type: string
           description: name to be displayed

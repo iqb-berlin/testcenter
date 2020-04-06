@@ -26,9 +26,9 @@ class Session extends DataCollection2 {
         $this->customTexts = $customTexts ?? (object) [];
     }
 
-    public function setAccessWorkspaceAdmin(array $accessList) {
+    public function setAccessWorkspaceAdmin(AccessObject ...$accessObjects) {
 
-        $this->access->workspaceAdmin = $accessList;
+        $this->access->workspaceAdmin = $accessObjects;
     }
 
     public function setAccessSuperAdmin() {
@@ -36,9 +36,9 @@ class Session extends DataCollection2 {
         $this->access->superAdmin = [];
     }
 
-    public function setAccessTest(array $accessList) {
+    public function setAccessTest(AccessObject ...$accessObjects) {
 
-        $this->access->test = $accessList;
+        $this->access->test = $accessObjects;
     }
 
     public function getAccessWorkspaceAdmin(): ?array {

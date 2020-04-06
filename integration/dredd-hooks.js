@@ -56,9 +56,9 @@ dreddHooks.beforeEach(function(transaction, done) {
         case '201':
         case '207':
             changeAuthToken(transaction, {
-                adminToken: 'static_token_admin_super',
-                loginToken: 'static_token_login_sample_user',
-                personToken: 'static_token_person_xxx'
+                adminToken: 'static_token:admin:super',
+                loginToken: 'static_token:login:sample_user',
+                personToken: 'static_token:person:sample_group_sample_user_xxx'
             });
             break;
         case '401':
@@ -73,9 +73,9 @@ dreddHooks.beforeEach(function(transaction, done) {
             break;
         case '410':
             changeAuthToken(transaction,{
-                adminToken: 'static_token_admin_expired_user',
-                loginToken: 'static_token_login_expired_user',
-                personToken: 'static_token_person_yyy'
+                adminToken: 'static_token:admin:expired_user',
+                loginToken: 'static_token:login:expired_user',
+                personToken: 'static_token:person:sample_group_expired_user_xxx'
             });
             break;
         default:

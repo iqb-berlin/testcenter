@@ -588,9 +588,7 @@ paths:
   /test:
     put:
       summary: start a test
-      description: creates a new test or continues a running one for given person and testlet-name.
-        it also generates a person token if there is none, so this is part II od two-factor authentication
-        returns the (new) test-id and peron-token.
+      description: creates a new test or continues a running one for given person and booklet-name.
       parameters:
         - in: header
           name: AuthToken
@@ -608,12 +606,6 @@ paths:
                 bookletName:
                   description: name of the booklet to start
                   type: string
-                BookletLabel:
-                  description: label of the booklet
-                  type: string
-                code:
-                  description: login code (maybe "", will be depricated after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52)
-                  type: string
               required:
                 - entry
                 - timestamp
@@ -628,7 +620,6 @@ paths:
             application/json:
               example:
                 testId: 1
-                personToken: 0000000000000.00000000000
         "401":
           description: Not authenticated - auth token header is missing or not containing at least a login token
         "403":

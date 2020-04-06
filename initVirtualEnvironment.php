@@ -22,33 +22,31 @@ try {
     $initArgs = [
         'user_name' => 'super',
         'user_password' => 'user123',
-        'workspace' => '1',
+        'workspace' => 1,
+        'workspace_name' => 'sample_workspace',
         'test_login_name' => 'test',
         'test_login_password' => 'user123',
         'test_person_codes' => 'xxx yyy'
     ];
 
+    $initializer = new WorkspaceInitializer();
+    $initializer->importSampleData($initArgs['workspace'], $initArgs);
+
     $initDAO = new InitDAO();
     $initDAO->runFile('scripts/sql-schema/sqlite.sql');
-    $adminDAO = new AdminDAO();
 
-    $initializer = new WorkspaceInitializer();
-    $initializer->importSampleData(1, $initArgs);
-
-    $adminUser = $initDAO->createUser($initArgs['user_name'], $initArgs['user_password'], true);
-    $adminDAO->createAdminToken($initArgs['user_name'], $initArgs['user_password']);
-    $initDAO->createWorkspace('sample_workspace');
-    $initDAO->setWorkspaceRightsByUser(1, [(object) [
-        "id" => 1,
-        "role" => "RW"
-    ]]);
+    $initDAO->createWorkspaceAndAdmin(
+        $initArgs['user_name'],
+        $initArgs['user_password'],
+        $initArgs['workspace'],
+        $initArgs['workspace_name']
+    );
 
     $initDAO->createSampleLoginsReviewsLogs('xxx');
-    $initDAO->createSampleExpiredLogin('yyy');
+    $initDAO->createSampleExpiredLogin('xxx');
 
     // init random generator
     srand(1);
-
 
     //TODO this is interesting for debugging sometimes... find a good place to put it
     $fullState = "# State of DATA_DIR\n\n";

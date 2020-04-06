@@ -7,41 +7,15 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-/**
- * TODO this should as well RequirePersonToken instead of RequireLoginToken
- * after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
- * remove lines marked below from here
- */
 $app->group('/booklet', function(App $app) {
 
     $sessionDAO = new SessionDAO();
 
     $app->get('/{booklet_name}/state', function (Request $request, Response $response) use ($sessionDAO) {
 
-        /* @var $authToken AuthToken */
+        /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $personToken = $authToken->getToken();
-
-        /* TODO instead work with personToken and delete from here ... */
-        if ($authToken::type == "login") {
-
-            $code = $request->getParam('code', '');
-
-            $login = $sessionDAO->getLogin($authToken->getToken());
-
-            $person = $sessionDAO->getOrCreatePerson($login, $code);
-
-            $personToken = $person['token'];
-            $personFull = $sessionDAO->getPerson($personToken);
-            $workspaceId = $personFull['workspace_id'];
-
-        } else {
-
-            /* @var $authToken PersonAuthToken */
-            $workspaceId = $authToken->getWorkspaceId();
-
-        }
-        /* ... to here ... */
 
         $bookletName = $request->getAttribute('booklet_name');
 
@@ -54,11 +28,11 @@ $app->group('/booklet', function(App $app) {
 
         if (!$bookletStatus['running']) {
 
-            $workspaceController = new BookletsFolder((int) $workspaceId);
+            $workspaceController = new BookletsFolder((int) $authToken->getWorkspaceId());
             $bookletStatus['label'] = $workspaceController->getBookletName($bookletName);
         }
 
         return $response->withJson($bookletStatus);
     });
 })
-    ->add(new RequireAnyToken());
+    ->add(new RequirePersonToken());

@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 use Slim\App;
-use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpException;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -232,47 +231,28 @@ $app->group('/test', function(App $app) {
 
 // was /startbooklet
 
-/**
- * TODO this should as well RequirePersonToken instead of RequireLoginToken
- * after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52 is resolved,
- * remove PersonTokenCreation from here
- */
-
 $app->put('/test', function(Request $request, Response $response) {
 
-    /* @var $authToken LoginAuthToken */
+    /* @var $authToken PersonAuthToken */
     $authToken = $request->getAttribute('AuthToken');
-    $loginToken = $authToken->getToken();
 
     $body = RequestBodyParser::getElements($request, [
-        'code' => "", // was: c
-        'bookletLabel' => '¿Testheft?', // was: bl // TODO overthink this. maybe we better fetch it new here from file?
-        'bookletName' => null // was: b
+        'bookletName' => null // was: b // change to ID
     ]);
 
     $testDAO = new TestDAO();
-    $sessionDAO = new SessionDAO();
 
-    /* TODO instead work with personToken and delete from here ... */
-    $login = $sessionDAO->getLogin($loginToken);
-    $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
-    /* ... to here ... */
+    $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
+    $bookletName = $bookletsFolder->getBookletName($body['bookletName']);
 
-    $person = $sessionDAO->getPerson($person['token']);
-
-    if ($person == null) {
-        throw new HttpForbiddenException($request);
-    }
-
-    $test = $testDAO->getOrCreateTest((int) $person['id'], $body['bookletName'], $body['bookletLabel']);
+    $test = $testDAO->getOrCreateTest($authToken->getPersonId(), $body['bookletName'], $bookletName);
 
     if ($test['locked'] == '1') {
         throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
     }
 
     return $response->withJson([
-        'testId' => $test['id'],
-        'personToken' => $person['token'] // person token
+        'testId' => $test['id']
     ])->withStatus(201);
 })
-    ->add(new RequireLoginToken());
+    ->add(new RequirePersonToken());

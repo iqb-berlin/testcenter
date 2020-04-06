@@ -5,7 +5,25 @@ declare(strict_types=1);
 
 class TesttakersFolder extends WorkspaceController {
 
-    public function findLoginData(string $name, string $password): ?LoginData { // TODO unit-test
+
+    static function searchAllForLogin(string $name, string $password): ?PotentialLogin {
+
+        $loginData = null;
+
+        foreach (TesttakersFolder::getAll() as $testtakersFolder) { /* @var TesttakersFolder $testtakersFolder */
+
+            $loginData = $testtakersFolder->findLoginData($name, $password);
+
+            if ($loginData != null) {
+                break;
+            }
+        }
+
+        return $loginData;
+    }
+
+
+    public function findLoginData(string $name, string $password): ?PotentialLogin { // TODO unit-test
 
         foreach (Folder::glob($this->_getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
@@ -13,11 +31,9 @@ class TesttakersFolder extends WorkspaceController {
 
             if ($xFile->isValid()) {
                 if ($xFile->getRoottagName() == 'Testtakers') {
-                    $loginData = $xFile->getLoginData($name, $password);
-                    if (count($loginData['booklets']) > 0) {
-                        $loginData['workspaceId'] = $this->_workspaceId;
-                        $loginData['customTexts'] = $xFile->getCustomTexts();
-                        return new LoginData($loginData);
+                    $potentialLogin = $xFile->getLoginData($name, $password, $this->_workspaceId);
+                    if ($potentialLogin and (count($potentialLogin->getBooklets()) > 0)) {
+                        return $potentialLogin;
                     }
                 }
             }

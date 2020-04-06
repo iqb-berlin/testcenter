@@ -16,29 +16,21 @@ paths:
                     schema:
                         $ref: '#/components/schemas/auth_test'
                     example:
-                        l: user000000000.test0000000
                         p: 0
-                        at: user000000000.rw00000000
             responses:
                 '200':
                     description: 'OK, get session data'
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/login_session'
+                                $ref: '#/components/schemas/session'
                             example:
-                                workspaceId: '1'
-                                groupName: sample_group
-                                name: sample_user
-                                mode: run-hot-return
-                                booklets:
-                                    xxx: [BOOKLET.SAMPLE]
+                                token: static_token_person_xxx
+                                displayName: sample_group/sample_user/xxx
+                                access:
+                                    test: [{id: -1, name: BOOKLET.SAMPLE}]
                                 customTexts: {}
-                                loginToken: ""
-                                personToken: ""
-                                code: ""
-                                testId: 0
-                                bookletLabel: ""
+                                flags: []
                 '401':
                     description: 'No token qualifies for authentication'
                 '410':
@@ -60,14 +52,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/admin_session'
+                                $ref: '#/components/schemas/session'
                             example:
-                                adminToken: user000000000.0000000000
-                                name: super
-                                workspaces:
-                                    - {id: '1', name: example_workspace, role: RW}
-                                isSuperadmin: true
-                                userEmail: ""
+                                token: user000000000.0000000000
+                                displayName: super
+                                access:
+                                    workspaceAdmin: [{id: 1, name: example_workspace}]
+                                    superAdmin: []
                 '202':
                     description: 'User has account but neither workspace nor super-admin privilige'
                 '400':
@@ -92,7 +83,14 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/login_session'
+                                $ref: '#/components/schemas/session'
+                            example:
+                                token: static_token_login_sample_login
+                                displayName: sample_group/sample_user
+                                access: {}
+                                customTexts: {}
+                                flags:
+                                    - requireCode
                 '400':
                     description: 'Insufficent Crendetials'
                 '500':
@@ -125,10 +123,15 @@ paths:
                     description: OK
                     content:
                         application/json:
+                            schema:
+                                $ref: '#/components/schemas/session'
                             example:
-                                personId: '2'
-                                personToken: a5e690e51b931a3.29393583
-                                code: xxx
+                                token: static_token_person_xxx
+                                displayName: sample_group/sample_user/xxx
+                                access:
+                                    test: [{id: -1, name: BOOKLET.SAMPLE}]
+                                customTexts: {}
+                                flags: []
                 '400':
                     description: 'Insufficent Crendetials'
                 '410':
@@ -955,7 +958,7 @@ paths:
     /test:
         put:
             summary: 'start a test'
-            description: 'creates a new test or continues a running one for given person and testlet-name. it also generates a person token if there is none, so this is part II od two-factor authentication returns the (new) test-id and peron-token.'
+            description: 'creates a new test or continues a running one for given person and booklet-name.'
             parameters:
                 -
                     in: header
@@ -974,12 +977,6 @@ paths:
                                 bookletName:
                                     description: 'name of the booklet to start'
                                     type: string
-                                BookletLabel:
-                                    description: 'label of the booklet'
-                                    type: string
-                                code:
-                                    description: 'login code (maybe "", will be depricated after https://github.com/iqb-berlin/testcenter-iqb-ng/issues/52)'
-                                    type: string
                             required:
                                 - entry
                                 - timestamp
@@ -994,7 +991,6 @@ paths:
                         application/json:
                             example:
                                 testId: 1
-                                personToken: 0
                 '401':
                     description: 'Not authenticated - auth token header is missing or not containing at least a login token'
                 '403':
@@ -2523,6 +2519,60 @@ components:
                     type: string
                     description: Password
                     example: user123
+        session:
+            description: 'content of a session'
+            type: object
+            properties:
+                token:
+                    type: string
+                    description: 'Token for session authentication'
+                    example: person00000000.test0000000
+                displayName:
+                    type: string
+                    description: 'name to be displayed'
+                    example: super
+                customTexts:
+                    type: object
+                    description: 'An Object containing customtext-strings for the UI as key-value-pairs'
+                    example:
+                        somestr: string
+                flags:
+                    type: array
+                    description: "flags with additonal information.\n  * `codeRequired` that says indicated that a second part of authentication is required"
+                access:
+                    description: 'a collection of available obejcts. keys are type of object.'
+                    type: object
+                    properties:
+                        workspaceAdmin:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/access_item'
+                        superAdmin:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/access_item'
+                        test:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/access_item'
+                        workspaceMonitor:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/access_item'
+                        testGroupMonitor:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/access_item'
+        access_item:
+            description: 'an item a user may have access to. may be a test or a workspace'
+            type: object
+            properties:
+                id:
+                    type: integer
+                name:
+                    type: string
+                enabled:
+                    type: boolean
         admin_session:
             type: object
             properties:
@@ -2531,7 +2581,7 @@ components:
                     description: 'Token for session authentication'
                 name:
                     type: string
-                    description: 'Username repetition'
+                    description: Username
                     example: super
                 workspaces:
                     type: array

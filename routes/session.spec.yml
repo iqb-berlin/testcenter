@@ -23,9 +23,9 @@ paths:
           schema:
             $ref: './components.spec.yml#/components/schemas/auth_test'
           example:
-            l: user000000000.test0000000
+#            l: user000000000.test0000000
             p: 0000000000000.00000000000
-            at: user000000000.rw00000000
+#            at: user000000000.rw00000000
       responses:
         "200":
           description: OK, get session data
@@ -34,13 +34,13 @@ paths:
               schema:
                 $ref: './components.spec.yml#/components/schemas/session'
               example:
-                displayName: sample_user
+                token:  "static_token_person_xxx"
+                displayName: "sample_group/sample_user/xxx"
                 access:
-                  booklets:
-                    - BOOKLET.SAMPLE
+                  test:
+                    - {id: -1, name: "BOOKLET.SAMPLE"}
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-                flags:
-                  - requireCode
+                flags: []
 
         "401":
           description: No token qualifies for authentication
@@ -67,16 +67,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/admin_session'
+                $ref: './components.spec.yml#/components/schemas/session'
               example:
-                adminToken: user000000000.0000000000
-                name: super
-                workspaces:
-                  - id: '1'
-                    name: example_workspace
-                    role: RW
-                isSuperadmin: true
-                userEmail: ''
+                token: user000000000.0000000000
+                displayName: super
+                access:
+                  workspaceAdmin: [{id: 1, name: "example_workspace"}]
+                  superAdmin: []
         "202":
           description: User has account but neither workspace nor super-admin privilige
         "400":
@@ -106,10 +103,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './components.spec.yml#/components/schemas/login_session'
+                $ref: './components.spec.yml#/components/schemas/session'
+              example:
+                token:  "static_token_login_sample_login"
+                displayName: "sample_group/sample_user"
+                access: {}
+                customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
+                flags: ['requireCode']
         "400":
           description: Insufficent Crendetials
-#        "410": - must be removed because test faisl other wise... TODO find better solution
+#        "410": - must be removed because test fails other wise... TODO find better solution
 #          description: Session Expired
         "500":
           description: Server Error
@@ -146,10 +149,16 @@ paths:
           description: OK
           content:
             application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/session'
               example:
-                personId: '2'
-                personToken: a5e690e51b931a3.29393583
-                code: 'xxx'
+                token:  "static_token_person_xxx"
+                displayName: "sample_group/sample_user/xxx"
+                access:
+                  test:
+                    - {id: -1, name: "BOOKLET.SAMPLE"}
+                customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
+                flags: []
         "400":
           description: Insufficent Crendetials
         "410":

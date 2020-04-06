@@ -2,7 +2,7 @@
 declare(strict_types=1);
 // TODO unit tests
 
-class InitDAO extends SuperAdminDAO {
+class InitDAO extends SessionDAO {
 
 
     public function createSampleLoginsReviewsLogs(string $loginCode): void {
@@ -12,15 +12,13 @@ class InitDAO extends SuperAdminDAO {
         $sessionDAO = new SessionDAO();
         $testDAO = new TestDAO();
 
-        $testSession = new LoginData(
-            [
-                'groupName' => 'sample_group',
-                'mode' => 'run-hot-return',
-                'workspaceId' => 1,
-                'name' => 'sample_user',
-                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']],
-                '_validTo' => TimeStamp::fromXMLFormat('1/1/2030 12:00')
-            ]
+        $testSession = new PotentialLogin(
+            'sample_user',
+            'run-hot-return',
+            'sample_group',
+            [$loginCode => ['BOOKLET.SAMPLE']],
+            1,
+            TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $login = $sessionDAO->getOrCreateLogin($testSession);
         $login->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00');
@@ -40,24 +38,42 @@ class InitDAO extends SuperAdminDAO {
      */
     public function createSampleExpiredLogin(string $loginCode): void {
 
-        $sessionDAO = new SessionDAO();
+        $superAdminDAO = new SuperAdminDAO();
         $adminDAO = new AdminDAO();
 
-        $testSession = new LoginData(
-            [
-                'groupName' => 'sample_group',
-                'mode' => 'run-hot-return',
-                'workspaceId' => 1,
-                'name' => 'expired_user',
-                'booklets' => [$loginCode => ['BOOKLET.SAMPLE']],
-                '_validTo' => TimeStamp::fromXMLFormat('1/1/2000 12:00')
-            ]
+        $testSession = new PotentialLogin(
+            'expired_user',
+            'run-hot-return',
+            'sample_group',
+             [$loginCode => ['BOOKLET.SAMPLE']],
+            1,
+            TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
 
-        $login = $sessionDAO->createLogin($testSession, true);
-        $sessionDAO->createPerson($login, $loginCode, true);
+        $login = $this->createLogin($testSession, true);
+        $this->createPerson($login, $loginCode, true);
 
-        $this->createUser("expired_user", "whatever", true);
+        $superAdminDAO->createUser("expired_user", "whatever", true);
         $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
+    }
+
+    /**
+     * @param string $username
+     * @param string $password
+     * @param int $workspaceId
+     * @param string $workspaceName
+     * @throws HttpError
+     */
+    public function createWorkspaceAndAdmin(string $username, string $password, int $workspaceId, string $workspaceName) {
+
+        $superAdminDAO = new SuperAdminDAO();
+        $adminDAO = new AdminDAO();
+        $superAdminDAO->createUser($username, $password, true);
+        $adminDAO->createAdminToken($username, $password);
+        $superAdminDAO->createWorkspace($workspaceName);
+        $superAdminDAO->setWorkspaceRightsByUser($workspaceId, [(object) [
+            "id" => $workspaceId,
+            "role" => "RW"
+        ]]);
     }
 }
