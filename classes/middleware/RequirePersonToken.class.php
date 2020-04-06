@@ -11,7 +11,13 @@ class RequirePersonToken extends RequireToken {
         $sessionDAO = new SessionDAO();
         $person = $sessionDAO->getPerson($tokenString);
 
-        return new PersonAuthToken($tokenString, (int) $person['workspace_id'], (int) $person['id'], (int) $person['login_id']);
+        return new PersonAuthToken(
+            $tokenString,
+            (int) $person['workspace_id'],
+            (int) $person['id'],
+            (int) $person['login_id'],
+            $person['mode']
+        );
     }
 
     function getTokenName(): string {

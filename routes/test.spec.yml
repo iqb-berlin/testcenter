@@ -588,7 +588,21 @@ paths:
   /test:
     put:
       summary: start a test
-      description: creates a new test or continues a running one for given person and booklet-name.
+      description: |-
+        Creates a new test or continues a running one for given person and booklet-name. Returns the Id of
+        the new test and the mode of current login-session.
+        Currently known modes are:
+          * run-hot-return - hot run of testLet, can save answers etc.,
+          session gets stored and can be revoked
+          * run-hot-restart - hot run of testLet, can save answers etc.,
+          every session starts all tests again and have unique Tokens
+          * run-review - run a review round of testLet, reviewes can be saved, but no answers
+          At the moment we distinguish between hot, trial and review in the GUI and there are no real
+          checks for the mode in this backend, except for the difference between `run-hot-return` and
+          `run-hot-restart`.
+          * run-trial - run a trial round
+          * monitor-study - TBA
+          * monitor-login - TBA
       parameters:
         - in: header
           name: AuthToken
@@ -620,6 +634,7 @@ paths:
             application/json:
               example:
                 testId: 1
+                mode: run
         "401":
           description: Not authenticated - auth token header is missing or not containing at least a login token
         "403":

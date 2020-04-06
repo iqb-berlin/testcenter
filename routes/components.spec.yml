@@ -95,19 +95,7 @@ components:
               items:
                 $ref: '#/components/schemas/access_item'
 
-#            mode of the current login-group
-#            currently known modes are
-#            * run-hot-return - hot run of testLet, can save answers etc.,
-#            session gets stored and can be revoked
-#            * run-hot-restart - hot run of testLet, can save answers etc.,
-#            every session starts all tests again and have unique Tokens
-#            * run-review - run a review round of testLet, reviewes can be saved, but no answers
-#            At the moment we distinguish between hot, trial and review in the GUI and there are no real
-#            checks for the mode in this backend, except for the difference between `run-hot-return` and
-#            `run-hot-restart`.
-#            * run-trial - run a trial round
-#            * monitor-study - TBA
-#            * monitor-login - TBA
+
 
     access_item:
       description: an item a user may have access to. may be a test or a workspace

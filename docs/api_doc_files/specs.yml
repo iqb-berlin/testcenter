@@ -958,7 +958,7 @@ paths:
     /test:
         put:
             summary: 'start a test'
-            description: 'creates a new test or continues a running one for given person and booklet-name.'
+            description: "Creates a new test or continues a running one for given person and booklet-name. Returns the Id of\nthe new test and the mode of current login-session.\nCurrently known modes are:  * run-hot-return - hot run of testLet, can save answers etc.,\n  session gets stored and can be revoked\n  * run-hot-restart - hot run of testLet, can save answers etc.,\n  every session starts all tests again and have unique Tokens\n  * run-review - run a review round of testLet, reviewes can be saved, but no answers\n  At the moment we distinguish between hot, trial and review in the GUI and there are no real\n  checks for the mode in this backend, except for the difference between `run-hot-return` and\n  `run-hot-restart`.\n  * run-trial - run a trial round\n  * monitor-study - TBA\n  * monitor-login - TBA"
             parameters:
                 -
                     in: header
@@ -991,6 +991,7 @@ paths:
                         application/json:
                             example:
                                 testId: 1
+                                mode: run
                 '401':
                     description: 'Not authenticated - auth token header is missing or not containing at least a login token'
                 '403':
@@ -2573,81 +2574,6 @@ components:
                     type: string
                 enabled:
                     type: boolean
-        admin_session:
-            type: object
-            properties:
-                adminToken:
-                    type: string
-                    description: 'Token for session authentication'
-                name:
-                    type: string
-                    description: Username
-                    example: super
-                workspaces:
-                    type: array
-                    description: 'List of workspaces wich are open to this user'
-                    items:
-                        $ref: '#/components/schemas/workspace'
-                isSuperadmin:
-                    type: boolean
-                    description: 'Flag that tells, if this user is a superadmin'
-                    example: true
-        login_session:
-            type: object
-            required:
-                - workspaceId
-                - groupName
-                - name
-                - mode
-                - booklets
-            properties:
-                workspaceId:
-                    type: number
-                    description: 'this session belongs to workspace with this Id'
-                    example: 1
-                groupName:
-                    type: string
-                    description: 'name of loginGroup to this belongs to'
-                    example: sample_group
-                name:
-                    type: string
-                    description: 'name of the login'
-                    example: sample_login
-                mode:
-                    type: string
-                    description: "mode of the current login-group\ncurrently known modes are\n * run-hot-return - hot run of testLet, can save answers etc.,\n    session gets stored and can be revoked\n * run-hot-restart - hot run of testLet, can save answers etc.,\n    every session starts all tests again and have unique Tokens\n * run-review - run a review round of testLet, reviewes can be saved, but no answers\n    At the moment we distinguish between hot, trial and review in the GUI and there are no real\n    checks for the mode in this backend, except for the difference between `run-hot-return` and\n    `run-hot-restart`.\n * run-trial - run a trial round\n * monitor-study - TBA\n * monitor-login - TBA"
-                    example: run-hot-return
-                booklets:
-                    type: object
-                    description: 'An object containing information of login codes and available booklets for this group.'
-                    example:
-                        xxx:
-                            - BOOKLET.SAMPLE
-                customTexts:
-                    type: object
-                    description: 'An Object containing customtext-strings for the UI as key-value-pairs'
-                    example:
-                        somestr: string
-                loginToken:
-                    type: string
-                    description: 'the token for this session (available after two-factor-authorization part I)'
-                    example: login00000000.test0000000
-                personToken:
-                    type: string
-                    description: 'the token for this person (available after two-factor-authorization part II)'
-                    example: person00000000.test0000000
-                code:
-                    type: string
-                    description: 'login-code this person (available after two-factor-authorization part II)'
-                    example: xxx
-                testId:
-                    type: number
-                    description: 'number of currently running test, 0 if none'
-                    example: 0
-                bookletLabel:
-                    type: string
-                    description: 'label of booklet of currently running test if any'
-                    example: ""
         workspace:
             type: object
             properties:

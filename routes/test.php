@@ -252,7 +252,8 @@ $app->put('/test', function(Request $request, Response $response) {
     }
 
     return $response->withJson([
-        'testId' => $test['id']
+        'testId' => $test['id'],
+        'mode' => $authToken->getMode()
     ])->withStatus(201);
 })
     ->add(new RequirePersonToken());
