@@ -44,7 +44,7 @@ $app->put('/session/login', function(Request $request, Response $response) use (
     if ($potentialLogin == null) {
 
         $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $body['password']);
-        throw new HttpUnauthorizedException($request, "No Login for `{$body['name']}` with `{$shortPW}`");
+        throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `{$shortPW}`");
     }
 
     $sessionDAO = new SessionDAO();

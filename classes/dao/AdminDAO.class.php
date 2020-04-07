@@ -45,7 +45,7 @@ class AdminDAO extends DAO {
 	public function createAdminToken(string $username, string $password, ?int $validTo = null): string {
 
 		if ((strlen($username) == 0) or (strlen($username) > 50)) {
-			throw new Exception("Invalid Username `$username`");
+			throw new Exception("Invalid Username `$username`", 400);
 		}
 
 		$passwordSha = $this->encryptPassword($password);
@@ -54,7 +54,7 @@ class AdminDAO extends DAO {
 
 		if ($user === null) {
 		    $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
-            throw new HttpError("Invalid Password `$shortPW`", 401);
+            throw new HttpError("Invalid Password `$shortPW`", 400);
         }
 
 		$this->_deleteTokensByUser((int) $user['id']);
