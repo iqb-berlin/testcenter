@@ -68,7 +68,7 @@ class SessionDAO extends DAO {
     }
 
 
-    public function getOrCreatePersonSession(Login $login, string $code): Session {
+    public function getOrCreatePersonSession(Login $login, string $code = ''): Session {
 
         $person = $this->getOrCreatePerson($login, $code);
         $session = new Session(
