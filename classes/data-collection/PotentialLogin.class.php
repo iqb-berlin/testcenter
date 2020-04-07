@@ -3,7 +3,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class PotentialLogin extends DataCollection2 {
+class PotentialLogin extends DataCollectionTypeSafe {
 
     protected $name = "";
     protected $mode = "";

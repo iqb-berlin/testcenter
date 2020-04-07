@@ -1,6 +1,6 @@
 <?php
 
-class Session extends DataCollection2 {
+class Session extends DataCollectionTypeSafe {
 
     protected $token;
     protected $displayName;

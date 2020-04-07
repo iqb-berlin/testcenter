@@ -1,7 +1,7 @@
 <?php
 
 
-class AccessObject extends DataCollection2 {
+class AccessObject extends DataCollectionTypeSafe {
 
     protected $id;
     protected $name;

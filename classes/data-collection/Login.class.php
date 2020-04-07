@@ -3,7 +3,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 
-class Login extends DataCollection2 {
+class Login extends DataCollectionTypeSafe {
 
     protected $id = 0;
     protected $name = "";

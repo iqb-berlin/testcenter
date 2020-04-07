@@ -68,6 +68,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     public function getOrCreatePersonSession(Login $login, string $code = ''): Session {
 
         $person = $this->getOrCreatePerson($login, $code);
@@ -170,6 +171,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     protected function createLogin(PotentialLogin $loginData, bool $allowExpired = false): Login {
 
         if (!$allowExpired) {
@@ -314,6 +316,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     protected function getOrCreatePerson(Login $loginSession, string $code): array {
 
         $person = $this->_(
@@ -334,6 +337,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     public function createPerson(Login $login, string $code, bool $allowExpired = false): array {
 
         if (!array_key_exists($code, $login->getBooklets())) {

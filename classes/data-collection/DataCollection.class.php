@@ -3,8 +3,16 @@
 declare(strict_types=1);
 // TODO unit test
 
+/*
+ * data holding class
+ *
+ * for some data-classes we use this weak-typed class, for those where it seemed to be especially important
+ * a typesafe variant with getters/setters
+ * TODO with PHP7.4 both can be merged and will be typesafe without getters/setters
+ *
+ */
 
-class DataCollection implements JsonSerializable {
+abstract class DataCollection implements JsonSerializable {
 
     function __construct($initData) {
 
