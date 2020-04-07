@@ -14,11 +14,11 @@ class AdminDAO extends DAO {
             $admin['name']
         );
 
-        $workspacesAsAccessObjects = array_map(function($workspace) {
-            return new AccessObject((int) $workspace['id'], $workspace['name']);
+        $workspacesIds = array_map(function($workspace) {
+            return (int) $workspace['id'];
         }, $this->getWorkspaces($adminToken));
 
-        $session->setAccessWorkspaceAdmin(...$workspacesAsAccessObjects);
+        $session->setAccessWorkspaceAdmin(...$workspacesIds);
 
         if ($admin["isSuperadmin"]) {
             $session->setAccessSuperAdmin();

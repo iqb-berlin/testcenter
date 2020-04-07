@@ -51,9 +51,6 @@ class SessionDAO extends DAO {
         }
 
         $personsBooklets = $booklets[$loginData['code']] ?? [];
-        $personsBookletsAsAccessObjects = array_map(function(string $bookletName): AccessObject {
-            return new AccessObject(-1, $bookletName);
-        }, $personsBooklets);
 
         $session = new Session(
             $personToken,
@@ -62,7 +59,7 @@ class SessionDAO extends DAO {
             $loginData['customTexts'] ?? (object) [] // TODO customTexts
         );
 
-        $session->setAccessTest(...$personsBookletsAsAccessObjects);
+        $session->setAccessTest(...$personsBooklets);
 
         return $session;
     }
@@ -80,11 +77,8 @@ class SessionDAO extends DAO {
         );
 
         $personsBooklets = $login->getBooklets()[$person['code']] ?? [];
-        $personsBookletsAsAccessObjects = array_map(function(string $bookletName): AccessObject {
-            return new AccessObject(-1, $bookletName);
-        }, $personsBooklets);
 
-        $session->setAccessTest(...$personsBookletsAsAccessObjects);
+        $session->setAccessTest(...$personsBooklets);
 
         return $session;
     }

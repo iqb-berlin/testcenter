@@ -28,7 +28,7 @@ paths:
                                 token: static_token_person_xxx
                                 displayName: sample_group/sample_user/xxx
                                 access:
-                                    test: [{id: -1, name: BOOKLET.SAMPLE}]
+                                    test: [BOOKLET.SAMPLE]
                                 customTexts: {}
                                 flags: []
                 '401':
@@ -57,7 +57,7 @@ paths:
                                 token: user000000000.0000000000
                                 displayName: super
                                 access:
-                                    workspaceAdmin: [{id: 1, name: example_workspace}]
+                                    workspaceAdmin: [1]
                                     superAdmin: []
                 '202':
                     description: 'User has account but neither workspace nor super-admin privilige'
@@ -68,7 +68,7 @@ paths:
     /session/login:
         put:
             summary: 'Start Login Session'
-            description: 'Starts a Session as Login by Username and password This is Part I of the Two-Factor Authentication. Get a token for a login, defined in a `Testtakers.xml`-file, together with some session information like running tests etc.'
+            description: 'Starts a Session as Login by Username and password This is Part I of the two-factor authentication. Get a token for a login, defined in a `Testtakers.xml`-file, together with some session information like running tests etc.'
             requestBody:
                 content:
                     application/json:
@@ -129,7 +129,7 @@ paths:
                                 token: static_token_person_xxx
                                 displayName: sample_group/sample_user/xxx
                                 access:
-                                    test: [{id: -1, name: BOOKLET.SAMPLE}]
+                                    test: ['- BOOKLET.SAMPLE']
                                 customTexts: {}
                                 flags: []
                 '400':
@@ -2541,39 +2541,22 @@ components:
                     type: array
                     description: "flags with additonal information.\n  * `codeRequired` that says indicated that a second part of authentication is required"
                 access:
-                    description: 'a collection of available obejcts. keys are type of object.'
+                    description: 'A collection of available obejcts. The keys are type of object.'
                     type: object
                     properties:
                         workspaceAdmin:
-                            type: array
-                            items:
-                                $ref: '#/components/schemas/access_item'
+                            type: string
+                            description: 'Elements are (numeric) Workspace-Ids. Use `[GET] /workspace/{worksapce_id}` to obtain label, user-rights and such.'
                         superAdmin:
-                            type: array
-                            items:
-                                $ref: '#/components/schemas/access_item'
+                            type: string
+                            description: 'No Elements. Presence of this key indicated access to Superadmin-functions for this user.'
                         test:
-                            type: array
-                            items:
-                                $ref: '#/components/schemas/access_item'
+                            type: string
+                            description: 'Elements are booklet-names (not test-idss because unstarted tests don''t have one. Through the endpoint `[GET] /booklet/{test_name}` the corresponding ids if startet, status etc. can be obtained.'
                         workspaceMonitor:
-                            type: array
-                            items:
-                                $ref: '#/components/schemas/access_item'
+                            type: string
                         testGroupMonitor:
-                            type: array
-                            items:
-                                $ref: '#/components/schemas/access_item'
-        access_item:
-            description: 'an item a user may have access to. may be a test or a workspace'
-            type: object
-            properties:
-                id:
-                    type: integer
-                name:
-                    type: string
-                enabled:
-                    type: boolean
+                            type: string
         workspace:
             type: object
             properties:

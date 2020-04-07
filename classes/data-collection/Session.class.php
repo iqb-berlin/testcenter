@@ -26,7 +26,7 @@ class Session extends DataCollectionTypeSafe {
         $this->customTexts = $customTexts ?? (object) [];
     }
 
-    public function setAccessWorkspaceAdmin(AccessObject ...$accessObjects) {
+    public function setAccessWorkspaceAdmin(int ...$accessObjects) {
 
         $this->access->workspaceAdmin = $accessObjects;
     }
@@ -36,7 +36,7 @@ class Session extends DataCollectionTypeSafe {
         $this->access->superAdmin = [];
     }
 
-    public function setAccessTest(AccessObject ...$accessObjects) {
+    public function setAccessTest(string ...$accessObjects) {
 
         $this->access->test = $accessObjects;
     }

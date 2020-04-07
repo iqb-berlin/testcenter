@@ -10,8 +10,8 @@ paths:
     get:
       summary: get a session
       description: returns session data according to a AuthToken.
-        Type of the session is deteced by the type of the token. The AuthToken is a JSON-array in the header
-        `AuthToken`, containing the field `l` with a login-session-token (tow factor authentication part I only),
+        The type of the session is deteced by the type of the token. The auth-token is a JSON-array in the header
+        `AuthToken`, containing the field `l` with a login-session-token (two-factor-authentication part I only),
         `p` with a person token (authenticated as testee or test-commander), or `at` with an admin (authenticated as
         administrator).
         If there are several tokens in the header, only one session can be returned. Existance of sessions to the tokens
@@ -37,8 +37,7 @@ paths:
                 token:  "static_token_person_xxx"
                 displayName: "sample_group/sample_user/xxx"
                 access:
-                  test:
-                    - {id: -1, name: "BOOKLET.SAMPLE"}
+                  test:  ["BOOKLET.SAMPLE"]
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
                 flags: []
 
@@ -72,7 +71,7 @@ paths:
                 token: user000000000.0000000000
                 displayName: super
                 access:
-                  workspaceAdmin: [{id: 1, name: "example_workspace"}]
+                  workspaceAdmin: [1]
                   superAdmin: []
         "202":
           description: User has account but neither workspace nor super-admin privilige
@@ -85,7 +84,7 @@ paths:
     put:
       summary: Start Login Session
       description: Starts a Session as Login by Username and password
-        This is Part I of the Two-Factor Authentication. Get a token for a login, defined in a `Testtakers.xml`-file,
+        This is Part I of the two-factor authentication. Get a token for a login, defined in a `Testtakers.xml`-file,
         together with some session information like running tests etc.
 
       requestBody:
@@ -156,7 +155,7 @@ paths:
                 displayName: "sample_group/sample_user/xxx"
                 access:
                   test:
-                    - {id: -1, name: "BOOKLET.SAMPLE"}
+                    - ["BOOKLET.SAMPLE"]
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
                 flags: []
         "400":
