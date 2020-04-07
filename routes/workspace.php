@@ -17,12 +17,13 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
-        $workspaceController = new WorkspaceController($workspaceId);
+        /* @var $authToken AdminAuthToken */
+        $authToken = $request->getAttribute('AuthToken');
 
         return $response->withJson([
             "id" => $workspaceId,
             "name" => $adminDAO->getWorkspaceName($workspaceId),
-            "files" => $workspaceController->countFilesOfAllSubFolders()
+            "role" => $adminDAO->getWorkspaceRole($authToken->getToken(), $workspaceId)
         ]);
 
     })->add(new IsWorkspacePermitted('MO'));

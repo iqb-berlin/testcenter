@@ -990,12 +990,7 @@ paths:
               example:
                 id: 1
                 name: example_workspace
-                files:
-                  Testtakers: 1
-                  SysCheck: 1
-                  Booklet: 1
-                  Unit: 1
-                  Resource: 1
+                role: "RW"
         "401":
           description: Not authenticated
         "403":

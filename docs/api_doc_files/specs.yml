@@ -7,7 +7,7 @@ paths:
     /session:
         get:
             summary: 'get a session'
-            description: 'returns session data according to a AuthToken. Type of the session is deteced by the type of the token. The AuthToken is a JSON-array in the header `AuthToken`, containing the field `l` with a login-session-token (tow factor authentication part I only), `p` with a person token (authenticated as testee or test-commander), or `at` with an admin (authenticated as administrator). If there are several tokens in the header, only one session can be returned. Existance of sessions to the tokens are proved in the order `login`, `person`, `admin`.'
+            description: 'returns session data according to a AuthToken. The type of the session is deteced by the type of the token. The auth-token is a JSON-array in the header `AuthToken`, containing the field `l` with a login-session-token (two-factor-authentication part I only), `p` with a person token (authenticated as testee or test-commander), or `at` with an admin (authenticated as administrator). If there are several tokens in the header, only one session can be returned. Existance of sessions to the tokens are proved in the order `login`, `person`, `admin`.'
             parameters:
                 -
                     in: header
@@ -2073,12 +2073,7 @@ paths:
                             example:
                                 id: 1
                                 name: example_workspace
-                                files:
-                                    Testtakers: 1
-                                    SysCheck: 1
-                                    Booklet: 1
-                                    Unit: 1
-                                    Resource: 1
+                                role: RW
                 '401':
                     description: 'Not authenticated'
                 '403':
