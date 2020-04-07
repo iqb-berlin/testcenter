@@ -627,13 +627,13 @@ paths:
                 errors: []
                 warnings: []
                 infos:
-                  - 1 resource files found
-                  - 1 valid units found
-                  - 1 valid booklets found
-                  - 0 valid syschecks found
-                  - 10 testtakers in 1 logins found
+                  - '1 resource files found'
+                  - '1 valid units found'
+                  - '1 valid booklets found'
+                  - '0 valid syschecks found'
+                  - '10 testtakers in 1 logins found'
                   - 'booklet loads (bytes, sorted):'
-                  - "    BOOKLET.SAMPLE: 5.365"
+                  - '    BOOKLET.SAMPLE: 5.365'
         "401":
           description: Not authenticated
         "403":

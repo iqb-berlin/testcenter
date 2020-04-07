@@ -102,7 +102,7 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required"/>
-            <xs:attribute name="validTo" type="xs:string">
+            <xs:attribute name="validTo">
               <xs:annotation>
                 <xs:documentation>
                   Login-/Person-Token of this group are valid until the specified date and can not be created after.
@@ -116,7 +116,7 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
-            <xs:attribute name="validFrom" type="xs:string">
+            <xs:attribute name="validFrom">
               <xs:annotation>
                 <xs:documentation>
                   If provided, Login-/Person-Token are only valid and can only be created *after* this date.
