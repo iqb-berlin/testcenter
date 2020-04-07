@@ -68,7 +68,7 @@ paths:
     /session/login:
         put:
             summary: 'Start Login Session'
-            description: 'Starts a Session as Login by Username and password This is Part I of the two-factor authentication. Get a token for a login, defined in a `Testtakers.xml`-file, together with some session information like running tests etc.'
+            description: 'Starts a Session as Login by Username and password If the login requires a subsequent code insertion, you get a session with no access and the request for a password. Otherwise a set of accessable booklets will be retrieved.'
             requestBody:
                 content:
                     application/json:
@@ -98,7 +98,7 @@ paths:
     /session/person:
         put:
             summary: 'Start Person Session'
-            description: 'Starts a Session for a Person, on the basis of LoginToken (!) which is Part II of the Two-Factor Authentication. Get a token for a person belonging to a login, as defined in a `Testtakers.xml`-file, together with some information about this person'
+            description: 'Starts a Session for a Person, on the basis of LoginToken (!) which is Part II of the Two-Factor Authentication for code-demanding logins. Get a token for a person belonging to a login, as defined in a `Testtakers.xml`-file, together with some information about this person'
             parameters:
                 -
                     in: header
@@ -1701,12 +1701,6 @@ paths:
                     description: 'OK, list of reviews'
                     content:
                         application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    errors: {type: array, items: {type: string}}
-                                    warnings: {type: array, items: {type: string}}
-                                    infos: {type: array, items: {type: string}}
                             example:
                                 errors: []
                                 warnings: []
