@@ -5,7 +5,6 @@ Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
 
 Options +FollowSymLinks
 Options -Indexes
-DirectorySlash Off
 
 RewriteEngine on
 
@@ -14,13 +13,6 @@ RewriteBase /
 
 # exception for this file (guthub takes other root dir than local installation)
 RewriteRule ^specs.yml docs/specs.yml [L]
-
-
-# add a trailing slash to directories
-# repents DirectorySlash Off but
-# circumvents the problem with endpoint `test` und dir `test`
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule [^/]$ %{REQUEST_URI}/ [L]
 
 # rewrite all calls except docs to index.php
 RewriteCond %{REQUEST_FILENAME} !index.php

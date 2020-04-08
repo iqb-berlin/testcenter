@@ -26,7 +26,7 @@ class SessionDAOTest extends TestCase {
         DB::connect(new DBConfig(["type" => "temp", "staticTokens" => true]));
         $this->dbc = new SessionDAO();
         $this->dbc->runFile('scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile('test/testdata.sql');
+        $this->dbc->runFile('unit-tests/testdata.sql');
     }
 
 

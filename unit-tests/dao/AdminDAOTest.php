@@ -22,7 +22,7 @@ class AdminDAOTest extends TestCase {
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new AdminDAO();
         $this->dbc->runFile('scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile('test/testdata.sql');
+        $this->dbc->runFile('unit-tests/testdata.sql');
     }
 
 
