@@ -120,7 +120,7 @@ gulp.task('update_docs', done => {
     printHeadline('copy compiled spec and redoc lib to docs folder');
 
     const compiledFileName = 'tmp/compiled.specs.yml';
-    const targetFileName = '../docs/api_doc_files/specs.yml';
+    const targetFileName = '../docs/specs.yml';
     const yamlString = fs.readFileSync(compiledFileName, "utf8");
     const yamlTree = YAML.parse(yamlString);
     const localizeReference = (key, val) => {
