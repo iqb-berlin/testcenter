@@ -12,7 +12,7 @@ $app->group('/test', function(App $app) {
 
     $app->get('/{test_id}', function(Request $request, Response $response) use ($testDAO) {
 
-        /* @var $authToken PersonAuthToken */
+        /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $testId = (int) $request->getAttribute('test_id');
 
@@ -32,7 +32,7 @@ $app->group('/test', function(App $app) {
 
     $app->get('/{test_id}/unit/{unit_name}', function(Request $request, Response $response) use ($testDAO) {
 
-        /* @var $authToken PersonAuthToken */
+        /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $unitName = $request->getAttribute('unit_name');
         $testId = (int) $request->getAttribute('test_id');
@@ -52,7 +52,7 @@ $app->group('/test', function(App $app) {
 
     $app->get('/{test_id}/resource/{resource_name}', function (Request $request, Response $response) use ($testDAO) {
 
-        /* @var $authToken PersonAuthToken */
+        /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
         $resourceName = $request->getAttribute('resource_name');
@@ -227,13 +227,13 @@ $app->group('/test', function(App $app) {
     })
         ->add(new IsTestWritable());
 })
-    ->add(new RequirePersonToken());
+    ->add(new RequireToken('person'));
 
 // was /startbooklet
 
 $app->put('/test', function(Request $request, Response $response) {
 
-    /* @var $authToken PersonAuthToken */
+    /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
 
     $body = RequestBodyParser::getElements($request, [
@@ -245,7 +245,7 @@ $app->put('/test', function(Request $request, Response $response) {
     $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
     $bookletName = $bookletsFolder->getBookletName($body['bookletName']);
 
-    $test = $testDAO->getOrCreateTest($authToken->getPersonId(), $body['bookletName'], $bookletName);
+    $test = $testDAO->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletName);
 
     if ($test['locked'] == '1') {
         throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
@@ -256,4 +256,4 @@ $app->put('/test', function(Request $request, Response $response) {
         'mode' => $authToken->getMode()
     ])->withStatus(201);
 })
-    ->add(new RequirePersonToken());
+    ->add(new RequireToken('person'));

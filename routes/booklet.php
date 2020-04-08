@@ -13,7 +13,6 @@ $app->group('/booklet', function(App $app) {
 
     $app->get('/{booklet_name}/state', function (Request $request, Response $response) use ($sessionDAO) {
 
-        /* @var $authToken PersonAuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $personToken = $authToken->getToken();
 
@@ -35,4 +34,4 @@ $app->group('/booklet', function(App $app) {
         return $response->withJson($bookletStatus);
     });
 })
-    ->add(new RequirePersonToken());
+    ->add(new RequireToken('person'));

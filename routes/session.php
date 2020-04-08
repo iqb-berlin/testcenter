@@ -85,7 +85,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     return $response->withJson($session);
 
-})->add(new RequireLoginToken());
+})->add(new RequireToken('login'));
 
 
 $app->get('/session', function(Request $request, Response $response) use ($app) {
@@ -95,13 +95,13 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     $sessionDAO = new SessionDAO();
 
-    if ($authToken::type == "login") {
+    if ($authToken->getType() == "login") {
 
         $session = $sessionDAO->getLoginSession($authToken->getToken());
         return $response->withJson($session);
     }
 
-    if ($authToken::type == "person") {
+    if ($authToken->getType() == "person") {
 
         $session = $sessionDAO->getPersonSession($authToken->getToken());
         return $response->withJson($session);
@@ -109,7 +109,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     $adminDAO = new AdminDAO();
 
-    if ($authToken::type == "admin") {
+    if ($authToken->getType() == "admin") {
 
         $session = $adminDAO->getAdminSession($authToken->getToken());
         return $response->withJson($session);
@@ -117,4 +117,4 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     throw new HttpUnauthorizedException($request);
 
-})->add(new RequireAnyToken());
+})->add(new RequireToken('login', 'person', 'admin'));

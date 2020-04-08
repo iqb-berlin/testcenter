@@ -12,11 +12,8 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        p: 0
+                    description: 'auth-token for any user'
+                    example: 'p:0000000000000.00000000000'
             responses:
                 '200':
                     description: 'OK, get session data'
@@ -103,11 +100,8 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
+                    description: 'auth-token for a login-session'
+                    example: 'l:user000000000.test0000000'
             requestBody:
                 content:
                     application/json:
@@ -238,10 +232,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
             responses:
                 '200':
                     description: 'List of Workspaces'
@@ -269,10 +260,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
             requestBody:
                 content:
                     application/json:
@@ -305,10 +293,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
             responses:
                 '200':
                     description: 'List of users'
@@ -338,10 +323,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
             requestBody:
                 content:
                     application/json:
@@ -374,11 +356,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -411,11 +389,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -457,11 +431,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -499,11 +469,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -559,11 +525,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -610,11 +572,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -669,11 +627,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -725,11 +679,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -781,11 +731,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -829,11 +775,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -885,11 +827,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -933,11 +871,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
                 -
                     in: path
                     name: test_id
@@ -964,11 +898,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for test-user'
-                    schema:
-                        $ref: '#/components/schemas/auth_test'
-                    example:
-                        l: user000000000.test0000000
-                        p: 0
+                    example: 'p:0000000000000.00000000000'
             requestBody:
                 content:
                     application/json:
@@ -1009,10 +939,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: user_id
@@ -1050,10 +977,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: user_id
@@ -1098,10 +1022,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
             requestBody:
                 content:
                     application/json:
@@ -1130,10 +1051,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: user_id
@@ -1169,10 +1087,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: user_id
@@ -1219,10 +1134,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "MO" for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.mo00000000
+                    example: 'a:user000000000.mo00000000'
                 -
                     in: path
                     name: ws_id
@@ -1285,8 +1197,7 @@ paths:
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.ro00000000'
                 -
                     in: path
                     name: ws_id
@@ -1335,8 +1246,7 @@ paths:
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.ro00000000'
                 -
                     in: path
                     name: ws_id
@@ -1407,8 +1317,7 @@ paths:
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
                     schema:
                         $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.ro00000000'
                 -
                     in: path
                     name: ws_id
@@ -1461,10 +1370,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.rw00000000
+                    example: 'a:user000000000.rw00000000'
                 -
                     in: path
                     name: ws_id
@@ -1507,10 +1413,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -1557,10 +1460,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -1633,10 +1533,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "MO" (monitor only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.mo00000000
+                    example: 'a:user000000000.mo00000000'
                 -
                     in: path
                     name: ws_id
@@ -1684,10 +1581,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -1737,10 +1631,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.rw00000000
+                    example: 'a:user000000000.rw00000000'
                 -
                     in: path
                     name: ws_id
@@ -1790,10 +1681,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -1868,10 +1756,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.rw00000000
+                    example: 'a:user000000000.rw00000000'
                 -
                     in: path
                     name: ws_id
@@ -1927,10 +1812,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.rw00000000
+                    example: 'a:user000000000.rw00000000'
                 -
                     in: path
                     name: ws_id
@@ -1973,10 +1855,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.rw00000000
+                    example: 'a:user000000000.rw00000000'
                 -
                     in: path
                     name: ws_id
@@ -2019,10 +1898,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
             requestBody:
                 content:
                     application/json:
@@ -2053,10 +1929,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -2090,10 +1963,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -2134,10 +2004,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -2181,10 +2048,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with super-admin privilege'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.superadmin0
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id
@@ -2223,10 +2087,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: query
                     name: format
@@ -2277,10 +2138,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role "RW" (read/write) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.rw00000000
+                    example: 'a:user000000000.rw00000000'
                 -
                     in: path
                     name: ws_id
@@ -2328,10 +2186,7 @@ paths:
                     in: header
                     name: AuthToken
                     description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example:
-                        at: user000000000.ro00000000
+                    example: 'a:user000000000.superadmin0'
                 -
                     in: path
                     name: ws_id

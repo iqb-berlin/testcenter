@@ -14,10 +14,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "MO" for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.mo00000000
+          example: "a:user000000000.mo00000000"
         - in: path
           name: ws_id
           required: true
@@ -96,8 +93,7 @@ paths:
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.ro00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -145,8 +141,7 @@ paths:
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.ro00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -229,8 +224,7 @@ paths:
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
           schema:
             $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.ro00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -316,10 +310,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.rw00000000
+          example: "a:user000000000.rw00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -365,10 +356,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -430,10 +418,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -521,10 +506,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "MO" (monitor only) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.mo00000000
+          example: "a:user000000000.mo00000000"
 
         - in: path
           name: ws_id
@@ -591,10 +573,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -654,10 +633,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.rw00000000
+          example: "a:user000000000.rw00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -711,10 +687,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -783,10 +756,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.rw00000000
+          example: "a:user000000000.rw00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -842,10 +812,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.rw00000000
+          example: "a:user000000000.rw00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -888,10 +855,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.rw00000000
+          example: "a:user000000000.rw00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -935,10 +899,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.superadmin0
+          example: "a:user000000000.superadmin0"
 
       requestBody:
         content:
@@ -971,10 +932,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.superadmin0
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1009,10 +967,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.superadmin0
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1055,10 +1010,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.superadmin0
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1110,10 +1062,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with super-admin privilege
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.superadmin0
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1152,10 +1101,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.superadmin0"
 #        - in: header
 #          name: Accept
 #          description: "Response format: application/json or text/csv"
@@ -1218,10 +1164,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.rw00000000
+          example: "a:user000000000.rw00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -1271,10 +1214,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for admin-user with role at least "RO" (read only) for this workspace
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth'
-          example:
-            at: user000000000.ro00000000
+          example: "a:user000000000.superadmin0"
         - in: path
           name: ws_id
           description: workspace-id

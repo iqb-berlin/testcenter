@@ -10,25 +10,29 @@ let skipTheRest = false;
 
 const changeAuthToken = (transaction, newAuthTokenData) => {
 
-    let authToken = {};
-
-    if (typeof transaction.request.headers['AuthToken'] !== "undefined") {
-        authToken = transaction.request.headers['AuthToken'];
+    if (typeof transaction.request.headers['AuthToken'] === "undefined") {
+        return;
     }
 
-    if (typeof authToken['at'] !== "undefined") {
-        authToken['at'] = newAuthTokenData.adminToken;
+    let authToken = '';
+
+    let tokenType = transaction.request.headers['AuthToken'].split(':')[0];
+
+    switch (tokenType) {
+
+        case 'a':
+            authToken = newAuthTokenData.adminToken;
+            break;
+        case 'p':
+            authToken = newAuthTokenData.personToken;
+            break;
+        case 'l':
+            authToken = newAuthTokenData.loginToken;
+            break;
     }
 
-    if (typeof authToken['p'] !== "undefined") {
-        authToken['p'] = newAuthTokenData.personToken;
-    }
 
-    if (typeof authToken['l'] !== "undefined") {
-        authToken['l'] = newAuthTokenData.loginToken;
-    }
-
-    transaction.request.headers['AuthToken'] = JSON.stringify(authToken);
+    transaction.request.headers['AuthToken'] = authToken;
 };
 
 

@@ -94,4 +94,4 @@ $app->group('/user', function(App $app) {
 
 })
     ->add(new IsSuperAdmin())
-    ->add(new RequireAdminToken());
+    ->add(new RequireToken('admin'));

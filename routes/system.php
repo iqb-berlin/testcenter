@@ -20,7 +20,7 @@ $app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspectio
     return $response->withJson($workspaces);
 })
     ->add(new IsSuperAdmin())
-    ->add(new RequireAdminToken());
+    ->add(new RequireToken('admin'));
 
 
 $app->delete('/workspaces', function (Request $request, Response $response) {
@@ -38,7 +38,7 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     return $response;
 })
     ->add(new IsSuperAdmin())
-    ->add(new RequireAdminToken());
+    ->add(new RequireToken('admin'));
 
 
 $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
@@ -48,7 +48,7 @@ $app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ R
     return $response->withJson($superAdminDAO->getUsers());
 })
     ->add(new IsSuperAdmin())
-    ->add(new RequireAdminToken());
+    ->add(new RequireToken('admin'));
 
 
 $app->delete('/users', function(Request $request, Response $response) {
@@ -62,7 +62,7 @@ $app->delete('/users', function(Request $request, Response $response) {
     return $response;
 })
     ->add(new IsSuperAdmin())
-    ->add(new RequireAdminToken());
+    ->add(new RequireToken('admin'));
 
 
 $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {

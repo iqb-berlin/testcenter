@@ -9,22 +9,13 @@ paths:
   /session:
     get:
       summary: get a session
-      description: returns session data according to a AuthToken.
-        The type of the session is deteced by the type of the token. The auth-token is a JSON-array in the header
-        `AuthToken`, containing the field `l` with a login-session-token (two-factor-authentication part I only),
-        `p` with a person token (authenticated as testee or test-commander), or `at` with an admin (authenticated as
-        administrator).
-        If there are several tokens in the header, only one session can be returned. Existance of sessions to the tokens
-        are proved in the order `login`, `person`, `admin`.
+      description: returns session data according to an authToken.
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
+          description: auth-token for any user
+          example: "p:0000000000000.00000000000"
 #            l: user000000000.test0000000
-            p: 0000000000000.00000000000
 #            at: user000000000.rw00000000
       responses:
         "200":
@@ -127,11 +118,8 @@ paths:
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
+          description: auth-token for a login-session
+          example: "l:user000000000.test0000000"
 
       requestBody:
         content:

@@ -83,6 +83,15 @@ class TimeStamp {
         }
 
         $timeZone = new DateTimeZone('Europe/Berlin');
+
+        // TODO remove this workaround. problem: date is stored in differently ways in table admintokens and others
+        if (is_numeric($sqlFormatTimestamp) and ((int) $sqlFormatTimestamp > 1000000)) {
+
+            $dateTime = new DateTime('now', $timeZone);
+            $dateTime->setTimestamp((int) $sqlFormatTimestamp);
+            return $dateTime->getTimestamp();
+        }
+
         $dateTime = DateTime::createFromFormat("Y-m-d H:i:s", $sqlFormatTimestamp, $timeZone);
         return $dateTime ? $dateTime->getTimestamp() : 0;
     }

@@ -14,11 +14,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: id of a executed test
@@ -50,11 +46,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: id of a executed test
@@ -93,11 +85,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: id of a executed test
@@ -133,11 +121,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -191,11 +175,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -243,11 +223,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -301,11 +277,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -355,11 +327,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -409,11 +377,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -459,11 +423,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -515,11 +475,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -563,11 +519,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
         - in: path
           name: test_id
           description: test-id - id of a test execution.
@@ -607,11 +559,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for test-user
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
-            p: 0000000000000.00000000000
+          example: "p:0000000000000.00000000000"
       requestBody:
         content:
           application/json:

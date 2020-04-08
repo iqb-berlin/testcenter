@@ -17,7 +17,7 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
-        /* @var $authToken AdminAuthToken */
+        /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
         return $response->withJson([
@@ -284,7 +284,7 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-})->add(new RequireAdminToken());
+})->add(new RequireToken('admin'));
 
 $app->group('/workspace', function(App $app) {
 
@@ -339,7 +339,7 @@ $app->group('/workspace', function(App $app) {
 
 })
     ->add(new IsSuperAdmin())
-    ->add(new RequireAdminToken());
+    ->add(new RequireToken('admin'));
 
 
 $app->get('/workspace/{ws_id}/sys-check/{sys-check_name}', function(Request $request, Response $response) use ($app) {

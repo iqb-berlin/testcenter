@@ -6,6 +6,71 @@ declare(strict_types=1);
 class SessionDAO extends DAO {
 
 
+    public function getToken(string $tokenString, array $requiredTypes): AuthToken {
+
+        $tokenInfo = $this->_(
+            'select
+                    *
+            from (
+                select
+                    admintokens.id as token,
+                    users.id,
+                    \'admin\' as type,
+                    -1 as workspaceId,
+                    case when (users.is_superadmin > 0) then \'super-admin\' else \'admin\' end as "mode",
+                    valid_until as "validTo"
+                from admintokens
+                    inner join users on (users.id = admintokens.user_id)
+                union
+                select
+                    token,
+                    logins.id as "id",
+                    \'login\' as "type",
+                    workspace_id as "workspaceId",
+                    logins.mode,
+                    valid_until as "validTo"
+                FROM logins
+                union
+                select
+                    persons.token,
+                    persons.id as "id",
+                    \'person\' as "type",
+                    workspace_id as "workspaceId",
+                    logins.mode,
+                    persons.valid_until as "validTo"
+                from logins
+                    inner join persons on (persons.login_id = logins.id)
+            ) as allTokenTables
+            where 
+                token = :token',
+            [':token' => $tokenString]
+        );
+
+        if ($tokenInfo == null) {
+
+            throw new HttpError("Invalid token: `$tokenString`", 403);
+        }
+
+        if (!in_array($tokenInfo["type"], $requiredTypes)) {
+
+            throw new HttpError("Token `{$tokenString}` of type `{$tokenInfo["type"]}` hat insufficient rights", 403);
+        }
+
+        error_log("CHECK ME OUT  `{$tokenString}` of type `{$tokenInfo["type"]}` : {$tokenInfo['validTo']}");
+
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($tokenInfo['validTo']));
+
+        return new AuthToken(
+            $tokenInfo['token'],
+            (int) $tokenInfo['id'],
+            $tokenInfo['type'],
+            (int) $tokenInfo['workspaceId'],
+            $tokenInfo['mode']
+        );
+    }
+
+
+
     public function getLoginSession(string $loginToken): Session {
 
         $loginData = $this->getLogin($loginToken);
@@ -114,13 +179,13 @@ class SessionDAO extends DAO {
         // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 restore customTexts as well
 
         return new Login(
-            $oldLogin['id'],
+            (int) $oldLogin['id'],
             $oldLogin['name'],
             $oldLogin['token'],
             $oldLogin['mode'],
             $oldLogin['groupName'],
             JSON::decode($oldLogin['booklets'], true),
-            $oldLogin['workspaceId'],
+            (int) $oldLogin['workspaceId'],
             TimeStamp::fromSQLFormat($oldLogin['_validTo'])
         );
     }

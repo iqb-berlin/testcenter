@@ -8,7 +8,14 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 
-abstract class RequireToken {
+class RequireToken {
+
+    protected $requiredTypes = [];
+
+    public function __construct(string ...$requiredTypes) {
+
+        $this->requiredTypes = $requiredTypes;
+    }
 
     function __invoke(Request $request, Response $response, $next) {
 
@@ -18,7 +25,11 @@ abstract class RequireToken {
 
         $tokenString = $this->getTokenFromHeader($request);
 
-        $request = $request->withAttribute('AuthToken', $this->createTokenObject($tokenString));
+        $sessionDAO = new SessionDAO();
+
+        $token = $sessionDAO->getToken($tokenString, $this->requiredTypes);
+
+        $request = $request->withAttribute('AuthToken', $token);
 
         return $next($request, $response);
     }
@@ -26,22 +37,16 @@ abstract class RequireToken {
 
     function getTokenFromHeader(Request $request): string {
 
-        $tokenName = $this->getTokenName();
-
         if (!$request->hasHeader('AuthToken')) {
-            throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: header missing');
+            throw new HttpUnauthorizedException($request, 'Auth Header not sufficient: missing');
         }
 
-        $authToken = JSON::decode($request->getHeaderLine('AuthToken'));
+        $authToken = $request->getHeaderLine('AuthToken');
 
-        if (!isset($authToken->$tokenName) or strlen($authToken->$tokenName) == 0) {
-            throw new HttpUnauthorizedException($request, "Auth Header not sufficient: `$tokenName` missing");
+        if (!$authToken) {
+            throw new HttpUnauthorizedException($request, "Auth Header not sufficient: empty");
         }
 
-        return $authToken->$tokenName;
+        return $authToken;
     }
-
-    abstract function createTokenObject(string $tokenString): AuthToken;
-
-    abstract function getTokenName(): string;
 }

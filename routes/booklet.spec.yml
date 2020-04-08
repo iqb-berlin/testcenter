@@ -9,16 +9,12 @@ paths:
   /booklet/{booklet_name}/state:
     get:
       summary: get status of a booklet
-      description: retrieves some status informations of a booklet
+      description: Retrieves some status informations of a booklet
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for test-user containing a loginToken
-
-          schema:
-            $ref: './components.spec.yml#/components/schemas/auth_test'
-          example:
-            l: user000000000.test0000000
+          description: auth-token for test-user containing a personToken
+          example: "p:user000000000.test0000000"
         - in: path
           name: booklet_name
           description: id of a executed test
@@ -42,7 +38,7 @@ paths:
                 id: 0
                 lastState: ""
                 locked: false
-                label: "BLA"
+                label: "Booklets little label"
         "401":
           description: Not authenticated
         "410":
