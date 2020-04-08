@@ -31,8 +31,31 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
             break;
     }
 
-
     transaction.request.headers['AuthToken'] = authToken;
+};
+
+
+const changeBody = (transaction, changeMap) => {
+
+    dreddHooks.log(JSON.stringify(transaction.request.body));
+    dreddHooks.log(typeof transaction.request.body);
+
+    if (!transaction.request.body) {
+        return;
+    }
+
+    const body = JSON.parse(transaction.request.body);
+
+    Object.keys(changeMap).forEach(key => {
+        if (typeof body[key] !== "undefined") {
+            body[key] = changeMap[key];
+        }
+    });
+
+    transaction.request.body = JSON.stringify(body);
+
+    dreddHooks.log(JSON.stringify(transaction.request.body));
+    dreddHooks.log(typeof transaction.request.body);
 };
 
 
@@ -63,6 +86,15 @@ dreddHooks.beforeEach(function(transaction, done) {
                 adminToken: 'static_token:admin:super',
                 loginToken: 'static_token:login:sample_user',
                 personToken: 'static_token:person:sample_group_sample_user_xxx'
+            });
+            break;
+        case '400':
+            changeBody(transaction, {
+                password: '__totally_invalid_password__',
+                code: "__invalid_code__"
+            });
+            changeAuthToken(transaction, {
+                loginToken: 'static_token:login:sample_user',
             });
             break;
         case '401':

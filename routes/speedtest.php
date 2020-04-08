@@ -2,12 +2,8 @@
 declare(strict_types=1);
 
 use Slim\App;
-use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-
-
 
 
 $app->group('/speed-test', function(App $app) { // TODO write spec
@@ -22,7 +18,7 @@ $app->group('/speed-test', function(App $app) { // TODO write spec
 
         if (($size > 8388608 * 8) or ($size < 16)) {
 
-            throw new HttpBadRequestException($request, "Unsupported test size ({$size})");
+            throw new HttpError("Unsupported test size ({$size})", 406);
         }
 
         $package = '';

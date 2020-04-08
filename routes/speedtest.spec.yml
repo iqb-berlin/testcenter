@@ -26,7 +26,7 @@ paths:
               schema:
                 type: string
               example: "lrOI/JLFOAPBOHt="
-        "400":
+        "406":
           description: bad package size
         "500":
           description: server error

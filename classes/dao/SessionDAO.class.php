@@ -400,7 +400,7 @@ class SessionDAO extends DAO {
     public function createPerson(Login $login, string $code, bool $allowExpired = false): array {
 
         if (!array_key_exists($code, $login->getBooklets())) {
-            throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 401);
+            throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 400);
         }
 
         if (!$allowExpired) {
