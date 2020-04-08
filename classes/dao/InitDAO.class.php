@@ -18,7 +18,10 @@ class InitDAO extends SessionDAO {
             'sample_group',
             [$loginCode => ['BOOKLET.SAMPLE']],
             1,
-            TimeStamp::fromXMLFormat('1/1/2030 12:00')
+            TimeStamp::fromXMLFormat('1/1/2030 12:00'),
+            0,
+            0,
+            (object) ['somStr' => 'someLabel']
         );
         $login = $sessionDAO->getOrCreateLogin($testSession);
         $login->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00');

@@ -56,8 +56,6 @@ class SessionDAO extends DAO {
             throw new HttpError("Token `{$tokenString}` of type `{$tokenInfo["type"]}` hat insufficient rights", 403);
         }
 
-        error_log("CHECK ME OUT  `{$tokenString}` of type `{$tokenInfo["type"]}` : {$tokenInfo['validTo']}");
-
         TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($tokenInfo['validTo']));
 
         return new AuthToken(
@@ -78,13 +76,13 @@ class SessionDAO extends DAO {
         return new Session(
             $loginData->getToken(),
             "{$loginData->getGroupName()}/{$loginData->getName()}",
-            $loginData->isCodeRequired() ? ['codeRequired'] : []
+            $loginData->isCodeRequired() ? ['codeRequired'] : [],
+            $loginData->getCustomTexts()
         );
     }
 
 
     // TODO add unit-test
-    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
     public function getPersonSession(string $personToken): Session {
 
         $loginData = $this->_(
@@ -95,6 +93,7 @@ class SessionDAO extends DAO {
                logins.groupname as "groupName",
                logins.token    as "loginToken",
                logins.name,
+               logins.customTexts,
                workspaces.name as "workspaceName",
                persons.code
             FROM persons
@@ -121,7 +120,7 @@ class SessionDAO extends DAO {
             $personToken,
             "{$loginData['groupName']}/{$loginData['name']}/{$loginData['code']}",
             [],
-            $loginData['customTexts'] ?? (object) [] // TODO customTexts
+            JSON::decode($loginData['customTexts']) ?? (object) []
         );
 
         $session->setAccessTest(...$personsBooklets);
@@ -161,7 +160,8 @@ class SessionDAO extends DAO {
                     logins.token,
                     logins.mode,
                     logins.booklet_def as "booklets",
-                    logins.groupname as "groupName"
+                    logins.groupname as "groupName",
+                    logins.customTexts
             FROM logins
 			WHERE logins.name = :name AND logins.workspace_id = :ws', [
                 ':name' => $loginData->getName(),
@@ -175,9 +175,7 @@ class SessionDAO extends DAO {
         }
 
         TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['_validTo']));
-
-        // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 restore customTexts as well
-
+        error_log('XXX:'. print_r(JSON::decode($oldLogin['customTexts']), true));
         return new Login(
             (int) $oldLogin['id'],
             $oldLogin['name'],
@@ -186,12 +184,12 @@ class SessionDAO extends DAO {
             $oldLogin['groupName'],
             JSON::decode($oldLogin['booklets'], true),
             (int) $oldLogin['workspaceId'],
-            TimeStamp::fromSQLFormat($oldLogin['_validTo'])
+            TimeStamp::fromSQLFormat($oldLogin['_validTo']),
+            JSON::decode($oldLogin['customTexts'])
         );
     }
 
 
-    // TODO https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
     public function getLogin(string $loginToken): Login {
 
         $login = $this->_(
@@ -203,7 +201,8 @@ class SessionDAO extends DAO {
                     logins.token,
                     logins.mode,
                     logins.booklet_def as "booklets",
-                    logins.groupname as "groupName"
+                    logins.groupname as "groupName",
+                    logins.customTexts
                 FROM 
                     logins 
                 WHERE 
@@ -225,7 +224,8 @@ class SessionDAO extends DAO {
             $login["groupName"],
             JSON::decode($login['booklets'], true),
             (int) $login["workspaceId"],
-            TimeStamp::fromSQLFormat($login['validTo'])
+            TimeStamp::fromSQLFormat($login['validTo']),
+            JSON::decode($login["customTexts"])
         );
     }
 
@@ -242,8 +242,8 @@ class SessionDAO extends DAO {
         $loginToken = $this->_randomToken('login', $loginData->getName());
 
         $this->_(
-            'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname) 
-                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname)',
+            'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname, customTexts) 
+                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname, :customTexts)',
             [
                 ':token' => $loginToken,
                 ':sd' => json_encode($loginData->getBooklets()),
@@ -251,7 +251,8 @@ class SessionDAO extends DAO {
                 ':name' => $loginData->getName(),
                 ':mode' => $loginData->getMode(),
                 ':ws' => $loginData->getWorkspaceId(),
-                ':groupname' => $loginData->getGroupName()
+                ':groupname' => $loginData->getGroupName(),
+                ':customTexts' => json_encode($loginData->getCustomTexts())
             ]
         );
 

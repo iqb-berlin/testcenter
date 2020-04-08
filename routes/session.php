@@ -60,7 +60,8 @@ $app->put('/session/login', function(Request $request, Response $response) use (
         $session = new Session(
             $login->getToken(),
             "{$login->getGroupName()}/{$login->getName()}",
-            $login->isCodeRequired() ? ['codeRequired'] : []
+            $login->isCodeRequired() ? ['codeRequired'] : [],
+            $login->getCustomTexts()
         );
     }
 

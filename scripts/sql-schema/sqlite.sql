@@ -42,6 +42,7 @@ CREATE TABLE `logins` (
 ,  `token` varchar(50) NOT NULL
 ,  `booklet_def` text DEFAULT NULL
 ,  `groupname` varchar(100) NOT NULL
+,  `customTexts` text DEFAULT NULL
 ,  CONSTRAINT `fk_login_workspace` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE TABLE `persons` (

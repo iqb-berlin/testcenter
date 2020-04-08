@@ -15,19 +15,19 @@ class Login extends DataCollectionTypeSafe {
 
     protected $validTo = 0;
 
-    protected $customTexts; // TODO after https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 make null
+    protected $customTexts;
 
 
     function __construct(
         int $id,
-        string $name, // . sg
-        string $token, // s
-        string $mode, // sg
-        string $groupName, // . sg
-        array $booklets, // . g
-        int $workspaceId, // sg
-        int $validTo, // s
-        $customTexts = null // .
+        string $name,
+        string $token,
+        string $mode,
+        string $groupName,
+        array $booklets,
+        int $workspaceId,
+        int $validTo,
+        $customTexts = null
     ) {
 
         $this->id = $id;

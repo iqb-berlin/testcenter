@@ -289,7 +289,7 @@ class XMLFileTesttakers extends XMLFile {
                                                     $validTo,
                                                     $validFrom,
                                                     $validForMinutes,
-                                                    $this->getCustomTexts()
+                                                    (object) $this->getCustomTexts()
                                                 );
                                             } else {
                                                 return new PotentialLogin(
@@ -301,7 +301,7 @@ class XMLFileTesttakers extends XMLFile {
                                                     $validTo,
                                                     $validFrom,
                                                     $validForMinutes,
-                                                    $this->getCustomTexts()
+                                                    (object) $this->getCustomTexts()
                                                 );
                                             }
 

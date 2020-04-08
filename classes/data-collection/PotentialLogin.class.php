@@ -15,7 +15,7 @@ class PotentialLogin extends DataCollectionTypeSafe {
     protected $validTo = 0;
     protected $validForMinutes = 0;
 
-    protected $customTexts; // TODO after https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 make null
+    protected $customTexts;
 
 
     function __construct(
