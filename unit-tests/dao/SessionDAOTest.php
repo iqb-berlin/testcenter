@@ -96,7 +96,7 @@ class SessionDAOTest extends TestCase {
 
         } catch (HttpError $exception) {
 
-            $this->assertEquals($exception->getCode(), 401);
+            $this->assertEquals($exception->getCode(), 400);
         }
 
     }
