@@ -5,12 +5,12 @@ Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
 
 Options +FollowSymLinks
 Options -Indexes
-#DirectorySlash Off
+DirectorySlash Off
 
 RewriteEngine on
 
 # can be installed in subdir or not
-#RewriteBase /
+RewriteBase /
 
 # exception for this file (guthub takes other root dir than local installation)
 RewriteRule ^specs.yml docs/specs.yml [L]
