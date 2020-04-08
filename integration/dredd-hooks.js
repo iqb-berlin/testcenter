@@ -37,9 +37,6 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
 
 const changeBody = (transaction, changeMap) => {
 
-    dreddHooks.log(JSON.stringify(transaction.request.body));
-    dreddHooks.log(typeof transaction.request.body);
-
     if (!transaction.request.body) {
         return;
     }
@@ -53,9 +50,15 @@ const changeBody = (transaction, changeMap) => {
     });
 
     transaction.request.body = JSON.stringify(body);
+};
 
-    dreddHooks.log(JSON.stringify(transaction.request.body));
-    dreddHooks.log(typeof transaction.request.body);
+const changeUri = (transaction, changeMap) => {
+
+    Object.keys(changeMap).forEach(key => {
+        transaction.request.uri = transaction.request.uri.replace(key, changeMap[key]);
+        transaction.fullPath = transaction.fullPath.replace(key, changeMap[key]);
+    });
+
 };
 
 
@@ -105,6 +108,16 @@ dreddHooks.beforeEach(function(transaction, done) {
                 adminToken: '__invalid_token__',
                 loginToken: '__invalid_token__',
                 personToken: '__invalid_token__'
+            });
+            break;
+        case '404':
+            changeAuthToken(transaction, {
+                adminToken: 'static_token:admin:super',
+                loginToken: 'static_token:login:sample_user',
+                personToken: 'static_token:person:sample_group_sample_user_xxx'
+            });
+            changeUri(transaction, {
+                '/workspace/1/': '/workspace/13/'
             });
             break;
         case '410':

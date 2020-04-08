@@ -77,7 +77,7 @@ gulp.task('prepare_spec_for_dredd', done => {
         "parameters > \\d+ > schema$": () => null,
         "text/xml > example$": () => null,
         "application/octet-stream > example$": () => null,
-        "^paths > .*? > .*? > responses > (404|500|202)$": () => null,
+        "^paths > .*? > .*? > responses > (500|202)$": () => null,
         "schema > \\$ref$": resolveReference,
         "items > \\$ref$": resolveReference
     };

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 // TODO unit test
 
-use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -20,14 +20,6 @@ class IsWorkspacePermitted {
     }
 
 
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @param $next
-     * @return mixed
-     * @throws HttpBadRequestException
-     * @throws HttpForbiddenException
-     */
     function __invoke(Request $request, Response $response, $next) {
 
         $route = $request->getAttribute('route');
@@ -35,7 +27,7 @@ class IsWorkspacePermitted {
 
         if (!isset($params['ws_id']) or ((int) $params['ws_id'] < 1)) {
 
-            throw new HttpBadRequestException($request, "No valid workspace: {$params['ws_id']}");
+            throw new HttpNotFoundException($request, "No valid workspace: `{$params['ws_id']}`");
         }
 
         /* @var $authToken AuthToken */
@@ -45,7 +37,7 @@ class IsWorkspacePermitted {
 
         if (!$adminDAO->hasAdminAccessToWorkspace($authToken->getToken(), (int) $params['ws_id'])) {
 
-            throw new HttpForbiddenException($request,"Access to workspace ws_{$params['ws_id']} is not provided.");
+            throw new HttpNotFoundException($request,"Workspace `{$params['ws_id']}` not found.");
         }
 
         $userRoleOnWorkspace = $role = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
