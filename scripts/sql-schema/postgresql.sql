@@ -1,23 +1,6 @@
 -- database schema IQB Testcenter
 -- for PostgreSQL
 
--- vo stands for VERA online
--- tc stands for testcenter
-
--- CREATE DATABASE not tested (dummy)
-# CREATE DATABASE votcdb
-#     WITH
-#     OWNER = votc_admin
-#     ENCODING = 'UTF8'votcdb
-#     LC_COLLATE = 'de_DE.UTF-8'
-#     LC_CTYPE = 'de_DE.UTF-8'
-#     TABLESPACE = pg_default
-#     CONNECTION LIMIT = -1;
-#
-# GRANT ALL ON DATABASE votcdb TO votc_admin;
-
-
--- tested 10.9.2018 (mdr2, mme)
 
 CREATE TABLE public.users
 (

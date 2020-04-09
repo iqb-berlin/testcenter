@@ -30,8 +30,10 @@ git clone https://github.com/iqb-berlin/testcenter-iqb-php.git
 - create database structure:
 ```
 mysql -u username -p database_name < scripts/sql-schema/mysql.sql
+mysql -u username -p database_name < scripts/sql-schema/patches.mysql.sql
 # or
 psql -U username database_name < scripts/sql-schema/postgresql.sql
+psql -U username database_name < scripts/sql-schema/patches.postgresql.sql
 ```
 - create config/DBConnectionData.json with you database connection data
 - install dependencies with composer:
