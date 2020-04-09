@@ -74,15 +74,6 @@ class WorkspaceInitializer {
         return $login;
     }
 
-    /**
-     * returns a string with 10 randomized 3-letter logins codes
-     *
-     * @return array
-     */
-    public function getLoginCodes() {
-
-        return array_map([$this, '_generateLogin'], range(0, 9));
-    }
 
     /**
      * @param $workspaceId - _number_ of workspace where to import

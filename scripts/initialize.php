@@ -9,8 +9,6 @@
  * usage:
  * --user_name=(super user name)
  * --user_password=(super user password)
- *
- * if you want to create a workspace with sample data as well, provide:
  * --workspace=(workspace name)
  * --test_login_name=(login for the sample test booklet)
  * --test_login_password=(login for the sample test booklet)
@@ -47,46 +45,36 @@ $args = getopt("", [
 
 try  {
 
-    if (!isset($args['user_name'])) {
-        throw new Exception("user name not provided. use: --user_name=...");
-    }
-
-    if (!isset($args['user_password'])) {
-        throw new Exception("password not provided. use: --user_password=...");
-    }
-
-    if (strlen($args['user_password']) < 7) {
-        throw new Exception("Password must have at least 7 characters!");
-    }
+    $args = new InstallationArguments($args);
 
     $config_file_path = ROOT_DIR . '/config/DBConnectionData.json';
 
     if (!file_exists($config_file_path)) {
+
         throw new Exception("DB-config file is missing!");
     }
 
     $config = file_get_contents($config_file_path);
-
     $config = JSON::decode($config, true);
-
     DB::connect(new DBConfig($config));
 
     $initializer = new WorkspaceInitializer();
 
     try {
+
         $initDAO = new InitDAO();
+
     } catch (Throwable $t) {
+
         $retries = 5;
         $error = true;
+
         while ($retries-- && $error) {
-            try {
-                $initializer = new WorkspaceInitializer();
-                echo "Database connection failed... retry ($retries attempts left)\n";
-                usleep(20 * 1000000); // give database container time to come up
-                $error = false;
-            } catch (Throwable $t) {
-                $error = true;
-            }
+
+            $initDAO = new InitDAO();
+            echo "Database connection failed... retry ($retries attempts left)\n";
+            usleep(20 * 1000000); // give database container time to come up
+            $error = false;
         }
     }
 
@@ -96,23 +84,16 @@ try  {
         $args['workspace']
     );
 
-    if (!isset($args['test_person_codes']) or !$args['test_person_codes']) {
-        $loginCodes = $initializer->getLoginCodes();
-    } else {
-        $loginCodes = explode(',', $args['test_person_codes']);
-    }
-
-    $args['test_person_codes'] = implode(" ", $loginCodes);
-
     $initializer->importSampleData($newIds['workspaceId'], $args);
 
-//    $initDAO->createSampleLoginsReviewsLogs($loginCodes[0]);
+    $initDAO->createSampleLoginsReviewsLogs(explode(" ", $args['test_person_codes'])[0]);
 
     echo "Sample data parameters: \n";
     echo implode("\n", array_map(function($param_key) use ($args) {return "$param_key: {$args[$param_key]}";}, array_keys($args)));
 
 
 } catch (Exception $e) {
+
     ErrorHandler::logException($e, false);
     fwrite(STDERR,"\n" . $e->getMessage() . "\n");
     if (isset($config)) {

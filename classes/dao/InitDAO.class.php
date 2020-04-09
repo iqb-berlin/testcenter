@@ -91,4 +91,18 @@ class InitDAO extends SessionDAO {
             "userId" => (int) $admin['id'],
         ];
     }
+
+
+    public function clearDb(): string {
+
+        $report = "";
+
+        foreach ($this::tables as $table) {
+
+            $report .= "## DROP TABLE `$table`\n";
+            $this->_("Drop table if exists $table cascade ");
+        }
+
+        return $report;
+    }
 }
