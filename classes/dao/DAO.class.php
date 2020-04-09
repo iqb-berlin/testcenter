@@ -6,14 +6,14 @@ declare(strict_types=1);
 class DAO {
 
     const tables = [ // because we use different types of DB is difficult to get table list by command
-        'admintokens',
-        'bookletlogs',
-        'bookletreviews',
-        'booklets',
-        'logins',
-        'persons',
-        'unitlogs',
-        'unitreviews',
+        'admin_sessions',
+        'booklet_logs',
+        'booklet_reviews',
+        'tests',
+        'login_sessions',
+        'person_sessions',
+        'unit_logs',
+        'unit_reviews',
         'units',
         'users',
         'workspace_users',

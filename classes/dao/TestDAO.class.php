@@ -9,8 +9,8 @@ class TestDAO extends DAO {
     public function getBookletName(int $testId): string { // TODO add unit test.
 
         $booklet = $this->_(
-            'SELECT booklets.name FROM booklets
-            WHERE booklets.id=:bookletId',
+            'SELECT tests.name FROM tests
+            WHERE tests.id=:bookletId',
             [':bookletId' => $testId]
         );
 
@@ -26,8 +26,8 @@ class TestDAO extends DAO {
     public function getOrCreateTest(int $personId, string $bookletName, string $bookletLabel): array {
 
         $test = $this->_(
-            'SELECT booklets.locked, booklets.id, booklets.laststate, booklets.label FROM booklets
-            WHERE booklets.person_id=:personId and booklets.name=:bookletname',
+            'SELECT tests.locked, tests.id, tests.laststate, tests.label FROM tests
+            WHERE tests.person_id=:personId and tests.name=:bookletname',
             [
                 ':personId' => $personId,
                 ':bookletname' => $bookletName
@@ -39,7 +39,7 @@ class TestDAO extends DAO {
             if ($test['locked'] != '1') {
 
                 $this->_( // TODO is this necessary?
-                    'UPDATE booklets SET label = :label WHERE id = :id',
+                    'UPDATE tests SET label = :label WHERE id = :id',
                     [
                         ':label' => $bookletLabel,
                         ':id' => $test['id']
@@ -53,7 +53,7 @@ class TestDAO extends DAO {
         }
 
         $this->_(
-            'INSERT INTO booklets (person_id, name, label) VALUES(:person_id, :name, :label)',
+            'INSERT INTO tests (person_id, name, label) VALUES(:person_id, :name, :label)',
             [
                 ':person_id' => $personId,
                 ':name' => $bookletName,
@@ -76,8 +76,8 @@ class TestDAO extends DAO {
     public function isTestLocked(int $testId) {
 
         $test = $this->_(
-            'SELECT booklets.locked FROM booklets
-                WHERE booklets.id=:bookletId',
+            'SELECT tests.locked FROM tests
+                WHERE tests.id=:bookletId',
             [
                 ':bookletId' => $testId
             ]
@@ -95,12 +95,11 @@ class TestDAO extends DAO {
     public function addTestReview(int $testId, int $priority, string $categories, string $entry): void {
 
         $this->_(
-            'INSERT INTO bookletreviews (booklet_id, reviewtime, reviewer, priority, categories, entry) 
-            VALUES(:b, :t, :r, :p, :c, :e)',
+            'INSERT INTO test_reviews (booklet_id, reviewtime, priority, categories, entry) 
+            VALUES(:b, :t, :p, :c, :e)',
             [
                 ':b' => $testId,
                 ':t' => date('Y-m-d H:i:s', time()),
-                ':r' => '-', // field is deprecated, reviewer is identified by bookelet. TODO remove field from DB
                 ':p' => $priority,
                 ':c' => $categories,
                 ':e' => $entry
@@ -114,12 +113,11 @@ class TestDAO extends DAO {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unit);
         $this->_(
-            'INSERT INTO unitreviews (unit_id, reviewtime, reviewer, priority, categories, entry) 
-            VALUES(:u, :t, :r, :p, :c, :e)',
+            'INSERT INTO unit_reviews (unit_id, reviewtime, priority, categories, entry) 
+            VALUES(:u, :t, :p, :c, :e)',
             [
                 ':u' => $unitDbId,
                 ':t' => date('Y-m-d H:i:s', time()),
-                ':r' => '-', // field is deprecated, reviewer is identified by bookelet. TODO remove field from DB
                 ':p' => $priority,
                 ':c' => $categories,
                 ':e' => $entry
@@ -132,7 +130,7 @@ class TestDAO extends DAO {
     public function getTestLastState(int $testId): array {
 
         $booklet = $this->_(
-            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:testId',
+            'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
             [
                 ':testId' => $testId
             ]
@@ -146,7 +144,7 @@ class TestDAO extends DAO {
     public function updateTestLastState($testId, $stateKey, $stateValue): void {
 
         $testData = $this->_(
-            'SELECT booklets.laststate FROM booklets WHERE booklets.id=:testId',
+            'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
             [
                 ':testId' => $testId
             ]
@@ -156,7 +154,7 @@ class TestDAO extends DAO {
         $state[$stateKey] = $stateValue;
 
          $this->_(
-             'UPDATE booklets SET laststate = :laststate WHERE id = :id',
+             'UPDATE tests SET laststate = :laststate WHERE id = :id',
              [
                  ':laststate' => json_encode($state),
                  ':id' => $testId
@@ -209,7 +207,7 @@ class TestDAO extends DAO {
     // TODO unit test
     public function lockBooklet(int $testId): void {
 
-        $this->_('UPDATE booklets SET locked = :locked WHERE id = :id',
+        $this->_('UPDATE tests SET locked = :locked WHERE id = :id',
             [
                 ':locked' => '1',
                 ':id' => $testId
@@ -303,7 +301,7 @@ class TestDAO extends DAO {
         $unitId = $this->getOrCreateUnitId($testId, $unitName);
 
         $this->_(
-            'INSERT INTO unitlogs (unit_id, logentry, timestamp) 
+            'INSERT INTO unit_logs (unit_id, logentry, timestamp) 
             VALUES(
                 :unitId,
                 :logentry, 
@@ -321,7 +319,7 @@ class TestDAO extends DAO {
     // TODO unit test
     public function addBookletLog($testId, $logEntry, $timestamp) {
 
-        $this->_('INSERT INTO bookletlogs (booklet_id, logentry, timestamp) VALUES (:bookletId, :logentry, :timestamp)',
+        $this->_('INSERT INTO test_logs (booklet_id, logentry, timestamp) VALUES (:bookletId, :logentry, :timestamp)',
             [
                 ':bookletId' => $testId,
                 ':logentry' => $logEntry,

@@ -13,33 +13,33 @@ class SessionDAO extends DAO {
                     *
             from (
                 select
-                    admintokens.id as token,
+                    admin_sessions.token,
                     users.id,
                     \'admin\' as type,
                     -1 as workspaceId,
                     case when (users.is_superadmin > 0) then \'super-admin\' else \'admin\' end as "mode",
                     valid_until as "validTo"
-                from admintokens
-                    inner join users on (users.id = admintokens.user_id)
+                from admin_sessions
+                    inner join users on (users.id = admin_sessions.user_id)
                 union
                 select
                     token,
-                    logins.id as "id",
+                    login_sessions.id as "id",
                     \'login\' as "type",
                     workspace_id as "workspaceId",
-                    logins.mode,
+                    login_sessions.mode,
                     valid_until as "validTo"
-                FROM logins
+                FROM login_sessions
                 union
                 select
-                    persons.token,
-                    persons.id as "id",
+                    person_sessions.token,
+                    person_sessions.id as "id",
                     \'person\' as "type",
                     workspace_id as "workspaceId",
-                    logins.mode,
-                    persons.valid_until as "validTo"
-                from logins
-                    inner join persons on (persons.login_id = logins.id)
+                    login_sessions.mode,
+                    person_sessions.valid_until as "validTo"
+                from login_sessions
+                    inner join person_sessions on (person_sessions.login_id = login_sessions.id)
             ) as allTokenTables
             where 
                 token = :token',
@@ -87,19 +87,19 @@ class SessionDAO extends DAO {
 
         $loginData = $this->_(
             'SELECT 
-               logins.booklet_def,
-               logins.workspace_id as "workspaceId",
-               logins.mode,
-               logins.groupname as "groupName",
-               logins.token    as "loginToken",
-               logins.name,
-               logins.customTexts,
+               login_sessions.codes_to_booklets,
+               login_sessions.workspace_id as "workspaceId",
+               login_sessions.mode,
+               login_sessions.group_name as "groupName",
+               login_sessions.token    as "loginToken",
+               login_sessions.name,
+               login_sessions.custom_texts as "customTexts",
                workspaces.name as "workspaceName",
-               persons.code
-            FROM persons
-                 INNER JOIN logins ON logins.id = persons.login_id
-                 INNER JOIN workspaces ON workspaces.id = logins.workspace_id
-            WHERE persons.token =  :token',
+               person_sessions.code
+            FROM person_sessions
+                 INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
+                 INNER JOIN workspaces ON workspaces.id = login_sessions.workspace_id
+            WHERE person_sessions.token =  :token',
             [':token' => $personToken]
         );
 
@@ -108,7 +108,7 @@ class SessionDAO extends DAO {
             throw new HttpError("PersonToken invalid: `$personToken`", 403);
         }
 
-        $booklets = JSON::decode($loginData['booklet_def'], true);
+        $booklets = JSON::decode($loginData['codes_to_booklets'], true);
 
         if (!isset($booklets[$loginData['code']])) {
             throw new HttpError("No Booklet found", 404);
@@ -153,17 +153,17 @@ class SessionDAO extends DAO {
 
         $oldLogin = $this->_(
             'SELECT
-                    logins.id, 
-                    logins.name,
-                    logins.workspace_id as "workspaceId",             
-                    logins.valid_until as "_validTo",
-                    logins.token,
-                    logins.mode,
-                    logins.booklet_def as "booklets",
-                    logins.groupname as "groupName",
-                    logins.customTexts
-            FROM logins
-			WHERE logins.name = :name AND logins.workspace_id = :ws', [
+                    login_sessions.id, 
+                    login_sessions.name,
+                    login_sessions.workspace_id as "workspaceId",             
+                    login_sessions.valid_until as "_validTo",
+                    login_sessions.token,
+                    login_sessions.mode,
+                    login_sessions.codes_to_booklets as "booklets",
+                    login_sessions.group_name as "groupName",
+                    login_sessions.custom_texts as "customTexts"
+            FROM login_sessions
+			WHERE login_sessions.name = :name AND login_sessions.workspace_id = :ws', [
                 ':name' => $loginData->getName(),
                 ':ws' => $loginData->getWorkspaceId()
             ]
@@ -194,19 +194,19 @@ class SessionDAO extends DAO {
 
         $login = $this->_(
             'SELECT 
-                    logins.id, 
-                    logins.name,
-                    logins.workspace_id as "workspaceId",             
-                    logins.valid_until as "validTo",
-                    logins.token,
-                    logins.mode,
-                    logins.booklet_def as "booklets",
-                    logins.groupname as "groupName",
-                    logins.customTexts
+                    login_sessions.id, 
+                    login_sessions.name,
+                    login_sessions.workspace_id as "workspaceId",             
+                    login_sessions.valid_until as "validTo",
+                    login_sessions.token,
+                    login_sessions.mode,
+                    login_sessions.codes_to_booklets as "booklets",
+                    login_sessions.group_name as "groupName",
+                    login_sessions.custom_texts as "customTexts"
                 FROM 
-                    logins 
+                    login_sessions 
                 WHERE 
-                    logins.token=:token',
+                    login_sessions.token=:token',
             [':token' => $loginToken]
         );
 
@@ -242,8 +242,8 @@ class SessionDAO extends DAO {
         $loginToken = $this->_randomToken('login', $loginData->getName());
 
         $this->_(
-            'INSERT INTO logins (token, booklet_def, valid_until, name, mode, workspace_id, groupname, customTexts) 
-                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname, :customTexts)',
+            'INSERT INTO login_sessions (token, codes_to_booklets, valid_until, name, mode, workspace_id, group_name, custom_texts) 
+                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname, :custom_texts)',
             [
                 ':token' => $loginToken,
                 ':sd' => json_encode($loginData->getBooklets()),
@@ -252,7 +252,7 @@ class SessionDAO extends DAO {
                 ':mode' => $loginData->getMode(),
                 ':ws' => $loginData->getWorkspaceId(),
                 ':groupname' => $loginData->getGroupName(),
-                ':customTexts' => json_encode($loginData->getCustomTexts())
+                ':custom_texts' => json_encode($loginData->getCustomTexts())
             ]
         );
 
@@ -273,17 +273,17 @@ class SessionDAO extends DAO {
     public function personHasBooklet(string $personToken, string $bookletName): bool {
 
         $bookletDef = $this->_('
-            SELECT logins.booklet_def, logins.id, persons.code
-            FROM logins
-                     left join persons on (logins.id = persons.login_id)
-            WHERE persons.token = :token',
+            SELECT login_sessions.codes_to_booklets, login_sessions.id, person_sessions.code
+            FROM login_sessions
+                     left join person_sessions on (login_sessions.id = person_sessions.login_id)
+            WHERE person_sessions.token = :token',
             [
                 ':token' => $personToken
             ]
         );
 
         $code = $bookletDef['code'];
-        $codes2booklets = JSON::decode($bookletDef['booklet_def'], true);
+        $codes2booklets = JSON::decode($bookletDef['codes_to_booklets'], true);
 
         return $codes2booklets and isset($codes2booklets[$code]) and in_array($bookletName, $codes2booklets[$code]);
     }
@@ -295,8 +295,8 @@ class SessionDAO extends DAO {
         $person = $this->getPerson($personToken);
 
         $test = $this->_(
-            'SELECT booklets.laststate, booklets.locked, booklets.label, booklets.id FROM booklets
-            WHERE booklets.person_id = :personid and booklets.name = :bookletname',
+            'SELECT tests.laststate, tests.locked, tests.label, tests.id FROM tests
+            WHERE tests.person_id = :personid and tests.name = :bookletname',
             [
                 ':personid' => $person['id'],
                 ':bookletname' => $bookletName
@@ -337,9 +337,9 @@ class SessionDAO extends DAO {
     public function canWriteTestData(string $personToken, string $testId): bool {
 
         $test = $this->_(
-            'SELECT booklets.locked FROM booklets
-                INNER JOIN persons ON persons.id = booklets.person_id
-                WHERE persons.token=:token and booklets.id=:testId',
+            'SELECT tests.locked FROM tests
+                INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+                WHERE person_sessions.token=:token and tests.id=:testId',
             [
                 ':token' => $personToken,
                 ':testId' => $testId
@@ -358,9 +358,9 @@ class SessionDAO extends DAO {
         $person = $this->_(
             'SELECT 
                 *
-            FROM logins
-                     left join persons on (persons.login_id = logins.id)
-            WHERE persons.token = :token',
+            FROM login_sessions
+                     left join person_sessions on (person_sessions.login_id = login_sessions.id)
+            WHERE person_sessions.token = :token',
             [
                 ':token' => $personToken
             ]
@@ -380,7 +380,7 @@ class SessionDAO extends DAO {
     protected function getOrCreatePerson(Login $loginSession, string $code): array {
 
         $person = $this->_(
-            'SELECT * FROM persons WHERE persons.login_id=:id and persons.code=:code',
+            'SELECT * FROM person_sessions WHERE person_sessions.login_id=:id and person_sessions.code=:code',
             [
                 ':id' => $loginSession->getId(),
                 ':code' => $code
@@ -412,7 +412,7 @@ class SessionDAO extends DAO {
         $validUntil = TimeStamp::toSQLFormat($login->getValidTo());
 
         $this->_(
-            'INSERT INTO persons (token, code, login_id, valid_until)
+            'INSERT INTO person_sessions (token, code, login_id, valid_until)
             VALUES(:token, :code, :login_id, :valid_until)',
             [
                 ':token' => $newPersonToken,
