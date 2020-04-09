@@ -94,10 +94,13 @@ class SuperAdminDAO extends DAO {
     public function setWorkspaceRightsByUser(int $userId, array $listOfWorkspaceIdsAndRoles) {
 
         $this->_('DELETE FROM workspace_users WHERE workspace_users.user_id=:user_id', [':user_id' => $userId]);
+
         foreach($listOfWorkspaceIdsAndRoles as $workspaceIdAndRole) {
+
             if (strlen($workspaceIdAndRole->role) > 0) {
+
                 $this->_(
-                    'INSERT INTO workspace_users (workspace_id, user_id, role) VALUES(:workspaceId, :userId, :role)',
+                    'INSERT INTO workspace_users (workspace_id, user_id, role) VALUES (:workspaceId, :userId, :role)',
                     [
                         ':workspaceId' => $workspaceIdAndRole->id,
                         ':role' => $workspaceIdAndRole->role,

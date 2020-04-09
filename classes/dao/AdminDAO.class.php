@@ -28,7 +28,7 @@ class AdminDAO extends DAO {
     }
 
 
-    public function refreshAdminToken(string $token): void {
+    public function refreshAdminToken(string $token): void { // TODO use it!
 
         $this->_(
             'UPDATE admin_sessions 
@@ -102,7 +102,7 @@ class AdminDAO extends DAO {
 			[
 				':token' => $token,
 				':user_id' => $userId,
-				':valid_until' => $validTo
+				':valid_until' => TimeStamp::toSQLFormat($validTo)
 			]
 		);
 	}
@@ -142,7 +142,7 @@ class AdminDAO extends DAO {
             throw new HttpError("Token not valid! ($token)", 403);
         }
 
-        TimeStamp::checkExpiration(0, (int) $tokenInfo['_validTo']);
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($tokenInfo['_validTo']));
 
         $tokenInfo['userEmail'] = $tokenInfo['userEmail'] ?? '';
 
