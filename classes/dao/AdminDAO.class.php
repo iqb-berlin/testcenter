@@ -28,7 +28,7 @@ class AdminDAO extends DAO {
     }
 
 
-    public function refreshAdminToken(string $token): void { // TODO use it!
+    public function refreshAdminToken(string $token): void {
 
         $this->_(
             'UPDATE admin_sessions 

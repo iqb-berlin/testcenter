@@ -19,6 +19,7 @@ $app->put('/session/admin', function(Request $request, Response $response) use (
     $token = $adminDAO->createAdminToken($body['name'], $body['password']);
 
     $session = $adminDAO->getAdminSession($token);
+    $adminDAO->refreshAdminToken($token);
 
     if (($session->getAccessWorkspaceAdmin()) and ($session->getAccessSuperAdmin() == null)) {
         throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 202);
@@ -113,6 +114,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
     if ($authToken->getType() == "admin") {
 
         $session = $adminDAO->getAdminSession($authToken->getToken());
+        $adminDAO->refreshAdminToken($authToken->getToken());
         return $response->withJson($session);
     }
 
