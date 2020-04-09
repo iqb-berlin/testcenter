@@ -17,7 +17,8 @@ Find API documentation [here](https://iqb-berlin.github.io/testcenter-iqb-php/).
 # Installation
 
 ## With Docker
-You can find Docker files and a complete setup [here](https://github.com/iqb-berlin/iqb-tba-docker-setup) .
+You can find Docker files and a complete setup [here](https://github.com/iqb-berlin/iqb-tba-docker-setup). 
+(currently outdated) 
 
 ## Manual Installation
 
@@ -26,11 +27,11 @@ You can find Docker files and a complete setup [here](https://github.com/iqb-ber
 git clone https://github.com/iqb-berlin/testcenter-iqb-php.git
 ```
 - create mysql or postgresql database
-- create database structure
+- create database structure:
 ```
 mysql -u username -p database_name < scripts/sql-schema/mysql.sql
 # or
-psql -U username database_name < scripts/sql-schema/postgres.sql
+psql -U username database_name < scripts/sql-schema/postgresql.sql
 ```
 - create config/DBConnectionData.json with you database connection data
 - install dependencies with composer:
@@ -43,8 +44,8 @@ php composer.phar install
  the shipped `.htaccess` as basis. 
 - ensure that PHP has access to /tmp and /vo_data
 ```
-sudo chown -R www-data:www-data ./integration/tmp # normal apache2 config
-sudo chown -R www-data:www-data ./vo_data # normal apache2 config
+sudo chown -R www-data:www-data ./integration/tmp # normal apache2 config assumed
+sudo chown -R www-data:www-data ./vo_data # normal apache2 config assumed
 ``` 
 - Run initialize to create a superuser, and, if you want to a workspace with some sample data and a test-login 
 ```

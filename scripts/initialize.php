@@ -47,10 +47,6 @@ $args = getopt("", [
 
 try  {
 
-    if (isset($args['apache_user'])) {
-        define('APACHE_USER', $args['apache_user']);
-    }
-
     if (!isset($args['user_name'])) {
         throw new Exception("user name not provided. use: --user_name=...");
     }
@@ -94,10 +90,11 @@ try  {
         }
     }
 
-    $adminUser = $initDAO->createUser($args['user_name'], $args['user_password'], true);
-
-    $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $args['user_password']);
-    echo "Superuser `{$args['user_name']}`` with password `$shortPW` created successfully.\n";
+    $newIds = $initDAO->createWorkspaceAndAdmin(
+        $args['user_name'],
+        $args['user_password'],
+        $args['workspace']
+    );
 
     if (!isset($args['test_person_codes']) or !$args['test_person_codes']) {
         $loginCodes = $initializer->getLoginCodes();
@@ -107,27 +104,19 @@ try  {
 
     $args['test_person_codes'] = implode(" ", $loginCodes);
 
-    if (isset($args['workspace'])) {
+    $initializer->importSampleData($newIds['workspaceId'], $args);
 
-        $workspace = $initDAO->getOrCreateWorkspace($args['workspace']);
+//    $initDAO->createSampleLoginsReviewsLogs($loginCodes[0]);
 
-        $initDAO->setWorkspaceRightsByUser((int) $adminUser['id'], [(object) [
-            "id" => $workspace['id'],
-            "role" => "RW"
-        ]]);
+    echo "Sample data parameters: \n";
+    echo implode("\n", array_map(function($param_key) use ($args) {return "$param_key: {$args[$param_key]}";}, array_keys($args)));
 
-        $initializer->importSampleData($workspace['id'], $args);
-
-        $initDAO->createSampleLoginsReviewsLogs($loginCodes[0]);
-
-        echo "Sample data parameters: \n";
-        echo implode("\n", array_map(function($param_key) use ($args) {return "$param_key: {$args[$param_key]}";}, array_keys($args)));
-    }
 
 } catch (Exception $e) {
+    ErrorHandler::logException($e, false);
     fwrite(STDERR,"\n" . $e->getMessage() . "\n");
     if (isset($config)) {
-        echo "\nconfig:\n$config";
+        echo "\nconfig:\n" . print_r($config, true);
     }
     exit(1);
 }

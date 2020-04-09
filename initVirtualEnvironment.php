@@ -22,25 +22,23 @@ try {
     $initArgs = [
         'user_name' => 'super',
         'user_password' => 'user123',
-        'workspace' => 1,
         'workspace_name' => 'sample_workspace',
         'test_login_name' => 'test',
         'test_login_password' => 'user123',
         'test_person_codes' => 'xxx yyy'
     ];
 
-    $initializer = new WorkspaceInitializer();
-    $initializer->importSampleData($initArgs['workspace'], $initArgs);
-
     $initDAO = new InitDAO();
     $initDAO->runFile('scripts/sql-schema/sqlite.sql');
 
-    $initDAO->createWorkspaceAndAdmin(
+    $newIds = $initDAO->createWorkspaceAndAdmin(
         $initArgs['user_name'],
         $initArgs['user_password'],
-        $initArgs['workspace'],
         $initArgs['workspace_name']
     );
+
+    $initializer = new WorkspaceInitializer();
+    $initializer->importSampleData($newIds['workspaceId'], $initArgs);
 
     $initDAO->createSampleLoginsReviewsLogs('xxx');
     $initDAO->createSampleExpiredLogin('xxx');

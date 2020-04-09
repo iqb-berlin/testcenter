@@ -65,18 +65,30 @@ class InitDAO extends SessionDAO {
      * @param string $password
      * @param int $workspaceId
      * @param string $workspaceName
+     * @return array
      * @throws HttpError
      */
-    public function createWorkspaceAndAdmin(string $username, string $password, int $workspaceId, string $workspaceName) {
+    public function createWorkspaceAndAdmin(string $username, string $password, string $workspaceName): array {
 
         $superAdminDAO = new SuperAdminDAO();
         $adminDAO = new AdminDAO();
-        $superAdminDAO->createUser($username, $password, true);
+        $admin = $superAdminDAO->createUser($username, $password, true);
         $adminDAO->createAdminToken($username, $password);
-        $superAdminDAO->createWorkspace($workspaceName);
-        $superAdminDAO->setWorkspaceRightsByUser($workspaceId, [(object) [
-            "id" => $workspaceId,
-            "role" => "RW"
-        ]]);
+        $workspace = $superAdminDAO->createWorkspace($workspaceName);
+
+        $superAdminDAO->setWorkspaceRightsByUser(
+            (int) $admin['id'],
+            [
+                (object) [
+                    "id" => (int) $workspace['id'],
+                    "role" => "RW"
+                ]
+            ]
+        );
+
+        return [
+            "workspaceId" => (int) $workspace['id'],
+            "userId" => (int) $admin['id'],
+        ];
     }
 }
