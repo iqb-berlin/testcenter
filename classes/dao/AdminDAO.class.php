@@ -35,7 +35,7 @@ class AdminDAO extends DAO {
             SET valid_until =:value
             WHERE token =:token',
             [
-                ':value' => TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes),
+                ':value' => TimeStamp::toSQLFormat(TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes)),
                 ':token'=> $token
             ]
         );

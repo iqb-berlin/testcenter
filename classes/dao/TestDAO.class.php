@@ -242,7 +242,7 @@ class TestDAO extends DAO {
 
         }
 
-        return $unit['id'];
+        return (string) $unit['id'];
     }
 
 
@@ -296,7 +296,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function addUnitLog(int $testId, string $unitName, string $logEntry, float $timestamp): void {
+    public function addUnitLog(int $testId, string $unitName, string $logEntry, int $timestamp): void {
 
         $unitId = $this->getOrCreateUnitId($testId, $unitName);
 
@@ -317,7 +317,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function addBookletLog($testId, $logEntry, $timestamp) {
+    public function addBookletLog(int $testId, string $logEntry, int $timestamp): void {
 
         $this->_('INSERT INTO test_logs (booklet_id, logentry, timestamp) VALUES (:bookletId, :logentry, :timestamp)',
             [

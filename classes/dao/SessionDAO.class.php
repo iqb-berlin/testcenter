@@ -17,7 +17,7 @@ class SessionDAO extends DAO {
                     users.id,
                     \'admin\' as type,
                     -1 as workspaceId,
-                    case when (users.is_superadmin > 0) then \'super-admin\' else \'admin\' end as "mode",
+                    case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
                     valid_until as "validTo"
                 from admin_sessions
                     inner join users on (users.id = admin_sessions.user_id)

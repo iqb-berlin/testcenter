@@ -121,4 +121,11 @@ class TimeStamp {
         return $dateTime ? $dateTime->getTimestamp() : 0;
     }
 
+
+    static public function now() {
+
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        $dateTime = new DateTime('now', $timeZone);
+        return $dateTime->getTimestamp();
+    }
 }

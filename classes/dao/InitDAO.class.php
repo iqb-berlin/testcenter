@@ -27,7 +27,7 @@ class InitDAO extends SessionDAO {
 
     public function createSampleLoginsReviewsLogs(string $loginCode): void {
 
-        $timestamp = microtime(true) * 1000; // TODO use TimeStamp helper for this
+        $timestamp = TimeStamp::now();
 
         $sessionDAO = new SessionDAO();
         $testDAO = new TestDAO();

@@ -59,7 +59,6 @@ try  {
         'test_person_codes::',
         'create_test_sessions::',
         'overwrite_existing_installation::',
-        'delete_files_if_present::'
     ]));
 
     echo "\n# Database config";
@@ -152,7 +151,9 @@ try  {
 
     if ($args->create_test_sessions) {
 
-        $initDAO->createSampleLoginsReviewsLogs(explode(" ", $args->test_person_codes)[0]);
+        $firstCode = explode(" ", $args->test_person_codes)[0];
+        $initDAO->createSampleLoginsReviewsLogs($firstCode);
+        $initDAO->createSampleExpiredLogin($firstCode);
         echo "\n Sample sessions created";
     }
 
@@ -168,7 +169,7 @@ try  {
     }
 
     echo "\n\n";
-    ErrorHandler::logException($e, false);
+    ErrorHandler::logException($e, true);
     exit(1);
 }
 
