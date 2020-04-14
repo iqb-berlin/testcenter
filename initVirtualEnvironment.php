@@ -19,22 +19,22 @@ try {
         'staticTokens' => true
     ]));
 
-    $initArgs = [
+    $initArgs = new InstallationArguments([
         'user_name' => 'super',
         'user_password' => 'user123',
-        'workspace_name' => 'sample_workspace',
+        'workspace' => 'sample_workspace',
         'test_login_name' => 'test',
         'test_login_password' => 'user123',
         'test_person_codes' => 'xxx yyy'
-    ];
+    ]);
 
     $initDAO = new InitDAO();
     $initDAO->runFile('scripts/sql-schema/sqlite.sql');
 
     $newIds = $initDAO->createWorkspaceAndAdmin(
-        $initArgs['user_name'],
-        $initArgs['user_password'],
-        $initArgs['workspace_name']
+        $initArgs->user_name,
+        $initArgs->user_password,
+        $initArgs->workspace
     );
 
     $initializer = new WorkspaceInitializer();

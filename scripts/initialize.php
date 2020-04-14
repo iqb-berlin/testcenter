@@ -16,6 +16,20 @@
  * you may add, otherwise they will be random person codes
  * --test_person_codes=one,two,three
  *
+ * if you add
+ * --overwrite_existing_installation=true
+ *
+ * existing database tables and files will be overwritten!
+ *
+ * /config/DBConnectionData.json hat to be present OR you can provide connection data yourself
+ * --type=(`mysql` or `pgsql`)
+ * --host=(mostly `localhost`)
+ * --post=(usually 3306 for mysql and 5432 for postgresl)
+ * --dbname=(database name)
+ * --user=(mysql-/postgresql-username)
+ * --password=(mysql-/postgresql-password)
+ *
+ *
  * Note: run this script as a user who can create files which can be read by the webserver or change file rights after wards
  * for example: sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
 
@@ -34,71 +48,127 @@ define('DATA_DIR', ROOT_DIR . '/vo_data');
 
 require_once(ROOT_DIR . '/autoload.php');
 
-$args = getopt("", [
-    'user_name:',
-    'user_password:',
-    'workspace:',
-    'test_login_name:',
-    'test_login_password:',
-    'test_person_codes::'
-]);
-
 try  {
 
-    $args = new InstallationArguments($args);
+    $args = new InstallationArguments(getopt("", [
+        'user_name:',
+        'user_password:',
+        'workspace:',
+        'test_login_name:',
+        'test_login_password:',
+        'test_person_codes::',
+        'create_test_sessions::',
+        'overwrite_existing_installation::',
+        'delete_files_if_present::'
+    ]));
 
-    $config_file_path = ROOT_DIR . '/config/DBConnectionData.json';
+    echo "\n# Database config";
+    if (!file_exists(ROOT_DIR . '/config/DBConnectionData.json')) {
 
-    if (!file_exists($config_file_path)) {
+        echo "\n Config not file found (`/config/DBConnectionData.json`). "
+         . "\nCreate it manually of provide arguments: "
+         . "\n--type=(`mysql` or `pgsql`): "
+         . "\n--host=(mostly `localhost`)"
+         . "\n--post=(ususally 3306 for mysql and 5432 for postgresl)"
+         . "\n--dbname=(database name)"
+         . "\n--user=(mysql-/postgresql-username)"
+         . "\n--password=(mysql-/postgresql-password)";
 
-        throw new Exception("DB-config file is missing!");
+        $config = new DBConfig(getopt("", [
+            'type::',
+            'host::',
+            'port::',
+            'dbname::',
+            'user::',
+            'password::',
+        ]));
+        DB::connect($config);
+        $initDAO = InitDAO::createWithRetries(5);
+
+        echo "\nProvided arguments OK.";
+
+        if (!file_put_contents(ROOT_DIR . '/config/DBConnectionData.json', json_encode(DB::getConfig()))) {
+
+            throw new Exception("Could nto write file. Check file permissions on `/config/`.");
+        }
+
+        echo "\nConfig file written.";
+
+    } else {
+
+        DB::connect();
+        $config = DB::getConfig();
+        echo "\nConfig file present.";
+        $initDAO = InitDAO::createWithRetries(5);
     }
 
-    $config = file_get_contents($config_file_path);
-    $config = JSON::decode($config, true);
-    DB::connect(new DBConfig($config));
+    echo "\n# Database structure";
 
-    $initializer = new WorkspaceInitializer();
+    if (!$initDAO->isDbReady()) {
 
-    try {
+        if (!$args->overwrite_existing_installation) {
 
-        $initDAO = new InitDAO();
+            throw new Exception("set --overwrite_existing_installation to true or set up manually a correct and empty database.");
+        }
 
-    } catch (Throwable $t) {
-
-        $retries = 5;
-        $error = true;
-
-        while ($retries-- && $error) {
-
-            $initDAO = new InitDAO();
-            echo "Database connection failed... retry ($retries attempts left)\n";
-            usleep(20 * 1000000); // give database container time to come up
-            $error = false;
+        echo $initDAO->clearDb();
+        echo "\n Install Database structure";
+        $typeName = ($config->type == "mysql") ? 'mysql' : 'postgresql';
+        $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/$typeName.sql");
+        echo "\n Install Patches";
+        $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/patches.$typeName.sql");
+        echo "\n State of the DB";
+        echo $initDAO->getDBContentDump();
+        echo "\n";
+        if (!$initDAO->isDbReady()) {
+            throw new Exception("Database installation failed");
         }
     }
 
+    echo "\n# Sample content";
+
     $newIds = $initDAO->createWorkspaceAndAdmin(
-        $args['user_name'],
-        $args['user_password'],
-        $args['workspace']
+        $args->user_name,
+        $args->user_password,
+        $args->workspace
     );
+
+    echo "\n Super-Admin-User `{$args->user_name}` created";
+
+    $initializer = new WorkspaceInitializer();
+
+    echo "\n Workspace `{$args->workspace}` as `ws_1` created";
+
+    $workspaceController = new WorkspaceController(1);
+
+    if (($workspaceController->countFilesOfAllSubFolders() > 0) and !$args->overwrite_existing_installation) {
+
+        throw new Exception("Workspace folder `{$workspaceController->getWorkspacePath()}` is not empty.");
+    }
 
     $initializer->importSampleData($newIds['workspaceId'], $args);
 
-    $initDAO->createSampleLoginsReviewsLogs(explode(" ", $args['test_person_codes'])[0]);
+    echo "\n Sample XML files created.";
 
-    echo "Sample data parameters: \n";
-    echo implode("\n", array_map(function($param_key) use ($args) {return "$param_key: {$args[$param_key]}";}, array_keys($args)));
+    if ($args->create_test_sessions) {
+
+        $initDAO->createSampleLoginsReviewsLogs(explode(" ", $args->test_person_codes)[0]);
+        echo "\n Sample sessions created";
+    }
+
+    echo "\n\n Ready. Parameters: \n";
+    print_r((array) $args);
 
 
 } catch (Exception $e) {
 
-    ErrorHandler::logException($e, false);
     fwrite(STDERR,"\n" . $e->getMessage() . "\n");
     if (isset($config)) {
-        echo "\nconfig:\n" . print_r($config, true);
+        echo "\n DB-Config:\n" . print_r($config, true);
     }
+
+    echo "\n\n";
+    ErrorHandler::logException($e, false);
     exit(1);
 }
 

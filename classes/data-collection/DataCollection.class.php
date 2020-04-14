@@ -14,24 +14,12 @@ declare(strict_types=1);
 
 abstract class DataCollection implements JsonSerializable {
 
-    function __construct($initData) {
+
+    static function getCommandLineOptionStrings() {
 
         $class = get_called_class();
-
-        foreach ($initData as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->$key = $value;
-            } else {
-                throw new Exception("$class creation error:`$key` is unknown in `" . get_class($this) . "`");
-            }
-        }
-
-        foreach ($this as $key => $value) {
-
-            if ($value === null) {
-                throw new Exception("$class creation error: `$key` is shall not be null after creation");
-            }
-        }
+        print_r((array) new $class([]));
+        return array_map(function($s) {return "$s::";}, (array) new $class([]));
     }
 
 
@@ -41,11 +29,32 @@ abstract class DataCollection implements JsonSerializable {
             throw new Exception("JSON file not found: `$path`");
         }
 
-        $connectionData = JSON::decode(file_get_contents($path));
+        $connectionData = JSON::decode(file_get_contents($path), true);
 
         $class = get_called_class();
 
         return new $class($connectionData);
+    }
+
+
+    function __construct($initData) {
+
+        $class = get_called_class();
+
+        foreach ($initData as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->$key = $value ?? $this->$key;
+            } else {
+                throw new Exception("$class creation error:`$key` is unknown in `" . get_class($this) . "`.");
+            }
+        }
+
+        foreach ($this as $key => $value) {
+
+            if ($value === null) {
+                throw new Exception("$class creation error: `$key` shall not be null after creation.");
+            }
+        }
     }
 
 

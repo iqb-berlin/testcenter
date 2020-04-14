@@ -1,8 +1,28 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 // TODO unit tests
 
 class InitDAO extends SessionDAO {
+
+
+    static function createWithRetries(int $retries = 5): InitDAO {
+
+        while ($retries--) {
+
+            try {
+
+                return new InitDAO();
+
+            } catch (Throwable $t) {
+
+                echo "\nDatabase connection failed... retry! ($retries attempts left)";
+                usleep(20 * 1000000); // give database container time to come up
+            }
+        }
+
+        throw new Exception("Database connection failed.");
+    }
 
 
     public function createSampleLoginsReviewsLogs(string $loginCode): void {
@@ -99,10 +119,37 @@ class InitDAO extends SessionDAO {
 
         foreach ($this::tables as $table) {
 
-            $report .= "## DROP TABLE `$table`\n";
+            $report .= "\n## DROP TABLE `$table`";
             $this->_("Drop table if exists $table cascade ");
         }
 
         return $report;
+    }
+
+
+    // TODO unit-test
+    public function isDbReady(): bool {
+
+        foreach ($this::tables as $table) {
+
+            try {
+                $entries = $this->_("SELECT * FROM $table limit 10", [], true);
+
+            } catch (Exception $exception) {
+
+                echo "\nDatabase strcuture not ready (at least one table is missing: `$table`).";
+                return false;
+            }
+
+
+            if (count($entries)) {
+
+                echo "\nDatabase is not empty (table `$table` has entries).";
+                return false;
+            }
+        }
+
+        echo "\nDatabase structure OK!";
+        return true;
     }
 }

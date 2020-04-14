@@ -1,6 +1,8 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
+require_once "classes/data-collection/DataCollection.class.php";
+require_once "classes/data-collection/InstallationArguments.class.php";
 require_once "classes/workspace/WorkspaceInitializer.class.php";
 require_once "classes/workspace/WorkspaceController.class.php";
 
@@ -31,14 +33,14 @@ class VfsForTest {
         vfsStream::newDirectory('vo_data', 0777)->at($vfs);
 
         $initializer = new WorkspaceInitializer();
-        $initializer->importSampleData(1, array(
+        $initializer->importSampleData(1, new InstallationArguments([
             'user_name' => 'unit_test_user',
             'user_password' => 'unit_test_user_password',
             'workspace' => '1',
             'test_login_name' => 'unit_test_login',
             'test_login_password' => 'unit_test_password',
             'test_person_codes' => 'abc def'
-        ));
+        ]));
 
         return $vfs;
     }

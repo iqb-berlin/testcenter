@@ -32,14 +32,9 @@ class WorkspaceInitializer {
 
     }
 
-    /**
-     * @param int $workspaceId
-     * @param string $filename - Filename in sampledata directory.
-     * @param array $vars - key-value list to replace placeholders in sample files
-     * @param string|null $destination - destination folder like "SysCheck/Reports" or "Resource". Null for auto.
-     * @throws Exception
-     */
-    private function _importSampleFile(int $workspaceId, string $filename, array $vars = [], string $destination = null) {
+
+    private function _importSampleFile(int $workspaceId, string $filename,
+                                       InstallationArguments $vars, string $destination = null) {
 
         $importFileName = ROOT_DIR . "/sampledata/$filename";
         $sampleFileContent = file_get_contents($importFileName);
@@ -55,23 +50,9 @@ class WorkspaceInitializer {
         $destinationSubDir = $destination ? $destination : basename($filename, '.xml');
         $fileNameToWrite = $this->_createSubdirectories(DATA_DIR . "/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
 
-        if (!file_put_contents($fileNameToWrite, $sampleFileContent)) {
+        if (@file_put_contents($fileNameToWrite, $sampleFileContent) === false) {
             throw new Exception("Could not write file: $fileNameToWrite");
         }
-    }
-
-    /**
-     *
-     * generated a random login
-     * @return string
-     */
-    private function _generateLogin() {
-
-        $login = "";
-        while (strlen($login) < 3) {
-            $login .= substr("abcdefghijklmnopqrstuvwxyz", rand(0, 25), 1);
-        }
-        return $login;
     }
 
 
@@ -81,7 +62,7 @@ class WorkspaceInitializer {
      * data files if given
      * @throws Exception
      */
-    public function importSampleData(int $workspaceId, array $parameters) {
+    public function importSampleData(int $workspaceId, InstallationArguments $parameters) {
 
         $this->_importSampleFile($workspaceId, 'Booklet.xml', $parameters);
         $this->_importSampleFile($workspaceId, 'Testtakers.xml', $parameters);

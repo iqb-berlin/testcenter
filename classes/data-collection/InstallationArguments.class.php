@@ -1,23 +1,32 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
-class InstallationArguments extends DBConfig {
+class InstallationArguments extends DataCollection {
 
-    public $user_name = null;
-    public $user_password = null;
+    /**
+     * STAND
+     * - neues init script fertig machen (mit clean.php verschmelzen)
+     *
+     * - möglichkeit bauen dredd gegen die echte Datenbank laufen zu lassen
+     * - testen, testen, testen
+     * - deployen-problem ist
+     */
+
+    public $user_name = '';
+    public $user_password = '';
     public $workspace = 'workspace_name';
-    public $test_login_name  = null;
-    public $test_login_password  = null;
-    public $test_person_codes;
+    public $test_login_name = "test";
+    public $test_login_password = "user123";
+    public $test_person_codes = "xxx yyy";
 
     public $create_test_sessions = false;
-    public $delete_tables_if_present = false;
+    public $overwrite_existing_installation = false;
     public $delete_files_if_present = false;
-    public $delete_config_if_present = false;
 
     public function __construct($initData) {
 
         if (!isset($initData['user_name'])) {
 
+            var_dump($initData);
             throw new Exception("user name not provided. use: --user_name=...");
         }
 
@@ -50,6 +59,15 @@ class InstallationArguments extends DBConfig {
     private function createLoginCodes() {
 
         return array_map([$this, '_generateLogin'], range(0, 9));
+    }
+
+    private function _generateLogin() {
+
+        $login = "";
+        while (strlen($login) < 3) {
+            $login .= substr("abcdefghijklmnopqrstuvwxyz", rand(0, 25), 1);
+        }
+        return $login;
     }
 
 }
