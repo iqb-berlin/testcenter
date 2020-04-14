@@ -3,34 +3,57 @@ const Dredd = require('dredd');
 const fsExtra = require('fs-extra');
 const gulp = require('gulp');
 const yamlMerge = require('gulp-yaml-merge');
-const jsonTransform = require('./helper/json-transformer');
 const YAML = require('yamljs');
+const inquirer = require('inquirer');
+const cliPrint = require('./helper/cli-print');
+const jsonTransform = require('./helper/json-transformer');
 
 // globals
 
-const apiUrl = process.env.TC_API_URL || 'http://localhost';
-
-// helper functions
-
-const printHeadline = text => console.log(`\x1b[37m\x1b[44m${text}\x1b[0m`);
-
-const getError = text => new Error(`\x1B[31m${text}\x1B[34m`);
+const apiUrl = process.env.TC_API_URL || '';
+const realDataMode = (process.env.TC_REAL_DATA_MODE === 'on');
 
 // tasks
 
 gulp.task('start', done => {
 
     if (!apiUrl) {
-        done(getError("No API Url given!"));
+        done(cliPrint.getError("No API Url given!"));
     }
 
-    printHeadline(`Running Dredd tests against API: ${apiUrl}`);
-    done();
+    cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
+
+    if (realDataMode) {
+
+        inquirer.prompt([{
+            type: 'confirm',
+            message: '\x1B[31mYou run this in REALDATAMODE - that means you want ' +
+                'to run tests against REAL database and ' +
+                'data folder as configured in `config/DBConnectionData.json`\n' +
+                'YOU WILL LOOSE ALL DATA IN DB AND FOLDER BY DOING THIS!!!\x1B[34m\n\n' +
+                '...you want to do this for real?',
+            default: false,
+            name: 'start'
+        }]).then((answers) => {
+
+            if(!answers.start) {
+                console.log('OK continue in normal mode.');
+                realDataMode = false;
+            }
+
+            done();
+
+        });
+
+    } else {
+
+        done();
+    }
 });
 
 gulp.task('clear_tmp_dir', done => {
 
-    printHeadline("clear tmp dir");
+    cliPrint.headline("clear tmp dir");
 
     fsExtra.emptyDirSync('./tmp');
     done();
@@ -38,7 +61,7 @@ gulp.task('clear_tmp_dir', done => {
 
 gulp.task('compile_spec_files', function() {
 
-    printHeadline(`compile spec files to one`);
+    cliPrint.headline(`compile spec files to one`);
 
     return gulp.src(`../routes/*.spec.yml`)
         .on("data", function(d) { console.log("File: " + d.path);})
@@ -52,7 +75,7 @@ gulp.task('prepare_spec_for_dredd', done => {
     const compiledFileName = 'tmp/compiled.specs.yml';
     const targetFileName = 'tmp/transformed.specs.yml';
 
-    printHeadline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
+    cliPrint.headline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
 
     const yamlString = fs.readFileSync(compiledFileName, "utf8");
     const yamlTree = YAML.parse(yamlString);
@@ -91,7 +114,7 @@ gulp.task('prepare_spec_for_dredd', done => {
 
 gulp.task('run_dredd', done => {
 
-    printHeadline(`run dredd against ${apiUrl}`);
+    cliPrint.headline(`run dredd against ${apiUrl}`);
 
     const dreddFileName = 'tmp/transformed.specs.yml';
 
@@ -105,10 +128,10 @@ gulp.task('run_dredd', done => {
     }).run(function(err, stats) {
         console.log(stats);
         if (err) {
-            done(getError(`Dredd Tests: ` + err));
+            done(cliPrint.getError(`Dredd Tests: ` + err));
         }
         if (stats.errors + stats.failures > 0) {
-            done(getError(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`));
+            done(cliPrint.getError(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`));
         }
         done();
     });
@@ -117,7 +140,7 @@ gulp.task('run_dredd', done => {
 
 gulp.task('update_docs', done => {
 
-    printHeadline('copy compiled spec and redoc lib to docs folder');
+    cliPrint.headline('copy compiled spec and redoc lib to docs folder');
 
     const compiledFileName = 'tmp/compiled.specs.yml';
     const targetFileName = '../docs/specs.yml';
@@ -154,12 +177,10 @@ exports.run_dredd_test = gulp.series(
     'update_docs'
 );
 
-exports.repeat_dredd_test = gulp.series(
+exports.tmp = gulp.series(
     'start',
-    'compile_spec_files',
-    'prepare_spec_for_dredd',
-    'run_dredd'
 );
+
 
 exports.update_specs = gulp.series(
     'start',
