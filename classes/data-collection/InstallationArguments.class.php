@@ -1,18 +1,7 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 class InstallationArguments extends DataCollection {
-
-    /**
-     * STAND
-     * - neues init script fertig machen (mit clean.php verschmelzen)
-     *
-     * - möglichkeit bauen dredd gegen die echte Datenbank laufen zu lassen
-     * --- STAND:
-     * --- random static und stataicTokens muss gesetzt werden: über ENV am ehesten!
-     * - testen, testen, testen
-     * - deployen
-     */
-
+    
     public $user_name = '';
     public $user_password = '';
     public $workspace = 'workspace_name';
