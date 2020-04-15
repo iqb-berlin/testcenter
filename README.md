@@ -73,7 +73,7 @@ sudo --user=www-data php scripts/initialize.php --user_name=super --user_passwor
 
 # Tests
 
-## API tests
+## E2E/API-Tests
 
 Tests the In/Output of all Endpoints against the API Specification.
 
@@ -81,12 +81,20 @@ Tests the In/Output of all Endpoints against the API Specification.
  npm --prefix=integration run dredd_test
 ```
 
-If your backend is not installed under http://localhost, use env TC_API_URL variable to set up loacation
+If your backend is not running under `http://localhost`, use env `TC_API_URL` variable to set up it's URI
 
 ```
 export TC_API_URL=http://localhost/testcenter-iqb-php 
   &&  npm --prefix=integration run dredd_test
 ```
+
+### run E2E/API-Tests against persistent database
+
+If you want to run the e2e-tests against a persistent database, MySQL or PostgreSQL, do the following:
+- in `/config` create a file `DBConnectionData.e2etest.json` analogous to `DBConnectionData.json` with your connection
+- also in `/config` create a file `e2eTests.json`with the content `{"configFile": "e2etest"}`
+- **Be really careful**: Running the tests this way will *erase all your data* from the data dir `vo_data` 
+and the specified database.
 
 
 ## Unit tests

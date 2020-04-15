@@ -7,7 +7,7 @@ vo_data/*
 !vo_data/.gitkeep
 
 # IDE stuff
-testcenter-iqb-php.iml
+*.iml
 .idea
 .vscode
 
@@ -17,6 +17,9 @@ integration/tmp
 
 # config
 config/DBConnectionData.json
+config/DBConnectionData.*.json
+config/e2eTests.backup.json
+config/e2eTests.json
 
 # legacy
 logs/*

@@ -62,7 +62,7 @@ class WorkspaceInitializer {
      * data files if given
      * @throws Exception
      */
-    public function importSampleData(int $workspaceId, InstallationArguments $parameters) {
+    public function importSampleData(int $workspaceId, InstallationArguments $parameters): void {
 
         $this->_importSampleFile($workspaceId, 'Booklet.xml', $parameters);
         $this->_importSampleFile($workspaceId, 'Testtakers.xml', $parameters);
@@ -70,5 +70,11 @@ class WorkspaceInitializer {
         $this->_importSampleFile($workspaceId, 'Unit.xml', $parameters);
         $this->_importSampleFile($workspaceId, 'Player.html', $parameters, 'Resource');
         $this->_importSampleFile($workspaceId, 'SysCheck-Report.json', $parameters, 'SysCheck/reports');
+    }
+
+
+    public function cleanWorkspace(int $workspaceId): void {
+
+        Folder::deleteContentsRecursive(DATA_DIR . "/ws_$workspaceId/");
     }
 }

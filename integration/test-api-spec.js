@@ -10,8 +10,11 @@ const jsonTransform = require('./helper/json-transformer');
 
 // globals
 
-const apiUrl = process.env.TC_API_URL || '';
-const realDataMode = (process.env.TC_REAL_DATA_MODE === 'on');
+const apiUrl = process.env.TC_API_URL || 'http://localhost';
+const specialTestConfig = fs.existsSync('../config/e2eTests.json')
+    ? JSON.parse(fs.readFileSync('../config/e2eTests.json').toString())
+    : false;
+
 
 // tasks
 
@@ -23,25 +26,25 @@ gulp.task('start', done => {
 
     cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
 
-    if (realDataMode) {
+    if ((specialTestConfig !== false) && (typeof specialTestConfig.configFile !== "undefined")) {
 
         inquirer.prompt([{
             type: 'confirm',
-            message: '\x1B[31mYou run this in REALDATAMODE - that means you want ' +
-                'to run tests against REAL database and ' +
+            message: cliPrint.red('You run this in REALDATAMODE - that means you want ' +
+                'to run tests against REAL database-configuration as defined in' +
+                `config/DBConnectionData.${specialTestConfig.configFile}.json` +
                 'data folder as configured in `config/DBConnectionData.json`\n' +
-                'YOU WILL LOOSE ALL DATA IN DB AND FOLDER BY DOING THIS!!!\x1B[34m\n\n' +
-                '...you want to do this for real?',
+                'YOU WILL LOOSE ALL DATA IN DB AND FOLDER BY DOING THIS!!!' +
+                '...you want to do this for real?'),
             default: false,
             name: 'start'
         }]).then((answers) => {
 
-            if(!answers.start) {
-                console.log('OK continue in normal mode.');
-                realDataMode = false;
+            if (!answers.start) {
+                done(cliPrint.getError("Aborted."));
+            } else {
+                done();
             }
-
-            done();
 
         });
 
@@ -168,17 +171,33 @@ gulp.task('update_docs', done => {
 });
 
 
+gulp.task('delete_special_config_file', done => {
+
+    if (specialTestConfig) {
+
+        try  {
+
+            fs.renameSync('../config/e2eTests.json', '../config/e2eTests.backup.json');
+            console.log(cliPrint.red("Special test config file 'config/e2eTests.json' was renamed for security reasons!"));
+
+        } catch (exception) {
+
+            console.log(cliPrint.red("Please delete config file 'config/e2eTests.json' for security reasons!"));
+        }
+    }
+
+    done();
+});
+
+
 exports.run_dredd_test = gulp.series(
     'start',
     'clear_tmp_dir',
     'compile_spec_files',
     'prepare_spec_for_dredd',
     'run_dredd',
+    'delete_special_config_file',
     'update_docs'
-);
-
-exports.tmp = gulp.series(
-    'start',
 );
 
 

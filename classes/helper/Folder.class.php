@@ -48,4 +48,22 @@ class Folder {
         return $list;
     }
 
+    // TODO unit-test
+    static function deleteContentsRecursive(string $path): void {
+
+        foreach(new DirectoryIterator($path) as $entry) {
+
+            if ($entry->isDot()) continue; // skip . and ..
+
+            if ($entry->isFile()) {
+
+                unlink($entry->getPathname());
+
+            } else if ($entry->isDir()) {
+
+                Folder::deleteContentsRecursive($entry->getPathname());
+            }
+        }
+    }
+
 }

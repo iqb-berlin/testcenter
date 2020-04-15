@@ -6,7 +6,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 
-$app->group('/speed-test', function(App $app) { // TODO write spec
+$app->group('/speed-test', function(App $app) {
 
     $app->get('/random-package/{size}', function(Request $request, Response $response) {
 

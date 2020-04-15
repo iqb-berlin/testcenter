@@ -17,12 +17,24 @@ try {
 
     if (isset($_SERVER['HTTP_TESTMODE'])) {
 
-        include_once 'initVirtualEnvironment.php';
+        if (file_exists(ROOT_DIR . "/config/e2eTests.json")) {
 
-    } else {
+            error_log("DANGER MODE");
+            TestEnvironment::setUpEnvironmentForRealDataE2ETests(); // DANGEROUS!!!
+            error_log("SRAND]:" . rand(0, 500));
 
+        } else {
+
+            error_log("SAFE E2E MODE");
+            TestEnvironment::setUpEnvironmentForE2eTests();
+            error_log("SRAND]:" . rand(0, 500));
+        }
+
+    } else { // productive
+
+        error_log("NORMAL MODE");
         define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
-        DB::connect(DBConfig::fromFile(ROOT_DIR . '/config/DBConnectionData.json'));
+        DB::connect();
     }
 
     $container = new Container();

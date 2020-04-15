@@ -128,7 +128,7 @@ class InitDAO extends SessionDAO {
 
 
     // TODO unit-test
-    public function isDbReady(): bool {
+    public function isDbNotReady(): ?string {
 
         foreach ($this::tables as $table) {
 
@@ -137,19 +137,16 @@ class InitDAO extends SessionDAO {
 
             } catch (Exception $exception) {
 
-                echo "\nDatabase strcuture not ready (at least one table is missing: `$table`).";
-                return false;
+                return "Database strcuture not ready (at least one table is missing: `$table`).";
             }
 
 
             if (count($entries)) {
 
-                echo "\nDatabase is not empty (table `$table` has entries).";
-                return false;
+                return "Database is not empty (table `$table` has entries).";
             }
         }
 
-        echo "\nDatabase structure OK!";
-        return true;
+        return null;
     }
 }

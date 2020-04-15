@@ -103,7 +103,9 @@ try  {
 
     echo "\n# Database structure";
 
-    if (!$initDAO->isDbReady()) {
+    if ($notReadyMsg = $initDAO->isDbNotReady()) {
+
+        echo "\n $notReadyMsg";
 
         if (!$args->overwrite_existing_installation) {
 
@@ -119,8 +121,8 @@ try  {
         echo "\n State of the DB";
         echo $initDAO->getDBContentDump();
         echo "\n";
-        if (!$initDAO->isDbReady()) {
-            throw new Exception("Database installation failed");
+        if ($notReadyMsg = $initDAO->isDbNotReady()) {
+            throw new Exception("Database installation failed: $notReadyMsg");
         }
     }
 
@@ -139,14 +141,17 @@ try  {
     echo "\n Workspace `{$args->workspace}` as `ws_1` created";
 
     $workspaceController = new WorkspaceController(1);
+    $filesInWorkspace = $workspaceController->countFilesOfAllSubFolders();
 
-    if (($workspaceController->countFilesOfAllSubFolders() > 0) and !$args->overwrite_existing_installation) {
+    if (($filesInWorkspace > 0) and !$args->overwrite_existing_installation) {
 
         throw new Exception("Workspace folder `{$workspaceController->getWorkspacePath()}` is not empty.");
     }
 
-    $initializer->importSampleData($newIds['workspaceId'], $args);
+    $initializer->cleanWorkspace($newIds['workspaceId']);
+    echo "\n {$filesInWorkspace} files in workspace-folder found and DELETED.";
 
+    $initializer->importSampleData($newIds['workspaceId'], $args);
     echo "\n Sample XML files created.";
 
     if ($args->create_test_sessions) {

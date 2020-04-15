@@ -2,9 +2,6 @@ const dreddHooks = require('hooks');
 const fs = require('fs');
 const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
-const shellExec = require('./helper/shell-exec');
-
-const realDataMode = (process.env.TC_REAL_DATA_MODE === 'on');
 
 const skipAfterFirstFail = true; // change this to debug
 let skipTheRest = false;
@@ -80,37 +77,8 @@ dreddHooks.beforeEach(function(transaction, done) {
         return done();
     }
 
-
-    if (realDataMode) {
-
-        const response = shellExec('php',
-            [
-                '../scripts/initialize.php',
-                `--user_name=super`,
-                `--user_password=user123`,
-                `--workspace=example_workspace`,
-                `--test_login_name=test`,
-                `--test_login_password=user123`,
-                `--test_person_codes=xxx,yyy`,
-                `--create_test_sessions=true`,
-                `--overwrite_existing_installation=true`
-            ]
-        );
-
-        if (!response.success) {
-
-            skipTheRest = true;
-            transaction.fail = 'Environment preparation failed with: ' + response.output;
-            return done();
-        }
-
-    } else {
-
-        transaction.request.headers['TestMode'] = true; // use virtual environment
-    }
-
-
-
+    // use virtual environment
+    transaction.request.headers['TestMode'] = true;
 
     // inject login credentials if necessary
     switch (transaction.expected.statusCode) {
