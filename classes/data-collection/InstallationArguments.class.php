@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 class InstallationArguments extends DataCollection {
-    
+
     public $user_name = '';
     public $user_password = '';
     public $workspace = 'workspace_name';

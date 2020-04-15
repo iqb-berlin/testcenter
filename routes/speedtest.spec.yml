@@ -25,7 +25,7 @@ paths:
             text/plain:
               schema:
                 type: string
-              example: "rOI/JLFOAPBOHt8="
+              example: "lrOI/JLFOAPBOHt="
         "406":
           description: bad package size
         "500":

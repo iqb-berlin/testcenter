@@ -81,8 +81,6 @@ class TestEnvironment {
         if ($notReadyMsg = $initDAO->isDbNotReady()) {
             throw new Exception("Database reset failed: $notReadyMsg");
         }
-
-        error_log('STATE RESETTED!');
     }
 
 

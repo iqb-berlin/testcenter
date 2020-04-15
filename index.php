@@ -19,15 +19,11 @@ try {
 
         if (file_exists(ROOT_DIR . "/config/e2eTests.json")) {
 
-            error_log("DANGER MODE");
             TestEnvironment::setUpEnvironmentForRealDataE2ETests(); // DANGEROUS!!!
-            error_log("SRAND]:" . rand(0, 500));
 
         } else {
 
-            error_log("SAFE E2E MODE");
             TestEnvironment::setUpEnvironmentForE2eTests();
-            error_log("SRAND]:" . rand(0, 500));
         }
 
     } else { // productive
