@@ -117,10 +117,18 @@ class InitDAO extends SessionDAO {
 
         $report = "";
 
+        if ($this->getDBType() == 'mysql') {
+            $this->_('SET FOREIGN_KEY_CHECKS = 0');
+        }
+
         foreach ($this::tables as $table) {
 
             $report .= "\n## DROP TABLE `$table`";
             $this->_("Drop table if exists $table cascade ");
+        }
+
+        if ($this->getDBType() == 'mysql') {
+            $this->_('SET FOREIGN_KEY_CHECKS = 1');
         }
 
         return $report;
