@@ -15,8 +15,8 @@ class SessionDAO extends DAO {
                 select
                     admin_sessions.token,
                     users.id,
-                    \'admin\' as type,
-                    -1 as workspaceId,
+                    \'admin\' as "type",
+                    -1 as "workspaceId",
                     case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
                     valid_until as "validTo"
                 from admin_sessions
