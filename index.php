@@ -27,8 +27,7 @@ try {
         }
 
     } else { // productive
-
-        error_log("NORMAL MODE");
+        
         define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
         DB::connect();
     }
