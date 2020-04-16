@@ -19,8 +19,9 @@ class WorkspaceController {
 
         foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
 
-            $workspaceId = array_pop(explode('_', $workspaceDir));
-            $workspaceControllers[$workspaceId] = new $class((int) $workspaceId);
+            $workspaceFolderNameParts = explode('_', $workspaceDir);
+            $workspaceId = (int) array_pop($workspaceFolderNameParts);
+            $workspaceControllers[$workspaceId] = new $class($workspaceId);
         }
 
         return $workspaceControllers;
