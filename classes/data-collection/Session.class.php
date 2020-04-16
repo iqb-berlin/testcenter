@@ -28,7 +28,7 @@ class Session extends DataCollectionTypeSafe {
 
     public function setAccessWorkspaceAdmin(int ...$accessObjects) {
 
-        $this->access->workspaceAdmin = $accessObjects;
+        $this->access->workspaceAdmin = array_map(function(int $id): string {return (string) $id;}, $accessObjects);
     }
 
     public function setAccessSuperAdmin() {
