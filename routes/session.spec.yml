@@ -99,7 +99,7 @@ paths:
                 displayName: "sample_group/sample_user"
                 access: {}
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-                flags: ['requireCode']
+                flags: ['codeRequired']
         "400":
           description: Insufficent Crendetials
 #        "410": # - must be removed because test fails other wise... TODO find better solution

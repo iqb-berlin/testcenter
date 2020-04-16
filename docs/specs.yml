@@ -87,7 +87,7 @@ paths:
                                 access: {}
                                 customTexts: {}
                                 flags:
-                                    - requireCode
+                                    - codeRequired
                 '400':
                     description: 'Insufficent Crendetials'
                 '500':
