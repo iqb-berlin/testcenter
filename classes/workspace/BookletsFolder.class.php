@@ -6,7 +6,7 @@ declare(strict_types=1);
 class BookletsFolder extends WorkspaceController {
 
 
-    public function getBookletName(string $bookletId): string {
+    public function getBookletLabel(string $bookletId): string {
 
         $bookletName = '';
 

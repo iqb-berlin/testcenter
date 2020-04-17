@@ -92,11 +92,11 @@ class BookletsFolderTest extends TestCase {
 
     function test_getBookletName() {
 
-        $result = $this->bookletsFolder->getBookletName('BOOKLET.SAMPLE');
+        $result = $this->bookletsFolder->getBookletLabel('BOOKLET.SAMPLE');
         $expectation = 'Sample booklet';
         $this->assertEquals($expectation, $result);
 
-        $result = $this->bookletsFolder->getBookletName('inexistent.BOOKLET');
+        $result = $this->bookletsFolder->getBookletLabel('inexistent.BOOKLET');
         $expectation = '';
         $this->assertEquals($expectation, $result);
     }

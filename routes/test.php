@@ -229,7 +229,6 @@ $app->group('/test', function(App $app) {
 })
     ->add(new RequireToken('person'));
 
-// was /startbooklet
 
 $app->put('/test', function(Request $request, Response $response) {
 
@@ -237,15 +236,15 @@ $app->put('/test', function(Request $request, Response $response) {
     $authToken = $request->getAttribute('AuthToken');
 
     $body = RequestBodyParser::getElements($request, [
-        'bookletName' => null // was: b // change to ID
+        'bookletName' => null
     ]);
 
     $testDAO = new TestDAO();
 
     $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
-    $bookletName = $bookletsFolder->getBookletName($body['bookletName']);
+    $bookletLabel = $bookletsFolder->getBookletLabel($body['bookletName']);
 
-    $test = $testDAO->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletName);
+    $test = $testDAO->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
 
     if ($test['locked'] == '1') {
         throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);

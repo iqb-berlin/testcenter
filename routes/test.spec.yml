@@ -573,8 +573,6 @@ paths:
                 - timestamp
             example:
               bookletName: 'BOOKLET.SAMPLE'
-              BookletLabel: 'A sample booklet'
-              code: 'xxx'
       responses:
         "201":
           description:  OK, started
@@ -584,7 +582,7 @@ paths:
                 testId: 1
                 mode: run
         "401":
-          description: Not authenticated - auth token header is missing or not containing at least a login token
+          description: Not authenticated - auth token header is missing or not containing a login token
         "403":
           description: Forbidden
         "423":

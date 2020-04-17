@@ -28,7 +28,7 @@ $app->group('/booklet', function(App $app) {
         if (!$bookletStatus['running']) {
 
             $workspaceController = new BookletsFolder((int) $authToken->getWorkspaceId());
-            $bookletStatus['label'] = $workspaceController->getBookletName($bookletName);
+            $bookletStatus['label'] = $workspaceController->getBookletLabel($bookletName);
         }
 
         return $response->withJson($bookletStatus);
