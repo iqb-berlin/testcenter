@@ -24,13 +24,13 @@ paths:
             type: string
         - in: query
           name: code
-          description: person code TODO replace this and work with personCode instead.
+          description: person code #TODO replace this and work with personCode instead.
           schema:
             type: string
           example: xxx
       responses:
         "200":
-          description: a object containg information about booklet
+          description: an object containg information about booklet
           content:
             application/json:
               example:
@@ -38,7 +38,7 @@ paths:
                 id: 0
                 lastState: ""
                 locked: false
-                label: "Booklets little label"
+                label: "Booklet's little label"
         "401":
           description: Not authenticated
         "410":

@@ -30,7 +30,7 @@ gulp.task('start', done => {
 
         inquirer.prompt([{
             type: 'confirm',
-            message: cliPrint.red('You run this in REALDATAMODE - that means you want ' +
+            message: cliPrint.red('You run this in REAL-DATA-MODE - that means you want ' +
                 'to run tests against REAL database-configuration as defined in' +
                 `config/DBConnectionData.${specialTestConfig.configFile}.json` +
                 'data folder as configured in `config/DBConnectionData.json`\n' +
@@ -67,9 +67,10 @@ gulp.task('compile_spec_files', function() {
     cliPrint.headline(`compile spec files to one`);
 
     return gulp.src(`../routes/*.spec.yml`)
-        .on("data", function(d) { console.log("File: " + d.path);})
-        .on("error", function(e) { console.warn(e);})
+        .on("data", (d) => { console.log("File: " + d.path);})
+        .on("error", (e) => { console.warn(e);})
         .pipe(yamlMerge('compiled.specs.yml'))
+        .on("error", (e) => { console.warn(e);})
         .pipe(gulp.dest('./tmp/'));
 });
 
