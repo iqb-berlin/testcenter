@@ -305,29 +305,18 @@ class SessionDAO extends DAO {
 
         if ($test !== null) {
 
-            $bookletStatus = [
+            return [
                 'running' => true,
-                'canStart' => true,
-                'statusLabel' => 'Zum Fortsetzen hier klicken',
-                'label' => $test['label'],
-                'id' => $test['id'],
-                'locked' => $test['locked'],
-                'lastState' => JSON::decode($test['laststate'], true)
+                'locked' => (bool) $test['locked'],
+                'label' => $test['label']
             ];
-
-            if ($test['locked'] == '1') {
-                $bookletStatus['canStart'] = false;
-                $bookletStatus['statusLabel'] = 'Beendet';
-            }
-
-            return $bookletStatus;
 
         } else {
 
             return [
-                'running' => false,
-                'canStart' => true,
-                'statusLabel' => 'Zum Starten hier klicken'
+                'running' => true,
+                'locked' => false,
+                'label' => "label: $bookletName"
             ];
         }
     }

@@ -29,8 +29,6 @@ paths:
                         application/json:
                             example:
                                 running: true
-                                id: 0
-                                lastState: ""
                                 locked: false
                                 label: 'Booklet''s little label'
                 '401':
@@ -387,7 +385,7 @@ paths:
     '/test/{test_id}':
         get:
             summary: 'get a test'
-            description: 'retrieves a certain executed test - the booklet-file XML, last state and lock status'
+            description: "Retrieves a certain test: It's contents, state and the mode of current login-session.\n`laststate` is an array of key-value-pairs stored for this test.\nCurrently known test-modes are:  * `run-hot-return` - hot run of testLet, can save answers etc.,\n  session gets stored and can be revoked\n  * `run-hot-restart` - hot run of testLet, can save answers etc.,\n  every session starts all tests again and have unique Tokens\n  * `run-review` - run a review round of testLet, reviewes can be saved, but no answers\n  At the moment we distinguish between hot, trial and review in the GUI and there are no real\n  checks for the mode in this backend, except for the difference between `run-hot-return` and\n  `run-hot-restart`.\n  * `run-trial` - run a trial round\n  * `monitor-study` - TBA\n  * `monitor-login` - TBA"
             parameters:
                 -
                     in: header
@@ -404,10 +402,11 @@ paths:
                         type: integer
             responses:
                 '200':
-                    description: 'List of Workspaces'
+                    description: 'Test and it''s contents'
                     content:
                         application/json:
                             example:
+                                mode: run-hot-return
                                 laststate: []
                                 locked: false
                                 xml: '(contents of a booklet.xml)'
@@ -929,7 +928,7 @@ paths:
     /test:
         put:
             summary: 'start a test'
-            description: "Creates a new test or continues a running one for given person and booklet-name. Returns the Id of\nthe new test and the mode of current login-session.\nCurrently known modes are:  * run-hot-return - hot run of testLet, can save answers etc.,\n  session gets stored and can be revoked\n  * run-hot-restart - hot run of testLet, can save answers etc.,\n  every session starts all tests again and have unique Tokens\n  * run-review - run a review round of testLet, reviewes can be saved, but no answers\n  At the moment we distinguish between hot, trial and review in the GUI and there are no real\n  checks for the mode in this backend, except for the difference between `run-hot-return` and\n  `run-hot-restart`.\n  * run-trial - run a trial round\n  * monitor-study - TBA\n  * monitor-login - TBA"
+            description: 'Creates a new test for a given person and booklet-name'
             parameters:
                 -
                     in: header
@@ -945,12 +944,9 @@ paths:
                                     description: 'name of the booklet to start'
                                     type: string
                             required:
-                                - entry
-                                - timestamp
+                                - bookletName
                         example:
                             bookletName: BOOKLET.SAMPLE
-                            BookletLabel: 'A sample booklet'
-                            code: xxx
             responses:
                 '201':
                     description: 'OK, started'
@@ -958,9 +954,8 @@ paths:
                         application/json:
                             example:
                                 testId: 1
-                                mode: run
                 '401':
-                    description: 'Not authenticated - auth token header is missing or not containing at least a login token'
+                    description: 'Not authenticated - auth token header is missing or not containing a login token'
                 '403':
                     description: Forbidden
                 '423':

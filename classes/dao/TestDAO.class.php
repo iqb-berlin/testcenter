@@ -49,7 +49,6 @@ class TestDAO extends DAO {
             }
 
             return $test;
-
         }
 
         $this->_(

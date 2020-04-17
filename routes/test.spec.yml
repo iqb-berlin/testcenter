@@ -9,7 +9,21 @@ paths:
   /test/{test_id}:
     get:
       summary: get a test
-      description: retrieves a certain executed test - the booklet-file XML, last state and lock status
+      description: |-
+        Retrieves a certain test: It's contents, state and the mode of current login-session.
+        `laststate` is an array of key-value-pairs stored for this test.
+        Currently known test-modes are:
+          * `run-hot-return` - hot run of testLet, can save answers etc.,
+          session gets stored and can be revoked
+          * `run-hot-restart` - hot run of testLet, can save answers etc.,
+          every session starts all tests again and have unique Tokens
+          * `run-review` - run a review round of testLet, reviewes can be saved, but no answers
+          At the moment we distinguish between hot, trial and review in the GUI and there are no real
+          checks for the mode in this backend, except for the difference between `run-hot-return` and
+          `run-hot-restart`.
+          * `run-trial` - run a trial round
+          * `monitor-study` - TBA
+          * `monitor-login` - TBA
       parameters:
         - in: header
           name: AuthToken
@@ -24,10 +38,11 @@ paths:
             type: integer
       responses:
         "200":
-          description: List of Workspaces
+          description: Test and it's contents
           content:
             application/json:
               example:
+                mode: "run-hot-return"
                 laststate: []
                 locked: false
                 xml: "(contents of a booklet.xml)"
@@ -541,20 +556,7 @@ paths:
     put:
       summary: start a test
       description: |-
-        Creates a new test or continues a running one for given person and booklet-name. Returns the Id of
-        the new test and the mode of current login-session.
-        Currently known modes are:
-          * run-hot-return - hot run of testLet, can save answers etc.,
-          session gets stored and can be revoked
-          * run-hot-restart - hot run of testLet, can save answers etc.,
-          every session starts all tests again and have unique Tokens
-          * run-review - run a review round of testLet, reviewes can be saved, but no answers
-          At the moment we distinguish between hot, trial and review in the GUI and there are no real
-          checks for the mode in this backend, except for the difference between `run-hot-return` and
-          `run-hot-restart`.
-          * run-trial - run a trial round
-          * monitor-study - TBA
-          * monitor-login - TBA
+        Creates a new test for a given person and booklet-name
       parameters:
         - in: header
           name: AuthToken
@@ -569,8 +571,7 @@ paths:
                   description: name of the booklet to start
                   type: string
               required:
-                - entry
-                - timestamp
+                - bookletName
             example:
               bookletName: 'BOOKLET.SAMPLE'
       responses:
@@ -580,7 +581,6 @@ paths:
             application/json:
               example:
                 testId: 1
-                mode: run
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
         "403":

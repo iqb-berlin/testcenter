@@ -6,9 +6,36 @@ use Slim\Exception\HttpException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+
 $app->group('/test', function(App $app) {
 
+
     $testDAO = new TestDAO();
+
+
+    $app->put('', function(Request $request, Response $response) use ($testDAO) {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $body = RequestBodyParser::getElements($request, [
+            'bookletName' => null
+        ]);
+
+        $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
+        $bookletLabel = $bookletsFolder->getBookletLabel($body['bookletName']);
+
+        $test = $testDAO->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
+
+        if ($test['locked'] == '1') {
+            throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
+        }
+
+        return $response->withJson([
+            'testId' => $test['id'],
+        ])->withStatus(201);
+    });
+
 
     $app->get('/{test_id}', function(Request $request, Response $response) use ($testDAO) {
 
@@ -20,13 +47,12 @@ $app->group('/test', function(App $app) {
         $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
         $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
 
-        $test = [
+        return $response->withJson([
+            'mode' => $authToken->getMode(),
             'laststate' => $testDAO->getTestLastState($testId),
             'locked' => $testDAO->isTestLocked($testId),
             'xml' => $bookletFile->xmlfile->asXML()
-        ];
-
-        return $response->withJson($test);
+        ]);
     });
 
 
@@ -226,33 +252,5 @@ $app->group('/test', function(App $app) {
         return $response->withStatus(200);
     })
         ->add(new IsTestWritable());
-})
-    ->add(new RequireToken('person'));
-
-
-$app->put('/test', function(Request $request, Response $response) {
-
-    /* @var $authToken AuthToken */
-    $authToken = $request->getAttribute('AuthToken');
-
-    $body = RequestBodyParser::getElements($request, [
-        'bookletName' => null
-    ]);
-
-    $testDAO = new TestDAO();
-
-    $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
-    $bookletLabel = $bookletsFolder->getBookletLabel($body['bookletName']);
-
-    $test = $testDAO->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
-
-    if ($test['locked'] == '1') {
-        throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
-    }
-
-    return $response->withJson([
-        'testId' => $test['id'],
-        'mode' => $authToken->getMode()
-    ])->withStatus(201);
 })
     ->add(new RequireToken('person'));
