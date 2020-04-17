@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
     title: 'IQB Testcenter API - Backend'
-    description: 'This a spec for the (REST-) API of the IQB-Tetscenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
+    description: 'This a spec for the (REST-) API of the IQB-Testcenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
     version: 2.0.0
 paths:
     '/booklet/{booklet_name}/state':
@@ -22,13 +22,6 @@ paths:
                     required: true
                     schema:
                         type: string
-                -
-                    in: query
-                    name: code
-                    description: 'person code'
-                    schema:
-                        type: string
-                    example: xxx
             responses:
                 '200':
                     description: 'an object containg information about booklet'

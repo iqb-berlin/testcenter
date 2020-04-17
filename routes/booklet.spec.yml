@@ -22,12 +22,6 @@ paths:
           required: true
           schema:
             type: string
-        - in: query
-          name: code
-          description: person code #TODO replace this and work with personCode instead.
-          schema:
-            type: string
-          example: xxx
       responses:
         "200":
           description: an object containg information about booklet
