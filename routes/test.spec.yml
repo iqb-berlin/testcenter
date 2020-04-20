@@ -579,7 +579,7 @@ paths:
           description:  OK, started
           content:
             text/plain:
-              example: 1
+              example: "1"
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
         "403":
