@@ -20,7 +20,7 @@ $app->group('/booklet', function(App $app) {
 
         if (!$sessionDAO->personHasBooklet($personToken, $bookletName)) {
 
-            throw new HttpForbiddenException($request, "Booklet `$bookletName` is not allowed for $personToken");
+            throw new HttpForbiddenException($request, "Booklet with name `$bookletName` is not allowed for $personToken");
         }
 
         $bookletStatus = $sessionDAO->getBookletStatus($personToken, $bookletName);

@@ -314,9 +314,9 @@ class SessionDAO extends DAO {
         } else {
 
             return [
-                'running' => true,
+                'running' => false,
                 'locked' => false,
-                'label' => "label: $bookletName"
+                'label' => ""
             ];
         }
     }
