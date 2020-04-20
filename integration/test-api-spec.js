@@ -174,7 +174,6 @@ gulp.task('update_docs', done => {
     fs.writeFileSync(targetFileName, transformedAsString, "utf8");
 
     done();
-
 });
 
 

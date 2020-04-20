@@ -8,11 +8,9 @@ class BookletsFolder extends WorkspaceController {
 
     public function getBookletLabel(string $bookletId): string {
 
-        $bookletName = '';
-
         $lookupFolder = $this->_workspacePath . '/Booklet';
         if (!file_exists($lookupFolder)) {
-            throw new HttpError("Folder does not exist: `$lookupFolder`", 500);
+            throw new HttpError("Folder does not exist: `$lookupFolder`", 404);
         }
 
         $lookupDir = opendir($lookupFolder);
@@ -32,19 +30,16 @@ class BookletsFolder extends WorkspaceController {
 
                     if ($xFile->getRoottagName()  == 'Booklet') {
 
-                        $myBookletId = $xFile->getId();
+                        if ($xFile->getId() === $bookletId) {
 
-                        if ($myBookletId === $bookletId) {
-
-                            $bookletName = $xFile->getLabel();
-                            break;
+                            return $xFile->getLabel();
                         }
                     }
                 }
             }
         }
 
-        return $bookletName;
+        throw new HttpError("No booklet with name `$bookletId` found", 404);
     }
 
 

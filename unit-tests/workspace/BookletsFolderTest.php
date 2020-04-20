@@ -96,8 +96,7 @@ class BookletsFolderTest extends TestCase {
         $expectation = 'Sample booklet';
         $this->assertEquals($expectation, $result);
 
-        $result = $this->bookletsFolder->getBookletLabel('inexistent.BOOKLET');
-        $expectation = '';
-        $this->assertEquals($expectation, $result);
+        $this->expectException('HttpError');
+        $this->bookletsFolder->getBookletLabel('inexistent.BOOKLET');
     }
 }
