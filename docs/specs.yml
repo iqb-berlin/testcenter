@@ -951,9 +951,8 @@ paths:
                 '201':
                     description: 'OK, started'
                     content:
-                        application/json:
-                            example:
-                                testId: 1
+                        text/plain:
+                            example: 1
                 '401':
                     description: 'Not authenticated - auth token header is missing or not containing a login token'
                 '403':

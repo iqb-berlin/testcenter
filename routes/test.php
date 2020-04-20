@@ -31,9 +31,8 @@ $app->group('/test', function(App $app) {
             throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
         }
 
-        return $response->withJson([
-            'testId' => $test['id'],
-        ])->withStatus(201);
+        $response->getBody()->write($test['id']);
+        return $response->withStatus(201);
     });
 
 
