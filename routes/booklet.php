@@ -11,7 +11,7 @@ $app->group('/booklet', function(App $app) {
 
     $sessionDAO = new SessionDAO();
 
-    $app->get('/{booklet_name}/state', function (Request $request, Response $response) use ($sessionDAO) {
+    $app->get('/{booklet_name}', function (Request $request, Response $response) use ($sessionDAO) {
 
         $authToken = $request->getAttribute('AuthToken');
         $personToken = $authToken->getToken();

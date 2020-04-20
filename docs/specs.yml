@@ -4,10 +4,10 @@ info:
     description: 'This a spec for the (REST-) API of the IQB-Testcenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
     version: 2.0.0
 paths:
-    '/booklet/{booklet_name}/state':
+    '/booklet/{booklet_name}':
         get:
             summary: 'get status of a booklet'
-            description: 'Retrieves some status informations of a booklet'
+            description: 'Retrieves a booklet - in this context that does not mean the booklet-file''s contents but status information about this booklet in regard of a given login: Is there a running test for this booklet etc.'
             parameters:
                 -
                     in: header
