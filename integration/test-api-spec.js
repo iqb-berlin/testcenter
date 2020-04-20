@@ -7,6 +7,8 @@ const YAML = require('yamljs');
 const inquirer = require('inquirer');
 const cliPrint = require('./helper/cli-print');
 const jsonTransform = require('./helper/json-transformer');
+const composerFile = require('../composer.json');
+
 
 // globals
 
@@ -160,7 +162,11 @@ gulp.task('update_docs', done => {
 
     const rules = {
         "schema > \\$ref$": localizeReference,
-        "items > \\$ref$": localizeReference
+        "items > \\$ref$": localizeReference,
+        "info > version": () => ({
+            key: 'version',
+            val: composerFile['version']
+        })
     };
 
     const transformed = jsonTransform(yamlTree, rules, false);
