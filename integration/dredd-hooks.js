@@ -98,6 +98,7 @@ dreddHooks.beforeEach(function(transaction, done) {
             });
             changeAuthToken(transaction, {
                 loginToken: 'static_token:login:sample_user',
+                adminToken: 'static_token:admin:super',
             });
             break;
         case '401':

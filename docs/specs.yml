@@ -1656,7 +1656,7 @@ paths:
     '/workspace/{ws_id}/file':
         post:
             summary: 'upload file'
-            description: 'uploads a Resource, Unit, Booklet, SysCheck ort Testtakers file'
+            description: 'uploads a Resource, Unit, Booklet, SysCheck or Testtakers file'
             parameters:
                 -
                     in: header
@@ -1688,17 +1688,19 @@ paths:
                                 - fileforvo
             responses:
                 '201':
-                    description: 'upload susccessfull'
+                    description: 'upload successful'
                     content:
                         application/json:
                             example:
                                 Unit.xml: true
+                '400':
+                    description: 'file could not be uploaded or is invalid.'
                 '401':
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
                 '404':
-                    description: 'workspace or file not found'
+                    description: 'workspace not found'
                 '410':
                     description: 'Session Expired'
                 '500':
