@@ -127,7 +127,7 @@ $app->group('/test', function(App $app) {
         ]);
 
         $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
-            ? $review['priority']
+            ? (int) $review['priority']
             : 0;
 
         $testDAO->addTestReview($testId, $priority, $review['categories'], $review['entry']);
