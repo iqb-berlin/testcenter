@@ -46,7 +46,7 @@
     </Login>
   </Group>
 
-  <Group name="future_group" validFrom="26/3/2020 9:00">
+  <Group name="future_group" validFrom="26/3/2030 9:00">
     <Login mode="run-hot-restart" name="test-future">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
