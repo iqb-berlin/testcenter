@@ -7,15 +7,15 @@
   <xs:element name="Testtakers" >
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
-        <xs:element name="CustomTexts" type="CustomTextsType" minOccurs = "0" maxOccurs="1"/>
-        <xs:element name="Group" minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="Metadata" type="MetadataType" />
+        <xs:element name="CustomTexts" type="CustomTextsType" minOccurs="0" />
+        <xs:element name="Group" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Login" minOccurs="1" maxOccurs="unbounded">
+              <xs:element name="Login" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Booklet" minOccurs="1" maxOccurs="unbounded">
+                    <xs:element name="Booklet" minOccurs="0" maxOccurs="unbounded">
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
@@ -67,23 +67,14 @@
                         <xs:enumeration value="monitor-group">
                           <xs:annotation>
                             <xs:documentation>
-                              Monitor of test execution: For the group
+                              Monitor of test execution: For the group.
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>
                         <xs:enumeration value="monitor-study">
                           <xs:annotation>
                             <xs:documentation>
-                              Monitor of test execution: For the whole workspace (i. e. study)
-                            </xs:documentation>
-                          </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="monitor-login">
-                          <xs:annotation>
-                            <xs:documentation>
-                              Monitor of test execution: For this specific login. This requires codes for every
-                              booklet to get a group of testees. In addition, the attribute 'monitorcode' must
-                              be set.
+                              Monitor of test execution: For the whole workspace (i. e. study).
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>
@@ -93,8 +84,8 @@
                   <xs:attribute name="monitorcode" type="xs:string">
                     <xs:annotation>
                       <xs:documentation>
-                        If login type is set to 'monitor-login', this attribute specifies the code the monitoring
-                        person 'proctor' must use for the second step of login.
+                        This attribute creates an group-monitor for this group which has the same login-credentials as
+                        the testees but it's own code.
                       </xs:documentation>
                     </xs:annotation>
                   </xs:attribute>
