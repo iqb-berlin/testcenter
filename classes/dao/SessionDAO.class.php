@@ -123,7 +123,14 @@ class SessionDAO extends DAO {
             JSON::decode($loginData['customTexts']) ?? (object) []
         );
 
-        $session->setAccessTest(...$personsBooklets);
+        if (in_array($loginData['mode'], Role::withChildren('monitor'))) {
+
+            $session->setAccessWorkspaceMonitor($loginData['workspaceId']);
+
+        } else {
+
+            $session->setAccessTest(...$personsBooklets);
+        }
 
         return $session;
     }
@@ -142,7 +149,15 @@ class SessionDAO extends DAO {
 
         $personsBooklets = $login->getBooklets()[$person['code']] ?? [];
 
-        $session->setAccessTest(...$personsBooklets);
+        if (in_array($login->getMode(), Role::withChildren('monitor'))) {
+
+            $session->setAccessWorkspaceMonitor($login->getWorkspaceId());
+
+        } else {
+
+            $session->setAccessTest(...$personsBooklets);
+        }
+
 
         return $session;
     }
@@ -175,7 +190,7 @@ class SessionDAO extends DAO {
         }
 
         TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['_validTo']));
-        error_log('XXX:'. print_r(JSON::decode($oldLogin['customTexts']), true));
+
         return new Login(
             (int) $oldLogin['id'],
             $oldLogin['name'],

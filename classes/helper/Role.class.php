@@ -9,7 +9,13 @@ class Role {
     const list = [
         'RW' => ['RO'],
         'RO' => ['MO'],
-        'MO' => []
+        'MO' => [],
+        'monitor' => [
+            'monitor-group',
+            'monitor-study'
+        ],
+        'monitor-group' => [],
+        'monitor-study' => []
     ];
 
     static function withChildren(string $role) {
