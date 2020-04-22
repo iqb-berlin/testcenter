@@ -47,8 +47,16 @@ paths:
                 -
                     in: header
                     name: AuthToken
-                    description: 'auth-token for any user'
-                    example: 'p:0000000000000.00000000000'
+                    examples:
+                        personToken:
+                            description: 'auth-token for person'
+                            value: 'p:0000000000000.00000000000'
+                        loginToken:
+                            description: 'auth-token for login (part I of 2-factor authorization only)'
+                            value: 'l:user000000000.test0000000'
+                        adminToken:
+                            description: 'auth-token for admin'
+                            value: 'a:user000000000.rw00000000'
             responses:
                 '200':
                     description: 'OK, get session data'
@@ -56,13 +64,13 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/session'
-                            example:
-                                token: static_token_person_xxx
-                                displayName: sample_group/sample_user/xxx
-                                access:
-                                    test: [BOOKLET.SAMPLE]
-                                customTexts: {}
-                                flags: []
+                            examples:
+                                personToken:
+                                    value: {token: 'static_token:person:sample_group_sample_user_xxx', displayName: sample_group/sample_user/xxx, access: {test: [BOOKLET.SAMPLE]}, customTexts: {}, flags: []}
+                                loginToken:
+                                    value: {token: 'static_token:login:test', displayName: sample_group/sample_user, access: {}, customTexts: {}, flags: [codeRequired]}
+                                adminToken:
+                                    value: {token: 'static_token:admin:super', displayName: super, access: {superAdmin: [], workspaceAdmin: ['1']}, customTexts: {}, flags: []}
                 '401':
                     description: 'No token qualifies for authentication'
                 '410':
@@ -2422,7 +2430,7 @@ components:
                         somestr: string
                 flags:
                     type: array
-                    description: "flags with additonal information.\n  * `codeRequired` that says indicated that a second part of authentication is required"
+                    description: "flags with additional information.\n  * `codeRequired` that indicates that a second part of authentication is required"
                 access:
                     description: 'A collection of available obejcts. The keys are type of object.'
                     type: object
@@ -2432,10 +2440,10 @@ components:
                             description: 'Elements are (numeric) Workspace-Ids. Use `[GET] /workspace/{worksapce_id}` to obtain label, user-rights and such.'
                         superAdmin:
                             type: string
-                            description: 'No Elements. Presence of this key indicated access to Superadmin-functions for this user.'
+                            description: 'No Elements. Presence of this key indicates access to Superadmin-functions for this user.'
                         test:
                             type: string
-                            description: 'Elements are booklet-names (not test-idss because unstarted tests don''t have one. Through the endpoint `[GET] /booklet/{test_name}` the corresponding ids if startet, status etc. can be obtained.'
+                            description: 'Elements are booklet-names (not test-ids because unstarted tests don''t have one. Through the endpoint `[GET] /booklet/{test_name}` the corresponding ids, and if startet, status etc. can be obtained.'
                         workspaceMonitor:
                             type: string
                         testGroupMonitor:

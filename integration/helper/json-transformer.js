@@ -31,8 +31,9 @@ module.exports = function(json, rules, verbose = false) {
         Object.keys(rules).forEach(rulePattern => {
             const matches = traceString.match(new RegExp(rulePattern));
             if (matches && matches.length) {
-                newKeyValue = rules[rulePattern](key, value);
-                if (verbose) console.log('YAML Transformer: ' + trace.join(' > ') + " => " +(newKeyValue ? newKeyValue.key : '(remove)'));
+                newKeyValue = rules[rulePattern](key, value, matches, trace);
+                if (verbose) console.log('JSON Transformer: ' + trace.join(' > ') + " => "
+                    + (newKeyValue ? newKeyValue.key : '(remove)'));
             }
         });
 

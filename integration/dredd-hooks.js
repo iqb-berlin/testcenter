@@ -147,7 +147,7 @@ dreddHooks.afterEach(function(transaction, done) {
 });
 
 
-dreddHooks.before('/workspace/{ws_id}/file > upload file > 201 > application/json', async function(transaction, done) {
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > application/json', async function(transaction, done) {
 
     const form = new Multipart();
 
@@ -158,7 +158,7 @@ dreddHooks.before('/workspace/{ws_id}/file > upload file > 201 > application/jso
     done();
 });
 
-dreddHooks.beforeValidation('/test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
+dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
 
     transaction.expected.body = fs.readFileSync('../sampledata/Player.html').toString();
     done();

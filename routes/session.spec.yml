@@ -13,10 +13,16 @@ paths:
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for any user
-          example: "p:0000000000000.00000000000"
-#            l: user000000000.test0000000
-#            at: user000000000.rw00000000
+          examples:
+            personToken:
+              description: auth-token for person
+              value: "p:0000000000000.00000000000"
+            loginToken:
+              description: auth-token for login (part I of 2-factor authorization only)
+              value: "l:user000000000.test0000000"
+            adminToken:
+              description: auth-token for admin
+              value: "a:user000000000.rw00000000"
       responses:
         "200":
           description: OK, get session data
@@ -24,14 +30,31 @@ paths:
             application/json:
               schema:
                 $ref: './components.spec.yml#/components/schemas/session'
-              example:
-                token:  "static_token_person_xxx"
-                displayName: "sample_group/sample_user/xxx"
-                access:
-                  test:  ["BOOKLET.SAMPLE"]
-                customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
-                flags: []
-
+              examples:
+                personToken:
+                  value:
+                    token:  "static_token:person:sample_group_sample_user_xxx"
+                    displayName: "sample_group/sample_user/xxx"
+                    access:
+                      test:  ["BOOKLET.SAMPLE"]
+                    customTexts: {}
+                    flags: []
+                loginToken:
+                  value:
+                    token: "static_token:login:test"
+                    displayName: "sample_group/sample_user"
+                    access: {}
+                    customTexts: {}
+                    flags: ["codeRequired"]
+                adminToken:
+                  value:
+                    token: "static_token:admin:super"
+                    displayName: "super"
+                    access:
+                      superAdmin: []
+                      workspaceAdmin: ["1"]
+                    customTexts: {}
+                    flags: []
         "401":
           description: No token qualifies for authentication
         "410":

@@ -79,12 +79,11 @@ gulp.task('compile_spec_files', function() {
 gulp.task('prepare_spec_for_dredd', done => {
 
     const compiledFileName = 'tmp/compiled.specs.yml';
-    const targetFileName = 'tmp/transformed.specs.yml';
-
     cliPrint.headline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
 
     const yamlString = fs.readFileSync(compiledFileName, "utf8");
     const yamlTree = YAML.parse(yamlString);
+
     const resolveReference = (key, val) => {
         const referenceString = val.substring(val.lastIndexOf('/') + 1);
         return {
@@ -93,28 +92,74 @@ gulp.task('prepare_spec_for_dredd', done => {
         }
     };
 
-    const rules = {
+    const splitExamples = (key, val) => {
 
-        "examples$": (key, val) => {return {
+        iterations = Math.max(iterations, Object.keys(val).length);
+        const currentExample = val[Object.keys(val)[iteration - 1]];
+        return (typeof currentExample === "undefined") ? null : {
             key: "example",
-            val: val[Object.keys(val)[0]].value
-        }},
-        "^info > description$": (key, val) => {return {
-            key: "description",
-            val: val + " - transformed to be dredd compatible"
-        }},
-        "parameters > \\d+ > schema$": () => null,
-        "text/xml > example$": () => null,
-        "application/octet-stream > example$": () => null,
-        "^paths > .*? > .*? > responses > (500|202)$": () => null,
-        "schema > \\$ref$": resolveReference,
-        "items > \\$ref$": resolveReference
+            val: currentExample.value
+        }
     };
 
-    const transformed = jsonTransform(yamlTree, rules, false);
-    const transformedAsString = YAML.stringify(transformed, 10);
-    fs.writeFileSync(targetFileName, transformedAsString, "utf8");
-    console.log(`${targetFileName} written.`);
+    let iterations = 1;
+    let iteration = 0;
+    let deletePaths;
+
+    /**
+     * Problem:
+     * Das aufsplitten funktioniert gut, aber die transactiosn, die nur ein example haben tauchen dann 3 mal auf
+     *
+     * - in dreddHooks.beforeAll kann man keine transaction löschen (sonst könnte man dublikate hier entfernen)
+     * - example einfach rauszunehmen fürt zu einem Fehler, da Dredd keine Pfade mit paramatern aber ohne
+     * example akzeptiert
+     * - also muss man auch die entsprechenden Pfade löschen (versuch siehe unten) -> problem: wenn alle methods
+     * eines pfads gelöscht sidn bleibt der stehen und es fürt wiede rzu einem fehler (>.<)
+     *
+     * lösung:
+     * - eventuell das iterieren lassen und neue Dateien erzeugen?
+     * - oder mit einer anderen Funktion, nicht JSON-transform, die ggeigneter ist,ungeeigenete pfade rauslöschen
+     *
+     *
+     *
+     */
+
+
+    const rules = {
+
+        "^info > title$": () => {return {
+            key: "title",
+            val: `specs`
+        }},
+        "parameters > \\d+ > schema$": () => null,
+        "text/xml > example$": () => null, // TODO work with this in dreddHooks?
+        "application/octet-stream > example$": () => null, // TODO work with this in dreddHooks?
+        "^paths > .*? > .*? > responses > (500|202)$": () => null, // TODO work with this in dreddHooks?
+        "schema > \\$ref$": resolveReference,
+        "items > \\$ref$": resolveReference,
+        // "^(paths > .*? > .*?) .*? > example$": (key, val, matches) => {
+        //     if (iteration === 1) {
+        //         return {key, val};
+        //     } else {
+        //         console.log(matches[1]);
+        //         deletePaths[matches[1]] = () => null;
+        //         return null;
+        //     }
+        // } ,
+        "examples$": splitExamples,
+    };
+
+    while (iteration++ < iterations) {
+
+        deletePaths = {};
+        const targetFileName = `tmp/transformed.specs.${iteration}.yml`;
+        const transformed = jsonTransform(yamlTree, rules, false);
+        // const transformed2 = jsonTransform(yamlTree, deletePaths, true);
+        const transformedAsString = YAML.stringify(transformed, 10);
+        fs.writeFileSync(targetFileName, transformedAsString, "utf8");
+        console.log(`${iteration}/${iterations}: ${targetFileName} written.`);
+    }
+
     done();
 });
 
@@ -122,16 +167,14 @@ gulp.task('run_dredd', done => {
 
     cliPrint.headline(`run dredd against ${apiUrl}`);
 
-    const dreddFileName = 'tmp/transformed.specs.yml';
-
     new Dredd({
         endpoint: apiUrl,
-        path: [dreddFileName],
+        path: ['tmp/transformed.specs.*.yml'],
         hookfiles: ['dredd-hooks.js'],
-        output: [`tmp/report.${dreddFileName}.html`],
+        output: [`tmp/report.html`],
         reporter: ['html'],
         names: false,
-    }).run(function(err, stats) {
+    }).run((err, stats) => {
         console.log(stats);
         if (err) {
             done(cliPrint.getError(`Dredd Tests: ` + err));
@@ -204,6 +247,11 @@ exports.run_dredd_test = gulp.series(
     'run_dredd',
     'delete_special_config_file',
     'update_docs'
+);
+
+exports.repeat = gulp.series(
+    'run_dredd',
+    'delete_special_config_file',
 );
 
 

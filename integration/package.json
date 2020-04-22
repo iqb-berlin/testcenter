@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "update_specs": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js update_specs",
-    "dredd_test": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test"
+    "dredd_test": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js run_dredd_test",
+    "repeat": "node_modules/.bin/gulp --gulpfile=./test-api-spec.js repeat"
   },
   "author": "Philipp Franck",
   "license": "MIT",

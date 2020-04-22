@@ -68,8 +68,8 @@ components:
         flags:
           type: array
           description: |-
-            flags with additonal information.
-              * `codeRequired` that says indicated that a second part of authentication is required
+            flags with additional information.
+              * `codeRequired` that indicates that a second part of authentication is required
         access:
           description: A collection of available obejcts. The keys are type of object.
           type: object
@@ -80,11 +80,11 @@ components:
                 label, user-rights and such.
             superAdmin:
               type: string
-              description: No Elements. Presence of this key indicated access to Superadmin-functions for this user.
+              description: No Elements. Presence of this key indicates access to Superadmin-functions for this user.
             test:
               type: string
-              description: Elements are booklet-names (not test-idss because unstarted tests don't have one. Through
-                the endpoint `[GET] /booklet/{test_name}` the corresponding ids if startet, status etc. can be obtained.
+              description: Elements are booklet-names (not test-ids because unstarted tests don't have one. Through
+                the endpoint `[GET] /booklet/{test_name}` the corresponding ids, and if startet, status etc. can be obtained.
             workspaceMonitor:
               type: string
             testGroupMonitor:
