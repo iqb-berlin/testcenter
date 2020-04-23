@@ -17,7 +17,7 @@
   </CustomTexts>
 
   <Group name="sample_group" validFor="45" validFrom="1/3/2020 10:00">
-    <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__" monitorcode="moni">
+    <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet codes="__TEST_PERSON_CODES__">BOOKLET.SAMPLE</Booklet>
     </Login>
     <Login mode="monitor-group" name="__TEST_LOGIN_NAME__-group-monitor" pw="user123"/>

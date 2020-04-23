@@ -86,6 +86,7 @@
                       <xs:documentation>
                         This attribute creates an group-monitor for this group which has the same login-credentials as
                         the testees but it's own code.
+                        ** This feature is only a proposal and not implemented **
                       </xs:documentation>
                     </xs:annotation>
                   </xs:attribute>
