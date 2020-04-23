@@ -1,6 +1,16 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
+// TODO unit-tests
 
 class Session extends DataCollectionTypeSafe {
+
+    static $accessObjectTypes = [
+        'test',
+        'superAdmin',
+        'workspaceAdmin',
+        'testMonitor',
+        'workspaceMonitor'
+    ];
 
     protected $token;
     protected $displayName;
@@ -26,38 +36,20 @@ class Session extends DataCollectionTypeSafe {
         $this->customTexts = $customTexts ?? (object) [];
     }
 
-    public function setAccessWorkspaceAdmin(int ...$accessObjects) {
+    public function addAccessObjects(string $type, string ...$accessObjects): Session {
 
-        $this->access->workspaceAdmin = array_map(function(int $id): string {return (string) $id;}, $accessObjects);
+        if (!in_array($type, $this::$accessObjectTypes)) {
+
+            throw new Exception("AccessObject type `$type` is not valid.");
+        }
+
+        $this->access->$type = $accessObjects;
+
+        return $this;
     }
 
-    public function setAccessWorkspaceMonitor(int ...$accessObjects) {
+    public function hasAccess(string $type, string $id = null): bool {
 
-        $this->access->workspaceMonitor = array_map(function(int $id): string {return (string) $id;}, $accessObjects);
-    }
-
-    public function setAccessSuperAdmin() {
-
-        $this->access->superAdmin = [];
-    }
-
-    public function setAccessTest(string ...$accessObjects) {
-
-        $this->access->test = $accessObjects;
-    }
-
-    public function getAccessWorkspaceAdmin(): ?array {
-
-        return $this->access->workspaceAdmin ?? null;
-    }
-
-    public function getAccessSuperAdmin(): ?array {
-
-        return $this->access->workspaceAdmin ?? null;
-    }
-
-    public function getAccessTest(): ?array {
-
-        return $this->access->test ?? null;
+        return isset($this->access->$type) and (!$id or in_array($id, $this->access->$type));
     }
 }

@@ -70,7 +70,6 @@ class SessionDAO extends DAO {
     }
 
 
-
     public function getLoginSession(string $loginToken): Session {
 
         $loginData = $this->getLogin($loginToken);
@@ -105,16 +104,9 @@ class SessionDAO extends DAO {
             [':token' => $personToken]
         );
 
-
         if ($loginData === null) {
             throw new HttpError("PersonToken invalid: `$personToken`", 403);
         }
-
-        $booklets = JSON::decode($loginData['codes_to_booklets'], true);
-
-
-
-        $personsBooklets = $booklets[$loginData['code']] ?? [];
 
         $session = new Session(
             $personToken,
@@ -123,17 +115,26 @@ class SessionDAO extends DAO {
             JSON::decode($loginData['customTexts']) ?? (object) []
         );
 
-        if (in_array($loginData['mode'], Role::withChildren('monitor'))) {
+        switch ($loginData['mode']) {
 
-            $session->setAccessWorkspaceMonitor((int) $loginData['workspaceId']);
-            return $session;
+            case "monitor-study":
+                $session->addAccessObjects('workspaceMonitor', $loginData['workspaceId']);
+                break;
+
+            case "monitor-group":
+                $session->addAccessObjects('workspaceTest', $loginData['workspaceId']);
+                break;
+
+            default:
+                $booklets = JSON::decode($loginData['codes_to_booklets'], true);
+                if (!isset($booklets[$loginData['code']])) {
+                    throw new HttpError("No Booklet found", 404);
+                }
+                $personsBooklets = $booklets[$loginData['code']] ?? [];
+                $session->addAccessObjects('test', ...$personsBooklets);
+                break;
         }
 
-        if (!isset($booklets[$loginData['code']])) {
-            throw new HttpError("No Booklet found", 404);
-        }
-
-        $session->setAccessTest(...$personsBooklets);
         return $session;
     }
 
@@ -149,17 +150,21 @@ class SessionDAO extends DAO {
             $login->getCustomTexts()
         );
 
-        $personsBooklets = $login->getBooklets()[$person['code']] ?? [];
+        switch ($login->getMode()) {
 
-        if (in_array($login->getMode(), Role::withChildren('monitor'))) {
+            case "monitor-study":
+                $session->addAccessObjects('workspaceMonitor', (string) $login->getWorkspaceId());
+                break;
 
-            $session->setAccessWorkspaceMonitor($login->getWorkspaceId());
+            case "monitor-group":
+                $session->addAccessObjects('testMonitor', (string) $login->getWorkspaceId());
+                break;
 
-        } else {
-
-            $session->setAccessTest(...$personsBooklets);
+            default:
+                $personsBooklets = $login->getBooklets()[$person['code']] ?? [];
+                $session->addAccessObjects('test', ...$personsBooklets);
+                break;
         }
-
 
         return $session;
     }

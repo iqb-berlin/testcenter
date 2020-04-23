@@ -2403,7 +2403,7 @@ components:
                         workspaceMonitor:
                             type: string
                             description: workspace(s)
-                        testGroupMonitor:
+                        testMonitor:
                             type: string
                             description: workspace(s)
         workspace:
