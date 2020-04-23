@@ -113,7 +113,7 @@ dreddHooks.beforeEach(function(transaction, done) {
                 adminToken: '__invalid_token__',
                 loginToken: '__invalid_token__',
                 personToken: '__invalid_token__',
-                monitorToken: '__invalid_token__'
+                monitorToken: 'static_token:person:sample_group_sample_user_xxx'
             });
             break;
         case '404':

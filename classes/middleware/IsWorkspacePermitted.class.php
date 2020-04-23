@@ -40,7 +40,7 @@ class IsWorkspacePermitted {
             throw new HttpNotFoundException($request,"Workspace `{$params['ws_id']}` not found.");
         }
 
-        $userRoleOnWorkspace = $role = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
+        $userRoleOnWorkspace = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
 
         if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Role::withChildren($userRoleOnWorkspace)))) {
 

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 // TODO unit test
 
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -21,6 +22,12 @@ class IsWorkspaceMonitor {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
+
+        if ($authToken->getMode() !== 'monitor-study') {
+
+            throw new HttpForbiddenException($request, "Access Denied: 
+                Wrong mode for personSession: `{$authToken->getMode()}`. `monitor-study` required.");
+        }
 
         $adminDAO = new AdminDAO();
 
