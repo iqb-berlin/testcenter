@@ -4,7 +4,6 @@ declare(strict_types=1);
 // TODO unit test
 
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Http\Request;
 use Slim\Http\UploadedFile;
 
@@ -25,7 +24,6 @@ class UploadedFilesHandler {
      * @param $workspaceId
      * @return array
      * @throws HttpBadRequestException
-     * @throws HttpInternalServerErrorException
      * @throws Exception
      */
     static function handleUploadedFiles(Request $request, string $fieldName, int $workspaceId) {
@@ -58,7 +56,7 @@ class UploadedFilesHandler {
         foreach ($uploadedFiles as $uploadedFile) { /** @var UploadedFile $uploadedFile */
 
             if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
-                throw new HttpInternalServerErrorException($request, UploadedFilesHandler::errorMessages[$uploadedFile->getError()] ?? 'unknown error');
+                throw new HttpBadRequestException($request, UploadedFilesHandler::errorMessages[$uploadedFile->getError()] ?? 'unknown error');
             }
 
             $originalFileName = $uploadedFile->getClientFilename();

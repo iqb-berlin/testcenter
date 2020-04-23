@@ -88,6 +88,7 @@ dreddHooks.beforeEach(function(transaction, done) {
         case '200':
         case '201':
         case '207':
+        case '422':
             changeAuthToken(transaction, {
                 adminToken: 'static_token:admin:super',
                 loginToken: 'static_token:login:sample_user',
@@ -164,6 +165,22 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > applica
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
     done();
 });
+
+
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 422', async function(transaction, done) {
+
+    const form = new Multipart();
+
+    form.append('fileforvo', fs.createReadStream('../sampledata/Unit.xml', 'utf-8'));
+
+    transaction.request.body = await streamToString(form.stream());
+    transaction.request.body = transaction.request.body
+        .replace('<Unit', '<Invalid')
+        .replace('</Unit', '</Invalid');
+    transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
+    done();
+});
+
 
 dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
 

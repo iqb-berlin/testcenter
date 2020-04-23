@@ -661,6 +661,8 @@ paths:
           description: Forbidden
         "410":
           description: Session Expired
+        "422":
+          description: Provided XML file is invalid
         "500":
           description: Server Error
 

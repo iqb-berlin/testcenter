@@ -182,14 +182,14 @@ class WorkspaceController {
             if ($xFile->isValid()) {
                 $targetFolder = $this->_workspacePath . '/' . $xFile->getRoottagName();
             } else {
-                throw new HttpError("'$fileName' XML nicht erkannt oder nicht valide: \n" . implode(";\n ", $xFile->getErrors()), 400);
+                throw new HttpError(implode("\n", $xFile->getErrors()), 422);
             }
         }
 
         // move file from testcenter-tmp-folder to targetfolder
         if (!file_exists($targetFolder)) {
             if (!mkdir($targetFolder)) {
-                throw new Exception('Konnte Unterverzeichnis nicht anlegen.');
+                throw new Exception("Could not create folder: `$targetFolder`.");
             }
         }
 
@@ -197,16 +197,14 @@ class WorkspaceController {
 
         if (file_exists($targetFilePath)) {
             if (!unlink($targetFilePath)) {
-                throw new Exception('Konnte alte Datei nicht löschen: ' . "$targetFolder/$fileName");
+                throw new Exception("Could not delete file: `$targetFolder/$fileName`");
             }
         }
 
         if (strlen($targetFilePath) > 0) {
             if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
-                throw new Exception('Konnte Datei nicht in Zielordner verschieben: ' . "$targetFolder/$fileName");
+                throw new Exception("Could not move file to `$targetFolder/$fileName`");
             }
-            // TODO remove if https://github.com/iqb-berlin/testcenter-iqb-php/issues/30 is done
-            chmod($targetFilePath, 0777);
         }
     }
 

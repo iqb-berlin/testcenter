@@ -61,16 +61,16 @@ class XMLFile {
         libxml_clear_errors();
     
         if (!file_exists($xmlfilename)) {
-            array_push($this->allErrors, 'Konnte ' . $xmlfilename . ' nicht finden.');
+            array_push($this->allErrors, "`$xmlfilename` not found`");
         } else {
 
             $this->xmlfile = simplexml_load_file($xmlfilename);
             if ($this->xmlfile == false) {
-                array_push($this->allErrors, 'Konnte ' . $xmlfilename . ' nicht öffnen.');
+                array_push($this->allErrors, "Error in `$xmlfilename`");
             } else {
                 $this->_rootTagName = $this->xmlfile->getName();
                 if (!array_key_exists($this->_rootTagName, $this->_schemaFileNames)) {
-                    array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->_rootTagName . '" unbekannt.');
+                    array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->_rootTagName . '" unknown.');
                 } else {
                     $mySchemaFilename = $xsdFolderName . $this->_schemaFileNames[$this->_rootTagName];
 
@@ -112,7 +112,7 @@ class XMLFile {
                             do {
                                 $continue = $myReader->read();
                                 foreach (libxml_get_errors() as $error) {
-                                    $errorString = "Fehler $error->code in Zeile {$error->line}: ";
+                                    $errorString = "Error [{$error->code}] in line {$error->line}: ";
                                     $errorString .= trim($error->message);
                                     array_push($this->allErrors, $errorString);
                                 }
@@ -130,7 +130,7 @@ class XMLFile {
         if ($validate) {
             // simplexml_load_file gibt auch Fehler nach libxml
             foreach (libxml_get_errors() as $error) {
-                $errorString = "Fehler $error->code in Zeile {$error->line}:";
+                $errorString = "Error [{$error->code}] in line {$error->line}: ";
                 $errorString .= trim($error->message);
                 array_push($this->allErrors, $errorString);
             }

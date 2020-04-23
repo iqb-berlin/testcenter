@@ -4,6 +4,41 @@ info:
     description: 'This a spec for the (REST-) API of the IQB-Testcenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
     version: 2.2.0
 paths:
+    '/booklet/{booklet_name}':
+        get:
+            summary: 'get status of a booklet'
+            description: 'Retrieves a booklet - in this context that does not mean the booklet-file''s contents but status information about this booklet in regard of a given login: Is there a running test for this booklet etc.'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user containing a personToken'
+                    example: 'p:user000000000.test0000000'
+                -
+                    in: path
+                    name: booklet_name
+                    description: 'id of a executed test'
+                    example: BOOKLET.SAMPLE
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'an object containg information about booklet'
+                    content:
+                        application/json:
+                            example:
+                                running: true
+                                locked: false
+                                label: 'Booklet''s little label'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
     /session:
         get:
             summary: 'get a session'
@@ -1667,6 +1702,8 @@ paths:
                     description: 'workspace not found'
                 '410':
                     description: 'Session Expired'
+                '422':
+                    description: 'Provided XML file is invalid'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/files':
