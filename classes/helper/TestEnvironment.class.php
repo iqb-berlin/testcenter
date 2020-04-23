@@ -116,7 +116,9 @@ class TestEnvironment {
         $initializer->importSampleData($newIds['workspaceId'], $initArgs);
 
         $initDAO->createSampleLoginsReviewsLogs('xxx');
-        $initDAO->createSampleExpiredLogin('xxx');
+        $initDAO->createSampleExpiredSessions('xxx');
+        $initDAO->createSampleMonitorSession();
+        TestEnvironment::debugVirtualEnvironment();
     }
 
 

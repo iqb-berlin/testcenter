@@ -158,7 +158,8 @@ try  {
 
         $firstCode = explode(" ", $args->test_person_codes)[0];
         $initDAO->createSampleLoginsReviewsLogs($firstCode);
-        $initDAO->createSampleExpiredLogin($firstCode);
+        $initDAO->createSampleExpiredSessions($firstCode);
+        $initDAO->createSampleMonitorSession();
         echo "\n Sample sessions created";
     }
 

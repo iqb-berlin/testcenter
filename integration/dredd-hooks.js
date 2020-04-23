@@ -28,6 +28,9 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
         case 'l':
             authToken = newAuthTokenData.loginToken;
             break;
+        case 'm':
+            authToken = newAuthTokenData.monitorToken;
+            break;
     }
 
     transaction.request.headers['AuthToken'] = authToken;
@@ -88,7 +91,8 @@ dreddHooks.beforeEach(function(transaction, done) {
             changeAuthToken(transaction, {
                 adminToken: 'static_token:admin:super',
                 loginToken: 'static_token:login:sample_user',
-                personToken: 'static_token:person:sample_group_sample_user_xxx'
+                personToken: 'static_token:person:sample_group_sample_user_xxx',
+                monitorToken: 'static_token:person:sample_group_test-study-monitor_'
             });
             break;
         case '400':
@@ -108,14 +112,16 @@ dreddHooks.beforeEach(function(transaction, done) {
             changeAuthToken(transaction,{
                 adminToken: '__invalid_token__',
                 loginToken: '__invalid_token__',
-                personToken: '__invalid_token__'
+                personToken: '__invalid_token__',
+                monitorToken: '__invalid_token__'
             });
             break;
         case '404':
             changeAuthToken(transaction, {
                 adminToken: 'static_token:admin:super',
                 loginToken: 'static_token:login:sample_user',
-                personToken: 'static_token:person:sample_group_sample_user_xxx'
+                personToken: 'static_token:person:sample_group_sample_user_xxx',
+                monitorToken: 'static_token:person:sample_group_test-study-monitor_'
             });
             changeUri(transaction, {
                 '/workspace/1/': '/workspace/13/'
@@ -125,7 +131,8 @@ dreddHooks.beforeEach(function(transaction, done) {
             changeAuthToken(transaction,{
                 adminToken: 'static_token:admin:expired_user',
                 loginToken: 'static_token:login:expired_user',
-                personToken: 'static_token:person:sample_group_expired_user_xxx'
+                personToken: 'static_token:person:sample_group_expired_user_xxx',
+                monitorToken: 'static_token:person:sample_group_expired_user_xxx'
             });
             break;
         default:

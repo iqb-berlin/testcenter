@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-
 use Slim\App;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Request;

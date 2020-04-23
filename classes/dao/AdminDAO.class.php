@@ -220,6 +220,23 @@ class AdminDAO extends DAO {
 	}
 
 
+    public function hasMonitorAccessToWorkspace(string $token, int $workspaceId): bool {
+
+        $data = $this->_(
+            'SELECT workspaces.id FROM workspaces
+				INNER JOIN login_sessions ON workspaces.id = login_sessions.workspace_id
+				INNER JOIN person_sessions ON person_sessions.login_id = login_sessions.id
+				WHERE person_sessions.token =:token and workspaces.id = :wsId',
+            [
+                ':token' => $token,
+                ':wsId' => $workspaceId
+            ]
+        );
+
+        return $data != false;
+    }
+
+
 	public function getWorkspaceRole(string $token, int $workspaceId): string {
 
 		$user = $this->_(

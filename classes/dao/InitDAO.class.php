@@ -59,7 +59,7 @@ class InitDAO extends SessionDAO {
      * @param string $loginCode
      * @throws HttpError
      */
-    public function createSampleExpiredLogin(string $loginCode): void {
+    public function createSampleExpiredSessions(string $loginCode): void {
 
         $superAdminDAO = new SuperAdminDAO();
         $adminDAO = new AdminDAO();
@@ -79,6 +79,22 @@ class InitDAO extends SessionDAO {
         $superAdminDAO->createUser("expired_user", "whatever", true);
         $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
     }
+
+
+    public function createSampleMonitorSession(): void {
+
+        $testSession = new PotentialLogin(
+            'test-study-monitor',
+            'monitor-study',
+            'sample_group',
+            [],
+            1,
+            TimeStamp::fromXMLFormat('1/1/2030 12:00')
+        );
+        $login = $this->createLogin($testSession);
+        $this->createPerson($login, '');
+    }
+
 
     /**
      * @param string $username

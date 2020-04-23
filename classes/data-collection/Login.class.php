@@ -96,6 +96,6 @@ class Login extends DataCollectionTypeSafe {
 
     public function isCodeRequired(): bool {
 
-        return (array_keys($this->booklets) != ['']);
+        return (count($this->booklets) and (array_keys($this->booklets) != ['']));
     }
 }

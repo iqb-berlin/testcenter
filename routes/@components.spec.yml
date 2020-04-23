@@ -87,8 +87,10 @@ components:
                 the endpoint `[GET] /booklet/{test_name}` the corresponding ids, and if startet, status etc. can be obtained.
             workspaceMonitor:
               type: string
+              description: workspace(s)
             testGroupMonitor:
               type: string
+              description: workspace(s)
 
     workspace:
       type: object

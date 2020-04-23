@@ -23,6 +23,9 @@ paths:
             adminToken:
               description: auth-token for admin
               value: "a:user000000000.rw00000000"
+            monitorToken:
+              description: auth-token for workspace-monitor
+              value: "m:user000000000.rw00000000"
       responses:
         "200":
           description: OK, get session data
@@ -53,6 +56,14 @@ paths:
                     access:
                       superAdmin: []
                       workspaceAdmin: ["1"]
+                    customTexts: {}
+                    flags: []
+                monitorToken:
+                  value:
+                    token: "static_token:person:sample_group_test-study-monitor_"
+                    displayName: "super"
+                    access:
+                      workspaceMonitor: ["1"]
                     customTexts: {}
                     flags: []
         "401":

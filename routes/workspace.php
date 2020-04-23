@@ -82,16 +82,6 @@ $app->group('/workspace', function(App $app) {
     })->add(new IsWorkspacePermitted('RW'));
 
 
-    $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $bookletsFolder = new BookletsFolder($workspaceId);
-
-        return $response->withJson($bookletsFolder->getTestStatusOverview($adminDAO->getBookletsStarted($workspaceId)));
-
-    })->add(new IsWorkspacePermitted('MO'));
-
-
     $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($adminDAO) {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
@@ -102,28 +92,6 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($results);
 
     })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->get('/{ws_id}/booklets/started', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $groups = explode(",", $request->getParam('groups'));
-
-        $bookletsStarted = [];
-        foreach($adminDAO->getBookletsStarted($workspaceId) as $booklet) {
-            if (in_array($booklet['groupname'], $groups)) {
-                if ($booklet['locked'] == '1') {
-                    $booklet['locked'] = true;
-                } else {
-                    $booklet['locked'] = false;
-                }
-                array_push($bookletsStarted, $booklet);
-            }
-        }
-
-        return $response->withJson($bookletsStarted);
-
-    })->add(new IsWorkspacePermitted('MO'));
 
 
     $app->get('/{ws_id}/validation', function(Request $request, Response $response) use ($adminDAO) {
@@ -198,34 +166,6 @@ $app->group('/workspace', function(App $app) {
         $deletionReport = $workspaceController->deleteFiles($filesToDelete);
 
         return $response->withJson($deletionReport)->withStatus(207);
-
-    })->add(new IsWorkspacePermitted('RW'));
-
-
-    $app->patch('/{ws_id}/tests/unlock', function(Request $request, Response $response) use ($adminDAO) { // TODO name more RESTful
-
-        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        foreach($groups as $groupName) {
-            $adminDAO->changeBookletLockStatus($workspaceId, $groupName, false);
-        }
-
-        return $response;
-
-    })->add(new IsWorkspacePermitted('RW'));
-
-
-    $app->patch('/{ws_id}/tests/lock', function(Request $request, Response $response) use ($adminDAO) { // TODO name more RESTful
-
-        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        foreach($groups as $groupName) {
-            $adminDAO->changeBookletLockStatus($workspaceId, $groupName, true);
-        }
-
-        return $response;
 
     })->add(new IsWorkspacePermitted('RW'));
 
@@ -404,3 +344,72 @@ $app->put('/workspace/{ws_id}/sys-check/{sys-check_name}/report', function(Reque
 
     return $response->withStatus(201);
 });
+
+
+$app->group('/workspace', function(App $app) {
+
+    $adminDAO = new AdminDAO();
+
+    $app->patch('/{ws_id}/tests/unlock', function(Request $request, Response $response) use ($adminDAO) { // TODO name more RESTful
+
+        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
+        $workspaceId = (int) $request->getAttribute('ws_id');
+
+        foreach($groups as $groupName) {
+            $adminDAO->changeBookletLockStatus($workspaceId, $groupName, false);
+        }
+
+        return $response;
+
+    });
+
+
+    $app->patch('/{ws_id}/tests/lock', function(Request $request, Response $response) use ($adminDAO) { // TODO name more RESTful
+
+        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
+        $workspaceId = (int) $request->getAttribute('ws_id');
+
+        foreach($groups as $groupName) {
+            $adminDAO->changeBookletLockStatus($workspaceId, $groupName, true);
+        }
+
+        return $response;
+
+    });
+
+
+    $app->get('/{ws_id}/status', function(Request $request, Response $response) use ($adminDAO) {
+
+        $workspaceId = (int) $request->getAttribute('ws_id');
+        $bookletsFolder = new BookletsFolder($workspaceId);
+
+        return $response->withJson($bookletsFolder->getTestStatusOverview($adminDAO->getBookletsStarted($workspaceId)));
+
+    });
+
+
+    $app->get('/{ws_id}/booklets/started', function(Request $request, Response $response) use ($adminDAO) {
+
+        $workspaceId = (int) $request->getAttribute('ws_id');
+        $groups = explode(",", $request->getParam('groups', ''));
+
+        $bookletsStarted = [];
+        foreach($adminDAO->getBookletsStarted($workspaceId) as $booklet) {
+            if (in_array($booklet['groupname'], $groups)) {
+                if ($booklet['locked'] == '1') {
+                    $booklet['locked'] = true;
+                } else {
+                    $booklet['locked'] = false;
+                }
+                array_push($bookletsStarted, $booklet);
+            }
+        }
+
+        return $response->withJson($bookletsStarted);
+    });
+
+})
+    ->add(new IsWorkspaceMonitor())
+    ->add(new RequireToken('person'));
+//    ->add(new HasMode('monitor')); TODO implement
+

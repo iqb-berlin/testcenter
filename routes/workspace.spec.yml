@@ -13,8 +13,8 @@ paths:
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for admin-user with role at least "MO" for this workspace
-          example: "a:user000000000.mo00000000"
+          description: auth-token for person with mode `monitor-study`
+          example: "m:user000000000.mo00000000"
         - in: path
           name: ws_id
           required: true
@@ -25,16 +25,12 @@ paths:
         - in: query
           name: groups
           schema:
-            type: object
-            properties:
-              g:
-                type: array
-                description: a list
-                items:
-                  type: string
+              type: array
+              description: a list
+              items:
+                type: string
           example:
-            g:
-                - sample_group
+            sample_group
       responses:
         "200":
           description: OK, list of started booklets
@@ -152,16 +148,12 @@ paths:
         - in: query
           name: groups
           schema:
-            type: object
-            properties:
-              g:
-                type: array
-                description: a list
-                items:
-                  type: string
+              type: array
+              description: a list
+              items:
+                type: string
           example:
-            g:
-              - sample_group
+            [sample_group]
       responses:
         "200":
           description: OK, list of logs
@@ -235,16 +227,12 @@ paths:
         - in: query
           name: groups
           schema:
-            type: object
-            properties:
-              g:
-                type: array
-                description: a list
-                items:
-                  type: string
+            type: array
+            description: a list
+            items:
+              type: string
           example:
-            g:
-              - sample_group
+            [sample_group]
       responses:
         "200":
           description: OK, list of responses
@@ -429,16 +417,12 @@ paths:
         - in: query
           name: groups
           schema:
-            type: object
-            properties:
-              g:
-                type: array
-                description: a list
-                items:
-                  type: string
+            type: array
+            description: a list
+            items:
+              type: string
           example:
-            g:
-              - sample_group
+            [sample_group]
 
       responses:
         "200":
@@ -505,8 +489,8 @@ paths:
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for admin-user with role at least "MO" (monitor only) for this workspace
-          example: "a:user000000000.mo00000000"
+          description: auth-token for person with mode `monitor-study`
+          example: "m:user000000000.mo00000000"
 
         - in: path
           name: ws_id
@@ -813,8 +797,8 @@ paths:
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          example: "a:user000000000.rw00000000"
+          description: auth-token for person with mode `monitor-study`
+          example: "m:user000000000.mo00000000"
         - in: path
           name: ws_id
           description: workspace-id
@@ -856,8 +840,8 @@ paths:
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for admin-user with role "RW" (read/write) for this workspace
-          example: "a:user000000000.rw00000000"
+          description: auth-token for person with mode `monitor-study`
+          example: "m:user000000000.mo00000000"
         - in: path
           name: ws_id
           description: workspace-id

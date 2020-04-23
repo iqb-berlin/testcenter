@@ -21,7 +21,7 @@ class AuthToken extends DataCollectionTypeSafe {
         $this->id = $id;
         $this->type = $type;
         $this->workspaceId = $workspaceId;
-        $this->mode = $mode;at:
+        $this->mode = $mode;
     }
 
 

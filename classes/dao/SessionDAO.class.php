@@ -11,36 +11,36 @@ class SessionDAO extends DAO {
         $tokenInfo = $this->_(
             'select
                     *
-            from (
-                select
-                    admin_sessions.token,
-                    users.id,
-                    \'admin\' as "type",
-                    -1 as "workspaceId",
-                    case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
-                    valid_until as "validTo"
-                from admin_sessions
-                    inner join users on (users.id = admin_sessions.user_id)
-                union
-                select
-                    token,
-                    login_sessions.id as "id",
-                    \'login\' as "type",
-                    workspace_id as "workspaceId",
-                    login_sessions.mode,
-                    valid_until as "validTo"
-                FROM login_sessions
-                union
-                select
-                    person_sessions.token,
-                    person_sessions.id as "id",
-                    \'person\' as "type",
-                    workspace_id as "workspaceId",
-                    login_sessions.mode,
-                    person_sessions.valid_until as "validTo"
-                from login_sessions
-                    inner join person_sessions on (person_sessions.login_id = login_sessions.id)
-            ) as allTokenTables
+                from (
+                    select
+                        admin_sessions.token,
+                        users.id,
+                        \'admin\' as "type",
+                        -1 as "workspaceId",
+                        case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
+                        valid_until as "validTo"
+                    from admin_sessions
+                        inner join users on (users.id = admin_sessions.user_id)
+                    union
+                    select
+                        token,
+                        login_sessions.id as "id",
+                        \'login\' as "type",
+                        workspace_id as "workspaceId",
+                        login_sessions.mode,
+                        valid_until as "validTo"
+                    FROM login_sessions
+                    union
+                    select
+                        person_sessions.token,
+                        person_sessions.id as "id",
+                        \'person\' as "type",
+                        workspace_id as "workspaceId",
+                        login_sessions.mode,
+                        person_sessions.valid_until as "validTo"
+                    from login_sessions
+                        inner join person_sessions on (person_sessions.login_id = login_sessions.id)
+                ) as allTokenTables
             where 
                 token = :token',
             [':token' => $tokenString]
@@ -53,7 +53,9 @@ class SessionDAO extends DAO {
 
         if (!in_array($tokenInfo["type"], $requiredTypes)) {
 
-            throw new HttpError("Token `{$tokenString}` of type `{$tokenInfo["type"]}` hat insufficient rights", 403);
+            throw new HttpError("Token `{$tokenString}` of "
+                . "type `{$tokenInfo["type"]}` has wrong type - `"
+                . implode($requiredTypes, "` or `") . "` required.", 403);
         }
 
         TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($tokenInfo['validTo']));
@@ -110,9 +112,7 @@ class SessionDAO extends DAO {
 
         $booklets = JSON::decode($loginData['codes_to_booklets'], true);
 
-        if (!isset($booklets[$loginData['code']])) {
-            throw new HttpError("No Booklet found", 404);
-        }
+
 
         $personsBooklets = $booklets[$loginData['code']] ?? [];
 
@@ -125,13 +125,15 @@ class SessionDAO extends DAO {
 
         if (in_array($loginData['mode'], Role::withChildren('monitor'))) {
 
-            $session->setAccessWorkspaceMonitor($loginData['workspaceId']);
-
-        } else {
-
-            $session->setAccessTest(...$personsBooklets);
+            $session->setAccessWorkspaceMonitor((int) $loginData['workspaceId']);
+            return $session;
         }
 
+        if (!isset($booklets[$loginData['code']])) {
+            throw new HttpError("No Booklet found", 404);
+        }
+
+        $session->setAccessTest(...$personsBooklets);
         return $session;
     }
 
@@ -404,7 +406,7 @@ class SessionDAO extends DAO {
     // TODO unit-test
     public function createPerson(Login $login, string $code, bool $allowExpired = false): array {
 
-        if (!array_key_exists($code, $login->getBooklets())) {
+        if (count($login->getBooklets()) and !array_key_exists($code, $login->getBooklets())) {
             throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 400);
         }
 
