@@ -124,7 +124,7 @@ gulp.task('prepare_spec_for_dredd', done => {
         "parameters > \\d+ > schema$": () => null, // @see https://github.com/apiaryio/api-elements.js/issues/226
         "text/xml > example$": () => null, // TODO work with this in dreddHooks?
         "application/octet-stream > example$": () => null, // TODO work with this in dreddHooks?
-        "^paths > .*? > .*? > responses > (500|202)$": () => null, // TODO work with this in dreddHooks?
+        "^paths > .*? > .*? > responses > (500|202)$": () => null,
         "schema > \\$ref$": resolveReference,
         "items > \\$ref$": resolveReference,
     };
@@ -239,6 +239,5 @@ exports.repeat = gulp.series(
 exports.update_specs = gulp.series(
     'start',
     'compile_spec_files',
-    'prepare_spec_for_dredd', // TODO check if needed
-    // 'update_docs'
+    'update_docs'
 );
