@@ -106,56 +106,37 @@ gulp.task('prepare_spec_for_dredd', done => {
     let iteration = 0;
     let deletePaths;
 
-    /**
-     * Problem:
-     * Das aufsplitten funktioniert gut, aber die transactiosn, die nur ein example haben tauchen dann 3 mal auf
-     *
-     * - in dreddHooks.beforeAll kann man keine transaction löschen (sonst könnte man dublikate hier entfernen)
-     * - example einfach rauszunehmen fürt zu einem Fehler, da Dredd keine Pfade mit paramatern aber ohne
-     * example akzeptiert
-     * - also muss man auch die entsprechenden Pfade löschen (versuch siehe unten) -> problem: wenn alle methods
-     * eines pfads gelöscht sidn bleibt der stehen und es fürt wiede rzu einem fehler (>.<)
-     *
-     * lösung:
-     * - eventuell das iterieren lassen und neue Dateien erzeugen?
-     * - oder mit einer anderen Funktion, nicht JSON-transform, die ggeigneter ist,ungeeigenete pfade rauslöschen
-     *
-     *
-     *
-     */
-
-
+    // @see https://github.com/apiaryio/api-elements.js/blob/master/packages/fury-adapter-oas3-parser/STATUS.md
     const rules = {
+        "^(paths > .*? > .*?) .*? > example$": (key, val, matches, trace) => {
+            if ((iteration > 1) && (trace.indexOf('schema') === -1)) {
+                deletePaths[matches[1]] = () => null;
+                return null;
+            }
+            return {key, val};
 
+        },
+        "examples$": splitExamples,
         "^info > title$": () => {return {
             key: "title",
             val: `specs`
         }},
-        "parameters > \\d+ > schema$": () => null,
+        "parameters > \\d+ > schema$": () => null, // @see https://github.com/apiaryio/api-elements.js/issues/226
         "text/xml > example$": () => null, // TODO work with this in dreddHooks?
         "application/octet-stream > example$": () => null, // TODO work with this in dreddHooks?
         "^paths > .*? > .*? > responses > (500|202)$": () => null, // TODO work with this in dreddHooks?
         "schema > \\$ref$": resolveReference,
         "items > \\$ref$": resolveReference,
-        // "^(paths > .*? > .*?) .*? > example$": (key, val, matches) => {
-        //     if (iteration === 1) {
-        //         return {key, val};
-        //     } else {
-        //         console.log(matches[1]);
-        //         deletePaths[matches[1]] = () => null;
-        //         return null;
-        //     }
-        // } ,
-        "examples$": splitExamples,
     };
+
 
     while (iteration++ < iterations) {
 
         deletePaths = {};
         const targetFileName = `tmp/transformed.specs.${iteration}.yml`;
         const transformed = jsonTransform(yamlTree, rules, false);
-        // const transformed2 = jsonTransform(yamlTree, deletePaths, true);
-        const transformedAsString = YAML.stringify(transformed, 10);
+        const transformed2 = jsonTransform(transformed, deletePaths, false);
+        const transformedAsString = YAML.stringify(transformed2, 10);
         fs.writeFileSync(targetFileName, transformedAsString, "utf8");
         console.log(`${iteration}/${iterations}: ${targetFileName} written.`);
     }
@@ -258,6 +239,6 @@ exports.repeat = gulp.series(
 exports.update_specs = gulp.series(
     'start',
     'compile_spec_files',
-    'prepare_spec_for_dredd',
-    'update_docs'
+    'prepare_spec_for_dredd', // TODO check if needed
+    // 'update_docs'
 );

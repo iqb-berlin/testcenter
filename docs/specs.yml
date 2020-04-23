@@ -251,6 +251,9 @@ paths:
                                 required:
                                     - version
                                     - customTexts
+                            example:
+                                version: 2.0.0
+                                customTexts: {}
                 '500':
                     description: 'Server Error'
     /version:
