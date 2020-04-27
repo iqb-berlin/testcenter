@@ -53,13 +53,17 @@
 
   <!-- ###################################################################-->
   <xs:complexType name="BookletConfigType">
-    <xs:all>
-      <xs:element name="NavPolicy" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="NavButtons" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="PageNavBar" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="Logging" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
-      <xs:element name="Loading" type="ParameterType" minOccurs = "0" maxOccurs="1"/>
-    </xs:all>
+    <xs:sequence>
+      <xs:element name="Config" minOccurs = "1" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="key" type="xs:ID" use="required"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
   </xs:complexType>
 
   <!-- ###################################################################-->
@@ -70,7 +74,6 @@
       <xs:all>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
         <xs:element name="BookletConfig" type="BookletConfigType" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="CustomTexts" type="CustomTextsType" minOccurs = "0" maxOccurs="1"/>
         <xs:element name="Units" type="TestletType" minOccurs="1" maxOccurs="1"/>
       </xs:all>
     </xs:complexType>
