@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use Slim\App;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -84,7 +85,9 @@ $app->group('/user', function(App $app) {
                 throw new HttpBadRequestException($request, "Provide Password for security reasons!");
             }
 
-            $superAdminDAO->checkPassword($userId, $requestBody->p);
+            if (!$superAdminDAO->checkPassword($userId, $requestBody->p)) {
+                throw new HttpForbiddenException($request, "Invalid password");
+            }
 
             $superAdminDAO->setSuperAdminStatus($userId, ($toStatusString == 'on'));
 
