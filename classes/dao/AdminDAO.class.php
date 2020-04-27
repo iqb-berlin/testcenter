@@ -15,7 +15,7 @@ class AdminDAO extends DAO {
         );
 
         $workspacesIds = array_map(function($workspace) {
-            return $workspace['id'];
+            return (string) $workspace['id'];
         }, $this->getWorkspaces($adminToken));
 
         $session->addAccessObjects('workspaceAdmin', ...$workspacesIds);
