@@ -71,6 +71,8 @@ $app->group('/user', function(App $app) {
     $app->patch('/{user_id}/super-admin/{to_status}',
         function(Request $request, Response $response) use ($superAdminDAO) {
 
+            /* @var $authToken AuthToken */
+            $authToken = $request->getAttribute('AuthToken');
             $requestBody = JSON::decode($request->getBody()->getContents());
             $userId = (int) $request->getAttribute('user_id');
             $toStatusString = $request->getAttribute('to_status');
@@ -85,8 +87,8 @@ $app->group('/user', function(App $app) {
                 throw new HttpBadRequestException($request, "Provide Password for security reasons!");
             }
 
-            if (!$superAdminDAO->checkPassword($userId, $requestBody->p)) {
-                throw new HttpForbiddenException($request, "Invalid password");
+            if (!$superAdminDAO->checkPassword($authToken->getId(), $requestBody->p)) {
+                throw new HttpForbiddenException($request, "Invalid password {$requestBody->p} {$authToken->getId()}");
             }
 
             $superAdminDAO->setSuperAdminStatus($userId, ($toStatusString == 'on'));

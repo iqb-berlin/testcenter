@@ -128,10 +128,10 @@ class SuperAdminDAO extends DAO {
 
         $user = $this->_(
             'SELECT * FROM users
-			WHERE users.id = :id AND users.password = :password',
+			WHERE id = :id AND password = :password',
             [
                 ':id' => $userId,
-                ':password' => $password
+                ':password' => $this->encryptPassword($password)
             ]
         );
         return !!$user;
