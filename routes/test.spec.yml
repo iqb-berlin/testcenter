@@ -43,7 +43,7 @@ paths:
             application/json:
               example:
                 mode: "run-hot-return"
-                laststate: []
+                laststate: {"LASTUNIT": "1"}
                 locked: false
                 xml: "(contents of a booklet.xml)"
         "401":

@@ -125,8 +125,7 @@ class TestDAO extends DAO {
     }
 
 
-    // TODO unit test
-    public function getTestLastState(int $testId): array {
+    public function getTestLastState(int $testId): StdClass {
 
         $booklet = $this->_(
             'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
@@ -135,7 +134,7 @@ class TestDAO extends DAO {
             ]
         );
 
-        return  ($booklet) ? [] : JSON::decode($booklet['laststate'], true);
+        return  ($booklet) ? JSON::decode($booklet['laststate']) : (object) [];
     }
 
 
