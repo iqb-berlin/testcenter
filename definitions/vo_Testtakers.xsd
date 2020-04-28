@@ -8,7 +8,13 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Metadata" type="MetadataType" />
-        <xs:element name="CustomTexts" type="CustomTextsType" minOccurs="0" />
+        <xs:element name="CustomTexts" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CustomText" type="KeyValueType" minOccurs = "1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="Group" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
@@ -139,6 +145,10 @@
     <xs:unique name="TesttakerLogin">
       <xs:selector xpath="Login"/>
       <xs:field xpath="@name"/>
+    </xs:unique>
+    <xs:unique name="CustomTextKey">
+      <xs:selector xpath="CustomText"/>
+      <xs:field xpath="@key"/>
     </xs:unique>
   </xs:element>
 </xs:schema>

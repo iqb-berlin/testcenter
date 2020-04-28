@@ -52,15 +52,7 @@
             <xs:sequence>
               <xs:element name="UploadSpeed" type="SpeedType" minOccurs = "0"/>
               <xs:element name="DownloadSpeed" type="SpeedType" minOccurs = "0"/>
-              <xs:element name="CustomText" minOccurs = "0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute name="key" type="xs:string" use="required"/>
-                    </xs:extension>
-                  </xs:simpleContent>
-                </xs:complexType>
-              </xs:element>
+              <xs:element name="CustomText" type="KeyValueType" minOccurs = "0" maxOccurs="unbounded"/>
               <xs:element name="Q" type="QuestionType" minOccurs = "0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="unit" type="xs:string"/>

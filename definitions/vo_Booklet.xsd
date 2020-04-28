@@ -43,39 +43,25 @@
   </xs:complexType>
 
   <!-- ###################################################################-->
-  <xs:complexType name="ParameterType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute name="parameter" type="xs:string"/>
-      </xs:extension>
-    </xs:simpleContent>
-  </xs:complexType>
-
-  <!-- ###################################################################-->
-  <xs:complexType name="BookletConfigType">
-    <xs:sequence>
-      <xs:element name="Config" minOccurs = "1" maxOccurs="unbounded">
-        <xs:complexType>
-          <xs:simpleContent>
-            <xs:extension base="xs:string">
-              <xs:attribute name="key" type="xs:ID" use="required"/>
-            </xs:extension>
-          </xs:simpleContent>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-
-  <!-- ###################################################################-->
   <!-- ###################################################################-->
 
   <xs:element name="Booklet">
     <xs:complexType>
       <xs:all>
         <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
-        <xs:element name="BookletConfig" type="BookletConfigType" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="BookletConfig" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Config" type="KeyValueType" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="Units" type="TestletType" minOccurs="1" maxOccurs="1"/>
       </xs:all>
     </xs:complexType>
+    <xs:unique name="BookletConfigKey">
+      <xs:selector xpath="Config"/>
+      <xs:field xpath="@key"/>
+    </xs:unique>
   </xs:element>
 </xs:schema>
