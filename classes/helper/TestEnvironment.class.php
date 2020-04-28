@@ -48,7 +48,7 @@ class TestEnvironment {
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');
             TestEnvironment::setUpTestData();
 
-            // TestEnvironment::debugVirtualEnvironment();
+             TestEnvironment::debugVirtualEnvironment();
 
             TestEnvironment::makeRandomStatic();
 
