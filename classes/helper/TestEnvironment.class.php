@@ -113,6 +113,7 @@ class TestEnvironment {
         );
 
         $initializer = new WorkspaceInitializer();
+        $initializer->cleanWorkspace($newIds['workspaceId']);
         $initializer->importSampleData($newIds['workspaceId'], $initArgs);
 
         $initDAO->createSampleLoginsReviewsLogs('xxx');

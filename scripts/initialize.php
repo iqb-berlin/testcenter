@@ -141,7 +141,9 @@ try  {
     echo "\n Workspace `{$args->workspace}` as `ws_1` created";
 
     $workspaceController = new WorkspaceController(1);
-    $filesInWorkspace = $workspaceController->countFilesOfAllSubFolders();
+    $filesInWorkspace = array_reduce($workspaceController->countFilesOfAllSubFolders(), function($carry, $item) {
+        return $carry + $item;
+    }, 0);
 
     if (($filesInWorkspace > 0) and !$args->overwrite_existing_installation) {
 
@@ -149,6 +151,7 @@ try  {
     }
 
     $initializer->cleanWorkspace($newIds['workspaceId']);
+
     echo "\n {$filesInWorkspace} files in workspace-folder found and DELETED.";
 
     $initializer->importSampleData($newIds['workspaceId'], $args);
@@ -163,9 +166,10 @@ try  {
         echo "\n Sample sessions created";
     }
 
-    echo "\n\n Ready. Parameters: \n";
-    print_r((array) $args);
-
+    echo "\n\n# Ready. Parameters:";
+    foreach ($args as $key => $value) {
+        echo "\n $key: $value";
+    }
 
 } catch (Exception $e) {
 

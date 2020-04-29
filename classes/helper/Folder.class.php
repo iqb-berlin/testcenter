@@ -57,7 +57,9 @@ class Folder {
 
             if ($entry->isFile()) {
 
-                unlink($entry->getPathname());
+                if (!unlink($entry->getPathname())) {
+                    throw new Exception("Could not delete `$entry`.. permission denied");
+                }
 
             } else if ($entry->isDir()) {
 
