@@ -422,8 +422,6 @@ class SessionDAO extends DAO {
         $newPersonToken = $this->_randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$code");
         $validUntil = TimeStamp::toSQLFormat($login->getValidTo());
 
-
-        error_log("TOKEN TOKEN TOKEN |||{$newPersonToken}|||"); // PROBLEM: Zu lange TOKEN static_token:person:sample_group_test-study-monitor_
         $this->_(
             'INSERT INTO person_sessions (token, code, login_id, valid_until)
             VALUES(:token, :code, :login_id, :valid_until)',
