@@ -19,11 +19,23 @@
           "type": "string",
           "title": "Text answers bla bla",
           "required": true
+        },
+        "lastUnit": {
+          "type": "string"
         }
       },
 
       "form": [
-        "string_example"
+        "string_example",
+        {
+          "type": "submit",
+          "title": "Finish"
+        },
+        {
+          "type": "hidden",
+          "key": "lastUnit",
+          "value": true
+        }
       ]
     }
   </Definition>

@@ -88,7 +88,7 @@ class XMLFile {
                     $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
                     if (isset($myCustomTextsNode)) {
                         foreach($myCustomTextsNode->children() as $costumTextElement) {
-                            if ($costumTextElement->getName() == 'Text') {
+                            if ($costumTextElement->getName() == 'CustomText') {
                                 $customTextValue = (string) $costumTextElement;
                                 $customTextKeyAttr = $costumTextElement['key'];
                                 if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
@@ -107,8 +107,7 @@ class XMLFile {
                             $myReader = new XMLReader();
                             $myReader->open($xmlfilename);
                             $myReader->setSchema($mySchemaFilename);
-        
-                            $continue = true;
+
                             do {
                                 $continue = $myReader->read();
                                 foreach (libxml_get_errors() as $error) {
@@ -137,7 +136,6 @@ class XMLFile {
             libxml_clear_errors();
         }
         libxml_use_internal_errors(false);
-
     }
 
 

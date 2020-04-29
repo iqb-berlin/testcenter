@@ -18,6 +18,16 @@
 
             const messages = {
 
+                "StartedNotification": () => {
+
+                    return {
+                        type: 'vo.FromPlayer.StartedNotification',
+                        sessionId: sessionId,
+                        presentationComplete: 'yes',
+                        responsesGiven: 'no'
+                    }
+                },
+
                 "ChangedDataTransfer-ready": (values) => {
                     return {
                         type: 'vo.FromPlayer.ChangedDataTransfer',
@@ -47,9 +57,9 @@
                     }
                 },
 
-                "NavigationRequestedNotification": (target) => {
+                "UnitNavigationRequest": (target) => {
                     return {
-                        type: 'vo.FromPlayer.NavigationRequestedNotification',
+                        type: 'vo.FromPlayer.UnitNavigationRequest',
                         sessionId: sessionId,
                         navigationTarget: target,
                     };
@@ -69,11 +79,12 @@
                         'schema': JSON.parse(data.unitDefinition).schema,
                         'form': JSON.parse(data.unitDefinition).form,
                         'onSubmit': (errors, values) => {
+                            const isLastUnit = (typeof values.lastUnit !== "undefined") && values.lastUnit;
                             if (errors) {
                                 alert('Something went wrong.');
                             } else {
                                 send("ChangedDataTransfer-ready", values);
-                                send("NavigationRequestedNotification", '#last');
+                                setTimeout(() => send("UnitNavigationRequest", isLastUnit ? '#end' : '#next'), 1000);
                             }
                         }
                     });
@@ -88,8 +99,15 @@
 
         // listen to messages from parent frame
         window.addEventListener('message', event => {receive(event.data.type, event.data);}, false);
+
         // send ready notification if loaded
-        document.addEventListener("DOMContentLoaded", () => send("ReadyNotification"));
+        document.addEventListener("DOMContentLoaded", () => {
+            send("ReadyNotification");
+
+            // wait 0.1sec and say "I am ready"
+            setTimeout(() => send("StartedNotification"), 100);
+        });
+
         // store restore point when sth changed
         $(document).on('change', "form :input", (() => {
             const restorePoint = $('form').serializeArray().reduce((o, p) => ({...o, [p.name]: p.value}), {});

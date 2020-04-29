@@ -13,7 +13,7 @@
   </Metadata>
 
   <CustomTexts>
-    <Text key="somestr">string</Text>
+    <CustomText key="somestr">string</CustomText>
   </CustomTexts>
 
   <Group name="sample_group" validFor="45" validFrom="1/3/2020 10:00">

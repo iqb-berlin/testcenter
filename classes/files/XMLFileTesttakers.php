@@ -210,7 +210,6 @@ class XMLFileTesttakers extends XMLFile {
             foreach($this->xmlfile->children() as $groupNode) {
                 if ($groupNode->getName() == 'Group') {
                     $groupnameAttr = $groupNode['name'];
-
                     if (isset($groupnameAttr)) {
                         $groupname = (string) $groupnameAttr;
 

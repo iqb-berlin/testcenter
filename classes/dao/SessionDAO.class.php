@@ -286,7 +286,8 @@ class SessionDAO extends DAO {
             $loginData->getGroupName(),
             $loginData->getBooklets(),
             (int) $loginData->getWorkspaceId(),
-            $validUntil
+            $validUntil,
+            $loginData->getCustomTexts()
         );
     }
 

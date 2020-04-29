@@ -1,6 +1,6 @@
 <Booklet
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.4.1/vo_code/vo_Booklet.xsd"
+        xsi:noNamespaceSchemaLocation="../definitions/vo_Booklet.xsd"
 >
   <Metadata>
     <Id>BOOKLET.SAMPLE</Id>
@@ -13,16 +13,13 @@
   </Metadata>
 
   <BookletConfig>
-    <NavPolicy parameter="NextOnlyIfPresentationComplete"/>
-    <NavButtons parameter="on"/>
-    <PageNavBar parameter="on"/>
-    <Logging parameter="on"/>
-    <Loading parameter="on"/>
+    <Config key="NextOnlyIfPresentationComplete"/>
+    <Config key="NavPolicy"/>
+    <Config key="NavButtons">on</Config>
+    <Config key="PageNavBar">on</Config>
+    <Config key="Logging">on</Config>
+    <Config key="Loading">on</Config>
   </BookletConfig>
-
-  <CustomTexts>
-    <Text key="sampletext">This is sample data!</Text>
-  </CustomTexts>
 
   <Units id="section_A" label="section_A">
     <Restrictions>
