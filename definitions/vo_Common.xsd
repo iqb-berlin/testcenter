@@ -26,19 +26,12 @@
   </xs:complexType>
 
   <!-- ###################################################################-->
-  <xs:complexType name="CustomTextType">
+  <xs:complexType name="KeyValueType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="key" type="xs:ID" use="required"/>
       </xs:extension>
     </xs:simpleContent>
-  </xs:complexType>
-
-  <!-- ###################################################################-->
-  <xs:complexType name="CustomTextsType">
-    <xs:sequence>
-      <xs:element name="Text" type="CustomTextType" minOccurs = "1" maxOccurs="unbounded"/>
-    </xs:sequence>
   </xs:complexType>
 
 </xs:schema>
