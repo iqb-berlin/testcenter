@@ -1,0 +1,31 @@
+<Unit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.4.1/vo_code/vo_Unit.xsd"
+>
+  <Metadata>
+    <Id>UNIT.SAMPLE-2</Id>
+    <Label>Another sample unit</Label>
+    <Description>This is another Unit</Description>
+    <Owner>__USER_NAME__</Owner>
+    <Lastchange>2020-04-28T13:37:00</Lastchange>
+    <Project>sample</Project>
+  </Metadata>
+
+  <Definition player="SAMPLE_PLAYER">
+    {
+      "schema": {
+
+        "string_example": {
+          "type": "string",
+          "title": "Text answers bla bla",
+          "required": true
+        }
+      },
+
+      "form": [
+        "string_example"
+      ]
+    }
+  </Definition>
+
+</Unit>

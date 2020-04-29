@@ -68,6 +68,7 @@ class WorkspaceInitializer {
         $this->_importSampleFile($workspaceId, 'Testtakers.xml', $parameters);
         $this->_importSampleFile($workspaceId, 'SysCheck.xml', $parameters);
         $this->_importSampleFile($workspaceId, 'Unit.xml', $parameters);
+        $this->_importSampleFile($workspaceId, 'Unit2.xml', $parameters, 'Unit');
         $this->_importSampleFile($workspaceId, 'Player.html', $parameters, 'Resource');
         $this->_importSampleFile($workspaceId, 'SysCheck-Report.json', $parameters, 'SysCheck/reports');
     }

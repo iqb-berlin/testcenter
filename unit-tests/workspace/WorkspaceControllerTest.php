@@ -56,7 +56,7 @@ class WorkspaceControllerTest extends TestCase {
     function test_getAllFiles() {
 
         $result = $this->workspaceController->getAllFiles();
-        $this->assertEquals(5, count($result));
+        $this->assertEquals(6, count($result));
 
         $this->assertEquals('SAMPLE_BOOKLET.XML', $result[0]['filename']);
         $this->assertEquals('Booklet', $result[0]['type']);
@@ -78,16 +78,21 @@ class WorkspaceControllerTest extends TestCase {
         $this->assertArrayHasKey('filesize', $result[3]);
         $this->assertArrayHasKey('filedatetime', $result[3]);
 
-        $this->assertEquals('SAMPLE_PLAYER.HTML', $result[4]['filename']);
-        $this->assertEquals('Resource', $result[4]['type']);
+        $this->assertEquals('SAMPLE_UNIT2.XML', $result[4]['filename']);
+        $this->assertEquals('Unit', $result[4]['type']);
         $this->assertArrayHasKey('filesize', $result[4]);
         $this->assertArrayHasKey('filedatetime', $result[4]);
+
+        $this->assertEquals('SAMPLE_PLAYER.HTML', $result[5]['filename']);
+        $this->assertEquals('Resource', $result[5]['type']);
+        $this->assertArrayHasKey('filesize', $result[5]);
+        $this->assertArrayHasKey('filedatetime', $result[5]);
     }
 
 
     function test_deleteFiles() {
 
-        $wsFolder = $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
+        $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
 
         $result = $this->workspaceController->deleteFiles(array(
             'Resource/SAMPLE_PLAYER.HTML',
@@ -125,7 +130,7 @@ class WorkspaceControllerTest extends TestCase {
             "Testtakers" => 1,
             "SysCheck" => 1,
             "Booklet" => 1,
-            "Unit" => 1,
+            "Unit" => 2,
             "Resource" => 1
         ];
 
