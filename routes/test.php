@@ -106,7 +106,7 @@ $app->group('/test', function(App $app) {
         // TODO check if unit exists in this booklet
 
         $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
-            ? $review['priority']
+            ? (int) $review['priority']
             : 0;
 
         $testDAO->addUnitReview($testId, $unitName, $priority, $review['categories'], $review['entry']);
