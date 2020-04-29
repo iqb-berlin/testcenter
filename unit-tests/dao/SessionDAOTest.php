@@ -81,7 +81,7 @@ class SessionDAOTest extends TestCase {
         $result = $this->dbc->createPerson($login, 'existing_code');
         $expect = [
             'id' => 1,
-            'token' => 'static_token:person:a group name_some_user_existing_code',
+            'token' => 'static:person:a group name_some_user_existing_code',
             'login_id' => 1,
             'code' => 'existing_code',
             'validTo' => 1893495600,

@@ -118,11 +118,11 @@ class SessionDAO extends DAO {
         switch ($loginData['mode']) {
 
             case "monitor-study":
-                $session->addAccessObjects('workspaceMonitor', $loginData['workspaceId']);
+                $session->addAccessObjects('workspaceMonitor', (string) $loginData['workspaceId']);
                 break;
 
             case "monitor-group":
-                $session->addAccessObjects('workspaceTest', $loginData['workspaceId']);
+                $session->addAccessObjects('workspaceTest', (string) $loginData['workspaceId']);
                 break;
 
             default:
@@ -422,6 +422,8 @@ class SessionDAO extends DAO {
         $newPersonToken = $this->_randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$code");
         $validUntil = TimeStamp::toSQLFormat($login->getValidTo());
 
+
+        error_log("TOKEN TOKEN TOKEN |||{$newPersonToken}|||"); // PROBLEM: Zu lange TOKEN static_token:person:sample_group_test-study-monitor_
         $this->_(
             'INSERT INTO person_sessions (token, code, login_id, valid_until)
             VALUES(:token, :code, :login_id, :valid_until)',

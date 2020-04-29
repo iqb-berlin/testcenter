@@ -36,7 +36,7 @@ paths:
               examples:
                 personToken:
                   value:
-                    token:  "static_token:person:sample_group_sample_user_xxx"
+                    token:  "static:person:sample_group_sample_user_xxx"
                     displayName: "sample_group/sample_user/xxx"
                     access:
                       test:  ["BOOKLET.SAMPLE"]
@@ -44,14 +44,14 @@ paths:
                     flags: []
                 loginToken:
                   value:
-                    token: "static_token:login:test"
+                    token: "static:login:test"
                     displayName: "sample_group/sample_user"
                     access: {}
                     customTexts: {}
                     flags: ["codeRequired"]
                 adminToken:
                   value:
-                    token: "static_token:admin:super"
+                    token: "static:admin:super"
                     displayName: "super"
                     access:
                       superAdmin: []
@@ -60,7 +60,7 @@ paths:
                     flags: []
                 monitorToken:
                   value:
-                    token: "static_token:person:sample_group_test-study-monitor_"
+                    token: "static:person:sample_group_test-study-monitor_"
                     displayName: "super"
                     access:
                       workspaceMonitor: ["1"]
@@ -129,7 +129,7 @@ paths:
               schema:
                 $ref: './components.spec.yml#/components/schemas/session'
               example:
-                token:  "static_token_login_sample_login"
+                token:  "static_login_sample_login"
                 displayName: "sample_group/sample_user"
                 access: {}
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
@@ -174,7 +174,7 @@ paths:
               schema:
                 $ref: './components.spec.yml#/components/schemas/session'
               example:
-                token:  "static_token_person_xxx"
+                token:  "static_person_xxx"
                 displayName: "sample_group/sample_user/xxx"
                 access:
                   test:

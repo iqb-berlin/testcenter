@@ -73,7 +73,7 @@ class DAO {
 
         if (DB::getConfig()->staticTokens) {
 
-            return "static_token:{$type}:$name";
+            return substr("static:{$type}:$name", 0, 50);
         }
 
         return uniqid('a', true);

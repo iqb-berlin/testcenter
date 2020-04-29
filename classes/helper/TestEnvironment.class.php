@@ -48,7 +48,7 @@ class TestEnvironment {
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');
             TestEnvironment::setUpTestData();
 
-             TestEnvironment::debugVirtualEnvironment();
+            // TestEnvironment::debugVirtualEnvironment();
 
             TestEnvironment::makeRandomStatic();
 
@@ -88,6 +88,7 @@ class TestEnvironment {
 
         $vfs = vfsStream::setup('root', 0777);
         vfsStream::newDirectory('vo_data', 0777)->at($vfs);
+        vfsStream::newDirectory('vo_data/ws_1', 0777)->at($vfs);
 
         define('DATA_DIR', vfsStream::url('root/vo_data'));
     }

@@ -90,10 +90,10 @@ dreddHooks.beforeEach(function(transaction, done) {
         case '207':
         case '422':
             changeAuthToken(transaction, {
-                adminToken: 'static_token:admin:super',
-                loginToken: 'static_token:login:sample_user',
-                personToken: 'static_token:person:sample_group_sample_user_xxx',
-                monitorToken: 'static_token:person:sample_group_test-study-monitor_'
+                adminToken: 'static:admin:super',
+                loginToken: 'static:login:sample_user',
+                personToken: 'static:person:sample_group_sample_user_xxx',
+                monitorToken: 'static:person:sample_group_test-study-monitor_'
             });
             break;
         case '400':
@@ -102,8 +102,8 @@ dreddHooks.beforeEach(function(transaction, done) {
                 code: "__invalid_code__"
             });
             changeAuthToken(transaction, {
-                loginToken: 'static_token:login:sample_user',
-                adminToken: 'static_token:admin:super',
+                loginToken: 'static:login:sample_user',
+                adminToken: 'static:admin:super',
             });
             break;
         case '401':
@@ -114,15 +114,15 @@ dreddHooks.beforeEach(function(transaction, done) {
                 adminToken: '__invalid_token__',
                 loginToken: '__invalid_token__',
                 personToken: '__invalid_token__',
-                monitorToken: 'static_token:person:sample_group_sample_user_xxx'
+                monitorToken: 'static:person:sample_group_sample_user_xxx'
             });
             break;
         case '404':
             changeAuthToken(transaction, {
-                adminToken: 'static_token:admin:super',
-                loginToken: 'static_token:login:sample_user',
-                personToken: 'static_token:person:sample_group_sample_user_xxx',
-                monitorToken: 'static_token:person:sample_group_test-study-monitor_'
+                adminToken: 'static:admin:super',
+                loginToken: 'static:login:sample_user',
+                personToken: 'static:person:sample_group_sample_user_xxx',
+                monitorToken: 'static:person:sample_group_test-study-monitor_'
             });
             changeUri(transaction, {
                 '/workspace/1/': '/workspace/13/'
@@ -130,10 +130,10 @@ dreddHooks.beforeEach(function(transaction, done) {
             break;
         case '410':
             changeAuthToken(transaction,{
-                adminToken: 'static_token:admin:expired_user',
-                loginToken: 'static_token:login:expired_user',
-                personToken: 'static_token:person:sample_group_expired_user_xxx',
-                monitorToken: 'static_token:person:sample_group_expired_user_xxx'
+                adminToken: 'static:admin:expired_user',
+                loginToken: 'static:login:expired_user',
+                personToken: 'static:person:sample_group_expired_user_xxx',
+                monitorToken: 'static:person:sample_group_expired_user_xxx'
             });
             break;
         default:

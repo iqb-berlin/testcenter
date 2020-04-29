@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: 'IQB Testcenter API - Backend'
     description: 'This a spec for the (REST-) API of the IQB-Testcenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
-    version: 2.2.2
+    version: 2.2.3
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -69,13 +69,13 @@ paths:
                                 $ref: '#/components/schemas/session'
                             examples:
                                 personToken:
-                                    value: {token: 'static_token:person:sample_group_sample_user_xxx', displayName: sample_group/sample_user/xxx, access: {test: [BOOKLET.SAMPLE]}, customTexts: {}, flags: []}
+                                    value: {token: 'static:person:sample_group_sample_user_xxx', displayName: sample_group/sample_user/xxx, access: {test: [BOOKLET.SAMPLE]}, customTexts: {}, flags: []}
                                 loginToken:
-                                    value: {token: 'static_token:login:test', displayName: sample_group/sample_user, access: {}, customTexts: {}, flags: [codeRequired]}
+                                    value: {token: 'static:login:test', displayName: sample_group/sample_user, access: {}, customTexts: {}, flags: [codeRequired]}
                                 adminToken:
-                                    value: {token: 'static_token:admin:super', displayName: super, access: {superAdmin: [], workspaceAdmin: ['1']}, customTexts: {}, flags: []}
+                                    value: {token: 'static:admin:super', displayName: super, access: {superAdmin: [], workspaceAdmin: ['1']}, customTexts: {}, flags: []}
                                 monitorToken:
-                                    value: {token: 'static_token:person:sample_group_test-study-monitor_', displayName: super, access: {workspaceMonitor: ['1']}, customTexts: {}, flags: []}
+                                    value: {token: 'static:person:sample_group_test-study-monitor_', displayName: super, access: {workspaceMonitor: ['1']}, customTexts: {}, flags: []}
                 '401':
                     description: 'No token qualifies for authentication'
                 '410':
@@ -130,7 +130,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/session'
                             example:
-                                token: static_token_login_sample_login
+                                token: static_login_sample_login
                                 displayName: sample_group/sample_user
                                 access: {}
                                 customTexts: {}
@@ -168,7 +168,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/session'
                             example:
-                                token: static_token_person_xxx
+                                token: static_person_xxx
                                 displayName: sample_group/sample_user/xxx
                                 access:
                                     test: ['- BOOKLET.SAMPLE']
