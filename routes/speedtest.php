@@ -37,7 +37,7 @@ $app->group('/speed-test', function(App $app) {
     });
 
 
-    $app->post('/random-package', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) { // TODO write spec
+    $app->post('/random-package', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
 
         return $response->withJson([
             'requestTime' => $_SERVER['REQUEST_TIME_FLOAT'],
