@@ -263,21 +263,20 @@ class XMLFileSysCheck extends XMLFile {
     }
 
 
-    // TODO copy from tc_get.php -> share in separate file
-    private function getResource($resourceid, $resourceFolder, $versionning = 'v') {
+    private function getResource($resourceId, $resourceFolder, $versioning = 'v') {
 
-        $path_parts = pathinfo($resourceid); // extract filename if path is given
-        $resourceFileName = FileName::normalize($path_parts['basename'], $versionning != 'f');
+        $path_parts = pathinfo($resourceId); // extract filename if path is given
+        $resourceFileName = FileName::normalize($path_parts['basename'], $versioning != 'f');
 
         if (file_exists($resourceFolder) and (strlen($resourceFileName) > 0)) {
-            $mydir = opendir($resourceFolder);
-            if ($mydir !== false) {
+            $resourceFolderHandle = opendir($resourceFolder);
+            if ($resourceFolderHandle !== false) {
 
-                while (($entry = readdir($mydir)) !== false) {
-                    $normfilename = FileName::normalize($entry, $versionning != 'f');
-                    if ($normfilename == $resourceFileName) {
-                        $fullfilename = $resourceFolder . '/' . $entry;
-                        return file_get_contents($fullfilename);
+                while (($entry = readdir($resourceFolderHandle)) !== false) {
+                    $normalizedFilename = FileName::normalize($entry, $versioning != 'f');
+                    if ($normalizedFilename == $resourceFileName) {
+                        $fullFilename = $resourceFolder . '/' . $entry;
+                        return file_get_contents($fullFilename);
                     }
                 }
             }
