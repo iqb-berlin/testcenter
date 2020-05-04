@@ -103,8 +103,8 @@ class WorkspaceValidator extends WorkspaceController {
     private function resourceExists($r, $v) {
 
         $myExistsReturn = false;
-        $rNormalised1 = $this->normaliseFileName($r, false);
-        $rNormalised2 = $this->normaliseFileName($r, true);
+        $rNormalised1 = FileName::normalize($r, false);
+        $rNormalised2 = FileName::normalize($r, true);
         if (in_array($rNormalised1, $this->_allResources)) {
             if (!in_array($rNormalised1, $this->_allUsedResources)) {
                 array_push($this->_allUsedResources, $rNormalised1);
@@ -155,10 +155,10 @@ class WorkspaceValidator extends WorkspaceController {
         while (($entry = readdir($resourceFolderHandle)) !== false) {
             if (is_file($resourceFolderPath . '/' . $entry)) {
                 $fileSize = filesize($resourceFolderPath . '/' . $entry);
-                array_push($this->_allResources, $this->normaliseFileName($entry, false));
-                $this->_allResourceFilesWithSize[$this->normaliseFileName($entry, false)] = $fileSize;
-                array_push($this->_allVersionedResources, $this->normaliseFileName($entry, true));
-                $this->_allResourceFilesWithSize[$this->normaliseFileName($entry, true)] = $fileSize;
+                array_push($this->_allResources, FileName::normalize($entry, false));
+                $this->_allResourceFilesWithSize[FileName::normalize($entry, false)] = $fileSize;
+                array_push($this->_allVersionedResources, FileName::normalize($entry, true));
+                $this->_allResourceFilesWithSize[FileName::normalize($entry, true)] = $fileSize;
             }
         }
     }
@@ -204,7 +204,7 @@ class WorkspaceValidator extends WorkspaceController {
             $definitionRef = $xFile->getDefinitionRef();
             if (strlen($definitionRef) > 0) {
                 if ($this->resourceExists($definitionRef, false)) {
-                    $fileSizeTotal += $this->_allResourceFilesWithSize[$this->normaliseFileName($definitionRef, false)];
+                    $fileSizeTotal += $this->_allResourceFilesWithSize[FileName::normalize($definitionRef, false)];
                 } else {
                     $this->reportError('definitionRef "' . $definitionRef . '" not found (required in Unit-XML-file "' . $entry . '"');
                     $ok = false;
@@ -284,7 +284,7 @@ class WorkspaceValidator extends WorkspaceController {
                     if (isset($this->_allResourceFilesWithSize[$myPlayer])) {
                         $bookletLoad += $this->_allResourceFilesWithSize[$myPlayer];
                     } else {
-                        $myPlayer = $this->normaliseFileName($myPlayer, true);
+                        $myPlayer = FileName::normalize($myPlayer, true);
                         if (isset($this->_allResourceFilesWithSize[$myPlayer])) {
                             $bookletLoad += $this->_allResourceFilesWithSize[$myPlayer];
                         } else {
@@ -442,7 +442,7 @@ class WorkspaceValidator extends WorkspaceController {
     private function findUnusedItems() {
 
         foreach($this->_allResources as $r) {
-            if (!in_array($r, $this->_allUsedResources) && !in_array($this->normaliseFileName($r, true), $this->_allUsedVersionedResources)) {
+            if (!in_array($r, $this->_allUsedResources) && !in_array(FileName::normalize($r, true), $this->_allUsedVersionedResources)) {
                 $this->reportWarning('Resource "' . $r . '" never used');
             }
         }

@@ -262,35 +262,19 @@ class XMLFileSysCheck extends XMLFile {
         return $myreturn;
     }
 
-    // TODO copy from tc_get.php -> share in separate file
-    private function normaliseFileName($fn, $v) {
-
-        $myreturn = strtoupper($fn);
-        if ($v) {
-            $firstDotPos = strpos($myreturn, '.');
-            if ($firstDotPos) {
-                $lastDotPos = strrpos($myreturn, '.');
-                if ($lastDotPos > $firstDotPos) {
-                    $myreturn = substr($myreturn, 0, $firstDotPos) . substr($myreturn, $lastDotPos);
-                }
-            }
-        }
-        return $myreturn;
-    }
-
 
     // TODO copy from tc_get.php -> share in separate file
     private function getResource($resourceid, $resourceFolder, $versionning = 'v') {
 
         $path_parts = pathinfo($resourceid); // extract filename if path is given
-        $resourceFileName = $this->normaliseFileName($path_parts['basename'], $versionning != 'f');
+        $resourceFileName = FileName::normalize($path_parts['basename'], $versionning != 'f');
 
         if (file_exists($resourceFolder) and (strlen($resourceFileName) > 0)) {
             $mydir = opendir($resourceFolder);
             if ($mydir !== false) {
 
                 while (($entry = readdir($mydir)) !== false) {
-                    $normfilename = $this->normaliseFileName($entry, $versionning != 'f');
+                    $normfilename = FileName::normalize($entry, $versionning != 'f');
                     if ($normfilename == $resourceFileName) {
                         $fullfilename = $resourceFolder . '/' . $entry;
                         return file_get_contents($fullfilename);

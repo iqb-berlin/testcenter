@@ -293,11 +293,11 @@ class WorkspaceController {
 
         $resourceFolder = $this->_getOrCreateSubFolderPath('Resource');
 
-        $resourceFileName = $this->normaliseFileName(basename($resourceName), $skipSubVersions);
+        $resourceFileName = FileName::normalize(basename($resourceName), $skipSubVersions);
 
         foreach (Folder::glob($resourceFolder, "*.*") as $fullFilePath) {
 
-            $normalizedFilename = $this->normaliseFileName(basename($fullFilePath), $skipSubVersions);
+            $normalizedFilename = FileName::normalize(basename($fullFilePath), $skipSubVersions);
 
             if ($normalizedFilename == $resourceFileName) {
                 return new ResourceFile($fullFilePath);
@@ -305,24 +305,6 @@ class WorkspaceController {
         }
 
         throw new HttpError("No resource with name `$resourceName` found!", 404);
-    }
-
-
-    protected function normaliseFileName(string $fileName, bool $skipSubVersions): string {
-
-        $normalizedFilename = strtoupper($fileName);
-
-        if ($skipSubVersions) {
-            $firstDotPos = strpos($normalizedFilename, '.');
-            if ($firstDotPos) {
-                $lastDotPos = strrpos($normalizedFilename, '.');
-                if ($lastDotPos > $firstDotPos) {
-                    $normalizedFilename = substr($normalizedFilename, 0, $firstDotPos) . substr($normalizedFilename, $lastDotPos);
-                }
-            }
-        }
-
-        return $normalizedFilename;
     }
 
 
