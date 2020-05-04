@@ -76,7 +76,7 @@ class AdminDAO extends DAO {
         }
 
         $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
-        throw new HttpError("Invalid Password `$shortPW`", 400);
+        throw new HttpError("Invalid Password `$shortPW` or unknown user `$userName`.", 400);
     }
 
 
