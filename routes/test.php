@@ -103,7 +103,7 @@ $app->group('/test', function(App $app) {
             'entry' => null // was: e
         ]);
 
-        // TODO check if unit exists in this booklet
+        // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
         $priority = (is_numeric($review['priority']) and ($review['priority'] < 4) and ($review['priority'] >= 0))
             ? (int) $review['priority']
@@ -148,6 +148,8 @@ $app->group('/test', function(App $app) {
             'responseType' => 'unknown'
         ]);
 
+        // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
+
         $testDAO->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
 
         return $response->withStatus(201);
@@ -165,7 +167,7 @@ $app->group('/test', function(App $app) {
             'restorePoint' => null
         ]);
 
-        // TODO check if unit exists in this booklet
+        // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
         $testDAO->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
 
@@ -217,7 +219,7 @@ $app->group('/test', function(App $app) {
             'timestamp' => null // was t
         ]);
 
-        // TODO check if unit exists in this booklet
+        // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
         $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 

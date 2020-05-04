@@ -34,11 +34,6 @@ $app->group('/user', function(App $app) {
         return $response;
     });
 
-    /**
-     * TODO change p to password
-     * TODO validate old password by changing
-     */
-
 
     $app->put('', function(Request $request, Response $response) use ($superAdminDAO) {
 
@@ -53,6 +48,10 @@ $app->group('/user', function(App $app) {
     });
 
 
+    /**
+     * TODO change p to password
+     * TODO validate old password by changing
+     */
     $app->patch('/{user_id}/password', function(Request $request, Response $response) use ($superAdminDAO) {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
