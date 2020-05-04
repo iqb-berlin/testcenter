@@ -118,7 +118,7 @@ class SuperAdminDAO extends DAO {
             'UPDATE users SET password = :password WHERE id = :user_id',
             [
                 ':user_id' => $userId,
-                ':password' => $this->encryptPassword($password)
+                ':password' => Password::encrypt($password)
             ]
         );
     }
@@ -126,15 +126,20 @@ class SuperAdminDAO extends DAO {
 
     public function checkPassword(int $userId, string $password): bool {
 
-        $user = $this->_(
-            'SELECT * FROM users
-			WHERE id = :id AND password = :password',
-            [
-                ':id' => $userId,
-                ':password' => $this->encryptPassword($password)
-            ]
+        $usersOfThisName = $this->_(
+            'SELECT * FROM users WHERE users.id = :id',
+            [':id' => $userId],
+            true
         );
-        return !!$user;
+
+        foreach ($usersOfThisName as $user) {
+
+            if (Password::verify($password, $user['password'], $this->passwordSalt)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -155,7 +160,7 @@ class SuperAdminDAO extends DAO {
             'INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, :is_superadmin)',
             [
                 ':user_name' => $userName,
-                ':user_password' => $this->encryptPassword($password),
+                ':user_password' => Password::encrypt($password),
                 ':is_superadmin' => $isSuperadmin ? 1 : 0
             ]
         );

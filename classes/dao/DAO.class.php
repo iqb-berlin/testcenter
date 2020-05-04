@@ -63,12 +63,6 @@ class DAO {
     }
 
 
-    protected function encryptPassword(string $password): string {
-
-        return sha1($this->passwordSalt . $password);
-    }
-
-
     protected function randomToken(string $type, string $name) {
 
         if (DB::getConfig()->staticTokens) {
@@ -128,5 +122,4 @@ class DAO {
 
         return $workspace['name'];
     }
-
 }

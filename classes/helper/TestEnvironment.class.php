@@ -48,7 +48,7 @@ class TestEnvironment {
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');
             TestEnvironment::setUpTestData();
 
-            // TestEnvironment::debugVirtualEnvironment();
+//          TestEnvironment::debugVirtualEnvironment();
 
             TestEnvironment::makeRandomStatic();
 
@@ -120,7 +120,7 @@ class TestEnvironment {
         $initDAO->createSampleLoginsReviewsLogs('xxx');
         $initDAO->createSampleExpiredSessions('xxx');
         $initDAO->createSampleMonitorSession();
-        TestEnvironment::debugVirtualEnvironment();
+//        TestEnvironment::debugVirtualEnvironment();
     }
 
 
@@ -137,6 +137,7 @@ class TestEnvironment {
 
     private static function bailOut(Throwable $exception) {
 
+        TestEnvironment::debugVirtualEnvironment();
         $errorUniqueId = ErrorHandler::logException($exception, true);
         http_response_code(500);
         header("Error-ID:$errorUniqueId");

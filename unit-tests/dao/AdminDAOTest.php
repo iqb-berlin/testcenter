@@ -6,6 +6,7 @@ require_once "classes/data-collection/DataCollection.class.php";
 require_once "classes/helper/DB.class.php";
 require_once "classes/data-collection/DBConfig.class.php";
 require_once "classes/helper/TimeStamp.class.php";
+require_once "classes/helper/Password.class.php";
 require_once "classes/dao/DAO.class.php";
 require_once "classes/dao/AdminDAO.class.php";
 
@@ -93,7 +94,4 @@ class AdminDAOTest extends TestCase {
         $result = $this->dbc->getWorkspaceRole($token, 1);
         $this->assertEquals($result, "");
     }
-
-
-
 }

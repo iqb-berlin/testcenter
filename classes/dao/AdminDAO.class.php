@@ -48,14 +48,7 @@ class AdminDAO extends DAO {
 			throw new Exception("Invalid Username `$username`", 400);
 		}
 
-		$passwordSha = $this->encryptPassword($password);
-
-		$user = $this->getUserByNameAndPasswordHash($username, $passwordSha);
-
-		if ($user === null) {
-		    $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
-            throw new HttpError("Invalid Password `$shortPW`", 400);
-        }
+		$user = $this->getUserByNameAndPassword($username, $password);
 
 		$this->deleteTokensByUser((int) $user['id']);
 
@@ -67,27 +60,31 @@ class AdminDAO extends DAO {
 	}
 
 
-	private function getUserByNameAndPasswordHash(string $userName, string $passwordHash): ?array {
+    private function getUserByNameAndPassword(string $userName, string $password): ?array {
 
-		return $this->_(
-			'SELECT * FROM users
-			WHERE users.name = :name AND users.password = :password',
-			[
-				':name' => $userName,
-				':password' => $passwordHash
-			]
-		);
-	}
+        $usersOfThisName = $this->_(
+            'SELECT * FROM users WHERE users.name = :name',
+            [':name' => $userName],
+            true
+        );
+
+        foreach ($usersOfThisName as $user) {
+
+            if (Password::verify($password, $user['password'], $this->passwordSalt)) {
+                return $user;
+            }
+        }
+
+        $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
+        throw new HttpError("Invalid Password `$shortPW`", 400);
+    }
 
 
 	private function deleteTokensByUser(int $userId): void {
 
 		$this->_(
-			'DELETE FROM admin_sessions 
-			WHERE admin_sessions.user_id = :id',
-			[
-				':id' => $userId
-			]
+			'DELETE FROM admin_sessions WHERE admin_sessions.user_id = :id',
+			[':id' => $userId]
 		);
 	}
 
