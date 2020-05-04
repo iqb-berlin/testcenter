@@ -25,7 +25,7 @@ class TesttakersFolder extends WorkspaceController {
 
     public function findLoginData(string $name, string $password): ?PotentialLogin { // TODO unit-test
 
-        foreach (Folder::glob($this->_getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
 

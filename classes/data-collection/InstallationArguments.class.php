@@ -49,10 +49,11 @@ class InstallationArguments extends DataCollection {
 
     private function createLoginCodes() {
 
-        return array_map([$this, '_generateLogin'], range(0, 9));
+        return array_map([$this, 'generateLogin'], range(0, 9));
     }
 
-    private function _generateLogin() {
+
+    private function generateLogin() {
 
         $login = "";
         while (strlen($login) < 3) {

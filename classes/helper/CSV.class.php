@@ -51,7 +51,7 @@ class CSV {
 
         $csvRows = [];
 
-        $csvRows[] = CSV::_stringifyRow($columns, $delimiter, $enclosure);
+        $csvRows[] = CSV::stringifyRow($columns, $delimiter, $enclosure);
 
         foreach($data as $set) {
 
@@ -62,14 +62,14 @@ class CSV {
                 $row[] = isset($set[$column]) ? $set[$column] : '';
             }
 
-            $csvRows[] = CSV::_stringifyRow($row, $delimiter, $enclosure);
+            $csvRows[] = CSV::stringifyRow($row, $delimiter, $enclosure);
         }
 
         return implode($lineDelimiter, $csvRows);
     }
 
 
-    private static function _stringifyRow($row, $delimiter, $enclosure) {
+    private static function stringifyRow($row, $delimiter, $enclosure) {
 
         return implode(
             $delimiter,

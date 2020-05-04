@@ -11,7 +11,7 @@ class SysChecksFolder extends WorkspaceController {
 
         $sysChecks = [];
 
-        foreach (Folder::glob($this->_getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($this->getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileSysCheck($fullFilePath);
 
@@ -58,7 +58,7 @@ class SysChecksFolder extends WorkspaceController {
 
     public function collectSysCheckReports(array $filterCheckIds = null): array {
 
-        $reportFolderName = $this->_getSysCheckReportsPath();
+        $reportFolderName = $this->getSysCheckReportsPath();
         $reportDir = opendir($reportFolderName);
         $reports = [];
 
@@ -82,7 +82,7 @@ class SysChecksFolder extends WorkspaceController {
     }
 
 
-    private function _getSysCheckReportsPath(): string {
+    private function getSysCheckReportsPath(): string {
 
         $sysCheckPath = $this->_workspacePath . '/SysCheck';
         if (!file_exists($sysCheckPath)) {
@@ -110,7 +110,7 @@ class SysChecksFolder extends WorkspaceController {
 
     public function saveSysCheckReport(SysCheckReport $report): void {
 
-        $reportFilename = $this->_getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
+        $reportFilename = $this->getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
 
         if (!file_put_contents($reportFilename, json_encode((array) $report))) {
             throw new Exception("Could not write to file `$reportFilename`");

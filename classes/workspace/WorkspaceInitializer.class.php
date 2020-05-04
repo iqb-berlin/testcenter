@@ -16,7 +16,7 @@ class WorkspaceInitializer {
      * @param $dirPath - a full path
      * @return string - the path, again
      */
-    private function _createSubdirectories(string $dirPath) {
+    private function createSubdirectories(string $dirPath) {
 
         $pathParts = parse_url($dirPath);
         return array_reduce(explode('/', $pathParts['path']), function($agg, $item) {
@@ -33,8 +33,8 @@ class WorkspaceInitializer {
     }
 
 
-    private function _importSampleFile(int $workspaceId, string $filename,
-                                       InstallationArguments $vars, string $destination = null) {
+    private function importSampleFile(int $workspaceId, string $filename,
+                                      InstallationArguments $vars, string $destination = null) {
 
         $importFileName = ROOT_DIR . "/sampledata/$filename";
         $sampleFileContent = file_get_contents($importFileName);
@@ -48,7 +48,7 @@ class WorkspaceInitializer {
         }
 
         $destinationSubDir = $destination ? $destination : basename($filename, '.xml');
-        $fileNameToWrite = $this->_createSubdirectories(DATA_DIR . "/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
+        $fileNameToWrite = $this->createSubdirectories(DATA_DIR . "/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
 
         if (@file_put_contents($fileNameToWrite, $sampleFileContent) === false) {
             throw new Exception("Could not write file: $fileNameToWrite");
@@ -64,13 +64,13 @@ class WorkspaceInitializer {
      */
     public function importSampleData(int $workspaceId, InstallationArguments $parameters): void {
 
-        $this->_importSampleFile($workspaceId, 'Booklet.xml', $parameters);
-        $this->_importSampleFile($workspaceId, 'Testtakers.xml', $parameters);
-        $this->_importSampleFile($workspaceId, 'SysCheck.xml', $parameters);
-        $this->_importSampleFile($workspaceId, 'Unit.xml', $parameters);
-        $this->_importSampleFile($workspaceId, 'Unit2.xml', $parameters, 'Unit');
-        $this->_importSampleFile($workspaceId, 'Player.html', $parameters, 'Resource');
-        $this->_importSampleFile($workspaceId, 'SysCheck-Report.json', $parameters, 'SysCheck/reports');
+        $this->importSampleFile($workspaceId, 'Booklet.xml', $parameters);
+        $this->importSampleFile($workspaceId, 'Testtakers.xml', $parameters);
+        $this->importSampleFile($workspaceId, 'SysCheck.xml', $parameters);
+        $this->importSampleFile($workspaceId, 'Unit.xml', $parameters);
+        $this->importSampleFile($workspaceId, 'Unit2.xml', $parameters, 'Unit');
+        $this->importSampleFile($workspaceId, 'Player.html', $parameters, 'Resource');
+        $this->importSampleFile($workspaceId, 'SysCheck-Report.json', $parameters, 'SysCheck/reports');
     }
 
 

@@ -75,11 +75,11 @@ class BookletsFolder extends WorkspaceController {
                 array_push($preparedBooklets[$localGroupName], $localLoginData);
             }
         }
-        return $this->_sortPreparedBooklets($preparedBooklets);
+        return $this->sortPreparedBooklets($preparedBooklets);
     }
 
 
-    private function _sortPreparedBooklets(array $preparedBooklets): array {
+    private function sortPreparedBooklets(array $preparedBooklets): array {
 
         $preparedBookletsSorted = [];
         // error_log(print_r($preparedBooklets, true));

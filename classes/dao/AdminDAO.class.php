@@ -50,24 +50,24 @@ class AdminDAO extends DAO {
 
 		$passwordSha = $this->encryptPassword($password);
 
-		$user = $this->_getUserByNameAndPasswordHash($username, $passwordSha);
+		$user = $this->getUserByNameAndPasswordHash($username, $passwordSha);
 
 		if ($user === null) {
 		    $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
             throw new HttpError("Invalid Password `$shortPW`", 400);
         }
 
-		$this->_deleteTokensByUser((int) $user['id']);
+		$this->deleteTokensByUser((int) $user['id']);
 
-		$token = $this->_randomToken('admin', $username);
+		$token = $this->randomToken('admin', $username);
 
-		$this->_storeToken((int) $user['id'], $token, $validTo);
+		$this->storeToken((int) $user['id'], $token, $validTo);
 
 		return $token;
 	}
 
 
-	private function _getUserByNameAndPasswordHash(string $userName, string $passwordHash): ?array {
+	private function getUserByNameAndPasswordHash(string $userName, string $passwordHash): ?array {
 
 		return $this->_(
 			'SELECT * FROM users
@@ -80,7 +80,7 @@ class AdminDAO extends DAO {
 	}
 
 
-	private function _deleteTokensByUser(int $userId): void {
+	private function deleteTokensByUser(int $userId): void {
 
 		$this->_(
 			'DELETE FROM admin_sessions 
@@ -92,7 +92,7 @@ class AdminDAO extends DAO {
 	}
 
 
-	private function _storeToken(int $userId, string $token, ?int $validTo = null): void {
+	private function storeToken(int $userId, string $token, ?int $validTo = null): void {
 
         $validTo = $validTo ?? TimeStamp::expirationFromNow(0, $this->timeUserIsAllowedInMinutes);
 

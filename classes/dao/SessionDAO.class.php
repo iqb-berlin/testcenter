@@ -261,7 +261,7 @@ class SessionDAO extends DAO {
 
         $validUntil = TimeStamp::expirationFromNow($loginData->getValidTo(), $loginData->getValidForMinutes());
 
-        $loginToken = $this->_randomToken('login', $loginData->getName());
+        $loginToken = $this->randomToken('login', $loginData->getName());
 
         $this->_(
             'INSERT INTO login_sessions (token, codes_to_booklets, valid_until, name, mode, workspace_id, group_name, custom_texts) 
@@ -420,7 +420,7 @@ class SessionDAO extends DAO {
             TimeStamp::checkExpiration(0, $login->getValidTo());
         }
 
-        $newPersonToken = $this->_randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$code");
+        $newPersonToken = $this->randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$code");
         $validUntil = TimeStamp::toSQLFormat($login->getValidTo());
 
         $this->_(

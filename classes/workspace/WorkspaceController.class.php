@@ -34,11 +34,11 @@ class WorkspaceController {
 
         $this->_dataPath = DATA_DIR;
 
-        $this->_workspacePath = $this->_getOrCreateWorkspacePath();
+        $this->_workspacePath = $this->getOrCreateWorkspacePath();
     }
 
 
-    protected function _getOrCreateWorkspacePath() {
+    protected function getOrCreateWorkspacePath() {
 
         $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
         if (file_exists($workspacePath) and !is_dir($workspacePath)) {
@@ -53,7 +53,7 @@ class WorkspaceController {
     }
 
 
-    protected function _getOrCreateSubFolderPath(string $type): string {
+    protected function getOrCreateSubFolderPath(string $type): string {
 
         $subFolderPath = $this->_workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
@@ -135,7 +135,7 @@ class WorkspaceController {
             $fileToDeletePath = $this->_workspacePath . '/' . $fileToDelete;
             if (!file_exists($fileToDeletePath)) {
                 $report['did_not_exist'][] = $fileToDelete;
-            } else if ($this->_isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
+            } else if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
                 $report['deleted'][] = $fileToDelete;
             } else {
                 $report['not_allowed'][] = $fileToDelete;
@@ -145,7 +145,7 @@ class WorkspaceController {
     }
 
 
-    protected function _isPathLegal(string $path): bool {
+    protected function isPathLegal(string $path): bool {
 
         return substr_count($path, '..') == 0;
     }
@@ -162,10 +162,10 @@ class WorkspaceController {
     public function importUnsortedResource($fileName) {
 
         if (strtoupper(substr($fileName, -4)) == '.ZIP') {
-            return $this->_importUnsortedZipArchive($fileName);
+            return $this->importUnsortedZipArchive($fileName);
         }
 
-        $this->_sortAndValidateUnsortedResource($fileName);
+        $this->sortAndValidateUnsortedResource($fileName);
 
         return [
             $fileName => true
@@ -173,7 +173,7 @@ class WorkspaceController {
     }
 
 
-    protected function _sortAndValidateUnsortedResource($fileName) {
+    protected function sortAndValidateUnsortedResource($fileName) {
 
         $targetFolder = $this->_workspacePath . '/Resource';
 
@@ -209,7 +209,7 @@ class WorkspaceController {
     }
 
 
-    protected function _importUnsortedZipArchive($fileName) {
+    protected function importUnsortedZipArchive($fileName) {
 
         $extractedFiles = [];
 
@@ -234,7 +234,7 @@ class WorkspaceController {
             while (($entry = readdir($zipFolderDir)) !== false) {
                 if (is_file($extractionPath . '/' .  $entry)) {
                     try { // we don't want to fail if one file fails
-                        $this->_sortAndValidateUnsortedResource("$extractionFolder/$entry");
+                        $this->sortAndValidateUnsortedResource("$extractionFolder/$entry");
                         $extractedFiles["$extractionFolder/$entry"] = true;
                     } catch (Exception $e) {
                         $extractedFiles["$extractionFolder/$entry"] = $e->getMessage();
@@ -243,14 +243,14 @@ class WorkspaceController {
             }
         }
 
-        $this->_emptyAndDeleteFolder($extractionPath);
+        $this->emptyAndDeleteFolder($extractionPath);
         unlink($filePath);
 
         return $extractedFiles;
     }
 
 
-    protected function _emptyAndDeleteFolder($folder) {
+    protected function emptyAndDeleteFolder($folder) {
         if (file_exists($folder)) {
             $folderDir = opendir($folder);
             if ($folderDir !== false) {
@@ -258,7 +258,7 @@ class WorkspaceController {
                     if (($entry !== '.') && ($entry !== '..')) {
                         $fullname = $folder . '/' .  $entry;
                         if (is_dir($fullname)) {
-                            $this->_emptyAndDeleteFolder($fullname);
+                            $this->emptyAndDeleteFolder($fullname);
                         } else {
                             unlink($fullname);
                         }
@@ -272,7 +272,7 @@ class WorkspaceController {
 
     public function getXMLFileByName(string $type, string $findName): XMLFile {
 
-        $dirToSearch = $this->_getOrCreateSubFolderPath($type);
+        $dirToSearch = $this->getOrCreateSubFolderPath($type);
 
         foreach (Folder::glob($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
 
@@ -291,7 +291,7 @@ class WorkspaceController {
 
     public function getResourceFileByName(string $resourceName, bool $skipSubVersions): ResourceFile {
 
-        $resourceFolder = $this->_getOrCreateSubFolderPath('Resource');
+        $resourceFolder = $this->getOrCreateSubFolderPath('Resource');
 
         $resourceFileName = FileName::normalize(basename($resourceName), $skipSubVersions);
 
@@ -311,7 +311,7 @@ class WorkspaceController {
     public function countFiles(string $type): int {
 
         $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-        return count(Folder::glob($this->_getOrCreateSubFolderPath($type), $pattern));
+        return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
     }
 
 

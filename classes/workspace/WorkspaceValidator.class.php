@@ -5,21 +5,21 @@ declare(strict_types=1);
 
 class WorkspaceValidator extends WorkspaceController {
 
-    private $_allResources = [];
-    private $_allVersionedResources = [];
-    private $_allUsedResources = [];
-    private $_allUsedVersionedResources = [];
-    private $_allUnits = [];
-    private $_allUsedUnits = [];
-    private $_allBooklets = [];
-    private $_allUsedBooklets = [];
-    private $_allResourceFilesWithSize = [];
-    private $_allUnitsWithPlayer = [];
-    private $_allUnitsOnlyFilesize = [];
-    private $_allBookletsFilesize = [];
-    private $_validSysCheckCount = 0;
-    private $_testtakersCount = 0;
-    private $_allLoginNames = [];
+    private $allResources = [];
+    private $allVersionedResources = [];
+    private $allUsedResources = [];
+    private $allUsedVersionedResources = [];
+    private $allUnits = [];
+    private $allUsedUnits = [];
+    private $allBooklets = [];
+    private $allUsedBooklets = [];
+    private $allResourceFilesWithSize = [];
+    private $allUnitsWithPlayer = [];
+    private $allUnitsOnlyFilesize = [];
+    private $allBookletsFilesize = [];
+    private $validSysCheckCount = 0;
+    private $testtakersCount = 0;
+    private $allLoginNames = [];
 
     private $_validationReport = ['errors' => [], 'warnings' => [], 'infos' => []];
 
@@ -28,35 +28,35 @@ class WorkspaceValidator extends WorkspaceController {
         $this->reset();
 
         $this->readResources();
-        $this->reportInfo(strval(count($this->_allResources)) . ' resource files found');
+        $this->reportInfo(strval(count($this->allResources)) . ' resource files found');
 
         $this->readAndValidateUnits();
-        $this->reportInfo(strval(count($this->_allUnits)) . ' valid units found');
+        $this->reportInfo(strval(count($this->allUnits)) . ' valid units found');
 
         // get all booklets and check units and resources
         $this->readAndValidateBooklets();
-        $this->reportInfo(strval(count($this->_allBooklets)) . ' valid booklets found');
+        $this->reportInfo(strval(count($this->allBooklets)) . ' valid booklets found');
 
         // get all syschecks and check units
         $this->readAndValidateSysChecks();
-        $this->reportInfo(strval($this->_validSysCheckCount) . ' valid syschecks found');
+        $this->reportInfo(strval($this->validSysCheckCount) . ' valid syschecks found');
         
         // get all logins and check booklets
         $this->readAndValidateLogins();
         $this->checkIfLoginsAreUsedInOtherWorkspaces();
-        $this->reportInfo(strval($this->_testtakersCount) . ' testtakers in ' . strval(count($this->_allLoginNames)) . ' logins found');
+        $this->reportInfo(strval($this->testtakersCount) . ' testtakers in ' . strval(count($this->allLoginNames)) . ' logins found');
 
         // find unused resources, units and booklets
         $this->findUnusedItems();
 
-        if (asort($this->_allBookletsFilesize, SORT_NUMERIC)) {
+        if (asort($this->allBookletsFilesize, SORT_NUMERIC)) {
             $this->reportInfo('booklet loaded (bytes, sorted):');
         } else {
             $this->reportInfo('booklet loaded (bytes, not sorted):');
         }
 
-        foreach(array_keys($this->_allBookletsFilesize) as $b) {
-            $this->reportInfo('    ' . $b . ': ' .  number_format($this->_allBookletsFilesize[$b], 0, "," , "." ));
+        foreach(array_keys($this->allBookletsFilesize) as $b) {
+            $this->reportInfo('    ' . $b . ': ' .  number_format($this->allBookletsFilesize[$b], 0, "," , "." ));
         }
 
         return $this->_validationReport;
@@ -79,22 +79,22 @@ class WorkspaceValidator extends WorkspaceController {
     
     private function reset() {
 
-        $this->_allResources = [];
-        $this->_allVersionedResources = [];
-        $this->_allUsedResources = [];
-        $this->_allUsedVersionedResources = [];
-        $this->_allUnits = [];
-        $this->_allUsedUnits = [];
-        $this->_allBooklets = [];
-        $this->_allUsedBooklets = [];
+        $this->allResources = [];
+        $this->allVersionedResources = [];
+        $this->allUsedResources = [];
+        $this->allUsedVersionedResources = [];
+        $this->allUnits = [];
+        $this->allUsedUnits = [];
+        $this->allBooklets = [];
+        $this->allUsedBooklets = [];
 
-        $this->_allResourceFilesWithSize = [];
-        $this->_allUnitsWithPlayer = [];
-        $this->_allUnitsOnlyFilesize = [];
-        $this->_allBookletsFilesize = [];
-        $this->_validSysCheckCount = 0;
-        $this->_testtakersCount = 0;
-        $this->_allLoginNames = [];
+        $this->allResourceFilesWithSize = [];
+        $this->allUnitsWithPlayer = [];
+        $this->allUnitsOnlyFilesize = [];
+        $this->allBookletsFilesize = [];
+        $this->validSysCheckCount = 0;
+        $this->testtakersCount = 0;
+        $this->allLoginNames = [];
 
         $this->_validationReport = ['errors' => [], 'warnings' => [], 'infos' => []];
     }
@@ -105,14 +105,14 @@ class WorkspaceValidator extends WorkspaceController {
         $myExistsReturn = false;
         $rNormalised1 = FileName::normalize($r, false);
         $rNormalised2 = FileName::normalize($r, true);
-        if (in_array($rNormalised1, $this->_allResources)) {
-            if (!in_array($rNormalised1, $this->_allUsedResources)) {
-                array_push($this->_allUsedResources, $rNormalised1);
+        if (in_array($rNormalised1, $this->allResources)) {
+            if (!in_array($rNormalised1, $this->allUsedResources)) {
+                array_push($this->allUsedResources, $rNormalised1);
             }
             $myExistsReturn = true;
-        } elseif ($v && in_array($rNormalised2, $this->_allVersionedResources)) {
-            if (!in_array($rNormalised2, $this->_allUsedVersionedResources)) {
-                array_push($this->_allUsedVersionedResources, $rNormalised2);
+        } elseif ($v && in_array($rNormalised2, $this->allVersionedResources)) {
+            if (!in_array($rNormalised2, $this->allUsedVersionedResources)) {
+                array_push($this->allUsedVersionedResources, $rNormalised2);
             }
             $myExistsReturn = true;
         }
@@ -122,9 +122,9 @@ class WorkspaceValidator extends WorkspaceController {
     private function unitExists($u) {
 
         $myExistsReturn = false;
-        if (in_array(strtoupper($u), $this->_allUnits)) {
-            if (!in_array(strtoupper($u), $this->_allUsedUnits)) {
-                array_push($this->_allUsedUnits, strtoupper($u));
+        if (in_array(strtoupper($u), $this->allUnits)) {
+            if (!in_array(strtoupper($u), $this->allUsedUnits)) {
+                array_push($this->allUsedUnits, strtoupper($u));
             }
             $myExistsReturn = true;
         }
@@ -134,9 +134,9 @@ class WorkspaceValidator extends WorkspaceController {
     private function bookletExists($b) {
 
         $myExistsReturn = false;
-        if (in_array(strtoupper($b), $this->_allBooklets)) {
-            if (!in_array(strtoupper($b), $this->_allUsedBooklets)) {
-                array_push($this->_allUsedBooklets, strtoupper($b));
+        if (in_array(strtoupper($b), $this->allBooklets)) {
+            if (!in_array(strtoupper($b), $this->allUsedBooklets)) {
+                array_push($this->allUsedBooklets, strtoupper($b));
             }
             $myExistsReturn = true;
         }
@@ -155,10 +155,10 @@ class WorkspaceValidator extends WorkspaceController {
         while (($entry = readdir($resourceFolderHandle)) !== false) {
             if (is_file($resourceFolderPath . '/' . $entry)) {
                 $fileSize = filesize($resourceFolderPath . '/' . $entry);
-                array_push($this->_allResources, FileName::normalize($entry, false));
-                $this->_allResourceFilesWithSize[FileName::normalize($entry, false)] = $fileSize;
-                array_push($this->_allVersionedResources, FileName::normalize($entry, true));
-                $this->_allResourceFilesWithSize[FileName::normalize($entry, true)] = $fileSize;
+                array_push($this->allResources, FileName::normalize($entry, false));
+                $this->allResourceFilesWithSize[FileName::normalize($entry, false)] = $fileSize;
+                array_push($this->allVersionedResources, FileName::normalize($entry, true));
+                $this->allResourceFilesWithSize[FileName::normalize($entry, true)] = $fileSize;
             }
         }
     }
@@ -193,7 +193,7 @@ class WorkspaceValidator extends WorkspaceController {
             }
 
             $unitId = $xFile->getId();
-            if (in_array($unitId, $this->_allUnits)) {
+            if (in_array($unitId, $this->allUnits)) {
                 $this->reportError('double unit id "' . $unitId . '" in Unit-XML-file "' . $entry . '"');
                 continue;
             }
@@ -204,7 +204,7 @@ class WorkspaceValidator extends WorkspaceController {
             $definitionRef = $xFile->getDefinitionRef();
             if (strlen($definitionRef) > 0) {
                 if ($this->resourceExists($definitionRef, false)) {
-                    $fileSizeTotal += $this->_allResourceFilesWithSize[FileName::normalize($definitionRef, false)];
+                    $fileSizeTotal += $this->allResourceFilesWithSize[FileName::normalize($definitionRef, false)];
                 } else {
                     $this->reportError('definitionRef "' . $definitionRef . '" not found (required in Unit-XML-file "' . $entry . '"');
                     $ok = false;
@@ -226,9 +226,9 @@ class WorkspaceValidator extends WorkspaceController {
             }
 
             if ($ok == true) {
-                array_push($this->_allUnits, $unitId);
-                $this->_allUnitsOnlyFilesize[$unitId] = $fileSizeTotal;
-                $this->_allUnitsWithPlayer[$unitId] = $myPlayer;
+                array_push($this->allUnits, $unitId);
+                $this->allUnitsOnlyFilesize[$unitId] = $fileSizeTotal;
+                $this->allUnitsWithPlayer[$unitId] = $myPlayer;
             }
         }
     }
@@ -266,7 +266,7 @@ class WorkspaceValidator extends WorkspaceController {
             $bookletLoad = filesize($fullFilename);
             $bookletPlayers = [];
             $bookletId = $xFile->getId();
-            if (in_array($bookletId, $this->_allBooklets)) {
+            if (in_array($bookletId, $this->allBooklets)) {
                 $this->reportError('double booklet id "' . $bookletId . '" in Booklet-XML-file "' . $entry . '"');
                 continue;
             }
@@ -278,15 +278,15 @@ class WorkspaceValidator extends WorkspaceController {
                     continue;
                 }
 
-                $bookletLoad += $this->_allUnitsOnlyFilesize[$unitId];
-                $myPlayer = $this->_allUnitsWithPlayer[$unitId];
+                $bookletLoad += $this->allUnitsOnlyFilesize[$unitId];
+                $myPlayer = $this->allUnitsWithPlayer[$unitId];
                 if (!in_array($myPlayer, $bookletPlayers)) {
-                    if (isset($this->_allResourceFilesWithSize[$myPlayer])) {
-                        $bookletLoad += $this->_allResourceFilesWithSize[$myPlayer];
+                    if (isset($this->allResourceFilesWithSize[$myPlayer])) {
+                        $bookletLoad += $this->allResourceFilesWithSize[$myPlayer];
                     } else {
                         $myPlayer = FileName::normalize($myPlayer, true);
-                        if (isset($this->_allResourceFilesWithSize[$myPlayer])) {
-                            $bookletLoad += $this->_allResourceFilesWithSize[$myPlayer];
+                        if (isset($this->allResourceFilesWithSize[$myPlayer])) {
+                            $bookletLoad += $this->allResourceFilesWithSize[$myPlayer];
                         } else {
                             $this->reportWarning('resource "' . $myPlayer . '" not found in filesize-list');
                         }
@@ -295,8 +295,8 @@ class WorkspaceValidator extends WorkspaceController {
                 }
             }
 
-            array_push($this->_allBooklets, $bookletId);
-            $this->_allBookletsFilesize[$bookletId] = $bookletLoad;
+            array_push($this->allBooklets, $bookletId);
+            $this->allBookletsFilesize[$bookletId] = $bookletLoad;
         }
 
     }
@@ -336,10 +336,10 @@ class WorkspaceValidator extends WorkspaceController {
                 if (!$this->unitExists($unitId)) {
                     $this->reportError('unit "' . $unitId . '" not found (required in SysCheck-XML-file "' . $entry . '")');
                 } else {
-                    $this->_validSysCheckCount = $this->_validSysCheckCount + 1;
+                    $this->validSysCheckCount = $this->validSysCheckCount + 1;
                 }
             } else {
-                $this->_validSysCheckCount = $this->_validSysCheckCount + 1;
+                $this->validSysCheckCount = $this->validSysCheckCount + 1;
             }
         }
     }
@@ -376,7 +376,7 @@ class WorkspaceValidator extends WorkspaceController {
 
             $errorBookletNames = [];
             $myTesttakers = $xFile->getAllTesttakers();
-            $this->_testtakersCount = $this->_testtakersCount + count($myTesttakers);
+            $this->testtakersCount = $this->testtakersCount + count($myTesttakers);
             foreach ($myTesttakers as $testtaker) {
                 foreach ($testtaker['booklets'] as $bookletId) {
                     if (!$this->bookletExists($bookletId)) {
@@ -386,8 +386,8 @@ class WorkspaceValidator extends WorkspaceController {
                         }
                     }
                 }
-                if (!in_array($testtaker['loginname'], $this->_allLoginNames)) {
-                    array_push($this->_allLoginNames, $testtaker['loginname']);
+                if (!in_array($testtaker['loginname'], $this->allLoginNames)) {
+                    array_push($this->allLoginNames, $testtaker['loginname']);
                 }
             }
 
@@ -429,7 +429,7 @@ class WorkspaceValidator extends WorkspaceController {
                     $xFile = new XMLFileTesttakers($fullFilename, true);
                     if ($xFile->isValid()) {
                         foreach($xFile->getAllLoginNames() as $ln) {
-                            if (in_array($ln, $this->_allLoginNames)) {
+                            if (in_array($ln, $this->allLoginNames)) {
                                 $this->reportError('double login "' . $ln . '" in Testtakers-XML-file "' . $entry . '" (other workspace "' . $wsIdOther . '")');
                             }
                         }
@@ -441,20 +441,20 @@ class WorkspaceValidator extends WorkspaceController {
 
     private function findUnusedItems() {
 
-        foreach($this->_allResources as $r) {
-            if (!in_array($r, $this->_allUsedResources) && !in_array(FileName::normalize($r, true), $this->_allUsedVersionedResources)) {
+        foreach($this->allResources as $r) {
+            if (!in_array($r, $this->allUsedResources) && !in_array(FileName::normalize($r, true), $this->allUsedVersionedResources)) {
                 $this->reportWarning('Resource "' . $r . '" never used');
             }
         }
 
-        foreach($this->_allUnits as $u) {
-            if (!in_array($u, $this->_allUsedUnits)) {
+        foreach($this->allUnits as $u) {
+            if (!in_array($u, $this->allUsedUnits)) {
                 $this->reportWarning('Unit "' . $u . '" not used in booklets');
             }
         }
 
-        foreach($this->_allBooklets as $b) {
-            if (!in_array($b, $this->_allUsedBooklets)) {
+        foreach($this->allBooklets as $b) {
+            if (!in_array($b, $this->allUsedBooklets)) {
                 $this->reportWarning('Booklet "' . $b . '" not used by testtakers');
             }
         }

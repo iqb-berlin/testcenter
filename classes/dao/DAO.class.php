@@ -69,7 +69,7 @@ class DAO {
     }
 
 
-    protected function _randomToken(string $type, string $name) {
+    protected function randomToken(string $type, string $name) {
 
         if (DB::getConfig()->staticTokens) {
 

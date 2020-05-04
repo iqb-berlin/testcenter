@@ -98,16 +98,16 @@ class SysCheckReportFile {
     function getDigest(): array {
 
         return [
-            'os' =>  $this->_getValueIfExists('envData', 'Betriebssystem') . ' '
-                . $this->_getValueIfExists('envData', 'Betriebssystem-Version'),
-            'browser' => $this->_getValueIfExists('envData', 'Browser') . ' '
-                . $this->_getValueIfExists('envData', 'Browser-Version'),
+            'os' =>  $this->getValueIfExists('envData', 'Betriebssystem') . ' '
+                . $this->getValueIfExists('envData', 'Betriebssystem-Version'),
+            'browser' => $this->getValueIfExists('envData', 'Browser') . ' '
+                . $this->getValueIfExists('envData', 'Browser-Version'),
         ];
     }
 
 
     // TODO use ids instead of labels (but ids has to be set in FE)
-    private function _getValueIfExists(string $section, string $field, string $default = '') {
+    private function getValueIfExists(string $section, string $field, string $default = '') {
 
         $sectionEntries = isset($this->_report[$section]) ? $this->_report[$section] : [];
 

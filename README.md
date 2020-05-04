@@ -14,6 +14,10 @@ and [here](https://github.com/iqb-berlin/testcenter-admin-iqb-ng).
 
 Find API documentation [here](https://iqb-berlin.github.io/testcenter-iqb-php/).
 
+# Bug Reports
+
+https://github.com/iqb-berlin/testcenter-iqb-php/issues
+
 # Installation
 
 ## With Installation Script on Webserver
@@ -23,7 +27,7 @@ Find API documentation [here](https://iqb-berlin.github.io/testcenter-iqb-php/).
 * Apache2 (other Webservers possible, but untested) with
   * mod_rewrite extension
   * header extension
-* PHP > 7.3 
+* PHP >= 7.3 
   * pdo extension
   * json extension
   * zip extension
@@ -48,8 +52,8 @@ php composer.phar install
 ``` 
 
 - Make sure, Apache2 accepts `.htacess`-files (`AllowOverride All`-setting in your Vhost-config) and 
-required extensions are present. *Make sure, config and data files are not exposed to the outside*. If the `.htacess`-files is
-accepted by Apache2 correctly this would be the case. 
+required extensions are present. *Make sure, config and data files are not exposed to the outside*. 
+If the `.htacess`-files is accepted by Apache2 correctly this would be the case. 
 
 - Ensure that PHP has _write_ access to `/tmp` and `/vo_data`:
 ```
@@ -129,30 +133,31 @@ export TC_API_URL=http://localhost/testcenter-iqb-php
 If you want to run the e2e-tests against a persistent database, MySQL or PostgreSQL, do the following:
 - in `/config` create a file `DBConnectionData.e2etest.json` analogous to `DBConnectionData.json` with your connection
 - also in `/config` create a file `e2eTests.json`with the content `{"configFile": "e2etest"}`
-- **Be really careful**: Running the tests this way will *erase all your data* from the data dir `vo_data` 
-and the specified database.
+- **Be really careful**: Running the tests this way will *erase all your data* from the data dir `vo_data` and the 
+specified database.
 
 
 # Development
 ## Coding Standards
 
-Following [PSR-12](https://www.php-fig.org/psr/psr-12/)
-
-Exceptions:
-* private and protected class methods are prefixed with underscore to make it more visible that they are helper methods.  
+Following mostly [PSR-12](https://www.php-fig.org/psr/psr-12/)
 
 Most important:
 * Class names MUST be declared in StudlyCaps ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 * Method names MUST be declared in camelCase ([PSR-1](https://www.php-fig.org/psr/psr-1/))
-* Class constants MUST be declared in all upper case with underscore separators. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
+* Class constants MUST be declared in all upper case with underscore separators. 
+([PSR-1](https://www.php-fig.org/psr/psr-1/))
 * Files MUST use only UTF-8 without BOM for PHP code. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
-* Files SHOULD either declare symbols (classes, functions, constants, etc.) or cause side-effects (e.g. generate output, change .ini settings, etc.) but SHOULD NOT do both. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
+* Files SHOULD either declare symbols (classes, functions, constants, etc.) or cause side-effects 
+(e.g. generate output, change .ini settings, etc.) but SHOULD NOT do both. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 
-### Various Rules
+### Various Rules and hints
 
-* always put a white line below function signature
-* use typed function signature as of php 7.1, arrays can be used as type, but will be replaced by typed array classes once 
-* dont't use require or include anywhere, program uses autoload for all classes from the `classes`-dir. 
+* Always put a white line below function signature an two above!
+* Use typed function signature as of php 7.1, arrays can be used as type, but will be replaced by typed array classes 
+once 7.4 is default.
+* Never `require` or `include` anywhere, program uses autoload for all classes from the `classes`-dir. 
 Exception: Unit-tests, where we want to define dependencies explicit in the test-file itself (and nowhere else).
- 
-
+* Always throw exceptions in case of error. They will be globally caught by ErrorHandler.
+When you are in the situation of catching an exception anywhere else it's 99% better not to throw the exception
+(since it's not an exception case most likely) but return false or null ot the like.
