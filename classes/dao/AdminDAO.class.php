@@ -68,6 +68,9 @@ class AdminDAO extends DAO {
             true
         );
 
+        // we always check at least one user to not leak the existence of username to time-attacks
+        $usersOfThisName[] = (!count($usersOfThisName)) ? ['password' => 'dummy'] : $usersOfThisName;
+
         foreach ($usersOfThisName as $user) {
 
             if (Password::verify($password, $user['password'], $this->passwordSalt)) {
@@ -75,6 +78,7 @@ class AdminDAO extends DAO {
             }
         }
 
+        // generic error message to not expose too much information to attackers
         $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
         throw new HttpError("Invalid Password `$shortPW` or unknown user `$userName`.", 400);
     }

@@ -132,6 +132,9 @@ class SuperAdminDAO extends DAO {
             true
         );
 
+        // we always check at least one user to not leak the existence of username to time-attacks
+        $usersOfThisName[] = (!count($usersOfThisName)) ? ['password' => 'dummy'] : $usersOfThisName;
+
         foreach ($usersOfThisName as $user) {
 
             if (Password::verify($password, $user['password'], $this->passwordSalt)) {
@@ -145,7 +148,7 @@ class SuperAdminDAO extends DAO {
 
     public function createUser(string $userName, string $password, bool $isSuperadmin = false): array {
 
-        // TODO maybe prove $userName and $password for validity
+        Password::validate($password);
 
         $user = $this->_(
             'SELECT users.name FROM users WHERE users.name=:user_name',

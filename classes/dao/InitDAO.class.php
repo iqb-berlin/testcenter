@@ -100,7 +100,6 @@ class InitDAO extends SessionDAO {
     /**
      * @param string $username
      * @param string $password
-     * @param int $workspaceId
      * @param string $workspaceName
      * @return array
      * @throws HttpError
