@@ -19,7 +19,6 @@ RewriteCond %{REQUEST_FILENAME} !index.php
 
 # exclude certain directories, which can be accessed directly
 RewriteCond %{REQUEST_URI} !/docs
-RewriteCond %{REQUEST_URI} !/saltnpepper.php
 
 # find real base
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
