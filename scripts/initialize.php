@@ -88,7 +88,7 @@ try  {
 
         if (!file_put_contents(ROOT_DIR . '/config/DBConnectionData.json', json_encode(DB::getConfig()))) {
 
-            throw new Exception("Could nto write file. Check file permissions on `/config/`.");
+            throw new Exception("Could not write file. Check file permissions on `/config/`.");
         }
 
         echo "\nConfig file written.";
@@ -97,7 +97,7 @@ try  {
 
         DB::connect();
         $config = DB::getConfig();
-        echo "\nConfig file present.";
+        echo "\nConfig file present:" . print_r(DB::getConfig(), true);
         $initDAO = InitDAO::createWithRetries(5);
     }
 

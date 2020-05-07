@@ -11,7 +11,6 @@ class InstallationArguments extends DataCollection {
 
     public $create_test_sessions = false;
     public $overwrite_existing_installation = false;
-    public $delete_files_if_present = false;
 
     public function __construct($initData) {
 
