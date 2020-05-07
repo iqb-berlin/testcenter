@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-
+/** @noinspection PhpUnhandledExceptionInspection */
 use org\bovigo\vfs\vfsStream;
 
 // TODO unit-tests galore
@@ -41,14 +41,13 @@ class TestEnvironment {
 
             DB::connect(new DBConfig([
                 'type' => 'temp',
-                'staticTokens' => true
+                'staticTokens' => true,
+                'insecurePasswords' => true
             ]));
 
             $initDAO = new InitDAO();
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');
             TestEnvironment::setUpTestData();
-
-//          TestEnvironment::debugVirtualEnvironment();
 
             TestEnvironment::makeRandomStatic();
 
@@ -120,7 +119,6 @@ class TestEnvironment {
         $initDAO->createSampleLoginsReviewsLogs('xxx');
         $initDAO->createSampleExpiredSessions('xxx');
         $initDAO->createSampleMonitorSession();
-//        TestEnvironment::debugVirtualEnvironment();
     }
 
 

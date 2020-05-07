@@ -39,7 +39,7 @@ class AdminDAOTest extends TestCase {
         $this->assertNotNull($token);
 
         $this->expectException("HttpError");
-        $this->dbc->createAdminToken('peter', 'lustig');
+        $this->dbc->createAdminToken('peter', 'peterspassword');
     }
 
 

@@ -150,7 +150,7 @@ class SuperAdminDAOTest extends TestCase {
 
     public function test_addUser() {
 
-        $result = $this->dbc->createUser("a_third_user", "somepw");
+        $result = $this->dbc->createUser("a_third_user", "some_password");
         $expectation = [
             "id" => "3",
             "name" => "a_third_user",

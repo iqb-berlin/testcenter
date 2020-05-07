@@ -11,6 +11,7 @@ class DBConfig extends DataCollection {
     public $password = null;
     public $salt = "t"; // for passwords
     public $staticTokens = false; // relevant for unit- and e2e-tests
+    public $insecurePasswords = false; // relevant for unit- and e2e-tests
 
     public function __construct($initData) {
 

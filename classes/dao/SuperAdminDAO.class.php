@@ -118,7 +118,7 @@ class SuperAdminDAO extends DAO {
             'UPDATE users SET password = :password WHERE id = :user_id',
             [
                 ':user_id' => $userId,
-                ':password' => Password::encrypt($password, $this->passwordSalt)
+                ':password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords)
             ]
         );
     }
@@ -163,7 +163,7 @@ class SuperAdminDAO extends DAO {
             'INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, :is_superadmin)',
             [
                 ':user_name' => $userName,
-                ':user_password' => Password::encrypt($password, $this->passwordSalt),
+                ':user_password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords),
                 ':is_superadmin' => $isSuperadmin ? 1 : 0
             ]
         );

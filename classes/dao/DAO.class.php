@@ -23,6 +23,7 @@ class DAO {
     protected $pdoDBhandle = false;
     protected $timeUserIsAllowedInMinutes = 30;
     protected $passwordSalt = 't';
+    protected $insecurePasswords = false;
 
 
     public function __construct() {
@@ -32,6 +33,7 @@ class DAO {
         $this->pdoDBhandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->passwordSalt = DB::getConfig()->salt;
+        $this->insecurePasswords = DB::getConfig()->insecurePasswords;
     }
 
 
