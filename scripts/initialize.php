@@ -97,7 +97,7 @@ try  {
 
         DB::connect();
         $config = DB::getConfig();
-        echo "\nConfig file present:" . print_r(DB::getConfig(), true);
+        echo "\nConfig file present";
         $initDAO = InitDAO::createWithRetries(5);
     }
 
