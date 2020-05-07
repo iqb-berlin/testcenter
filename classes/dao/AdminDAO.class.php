@@ -69,7 +69,7 @@ class AdminDAO extends DAO {
         );
 
         // we always check at least one user to not leak the existence of username to time-attacks
-        $usersOfThisName[] = (!count($usersOfThisName)) ? ['password' => 'dummy'] : $usersOfThisName;
+        $usersOfThisName = (!count($usersOfThisName)) ? ['password' => 'dummy'] : $usersOfThisName;
 
         foreach ($usersOfThisName as $user) {
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 class Password {
 
-    static function encrypt(string $password): string {
+    static function encrypt(string $password, string $pepper): string {
 
-        $hash = password_hash($password,  PASSWORD_BCRYPT);
+        $hash = password_hash(hash_hmac('sha256', $password, $pepper),  PASSWORD_BCRYPT);
 
         if (!$hash) {
 
@@ -39,19 +39,19 @@ class Password {
     }
 
 
-    static function verify(string $password, string $hash, string $salt): bool {
+    static function verify(string $password, string $hash, string $saltOrPepper): bool {
 
         if (strlen($hash) == 40) {
 
             // for legecy passwords. can only be used for timing attack, because
             // == comparisims only takes place when actually sha1-password is available
-            $legacyHash = sha1($salt . $password);
+            $legacyHash = sha1($saltOrPepper . $password);
 
             if (hash_equals($legacyHash, $hash)) {
                 return true;
             }
         }
 
-        return password_verify($password, $hash);
+        return password_verify(hash_hmac('sha256', $password, $saltOrPepper), $hash);
     }
 }

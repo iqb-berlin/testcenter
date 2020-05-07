@@ -141,7 +141,7 @@ class TestEnvironment {
         $errorUniqueId = ErrorHandler::logException($exception, true);
         http_response_code(500);
         header("Error-ID:$errorUniqueId");
-        echo "Could not create virtual environment: " . $exception->getMessage();
+        echo "Could not create environment: " . $exception->getMessage();
         exit(1);
     }
 }
