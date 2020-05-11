@@ -25,7 +25,9 @@
     "ext-zip": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
-    "ext-xmlreader": "*",
+    "ext-xmlreader": "*"
+  },
+  "suggest": {
     "ext-apache": "*"
   },
   "require-dev": {
