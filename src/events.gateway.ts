@@ -19,8 +19,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private clientsCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
 
-
-
     handleConnection(client: Client) {
 
         this.clients.push(client);
@@ -37,32 +35,24 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 break;
             }
         }
-        this.broadcast('disconnect',{});
 
         this.clientsCount.next(this.clientsCount.value - 1);
 
-        console.log("dis-connect");
+        console.log("disconnect");
     }
 
 
     public broadcast(event, message: any) {
 
         for (let client of this.clients) {
-            client.send(JSON.stringify({"event": event, "data": message}));
+            client.send(JSON.stringify({event: event, data: message}));
         }
     }
 
 
-    @SubscribeMessage('events')
-    findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
+    @SubscribeMessage('subscribe:client.count')
+    subscribeClientCount(@MessageBody() data: number): Observable<WsResponse<number>> {
 
-        return from([1, 2, 3]).pipe(map(item => ({ event: 'events', data: item })));
-    }
-
-
-    @SubscribeMessage('clients.count')
-    subscribeClientsCount(@MessageBody() data: number): Observable<WsResponse<number>> {
-
-        return this.clientsCount.pipe(map((count: number) => ({ event: 'clients', data: count })));
+        return this.clientsCount.pipe(map((count: number) => ({ event: 'client.count', data: count })));
     }
 }
