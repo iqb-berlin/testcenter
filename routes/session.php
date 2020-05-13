@@ -85,6 +85,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $session = $sessionDAO->getOrCreatePersonSession($login, $body['code']);
 
+    BroadcastService::cast((string) $authToken->getId(), '', 'logged in');
     return $response->withJson($session);
 
 })->add(new RequireToken('login'));
@@ -105,6 +106,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     if ($authToken->getType() == "person") {
 
+        BroadcastService::cast((string) $authToken->getId(), '', 'logged in');
         $session = $sessionDAO->getPersonSession($authToken->getToken());
         return $response->withJson($session);
     }
