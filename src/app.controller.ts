@@ -5,25 +5,26 @@ import {TestInstance} from './test.interface';
 
 @Controller()
 export class AppController {
+
   constructor(
       private readonly eventsGateway: EventsGateway
   ) {}
 
-  private tests: {[person: string]: string} = {};
+
+  private tests: {[person: string]: TestInstance} = {};
+
 
   private static isTestInstance(arg: any): arg is TestInstance {
-    return (arg.person !== undefined) && (arg.status !== undefined);
+
+    return (arg.person !== undefined) && (arg.status !== undefined) && (arg.test !== undefined);
   }
+
 
   private updatePersonsStatus(testInstance: TestInstance) {
 
-    this.tests[testInstance.person] = testInstance.status;
+    this.tests[testInstance.person] = testInstance;
   }
 
-  private getAllPersonsStatus() {
-
-    return Object.keys(this.tests).map((person: string): TestInstance => ({person, status: this.tests[person]}));
-  }
 
   @Post('/call')
   getHello(@Req() request: Request): string {
@@ -31,15 +32,13 @@ export class AppController {
     if (AppController.isTestInstance(request.body)) {
 
       this.updatePersonsStatus(request.body);
-      this.eventsGateway.broadcast("tests", this.getAllPersonsStatus());
+      this.eventsGateway.broadcast("tests", Object.values(this.tests));
 
     } else {
 
       console.log("unknown message", request.body);
     }
 
-
-
-    return 'called';
+    return 'callabalal';
   }
 }
