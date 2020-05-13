@@ -31,6 +31,8 @@ $app->group('/test', function(App $app) {
             throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
         }
 
+        BroadcastService::cast((string) $authToken->getId(), $test['label'], $test['lastState'] ?? 'started');
+
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
     });
@@ -139,6 +141,9 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($testDAO) {
 
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
@@ -151,6 +156,8 @@ $app->group('/test', function(App $app) {
         // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
         $testDAO->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
+
+        BroadcastService::cast((string) $authToken->getId(), '', "responded to `$unitName`");
 
         return $response->withStatus(201);
     })
@@ -178,6 +185,9 @@ $app->group('/test', function(App $app) {
 
     $app->patch('/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($testDAO) {
 
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
@@ -188,12 +198,17 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
+        BroadcastService::cast((string) $authToken->getId(), (string) $testId, "changed unitstate of `$unitName` to {$body['key']}, {$body['value']}");
+
         return $response->withStatus(200);
     })
         ->add(new IsTestWritable());
 
 
     $app->patch('/{test_id}/state', function (Request $request, Response $response) use ($testDAO) {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
 
         $testId = (int) $request->getAttribute('test_id');
 
@@ -203,6 +218,8 @@ $app->group('/test', function(App $app) {
         ]);
 
         $testDAO->updateTestLastState($testId, $body['key'], $body['value']);
+
+        BroadcastService::cast((string) $authToken->getId(), (string) $testId, "set {$body['key']} to {$body['value']}");
 
         return $response->withStatus(200);
     })
@@ -246,9 +263,14 @@ $app->group('/test', function(App $app) {
 
     $app->patch('/{test_id}/lock', function (Request $request, Response $response) use ($testDAO) {
 
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
         $testId = (int) $request->getAttribute('test_id');
 
         $testDAO->lockBooklet($testId);
+
+        BroadcastService::cast((string) $authToken->getId(), (string) $testId, "locked");
 
         return $response->withStatus(200);
     })
