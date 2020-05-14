@@ -50,6 +50,7 @@ class Session extends DataCollectionTypeSafe {
 
     public function hasAccess(string $type, string $id = null): bool {
 
-        return isset($this->access->$type) and (!$id or in_array($id, $this->access->$type));
+        return isset($this->access->$type)
+            and (!$id and !count($this->access->$type)) or (in_array($id, $this->access->$type));
     }
 }
