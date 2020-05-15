@@ -39,6 +39,28 @@ class DB {
     }
 
 
+    static function connectWithRetries(?DBConfig $config = null, int $retries = 5): void {
+
+        while ($retries--) {
+
+            try {
+
+                error_log("Database Connection attempt");
+                DB::connect($config);
+                error_log("Database Connection successful");
+                return;
+
+            } catch (Throwable $t) {
+
+                error_log("Database Connection failed! Retry: $retries attempts left.");
+                usleep(20 * 1000000); // give database container time to come up
+            }
+        }
+
+        throw new Exception("Database connection failed.");
+    }
+
+
     static function getConnection(): PDO {
 
         if (!self::$pdo) {

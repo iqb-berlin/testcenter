@@ -100,7 +100,7 @@ class DAO {
 
         foreach ($this::tables as $table) {
 
-            $report .= "\n## $table\n";
+            $report .= "## $table\n";
             $entries = $this->_("SELECT * FROM $table", [], true);
             $report .= CSV::build($entries);
         }

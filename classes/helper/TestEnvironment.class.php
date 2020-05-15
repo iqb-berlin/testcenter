@@ -77,8 +77,9 @@ class TestEnvironment {
         $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/$typeName.sql");
         $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/patches.$typeName.sql");
 
-        if ($notReadyMsg = $initDAO->isDbNotReady()) {
-            throw new Exception("Database reset failed: $notReadyMsg");
+        $dbStatus = $initDAO->getDbStatus();
+        if ($dbStatus['missing'] or $dbStatus['used']) {
+            throw new Exception("Database reset failed: {$dbStatus['message']}");
         }
     }
 
