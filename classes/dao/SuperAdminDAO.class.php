@@ -114,6 +114,8 @@ class SuperAdminDAO extends DAO {
 
     public function setPassword(int $userId, string $password): void {
 
+        Password::validate($password);
+
         $this->_(
             'UPDATE users SET password = :password WHERE id = :user_id',
             [

@@ -1,6 +1,5 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
-// TODO unit-tests
 
 class Session extends DataCollectionTypeSafe {
 
@@ -17,6 +16,7 @@ class Session extends DataCollectionTypeSafe {
     protected $customTexts;
     protected $flags;
     protected $access;
+
 
     public function __construct(
         string $token,
@@ -36,6 +36,7 @@ class Session extends DataCollectionTypeSafe {
         $this->customTexts = $customTexts ?? (object) [];
     }
 
+
     public function addAccessObjects(string $type, string ...$accessObjects): Session {
 
         if (!in_array($type, $this::$accessObjectTypes)) {
@@ -48,8 +49,17 @@ class Session extends DataCollectionTypeSafe {
         return $this;
     }
 
+
     public function hasAccess(string $type, string $id = null): bool {
 
-        return isset($this->access->$type) and (!$id or in_array($id, $this->access->$type));
+        if (!$id) {
+            return isset($this->access->$type);
+        }
+
+        if (!isset($this->access->$type)) {
+            return false;
+        }
+
+        return in_array($id, $this->access->$type);
     }
 }
