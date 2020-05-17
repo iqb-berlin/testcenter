@@ -152,25 +152,33 @@ class InitDAO extends SessionDAO {
 
 
     // TODO unit-test
-    public function isDbNotReady(): ?string {
+    public function getDbStatus(): array {
+
+        $tableStatus = [
+            'used' => [],
+            'missing' => [],
+            'empty' => []
+        ];
 
         foreach ($this::tables as $table) {
 
             try {
+
                 $entries = $this->_("SELECT * FROM $table limit 10", [], true);
+                $tableStatus[count($entries) ? 'used' : 'empty'][] = $table;
 
             } catch (Exception $exception) {
 
-                return "Database strcuture not ready (at least one table is missing: `$table`).";
-            }
-
-
-            if (count($entries)) {
-
-                return "Database is not empty (table `$table` has entries).";
+                $tableStatus['missing'][] = $table;
             }
         }
 
-        return null;
+        return [
+            'message' =>
+                "Missing Tables: " . implode(', ', $tableStatus['missing']) . '. ' .
+                "Used Tables: " . implode(', ', $tableStatus['used']) . '.',
+            'used' => count($tableStatus['used']),
+            'missing' => count($tableStatus['missing'])
+        ];
     }
 }

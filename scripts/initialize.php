@@ -48,6 +48,8 @@ define('DATA_DIR', ROOT_DIR . '/vo_data');
 
 require_once(ROOT_DIR . '/autoload.php');
 
+class FinishOkay extends Exception {};
+
 try  {
 
     $args = new InstallationArguments(getopt("", [
@@ -81,8 +83,7 @@ try  {
             'user::',
             'password::',
         ]));
-        DB::connect($config);
-        $initDAO = InitDAO::createWithRetries(5);
+        DB::connectWithRetries($config, 5);
 
         echo "\nProvided arguments OK.";
 
@@ -95,21 +96,23 @@ try  {
 
     } else {
 
-        DB::connect();
+        DB::connectWithRetries(null, 5);
         $config = DB::getConfig();
-        echo "\nConfig file present";
-        $initDAO = InitDAO::createWithRetries(5);
+        echo "\nConfig file present.";
     }
+
+    $initDAO = new InitDAO();
 
     echo "\n# Database structure";
 
-    if ($notReadyMsg = $initDAO->isDbNotReady()) {
+    $dbStatus = $initDAO->getDbStatus();
+    if ($dbStatus['missing'] or $dbStatus['used']) {
 
-        echo "\n $notReadyMsg";
+        echo "\n {$dbStatus['message']}";
 
-        if (!$args->overwrite_existing_installation) {
+        if ((!$args->overwrite_existing_installation) and $dbStatus['used']) {
 
-            throw new Exception("set --overwrite_existing_installation to true or set up manually a correct and empty database.");
+            throw new FinishOkay("{$dbStatus['used']} tables in use.");
         }
 
         echo $initDAO->clearDb();
@@ -121,24 +124,13 @@ try  {
         echo "\n State of the DB";
         echo $initDAO->getDBContentDump();
         echo "\n";
-        if ($notReadyMsg = $initDAO->isDbNotReady()) {
-            throw new Exception("Database installation failed: $notReadyMsg");
+        $dbStatus = $initDAO->getDbStatus();
+        if ($dbStatus['missing'] or $dbStatus['used']) {
+            throw new Exception("Database installation failed: {$dbStatus['message']}");
         }
     }
 
     echo "\n# Sample content";
-
-    $newIds = $initDAO->createWorkspaceAndAdmin(
-        $args->user_name,
-        $args->user_password,
-        $args->workspace
-    );
-
-    echo "\n Super-Admin-User `{$args->user_name}` created";
-
-    $initializer = new WorkspaceInitializer();
-
-    echo "\n Workspace `{$args->workspace}` as `ws_1` created";
 
     $workspaceController = new WorkspaceController(1);
     $filesInWorkspace = array_reduce($workspaceController->countFilesOfAllSubFolders(), function($carry, $item) {
@@ -147,15 +139,25 @@ try  {
 
     if (($filesInWorkspace > 0) and !$args->overwrite_existing_installation) {
 
-        throw new Exception("Workspace folder `{$workspaceController->getWorkspacePath()}` is not empty.");
+        throw new FinishOkay("Workspace folder `{$workspaceController->getWorkspacePath()}` is not empty.");
     }
 
-    $initializer->cleanWorkspace($newIds['workspaceId']);
+    $newIds = $initDAO->createWorkspaceAndAdmin(
+        $args->user_name,
+        $args->user_password,
+        $args->workspace
+    );
+    echo "\n Super-Admin-User `{$args->user_name}` created";
 
+    $initializer = new WorkspaceInitializer();
+    echo "\n Workspace `{$args->workspace}` as `ws_1` created";
+
+    $initializer->cleanWorkspace($newIds['workspaceId']);
     echo "\n {$filesInWorkspace} files in workspace-folder found and DELETED.";
 
     $initializer->importSampleData($newIds['workspaceId'], $args);
     echo "\n Sample XML files created.";
+
 
     if ($args->create_test_sessions) {
 
@@ -170,6 +172,10 @@ try  {
     foreach ($args as $key => $value) {
         echo "\n $key: $value";
     }
+
+} catch (FinishOkay $ok) {
+
+    echo "\n #Abort initialization, data present: " . $ok->getMessage();
 
 } catch (Exception $e) {
 
