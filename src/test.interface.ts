@@ -1,6 +1,8 @@
-export interface TestInstance {
+export interface StatusUpdate {
 
-    person: string;
-    status: string;
+    person: number;
+    status: number;
     test: string;
+    personName?: string;
+    testName?: string;
 }

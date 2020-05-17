@@ -1,7 +1,7 @@
 import {Controller, Post, Req} from '@nestjs/common';
 import {EventsGateway} from './events.gateway';
 import { Request } from 'express';
-import {TestInstance} from './test.interface';
+import {StatusUpdate} from './test.interface';
 
 @Controller()
 export class AppController {
@@ -11,28 +11,42 @@ export class AppController {
   ) {}
 
 
-  private tests: {[person: string]: TestInstance} = {};
+  private status: {[person: string]: StatusUpdate} = {};
 
 
-  private static isTestInstance(arg: any): arg is TestInstance {
+  private static isStatusUpdate(arg: any): arg is StatusUpdate {
 
     return (arg.person !== undefined) && (arg.status !== undefined) && (arg.test !== undefined);
   }
 
 
-  private updatePersonsStatus(testInstance: TestInstance) {
+  private updatePersonsStatus(statusUpdate: StatusUpdate) {
 
-    this.tests[testInstance.person] = testInstance;
+    if (!statusUpdate.personName
+        && (typeof this.status[statusUpdate.person]  !== "undefined")
+        && (typeof this.status[statusUpdate.person].personName !== "undefined")
+    ) {
+      statusUpdate.personName = this.status[statusUpdate.person].personName;
+    }
+
+    if (!statusUpdate.testName
+        && (typeof this.status[statusUpdate.person]  !== "undefined")
+        && (typeof this.status[statusUpdate.person].testName !== "undefined")
+    ) {
+      statusUpdate.testName = this.status[statusUpdate.person].testName;
+    }
+
+    this.status[statusUpdate.person] = statusUpdate;
   }
 
 
   @Post('/call')
   getHello(@Req() request: Request): string {
 
-    if (AppController.isTestInstance(request.body)) {
+    if (AppController.isStatusUpdate(request.body)) {
 
       this.updatePersonsStatus(request.body);
-      this.eventsGateway.broadcast("tests", Object.values(this.tests));
+      this.eventsGateway.broadcast("status", Object.values(this.status));
 
     } else {
 
