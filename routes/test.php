@@ -31,7 +31,13 @@ $app->group('/test', function(App $app) {
             throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
         }
 
-        BroadcastService::cast((string) $authToken->getId(), $test['label'], $test['lastState'] ?? 'started');
+        BroadcastService::cast(
+            $authToken->getId(),
+            (int) $test['id'],
+            $test['lastState'] ?? 'started',
+            null,
+            $test['label']
+        );
 
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
@@ -157,7 +163,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
 
-        BroadcastService::cast((string) $authToken->getId(), '', "responded to `$unitName`");
+        BroadcastService::cast($authToken->getId(), $testId, "responded to `$unitName`");
 
         return $response->withStatus(201);
     })
@@ -198,7 +204,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
-        BroadcastService::cast((string) $authToken->getId(), (string) $testId, "changed unitstate of `$unitName` to {$body['key']}, {$body['value']}");
+        BroadcastService::cast($authToken->getId(), $testId, "changed state of  unit `$unitName`: `{$body['key']}` -> `{$body['value']}`");
 
         return $response->withStatus(200);
     })
@@ -219,7 +225,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateTestLastState($testId, $body['key'], $body['value']);
 
-        BroadcastService::cast((string) $authToken->getId(), (string) $testId, "set {$body['key']} to {$body['value']}");
+        BroadcastService::cast($authToken->getId(), $testId, "set {$body['key']} to {$body['value']}");
 
         return $response->withStatus(200);
     })
@@ -270,7 +276,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->lockBooklet($testId);
 
-        BroadcastService::cast((string) $authToken->getId(), (string) $testId, "locked");
+        BroadcastService::cast($authToken->getId(), $testId, "locked");
 
         return $response->withStatus(200);
     })

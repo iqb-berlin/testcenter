@@ -3,7 +3,22 @@
 
 class BroadcastService {
 
-    static function cast(string $person, string $test, string $status) {
+    static function cast(int $person, int $test, string $status,
+                         ?string $personName = null, ?string $testName = null) {
+
+        $status = [
+            "person" => $person,
+            "test" => $test,
+            "status" => $status
+        ];
+
+        if ($personName) {
+            $status['personName'] = $personName;
+        }
+
+        if ($testName) {
+            $status['testName'] = $testName;
+        }
 
         $curl = curl_init();
 
@@ -16,11 +31,7 @@ class BroadcastService {
 //            CURLOPT_FOLLOWLOCATION => true,
 //            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => json_encode([
-                "person" => $person,
-                "test" => $test,
-                "status" => $status
-            ]),
+            CURLOPT_POSTFIELDS => json_encode($status),
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json"
             ],
