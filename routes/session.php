@@ -86,7 +86,12 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $session = $sessionDAO->getOrCreatePersonSession($login, $body['code']);
 
-    BroadcastService::cast($authToken->getId(), -1, 'logged in', $session->jsonSerialize()['displayName']);
+    BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        'personLabel' => $session->jsonSerialize()['displayName'],
+        'personStatus' => 'signed in',
+        'groupLabel' => $login['groupName']
+    ]));
+
     return $response->withJson($session);
 
 })->add(new RequireToken('login'));
@@ -108,7 +113,12 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
     if ($authToken->getType() == "person") {
 
         $session = $sessionDAO->getPersonSession($authToken->getToken());
-        BroadcastService::cast($authToken->getId(), -1, 'logged in', $session->jsonSerialize()['displayName']);
+
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'personLabel' => $session->jsonSerialize()['displayName'],
+            'personStatus' => 'signed in'
+        ]));
+
         return $response->withJson($session);
     }
 

@@ -31,13 +31,11 @@ $app->group('/test', function(App $app) {
             throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
         }
 
-        BroadcastService::cast(
-            $authToken->getId(),
-            (int) $test['id'],
-            $test['lastState'] ?? 'started',
-            null,
-            $test['label']
-        );
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'testId' => (int) $test['id'],
+            'testStateKey' => $test['lastState'] ?? 'started',
+            'testLabel' => $test['label']
+        ]));
 
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
@@ -153,7 +151,7 @@ $app->group('/test', function(App $app) {
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
-        $review = RequestBodyParser::getElements($request, [
+        $unitResponse = RequestBodyParser::getElements($request, [
             'timestamp' => null,
             'response' => null,
             'responseType' => 'unknown'
@@ -161,9 +159,14 @@ $app->group('/test', function(App $app) {
 
         // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-        $testDAO->addResponse($testId, $unitName, $review['response'], $review['responseType'], $review['timestamp']);
+        $testDAO->addResponse($testId, $unitName, $unitResponse['response'], $unitResponse['responseType'], $unitResponse['timestamp']);
 
-        BroadcastService::cast($authToken->getId(), $testId, "responded to `$unitName`");
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'testId' => $testId,
+            'unitName' => $unitName,
+            'unitStateKey' => 'responding',
+            'unitStateValue' =>  $unitResponse['responseType']
+        ]));
 
         return $response->withStatus(201);
     })
@@ -204,7 +207,12 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
-        BroadcastService::cast($authToken->getId(), $testId, "changed state of  unit `$unitName`: `{$body['key']}` -> `{$body['value']}`");
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'testId' => $testId,
+            'unitName' => $unitName,
+            'unitStateKey' => $body['key'],
+            'unitStateValue' => $body['value'],
+        ]));
 
         return $response->withStatus(200);
     })
@@ -225,7 +233,11 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateTestLastState($testId, $body['key'], $body['value']);
 
-        BroadcastService::cast($authToken->getId(), $testId, "set {$body['key']} to {$body['value']}");
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'testId' => $testId,
+            'testStateKey' => $body['key'],
+            'testStateValue' => $body['value'],
+        ]));
 
         return $response->withStatus(200);
     })
@@ -276,7 +288,11 @@ $app->group('/test', function(App $app) {
 
         $testDAO->lockBooklet($testId);
 
-        BroadcastService::cast($authToken->getId(), $testId, "locked");
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'testId' => $testId,
+            'testState' => 'locked',
+            'testLabel' => 'true'
+        ]));
 
         return $response->withStatus(200);
     })

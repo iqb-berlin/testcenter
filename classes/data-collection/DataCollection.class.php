@@ -15,14 +15,6 @@ declare(strict_types=1);
 abstract class DataCollection implements JsonSerializable {
 
 
-    static function getCommandLineOptionStrings() {
-
-        $class = get_called_class();
-        print_r((array) new $class([]));
-        return array_map(function($s) {return "$s::";}, (array) new $class([]));
-    }
-
-
     static function fromFile(string $path = null): DataCollection {
 
         if (!file_exists($path)) {

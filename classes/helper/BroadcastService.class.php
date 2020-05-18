@@ -3,22 +3,7 @@
 
 class BroadcastService {
 
-    static function cast(int $person, int $test, string $status,
-                         ?string $personName = null, ?string $testName = null) {
-
-        $status = [
-            "person" => $person,
-            "test" => $test,
-            "status" => $status
-        ];
-
-        if ($personName) {
-            $status['personName'] = $personName;
-        }
-
-        if ($testName) {
-            $status['testName'] = $testName;
-        }
+    static function cast(StatusBroadcast $status) {
 
         $curl = curl_init();
 
