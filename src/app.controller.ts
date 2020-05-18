@@ -24,6 +24,9 @@ export class AppController {
 
     if (typeof this.status[statusUpdate.personId] !== "undefined") {
 
+      console.log(JSON.stringify(statusUpdate));
+      statusUpdate.unitState = {...statusUpdate.unitState, ...this.status[statusUpdate.personId].unitState};
+      statusUpdate.testState = {...statusUpdate.testState, ...this.status[statusUpdate.personId].testState};
       statusUpdate = {...this.status[statusUpdate.personId], ...statusUpdate};
     }
 
