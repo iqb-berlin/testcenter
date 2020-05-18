@@ -1,8 +1,17 @@
-export interface StatusUpdate {
+export interface StatusUpdate {    
 
-    person: number;
-    status: number;
-    test: string;
-    personName?: string;
-    testName?: string;
+    personId: number;    
+    personLabel?: string;
+    groupId?: number;
+    groupLabel?: string;
+    personStatus?: string;
+    testId?: number;
+    testLabel?: string;
+    testStateKey?: string;
+    testStateValue?: string;
+    unitName?: string;
+    unitLabel?: string;
+    unitStateKey?: string;
+    unitStateValue?: string;
+    timestamp: number;
 }

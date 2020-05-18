@@ -16,27 +16,18 @@ export class AppController {
 
   private static isStatusUpdate(arg: any): arg is StatusUpdate {
 
-    return (arg.person !== undefined) && (arg.status !== undefined) && (arg.test !== undefined);
+    return (arg.personId !== undefined) && (arg.timestamp !== undefined);
   }
 
 
-  private updatePersonsStatus(statusUpdate: StatusUpdate) {
+  private updateStatus(statusUpdate: StatusUpdate) {
 
-    if (!statusUpdate.personName
-        && (typeof this.status[statusUpdate.person]  !== "undefined")
-        && (typeof this.status[statusUpdate.person].personName !== "undefined")
-    ) {
-      statusUpdate.personName = this.status[statusUpdate.person].personName;
+    if (typeof this.status[statusUpdate.personId] !== "undefined") {
+
+      statusUpdate = {...this.status[statusUpdate.personId], ...statusUpdate};
     }
 
-    if (!statusUpdate.testName
-        && (typeof this.status[statusUpdate.person]  !== "undefined")
-        && (typeof this.status[statusUpdate.person].testName !== "undefined")
-    ) {
-      statusUpdate.testName = this.status[statusUpdate.person].testName;
-    }
-
-    this.status[statusUpdate.person] = statusUpdate;
+    this.status[statusUpdate.personId] = statusUpdate;
   }
 
 
@@ -45,7 +36,7 @@ export class AppController {
 
     if (AppController.isStatusUpdate(request.body)) {
 
-      this.updatePersonsStatus(request.body);
+      this.updateStatus(request.body);
       this.eventsGateway.broadcast("status", Object.values(this.status));
 
     } else {
