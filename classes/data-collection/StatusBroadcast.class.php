@@ -25,7 +25,7 @@ class StatusBroadcast extends DataCollection {
     protected $groupLabel = "";
     
     /**
-     * @var string|null
+     * @var string
      */
     protected $personStatus = "";
     
@@ -42,12 +42,8 @@ class StatusBroadcast extends DataCollection {
     /**
      * @var string
      */
-    protected $testStateKey = "";
+    protected $testState = [];
 
-    /**
-     * @var string
-     */
-    protected $testStateValue = "-";
 
     /**
      * @var string
@@ -60,14 +56,9 @@ class StatusBroadcast extends DataCollection {
     protected $unitLabel = "";
 
     /**
-     * @var string
+     * @var array
      */
-    protected $unitStateKey = "";
-
-    /**
-     * @var string
-     */
-    protected $unitStateValue = "-";
+    protected $unitState = [];
 
     /**
      * @var int
@@ -85,10 +76,10 @@ class StatusBroadcast extends DataCollection {
 
             if (in_array($key, $integers)) {
                 $initData[$key] = (int) $value;
-            } else {
-                $initData[$key] = (string) $value;
             }
         }
+
+        // TODO evaluate somehow that teststae and unistet are arrays of key-value pairs...
 
         parent::__construct($initData);
 

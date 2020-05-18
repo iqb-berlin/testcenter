@@ -33,7 +33,7 @@ $app->group('/test', function(App $app) {
 
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => (int) $test['id'],
-            'testStateKey' => $test['lastState'] ?? 'started',
+            'testState' => $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
             'testLabel' => $test['label']
         ]));
 
@@ -164,8 +164,7 @@ $app->group('/test', function(App $app) {
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => $testId,
             'unitName' => $unitName,
-            'unitStateKey' => 'responding',
-            'unitStateValue' =>  $unitResponse['responseType']
+            'unitState' => ['responding' => 'unitStateValue']
         ]));
 
         return $response->withStatus(201);
@@ -210,8 +209,7 @@ $app->group('/test', function(App $app) {
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => $testId,
             'unitName' => $unitName,
-            'unitStateKey' => $body['key'],
-            'unitStateValue' => $body['value'],
+            'unitState' => [$body['key'] => $body['value']],
         ]));
 
         return $response->withStatus(200);
@@ -235,8 +233,7 @@ $app->group('/test', function(App $app) {
 
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => $testId,
-            'testStateKey' => $body['key'],
-            'testStateValue' => $body['value'],
+            'testState' => [$body['key'] => $body['value']]
         ]));
 
         return $response->withStatus(200);
@@ -290,7 +287,7 @@ $app->group('/test', function(App $app) {
 
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => $testId,
-            'testState' => 'locked',
+            'testState' => ['status' => 'locked'],
             'testLabel' => 'true'
         ]));
 
