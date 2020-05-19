@@ -122,7 +122,7 @@ class SessionDAO extends DAO {
                 break;
 
             case "monitor-group":
-                $session->addAccessObjects('workspaceTest', (string) $loginData['workspaceId']);
+                $session->addAccessObjects('testGroupMonitor', (string) $loginData['workspaceId']);
                 break;
 
             default:
