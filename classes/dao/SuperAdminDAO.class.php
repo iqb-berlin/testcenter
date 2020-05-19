@@ -18,11 +18,16 @@ class SuperAdminDAO extends DAO {
 
     public function getUsers(): array {
 
-        return $this->_(
+        return array_map(
+            function($user) {
+                $user['isSuperadmin'] = (bool) $user['isSuperadmin'];
+                return $user;
+            },
+            $this->_(
             'SELECT users.name, users.id, users.email, users.is_superadmin as "isSuperadmin" FROM users ORDER BY users.name',
             [],
             true
-        );
+        ));
     }
 
 

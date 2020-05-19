@@ -138,8 +138,8 @@ components:
           nullable: true
           example: null
         isSuperadmin:
-          type: string # dredd does not support enum, otherwise it would be enum["1", "2"]
-          example: "1"
+          type: boolean
+          example: true
         selected:
           type: boolean
           example: true

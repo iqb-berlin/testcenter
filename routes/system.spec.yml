@@ -149,7 +149,7 @@ paths:
                 - name: super
                   id: '1'
                   email: null
-                  isSuperadmin: '1'
+                  isSuperadmin: true
         "401":
           description: Not authenticated
         "410":

@@ -357,7 +357,7 @@ paths:
                                     name: super
                                     id: '1'
                                     email: null
-                                    isSuperadmin: '1'
+                                    isSuperadmin: true
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -2487,8 +2487,8 @@ components:
                     nullable: true
                     example: null
                 isSuperadmin:
-                    type: string
-                    example: '1'
+                    type: boolean
+                    example: true
                 selected:
                     type: boolean
                     example: true
