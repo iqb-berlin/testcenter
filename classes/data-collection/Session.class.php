@@ -7,7 +7,7 @@ class Session extends DataCollectionTypeSafe {
         'test',
         'superAdmin',
         'workspaceAdmin',
-        'testMonitor',
+        'testGroupMonitor',
         'workspaceMonitor'
     ];
 
