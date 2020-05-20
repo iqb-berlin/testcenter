@@ -89,7 +89,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
     BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
         'personLabel' => $session->jsonSerialize()['displayName'],
         'personStatus' => 'signed in',
-        'groupLabel' => $login['groupName']
+        'groupLabel' => $login->getGroupName()
     ]));
 
     return $response->withJson($session);

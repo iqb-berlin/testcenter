@@ -44,6 +44,10 @@ class StatusBroadcast extends DataCollection {
      */
     protected $testState = [];
 
+    /**
+     * @var string
+     */
+    protected $bookletName = "";
 
     /**
      * @var string
@@ -64,6 +68,9 @@ class StatusBroadcast extends DataCollection {
      * @var int
      */
     protected $timestamp = 0;
+
+
+
 
     
     public function __construct(int $personId, array $initData) {

@@ -23,6 +23,6 @@ class BroadcastService {
         ]);
 
         $response = curl_exec($curl);
-        error_log($response);
+        error_log("CURl ERROR" . print_r($response, true));
     }
 }

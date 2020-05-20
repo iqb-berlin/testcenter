@@ -34,7 +34,8 @@ $app->group('/test', function(App $app) {
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => (int) $test['id'],
             'testState' => $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
-            'testLabel' => $test['label']
+            'testLabel' => $test['label'],
+            'bookletName' => $body['bookletName']
         ]));
 
         $response->getBody()->write($test['id']);
