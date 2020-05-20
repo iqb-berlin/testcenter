@@ -12,13 +12,17 @@ $app->group('/booklet', function(App $app) {
 
     $app->get('/{booklet_name}[/{data}]', function (Request $request, Response $response) use ($sessionDAO) { // swap status <-> data
 
+        /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $personToken = $authToken->getToken();
 
         $bookletName = $request->getAttribute('booklet_name');
         $includeData = $request->getAttribute('data') == 'data';
 
-        if (!$sessionDAO->personHasBooklet($personToken, $bookletName)) {
+        $adminDAO = new AdminDAO();
+
+        if (!$sessionDAO->personHasBooklet($personToken, $bookletName)
+            and !$adminDAO->hasMonitorAccessToWorkspace($personToken, $authToken->getWorkspaceId())) {
 
             throw new HttpForbiddenException($request, "Booklet with name `$bookletName` is not allowed for $personToken");
         }
@@ -27,7 +31,7 @@ $app->group('/booklet', function(App $app) {
 
         $bookletsFolder = new BookletsFolder((int) $authToken->getWorkspaceId());
 
-        if (!$bookletStatus['running']) { // TOSO is this OK?
+        if (!$bookletStatus['running']) { // TODO is this OK?
 
             $bookletStatus['label'] = $bookletsFolder->getBookletLabel($bookletName);
         }
