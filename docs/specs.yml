@@ -39,6 +39,42 @@ paths:
                     description: 'Session Expired'
                 '500':
                     description: 'Server Error'
+    '/booklet/{booklet_name}/data':
+        get:
+            summary: 'get status of a booklet'
+            description: 'Retrieves a booklet - in this context that does not mean the booklet-file''s contents but status information about this booklet in regard of a given login: Is there a running test for this booklet etc.'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user containing a personToken'
+                    example: 'p:user000000000.test0000000'
+                -
+                    in: path
+                    name: booklet_name
+                    description: 'id of a executed test'
+                    example: BOOKLET.SAMPLE
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'an object containg information about booklet'
+                    content:
+                        application/json:
+                            example:
+                                running: true
+                                locked: false
+                                label: 'Booklet''s little label'
+                                xml: 'some booklets xml'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
     /session:
         get:
             summary: 'get a session'

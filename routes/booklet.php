@@ -10,12 +10,13 @@ $app->group('/booklet', function(App $app) {
 
     $sessionDAO = new SessionDAO();
 
-    $app->get('/{booklet_name}', function (Request $request, Response $response) use ($sessionDAO) {
+    $app->get('/{booklet_name}[/{data}]', function (Request $request, Response $response) use ($sessionDAO) { // swap status <-> data
 
         $authToken = $request->getAttribute('AuthToken');
         $personToken = $authToken->getToken();
 
         $bookletName = $request->getAttribute('booklet_name');
+        $includeData = $request->getAttribute('data') == 'data';
 
         if (!$sessionDAO->personHasBooklet($personToken, $bookletName)) {
 
@@ -24,13 +25,20 @@ $app->group('/booklet', function(App $app) {
 
         $bookletStatus = $sessionDAO->getBookletStatus($personToken, $bookletName);
 
-        if (!$bookletStatus['running']) {
+        $bookletsFolder = new BookletsFolder((int) $authToken->getWorkspaceId());
 
-            $workspaceController = new BookletsFolder((int) $authToken->getWorkspaceId());
-            $bookletStatus['label'] = $workspaceController->getBookletLabel($bookletName);
+        if (!$bookletStatus['running']) { // TOSO is this OK?
+
+            $bookletStatus['label'] = $bookletsFolder->getBookletLabel($bookletName);
+        }
+
+        if ($includeData) {
+
+            $bookletStatus['xml'] = $bookletsFolder->getXMLFileByName('Booklet', $bookletName)->xmlfile->asXML();
         }
 
         return $response->withJson($bookletStatus);
     });
+
 })
     ->add(new RequireToken('person'));
