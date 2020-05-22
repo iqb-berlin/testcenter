@@ -7,6 +7,7 @@ export interface StatusUpdate {
     personStatus?: string;
     testId?: number;
     testLabel?: string;
+    bookletName?: string;
     testState: {
         [testStateKey: string]: string
     };
