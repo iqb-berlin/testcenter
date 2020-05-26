@@ -22,12 +22,32 @@ export class AppController {
 
   private updateStatus(statusUpdate: StatusUpdate) {
 
+    console.log('received', JSON.stringify(statusUpdate));
+
     if (typeof this.status[statusUpdate.personId] !== "undefined") {
 
-      console.log(JSON.stringify(statusUpdate));
-      statusUpdate.unitState = {...statusUpdate.unitState, ...this.status[statusUpdate.personId].unitState};
-      statusUpdate.testState = {...statusUpdate.testState, ...this.status[statusUpdate.personId].testState};
-      statusUpdate = {...this.status[statusUpdate.personId], ...statusUpdate};
+      const oldStatus = this.status[statusUpdate.personId];
+
+      if ((statusUpdate.testId) && (statusUpdate.testId !== oldStatus.testId)) {
+
+        oldStatus.testState = {};
+        oldStatus.unitState = {};
+        oldStatus.bookletName = '';
+        oldStatus.testLabel = '';
+      }
+
+      if ((statusUpdate.unitName) && (statusUpdate.unitName !== oldStatus.unitName)) {
+
+        oldStatus.unitState = {};
+      }
+
+      statusUpdate.unitState = {...oldStatus.unitState, ...statusUpdate.unitState};
+      statusUpdate.testState = {...oldStatus.testState, ...statusUpdate.testState};
+
+      statusUpdate = {...oldStatus, ...statusUpdate};
+
+      console.log('stored as', JSON.stringify(statusUpdate));
+
     }
 
     this.status[statusUpdate.personId] = statusUpdate;
@@ -35,7 +55,7 @@ export class AppController {
 
 
   @Post('/call')
-  getHello(@Req() request: Request): string {
+  getHello(@Req() request: Request): void {
 
     if (AppController.isStatusUpdate(request.body)) {
 
@@ -46,7 +66,5 @@ export class AppController {
 
       console.log("unknown message", request.body);
     }
-
-    return 'callabalal';
   }
 }
