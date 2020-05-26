@@ -6,7 +6,6 @@ export interface StatusUpdate {
     groupLabel?: string;
     personStatus?: string;
     testId?: number;
-    testLabel?: string;
     bookletName?: string;
     testState: {
         [testStateKey: string]: string
@@ -14,7 +13,6 @@ export interface StatusUpdate {
     testStateKey?: string;
     testStateValue?: string;
     unitName?: string;
-    unitLabel?: string;
     unitState: {
         [unitStateKey: string]: string
     };
