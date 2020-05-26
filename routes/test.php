@@ -34,7 +34,6 @@ $app->group('/test', function(App $app) {
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => (int) $test['id'],
             'testState' => $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
-            'testLabel' => $test['label'],
             'bookletName' => $body['bookletName']
         ]));
 
@@ -165,7 +164,7 @@ $app->group('/test', function(App $app) {
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
             'testId' => $testId,
             'unitName' => $unitName,
-            'unitState' => ['responding' => 'unitStateValue']
+            'unitState' => ['responding' => $unitResponse['responseType']]
         ]));
 
         return $response->withStatus(201);
@@ -287,9 +286,9 @@ $app->group('/test', function(App $app) {
         $testDAO->lockBooklet($testId);
 
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'personId' => $authToken->getId(),
             'testId' => $testId,
-            'testState' => ['status' => 'locked'],
-            'testLabel' => 'true'
+            'testState' => ['status' => 'locked']
         ]));
 
         return $response->withStatus(200);

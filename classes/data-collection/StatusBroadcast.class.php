@@ -33,11 +33,6 @@ class StatusBroadcast extends DataCollection {
      * @var int
      */
     protected $testId = -1;
-    
-    /**
-     * @var string
-     */
-    protected $testLabel = "";
 
     /**
      * @var string
@@ -53,11 +48,6 @@ class StatusBroadcast extends DataCollection {
      * @var string
      */
     protected $unitName = "";
-
-    /**
-     * @var string
-     */
-    protected $unitLabel = "";
 
     /**
      * @var array
