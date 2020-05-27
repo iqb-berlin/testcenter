@@ -33,7 +33,6 @@ export class AppController {
         oldStatus.testState = {};
         oldStatus.unitState = {};
         oldStatus.bookletName = '';
-        oldStatus.testLabel = '';
       }
 
       if ((statusUpdate.unitName) && (statusUpdate.unitName !== oldStatus.unitName)) {
