@@ -5,7 +5,7 @@
   <Metadata>
     <Id>BOOKLET.SAMPLE</Id>
     <Label>Sample booklet</Label>
-    <Description>This a a sample booklet for testing/development/showcase purposes.</Description>
+    <Description>This a sample booklet for testing/development/showcase purposes.</Description>
     <Owner>__USER_NAME__</Owner>
     <Lastchange>2019-10-27T13:37:00</Lastchange>
     <Status>unknown</Status>
@@ -13,32 +13,30 @@
   </Metadata>
 
   <BookletConfig>
-    <Config key="NextOnlyIfPresentationComplete"/>
-    <Config key="NavPolicy"/>
-    <Config key="NavButtons">on</Config>
-    <Config key="PageNavBar">on</Config>
-    <Config key="Logging">on</Config>
-    <Config key="Loading">on</Config>
+    <Config key="log_mode">RICH</Config>
+    <Config key="page_navibuttons">SEPARATE_BOTTOM</Config>
+    <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
   </BookletConfig>
 
-  <Units id="section_A" label="section_A">
+  <Units id="units_id" label="A sample booklet">
+
     <Restrictions>
       <TimeMax parameter="string">60</TimeMax>
     </Restrictions>
 
-    <Testlet>
+    <Testlet id="a_testlet_without_restrictions" label="First Group">
 
-      <Unit id="UNIT.SAMPLE" label="the great sample unit" labelshort="sample unit" />
+      <Unit id="UNIT.SAMPLE" label="The Great Sample Unit" labelshort="Sample Unit" />
     </Testlet>
 
-    <Testlet>
+    <Testlet id="a_testlet_with_restrictions" label="Second Group">
 
       <Restrictions>
         <CodeToEnter parameter="sample">Please insert the word `sample`.</CodeToEnter>
         <TimeMax parameter="1" />
       </Restrictions>
 
-      <Unit id="UNIT.SAMPLE-2" label="the great sample unit" labelshort="sample unit" />
+      <Unit id="UNIT.SAMPLE-2" label="The Seconds Sample Unit" labelshort="2nd Sample Unit" />
     </Testlet>
 
   </Units>
