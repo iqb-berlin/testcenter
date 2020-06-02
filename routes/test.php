@@ -144,10 +144,7 @@ $app->group('/test', function(App $app) {
 
 
     $app->put('/{test_id}/unit/{unit_name}/response', function (Request $request, Response $response) use ($testDAO) {
-
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-
+        
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
@@ -160,12 +157,6 @@ $app->group('/test', function(App $app) {
         // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
         $testDAO->addResponse($testId, $unitName, $unitResponse['response'], $unitResponse['responseType'], $unitResponse['timestamp']);
-
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
-            'testId' => $testId,
-            'unitName' => $unitName,
-            'unitState' => ['responding' => $unitResponse['responseType']]
-        ]));
 
         return $response->withStatus(201);
     })
@@ -243,6 +234,9 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($testDAO) {
 
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
@@ -255,12 +249,22 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'personId' => $authToken->getId(),
+            'testId' => $testId,
+            'unitName' => $unitName,
+            'unitState' => $testDAO->log2itemState($body['entry'])
+        ]));
+
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
     $app->put('/{test_id}/log', function (Request $request, Response $response) use ($testDAO) {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
 
         $testId = (int) $request->getAttribute('test_id');
 
@@ -270,6 +274,12 @@ $app->group('/test', function(App $app) {
         ]);
 
         $testDAO->addBookletLog($testId, $body['entry'], $body['timestamp']);
+
+        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+            'personId' => $authToken->getId(),
+            'testId' => $testId,
+            'testState' => $testDAO->log2itemState($body['entry'])
+        ]));
 
         return $response->withStatus(201);
     })
