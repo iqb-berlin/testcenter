@@ -1,8 +1,8 @@
 export interface StatusUpdate {
 
     personId: number;
-    personLabel?: string;
-    groupId?: number;
+    mode?: string;
+    groupName?: string;
     groupLabel?: string;
     personStatus?: string;
     testId?: number;
