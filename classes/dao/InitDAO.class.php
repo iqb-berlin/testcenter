@@ -46,7 +46,7 @@ class InitDAO extends SessionDAO {
         $login = $sessionDAO->getOrCreateLogin($testSession);
         $login->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00');
         $person = $sessionDAO->getOrCreatePerson($login, $loginCode);
-        $test = $testDAO->getOrCreateTest($person['id'], 'BOOKLET.SAMPLE', "sample_booklet_label");
+        $test = $testDAO->getOrCreateTest($person->getId(), 'BOOKLET.SAMPLE', "sample_booklet_label");
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
         $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);

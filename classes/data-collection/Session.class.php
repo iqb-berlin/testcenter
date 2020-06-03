@@ -18,6 +18,36 @@ class Session extends DataCollectionTypeSafe {
     protected $access;
 
 
+    // TODO add unit-test
+    static function createFromLogin(Login $login, Person $person) {
+
+        $session = new Session(
+            $person->getToken(),
+            "{$login->getGroupName()}/{$login->getName()}/{$person->getCode()}",
+            [],
+            $login->getCustomTexts() ?? new stdClass()
+        );
+
+        switch ($login->getMode()) {
+
+            case "monitor-study":
+                $session->addAccessObjects('workspaceMonitor', (string) $login->getWorkspaceId());
+                break;
+
+            case "monitor-group":
+                $session->addAccessObjects('testGroupMonitor', (string) $login->getWorkspaceId());
+                break;
+
+            default:
+                $personsBooklets = $login->getBooklets()[$person->getCode()] ?? [];
+                $session->addAccessObjects('test', ...$personsBooklets);
+                break;
+        }
+
+        return $session;
+    }
+
+
     public function __construct(
         string $token,
         string $displayName,

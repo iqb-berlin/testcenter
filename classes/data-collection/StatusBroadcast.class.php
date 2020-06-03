@@ -15,10 +15,10 @@ class StatusBroadcast extends DataCollection {
     protected $personLabel = "";
 
     /**
-     * @var int
+     * @var string
      */
-    protected $groupId = -1;
-    
+    protected $groupName = "";
+
     /**
      * @var string
      */
@@ -27,7 +27,7 @@ class StatusBroadcast extends DataCollection {
     /**
      * @var string
      */
-    protected $personStatus = "";
+    protected $mode = "";
     
     /**
      * @var int
@@ -67,7 +67,7 @@ class StatusBroadcast extends DataCollection {
 
         $this->personId = $personId;
 
-        $integers = ['groupId', 'testId'];
+        $integers = ['testId'];
 
         foreach ($initData as $key => $value) {
 
@@ -76,7 +76,7 @@ class StatusBroadcast extends DataCollection {
             }
         }
 
-        // TODO evaluate somehow that teststae and unistet are arrays of key-value pairs...
+        // TODO evaluate somehow that teststate and unitstate are arrays of key-value pairs...
 
         parent::__construct($initData);
 

@@ -8,6 +8,7 @@ class PotentialLogin extends DataCollectionTypeSafe {
     protected $name = "";
     protected $mode = "";
     protected $groupName = "";
+    protected $groupLabel = "";
     protected $booklets = [];
     protected $workspaceId = 0;
 
@@ -16,6 +17,7 @@ class PotentialLogin extends DataCollectionTypeSafe {
     protected $validForMinutes = 0;
 
     protected $customTexts;
+
 
 
     function __construct(
@@ -60,6 +62,12 @@ class PotentialLogin extends DataCollectionTypeSafe {
     }
 
 
+    public function getGroupLabel() {
+
+        return $this->groupLabel;
+    }
+
+
     public function getBooklets(): array {
         
         return $this->booklets;
@@ -67,6 +75,7 @@ class PotentialLogin extends DataCollectionTypeSafe {
     
     
     public function getWorkspaceId(): int {
+
         return $this->workspaceId;
     }
 

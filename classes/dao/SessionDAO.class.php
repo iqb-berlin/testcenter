@@ -84,23 +84,25 @@ class SessionDAO extends DAO {
 
 
     // TODO add unit-test
-    public function getPersonSession(string $personToken): Session {
+    public function getPersonLogin(string $personToken): LoginWithPerson {
 
         $loginData = $this->_(
             'SELECT 
+               login_sessions.id,
                login_sessions.codes_to_booklets,
                login_sessions.workspace_id as "workspaceId",
                login_sessions.mode,
-               login_sessions.group_name as "groupName",
-               login_sessions.token    as "loginToken",
+               login_sessions.group_name   as "groupName",
+               login_sessions.token        as "loginToken",
                login_sessions.name,
-               login_sessions.custom_texts as "customTexts",
-               workspaces.name as "workspaceName",
-               person_sessions.code
+               login_sessions.custom_texts,
+               login_sessions.valid_until,
+               person_sessions.id as "personId",
+               person_sessions.code,
+               person_sessions.valid_until as "personValidTo"
             FROM person_sessions
                  INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-                 INNER JOIN workspaces ON workspaces.id = login_sessions.workspace_id
-            WHERE person_sessions.token =  :token',
+            WHERE person_sessions.token = :token',
             [':token' => $personToken]
         );
 
@@ -108,34 +110,34 @@ class SessionDAO extends DAO {
             throw new HttpError("PersonToken invalid: `$personToken`", 403);
         }
 
-        $session = new Session(
-            $personToken,
-            "{$loginData['groupName']}/{$loginData['name']}/{$loginData['code']}",
-            [],
-            JSON::decode($loginData['customTexts']) ?? (object) []
+        // TODO validity check here?
+
+//        $booklets =
+//        if (!isset($booklets[$loginData['code']])) {
+//            throw new HttpError("No Booklet found", 404);
+//        }
+//        $personsBooklets = $booklets[$loginData['code']] ?? [];
+
+        return new LoginWithPerson(
+            new Login(
+                (int) $loginData['id'],
+                $loginData['name'],
+                $loginData['loginToken'],
+                $loginData['mode'],
+                $loginData['groupName'],
+                '',
+                JSON::decode($loginData['codes_to_booklets'], true),
+                (int) $loginData['workspaceId'],
+                TimeStamp::fromSQLFormat($loginData['valid_until']),
+                JSON::decode($loginData['custom_texts'])
+            ),
+            new Person(
+                (int) $loginData['personId'],
+                $personToken,
+                $loginData['code'] ?? '',
+                TimeStamp::fromSQLFormat($loginData['personValidTo'])
+            )
         );
-
-        switch ($loginData['mode']) {
-
-            case "monitor-study":
-                $session->addAccessObjects('workspaceMonitor', (string) $loginData['workspaceId']);
-                break;
-
-            case "monitor-group":
-                $session->addAccessObjects('testGroupMonitor', (string) $loginData['workspaceId']);
-                break;
-
-            default:
-                $booklets = JSON::decode($loginData['codes_to_booklets'], true);
-                if (!isset($booklets[$loginData['code']])) {
-                    throw new HttpError("No Booklet found", 404);
-                }
-                $personsBooklets = $booklets[$loginData['code']] ?? [];
-                $session->addAccessObjects('test', ...$personsBooklets);
-                break;
-        }
-
-        return $session;
     }
 
 
@@ -143,34 +145,13 @@ class SessionDAO extends DAO {
     public function getOrCreatePersonSession(Login $login, string $code = ''): Session {
 
         $person = $this->getOrCreatePerson($login, $code);
-        $session = new Session(
-            $person['token'],
-            "{$login->getGroupName()}/{$login->getName()}/{$person['code']}",
-            [],
-            $login->getCustomTexts()
-        );
 
-        switch ($login->getMode()) {
-
-            case "monitor-study":
-                $session->addAccessObjects('workspaceMonitor', (string) $login->getWorkspaceId());
-                break;
-
-            case "monitor-group":
-                $session->addAccessObjects('testGroupMonitor', (string) $login->getWorkspaceId());
-                break;
-
-            default:
-                $personsBooklets = $login->getBooklets()[$person['code']] ?? [];
-                $session->addAccessObjects('test', ...$personsBooklets);
-                break;
-        }
-
-        return $session;
+        return Session::createFromLogin($login, $person);
     }
 
 
     // TODO add unit-test
+    // TODO get and store groupLabel as well
     public function getOrCreateLogin(PotentialLogin $loginData): Login {
 
         $oldLogin = $this->_(
@@ -178,12 +159,12 @@ class SessionDAO extends DAO {
                     login_sessions.id, 
                     login_sessions.name,
                     login_sessions.workspace_id as "workspaceId",             
-                    login_sessions.valid_until as "_validTo",
+                    login_sessions.valid_until,
                     login_sessions.token,
                     login_sessions.mode,
                     login_sessions.codes_to_booklets as "booklets",
                     login_sessions.group_name as "groupName",
-                    login_sessions.custom_texts as "customTexts"
+                    login_sessions.custom_texts
             FROM login_sessions
 			WHERE login_sessions.name = :name AND login_sessions.workspace_id = :ws', [
                 ':name' => $loginData->getName(),
@@ -196,7 +177,7 @@ class SessionDAO extends DAO {
             return $this->createLogin($loginData);
         }
 
-        TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['_validTo']));
+        TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['valid_until']));
 
         return new Login(
             (int) $oldLogin['id'],
@@ -204,10 +185,11 @@ class SessionDAO extends DAO {
             $oldLogin['token'],
             $oldLogin['mode'],
             $oldLogin['groupName'],
+            "",
             JSON::decode($oldLogin['booklets'], true),
             (int) $oldLogin['workspaceId'],
-            TimeStamp::fromSQLFormat($oldLogin['_validTo']),
-            JSON::decode($oldLogin['customTexts'])
+            TimeStamp::fromSQLFormat($oldLogin['valid_until']),
+            JSON::decode($oldLogin['custom_texts'])
         );
     }
 
@@ -244,6 +226,7 @@ class SessionDAO extends DAO {
             $login["token"],
             $login["mode"],
             $login["groupName"],
+            '',
             JSON::decode($login['booklets'], true),
             (int) $login["workspaceId"],
             TimeStamp::fromSQLFormat($login['validTo']),
@@ -284,6 +267,7 @@ class SessionDAO extends DAO {
             $loginToken,
             $loginData->getMode(),
             $loginData->getGroupName(),
+            $loginData->getGroupLabel(),
             $loginData->getBooklets(),
             (int) $loginData->getWorkspaceId(),
             $validUntil,
@@ -365,6 +349,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit test
+    // TODO return type Person!
     public function getPerson(string $personToken): array {
 
         $person = $this->_(
@@ -389,7 +374,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    protected function getOrCreatePerson(Login $loginSession, string $code): array {
+    protected function getOrCreatePerson(Login $loginSession, string $code): Person {
 
         $person = $this->_(
             'SELECT * FROM person_sessions WHERE person_sessions.login_id=:id and person_sessions.code=:code',
@@ -402,7 +387,12 @@ class SessionDAO extends DAO {
         if ($person !== null) {
 
             TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
-            return $person;
+            return new Person(
+                (int) $person['id'],
+                $person['token'],
+                $person['code'],
+                TimeStamp::fromSQLFormat($person['valid_until'])
+            );
         }
 
         return $this->createPerson($loginSession, $code);
@@ -410,7 +400,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    public function createPerson(Login $login, string $code, bool $allowExpired = false): array {
+    public function createPerson(Login $login, string $code, bool $allowExpired = false): Person {
 
         if (count($login->getBooklets()) and !array_key_exists($code, $login->getBooklets())) {
             throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 400);
@@ -434,13 +424,12 @@ class SessionDAO extends DAO {
             ]
         );
 
-        return [
-            'id' => (int) $this->pdoDBhandle->lastInsertId(),
-            'token' => $newPersonToken,
-            'login_id' => $login->getId(),
-            'code' => $code,
-            'validTo' => TimeStamp::fromSQLFormat($validUntil),
-            'laststate' => null
-        ];
+        // TODO how about laststate, login_id ('login_id' => $login->getId(),)
+        return new Person(
+            (int) $this->pdoDBhandle->lastInsertId(),
+            $newPersonToken,
+            $code,
+            TimeStamp::fromSQLFormat($validUntil)
+        );
     }
 }

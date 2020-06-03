@@ -82,5 +82,4 @@ class SessionTest extends TestCase {
         $this->assertEquals(false, $session->hasAccess("superAdmin", 1));
         $this->assertEquals(false, $session->hasAccess("workspaceAdmin", 1));
     }
-
 }

@@ -10,6 +10,7 @@ class Login extends DataCollectionTypeSafe {
     protected $token = "";
     protected $mode = "";
     protected $groupName = "";
+    protected $groupLabel = "";
     protected $booklets = [];
     protected $workspaceId = 0;
 
@@ -24,6 +25,7 @@ class Login extends DataCollectionTypeSafe {
         string $token,
         string $mode,
         string $groupName,
+        string $groupLabel,
         array $booklets,
         int $workspaceId,
         int $validTo,
@@ -35,6 +37,7 @@ class Login extends DataCollectionTypeSafe {
         $this->token  = $token;
         $this->mode = $mode;
         $this->groupName = $groupName;
+        $this->groupLabel = $groupLabel ?? ucfirst(str_replace('_', " ", $groupName));
         $this->booklets = $booklets;
         $this->workspaceId = $workspaceId;
         $this->validTo = $validTo;
@@ -43,6 +46,7 @@ class Login extends DataCollectionTypeSafe {
     
     
     public function getId(): int {
+
         return $this->id;
     }
 
@@ -71,6 +75,12 @@ class Login extends DataCollectionTypeSafe {
     }
 
 
+    public function getGroupLabel(): string {
+
+        return $this->groupLabel;
+    }
+
+
     public function getBooklets(): array {
         
         return $this->booklets;
@@ -78,6 +88,7 @@ class Login extends DataCollectionTypeSafe {
     
     
     public function getWorkspaceId(): int {
+
         return $this->workspaceId;
     }
 

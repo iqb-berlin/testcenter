@@ -87,9 +87,10 @@ $app->put('/session/person', function(Request $request, Response $response) use 
     $session = $sessionDAO->getOrCreatePersonSession($login, $body['code']);
 
     BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
-        'personLabel' => $session->jsonSerialize()['displayName'],
-        'personStatus' => 'signed in',
-        'groupLabel' => $login->getGroupName()
+        'personLabel' => $login->getName() . ($body['code'] ? '/' . $body['code'] : ''),
+        'mode' => $login->getMode(),
+        'groupLabel' => $login->getGroupLabel(),
+        'groupName' => $login->getGroupName()
     ]));
 
     return $response->withJson($session);
@@ -112,11 +113,15 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
 
     if ($authToken->getType() == "person") {
 
-        $session = $sessionDAO->getPersonSession($authToken->getToken());
+        $loginWithPerson = $sessionDAO->getPersonLogin($authToken->getToken());
+        $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
         BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
-            'personLabel' => $session->jsonSerialize()['displayName'],
-            'personStatus' => 'signed in'
+            'personLabel' => $loginWithPerson->getLogin()->getName()
+                . ($loginWithPerson->getPerson()->getCode() ? '/' . $loginWithPerson->getPerson()->getCode() : ''),
+            'mode' => $loginWithPerson->getLogin()->getMode(),
+            'groupLabel' => $loginWithPerson->getLogin()->getGroupName(),
+            'groupName' => $loginWithPerson->getLogin()->getGroupLabel()
         ]));
 
         return $response->withJson($session);

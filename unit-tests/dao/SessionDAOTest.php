@@ -9,6 +9,7 @@ require_once "classes/helper/JSON.class.php";
 require_once "classes/data-collection/DBConfig.class.php";
 require_once "classes/data-collection/Login.class.php";
 require_once "classes/data-collection/Session.class.php";
+require_once "classes/data-collection/Person.class.php";
 require_once "classes/helper/TimeStamp.class.php";
 require_once "classes/dao/DAO.class.php";
 require_once "classes/dao/SessionDAO.class.php";
@@ -74,6 +75,7 @@ class SessionDAOTest extends TestCase {
             "token",
             "some_mode",
             "a group name",
+            "A Group Label",
             ["existing_code" => ["a booklet"]],
             1,
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
@@ -82,12 +84,17 @@ class SessionDAOTest extends TestCase {
         $expect = [
             'id' => 1,
             'token' => 'static:person:a group name_some_user_existing_code',
-            'login_id' => 1,
             'code' => 'existing_code',
-            'validTo' => 1893495600,
-            'laststate' => null
+            'validTo' => 1893495600
         ];
-        $this->assertEquals($result, $expect);
+        $resultAsArray = [
+            'id' => $result->getId(),
+            'token' => $result->getToken(),
+            'code' => $result->getCode(),
+            'validTo' => $result->getValidTo()
+        ];
+
+        $this->assertEquals($resultAsArray, $expect);
 
         try {
 
