@@ -1,4 +1,4 @@
-export interface StatusUpdate {
+export interface SessionChange {
 
     personId: number;
     mode?: string;
@@ -17,4 +17,9 @@ export interface StatusUpdate {
         [unitStateKey: string]: string
     };
     timestamp: number;
+}
+
+export function isSessionChange(arg: any): arg is SessionChange {
+
+    return (arg.personId !== undefined) && (arg.timestamp !== undefined);
 }

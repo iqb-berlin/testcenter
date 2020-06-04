@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import {AppController} from './app.controller';
+import {SessionChangeController} from './sessionChangeController';
 import {EventsGateway} from './events.gateway';
 
 @Module({
-  controllers: [AppController],
+  controllers: [SessionChangeController],
   providers: [EventsGateway],
 })
 export class AppModule {}
