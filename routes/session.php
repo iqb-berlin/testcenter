@@ -86,7 +86,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $session = $sessionDAO->getOrCreatePersonSession($login, $body['code']);
 
-    BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+    BroadcastService::push(new StatusBroadcast($authToken->getId(), [
         'personLabel' => $login->getName() . ($body['code'] ? '/' . $body['code'] : ''),
         'mode' => $login->getMode(),
         'groupLabel' => $login->getGroupLabel(),
@@ -116,7 +116,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
         $loginWithPerson = $sessionDAO->getPersonLogin($authToken->getToken());
         $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
             'personLabel' => $loginWithPerson->getLogin()->getName()
                 . ($loginWithPerson->getPerson()->getCode() ? '/' . $loginWithPerson->getPerson()->getCode() : ''),
             'mode' => $loginWithPerson->getLogin()->getMode(),

@@ -28,7 +28,11 @@ try {
 
     } else { // productive
 
+        /* @var $config SystemConfig */
+        $config = SystemConfig::fromFile(ROOT_DIR . '/config/system.json');
         define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
+        BroadcastService::setup($config);
+
         DB::connect();
     }
 

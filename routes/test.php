@@ -31,7 +31,7 @@ $app->group('/test', function(App $app) {
             throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
         }
 
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
             'testId' => (int) $test['id'],
             'testState' => $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
             'bookletName' => $body['bookletName']
@@ -197,7 +197,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
             'testId' => $testId,
             'unitName' => $unitName,
             'unitState' => [$body['key'] => $body['value']],
@@ -222,7 +222,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateTestLastState($testId, $body['key'], $body['value']);
 
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
             'testId' => $testId,
             'testState' => [$body['key'] => $body['value']]
         ]));
@@ -249,7 +249,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
             'personId' => $authToken->getId(),
             'testId' => $testId,
             'unitName' => $unitName,
@@ -275,7 +275,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addBookletLog($testId, $body['entry'], $body['timestamp']);
 
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
             'personId' => $authToken->getId(),
             'testId' => $testId,
             'testState' => $testDAO->log2itemState($body['entry'])
@@ -295,7 +295,7 @@ $app->group('/test', function(App $app) {
 
         $testDAO->lockBooklet($testId);
 
-        BroadcastService::cast(new StatusBroadcast($authToken->getId(), [
+        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
             'personId' => $authToken->getId(),
             'testId' => $testId,
             'testState' => ['status' => 'locked']

@@ -3,12 +3,23 @@
 
 class BroadcastService {
 
-    static function cast(StatusBroadcast $status) {
+    private static $url = '';
+
+    static function setup(SystemConfig $config) {
+
+        self::$url = $config->broadcastServiceUri;
+    }
+
+    static function push(StatusBroadcast $status) {
+
+        if (!BroadcastService::$url) {
+            return;
+        }
 
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => "http://localhost:3000/call",
+            CURLOPT_URL => BroadcastService::$url . "/call",
             CURLOPT_RETURNTRANSFER => true,
 //            CURLOPT_ENCODING => "",
 //            CURLOPT_MAXREDIRS => 10,
