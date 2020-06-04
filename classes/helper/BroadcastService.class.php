@@ -11,29 +11,37 @@ class BroadcastService {
 
         self::$url = $broadcastServiceUri;
     }
+    
+    
+    static function sessionChange(SessionChangeMessage $sessionChange) {
 
+        BroadcastService::push('session-change', json_encode($sessionChange));
+    }
+    
 
-    static function push(StatusBroadcast $status) {
+    static function push(string $messageType, string $message,
+                         string $verb = "POST", string $contentType = "application/json"): bool {
+
 
         if (!BroadcastService::$url) {
 
-            return;
+            return false;
         }
 
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => BroadcastService::$url . "/call",
+            CURLOPT_URL => BroadcastService::$url . "/push/{$messageType}",
             CURLOPT_RETURNTRANSFER => true,
-//            CURLOPT_ENCODING => "",
-//            CURLOPT_MAXREDIRS => 10,
-//            CURLOPT_TIMEOUT => 0,
-//            CURLOPT_FOLLOWLOCATION => true,
-//            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => json_encode($status),
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => $verb,
+            CURLOPT_POSTFIELDS => $message,
             CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json"
+                "Content-Type: $contentType"
             ],
         ]);
 
@@ -41,6 +49,9 @@ class BroadcastService {
 
         if (curl_error($curl)) {
             error_log("CURl ERROR" . print_r($curlResponse, true));
+            return false;
         }
+
+        return true;
     }
 }

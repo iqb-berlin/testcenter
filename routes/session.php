@@ -86,12 +86,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $session = $sessionDAO->getOrCreatePersonSession($login, $body['code']);
 
-    BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-        'personLabel' => $login->getName() . ($body['code'] ? '/' . $body['code'] : ''),
-        'mode' => $login->getMode(),
-        'groupLabel' => $login->getGroupLabel(),
-        'groupName' => $login->getGroupName()
-    ]));
+    BroadcastService::sessionChange(SessionChangeMessage::login($authToken->getId(), $login, $body['code']));
 
     return $response->withJson($session);
 
@@ -116,13 +111,11 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
         $loginWithPerson = $sessionDAO->getPersonLogin($authToken->getToken());
         $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
-        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-            'personLabel' => $loginWithPerson->getLogin()->getName()
-                . ($loginWithPerson->getPerson()->getCode() ? '/' . $loginWithPerson->getPerson()->getCode() : ''),
-            'mode' => $loginWithPerson->getLogin()->getMode(),
-            'groupLabel' => $loginWithPerson->getLogin()->getGroupName(),
-            'groupName' => $loginWithPerson->getLogin()->getGroupLabel()
-        ]));
+        BroadcastService::sessionChange(SessionChangeMessage::login(
+            $authToken->getId(),
+            $loginWithPerson->getLogin(),
+            $loginWithPerson->getPerson()->getCode()
+        ));
 
         return $response->withJson($session);
     }

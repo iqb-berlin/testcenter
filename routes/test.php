@@ -31,11 +31,12 @@ $app->group('/test', function(App $app) {
             throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
         }
 
-        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-            'testId' => (int) $test['id'],
-            'testState' => $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
-            'bookletName' => $body['bookletName']
-        ]));
+        BroadcastService::sessionChange(SessionChangeMessage::testState(
+            $authToken->getId(),
+            (int) $test['id'],
+            $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
+            $body['bookletName']
+        ));
 
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
@@ -197,11 +198,9 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
-        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-            'testId' => $testId,
-            'unitName' => $unitName,
-            'unitState' => [$body['key'] => $body['value']],
-        ]));
+        BroadcastService::sessionChange(
+            SessionChangeMessage::unitState($authToken->getId(), $testId, $unitName, [$body['key'] => $body['value']])
+        );
 
         return $response->withStatus(200);
     })
@@ -222,10 +221,9 @@ $app->group('/test', function(App $app) {
 
         $testDAO->updateTestLastState($testId, $body['key'], $body['value']);
 
-        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-            'testId' => $testId,
-            'testState' => [$body['key'] => $body['value']]
-        ]));
+        BroadcastService::sessionChange(
+            SessionChangeMessage::testState($authToken->getId(), $testId, [$body['key'] => $body['value']])
+        );
 
         return $response->withStatus(200);
     })
@@ -249,12 +247,9 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
-        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-            'personId' => $authToken->getId(),
-            'testId' => $testId,
-            'unitName' => $unitName,
-            'unitState' => $testDAO->log2itemState($body['entry'])
-        ]));
+        BroadcastService::sessionChange(SessionChangeMessage::unitState(
+            $authToken->getId(), $testId, $unitName, $testDAO->log2itemState($body['entry']))
+        );
 
         return $response->withStatus(201);
     })
@@ -275,11 +270,9 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addBookletLog($testId, $body['entry'], $body['timestamp']);
 
-        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-            'personId' => $authToken->getId(),
-            'testId' => $testId,
-            'testState' => $testDAO->log2itemState($body['entry'])
-        ]));
+        BroadcastService::sessionChange(
+            SessionChangeMessage::testState($authToken->getId(), $testId, $testDAO->log2itemState($body['entry']))
+        );
 
         return $response->withStatus(201);
     })
@@ -295,11 +288,9 @@ $app->group('/test', function(App $app) {
 
         $testDAO->lockBooklet($testId);
 
-        BroadcastService::push(new StatusBroadcast($authToken->getId(), [
-            'personId' => $authToken->getId(),
-            'testId' => $testId,
-            'testState' => ['status' => 'locked']
-        ]));
+        BroadcastService::sessionChange(
+            SessionChangeMessage::testState($authToken->getId(), $testId, ['status' => 'locked'])
+        );
 
         return $response->withStatus(200);
     })

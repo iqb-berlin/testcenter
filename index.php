@@ -54,7 +54,6 @@ try {
     include_once 'routes/test.php';
     include_once 'routes/booklet.php';
     include_once 'routes/speedtest.php';
-    include_once 'routes/monitor.php';
 
     $app->run();
 
