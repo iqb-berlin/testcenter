@@ -18,6 +18,8 @@ integration/tmp
 # config
 config/DBConnectionData.json
 config/DBConnectionData.*.json
+config/system.json
+config/system.*.json
 config/e2eTests.backup.json
 config/e2eTests.json
 

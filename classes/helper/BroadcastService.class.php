@@ -1,18 +1,22 @@
 <?php
-
+// TODO unit-test
+// TODO find a way to integrate this in e2e-tests
 
 class BroadcastService {
 
     private static $url = '';
 
-    static function setup(SystemConfig $config) {
 
-        self::$url = $config->broadcastServiceUri;
+    static function setup(string $broadcastServiceUri) {
+
+        self::$url = $broadcastServiceUri;
     }
+
 
     static function push(StatusBroadcast $status) {
 
         if (!BroadcastService::$url) {
+
             return;
         }
 
@@ -33,10 +37,10 @@ class BroadcastService {
             ],
         ]);
 
-        $response = curl_exec($curl);
+        $curlResponse = curl_exec($curl);
 
         if (curl_error($curl)) {
-            error_log("CURl ERROR" . print_r($response, true));
+            error_log("CURl ERROR" . print_r($curlResponse, true));
         }
     }
 }

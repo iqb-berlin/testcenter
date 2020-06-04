@@ -63,10 +63,34 @@ try  {
         'overwrite_existing_installation::',
     ]));
 
+    echo "\n Sys-Config";
+    if (!file_exists(ROOT_DIR . '/config/system.json')) {
+
+        echo "\n System-Config not file found (`/config/system.json`). "
+            . "\nCreate it manually of provide arguments: "
+            . "\n--broadcastServiceUri=";
+
+        $sysConf = new SystemConfig(getopt("", [
+            'broadcastServiceUri::'
+        ]));
+
+        BroadcastService::setup($sysConf);
+
+        echo "\nProvided arguments OK.";
+
+        if (!file_put_contents(ROOT_DIR . '/config/system.json', json_encode($sysConf))) {
+
+            throw new Exception("Could not write file `/config/system.json`. Check file permissions on `/config/`.");
+        }
+
+        echo "\nSystem-Config file written.";
+    }
+
+
     echo "\n# Database config";
     if (!file_exists(ROOT_DIR . '/config/DBConnectionData.json')) {
 
-        echo "\n Config not file found (`/config/DBConnectionData.json`). "
+        echo "\n Database-Config not file found (`/config/DBConnectionData.json`). "
          . "\nCreate it manually of provide arguments: "
          . "\n--type=(`mysql` or `pgsql`): "
          . "\n--host=(mostly `localhost`)"
@@ -92,7 +116,7 @@ try  {
             throw new Exception("Could not write file. Check file permissions on `/config/`.");
         }
 
-        echo "\nConfig file written.";
+        echo "\nDatabase-Config file written.";
 
     } else {
 
