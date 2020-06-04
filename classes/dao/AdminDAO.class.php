@@ -276,21 +276,81 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function getBookletsStarted($workspaceId) { // TODO add unit test  // TODO use dataclass an camelCase-objects
+    public function getBookletsStarted($workspaceId){ // TODO add unit test  // TODO use dataclass an camelCase-objects
 
-		return $this->_(
-			'SELECT login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code, 
-					tests.name as bookletname, tests.locked,
-					login_sessions.valid_until as lastlogin, person_sessions.valid_until as laststart
+        return $this->_(
+            'SELECT login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code 
 				FROM tests
 				INNER JOIN person_sessions ON person_sessions.id = tests.person_id
 				INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
 				WHERE login_sessions.workspace_id =:workspaceId',
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
+            [
+                ':workspaceId' => $workspaceId
+            ],
+            true
+        );
+    }
+
+	public function getSessions(int $workspaceId, array $groups): SessionChangeMessageArray { // TODO add unit test
+
+        $replacements = [];
+
+        if (count($groups)) {
+
+            foreach ($groups as $index => $group) {
+
+                $replacements[":group_$index"] = $group;
+            }
+
+            $in = implode(',', array_keys($replacements));
+        }
+
+        $replacements[':workspaceId'] = $workspaceId;
+
+        $sql = 'SELECT
+                 person_sessions.id as "personId",
+                 login_sessions.name as "loginName",
+                 login_sessions.group_name as "groupName",
+                 login_sessions.mode,
+                 person_sessions.code,
+                 tests.id as "testId",
+                 tests.name as "bookletName",
+                 tests.locked,
+                 tests.laststate as "testState"
+            FROM person_sessions
+                 LEFT JOIN tests ON person_sessions.id = tests.person_id
+                 LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_id
+            WHERE login_sessions.workspace_id = :workspaceId'
+            . (count($groups) ? " AND login_sessions.group_name IN ($in)" : '');
+
+		$sessions = $this->_($sql, $replacements,true);
+
+        $sessionChangeMessages = new SessionChangeMessageArray();
+
+		foreach ($sessions as $session) {
+
+		    $testState = (array) JSON::decode($session['testState']);
+
+		    if ($session['locked']) {
+                $testState['status'] = 'lcoked';
+            }
+
+            $sessionChangeMessages->add(SessionChangeMessage::init(
+                (int) $session['personId'],
+                $session['loginName'],
+                $session['groupName'],
+                ucfirst(str_replace('_', " ", $session['groupName'])),
+                $session['mode'],
+                $session['code'],
+                (int) $session['testId'],
+                $testState,
+                $session['bookletName'] ?? "",
+                '',
+                []
+            ));
+        }
+
+		return $sessionChangeMessages;
 	}
 
 

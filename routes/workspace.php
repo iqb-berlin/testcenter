@@ -408,6 +408,27 @@ $app->group('/workspace', function(App $app) {
         return $response->withJson($bookletsStarted);
     });
 
+
+    $app->get('/{ws_id}/sessions', function(Request $request, Response $response) use ($adminDAO) {
+
+        // TODO - lastUnit in tests speichern (bei log, response, restorePoint etc.) und hier abfragen
+        // STAND
+        /**
+         * - unit  states & logs
+         * - gehört zum anderen monitor eigentlich
+         * - broadcast (wenn antwort gibt es einen link zum Abo) [erledigt eventuell gleich auth?!]
+         *
+         */
+
+        $workspaceId = (int) $request->getAttribute('ws_id');
+        $groups = array_filter(explode(",", $request->getParam('groups', '')));
+
+        $sessionChangeMessages = $adminDAO->getSessions($workspaceId, $groups);
+
+        return $response->withJson($sessionChangeMessages->asArray());
+    });
+
+
 })
     ->add(new IsWorkspaceMonitor())
     ->add(new RequireToken('person'));

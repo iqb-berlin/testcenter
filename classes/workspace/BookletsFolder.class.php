@@ -134,7 +134,7 @@ class BookletsFolder extends WorkspaceController {
             if ($startedBooklet['locked'] == '1') {
                 $preparedBooklets[$startedBooklet['groupname']]['bookletsLocked'] += 1;
             }
-            $tmpTime = strtotime($startedBooklet['laststart']);
+            $tmpTime = strtotime($startedBooklet['laststart'] ?? "1/1/2000");
             if ($tmpTime > $preparedBooklets[$startedBooklet['groupname']]['laststart']) {
                 $preparedBooklets[$startedBooklet['groupname']]['laststart'] = $tmpTime;
                 $preparedBooklets[$startedBooklet['groupname']]['laststartStr'] = strftime('%d.%m.%Y',$tmpTime);

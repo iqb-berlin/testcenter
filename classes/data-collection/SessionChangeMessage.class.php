@@ -60,42 +60,72 @@ class SessionChangeMessage implements JsonSerializable {
     protected $timestamp = 0;
 
 
-    public static function login(int $personId, Login $login, $code): SessionChangeMessage {
+    public static function login(int $personId, Login $login, string $code): SessionChangeMessage {
 
-        $p = new SessionChangeMessage($personId);
+        $message = new SessionChangeMessage($personId);
 
-        $p->personLabel = $login->getName() . ($code ? '/' . $code : '');
-        $p->mode = $login->getMode();
-        $p->groupName = $login->getGroupName();
-        $p->groupLabel = $login->getGroupLabel();
+        $message->personLabel = $login->getName() . ($code ? '/' . $code : '');
+        $message->mode = $login->getMode();
+        $message->groupName = $login->getGroupName();
+        $message->groupLabel = $login->getGroupLabel();
 
-        return $p;
+        return $message;
     }
 
 
     public static function testState(int $personId, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
 
-        $p = new SessionChangeMessage($personId);
+        $message = new SessionChangeMessage($personId);
 
-        $p->testId = $testId;
-        $p->testState = $testState;
+        $message->testId = $testId;
+        $message->testState = $testState;
         if ($bookletName !== null) {
-            $p->bookletName = $bookletName;
+            $message->bookletName = $bookletName;
         }
 
-        return $p;
+        return $message;
     }
 
 
     public static function unitState(int $personId, int $testId, string $unitName, array $unitState): SessionChangeMessage {
 
-        $p = new SessionChangeMessage($personId);
+        $message = new SessionChangeMessage($personId);
 
-        $p->testId = $testId;
-        $p->unitName = $unitName;
-        $p->unitState = $unitState;
+        $message->testId = $testId;
+        $message->unitName = $unitName;
+        $message->unitState = $unitState;
 
-        return $p;
+        return $message;
+    }
+
+
+    public static function init(
+        int $personId,
+        string $loginName,
+        string $groupName,
+        string $groupLabel,
+        string $mode,
+        string $code,
+        int $testId,
+        array $testState,
+        string $bookletName,
+        string $unitName,
+        array $unitState
+    ) {
+
+        $message = new SessionChangeMessage($personId);
+
+        $message->personLabel = $loginName . ($code ? '/' . $code : '');
+        $message->mode = $mode;
+        $message->groupName = $groupName;
+        $message->groupLabel = $groupLabel;
+        $message->testId = $testId;
+        $message->testState = $testState;
+        $message->bookletName = $bookletName;
+        $message->unitName = $unitName;
+        $message->unitState = $unitState;
+
+        return $message;
     }
 
     
