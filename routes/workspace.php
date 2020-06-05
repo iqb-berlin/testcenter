@@ -423,7 +423,7 @@ $app->group('/workspace', function(App $app) {
         $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = array_filter(explode(",", $request->getParam('groups', '')));
 
-        $sessionChangeMessages = $adminDAO->getSessions($workspaceId, $groups);
+        $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, $groups);
 
         return $response->withJson($sessionChangeMessages->asArray());
     });

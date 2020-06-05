@@ -291,7 +291,8 @@ class AdminDAO extends DAO {
         );
     }
 
-	public function getSessions(int $workspaceId, array $groups): SessionChangeMessageArray { // TODO add unit test
+
+	public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray { // TODO add unit test
 
         $replacements = [];
 
@@ -323,35 +324,101 @@ class AdminDAO extends DAO {
             WHERE login_sessions.workspace_id = :workspaceId'
             . (count($groups) ? " AND login_sessions.group_name IN ($in)" : '');
 
-		$sessions = $this->_($sql, $replacements,true);
+		$testSessionsData = $this->_($sql, $replacements,true);
 
         $sessionChangeMessages = new SessionChangeMessageArray();
 
-		foreach ($sessions as $session) {
+		foreach ($testSessionsData as $testSession) {
 
-		    $testState = (array) JSON::decode($session['testState']);
+            $testState = $this->getTestFullState((int) $testSession['testId']);
 
-		    if ($session['locked']) {
-                $testState['status'] = 'lcoked';
+		    if ($testSession['locked']) {
+                $testState['status'] = 'locked';
             }
 
+		    $unit = $this->getLastUnit((int) $testSession['testId']);
+
             $sessionChangeMessages->add(SessionChangeMessage::init(
-                (int) $session['personId'],
-                $session['loginName'],
-                $session['groupName'],
-                ucfirst(str_replace('_', " ", $session['groupName'])),
-                $session['mode'],
-                $session['code'],
-                (int) $session['testId'],
+                (int) $testSession['personId'],
+                $testSession['loginName'],
+                $testSession['groupName'],
+                ucfirst(str_replace('_', " ", $testSession['groupName'])),
+                $testSession['mode'],
+                $testSession['code'],
+                (int) $testSession['testId'],
                 $testState,
-                $session['bookletName'] ?? "",
-                '',
-                []
+                $testSession['bookletName'] ?? "",
+                $unit['name'],
+                $unit['state']
             ));
         }
 
 		return $sessionChangeMessages;
 	}
+
+
+	private function getTestFullState(int $testId): array {
+
+        $testLogData = $this->_("select
+                    tests.id,
+                    tests.name,
+                    timestamp,
+                    laststate,
+                    logentry
+                from
+                    tests
+                    left join test_logs on tests.id = test_logs.booklet_id
+                where booklet_id = :testId
+                order by timestamp",
+            [':testId' => $testId],
+            true
+        );
+
+        $testState = JSON::decode($testLogData[0]['testState'], true);
+
+        foreach ($testLogData as $testLogDataRow) {
+            $testState = array_merge($testState, $this->log2itemState($testLogDataRow['logentry']));
+        }
+
+        return $testState;
+    }
+
+
+	private function getLastUnit(int $testId): array {
+
+        $unitData = $this->_("select
+                unit_id,
+                max(units.name) as name,
+                max(timestamp) as timestamp,
+                max(laststate) as laststate,
+                group_concat(logentry separator '||||') as log
+            from
+                units 
+                left join unit_logs on units.id = unit_logs.unit_id
+            where units.booklet_id = :testId
+            group by units.id
+            order by timestamp desc
+            limit 1",
+            [':testId' => $testId]
+        );
+
+        if (!$unitData) {
+            return [
+                'name' => '',
+                'state' => []
+            ];
+        }
+
+        $state = JSON::decode($unitData['laststate'], true) ?? [];
+        foreach (explode('||||', $unitData['log']) as $logEntry) {
+            $state = array_merge($state, $this->log2itemState($logEntry));
+        }
+
+        return [
+            'name' => $unitData['name'],
+            'state' => $state ?? ['lol' => print_r($unitData, true)]
+        ];
+    }
 
 
 	public function getBookletsResponsesGiven($workspaceId) { // TODO add unit test // TODO use dataclass an camelCase-objects
