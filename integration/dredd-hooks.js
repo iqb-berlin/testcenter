@@ -3,7 +3,7 @@ const fs = require('fs');
 const Multipart = require('multi-part');
 const streamToString = require('stream-to-string');
 
-const skipAfterFirstFail = true; // change this to debug
+const skipAfterFirstFail = false; // change this to debug
 let skipTheRest = false;
 
 
