@@ -33,9 +33,11 @@ export class SessionChangeController {
 
     console.log('sessionChange received', JSON.stringify(sessionChange));
 
-    if (typeof this.status[sessionChange.personId] !== "undefined") {
+    const sessionId = sessionChange.personId + '|' + sessionChange.testId;
 
-      const oldStatus = this.status[sessionChange.personId];
+    if (typeof this.status[sessionId] !== "undefined") {
+
+      const oldStatus = this.status[sessionId];
 
       if ((sessionChange.testId) && (sessionChange.testId !== oldStatus.testId)) {
 
@@ -55,6 +57,6 @@ export class SessionChangeController {
       sessionChange = {...oldStatus, ...sessionChange};
     }
 
-    this.status[sessionChange.personId] = sessionChange;
+    this.status[sessionId] = sessionChange;
   }
 }
