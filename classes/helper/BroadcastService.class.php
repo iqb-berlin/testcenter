@@ -11,17 +11,22 @@ class BroadcastService {
 
         self::$url = $broadcastServiceUri;
     }
-    
-    
-    static function sessionChange(SessionChangeMessage $sessionChange) {
 
-        BroadcastService::push('session-change', json_encode($sessionChange));
+
+    static function getUrl() {
+
+        return BroadcastService::$url;
+    }
+    
+    
+    static function sessionChange(SessionChangeMessage $sessionChange): bool {
+
+        return BroadcastService::push('session-change', json_encode($sessionChange));
     }
     
 
     static function push(string $messageType, string $message,
                          string $verb = "POST", string $contentType = "application/json"): bool {
-
 
         if (!BroadcastService::$url) {
 

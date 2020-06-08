@@ -418,21 +418,36 @@ $app->group('/workspace', function(App $app) {
          *
          */
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $groups = array_filter(explode(",", $request->getParam('groups', '')));
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
 
-        $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, $groups);
+        $workspaceId = (int) $request->getAttribute('ws_id');
+
+        $sessionDAO = new SessionDAO();
+        $me = $sessionDAO->getPerson($authToken->getToken());
+
+        $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, [$me->getGroup()]);
+
+        $broadcastServiceSuccess = true;
 
         foreach ($sessionChangeMessages as $sessionChangeMessage) {
 
-            BroadcastService::sessionChange($sessionChangeMessage);
+            $broadcastServiceSuccess = $broadcastServiceSuccess && BroadcastService::sessionChange($sessionChangeMessage);
         }
+
+        if ($broadcastServiceSuccess) {
+
+            $response = $response->withHeader('SubscribeURI', BroadcastService::getUrl());
+        }
+
+        $response = $response->withHeader('X-A', 'B');
+        $response = $response->withHeader('x-i', 'B');
 
         return $response->withJson($sessionChangeMessages->asArray());
     });
 
 
 })
-    ->add(new IsWorkspaceMonitor())
+//    ->add(new IsWorkspaceMonitor())
     ->add(new RequireToken('person'));
 

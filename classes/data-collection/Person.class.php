@@ -8,6 +8,7 @@ class Person extends DataCollectionTypeSafe {
     protected $id = 0;
     protected $token = "";
     protected $code = "";
+    protected $group = "";
 
     protected $validTo = 0;
 
@@ -15,13 +16,15 @@ class Person extends DataCollectionTypeSafe {
         int $id,
         string $token,
         string $code,
-        int $validTo
+        int $validTo,
+        string $group
     ) {
 
         $this->id = $id;
         $this->token  = $token;
         $this->code = $code;
         $this->validTo = $validTo;
+        $this->group = $group;
     }
 
 
@@ -46,5 +49,10 @@ class Person extends DataCollectionTypeSafe {
     public function getValidTo(): int {
 
         return $this->validTo;
+    }
+
+    public function getGroup(): string {
+
+        return $this->group;
     }
 }

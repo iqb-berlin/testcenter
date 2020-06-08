@@ -135,7 +135,8 @@ class SessionDAO extends DAO {
                 (int) $loginData['personId'],
                 $personToken,
                 $loginData['code'] ?? '',
-                TimeStamp::fromSQLFormat($loginData['personValidTo'])
+                TimeStamp::fromSQLFormat($loginData['personValidTo']),
+                $loginData['groupName']
             )
         );
     }
@@ -305,7 +306,7 @@ class SessionDAO extends DAO {
             'SELECT tests.laststate, tests.locked, tests.label, tests.id FROM tests
             WHERE tests.person_id = :personid and tests.name = :bookletname',
             [
-                ':personid' => $person['id'],
+                ':personid' => $person->getId(),
                 ':bookletname' => $bookletName
             ]
         );
@@ -349,14 +350,17 @@ class SessionDAO extends DAO {
 
 
     // TODO unit test
-    // TODO return type Person!
-    public function getPerson(string $personToken): array {
+    public function getPerson(string $personToken): Person {
 
         $person = $this->_(
             'SELECT 
-                *
+                person_sessions.id,
+                person_sessions.token,
+                person_sessions.code,
+                person_sessions.valid_until,
+                login_sessions.group_name
             FROM login_sessions
-                     left join person_sessions on (person_sessions.login_id = login_sessions.id)
+                left join person_sessions on (person_sessions.login_id = login_sessions.id)
             WHERE person_sessions.token = :token',
             [
                 ':token' => $personToken
@@ -369,7 +373,13 @@ class SessionDAO extends DAO {
 
         TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
 
-        return $person;
+        return new Person(
+            (int) $person['id'],
+            $person['token'],
+            $person['code'],
+            TimeStamp::fromSQLFormat($person['valid_until']),
+            $person['group_name']
+        );
     }
 
 
@@ -377,7 +387,15 @@ class SessionDAO extends DAO {
     protected function getOrCreatePerson(Login $loginSession, string $code): Person {
 
         $person = $this->_(
-            'SELECT * FROM person_sessions WHERE person_sessions.login_id=:id and person_sessions.code=:code',
+            'SELECT 
+                    person_sessions.id,
+                    person_sessions.token,
+                    person_sessions.code,
+                    person_sessions.valid_until,
+                    login_sessions.group_name
+                FROM login_sessions
+                    left join person_sessions on (person_sessions.login_id = login_sessions.id)
+                WHERE person_sessions.login_id=:id and person_sessions.code=:code',
             [
                 ':id' => $loginSession->getId(),
                 ':code' => $code
@@ -391,7 +409,8 @@ class SessionDAO extends DAO {
                 (int) $person['id'],
                 $person['token'],
                 $person['code'],
-                TimeStamp::fromSQLFormat($person['valid_until'])
+                TimeStamp::fromSQLFormat($person['valid_until']),
+                $person['group_name']
             );
         }
 
@@ -429,7 +448,8 @@ class SessionDAO extends DAO {
             (int) $this->pdoDBhandle->lastInsertId(),
             $newPersonToken,
             $code,
-            TimeStamp::fromSQLFormat($validUntil)
+            TimeStamp::fromSQLFormat($validUntil),
+            $login->getGroupName()
         );
     }
 }
