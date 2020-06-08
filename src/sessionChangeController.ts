@@ -31,32 +31,46 @@ export class SessionChangeController {
 
   private applySessionChange(sessionChange: SessionChange) {
 
-    console.log('sessionChange received', JSON.stringify(sessionChange));
+      const mergeChanges = (oldStatus: SessionChange, sessionChange: SessionChange): SessionChange => {
 
-    const sessionId = sessionChange.personId + '|' + sessionChange.testId;
+          if ((sessionChange.testId) && (sessionChange.testId !== oldStatus.testId)) {
 
-    if (typeof this.status[sessionId] !== "undefined") {
+              oldStatus.testState = {};
+              oldStatus.unitState = {};
+              oldStatus.bookletName = '';
+          }
 
-      const oldStatus = this.status[sessionId];
+          if ((sessionChange.unitName) && (sessionChange.unitName !== oldStatus.unitName)) {
 
-      if ((sessionChange.testId) && (sessionChange.testId !== oldStatus.testId)) {
+              oldStatus.unitState = {};
+          }
 
-        oldStatus.testState = {};
-        oldStatus.unitState = {};
-        oldStatus.bookletName = '';
+          sessionChange.unitState = {...oldStatus.unitState, ...sessionChange.unitState};
+          sessionChange.testState = {...oldStatus.testState, ...sessionChange.testState};
+
+          return {...oldStatus, ...sessionChange};
       }
 
-      if ((sessionChange.unitName) && (sessionChange.unitName !== oldStatus.unitName)) {
+      console.log('sessionChange received', JSON.stringify(sessionChange));
 
-        oldStatus.unitState = {};
+      const sessionId = sessionChange.personId + '|' + sessionChange.testId;
+      const sessionIdWithoutTest = sessionChange.personId + '|-1';
+
+      if ((sessionChange.testId > -1) && (typeof this.status[sessionIdWithoutTest] !== "undefined")) {
+
+          // console.log("MERGE & DELETE TESTLESS");
+          this.status[sessionId] = mergeChanges(this.status[sessionIdWithoutTest], sessionChange);
+          delete this.status[sessionIdWithoutTest];
+
+      } else if (typeof this.status[sessionId] !== "undefined") {
+
+          // console.log("JUST MERGE");
+          this.status[sessionId] = mergeChanges(this.status[sessionId], sessionChange);
+
+      } else {
+
+          // console.log("NEW");
+          this.status[sessionId] = sessionChange;
       }
-
-      sessionChange.unitState = {...oldStatus.unitState, ...sessionChange.unitState};
-      sessionChange.testState = {...oldStatus.testState, ...sessionChange.testState};
-
-      sessionChange = {...oldStatus, ...sessionChange};
-    }
-
-    this.status[sessionId] = sessionChange;
   }
 }
