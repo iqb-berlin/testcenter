@@ -5,9 +5,10 @@ import {
     WebSocketServer,
     WsResponse,
 } from '@nestjs/websockets';
-import {BehaviorSubject, from, Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 import {Server, Client} from "ws";
+import {IncomingMessage} from 'http';
 
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -15,22 +16,22 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer()
     private server: Server;
 
-    private clients: Client[] = [];
+    private clients: {client: Client, token: string}[] = [];
     private clientsCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
 
-    handleConnection(client: Client) {
+    handleConnection(client: Client, message: IncomingMessage): void {
 
-        this.clients.push(client);
+        this.clients.push({client, token: message.url});
         this.clientsCount.next(this.clientsCount.value + 1);
-        console.log("connect");
+        console.log("connect", message.url);
     }
 
 
-    handleDisconnect(client: Client) {
+    handleDisconnect(client: Client): void {
 
         for (let i = 0; i < this.clients.length; i++) {
-            if (this.clients[i] === client) {
+            if (this.clients[i].client === client) {
                 this.clients.splice(i, 1);
                 break;
             }
@@ -42,10 +43,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
 
-    public broadcast(event, message: any) {
+    public broadcast(event, message: any): void {
 
         for (let client of this.clients) {
-            client.send(JSON.stringify({event: event, data: message}));
+            client.client.send(JSON.stringify({event: event, data: message}));
         }
     }
 
