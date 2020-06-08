@@ -345,7 +345,7 @@ class AdminDAO extends DAO {
                 ucfirst(str_replace('_', " ", $testSession['groupName'])),
                 $testSession['mode'],
                 $testSession['code'],
-                (int) $testSession['testId'],
+                ($testSession['testId'] == null) ? -1 : (int) $testSession['testId'],
                 $testState,
                 $testSession['bookletName'] ?? "",
                 $unit['name'],

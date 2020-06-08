@@ -411,10 +411,8 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/sessions', function(Request $request, Response $response) use ($adminDAO) {
 
-        // TODO - lastUnit in tests speichern (bei log, response, restorePoint etc.) und hier abfragen
         // STAND
         /**
-         * - unit  states & logs
          * - gehört zum anderen monitor eigentlich
          * - broadcast (wenn antwort gibt es einen link zum Abo) [erledigt eventuell gleich auth?!]
          *
@@ -424,6 +422,11 @@ $app->group('/workspace', function(App $app) {
         $groups = array_filter(explode(",", $request->getParam('groups', '')));
 
         $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, $groups);
+
+        foreach ($sessionChangeMessages as $sessionChangeMessage) {
+
+            BroadcastService::sessionChange($sessionChangeMessage);
+        }
 
         return $response->withJson($sessionChangeMessages->asArray());
     });
