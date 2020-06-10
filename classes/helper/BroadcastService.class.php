@@ -19,14 +19,14 @@ class BroadcastService {
     }
     
     
-    static function sessionChange(SessionChangeMessage $sessionChange): bool {
+    static function sessionChange(SessionChangeMessage $sessionChange): ?string {
 
         return BroadcastService::push('session-change', json_encode($sessionChange));
     }
     
 
     static function push(string $messageType, string $message,
-                         string $verb = "POST", string $contentType = "application/json"): bool {
+                         string $verb = "POST", string $contentType = "application/json"): ?string {
 
         if (!BroadcastService::$url) {
 
@@ -54,9 +54,9 @@ class BroadcastService {
 
         if (curl_error($curl)) {
             error_log("CURl ERROR" . print_r($curlResponse, true));
-            return false;
+            return null;
         }
 
-        return true;
+        return $curlResponse;
     }
 }

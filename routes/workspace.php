@@ -432,16 +432,17 @@ $app->group('/workspace', function(App $app) {
 
         foreach ($sessionChangeMessages as $sessionChangeMessage) {
 
-            $broadcastServiceSuccess = $broadcastServiceSuccess && BroadcastService::sessionChange($sessionChangeMessage);
+            $bcResponse = $broadcastServiceSuccess && BroadcastService::sessionChange($sessionChangeMessage);
+            $broadcastServiceSuccess = ($bcResponse !== null);
         }
 
         if ($broadcastServiceSuccess) {
 
-            $response = $response->withHeader('SubscribeURI', BroadcastService::getUrl());
-        }
+            $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getUrl()); // TODO right place here?
+            $url .= '/' . md5($authToken->getToken());
 
-        $response = $response->withHeader('X-A', 'B');
-        $response = $response->withHeader('x-i', 'B');
+            $response = $response->withHeader('SubscribeURI', $url);
+        }
 
         return $response->withJson($sessionChangeMessages->asArray());
     });
