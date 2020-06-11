@@ -434,6 +434,7 @@ $app->group('/workspace', function(App $app) {
 
             $bcResponse = $broadcastServiceSuccess && BroadcastService::sessionChange($sessionChangeMessage);
             $broadcastServiceSuccess = ($bcResponse !== null);
+            error_log('BCR: ' . $bcResponse);
         }
 
         if ($broadcastServiceSuccess) {

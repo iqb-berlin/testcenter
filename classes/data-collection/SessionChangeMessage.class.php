@@ -63,12 +63,13 @@ class SessionChangeMessage implements JsonSerializable {
     public static function login(int $personId, Login $login, string $code): SessionChangeMessage {
 
         $message = new SessionChangeMessage($personId);
-
-        $message->personLabel = $login->getName() . ($code ? '/' . $code : '');
-        $message->mode = $login->getMode();
-        $message->groupName = $login->getGroupName();
-        $message->groupLabel = $login->getGroupLabel();
-
+        $message->setLogin(
+            $login->getName(),
+            $login->getMode(),
+            $login->getGroupName(),
+            $login->getGroupLabel(),
+            $code
+        );
         return $message;
     }
 
@@ -76,13 +77,7 @@ class SessionChangeMessage implements JsonSerializable {
     public static function testState(int $personId, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
 
         $message = new SessionChangeMessage($personId);
-
-        $message->testId = $testId;
-        $message->testState = $testState;
-        if ($bookletName !== null) {
-            $message->bookletName = $bookletName;
-        }
-
+        $message->setTestState($testId, $testState, $bookletName);
         return $message;
     }
 
@@ -90,42 +85,34 @@ class SessionChangeMessage implements JsonSerializable {
     public static function unitState(int $personId, int $testId, string $unitName, array $unitState): SessionChangeMessage {
 
         $message = new SessionChangeMessage($personId);
-
         $message->testId = $testId;
-        $message->unitName = $unitName;
-        $message->unitState = $unitState;
-
+        $message->setUnitState($unitName, $unitState);
         return $message;
     }
 
 
-    public static function init(
-        int $personId,
-        string $loginName,
-        string $groupName,
-        string $groupLabel,
-        string $mode,
-        string $code,
-        int $testId,
-        array $testState,
-        string $bookletName,
-        string $unitName,
-        array $unitState
-    ) {
+    public function setLogin(string $loginLabel, string $mode, string $groupName, string $groupLabel, string $code): void {
 
-        $message = new SessionChangeMessage($personId);
+        $this->personLabel = $loginLabel  . ($code ? '/' . $code : '');
+        $this->mode = $mode;
+        $this->groupName = $groupName;
+        $this->groupLabel = $groupLabel;
+    }
 
-        $message->personLabel = $loginName . ($code ? '/' . $code : '');
-        $message->mode = $mode;
-        $message->groupName = $groupName;
-        $message->groupLabel = $groupLabel;
-        $message->testId = $testId;
-        $message->testState = $testState;
-        $message->bookletName = $bookletName;
-        $message->unitName = $unitName;
-        $message->unitState = $unitState;
 
-        return $message;
+    public function setTestState(int $testId, array $testState, string $bookletName = null): void {
+
+        $this->testId = $testId;
+        $this->testState = $testState;
+        if ($bookletName !== null) {
+            $this->bookletName = $bookletName;
+        }
+    }
+
+    public function setUnitState(string $unitName, array $unitState) {
+
+        $this->unitName = $unitName;
+        $this->unitState = $unitState;
     }
 
     

@@ -330,27 +330,38 @@ class AdminDAO extends DAO {
 
 		foreach ($testSessionsData as $testSession) {
 
-            $testState = $this->getTestFullState((int) $testSession['testId']);
-
-		    if ($testSession['locked']) {
-                $testState['status'] = 'locked';
-            }
-
-		    $unit = $this->getLastUnit((int) $testSession['testId']);
-
-            $sessionChangeMessages->add(SessionChangeMessage::init(
-                (int) $testSession['personId'],
+		    $sessionChangeMessage = new SessionChangeMessage((int) $testSession['personId']);
+		    $sessionChangeMessage->setLogin(
                 $testSession['loginName'],
                 $testSession['groupName'],
                 ucfirst(str_replace('_', " ", $testSession['groupName'])),
                 $testSession['mode'],
-                $testSession['code'],
-                ($testSession['testId'] == null) ? -1 : (int) $testSession['testId'],
-                $testState,
-                $testSession['bookletName'] ?? "",
-                $unit['name'],
-                $unit['state']
-            ));
+                $testSession['code']
+            );
+
+		    if ($testSession['testId']) {
+
+                $testState = $this->getTestFullState((int) $testSession['testId']);
+
+                if ($testSession['locked']) {
+                    $testState['status'] = 'locked';
+                }
+
+                $sessionChangeMessage->setTestState(
+                    ($testSession['testId'] == null) ? -1 : (int) $testSession['testId'],
+                    $testState,
+                    $testSession['bookletName'] ?? ""
+                );
+
+                $unit = $this->getLastUnit((int) $testSession['testId']);
+
+                $sessionChangeMessage->setUnitState(
+                    $unit['name'],
+                    $unit['state']
+                );
+            }
+
+            $sessionChangeMessages->add($sessionChangeMessage);
         }
 
 		return $sessionChangeMessages;
@@ -373,6 +384,10 @@ class AdminDAO extends DAO {
             [':testId' => $testId],
             true
         );
+
+        if (!count($testLogData)) {
+            error_log("WTF is wrong with $testId");
+        }
 
         $testState = JSON::decode($testLogData[0]['testState'], true);
 
