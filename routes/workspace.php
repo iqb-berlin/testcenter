@@ -420,7 +420,7 @@ $app->group('/workspace', function(App $app) {
 
         $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, [$authToken->getGroup()]);
 
-        $bsToken = md5($authToken->getToken());
+        $bsToken = md5((string) rand(0, 99999999));
 
         $broadcastServiceOnline = BroadcastService::push("monitor/register", json_encode([
             "token" => $bsToken,
