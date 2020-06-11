@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 // TODO unit-test
 // TODO find a way to integrate this in e2e-tests
 
@@ -30,7 +31,7 @@ class BroadcastService {
 
         if (!BroadcastService::$url) {
 
-            return false;
+            return null;
         }
 
         $curl = curl_init();

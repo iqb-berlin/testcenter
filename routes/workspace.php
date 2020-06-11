@@ -433,8 +433,7 @@ $app->group('/workspace', function(App $app) {
         foreach ($sessionChangeMessages as $sessionChangeMessage) {
 
             $bcResponse = $broadcastServiceSuccess && BroadcastService::sessionChange($sessionChangeMessage);
-            $broadcastServiceSuccess = ($bcResponse !== null);
-            error_log('BCR: ' . $bcResponse);
+            $broadcastServiceSuccess = ($bcResponse != null);
         }
 
         if ($broadcastServiceSuccess) {
