@@ -333,9 +333,9 @@ class AdminDAO extends DAO {
 		    $sessionChangeMessage = new SessionChangeMessage((int) $testSession['personId']);
 		    $sessionChangeMessage->setLogin(
                 $testSession['loginName'],
+                $testSession['mode'],
                 $testSession['groupName'],
                 ucfirst(str_replace('_', " ", $testSession['groupName'])),
-                $testSession['mode'],
                 $testSession['code']
             );
 
