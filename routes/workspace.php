@@ -432,9 +432,22 @@ $app->group('/workspace', function(App $app) {
 
         foreach ($sessionChangeMessages as $sessionChangeMessage) {
 
-            $bcResponse = $broadcastServiceSuccess && BroadcastService::sessionChange($sessionChangeMessage);
-            $broadcastServiceSuccess = ($bcResponse != null);
+            $bcResponse = BroadcastService::sessionChange($sessionChangeMessage);
+            $thisSu = ($bcResponse !== null);
+            $broadcastServiceSuccess = $broadcastServiceSuccess && $thisSu;
+
+            error_log(
+                "DEBUG: " .
+                print_r($bcResponse, true) . ' | ' .
+                print_r($thisSu, true) . ' | ' .
+                print_r($broadcastServiceSuccess, true) . ' | '
+            );
+
         }
+        error_log(
+            "DEBUG2: " .
+            print_r($broadcastServiceSuccess, true) . ' | '
+        );
 
         if ($broadcastServiceSuccess) {
 
