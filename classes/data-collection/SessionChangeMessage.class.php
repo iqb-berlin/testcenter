@@ -7,17 +7,17 @@ class SessionChangeMessage implements JsonSerializable {
     /**
      * @var int
      */
-    protected $personId = null;
+    protected $personId;
+
+    /**
+     * @var string
+     */
+    protected $groupName;
         
     /**
      * @var string
      */
     protected $personLabel = "";
-
-    /**
-     * @var string
-     */
-    protected $groupName = "";
 
     /**
      * @var string
@@ -60,13 +60,21 @@ class SessionChangeMessage implements JsonSerializable {
     protected $timestamp = 0;
 
 
-    public static function login(int $personId, Login $login, string $code): SessionChangeMessage {
+    public function __construct(int $personId, string $groupName) {
 
-        $message = new SessionChangeMessage($personId);
+        $this->personId = $personId;
+        $this->groupName = $groupName;
+
+        $this->timestamp = TimeStamp::now();
+    }
+
+
+    public static function login(AuthToken $authToken, Login $login, string $code): SessionChangeMessage {
+
+        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup());
         $message->setLogin(
             $login->getName(),
             $login->getMode(),
-            $login->getGroupName(),
             $login->getGroupLabel(),
             $code
         );
@@ -74,28 +82,27 @@ class SessionChangeMessage implements JsonSerializable {
     }
 
 
-    public static function testState(int $personId, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
+    public static function testState(AuthToken $authToken, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($personId);
+        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup());
         $message->setTestState($testId, $testState, $bookletName);
         return $message;
     }
 
 
-    public static function unitState(int $personId, int $testId, string $unitName, array $unitState): SessionChangeMessage {
+    public static function unitState(AuthToken $authToken, int $testId, string $unitName, array $unitState): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($personId);
+        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup());
         $message->testId = $testId;
         $message->setUnitState($unitName, $unitState);
         return $message;
     }
 
 
-    public function setLogin(string $loginLabel, string $mode, string $groupName, string $groupLabel, string $code): void {
+    public function setLogin(string $loginLabel, string $mode, string $groupLabel, string $code): void {
 
         $this->personLabel = $loginLabel  . ($code ? '/' . $code : '');
         $this->mode = $mode;
-        $this->groupName = $groupName;
         $this->groupLabel = $groupLabel;
     }
 
@@ -113,14 +120,6 @@ class SessionChangeMessage implements JsonSerializable {
 
         $this->unitName = $unitName;
         $this->unitState = $unitState;
-    }
-
-    
-    public function __construct(int $personId) {
-
-        $this->personId = $personId;
-
-        $this->timestamp = TimeStamp::now();
     }
 
 

@@ -33,7 +33,7 @@ $app->group('/test', function(App $app) {
         }
 
         BroadcastService::sessionChange(SessionChangeMessage::testState(
-            $authToken->getId(),
+            $authToken,
             (int) $test['id'],
             $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
             $body['bookletName']
@@ -200,7 +200,7 @@ $app->group('/test', function(App $app) {
         $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::unitState($authToken->getId(), $testId, $unitName, [$body['key'] => $body['value']])
+            SessionChangeMessage::unitState($authToken, $testId, $unitName, [$body['key'] => $body['value']])
         );
 
         return $response->withStatus(200);
@@ -223,7 +223,7 @@ $app->group('/test', function(App $app) {
         $testDAO->updateTestLastState($testId, $body['key'], $body['value']);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken->getId(), $testId, [$body['key'] => $body['value']])
+            SessionChangeMessage::testState($authToken, $testId, [$body['key'] => $body['value']])
         );
 
         return $response->withStatus(200);
@@ -249,7 +249,7 @@ $app->group('/test', function(App $app) {
         $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
         BroadcastService::sessionChange(SessionChangeMessage::unitState(
-            $authToken->getId(), $testId, $unitName, $testDAO->log2itemState($body['entry']))
+            $authToken, $testId, $unitName, $testDAO->log2itemState($body['entry']))
         );
 
         return $response->withStatus(201);
@@ -272,7 +272,7 @@ $app->group('/test', function(App $app) {
         $testDAO->addBookletLog($testId, $body['entry'], $body['timestamp']);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken->getId(), $testId, $testDAO->log2itemState($body['entry']))
+            SessionChangeMessage::testState($authToken, $testId, $testDAO->log2itemState($body['entry']))
         );
 
         return $response->withStatus(201);
@@ -290,7 +290,7 @@ $app->group('/test', function(App $app) {
         $testDAO->lockBooklet($testId);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken->getId(), $testId, ['status' => 'locked'])
+            SessionChangeMessage::testState($authToken, $testId, ['status' => 'locked'])
         );
 
         return $response->withStatus(200);

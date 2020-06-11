@@ -86,7 +86,7 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $session = $sessionDAO->getOrCreatePersonSession($login, $body['code']);
 
-    BroadcastService::sessionChange(SessionChangeMessage::login($authToken->getId(), $login, $body['code']));
+    BroadcastService::sessionChange(SessionChangeMessage::login($authToken, $login, $body['code']));
 
     return $response->withJson($session);
 
@@ -112,7 +112,7 @@ $app->get('/session', function(Request $request, Response $response) use ($app) 
         $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
         BroadcastService::sessionChange(SessionChangeMessage::login(
-            $authToken->getId(),
+            $authToken,
             $loginWithPerson->getLogin(),
             $loginWithPerson->getPerson()->getCode()
         ));

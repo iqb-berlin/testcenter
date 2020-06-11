@@ -18,7 +18,8 @@ class SessionDAO extends DAO {
                         \'admin\' as "type",
                         -1 as "workspaceId",
                         case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
-                        valid_until as "validTo"
+                        valid_until as "validTo",
+                        \'[admins]\' as "group"
                     from admin_sessions
                         inner join users on (users.id = admin_sessions.user_id)
                     union
@@ -28,7 +29,8 @@ class SessionDAO extends DAO {
                         \'login\' as "type",
                         workspace_id as "workspaceId",
                         login_sessions.mode,
-                        valid_until as "validTo"
+                        valid_until as "validTo",
+                        login_sessions.group_name as "group"
                     FROM login_sessions
                     union
                     select
@@ -37,7 +39,8 @@ class SessionDAO extends DAO {
                         \'person\' as "type",
                         workspace_id as "workspaceId",
                         login_sessions.mode,
-                        person_sessions.valid_until as "validTo"
+                        person_sessions.valid_until as "validTo",
+                        login_sessions.group_name as "group"
                     from login_sessions
                         inner join person_sessions on (person_sessions.login_id = login_sessions.id)
                 ) as allTokenTables
@@ -65,7 +68,8 @@ class SessionDAO extends DAO {
             (int) $tokenInfo['id'],
             $tokenInfo['type'],
             (int) $tokenInfo['workspaceId'],
-            $tokenInfo['mode']
+            $tokenInfo['mode'],
+            $tokenInfo['group']
         );
     }
 

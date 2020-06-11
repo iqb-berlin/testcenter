@@ -330,11 +330,10 @@ class AdminDAO extends DAO {
 
 		foreach ($testSessionsData as $testSession) {
 
-		    $sessionChangeMessage = new SessionChangeMessage((int) $testSession['personId']);
+		    $sessionChangeMessage = new SessionChangeMessage((int) $testSession['personId'], $testSession['groupName']);
 		    $sessionChangeMessage->setLogin(
                 $testSession['loginName'],
                 $testSession['mode'],
-                $testSession['groupName'],
                 ucfirst(str_replace('_', " ", $testSession['groupName'])),
                 $testSession['code']
             );
@@ -387,9 +386,10 @@ class AdminDAO extends DAO {
 
         if (!count($testLogData)) {
             error_log("WTF is wrong with $testId");
+            return [];
         }
 
-        $testState = JSON::decode($testLogData[0]['testState'], true);
+        $testState = JSON::decode($testLogData[0]['laststate'], true);
 
         foreach ($testLogData as $testLogDataRow) {
             $testState = array_merge($testState, $this->log2itemState($testLogDataRow['logentry']));

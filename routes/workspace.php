@@ -411,48 +411,31 @@ $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}/sessions', function(Request $request, Response $response) use ($adminDAO) {
 
-        // STAND
-        /**
-         * - gehört zum anderen monitor eigentlich
-         * - broadcast (wenn antwort gibt es einen link zum Abo) [erledigt eventuell gleich auth?!]
-         *
-         */
+        // STAND TODO gehört zum anderen monitor eigentlich
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
-        $sessionDAO = new SessionDAO();
-        $me = $sessionDAO->getPerson($authToken->getToken());
+        $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, [$authToken->getGroup()]);
 
-        $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, [$me->getGroup()]);
+        $bsToken = md5($authToken->getToken());
 
-        $broadcastServiceSuccess = true;
+        $broadcastServiceOnline = BroadcastService::push("monitor/register", json_encode([
+            "token" => $bsToken,
+            "groups" => [$authToken->getGroup()]
+        ])) !== null;
 
-        foreach ($sessionChangeMessages as $sessionChangeMessage) {
+        if ($broadcastServiceOnline) {
 
-            $bcResponse = BroadcastService::sessionChange($sessionChangeMessage);
-            $thisSu = ($bcResponse !== null);
-            $broadcastServiceSuccess = $broadcastServiceSuccess && $thisSu;
+            foreach ($sessionChangeMessages as $sessionChangeMessage) {
 
-            error_log(
-                "DEBUG: " .
-                print_r($bcResponse, true) . ' | ' .
-                print_r($thisSu, true) . ' | ' .
-                print_r($broadcastServiceSuccess, true) . ' | '
-            );
-
-        }
-        error_log(
-            "DEBUG2: " .
-            print_r($broadcastServiceSuccess, true) . ' | '
-        );
-
-        if ($broadcastServiceSuccess) {
+                BroadcastService::sessionChange($sessionChangeMessage);
+            }
 
             $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getUrl()); // TODO right place here?
-            $url .= '/' . md5($authToken->getToken());
+            $url .= '/' . $bsToken;
 
             $response = $response->withHeader('SubscribeURI', $url);
         }

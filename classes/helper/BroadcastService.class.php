@@ -22,12 +22,11 @@ class BroadcastService {
     
     static function sessionChange(SessionChangeMessage $sessionChange): ?string {
 
-        return BroadcastService::push('session-change', json_encode($sessionChange));
+        return BroadcastService::push('push/session-change', json_encode($sessionChange));
     }
     
 
-    static function push(string $messageType, string $message,
-                         string $verb = "POST", string $contentType = "application/json"): ?string {
+    static function push(string $endpoint, string $message, string $verb = "POST"): ?string {
 
         if (!BroadcastService::$url) {
 
@@ -37,7 +36,7 @@ class BroadcastService {
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => BroadcastService::$url . "/push/{$messageType}",
+            CURLOPT_URL => BroadcastService::$url . '/' . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -47,7 +46,7 @@ class BroadcastService {
             CURLOPT_CUSTOMREQUEST => $verb,
             CURLOPT_POSTFIELDS => $message,
             CURLOPT_HTTPHEADER => [
-                "Content-Type: $contentType"
+                "Content-Type: application/json"
             ],
         ]);
 

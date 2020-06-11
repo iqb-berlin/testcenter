@@ -8,13 +8,15 @@ class AuthToken extends DataCollectionTypeSafe {
     protected $type;
     protected $workspaceId;
     protected $mode;
+    protected $group;
 
     public function __construct(
         string $token,
         int $id,
         string $type,
         int $workspaceId,
-        string $mode
+        string $mode,
+        string $group
     ) {
 
         $this->token = $token;
@@ -22,6 +24,7 @@ class AuthToken extends DataCollectionTypeSafe {
         $this->type = $type;
         $this->workspaceId = $workspaceId;
         $this->mode = $mode;
+        $this->group = $group;
     }
 
 
@@ -55,4 +58,8 @@ class AuthToken extends DataCollectionTypeSafe {
     }
 
 
+    public function getGroup(): string {
+
+        return $this->group;
+    }
 }
