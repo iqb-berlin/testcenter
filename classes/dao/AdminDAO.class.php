@@ -340,14 +340,10 @@ class AdminDAO extends DAO {
 
 		    if ($testSession['testId']) {
 
-                $testState = $this->getTestFullState((int) $testSession['testId']);
-
-                if ($testSession['locked']) {
-                    $testState['status'] = 'locked';
-                }
+                $testState = $this->getTestFullState($testSession);
 
                 $sessionChangeMessage->setTestState(
-                    ($testSession['testId'] == null) ? -1 : (int) $testSession['testId'],
+                    (int) $testSession['testId'],
                     $testState,
                     $testSession['bookletName'] ?? ""
                 );
@@ -358,6 +354,7 @@ class AdminDAO extends DAO {
                     $unit['name'],
                     $unit['state']
                 );
+
             }
 
             $sessionChangeMessages->add($sessionChangeMessage);
@@ -367,32 +364,27 @@ class AdminDAO extends DAO {
 	}
 
 
-	private function getTestFullState(int $testId): array {
+	private function getTestFullState(array $testSessionData): array {
 
         $testLogData = $this->_("select
-                    tests.id,
-                    tests.name,
                     timestamp,
-                    laststate,
                     logentry
                 from
-                    tests
-                    left join test_logs on tests.id = test_logs.booklet_id
+                    test_logs
                 where booklet_id = :testId
                 order by timestamp",
-            [':testId' => $testId],
+            [':testId' => $testSessionData['testId']],
             true
         );
 
-        if (!count($testLogData)) {
-            error_log("WTF is wrong with $testId");
-            return [];
-        }
-
-        $testState = JSON::decode($testLogData[0]['laststate'], true);
+        $testState = JSON::decode($testSessionData['testState'], true);
 
         foreach ($testLogData as $testLogDataRow) {
             $testState = array_merge($testState, $this->log2itemState($testLogDataRow['logentry']));
+        }
+
+        if ($testSessionData['locked']) {
+            $testState['status'] = 'locked';
         }
 
         return $testState;
