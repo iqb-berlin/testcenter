@@ -3,6 +3,7 @@ import {SessionChange} from './SessionChange.interface';
 import {EventsGateway} from './events.gateway';
 import {Monitor} from './Monitor.interface';
 
+
 const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionChange): SessionChange => {
 
     if ((sessionChange.testId) && (sessionChange.testId !== testSession.testId)) {
@@ -29,7 +30,12 @@ export class DataService {
 
     constructor(
         private readonly eventsGateway: EventsGateway
-    ) {}
+    ) {
+
+        this.eventsGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
+            this.removeMonitor(disconnected);
+        });
+    }
 
     private testSessions: {
         [group: string]: {
@@ -120,17 +126,50 @@ export class DataService {
     }
 
 
-    public removeMonitor(monitor: Monitor): void {
+    public removeMonitor(monitorToken: string): void {
+
+        console.log('remove monitor:' + monitorToken);
 
         Object.keys(this.monitors).forEach((group: string) => {
 
-            if (typeof this.monitors[group][monitor.token] !== "undefined") {
-                delete this.monitors[group][monitor.token];
+            if (typeof this.monitors[group][monitorToken] !== "undefined") {
+                delete this.monitors[group][monitorToken];
 
                 if (Object.keys(this.monitors[group]).length === 0) {
                     delete this.testSessions[group];
                 }
             }
         });
+
+        this.eventsGateway.disconnectClient(monitorToken);
+    }
+
+
+    public getMonitors(): Monitor[] {
+
+        return Object.values(this.monitors)
+            .reduce(
+                (allMonitors: Monitor[], groupMonitors: {[g: string]: Monitor}): Monitor[] =>
+                    allMonitors.concat(Object.values(groupMonitors)),
+                []
+            )
+            .filter((v: Monitor, i: number, a: Monitor[]) => a.indexOf(v) === i);
+    }
+
+
+    public getTestSessions(): SessionChange[] {
+
+        return Object.values(this.testSessions)
+            .reduce(
+                (allTestSessions: SessionChange[], groupTestSessions: {[g: string]: SessionChange}): SessionChange[] =>
+                    allTestSessions.concat(Object.values(groupTestSessions)),
+                []
+            );
+    }
+
+
+    public getClientTokens(): string[] {
+
+        return this.eventsGateway.getClientTokens();
     }
 }

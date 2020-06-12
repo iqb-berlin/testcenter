@@ -24,7 +24,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private server: Server;
 
     private clients: {[token: string] : Client} = {};
-    private clientsCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    private clientsCount$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    private clientLost$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
 
     handleConnection(client: Client, message: IncomingMessage): void {
@@ -33,7 +34,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         this.clients[token] = client;
 
-        this.clientsCount.next(Object.values(this.clients).length);
+        this.clientsCount$.next(Object.values(this.clients).length);
 
         console.log("connected: " + token);
     }
@@ -49,9 +50,13 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
            }
         });
 
-        this.clientsCount.next(Object.values(this.clients).length);
+        if (disconnectedToken !== "") {
 
-        console.log("disconnected: " + disconnectedToken);
+            this.clientLost$.next(disconnectedToken);
+            this.clientsCount$.next(Object.values(this.clients).length);
+
+            console.log("disconnected: " + disconnectedToken);
+        }
     }
 
 
@@ -77,9 +82,33 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
 
+
+    disconnectClient(monitorToken: string): void {
+
+        if (typeof this.clients[monitorToken]) {
+
+            console.log('disconnect client: ' + monitorToken);
+            this.clients[monitorToken].close();
+        }
+    }
+
+
+    public getDisconnectionObservable(): Observable<string> {
+
+        return this.clientLost$.asObservable();
+    }
+
+
+    public getClientTokens(): string[] {
+
+        return Object.keys(this.clients);
+    }
+
+
     @SubscribeMessage('subscribe:client.count')
     subscribeClientCount(@MessageBody() data: number): Observable<WsResponse<number>> {
 
-        return this.clientsCount.pipe(map((count: number) => ({ event: 'client.count', data: count })));
+        return this.clientsCount$.pipe(map((count: number) => ({ event: 'client.count', data: count })));
     }
+
 }

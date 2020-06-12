@@ -1,6 +1,7 @@
 import {Catch, ArgumentsHost, HttpStatus} from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import {EventsGateway} from './events.gateway';
+import {Response} from 'express';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -16,7 +17,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         console.log("CATCH", exception);
 
         const ctx = host.switchToHttp();
-        const response = ctx.getResponse();
+        const response: Response = ctx.getResponse();
 
         let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -40,8 +41,10 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
             status = HttpStatus.BAD_REQUEST;
         }
 
-        response.status(status);
+        response.status(status).send();
 
-        this.eventsGateway.disconnectAll();
+        if (status >= 500) {
+            this.eventsGateway.disconnectAll();
+        }
     }
 }
