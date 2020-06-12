@@ -101,7 +101,9 @@ export class DataService {
 
             console.log("broadcasting data about group: " + groupName);
             const tokens = Object.keys(this.monitors[groupName]);
-            const sessions =  Object.values(this.testSessions[groupName]);
+            const sessions = (typeof this.testSessions[groupName] !== "undefined")
+                ? Object.values(this.testSessions[groupName])
+                : [];
             this.eventsGateway.broadCastToRegistered(tokens, "test-sessions", sessions);
         }
     }
