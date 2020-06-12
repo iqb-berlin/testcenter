@@ -10,44 +10,70 @@ import { map } from 'rxjs/operators';
 import {Server, Client} from "ws";
 import {IncomingMessage} from 'http';
 
+
+function getLastUrlPart(url: string) {
+
+    const arr = url.split("/").filter(e => e);
+    return arr[arr.length - 1];
+}
+
 @WebSocketGateway()
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer()
     private server: Server;
 
-    private clients: {client: Client, token: string}[] = [];
+    private clients: {[token: string] : Client} = {};
     private clientsCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
 
     handleConnection(client: Client, message: IncomingMessage): void {
 
-        this.clients.push({client, token: message.url});
-        this.clientsCount.next(this.clientsCount.value + 1);
-        console.log("connect", message.url);
+        const token = getLastUrlPart(message.url);
+
+        this.clients[token] = client;
+
+        this.clientsCount.next(Object.values(this.clients).length);
+
+        console.log("connected: " + token);
     }
 
 
     handleDisconnect(client: Client): void {
 
-        for (let i = 0; i < this.clients.length; i++) {
-            if (this.clients[i].client === client) {
-                this.clients.splice(i, 1);
-                break;
-            }
-        }
+        let disconnectedToken = "";
+        Object.keys(this.clients).forEach((token: string) => {
+           if (this.clients[token] === client) {
+               delete this.clients[token];
+               disconnectedToken = token;
+           }
+        });
 
-        this.clientsCount.next(this.clientsCount.value - 1);
+        this.clientsCount.next(Object.values(this.clients).length);
 
-        console.log("disconnect");
+        console.log("disconnected: " + disconnectedToken);
     }
 
 
-    public broadcast(event, message: any): void {
+    public broadCastToRegistered(tokens: string[], event: string, message: any): void {
 
-        for (let client of this.clients) {
-            client.client.send(JSON.stringify({event: event, data: message}));
-        }
+        const payload = JSON.stringify({event: event, data: message});
+        tokens.forEach((token: string) => {
+            console.log("sending to: " + token);
+            if (typeof this.clients[token] !== "undefined") {
+                this.clients[token].send(payload);
+            }
+        });
+    }
+
+
+    public disconnectAll(): void {
+
+        Object.keys(this.clients).forEach((token: string) => {
+
+            this.clients[token].close();
+            delete this.clients[token];
+        });
     }
 
 
