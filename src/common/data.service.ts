@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import {SessionChange} from './SessionChange.interface';
-import {EventsGateway} from './events.gateway';
-import {Monitor} from './Monitor.interface';
+import {SessionChange} from '../test-session/session-change.interface';
+import {Monitor} from '../monitor/monitor.interface';
+import {WebsocketGateway} from './websocket.gateway';
 
 
 const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionChange): SessionChange => {
@@ -29,7 +29,7 @@ const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionC
 export class DataService {
 
     constructor(
-        private readonly eventsGateway: EventsGateway
+        private readonly eventsGateway: WebsocketGateway
     ) {
 
         this.eventsGateway.getDisconnectionObservable().subscribe((disconnected: string) => {

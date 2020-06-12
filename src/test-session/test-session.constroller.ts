@@ -1,10 +1,10 @@
 import {Controller, Get, HttpException, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
-import {isSessionChange, SessionChange} from './SessionChange.interface';
-import {DataService} from './data.service';
+import {isSessionChange, SessionChange} from './session-change.interface';
+import {DataService} from '../common/data.service';
 
 @Controller()
-export class SessionChangeController {
+export class TestSessionConstroller {
 
     constructor(
         private readonly dataService: DataService

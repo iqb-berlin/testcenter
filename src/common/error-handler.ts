@@ -1,13 +1,13 @@
 import {Catch, ArgumentsHost, HttpStatus} from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
-import {EventsGateway} from './events.gateway';
+import {BaseExceptionFilter} from '@nestjs/core';
+import {WebsocketGateway} from './websocket.gateway';
 import {Response} from 'express';
 
 @Catch()
-export class AllExceptionsFilter extends BaseExceptionFilter {
+export class ErrorHandler extends BaseExceptionFilter {
 
     constructor(
-        private readonly eventsGateway: EventsGateway
+        private readonly eventsGateway: WebsocketGateway
     ) {
         super();
     }

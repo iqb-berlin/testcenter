@@ -6,7 +6,7 @@ import {
     WsResponse,
 } from '@nestjs/websockets';
 import {BehaviorSubject, Observable} from 'rxjs';
-import { map } from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {Server, Client} from "ws";
 import {IncomingMessage} from 'http';
 
@@ -18,7 +18,7 @@ function getLastUrlPart(url: string) {
 }
 
 @WebSocketGateway()
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer()
     private server: Server;

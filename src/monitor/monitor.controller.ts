@@ -1,7 +1,7 @@
 import {Controller, Get, HttpException, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
-import {isMonitor, Monitor} from './Monitor.interface';
-import {DataService} from './data.service';
+import {isMonitor, Monitor} from './monitor.interface';
+import {DataService} from '../common/data.service';
 
 @Controller()
 export class MonitorController {
