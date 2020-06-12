@@ -36,7 +36,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         this.clientsCount$.next(Object.values(this.clients).length);
 
-        console.log("connected: " + token);
+        console.log("client connected: " + token);
     }
 
 
@@ -55,7 +55,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
             this.clientLost$.next(disconnectedToken);
             this.clientsCount$.next(Object.values(this.clients).length);
 
-            console.log("disconnected: " + disconnectedToken);
+            console.log("client disconnected: " + disconnectedToken);
         }
     }
 
@@ -63,12 +63,25 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public broadCastToRegistered(tokens: string[], event: string, message: any): void {
 
         const payload = JSON.stringify({event: event, data: message});
+
         tokens.forEach((token: string) => {
-            console.log("sending to: " + token);
+
             if (typeof this.clients[token] !== "undefined") {
+                console.log("sending to client: " + token);
                 this.clients[token].send(payload);
             }
         });
+    }
+
+
+    public disconnectClient(monitorToken: string): void {
+
+        if (typeof this.clients[monitorToken] !== "undefined") {
+
+            console.log('disconnect client: ' + monitorToken);
+            this.clients[monitorToken].close();
+            delete this.clients[monitorToken];
+        }
     }
 
 
@@ -76,20 +89,8 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         Object.keys(this.clients).forEach((token: string) => {
 
-            this.clients[token].close();
-            delete this.clients[token];
+            this.disconnectClient(token);
         });
-    }
-
-
-
-    disconnectClient(monitorToken: string): void {
-
-        if (typeof this.clients[monitorToken]) {
-
-            console.log('disconnect client: ' + monitorToken);
-            this.clients[monitorToken].close();
-        }
     }
 
 

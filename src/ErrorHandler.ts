@@ -14,7 +14,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
     catch(exception: any, host: ArgumentsHost) {
 
-        console.log("CATCH", exception);
+        console.warn("error caught: ", exception);
 
         const ctx = host.switchToHttp();
         const response: Response = ctx.getResponse();

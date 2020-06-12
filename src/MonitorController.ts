@@ -19,7 +19,7 @@ export class MonitorController {
             throw new HttpException("not monitor data", 400);
         }
 
-        console.log("monitor registered:", request.body);
+        console.log("monitor registered:" + JSON.stringify(request.body));
         this.dataService.addMonitor(request.body);
     }
 
@@ -33,7 +33,7 @@ export class MonitorController {
         }
 
         console.log("monitor unregistered:", request.body);
-        this.dataService.removeMonitor(request.body);
+        this.dataService.removeMonitor(request.body['token']);
     }
 
 

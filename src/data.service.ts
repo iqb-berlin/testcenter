@@ -67,7 +67,7 @@ export class DataService {
         // testSession is first of group
         if (typeof this.testSessions[group] === "undefined") {
 
-            console.log("don't log group:" + group);
+            console.log("skipping group hence not monitored: " + group);
             return;
         }
 
@@ -99,7 +99,7 @@ export class DataService {
 
         if (typeof this.monitors[groupName] !== "undefined") {
 
-            console.log("sending about " + groupName);
+            console.log("broadcasting data about group: " + groupName);
             const tokens = Object.keys(this.monitors[groupName]);
             const sessions =  Object.values(this.testSessions[groupName]);
             this.eventsGateway.broadCastToRegistered(tokens, "test-sessions", sessions);
@@ -128,7 +128,7 @@ export class DataService {
 
     public removeMonitor(monitorToken: string): void {
 
-        console.log('remove monitor:' + monitorToken);
+        console.log('remove monitor: ' + monitorToken);
 
         Object.keys(this.monitors).forEach((group: string) => {
 
