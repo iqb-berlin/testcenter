@@ -18,6 +18,7 @@
     <xs:all>
       <xs:element name="TimeMax" type="ConfigType" minOccurs = "0" maxOccurs="1"/>
       <xs:element name="CodeToEnter" type="ConfigType" minOccurs = "0" maxOccurs="1"/>
+      <xs:element name="Lock" type="ConfigType" minOccurs = "0" maxOccurs="1"/>
     </xs:all>
   </xs:complexType>
 
