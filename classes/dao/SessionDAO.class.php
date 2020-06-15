@@ -146,15 +146,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
-    public function getOrCreatePersonSession(Login $login, string $code = ''): Session {
-
-        $person = $this->getOrCreatePerson($login, $code);
-
-        return Session::createFromLogin($login, $person);
-    }
-
-
     // TODO add unit-test
     // TODO get and store groupLabel as well
     public function getOrCreateLogin(PotentialLogin $loginData): Login {
@@ -388,7 +379,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    protected function getOrCreatePerson(Login $loginSession, string $code): Person {
+    public function getOrCreatePerson(Login $loginSession, string $code): Person {
 
         $person = $this->_(
             'SELECT 

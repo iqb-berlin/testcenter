@@ -55,7 +55,8 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
     if (!$login->isCodeRequired()) {
 
-        $session = $sessionDAO->getOrCreatePersonSession($login);
+        $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
+        $session = Session::createFromLogin($login, $person);
 
     } else {
 
@@ -84,9 +85,24 @@ $app->put('/session/person', function(Request $request, Response $response) use 
 
     $login = $sessionDAO->getLogin($authToken->getToken());
 
-    $session = $sessionDAO->getOrCreatePersonSession($login, $body['code']);
+    $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
 
-    BroadcastService::sessionChange(SessionChangeMessage::login($authToken, $login, $body['code']));
+    $session = Session::createFromLogin($login, $person);
+
+    BroadcastService::sessionChange(
+        SessionChangeMessage::login(
+            new AuthToken(
+                $person->getToken(),
+                $person->getId(),
+                'person',
+                $login->getWorkspaceId(),
+                $login->getMode(),
+                $login->getGroupName()
+            ),
+            $login,
+            $body['code']
+        )
+    );
 
     return $response->withJson($session);
 
