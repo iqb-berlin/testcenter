@@ -35,7 +35,7 @@ class Session extends DataCollectionTypeSafe {
                 break;
 
             case "monitor-group":
-                $session->addAccessObjects('testGroupMonitor', (string) $login->getWorkspaceId());
+                $session->addAccessObjects('testGroupMonitor', (string) $login->getGroupName());
                 break;
 
             default:

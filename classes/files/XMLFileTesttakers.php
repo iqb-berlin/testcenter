@@ -317,4 +317,29 @@ class XMLFileTesttakers extends XMLFile {
         }
         return null;
     }
+
+
+    function getGroups(): array {
+
+        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) {
+            return [];
+        }
+
+        $groups = [];
+
+        foreach($this->xmlfile->children() as $groupNode) {
+
+            if (!$groupNode->getName() == 'Group') {
+                continue;
+            }
+
+            $groups[(string) $groupNode['name']] = [
+                "name" => (string) $groupNode['name'],
+                "label" => (string) $groupNode['label']
+            ];
+        }
+
+        return $groups;
+    }
+
 }

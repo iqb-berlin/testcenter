@@ -55,7 +55,7 @@ $app->put('/session/login', function(Request $request, Response $response) use (
 
     if (!$login->isCodeRequired()) {
 
-        $person = $sessionDAO->getOrCreatePerson($login, $body['code']);
+        $person = $sessionDAO->getOrCreatePerson($login, '');
         $session = Session::createFromLogin($login, $person);
 
     } else {
