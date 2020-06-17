@@ -327,9 +327,10 @@ class AdminDAO extends DAO {
 		$testSessionsData = $this->_($sql, $replacements,true);
 
         $sessionChangeMessages = new SessionChangeMessageArray();
-
+        error_log("0: ", $workspaceId);
 		foreach ($testSessionsData as $testSession) {
 
+            error_log("1");
 		    $sessionChangeMessage = new SessionChangeMessage((int) $testSession['personId'], $testSession['groupName']);
 		    $sessionChangeMessage->setLogin(
                 $testSession['loginName'],
@@ -337,8 +338,10 @@ class AdminDAO extends DAO {
                 ucfirst(str_replace('_', " ", $testSession['groupName'])),
                 $testSession['code']
             );
+		    error_log("2");
 
 		    if ($testSession['testId']) {
+                error_log("3");
 
                 $testState = $this->getTestFullState($testSession);
 

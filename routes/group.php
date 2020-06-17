@@ -35,9 +35,7 @@ $app->group('/monitor', function(App $app) {
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
-        $workspaceId = (int)$request->getAttribute('ws_id');
-
-        $sessionChangeMessages = $adminDAO->getTestSessions($workspaceId, [$authToken->getGroup()]);
+        $sessionChangeMessages = $adminDAO->getTestSessions($authToken->getWorkspaceId(), [$authToken->getGroup()]);
 
         $bsToken = md5((string)rand(0, 99999999));
 
