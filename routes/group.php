@@ -23,10 +23,7 @@ $app->group('/monitor', function(App $app) {
             throw new HttpError("Group `$groupName` not found.");
         }
 
-        return $response->withJson([ // TODO synchronize terminology in XML, FE and BE
-            'id' => $group['name'],
-            'name' => $group['label']
-        ]);
+        return $response->withJson($group);
     });
 
 
