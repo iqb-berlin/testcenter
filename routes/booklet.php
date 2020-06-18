@@ -9,17 +9,15 @@ use Slim\Http\Response;
 $app->group('/booklet', function(App $app) {
 
     $sessionDAO = new SessionDAO();
+    $adminDAO = new AdminDAO();
 
-    $app->get('/{booklet_name}[/{data}]', function (Request $request, Response $response) use ($sessionDAO) { // swap status <-> data
+    $app->get('/{booklet_name}/data', function (Request $request, Response $response) use ($sessionDAO, $adminDAO) {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $personToken = $authToken->getToken();
 
         $bookletName = $request->getAttribute('booklet_name');
-        $includeData = $request->getAttribute('data') == 'data';
-
-        $adminDAO = new AdminDAO();
 
         if (!$sessionDAO->personHasBooklet($personToken, $bookletName)
             and !$adminDAO->hasMonitorAccessToWorkspace($personToken, $authToken->getWorkspaceId())) {
@@ -36,12 +34,29 @@ $app->group('/booklet', function(App $app) {
             $bookletStatus['label'] = $bookletsFolder->getBookletLabel($bookletName);
         }
 
-        if ($includeData) {
+        return $response->withJson($bookletStatus);
+    });
 
-            $bookletStatus['xml'] = $bookletsFolder->getXMLFileByName('Booklet', $bookletName)->xmlfile->asXML();
+
+    $app->get('/{booklet_name}', function (Request $request, Response $response) use ($sessionDAO, $adminDAO) {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+        $personToken = $authToken->getToken();
+
+        $bookletName = $request->getAttribute('booklet_name');
+
+        if (!$sessionDAO->personHasBooklet($personToken, $bookletName)
+            and !$adminDAO->hasMonitorAccessToWorkspace($personToken, $authToken->getWorkspaceId())) {
+
+            throw new HttpForbiddenException($request, "Booklet with name `$bookletName` is not allowed for $personToken");
         }
 
-        return $response->withJson($bookletStatus);
+        $bookletName = $request->getAttribute('booklet_name');
+        $bookletsFolder = new BookletsFolder((int) $authToken->getWorkspaceId());
+        $xml = $bookletsFolder->getXMLFileByName('Booklet', $bookletName)->xmlfile->asXML();
+
+        $response->withHeader('Content-Type', 'application/xml')->write($xml);
     });
 
 })
