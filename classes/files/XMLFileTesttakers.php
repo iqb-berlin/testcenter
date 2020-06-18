@@ -5,29 +5,8 @@ declare(strict_types=1);
 
 class XMLFileTesttakers extends XMLFile {
 
-    private function getCodesFromBookletElement(SimpleXMLElement $bookletElement) {
-
-        $myreturn = [];
-        if ($bookletElement->getName() == 'Booklet') {
-            $codesAttr = $bookletElement['codes'];
-            if (isset($codesAttr)) {
-                $codes = (string) $codesAttr;
-                if (strlen(trim($codes)) > 0) {
-                    foreach(explode(' ', $codes) as $c) {
-                        if (strlen($c) > 0) {
-                            if (!in_array($c, $myreturn)) {
-                                array_push($myreturn, $c);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $myreturn;
-    }
-
-
-    // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
+    // TODO unit-test
+    // // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
     public function getAllTesttakers() {
         $myreturn = [];
 
@@ -142,6 +121,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
+    // TODO unit-test
     public function getDoubleLoginNames() {
 
         $myreturn = [];
@@ -176,6 +156,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
+    // TODO unit-test
     public function getAllLoginNames() {
         $myreturn = [];
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
@@ -204,118 +185,179 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
+
+
     public function getLoginData(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLogin {
 
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
-            foreach($this->xmlfile->children() as $groupNode) {
-                if ($groupNode->getName() == 'Group') {
-                    $groupnameAttr = $groupNode['name'];
-                    if (isset($groupnameAttr)) {
-                        $groupname = (string) $groupnameAttr;
+        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) {
+            return null;
+        }
 
-                        $validFrom = TimeStamp::fromXMLFormat((string) $groupNode['validFrom']);
-                        $validTo = isset($groupNode['validTo']) ? TimeStamp::fromXMLFormat((string) $groupNode['validTo']) : 0;
-                        $validForMinutes = (int) ($groupNode['validFor'] ?? 0);
+        foreach($this->xmlfile->children() as $groupNode) {
 
-                        foreach($groupNode->children() as $loginNode) {
-                            if ($loginNode->getName() == 'Login') {
-                                $loginNameAttr = $loginNode['name'];
-                                $loginPwAttr = $loginNode['pw'] ?? '';
-                                $mode = (string) $loginNode['mode'] ?? 'run-hot-return';
-                                if (isset($loginNameAttr) and isset($loginPwAttr)) {
-                                    $loginName = (string) $loginNameAttr;
-                                    if ((strlen($loginName) > 2) and ($loginName == $givenLoginName)) {
-                                        $loginPw = (string) $loginPwAttr;
-                                        if ($loginPw == $givenPassword) {
-   
-                                            // collect all codes
-                                            $allCodes = [];
-                                            foreach($loginNode->children() as $bookletElement) {
-                                                if ($bookletElement->getName() == 'Booklet') {
-                                                    foreach($this->getCodesFromBookletElement($bookletElement) as $c) {
-                                                        if (!in_array($c, $allCodes)) {
-                                                            array_push($allCodes, $c);
-                                                        }
-                                                    }
-                                                }
-                                            }
+            if (!$groupNode->getName() == 'Group') {
+                continue;
+            }
 
-                                            // collect booklets per code and booklets with no code
-                                            $noCodeBooklets = [];
-                                            $codeBooklets = []; // key: code, value: bookletName[]
-                                            foreach($loginNode->children() as $bookletElement) {
-                                                if ($bookletElement->getName() == 'Booklet') {
-                                                    $bookletName = strtoupper(trim((string) $bookletElement));
-                                                    if (strlen($bookletName) > 0) {
-                                                        $myCodes = $this->getCodesFromBookletElement($bookletElement);
-                                                        if (count($myCodes) > 0) {
-                                                            foreach($myCodes as $c) {
-                                                                if (!isset($codeBooklets[$c])) {
-                                                                    $codeBooklets[$c] = [];
-                                                                }
-                                                                if (!in_array($bookletName, $codeBooklets[$c])) {
-                                                                    array_push($codeBooklets[$c], $bookletName);
-                                                                }
-                                                            }
-                                                        } else {
-                                                            if (!in_array($bookletName, $noCodeBooklets)) {
-                                                                array_push($noCodeBooklets, $bookletName);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
+            $groupNameAttr = $groupNode['name'];
 
-                                            if (count($codeBooklets) > 0) {
-                                                if (count($noCodeBooklets) > 0) {
-                                                    // add all no-code-booklets to every code
-                                                    foreach($codeBooklets as $code => $booklets) {
-                                                        foreach($noCodeBooklets as $booklet) {
-                                                            if (!in_array($booklet, $codeBooklets[$code])) {
-                                                                array_push($codeBooklets[$code], $booklet);
-                                                            }
-                                                        }
-                                                    }
-                                                }
+            if (!isset($groupNameAttr)) {
+                continue;
+            }
+
+            $groupName = (string) $groupNameAttr;
+
+            $validFrom = TimeStamp::fromXMLFormat((string) $groupNode['validFrom']);
+            $validTo = isset($groupNode['validTo']) ? TimeStamp::fromXMLFormat((string) $groupNode['validTo']) : 0;
+            $validForMinutes = (int) ($groupNode['validFor'] ?? 0);
+
+            foreach($groupNode->children() as $loginNode) {
+
+                if ($loginNode->getName() !== 'Login') {
+                    continue;
+                }
+
+                $mode = (string) $loginNode['mode'] ?? 'run-hot-return';
+
+                if (!$this->isMatchingLogin($loginNode, $givenLoginName, $givenPassword)) {
+                    continue;
+                }
+
+                $codeBooklets = $this->collectBookletsPerCode($loginNode);
+
+                return new PotentialLogin(
+                    (string) $loginNode['name'],
+                    $mode,
+                    $groupName,
+                    $codeBooklets,
+                    $workspaceId,
+                    $validTo,
+                    $validFrom,
+                    $validForMinutes,
+                    (object) $this->getCustomTexts()
+                );
 
 
-                                                return new PotentialLogin(
-                                                    $loginName,
-                                                    $mode,
-                                                    $groupname,
-                                                    $codeBooklets,
-                                                    $workspaceId,
-                                                    $validTo,
-                                                    $validFrom,
-                                                    $validForMinutes,
-                                                    (object) $this->getCustomTexts()
-                                                );
-                                            } else {
-                                                return new PotentialLogin(
-                                                    $loginName,
-                                                    $mode,
-                                                    $groupname,
-                                                    ['' => $noCodeBooklets],
-                                                    $workspaceId,
-                                                    $validTo,
-                                                    $validFrom,
-                                                    $validForMinutes,
-                                                    (object) $this->getCustomTexts()
-                                                );
-                                            }
+            }
 
-                                            // //////////////////////////////////////////////////////////////
-                                        }
-                                        break; // abort also if the given password is incorrect
-                                    }
-                                }
-                            }
-                        }
+        }
+
+        return null;
+    }
+
+
+    // TODO CODE IS BOOKLET_CHILD NOT LOGIN !11
+    public function isMatchingLogin(SimpleXMLElement $loginElement, string $name, string $password = '', string $code = null): bool {
+
+        $name2 = (string) $loginElement['name'];
+        $isMatching = ($name2 == $name);
+
+        if ($password) {
+
+            $password2 = (string) $loginElement['pw'];
+            $isMatching = ($isMatching and ($password2 == $password));
+        }
+
+        if ($code !== null) {
+
+            $availableCodesInThisLogin = $this->getCodesFromLoginElement($loginElement);
+            $isMatching = ($isMatching and in_array($code, $availableCodesInThisLogin));
+        }
+
+        return $isMatching;
+    }
+
+
+    public function getCodesFromBookletElement(SimpleXMLElement $bookletElement): array {
+
+
+        if ($bookletElement->getName() !== 'Booklet') {
+            return [];
+        }
+
+        $codesString = isset($bookletElement['codes'])
+            ? trim((string) $bookletElement['codes'])
+            : '';
+
+        if (!$codesString) {
+            return [];
+        }
+
+        return array_unique(explode(' ', $codesString));
+    }
+
+
+    // TODO unit-test
+    public function getCodesFromLoginElement(SimpleXMLElement $loginElement): array {
+
+        if ($loginElement->getName() !== 'Login') {
+            return [];
+        }
+
+        $allCodes = [];
+
+        foreach ($loginElement->children() as $bookletElement) {
+            $allCodes = array_merge($allCodes, $this->getCodesFromBookletElement($bookletElement));
+        }
+
+        return array_unique($allCodes);
+    }
+
+
+    public function collectBookletsPerCode(SimpleXMLElement $loginNode) {
+
+        $noCodeBooklets = [];
+        $codeBooklets = [];
+
+        foreach($loginNode->children() as $bookletElement) {
+
+            if ($bookletElement->getName() !== 'Booklet') {
+                continue;
+            }
+
+            $bookletName = strtoupper(trim((string) $bookletElement));
+
+            if (!$bookletName) {
+                continue;
+            }
+
+            $codesOfThisBooklet = $this->getCodesFromBookletElement($bookletElement);
+
+            if (count($codesOfThisBooklet) > 0) {
+
+                foreach($codesOfThisBooklet as $c) {
+
+                    if (!isset($codeBooklets[$c])) {
+                        $codeBooklets[$c] = [];
+                    }
+
+                    if (!in_array($bookletName, $codeBooklets[$c])) {
+                        $codeBooklets[$c][] = $bookletName;
                     }
                 }
+
+            } else {
+
+                $noCodeBooklets[] = $bookletName;
             }
         }
-        return null;
+
+        $noCodeBooklets = array_unique($noCodeBooklets);
+
+        if (count($codeBooklets) === 0) {
+
+            $codeBooklets = ['' => $noCodeBooklets];
+
+        } else {
+
+            // add all no-code-booklets to every code
+            foreach($codeBooklets as $code => $booklets) {
+
+                $codeBooklets[$code] = array_unique(array_merge($codeBooklets[$code], $noCodeBooklets));
+            }
+        }
+
+        return $codeBooklets;
     }
 
 
@@ -333,13 +375,33 @@ class XMLFileTesttakers extends XMLFile {
                 continue;
             }
 
-            $groups[(string) $groupNode['name']] = [
-                "name" => (string) $groupNode['name'],
-                "label" => (string) $groupNode['label']
-            ];
+            $groups[(string) $groupNode['name']] = new Group(
+                (string) $groupNode['name'],
+                (string) $groupNode['label']
+            );
         }
 
         return $groups;
+    }
+
+
+    // STAND
+    function getGroupOfLogin(string $name, string $password = null, string $code = null): array {
+
+        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) {
+            return [];
+        }
+
+        foreach($this->xmlfile->children() as $groupNode) {
+
+            if (!$groupNode->getName() == 'Group') {
+                continue;
+            }
+
+
+        }
+
+        return []
     }
 
 }

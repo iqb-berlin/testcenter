@@ -63,4 +63,9 @@ class Password {
 
         return password_verify(hash_hmac('sha256', $password, $saltOrPepper), $hash);
     }
+
+    static function shorten(string $password): string {
+
+        return preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
+    }
 }

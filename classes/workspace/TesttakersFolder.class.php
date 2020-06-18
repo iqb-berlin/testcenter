@@ -6,7 +6,7 @@ declare(strict_types=1);
 class TesttakersFolder extends WorkspaceController {
 
 
-    static function searchAllForLogin(string $name, string $password): ?PotentialLogin {
+    static function searchAllForLogin(string $name, string $password = ''): ?PotentialLogin {
 
         $loginData = null;
 
