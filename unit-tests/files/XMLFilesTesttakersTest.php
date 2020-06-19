@@ -360,7 +360,7 @@ END;
     }
 
 
-    function test_getGroupOfLogin() {
+    function test_getMembersOfLogin() {
 
         $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
 
@@ -378,7 +378,7 @@ END;
             )
         );
 
-        $result = $xmlFile->getGroupOfLogin('__TEST_LOGIN_NAME__-group-monitor', 'user123', 13);
+        $result = $xmlFile->getMembersOfLogin('__TEST_LOGIN_NAME__-group-monitor', 'user123', 13);
 
         $this->assertEquals($expected, $result);
     }

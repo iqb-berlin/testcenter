@@ -106,12 +106,35 @@ class SessionController extends Controller {
         );
 
         if ($login->getMode() == 'group-monitor') {
-// STAND
-//            $login = TesttakersFolder::searchAllForLogin($login->getName(), '', $person->getCode());
-//            BroadcastService::sessionChanges(array_map(function(PotentialLogin $login) {
-//            return SessionChangeMessage::login($login->groupMembers);
-//            });
-            echo "STAND";
+
+            // STAND
+            // - PROBLEM: getLogin geht nach Name und PW, gibt es den login mehrmals nimmt er den wo das passwort passt
+            // -> wir kennen aber das passwort nicht unbedingt... -> aber warum eigentlich nicht? GAR KEIN PROBLEM,
+            // wenn es einen CODE gibt, kann es ja kein Monitor sein. Das macht sonst null Sinn!!!!!
+            // - passwort und name per xpath abfragen?
+            // - must be valid mode für XMLFileClasses?
+            // - units tests für testtakers folder
+            // - unit tests für session controller
+            // - ... funktion unten soll gehen
+
+            // functionksweise der gruppen-anmeldung angerissen:
+            $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
+            $members = $testtakersFolder->getMembersOfLogin($login->getName(), 'password?!?!?!');
+
+            foreach ($members->asArray() as $member) {
+
+                $memberLogin = SessionController::sessionDAO()->getOrCreateLogin($member);
+                $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, 'code!?!?!?');
+                $authToken = new AuthToken(
+                    $memberPerson->getToken(),
+                    $memberPerson->getId(),
+                    'person',
+                    $login->getWorkspaceId(),
+                    $login->getMode(),
+                    $login->getGroupName()
+                );
+                BroadcastService::sessionChange(SessionChangeMessage::login($authToken, $login, $memberPerson->getCode()));
+            }
         }
     }
 

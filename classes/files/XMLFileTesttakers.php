@@ -131,7 +131,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getGroupOfLogin(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLoginArray { // TODO muss passwort sein?
+    public function getMembersOfLogin(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLoginArray { // TODO muss passwort sein?
 
         if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
             return null;
