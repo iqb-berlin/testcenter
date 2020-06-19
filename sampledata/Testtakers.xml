@@ -21,9 +21,6 @@
     </Login>
     <Login mode="monitor-group" name="__TEST_LOGIN_NAME__-group-monitor" pw="user123"/>
     <Login mode="monitor-study" name="__TEST_LOGIN_NAME__-study-monitor" pw="user123"/>
-    <Login mode="sedfjkl" pw="sdfsdf">
-      <Booklet>dsa</Booklet>
-    </Login>
   </Group>
 
   <Group name="review_group" label="A Group of Reviewers">

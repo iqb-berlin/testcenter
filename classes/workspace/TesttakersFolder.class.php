@@ -31,7 +31,7 @@ class TesttakersFolder extends WorkspaceController {
 
             if ($xFile->isValid()) {
                 if ($xFile->getRoottagName() == 'Testtakers') {
-                    $potentialLogin = $xFile->getLoginData($name, $password, $this->_workspaceId);
+                    $potentialLogin = $xFile->getLogin($name, $password, $this->_workspaceId);
                     if ($potentialLogin and (count($potentialLogin->getBooklets()) > 0)) {
                         return $potentialLogin;
                     }

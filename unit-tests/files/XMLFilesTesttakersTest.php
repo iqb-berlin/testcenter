@@ -34,11 +34,11 @@ END;
 
 class XMLFilesTesttakersTest extends TestCase {
 
-    function test_getLoginData() {
+    function test_getLogin() {
 
         $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
 
-        $result = $xmlFile->getLoginData('__TEST_LOGIN_NAME__', '__TEST_LOGIN_PASSWORD__', 1);
+        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__', '__TEST_LOGIN_PASSWORD__', 1);
 
         $expected = new PotentialLogin(
             '__TEST_LOGIN_NAME__',
@@ -57,7 +57,7 @@ class XMLFilesTesttakersTest extends TestCase {
 
 
 
-        $result = $xmlFile->getLoginData('__TEST_LOGIN_NAME__-no-pw', '', 1);
+        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw', '', 1);
 
         $expected = new PotentialLogin(
             '__TEST_LOGIN_NAME__-no-pw',
@@ -76,14 +76,14 @@ class XMLFilesTesttakersTest extends TestCase {
 
 
 
-        $result = $xmlFile->getLoginData('__TEST_LOGIN_NAME__', 'wrong passowrd', 1);
+        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__', 'wrong passowrd', 1);
 
         $this->assertNull($result, "login with wrong password");
 
 
 
 
-        $result = $xmlFile->getLoginData('wrong username', '__TEST_LOGIN_PASSWORD__', 1);
+        $result = $xmlFile->getLogin('wrong username', '__TEST_LOGIN_PASSWORD__', 1);
 
         $this->assertNull($result, "login with wrong username");
     }
@@ -355,6 +355,30 @@ END;
         ];
 
         $result = $xmlFile->getAllLoginNames();
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+    function test_getGroupOfLogin() {
+
+        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+
+        $expected = new PotentialLoginArray(
+            new PotentialLogin(
+                '__TEST_LOGIN_NAME__',
+                'run-hot-return',
+                'sample_group',
+                ['__TEST_PERSON_CODES__' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']], // TODO fix sample file !!!!!
+                13,
+                0,
+                1583053200,
+                45,
+                (object) ['somestr' => 'string']
+            )
+        );
+
+        $result = $xmlFile->getGroupOfLogin('__TEST_LOGIN_NAME__-group-monitor', 'user123', 13);
 
         $this->assertEquals($expected, $result);
     }
