@@ -298,6 +298,7 @@ END;
             ]
         ];
 
+
         $result = $xmlFile->getAllTesttakers();
 
         $this->assertEquals($expected, $result);

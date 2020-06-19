@@ -5,9 +5,44 @@ declare(strict_types=1);
 
 class XMLFileTesttakers extends XMLFile {
 
-    // TODO refactor, unit-test
-    // // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
+    // TODO refactor
+    // returns ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
     public function getAllTesttakers() {
+
+        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
+            return null;
+        }
+
+        $testTakers = [];
+
+        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+
+            foreach ($groupElement->xpath('Login') as $loginElement) {
+
+                $bookletsPerCode = $this->collectBookletsPerCode($loginElement);
+
+                foreach ($bookletsPerCode as $code => $booklets) {
+
+                    if (count($booklets)) {
+
+                        $testTakers[] = [
+                            'groupname' => (string) $groupElement['name'],
+                            'loginname' => (string) $loginElement['name'], // TODO add groupLabel
+                            'code' => $code,
+                            'booklets' => $booklets
+                        ];
+                    }
+                }
+            }
+        }
+
+        //STAND eventl. noch weitere tests und gleiches verhalten sicher zustelleN?
+
+        return $testTakers;
+    }
+
+
+    public function getAllTesttakersOLD() {
         $myreturn = [];
 
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
@@ -38,7 +73,7 @@ class XMLFileTesttakers extends XMLFile {
                                         if (strlen($loginName) > 2) {
 
                                             // only valid logins are taken //////////////////////////////////
-                                            
+
                                             // collect all codes
                                             $allCodes = [];
                                             foreach($loginNode->children() as $bookletElement) {
@@ -98,7 +133,7 @@ class XMLFileTesttakers extends XMLFile {
                                                 }
                                             } else {
                                                 if (count($noCodeBooklets) > 0) {
-                                                        array_push($myreturn, [
+                                                    array_push($myreturn, [
                                                         'groupname' => $groupname,
                                                         'loginname' => $loginName,
                                                         'code' => '',
@@ -216,30 +251,21 @@ class XMLFileTesttakers extends XMLFile {
     // TODO unit-test
     public function findGroupElementByLogin(string $matchName, string $matchPw = '', string $matchCode = null): ?array {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) {
+        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
             return null;
         }
 
-        foreach($this->xmlfile->children() as $groupElement) {
+        foreach($this->xmlfile->xpath('Group') as $groupElement) {
 
-            if (!$groupElement->getName() == 'Group') {
-                continue;
-            }
+            foreach($groupElement->xpath('Login') as $loginElement) {
 
-            foreach($groupElement->children() as $loginElement) {
+                if ($this->isMatchingLogin($loginElement, $matchName, $matchPw, $matchCode)) {
 
-                if ($loginElement->getName() !== 'Login') {
-                    continue;
+                    return [
+                        "group" => $groupElement,
+                        "login" => $loginElement,
+                    ];
                 }
-
-                if (!$this->isMatchingLogin($loginElement, $matchName, $matchPw, $matchCode)) {
-                    continue;
-                }
-
-                return [
-                    "group" => $groupElement,
-                    "login" => $loginElement,
-                ];
             }
         }
 
