@@ -4,6 +4,8 @@ use PHPUnit\Framework\TestCase;
 require_once "classes/files/XMLFile.php";
 require_once "classes/files/XMLFileTesttakers.php";
 require_once "classes/data-collection/PotentialLogin.class.php";
+require_once "classes/data-collection/PotentialLoginArray.class.php";
+require_once "classes/data-collection/Group.class.php";
 
 define('ROOT_DIR', realpath('../..'));
 
@@ -198,6 +200,109 @@ END;
         $expected = [];
         $result = $xmlFile->getCodesFromBookletElement(new SimpleXMLElement($xml));
         $this->assertEquals($expected, $result);
+    }
+
+
+    function test_getGroups() {
+
+        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+
+        $expected = [
+            'sample_group' => new Group(
+                'sample_group',
+                'Primary Sample Group'
+            ),
+            'review_group' => new Group(
+                'review_group',
+                'A Group of Reviewers'
+            ),
+            'trial_group' => new Group(
+                'trial_group',
+                'A Group for Trails'
+            ),
+            'passwordless_group' => new Group(
+                'passwordless_group',
+                'A group of persons without password'
+            ),
+            'expired_group' => new Group(
+                'expired_group',
+                'An already expired group'
+            ),
+            'future_group' => new Group(
+                'future_group',
+                'An not yet active group'
+            ),
+        ];
+
+        $result = $xmlFile->getGroups();
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+    function test_getAllTesttakers() {
+
+        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+
+        $expected = [
+            [
+                "groupname" => "sample_group",
+                "loginname" => "__TEST_LOGIN_NAME__",
+                "code" => "__TEST_PERSON_CODES__",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2",
+                ]
+
+            ],
+            [
+                "groupname" => "review_group",
+                "loginname" => "__TEST_LOGIN_NAME__-review",
+                "code" => "",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                ],
+            ],
+            [
+                "groupname" => "trial_group",
+                "loginname" => "__TEST_LOGIN_NAME__-trial",
+                "code" => "",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                ]
+
+            ],
+            [
+                "groupname" => "passwordless_group",
+                "loginname" => "__TEST_LOGIN_NAME__-no-pw",
+                "code" => "",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                ]
+            ],
+            [
+                "groupname" => "expired_group",
+                "loginname" => "test-expired",
+                "code" => "",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                ],
+            ],
+            [
+                "groupname" => "future_group",
+                "loginname" => "test-future",
+                "code" => "",
+                "booklets" => [
+                  "BOOKLET.SAMPLE",
+                ]
+            ]
+        ];
+
+        $result = $xmlFile->getAllTesttakers();
+
+        $this->assertEquals($expected, $result);
+
+
     }
 
 }

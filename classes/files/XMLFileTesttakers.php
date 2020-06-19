@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 class XMLFileTesttakers extends XMLFile {
 
-    // TODO unit-test
+    // TODO refactor, unit-test
     // // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
     public function getAllTesttakers() {
         $myreturn = [];
@@ -121,7 +121,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    // TODO unit-test
+    // TODO refactor, unit-test
     public function getDoubleLoginNames() {
 
         $myreturn = [];
@@ -156,7 +156,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    // TODO unit-test
+    // TODO refactor, unit-test
     public function getAllLoginNames() {
         $myreturn = [];
         if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
@@ -185,83 +185,88 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-
-
     public function getLoginData(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLogin {
+
+        $groupAndContext = $this->findGroupElementByLogin($givenLoginName, $givenPassword);
+
+        if (!$groupAndContext) {
+
+            return null;
+        }
+
+        /* @var $groupNode SimpleXmlElement */
+        $groupNode = $groupAndContext['group'];
+        /* @var $loginNode SimpleXmlElement */
+        $loginNode = $groupAndContext['login'];
+
+        return new PotentialLogin(
+            (string) $loginNode['name'],
+            (string) $loginNode['mode'] ?? 'run-hot-return',
+            (string) $groupNode['name'], // TODO groupLabel
+            $this->collectBookletsPerCode($loginNode),
+            $workspaceId,
+            isset($groupNode['validTo']) ? TimeStamp::fromXMLFormat((string) $groupNode['validTo']) : 0,
+            TimeStamp::fromXMLFormat((string) $groupNode['validFrom']),
+            (int) ($groupNode['validFor'] ?? 0),
+            (object) $this->getCustomTexts()
+        );
+    }
+
+
+    // TODO unit-test
+    public function findGroupElementByLogin(string $matchName, string $matchPw = '', string $matchCode = null): ?array {
 
         if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) {
             return null;
         }
 
-        foreach($this->xmlfile->children() as $groupNode) {
+        foreach($this->xmlfile->children() as $groupElement) {
 
-            if (!$groupNode->getName() == 'Group') {
+            if (!$groupElement->getName() == 'Group') {
                 continue;
             }
 
-            $groupNameAttr = $groupNode['name'];
+            foreach($groupElement->children() as $loginElement) {
 
-            if (!isset($groupNameAttr)) {
-                continue;
-            }
-
-            $groupName = (string) $groupNameAttr;
-
-            $validFrom = TimeStamp::fromXMLFormat((string) $groupNode['validFrom']);
-            $validTo = isset($groupNode['validTo']) ? TimeStamp::fromXMLFormat((string) $groupNode['validTo']) : 0;
-            $validForMinutes = (int) ($groupNode['validFor'] ?? 0);
-
-            foreach($groupNode->children() as $loginNode) {
-
-                if ($loginNode->getName() !== 'Login') {
+                if ($loginElement->getName() !== 'Login') {
                     continue;
                 }
 
-                $mode = (string) $loginNode['mode'] ?? 'run-hot-return';
-
-                if (!$this->isMatchingLogin($loginNode, $givenLoginName, $givenPassword)) {
+                if (!$this->isMatchingLogin($loginElement, $matchName, $matchPw, $matchCode)) {
                     continue;
                 }
 
-                $codeBooklets = $this->collectBookletsPerCode($loginNode);
-
-                return new PotentialLogin(
-                    (string) $loginNode['name'],
-                    $mode,
-                    $groupName,
-                    $codeBooklets,
-                    $workspaceId,
-                    $validTo,
-                    $validFrom,
-                    $validForMinutes,
-                    (object) $this->getCustomTexts()
-                );
-
-
+                return [
+                    "group" => $groupElement,
+                    "login" => $loginElement,
+                ];
             }
-
         }
 
         return null;
     }
 
 
-    // TODO CODE IS BOOKLET_CHILD NOT LOGIN !11
-    public function isMatchingLogin(SimpleXMLElement $loginElement, string $name, string $password = '', string $code = null): bool {
 
-        $name2 = (string) $loginElement['name'];
-        $isMatching = ($name2 == $name);
+    public function isMatchingLogin(SimpleXMLElement $loginElement, string $matchName, string $matchPw = '', string $matchCode = null): bool {
 
-        if ($password) {
-
-            $password2 = (string) $loginElement['pw'];
-            $isMatching = ($isMatching and ($password2 == $password));
+        if ($loginElement->getName() !== 'Login') {
+            return false;
         }
 
-        if ($code !== null) {
+        $name2 = (string) $loginElement['name'];
+        $isMatching = ($name2 == $matchName);
+
+        if ($matchPw) {
+
+            $password2 = (string) $loginElement['pw'];
+            $isMatching = ($isMatching and ($password2 == $matchPw));
+        }
+
+        if ($matchCode !== null) {
 
             $availableCodesInThisLogin = $this->getCodesFromLoginElement($loginElement);
-            $isMatching = ($isMatching and in_array($code, $availableCodesInThisLogin));
+            $isMatching = ($isMatching and in_array($matchCode, $availableCodesInThisLogin));
         }
 
         return $isMatching;
@@ -269,7 +274,6 @@ class XMLFileTesttakers extends XMLFile {
 
 
     public function getCodesFromBookletElement(SimpleXMLElement $bookletElement): array {
-
 
         if ($bookletElement->getName() !== 'Booklet') {
             return [];
@@ -361,7 +365,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    function getGroups(): array {
+    public function getGroups(): array {
 
         if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) {
             return [];
@@ -369,15 +373,15 @@ class XMLFileTesttakers extends XMLFile {
 
         $groups = [];
 
-        foreach($this->xmlfile->children() as $groupNode) {
+        foreach($this->xmlfile->children() as $groupElement) {
 
-            if (!$groupNode->getName() == 'Group') {
+            if ($groupElement->getName() != 'Group') {
                 continue;
             }
 
-            $groups[(string) $groupNode['name']] = new Group(
-                (string) $groupNode['name'],
-                (string) $groupNode['label']
+            $groups[(string) $groupElement['name']] = new Group(
+                (string) $groupElement['name'],
+                (string) $groupElement['label']
             );
         }
 
@@ -385,23 +389,27 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    // STAND
-    function getGroupOfLogin(string $name, string $password = null, string $code = null): array {
+    // TODO implement, unit-Test
+    public function getGroupOfLogin(string $givenLoginName, string $givenPassword = null, string $givenCode = null): ?Group {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) {
-            return [];
+        $groupAndContext = $this->findGroupElementByLogin($givenLoginName, $givenPassword, $givenCode);
+
+        if (!$groupAndContext) {
+
+            return null;
         }
 
-        foreach($this->xmlfile->children() as $groupNode) {
-
-            if (!$groupNode->getName() == 'Group') {
-                continue;
-            }
+        /* @var $groupNode SimpleXmlElement */
+        $groupNode = $groupAndContext['group'];
 
 
-        }
 
-        return []
+
+
+
+
+
+        return null;
     }
 
 }

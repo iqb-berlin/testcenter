@@ -14,7 +14,7 @@ class Group extends DataCollectionTypeSafe {
         $this->label = $label;
         $this->name = $name;
 
-        $this->_members = new GroupArray(...$members);
+        $this->_members = new PotentialLoginArray(...$members);
     }
 
 
@@ -30,7 +30,7 @@ class Group extends DataCollectionTypeSafe {
     }
 
 
-    public function getMembers(): GroupArray {
+    public function getMembers(): PotentialLoginArray {
 
         return $this->_members;
     }
