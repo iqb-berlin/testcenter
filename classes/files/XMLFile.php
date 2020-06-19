@@ -1,7 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
-
+// TODO unit-tests
 
 class XMLFile {
     public $allErrors = [];
@@ -20,32 +20,32 @@ class XMLFile {
     public $xmlfile;
 
 
-    static function get(string $xmlfilename, bool $validate = false): XMLFile {
+    static function get(string $xmlFilename, bool $validate = false): XMLFile {
 
-        if (!file_exists($xmlfilename)) {
+        if (!file_exists($xmlFilename)) {
 
-            throw new HttpError("File not found: `{$xmlfilename}`");
+            throw new HttpError("File not found: `{$xmlFilename}`");
         }
 
-        $xml = simplexml_load_file($xmlfilename);
+        $xml = simplexml_load_file($xmlFilename);
 
         if (!$xml) {
 
-            throw new HttpError("Could not open XML-File: `{$xmlfilename}`");
+            throw new HttpError("Could not open XML-File: `{$xmlFilename}`");
         }
 
         switch ($xml->getName()) {
-            case 'Testtakers': return new XMLFileTesttakers($xmlfilename, $validate);
-            case 'SysCheck': return new XMLFileSysCheck($xmlfilename, $validate);
-            case 'SysBooklet': return new XMLFileBooklet($xmlfilename, $validate);
-            case 'Unit': return new XMLFileUnit($xmlfilename, $validate);
+            case 'Testtakers': return new XMLFileTesttakers($xmlFilename, $validate);
+            case 'SysCheck': return new XMLFileSysCheck($xmlFilename, $validate);
+            case 'SysBooklet': return new XMLFileBooklet($xmlFilename, $validate);
+            case 'Unit': return new XMLFileUnit($xmlFilename, $validate);
         }
 
-        return new XMLFile($xmlfilename, $validate);
+        return new XMLFile($xmlFilename, $validate);
     }
 
 
-    public function __construct($xmlfilename, $validate = false) {
+    public function __construct(string $xmlfilename, bool $validate = false, bool $isRawXml = false) {
         $this->allErrors = [];
         $this->_rootTagName = '';
         $this->_id = '';
@@ -60,11 +60,16 @@ class XMLFile {
         libxml_use_internal_errors(true);
         libxml_clear_errors();
     
-        if (!file_exists($xmlfilename)) {
+        if (!$isRawXml and !file_exists($xmlfilename)) {
+
             array_push($this->allErrors, "`$xmlfilename` not found`");
+
         } else {
 
-            $this->xmlfile = simplexml_load_file($xmlfilename);
+            $this->xmlfile = !$isRawXml
+                ? simplexml_load_file($xmlfilename)
+                : new SimpleXMLElement($xmlfilename);
+
             if ($this->xmlfile == false) {
                 array_push($this->allErrors, "Error in `$xmlfilename`");
             } else {
@@ -140,6 +145,7 @@ class XMLFile {
 
 
     public function getErrors() {
+
         return $this->allErrors;
     }
 

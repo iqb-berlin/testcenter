@@ -9,6 +9,29 @@ require_once "classes/data-collection/Group.class.php";
 
 define('ROOT_DIR', realpath('../..'));
 
+$ExampleXml1 = <<<END
+<Testtakers>
+  <Metadata>
+    <Id>example</Id>
+  </Metadata>
+
+  <Group name="first_group">
+    <Login mode="run-hot-return" name="duplicateInSameGroup" pw="one" />
+    <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="two" />
+    <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="three" />
+    <Login mode="run-hot-return" name="noDuplicate" pw="four" />
+  </Group>
+
+  <Group name="second_group">
+    <Login mode="run-hot-return" name="duplicateInSameGroup" pw="two" />
+    <Login mode="run-hot-return" name="noDuplicateAgain" pw="four" />
+    <Login mode="omit-login-without-name" pw="eight" /> 
+    <Login mode="omit-login-without-name" pw="duplicate-but-still-omitted" /> 
+  </Group>
+</Testtakers>
+END;
+
+
 class XMLFilesTesttakersTest extends TestCase {
 
     function test_getLoginData() {
@@ -302,8 +325,38 @@ END;
         $result = $xmlFile->getAllTesttakers();
 
         $this->assertEquals($expected, $result);
+    }
 
 
+    function test_getDoubleLoginNames() {
+
+        global $ExampleXml1;
+
+        $xmlFile = new XMLFileTesttakers($ExampleXml1, false, true);
+
+        $expected = ['duplicateInSameGroup', 'duplicateInDifferentGroup'];
+
+        $result = $xmlFile->getDoubleLoginNames();
+
+        $this->assertEquals($expected, $result);
+    }
+
+    function test_getAllLoginNames() {
+
+        global $ExampleXml1;
+
+        $xmlFile = new XMLFileTesttakers($ExampleXml1, false, true);
+
+        $expected = [
+            'duplicateInSameGroup',
+            'duplicateInDifferentGroup',
+            'noDuplicate',
+            'noDuplicateAgain'
+        ];
+
+        $result = $xmlFile->getAllLoginNames();
+
+        $this->assertEquals($expected, $result);
     }
 
 }

@@ -5,9 +5,15 @@ declare(strict_types=1);
 
 class XMLFileTesttakers extends XMLFile {
 
-    // TODO refactor
-    // returns ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-    public function getAllTesttakers() {
+    /**
+     * @return array|null
+     *
+     * returns array of the structure ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
+     * this shoudla nd can be replaces by a structured data-type like PotentialLogin. We keep this structure to maintain
+     * compatibility with other classes which have to be rafctored later.
+     * TODO refactor to return PotentialLogin[] -> affects WorkspaceValidator and BookletsFolder
+     */
+    public function getAllTesttakers(): ?array {
 
         if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
             return null;
@@ -17,7 +23,7 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xmlfile->xpath('Group') as $groupElement) {
 
-            foreach ($groupElement->xpath('Login') as $loginElement) {
+            foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
 
                 $bookletsPerCode = $this->collectBookletsPerCode($loginElement);
 
@@ -36,187 +42,51 @@ class XMLFileTesttakers extends XMLFile {
             }
         }
 
-        //STAND eventl. noch weitere tests und gleiches verhalten sicher zustelleN?
-
         return $testTakers;
     }
 
 
-    public function getAllTesttakersOLD() {
-        $myreturn = [];
-
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
-            $allLoginNames = []; // double logins are ignored
-            foreach($this->xmlfile->children() as $groupNode) {
-
-                if ($groupNode->getName() == 'Group') {
-
-                    $groupnameAttr = $groupNode['name'];
-
-                    if (isset($groupnameAttr)) {
-
-                        $groupname = (string) $groupnameAttr;
-
-                        foreach($groupNode->children() as $loginNode) {
-
-                            if ($loginNode->getName() == 'Login') {
-
-                                $loginNameAttr = $loginNode['name'];
-
-                                if (isset($loginNameAttr)) {
-
-                                    $loginName = (string) $loginNameAttr;
-
-                                    if (!in_array($loginName, $allLoginNames)) {
-                                        array_push($allLoginNames, $loginName);
-
-                                        if (strlen($loginName) > 2) {
-
-                                            // only valid logins are taken //////////////////////////////////
-
-                                            // collect all codes
-                                            $allCodes = [];
-                                            foreach($loginNode->children() as $bookletElement) {
-                                                if ($bookletElement->getName() == 'Booklet') {
-                                                    foreach($this->getCodesFromBookletElement($bookletElement) as $c) {
-                                                        if (!in_array($c, $allCodes)) {
-                                                            array_push($allCodes, $c);
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            // collect booklets per code and booklets with no code
-                                            $noCodeBooklets = [];
-                                            $codeBooklets = []; // key: code, value: bookletName[]
-                                            foreach($loginNode->children() as $bookletElement) {
-                                                if ($bookletElement->getName() == 'Booklet') {
-                                                    $bookletName = strtoupper(trim((string) $bookletElement));
-                                                    if (strlen($bookletName) > 0) {
-                                                        $myCodes = $this->getCodesFromBookletElement($bookletElement);
-                                                        if (count($myCodes) > 0) {
-                                                            foreach($myCodes as $c) {
-                                                                if (!isset($codeBooklets[$c])) {
-                                                                    $codeBooklets[$c] = [];
-                                                                }
-                                                                if (!in_array($bookletName, $codeBooklets[$c])) {
-                                                                    array_push($codeBooklets[$c], $bookletName);
-                                                                }
-                                                            }
-                                                        } else {
-                                                            if (!in_array($bookletName, $noCodeBooklets)) {
-                                                                array_push($noCodeBooklets, $bookletName);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            if (count($codeBooklets) > 0) {
-                                                if (count($noCodeBooklets) > 0) {
-                                                    // add all no-code-booklets to every code
-                                                    foreach($codeBooklets as $code => $booklets) {
-                                                        foreach($noCodeBooklets as $booklet) {
-                                                            if (!in_array($booklet, $codeBooklets[$code])) {
-                                                                array_push($codeBooklets[$code], $booklet);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                foreach($codeBooklets as $code => $booklets) {
-                                                    array_push($myreturn, [
-                                                        'groupname' => $groupname,
-                                                        'loginname' => $loginName,
-                                                        'code' => $code,
-                                                        'booklets' => $booklets
-                                                    ]);
-                                                }
-                                            } else {
-                                                if (count($noCodeBooklets) > 0) {
-                                                    array_push($myreturn, [
-                                                        'groupname' => $groupname,
-                                                        'loginname' => $loginName,
-                                                        'code' => '',
-                                                        'booklets' => $noCodeBooklets
-                                                    ]);
-                                                }
-                                            }
-                                            // //////////////////////////////////////////////////////////////
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return $myreturn;
-    }
-
-
-    // TODO refactor, unit-test
     public function getDoubleLoginNames() {
 
-        $myreturn = [];
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
-            $allLoginNames = [];
-            foreach($this->xmlfile->children() as $groupNode) {
-                if ($groupNode->getName() == 'Group') {
-                    $groupnameAttr = $groupNode['name'];
-                    if (isset($groupnameAttr)) {
+        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
+            return null;
+        }
 
-                        foreach($groupNode->children() as $loginNode) {
-                            if ($loginNode->getName() == 'Login') {
-                                $loginNameAttr = $loginNode['name'];
-                                if (isset($loginNameAttr)) {
-                                    $loginName = (string) $loginNameAttr;
-                                    if (!in_array($loginName, $allLoginNames)) {
-                                        array_push($allLoginNames, $loginName);
-                                    } else {
-                                        if (!in_array($loginName, $myreturn)) {
-                                            array_push($myreturn, $loginName);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        $loginNames = [];
+
+        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+
+            foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
+
+                $loginNames[] = (string) $loginElement['name'];
             }
         }
 
-        return $myreturn;
+        return array_keys(array_filter(array_count_values($loginNames), function($count) {
+            return $count > 1;
+        }));
     }
 
 
-    // TODO refactor, unit-test
     public function getAllLoginNames() {
-        $myreturn = [];
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Testtakers')) {
-            foreach($this->xmlfile->children() as $groupNode) {
-                if ($groupNode->getName() == 'Group') {
-                    $groupnameAttr = $groupNode['name'];
-                    if (isset($groupnameAttr)) {
 
-                        foreach($groupNode->children() as $loginNode) {
-                            if ($loginNode->getName() == 'Login') {
-                                $loginNameAttr = $loginNode['name'];
-                                if (isset($loginNameAttr)) {
-                                    $loginName = (string) $loginNameAttr;
-                                    if (!in_array($loginName, $myreturn)) {
-                                        array_push($myreturn, $loginName);
-                                    }
-                                }
-                            }
-                        }
-                    }
+        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
+            return null;
+        }
+
+        $loginNames = [];
+
+        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+
+            foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
+
+                if (!in_array((string) $loginElement['name'], $loginNames)) {
+                    $loginNames[] = (string) $loginElement['name'];
                 }
             }
         }
 
-        return $myreturn;
+        return $loginNames;
     }
 
 
@@ -257,7 +127,7 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xmlfile->xpath('Group') as $groupElement) {
 
-            foreach($groupElement->xpath('Login') as $loginElement) {
+            foreach($groupElement->xpath('Login[@name]') as $loginElement) {
 
                 if ($this->isMatchingLogin($loginElement, $matchName, $matchPw, $matchCode)) {
 
@@ -339,11 +209,7 @@ class XMLFileTesttakers extends XMLFile {
         $noCodeBooklets = [];
         $codeBooklets = [];
 
-        foreach($loginNode->children() as $bookletElement) {
-
-            if ($bookletElement->getName() !== 'Booklet') {
-                continue;
-            }
+        foreach($loginNode->xpath('Booklet') as $bookletElement) {
 
             $bookletName = strtoupper(trim((string) $bookletElement));
 
