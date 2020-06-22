@@ -63,19 +63,16 @@ class TesttakersFolder extends WorkspaceController {
 
     public function getMembersOfLogin(string $name, string $password): PotentialLoginArray { // TODO unit-test
 
-//        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
-//
-//            $xFile = new XMLFileTesttakers($fullFilePath);
-//
-//            $groups = $xFile->getGroups();
-//
-//            if (isset($groups[$groupName])) {
-//                return $groups[$groupName];
-//            }
-//        }
+        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
-//        return null;
+            $xFile = new XMLFileTesttakers($fullFilePath);
 
+            $members = $xFile->getMembersOfLogin($name, $password, $this->_workspaceId);
+
+            if ($members) {
+                return $members;
+            }
+        }
         return new PotentialLoginArray();
     }
 }
