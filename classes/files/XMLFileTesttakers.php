@@ -9,8 +9,8 @@ class XMLFileTesttakers extends XMLFile {
      * @return array|null
      *
      * returns array of the structure ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-     * this shoudla nd can be replaces by a structured data-type like PotentialLogin. We keep this structure to maintain
-     * compatibility with other classes which have to be rafctored later.
+     * this should and can be replaced by a structured data-type like PotentialLogin. We keep this structure  for now
+     * to maintain compatibility with other classes which have to be refactored later.
      * TODO refactor to return PotentialLogin[] -> affects WorkspaceValidator and BookletsFolder
      */
     public function getAllTesttakers(): ?array {
@@ -54,12 +54,9 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+        foreach($this->xmlfile->xpath('Group/Login[@name]') as $loginElement) {
 
-            foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
-
-                $loginNames[] = (string) $loginElement['name'];
-            }
+            $loginNames[] = (string) $loginElement['name'];
         }
 
         return array_keys(array_filter(array_count_values($loginNames), function($count) {
@@ -76,13 +73,10 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+        foreach($this->xmlfile->xpath('Group/Login[@name]') as $loginElement) {
 
-            foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
-
-                if (!in_array((string) $loginElement['name'], $loginNames)) {
-                    $loginNames[] = (string) $loginElement['name'];
-                }
+            if (!in_array((string) $loginElement['name'], $loginNames)) {
+                $loginNames[] = (string) $loginElement['name'];
             }
         }
 
@@ -110,7 +104,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getLogin(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLogin { // TODO muss passwort sein?
+    public function getLogin(string $name, string $password, int $workspaceId): ?PotentialLogin {
 
         if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
             return null;
@@ -118,7 +112,7 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xmlfile->xpath('Group') as $groupElement) {
 
-            $selector = "@name='$givenLoginName'" . ($givenPassword ?  " and  @pw='$givenPassword'" : '');
+            $selector = "@name='$name'" . ($password ?  " and  @pw='$password'" : '');
             foreach($groupElement->xpath("Login[$selector]") as $loginElement) {
 
                 return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
@@ -129,13 +123,13 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getMembersOfLogin(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLoginArray {
+    public function getMembersOfLogin(string $name, string $password, int $workspaceId): ?PotentialLoginArray {
 
         if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
             return null;
         }
 
-        $selector = "@name='$givenLoginName'" . ($givenPassword ?  " and  @pw='$givenPassword'" : '');
+        $selector = "@name='$name'" . ($password ?  " and  @pw='$password'" : '');
         foreach($this->xmlfile->xpath("Group[Login[$selector]]") as $groupElement) {
 
             $groupMembers = new PotentialLoginArray();
@@ -255,11 +249,4 @@ class XMLFileTesttakers extends XMLFile {
 
         return $codeBooklets;
     }
-
-
-
-
-
-
-
 }
