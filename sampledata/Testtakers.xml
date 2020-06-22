@@ -17,11 +17,6 @@
   <Group name="sample_group" validFor="45" validFrom="1/3/2020 10:00" label="Primary Sample Group">
 
 
-    <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="SHIT">
-      <Booklet>BOOKLET.SAMPLE-2</Booklet><!-- TODO clean this up -->
-    </Login>
-
-
     <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet codes="__TEST_PERSON_CODES__">BOOKLET.SAMPLE</Booklet>
       <Booklet>BOOKLET.SAMPLE-2</Booklet><!-- TODO clean this up -->
@@ -48,6 +43,9 @@
 
   <Group name="passwordless_group" label="A group of persons without password">
     <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-no-pw">
+      <Booklet>BOOKLET.SAMPLE</Booklet>
+    </Login>
+    <Login mode="run-trial" password="" name="__TEST_LOGIN_NAME__-no-pw-trial">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>

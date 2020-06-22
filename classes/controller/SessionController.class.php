@@ -54,6 +54,10 @@ class SessionController extends Controller {
 
             $session = self::getOrCreatePersonSession($login, '');
 
+            if ($login->getMode() == 'group-monitor') {
+                self::registerGroup($login, $body['password']);
+            }
+
         } else {
 
             $session = new Session(
@@ -88,6 +92,42 @@ class SessionController extends Controller {
     }
 
 
+    private static function registerGroup(Login $login, string $password): void {
+
+        if ($login->getMode() == 'group-monitor') {
+
+            // STAND
+            // - PROBLEM: getLogin geht nach Name und PW, gibt es den login mehrmals nimmt er den wo das passwort passt
+            // -> wir kennen aber das passwort nicht unbedingt... -> aber warum eigentlich nicht? GAR KEIN PROBLEM,
+            // wenn es einen CODE gibt, kann es ja kein Monitor sein. Das macht sonst null Sinn!!!!!
+            // - passwort und name per xpath abfragen?
+            // - must be valid mode für XMLFileClasses?
+            // - units tests für testtakers folder
+            // - unit tests für session controller
+            // - ... funktion unten soll gehen
+
+            // functionksweise der gruppen-anmeldung angerissen:
+            $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
+            $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
+
+            foreach ($members->asArray() as $member) {
+
+                $memberLogin = $memberLogin ?? SessionController::sessionDAO()->getOrCreateLogin($member);
+                $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, 'code!?!?!?');
+                $authToken = new AuthToken(
+                    $memberPerson->getToken(),
+                    $memberPerson->getId(),
+                    'person',
+                    $login->getWorkspaceId(),
+                    $login->getMode(),
+                    $login->getGroupName()
+                );
+                BroadcastService::sessionChange(SessionChangeMessage::login($authToken, $login, $memberPerson->getCode()));
+            }
+        }
+    }
+
+
     private static function broadcastPersonLogin(Login $login, Person $person) {
 
         BroadcastService::sessionChange(
@@ -104,38 +144,6 @@ class SessionController extends Controller {
                 $person->getCode()
             )
         );
-
-        if ($login->getMode() == 'group-monitor') {
-
-            // STAND
-            // - PROBLEM: getLogin geht nach Name und PW, gibt es den login mehrmals nimmt er den wo das passwort passt
-            // -> wir kennen aber das passwort nicht unbedingt... -> aber warum eigentlich nicht? GAR KEIN PROBLEM,
-            // wenn es einen CODE gibt, kann es ja kein Monitor sein. Das macht sonst null Sinn!!!!!
-            // - passwort und name per xpath abfragen?
-            // - must be valid mode für XMLFileClasses?
-            // - units tests für testtakers folder
-            // - unit tests für session controller
-            // - ... funktion unten soll gehen
-
-            // functionksweise der gruppen-anmeldung angerissen:
-            $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
-            $members = $testtakersFolder->getMembersOfLogin($login->getName(), 'password?!?!?!');
-
-            foreach ($members->asArray() as $member) {
-
-                $memberLogin = SessionController::sessionDAO()->getOrCreateLogin($member);
-                $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, 'code!?!?!?');
-                $authToken = new AuthToken(
-                    $memberPerson->getToken(),
-                    $memberPerson->getId(),
-                    'person',
-                    $login->getWorkspaceId(),
-                    $login->getMode(),
-                    $login->getGroupName()
-                );
-                BroadcastService::sessionChange(SessionChangeMessage::login($authToken, $login, $memberPerson->getCode()));
-            }
-        }
     }
 
 

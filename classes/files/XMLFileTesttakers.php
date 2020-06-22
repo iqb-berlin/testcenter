@@ -118,12 +118,10 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xmlfile->xpath('Group') as $groupElement) {
 
-            foreach($groupElement->xpath('Login[@name]') as $loginElement) {
+            $selector = "@name='$givenLoginName'" . ($givenPassword ?  " and  @pw='$givenPassword'" : '');
+            foreach($groupElement->xpath("Login[$selector]") as $loginElement) {
 
-                if ($this->isMatchingLogin($loginElement, $givenLoginName, $givenPassword)) {
-
-                    return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
-                }
+                return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
             }
         }
 
@@ -131,28 +129,23 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getMembersOfLogin(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLoginArray { // TODO muss passwort sein?
+    public function getMembersOfLogin(string $givenLoginName, string $givenPassword, int $workspaceId): ?PotentialLoginArray {
 
         if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
             return null;
         }
 
-        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+        $selector = "@name='$givenLoginName'" . ($givenPassword ?  " and  @pw='$givenPassword'" : '');
+        foreach($this->xmlfile->xpath("Group[Login[$selector]]") as $groupElement) {
 
-            foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
+            $groupMembers = new PotentialLoginArray();
 
-                if ($this->isMatchingLogin($loginElement, $givenLoginName, $givenPassword)) {
+            foreach ($groupElement->xpath('Login[@name][Booklet]') as $memberElement) {
 
-                    $groupMembers = new PotentialLoginArray();
-
-                    foreach ($groupElement->xpath('Login[@name][Booklet]') as $memberElement) {
-
-                        $groupMembers->add($this->getPotentialLogin($groupElement, $memberElement, $workspaceId));
-                    }
-
-                    return $groupMembers;
-                }
+                $groupMembers->add($this->getPotentialLogin($groupElement, $memberElement, $workspaceId));
             }
+
+            return $groupMembers;
         }
 
         return null;
@@ -173,31 +166,6 @@ class XMLFileTesttakers extends XMLFile {
             (int) ($groupElement['validFor'] ?? 0),
             (object) $this->getCustomTexts()
         );
-    }
-
-
-    public function isMatchingLogin(SimpleXMLElement $loginElement, string $matchName, string $matchPw = '', string $matchCode = null): bool {
-
-        if ($loginElement->getName() !== 'Login') {
-            return false;
-        }
-
-        $name2 = (string) $loginElement['name'];
-        $isMatching = ($name2 == $matchName);
-
-        if ($matchPw) {
-
-            $password2 = (string) $loginElement['pw'];
-            $isMatching = ($isMatching and ($password2 == $matchPw));
-        }
-
-        if ($matchCode !== null) {
-
-            $availableCodesInThisLogin = $this->getCodesFromLoginElement($loginElement);
-            $isMatching = ($isMatching and in_array($matchCode, $availableCodesInThisLogin));
-        }
-
-        return $isMatching;
     }
 
 

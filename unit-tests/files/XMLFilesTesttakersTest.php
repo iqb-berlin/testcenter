@@ -39,7 +39,6 @@ class XMLFilesTesttakersTest extends TestCase {
         $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
 
         $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__', '__TEST_LOGIN_PASSWORD__', 1);
-
         $expected = new PotentialLogin(
             '__TEST_LOGIN_NAME__',
             'run-hot-return',
@@ -51,14 +50,10 @@ class XMLFilesTesttakersTest extends TestCase {
             45,
             (object) ['somestr' => 'string']
         );
-
-        $this->assertEquals($expected, $result, "login with codes");
-
-
+        $this->assertEquals($expected, $result, "login with password");
 
 
         $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw', '', 1);
-
         $expected = new PotentialLogin(
             '__TEST_LOGIN_NAME__-no-pw',
             'run-hot-restart',
@@ -70,76 +65,38 @@ class XMLFilesTesttakersTest extends TestCase {
             0,
             (object) ['somestr' => 'string']
         );
+        $this->assertEquals($expected, $result, "login without password (attribute omitted)");
 
-        $this->assertEquals($expected, $result, "login without codes");
 
-
+        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw-trial', '', 1);
+        $expected = new PotentialLogin(
+            '__TEST_LOGIN_NAME__-no-pw-trial',
+            'run-trial',
+            'passwordless_group',
+            ['' => ['BOOKLET.SAMPLE']],
+            1,
+            0,
+            0,
+            0,
+            (object) ['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login without password (attribute empty)");
 
 
         $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__', 'wrong passowrd', 1);
-
         $this->assertNull($result, "login with wrong password");
 
 
-
-
         $result = $xmlFile->getLogin('wrong username', '__TEST_LOGIN_PASSWORD__', 1);
-
         $this->assertNull($result, "login with wrong username");
-    }
 
 
-    function test_isMatchingLogin() {
+        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw', 'some password', 1);
+        $this->assertNull($result, "login with password if none is required (attribute omitted)");
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
 
-        $normal = new SimpleXMLElement('<Login name="myName" pw="myPassword">some content</Login>');
-
-        $this->assertTrue($xmlFile->isMatchingLogin($normal, 'myName', 'myPassword'),
-            'given: name, password | searched: name, password');
-        $this->assertFalse($xmlFile->isMatchingLogin($normal, 'myName', 'wrongPassword'),
-            'given: name, password | searched: name, wrong password');
-        $this->assertFalse($xmlFile->isMatchingLogin($normal, 'wrongName', 'myPassword'),
-            'given: name, password | searched: wrong name, password');
-        $this->assertFalse($xmlFile->isMatchingLogin($normal, 'wrongName', 'wrongPassword'),
-            'given: name, password | searched: wrong name, wrong password');
-
-        $noPassword = new SimpleXMLElement('<Login name="myName">some content</Login>');
-
-        $this->assertTrue($xmlFile->isMatchingLogin($noPassword, 'myName'),
-            'given: name | searched: name');
-        $this->assertFalse($xmlFile->isMatchingLogin($noPassword, 'wrongName'),
-            'given: name | searched: wrongName');
-        $this->assertFalse($xmlFile->isMatchingLogin($noPassword, 'myName', 'wrongPassword'),
-            'given: name | searched: name, wrongPassword');
-
-        $justCodes = new SimpleXMLElement('<Login name="myName"><Booklet codes="abc">B1</Booklet><Booklet codes="def">B2</Booklet></Login>');
-
-        $this->assertTrue($xmlFile->isMatchingLogin($justCodes, 'myName', '', 'abc'),
-            'given: name, codes | searched: name, code');
-        $this->assertFalse($xmlFile->isMatchingLogin($justCodes, 'myName', 'somePassword', 'def'),
-            'given: name, codes | searched: name, password, code');
-        $this->assertFalse($xmlFile->isMatchingLogin($justCodes, 'myName', '', 'non'),
-            'given: name, codes | searched: name, code');
-
-        $pwAndCodes = new SimpleXMLElement('<Login name="myName" pw="myPw"><Booklet codes="abc">B1</Booklet><Booklet codes="def">B2</Booklet></Login>');
-
-        $this->assertTrue($xmlFile->isMatchingLogin($pwAndCodes, 'myName', 'myPw', 'abc'),
-            'given: name, pw, codes | searched: name, pw, code');
-        $this->assertFalse($xmlFile->isMatchingLogin($pwAndCodes, 'myName', 'myPw', 'non'),
-            'given: name, pw, codes | searched: name, pw, wrong code');
-        $this->assertFalse($xmlFile->isMatchingLogin($pwAndCodes, 'myName', 'wrongPw', 'abc'),
-            'given: name, pw, codes | searched: name, wrong pw, code');
-        $this->assertFalse($xmlFile->isMatchingLogin($pwAndCodes, 'myName', 'wrongPw', 'non'),
-            'given: name, pw, codes | searched: name, wrong pw, wrong code');
-        $this->assertFalse($xmlFile->isMatchingLogin($pwAndCodes, 'wrongName', 'myPw', 'abc'),
-            'given: name, pw, codes | searched: wrong name, pw, code');
-        $this->assertFalse($xmlFile->isMatchingLogin($pwAndCodes, 'wrongName', 'myPw', 'non'),
-            'given: name, pw, codes | searched: wrong name, pw, wrong code');
-        $this->assertFalse($xmlFile->isMatchingLogin($pwAndCodes, 'wrongName', 'wrongPw', 'abc'),
-            'given: name, pw, codes | searched: name, wrong pw, wrong code');
-        $this->assertFalse($xmlFile->isMatchingLogin($pwAndCodes, 'wrongName', 'wrongPw', 'non'),
-            'given: name, pw, codes | searched: wrong name, wrong pw, wrong code');
+        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw-trial', 'some password', 1);
+        $this->assertNull($result, "login with password if none is required (attribute empty)");
     }
 
 
@@ -298,6 +255,14 @@ END;
             [
                 "groupname" => "passwordless_group",
                 "loginname" => "__TEST_LOGIN_NAME__-no-pw",
+                "code" => "",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                ]
+            ],
+            [
+                "groupname" => "passwordless_group",
+                "loginname" => "__TEST_LOGIN_NAME__-no-pw-trial",
                 "code" => "",
                 "booklets" => [
                     "BOOKLET.SAMPLE",
