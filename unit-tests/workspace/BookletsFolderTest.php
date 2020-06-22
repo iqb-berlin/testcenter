@@ -32,7 +32,7 @@ class BookletsFolderTest extends TestCase {
         $this->assertEquals('sample_group', $result['sample_group']['groupname']);
         $this->assertEquals(1, $result['sample_group']['loginsPrepared']);
         $this->assertEquals(2, $result['sample_group']['personsPrepared']);
-        $this->assertEquals(2, $result['sample_group']['bookletsPrepared']);
+        $this->assertEquals(4, $result['sample_group']['bookletsPrepared']);
         $this->assertArrayHasKey('bookletsStarted', $result['sample_group']);
         $this->assertArrayHasKey('bookletsLocked', $result['sample_group']);
         $this->assertArrayHasKey('laststart', $result['sample_group']);
@@ -77,7 +77,7 @@ class BookletsFolderTest extends TestCase {
         $this->assertEquals('sample_group', $result[0]['groupname']);
         $this->assertEquals(1, $result[0]['loginsPrepared']);
         $this->assertEquals(2, $result[0]['personsPrepared']);
-        $this->assertEquals(2, $result[0]['bookletsPrepared']);
+        $this->assertEquals(4, $result[0]['bookletsPrepared']);
         $this->assertEquals(2, $result[0]['bookletsStarted']);
         $this->assertEquals(1, $result[0]['bookletsLocked']);
         $this->assertEquals('fake_group', $result[6]['groupname']);
