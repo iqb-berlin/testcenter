@@ -87,21 +87,15 @@ class SessionController extends Controller {
 
         $person = self::sessionDAO()->getOrCreatePerson($login, $code);
         $session = Session::createFromLogin($login, $person);
-        self::broadcastPersonLogin($login, $person);
+        BroadcastService::sessionChange(SessionChangeMessage::login($login, $person));
         return $session;
     }
 
 
-    private static function registerGroup(Login $login, string $password): void {
+    public static function registerGroup(Login $login, string $password): void { // TODO make private
 
         if ($login->getMode() == 'group-monitor') {
 
-            // STAND
-            // - PROBLEM: getLogin geht nach Name und PW, gibt es den login mehrmals nimmt er den wo das passwort passt
-            // - unit tests für session controller
-            // - ... funktion unten soll gehen
-
-            // functionksweise der gruppen-anmeldung angerissen:
             $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
             $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
 
@@ -115,37 +109,10 @@ class SessionController extends Controller {
 
                     $memberLogin = $memberLogin ?? SessionController::sessionDAO()->getOrCreateLogin($member);
                     $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, $code);
-                    $authToken = new AuthToken(
-                        $memberPerson->getToken(),
-                        $memberPerson->getId(),
-                        'person',
-                        $login->getWorkspaceId(),
-                        $login->getMode(),
-                        $login->getGroupName()
-                    );
-                    BroadcastService::sessionChange(SessionChangeMessage::login($authToken, $login, $memberPerson->getCode()));
+                    BroadcastService::sessionChange(SessionChangeMessage::login($login, $memberPerson));
                 }
             }
         }
-    }
-
-
-    private static function broadcastPersonLogin(Login $login, Person $person) {
-
-        BroadcastService::sessionChange(
-            SessionChangeMessage::login(
-                new AuthToken(
-                    $person->getToken(),
-                    $person->getId(),
-                    'person',
-                    $login->getWorkspaceId(),
-                    $login->getMode(),
-                    $login->getGroupName()
-                ),
-                $login,
-                $person->getCode()
-            )
-        );
     }
 
 
@@ -164,7 +131,7 @@ class SessionController extends Controller {
             $loginWithPerson = self::sessionDAO()->getPersonLogin($authToken->getToken());
             $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
-            self::broadcastPersonLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
+            BroadcastService::sessionChange(SessionChangeMessage::login($loginWithPerson->getLogin(), $loginWithPerson->getPerson()));
 
             return $response->withJson($session);
         }

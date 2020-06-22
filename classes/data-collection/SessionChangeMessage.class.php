@@ -69,14 +69,14 @@ class SessionChangeMessage implements JsonSerializable {
     }
 
 
-    public static function login(AuthToken $authToken, Login $login, string $code): SessionChangeMessage {
+    public static function login(Login $login, Person $person): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup());
+        $message = new SessionChangeMessage($person->getId(), $person->getGroup());
         $message->setLogin(
             $login->getName(),
             $login->getMode(),
             $login->getGroupLabel(),
-            $code
+            $person->getCode()
         );
         return $message;
     }
