@@ -5,6 +5,13 @@ declare(strict_types=1);
 
 class XMLFileTesttakers extends XMLFile {
 
+
+    public function isValid(): bool {
+
+        return $this->_isValid and ($this->xmlfile == true) and ($this->_rootTagName === 'Testtakers');
+    }
+
+
     /**
      * @return array|null
      *
@@ -13,10 +20,10 @@ class XMLFileTesttakers extends XMLFile {
      * to maintain compatibility with other classes which have to be refactored later.
      * TODO refactor to return PotentialLogin[] -> affects WorkspaceValidator and BookletsFolder
      */
-    public function getAllTesttakers(): ?array {
+    public function getAllTesttakers(): array {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
-            return null;
+        if (!$this->isValid()) {
+            return [];
         }
 
         $testTakers = [];
@@ -46,10 +53,10 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getDoubleLoginNames() {
+    public function getDoubleLoginNames(): array {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
-            return null;
+        if (!$this->isValid()) {
+            return [];
         }
 
         $loginNames = [];
@@ -65,10 +72,10 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getAllLoginNames() {
+    public function getAllLoginNames(): array {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
-            return null;
+        if (!$this->isValid()) {
+            return [];
         }
 
         $loginNames = [];
@@ -86,7 +93,7 @@ class XMLFileTesttakers extends XMLFile {
 
     public function getGroups(): array {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
+        if (!$this->isValid()) {
             return [];
         }
 
@@ -106,7 +113,7 @@ class XMLFileTesttakers extends XMLFile {
 
     public function getLogin(string $name, string $password, int $workspaceId): ?PotentialLogin {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
+        if (!$this->isValid()) {
             return null;
         }
 
@@ -125,7 +132,7 @@ class XMLFileTesttakers extends XMLFile {
 
     public function getMembersOfLogin(string $name, string $password, int $workspaceId): ?PotentialLoginArray {
 
-        if (!$this->_isValid or ($this->xmlfile == false) or ($this->_rootTagName != 'Testtakers')) { // TODO prove redundancy of this check
+        if (!$this->isValid()) {
             return null;
         }
 
@@ -178,23 +185,6 @@ class XMLFileTesttakers extends XMLFile {
         }
 
         return array_unique(explode(' ', $codesString));
-    }
-
-
-    // TODO unit-test
-    public function getCodesFromLoginElement(SimpleXMLElement $loginElement): array {
-
-        if ($loginElement->getName() !== 'Login') {
-            return [];
-        }
-
-        $allCodes = [];
-
-        foreach ($loginElement->children() as $bookletElement) {
-            $allCodes = array_merge($allCodes, $this->getCodesFromBookletElement($bookletElement));
-        }
-
-        return array_unique($allCodes);
     }
 
 
