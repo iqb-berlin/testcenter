@@ -1,7 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
-// TODO unit test
+
 
 class TesttakersFolder extends WorkspaceController {
 
@@ -30,11 +30,12 @@ class TesttakersFolder extends WorkspaceController {
             $xFile = new XMLFileTesttakers($fullFilePath);
 
             if ($xFile->isValid()) {
-                if ($xFile->getRoottagName() == 'Testtakers') {
-                    $potentialLogin = $xFile->getLogin($name, $password, $this->_workspaceId);
-                    if ($potentialLogin and (count($potentialLogin->getBooklets()) > 0)) {
-                        return $potentialLogin;
-                    }
+
+                $potentialLogin = $xFile->getLogin($name, $password, $this->_workspaceId);
+
+                if ($potentialLogin) {
+
+                    return $potentialLogin;
                 }
             }
         }
@@ -43,7 +44,7 @@ class TesttakersFolder extends WorkspaceController {
     }
 
 
-    public function findGroup(string $groupName): ?array { // TODO unit-test
+    public function findGroup(string $groupName): ?Group {
 
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 

@@ -17,10 +17,12 @@ class VfsForTest {
         ini_set('max_execution_time', 3);
 
         if (!defined('ROOT_DIR')) {
+
             define('ROOT_DIR', vfsStream::url('root'));
         }
 
         if (!defined('DATA_DIR')) {
+
             define('DATA_DIR', vfsStream::url('root/vo_data'));
         }
     }
@@ -42,6 +44,17 @@ class VfsForTest {
             'test_person_codes' => 'abc def'
         ]));
 
+        self::insertTrashFiles();
+
         return $vfs;
     }
+
+
+    private static function insertTrashFiles() {
+
+        $trashXml = "<Trash><data value='some'>content</data></Trash>";
+        file_put_contents(DATA_DIR . '/ws_1/Testtakers/trash.xml', $trashXml);
+        file_put_contents(DATA_DIR . '/ws_1/Booklet/trash.xml', $trashXml);
+    }
+
 }

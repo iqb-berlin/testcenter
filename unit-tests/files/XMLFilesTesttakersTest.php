@@ -7,9 +7,7 @@ require_once "classes/data-collection/PotentialLogin.class.php";
 require_once "classes/data-collection/PotentialLoginArray.class.php";
 require_once "classes/data-collection/Group.class.php";
 
-define('ROOT_DIR', realpath('../..'));
-
-$ExampleXml1 = <<<END
+$exampleXML1 = <<<END
 <Testtakers>
   <Metadata>
     <Id>example</Id>
@@ -45,16 +43,31 @@ class XMLFileTesttakersExposed extends XMLFileTesttakers {
 
 class XMLFilesTesttakersTest extends TestCase {
 
+    public static function setUpBeforeClass(): void {
+
+        VfsForTest::setUpBeforeClass();
+        VfsForTest::setUp();
+    }
+
     function test_getMembersOfLogin() {
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
         $expected = new PotentialLoginArray(
             new PotentialLogin(
-                '__TEST_LOGIN_NAME__',
+                'unit_test_login',
                 'run-hot-return',
                 'sample_group',
-                ['__TEST_PERSON_CODES__' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']], // TODO fix sample file !!!!!
+                [
+                    "abc" => [
+                        "BOOKLET.SAMPLE",
+                        "BOOKLET.SAMPLE-2"
+                    ],
+                    "def" => [
+                        "BOOKLET.SAMPLE",
+                        "BOOKLET.SAMPLE-2"
+                    ]
+                ],
                 13,
                 0,
                 1583053200,
@@ -63,7 +76,7 @@ class XMLFilesTesttakersTest extends TestCase {
             )
         );
 
-        $result = $xmlFile->getMembersOfLogin('__TEST_LOGIN_NAME__-group-monitor', 'user123', 13);
+        $result = $xmlFile->getMembersOfLogin('unit_test_login-group-monitor', 'unit_test_password', 13);
 
         $this->assertEquals($expected, $result);
     }
@@ -71,14 +84,23 @@ class XMLFilesTesttakersTest extends TestCase {
 
     function test_getLogin() {
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
-        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__', '__TEST_LOGIN_PASSWORD__', 1);
+        $result = $xmlFile->getLogin('unit_test_login', 'unit_test_password', 1);
         $expected = new PotentialLogin(
-            '__TEST_LOGIN_NAME__',
+            'unit_test_login',
             'run-hot-return',
             'sample_group',
-            ['__TEST_PERSON_CODES__' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']], // TODO fix sample file !!!!!
+            [
+                "abc" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2"
+                ],
+                "def" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2"
+                ]
+            ],
             1,
             0,
             1583053200,
@@ -87,10 +109,9 @@ class XMLFilesTesttakersTest extends TestCase {
         );
         $this->assertEquals($expected, $result, "login with password");
 
-
-        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw', '', 1);
+        $result = $xmlFile->getLogin('unit_test_login-no-pw', '', 1);
         $expected = new PotentialLogin(
-            '__TEST_LOGIN_NAME__-no-pw',
+            'unit_test_login-no-pw',
             'run-hot-restart',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -103,9 +124,9 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertEquals($expected, $result, "login without password (attribute omitted)");
 
 
-        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw-trial', '', 1);
+        $result = $xmlFile->getLogin('unit_test_login-no-pw-trial', '', 1);
         $expected = new PotentialLogin(
-            '__TEST_LOGIN_NAME__-no-pw-trial',
+            'unit_test_login-no-pw-trial',
             'run-trial',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -118,7 +139,7 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertEquals($expected, $result, "login without password (attribute empty)");
 
 
-        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__', 'wrong passowrd', 1);
+        $result = $xmlFile->getLogin('unit_test_login', 'wrong password', 1);
         $this->assertNull($result, "login with wrong password");
 
 
@@ -126,11 +147,11 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertNull($result, "login with wrong username");
 
 
-        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw', 'some password', 1);
+        $result = $xmlFile->getLogin('unit_test_login-no-pw', 'some password', 1);
         $this->assertNull($result, "login with password if none is required (attribute omitted)");
 
 
-        $result = $xmlFile->getLogin('__TEST_LOGIN_NAME__-no-pw-trial', 'some password', 1);
+        $result = $xmlFile->getLogin('unit_test_login-no-pw-trial', 'some password', 1);
         $this->assertNull($result, "login with password if none is required (attribute empty)");
     }
 
@@ -168,8 +189,6 @@ END;
         ];
 
         $this->assertEquals($expected, $result, 'code-using and non-code-unsing logins present');
-
-
 
 
         $xml = <<<END
@@ -216,7 +235,7 @@ END;
 
     function test_getGroups() {
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
         $expected = [
             'sample_group' => new Group(
@@ -253,13 +272,23 @@ END;
 
     function test_getAllTesttakers() {
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
         $expected = [
             [
                 "groupname" => "sample_group",
-                "loginname" => "__TEST_LOGIN_NAME__",
-                "code" => "__TEST_PERSON_CODES__",
+                "loginname" => "unit_test_login",
+                "code" => "abc",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2",
+                ]
+
+            ],
+            [
+                "groupname" => "sample_group",
+                "loginname" => "unit_test_login",
+                "code" => "def",
                 "booklets" => [
                     "BOOKLET.SAMPLE",
                     "BOOKLET.SAMPLE-2",
@@ -268,7 +297,7 @@ END;
             ],
             [
                 "groupname" => "review_group",
-                "loginname" => "__TEST_LOGIN_NAME__-review",
+                "loginname" => "unit_test_login-review",
                 "code" => "",
                 "booklets" => [
                     "BOOKLET.SAMPLE",
@@ -276,7 +305,7 @@ END;
             ],
             [
                 "groupname" => "trial_group",
-                "loginname" => "__TEST_LOGIN_NAME__-trial",
+                "loginname" => "unit_test_login-trial",
                 "code" => "",
                 "booklets" => [
                     "BOOKLET.SAMPLE",
@@ -285,7 +314,7 @@ END;
             ],
             [
                 "groupname" => "passwordless_group",
-                "loginname" => "__TEST_LOGIN_NAME__-no-pw",
+                "loginname" => "unit_test_login-no-pw",
                 "code" => "",
                 "booklets" => [
                     "BOOKLET.SAMPLE",
@@ -293,7 +322,7 @@ END;
             ],
             [
                 "groupname" => "passwordless_group",
-                "loginname" => "__TEST_LOGIN_NAME__-no-pw-trial",
+                "loginname" => "unit_test_login-no-pw-trial",
                 "code" => "",
                 "booklets" => [
                     "BOOKLET.SAMPLE",
@@ -301,7 +330,7 @@ END;
             ],
             [
                 "groupname" => "expired_group",
-                "loginname" => "test-expired",
+                "loginname" => "unit_test_login-expired",
                 "code" => "",
                 "booklets" => [
                     "BOOKLET.SAMPLE",
@@ -309,7 +338,7 @@ END;
             ],
             [
                 "groupname" => "future_group",
-                "loginname" => "test-future",
+                "loginname" => "unit_test_login-future",
                 "code" => "",
                 "booklets" => [
                   "BOOKLET.SAMPLE",
@@ -326,9 +355,8 @@ END;
 
     function test_getDoubleLoginNames() {
 
-        global $ExampleXml1;
-
-        $xmlFile = new XMLFileTesttakers($ExampleXml1, false, true);
+        global $exampleXML1;
+        $xmlFile = new XMLFileTesttakers($exampleXML1, false, true);
 
         $expected = ['duplicateInSameGroup', 'duplicateInDifferentGroup'];
 
@@ -337,11 +365,11 @@ END;
         $this->assertEquals($expected, $result);
     }
 
+
     function test_getAllLoginNames() {
 
-        global $ExampleXml1;
-
-        $xmlFile = new XMLFileTesttakers($ExampleXml1, false, true);
+        global $exampleXML1;
+        $xmlFile = new XMLFileTesttakers($exampleXML1, false, true);
 
         $expected = [
             'duplicateInSameGroup',
@@ -354,10 +382,6 @@ END;
 
         $this->assertEquals($expected, $result);
     }
-
-
-
-
 }
 
 

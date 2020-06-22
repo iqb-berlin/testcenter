@@ -16,17 +16,13 @@
 
   <Group name="sample_group" validFor="45" validFrom="1/3/2020 10:00" label="Primary Sample Group">
 
-
     <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet codes="__TEST_PERSON_CODES__">BOOKLET.SAMPLE</Booklet>
       <Booklet>BOOKLET.SAMPLE-2</Booklet><!-- TODO clean this up -->
     </Login>
 
-
-
-
-    <Login mode="monitor-group" name="__TEST_LOGIN_NAME__-group-monitor" pw="user123"/>
-    <Login mode="monitor-study" name="__TEST_LOGIN_NAME__-study-monitor" pw="user123"/>
+    <Login mode="monitor-group" name="__TEST_LOGIN_NAME__-group-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
+    <Login mode="monitor-study" name="__TEST_LOGIN_NAME__-study-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
   </Group>
 
   <Group name="review_group" label="A Group of Reviewers">
@@ -45,19 +41,19 @@
     <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-no-pw">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
-    <Login mode="run-trial" password="" name="__TEST_LOGIN_NAME__-no-pw-trial">
+    <Login mode="run-trial" password="" name="__TEST_LOGIN_NAME__-no-pw-trial"> <!-- TODO pw !!! -->
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
   <Group name="expired_group" validTo="1/3/2020 19:30" label="An already expired group">
-    <Login mode="run-hot-restart" name="test-expired">
+    <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-expired">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
   <Group name="future_group" validFrom="26/3/2030 9:00" label="An not yet active group">
-    <Login mode="run-hot-restart" name="test-future">
+    <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-future">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>

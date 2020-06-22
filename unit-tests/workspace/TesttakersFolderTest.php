@@ -15,7 +15,6 @@ class TesttakersFolderTest extends TestCase {
     public static function setUpBeforeClass(): void {
 
         VfsForTest::setUpBeforeClass();
-        echo "\n!!!!!" . ROOT_DIR;
     }
 
     function setUp() {
@@ -25,14 +24,23 @@ class TesttakersFolderTest extends TestCase {
     }
 
 
-    function test_searchAllForLogin() {
+    function test_findLoginData() {
 
-        $result = $this->folder->findLoginData('test', 'user123');
+        $result = $this->folder->findLoginData('unit_test_login', 'unit_test_password');
         $expected = new PotentialLogin(
-            'test',
+            'unit_test_login',
             'run-hot-return',
             'sample_group',
-            ['__TEST_PERSON_CODES__' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']], // TODO fix sample file !!!!!
+            [
+                "abc" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2"
+                ],
+                "def" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2"
+                ]
+            ],
             1,
             0,
             1583053200,
@@ -41,10 +49,9 @@ class TesttakersFolderTest extends TestCase {
         );
         $this->assertEquals($expected, $result, "login with password");
 
-
-        $result = $this->folder->findLoginData('test-no-pw', '');
+        $result = $this->folder->findLoginData('unit_test_login-no-pw', '');
         $expected = new PotentialLogin(
-            'test-no-pw',
+            'unit_test_login-no-pw',
             'run-hot-restart',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -57,9 +64,9 @@ class TesttakersFolderTest extends TestCase {
         $this->assertEquals($expected, $result, "login without password (attribute omitted)");
 
 
-        $result = $this->folder->findLoginData('test-no-pw-trial', '');
+        $result = $this->folder->findLoginData('unit_test_login-no-pw-trial', '');
         $expected = new PotentialLogin(
-            'test-no-pw-trial',
+            'unit_test_login-no-pw-trial',
             'run-trial',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -72,19 +79,47 @@ class TesttakersFolderTest extends TestCase {
         $this->assertEquals($expected, $result, "login without password (attribute empty)");
 
 
-        $result = $this->folder->findLoginData('test', 'wrong passowrd');
+        $result = $this->folder->findLoginData('unit_test_login-group-monitor', 'unit_test_password');
+        $expected = new PotentialLogin(
+            'unit_test_login-group-monitor',
+            'monitor-group',
+            'sample_group',
+            ['' => []],
+            1,
+            0,
+            1583053200,
+            45,
+            (object) ['somestr' => 'string']
+        );
+//        echo "\n--->"; print_r($result); echo "\n<---";
+        $this->assertEquals($expected, $result, "login without booklets");
+
+
+        $result = $this->folder->findLoginData('unit_test_login', 'wrong password');
         $this->assertNull($result, "login with wrong password");
 
 
-        $result = $this->folder->findLoginData('wrong username', 'user123');
+        $result = $this->folder->findLoginData('wrong username', '__TEST_LOGIN_PASSWORD__');
         $this->assertNull($result, "login with wrong username");
 
 
-        $result = $this->folder->findLoginData('test-no-pw', 'some password');
+        $result = $this->folder->findLoginData('unit_test_login-no-pw', 'some password');
         $this->assertNull($result, "login with password if none is required (attribute omitted)");
 
 
-        $result = $this->folder->findLoginData('test-no-pw-trial', 'some password');
+        $result = $this->folder->findLoginData('unit_test_login-no-pw-trial', 'some password');
         $this->assertNull($result, "login with password if none is required (attribute empty)");
     }
+
+
+    function test_findGroup() {
+
+        $result = $this->folder->findGroup('sample_group');
+        $expected = new Group("sample_group", "Primary Sample Group");
+        $this->assertEquals($expected, $result);
+
+        $result = $this->folder->findGroup('not_existing_group');
+        $this->assertNull($result);
+    }
+
 }
