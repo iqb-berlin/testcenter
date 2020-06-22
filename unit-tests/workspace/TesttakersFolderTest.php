@@ -24,6 +24,34 @@ class TesttakersFolderTest extends TestCase {
     }
 
 
+    function test_searchAllForLogin()
+    {
+
+        $result = $this->folder::searchAllForLogin('unit_test_login', 'unit_test_password');
+        $expected = new PotentialLogin(
+            'unit_test_login',
+            'run-hot-return',
+            'sample_group',
+            [
+                "abc" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2"
+                ],
+                "def" => [
+                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-2"
+                ]
+            ],
+            1,
+            0,
+            1583053200,
+            45,
+            (object)['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login with password");
+    }
+
+
     function test_findLoginData() {
 
         $result = $this->folder->findLoginData('unit_test_login', 'unit_test_password');
