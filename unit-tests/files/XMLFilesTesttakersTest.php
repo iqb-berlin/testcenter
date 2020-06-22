@@ -31,8 +31,43 @@ $ExampleXml1 = <<<END
 </Testtakers>
 END;
 
+class XMLFileTesttakersExposed extends XMLFileTesttakers {
+
+    public static function collectBookletsPerCode(SimpleXMLElement $element): array {
+        return parent::collectBookletsPerCode($element);
+    }
+
+    public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
+        return parent::getCodesFromBookletElement($element);
+    }
+};
+
 
 class XMLFilesTesttakersTest extends TestCase {
+
+    function test_getMembersOfLogin() {
+
+        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
+
+        $expected = new PotentialLoginArray(
+            new PotentialLogin(
+                '__TEST_LOGIN_NAME__',
+                'run-hot-return',
+                'sample_group',
+                ['__TEST_PERSON_CODES__' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']], // TODO fix sample file !!!!!
+                13,
+                0,
+                1583053200,
+                45,
+                (object) ['somestr' => 'string']
+            )
+        );
+
+        $result = $xmlFile->getMembersOfLogin('__TEST_LOGIN_NAME__-group-monitor', 'user123', 13);
+
+        $this->assertEquals($expected, $result);
+    }
+
 
     function test_getLogin() {
 
@@ -102,8 +137,6 @@ class XMLFilesTesttakersTest extends TestCase {
 
     function test_collectBookletsPerCode() {
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
-
         $xml = <<<END
 <Login name="someName" password="somePass">
     <Booklet codes="aaa bbb">first_booklet</Booklet>
@@ -114,7 +147,7 @@ class XMLFilesTesttakersTest extends TestCase {
 </Login>
 END;
 
-        $result = $xmlFile->collectBookletsPerCode(new SimpleXMLElement($xml));
+        $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
 
         //print_r($result);
 
@@ -147,7 +180,7 @@ END;
 </Login>
 END;
 
-        $result = $xmlFile->collectBookletsPerCode(new SimpleXMLElement($xml));
+        $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
 
         //print_r($result);
 
@@ -164,21 +197,19 @@ END;
 
     function test_getCodesFromBookletElement() {
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
-
         $xml = '<Booklet codes="aaa bbb aaa">first_booklet</Booklet>';
         $expected = ['aaa', 'bbb'];
-        $result = $xmlFile->getCodesFromBookletElement(new SimpleXMLElement($xml));
+        $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
         $this->assertEquals($expected, $result);
 
         $xml = '<Booklet codes="">first_booklet</Booklet>';
         $expected = [];
-        $result = $xmlFile->getCodesFromBookletElement(new SimpleXMLElement($xml));
+        $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
         $this->assertEquals($expected, $result);
 
         $xml = '<Booklet>first_booklet</Booklet>';
         $expected = [];
-        $result = $xmlFile->getCodesFromBookletElement(new SimpleXMLElement($xml));
+        $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
         $this->assertEquals($expected, $result);
     }
 
@@ -325,28 +356,7 @@ END;
     }
 
 
-    function test_getMembersOfLogin() {
 
-        $xmlFile = new XMLFileTesttakers('sampledata/Testtakers.xml');
-
-        $expected = new PotentialLoginArray(
-            new PotentialLogin(
-                '__TEST_LOGIN_NAME__',
-                'run-hot-return',
-                'sample_group',
-                ['__TEST_PERSON_CODES__' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']], // TODO fix sample file !!!!!
-                13,
-                0,
-                1583053200,
-                45,
-                (object) ['somestr' => 'string']
-            )
-        );
-
-        $result = $xmlFile->getMembersOfLogin('__TEST_LOGIN_NAME__-group-monitor', 'user123', 13);
-
-        $this->assertEquals($expected, $result);
-    }
 
 }
 

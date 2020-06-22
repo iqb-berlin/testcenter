@@ -160,7 +160,7 @@ class XMLFileTesttakers extends XMLFile {
             (string) $loginElement['name'],
             (string) $loginElement['mode'] ?? 'run-hot-return',
             (string) $groupElement['name'], // TODO groupLabel
-            $this->collectBookletsPerCode($loginElement),
+            self::collectBookletsPerCode($loginElement),
             $workspaceId,
             isset($groupElement['validTo']) ? TimeStamp::fromXMLFormat((string) $groupElement['validTo']) : 0,
             TimeStamp::fromXMLFormat((string) $groupElement['validFrom']),
@@ -170,7 +170,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getCodesFromBookletElement(SimpleXMLElement $bookletElement): array {
+    protected static function getCodesFromBookletElement(SimpleXMLElement $bookletElement): array {
 
         if ($bookletElement->getName() !== 'Booklet') {
             return [];
@@ -188,7 +188,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function collectBookletsPerCode(SimpleXMLElement $loginNode) {
+    protected static function collectBookletsPerCode(SimpleXMLElement $loginNode) {
 
         $noCodeBooklets = [];
         $codeBooklets = [];
@@ -201,7 +201,7 @@ class XMLFileTesttakers extends XMLFile {
                 continue;
             }
 
-            $codesOfThisBooklet = $this->getCodesFromBookletElement($bookletElement);
+            $codesOfThisBooklet = self::getCodesFromBookletElement($bookletElement);
 
             if (count($codesOfThisBooklet) > 0) {
 
