@@ -1,28 +1,31 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-iqb-php?style=flat-square)](https://travis-ci.com/iqb-berlin/textcenter-iqb-php)
 
-# IQB Testcenter Backend
+# Testcenter Backend
 
-These are the backend applications for the applications
-- iqb testcenter
-- iqb testcenter-admin (deprecated)
+These are the backend applications for the Testcenter application.  
 
-You can find frontends for those applications [here](https://github.com/iqb-berlin/testcenter-iqb-ng) 
-and [here](https://github.com/iqb-berlin/testcenter-admin-iqb-ng).
+In older versions it's also the backend fot the meanwhile deprecated 
+Testcenter-Admin application.
 
-# Documentation
+You can find the frontend [here](https://github.com/iqb-berlin/testcenter-iqb-ng).
+
+## Documentation
 
 Find API documentation [here](https://iqb-berlin.github.io/testcenter-iqb-php/).
 
-# Bug Reports
+## Bug Reports
 
-https://github.com/iqb-berlin/testcenter-iqb-php/issues
+File bug reports, feature requests etc. [here](https://github.com/iqb-berlin/testcenter-iqb-php/issues).
 
-# Installation
+## Installation
 
-## With Installation Script on Webserver
+### With Docker (recommended)
+Find Docker files for a complete setup of the application [here](https://github.com/iqb-berlin/iqb-tba-docker-setup).
 
-### Prerequisites
+### With Installation Script on Webserver
+
+#### Prerequisites
 
 * Apache2 (other Webservers possible, but untested) with
   * mod_rewrite extension
@@ -38,7 +41,7 @@ https://github.com/iqb-berlin/testcenter-iqb-php/issues
 * MySQL or PostgreSQL
 * for tests / doc-building: NPM
 
-### Installation Steps
+#### Installation Steps
 
 - Clone this repository:
 ```
@@ -81,7 +84,7 @@ sudo --user=www-data php scripts/initialize.php \
     --password=<mysql-/postgresql-password>
 ```
 
-### Options
+#### Options
 - See `scripts/initialize.php` for more options of the initialize-script.
 - Optionally you can create the `config/DatabaseConnectionData.json` beforehand manually and omit the
 corresponding argument when calling the initialize-script. Check this file if you have any trouble 
@@ -95,24 +98,21 @@ psql -U username database_name < scripts/sql-schema/postgresql.sql
 psql -U username database_name < scripts/sql-schema/patches.postgresql.sql
 ```
 
-## With Docker
-You can find Docker files and a complete setup [here](https://github.com/iqb-berlin/iqb-tba-docker-setup). 
-**(currently outdated)** 
 
 
-# Tests
+## Tests
 
-## Unit tests
+### Unit tests
 
 ```
 vendor/bin/phpunit unit-tests
 ```
 
-## E2E/API-Tests
+### E2E/API-Tests
 
 These tests test the in-/output of all endpoints against the API Specification using [Dredd](https://dredd.org).
 
-### Preparation:
+#### Preparation:
 * install Node modules
 ```
 npm --prefix=integration install
@@ -124,12 +124,12 @@ export TC_API_URL=http://localhost/testcenter-iqb-php
   &&  npm --prefix=integration run dredd_test
 ```
 
-### Run the E2E/API-Tests
+#### Run the E2E/API-Tests
 ```
  npm --prefix=integration run dredd_test
 ```
 
-### Run E2E/API-Tests against persistent database
+#### Run E2E/API-Tests against persistent database
 If you want to run the e2e-tests against a persistent database, MySQL or PostgreSQL, do the following:
 - in `/config` create a file `DBConnectionData.e2etest.json` analogous to `DBConnectionData.json` with your connection
 - also in `/config` create a file `e2eTests.json`with the content `{"configFile": "e2etest"}`
@@ -137,8 +137,8 @@ If you want to run the e2e-tests against a persistent database, MySQL or Postgre
 specified database.
 
 
-# Development
-## Coding Standards
+## Development
+### Coding Standards
 
 Following mostly [PSR-12](https://www.php-fig.org/psr/psr-12/)
 
@@ -151,7 +151,7 @@ Most important:
 * Files SHOULD either declare symbols (classes, functions, constants, etc.) or cause side-effects 
 (e.g. generate output, change .ini settings, etc.) but SHOULD NOT do both. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 
-### Various Rules and hints
+#### Various Rules and hints
 
 * Always put a white line below function signature an two above!
 * Use typed function signature as of php 7.1, arrays can be used as type, but will be replaced by typed array classes 
