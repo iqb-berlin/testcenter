@@ -153,7 +153,7 @@ Most important:
 
 #### Various Rules and hints
 
-* Always put a white line below function signature an two above!
+* Always put a white line below function signature and two above!
 * Use typed function signature as of php 7.1, arrays can be used as type, but will be replaced by typed array classes 
 once 7.4 is default.
 * Never `require` or `include` anywhere, program uses autoload for all classes from the `classes`-dir. 

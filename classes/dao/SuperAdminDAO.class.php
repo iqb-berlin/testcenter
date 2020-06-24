@@ -31,7 +31,7 @@ class SuperAdminDAO extends DAO {
     }
 
 
-    public function getUserByName(string $userName): array {
+    public function getUserByName(string $userName): array { // TODO isSuperadmin should be boolean
 
         $user = $this->_(
             'SELECT 
