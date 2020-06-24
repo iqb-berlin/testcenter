@@ -3,7 +3,7 @@
 
 # Testcenter Backend
 
-These are the backend applications for the Testcenter application.  
+This is the backend of the Testcenter application.  
 
 In older versions it's also the backend fot the meanwhile deprecated 
 Testcenter-Admin application.
