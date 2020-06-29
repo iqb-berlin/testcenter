@@ -2,6 +2,13 @@
 
 use PHPUnit\Framework\TestCase;
 
+require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+require_once "classes/files/XMLFile.php";
+require_once "classes/files/XMLFileTesttakers.php";
+require_once "classes/data-collection/PotentialLogin.class.php";
+require_once "classes/data-collection/PotentialLoginArray.class.php";
+require_once "classes/data-collection/Group.class.php";
+
 $exampleXML1 = <<<END
 <Testtakers>
   <Metadata>
@@ -25,35 +32,24 @@ $exampleXML1 = <<<END
 END;
 
 
+class XMLFileTesttakersExposed extends XMLFileTesttakers {
+
+    public static function collectBookletsPerCode(SimpleXMLElement $element): array {
+        return parent::collectBookletsPerCode($element);
+    }
+
+    public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
+        return parent::getCodesFromBookletElement($element);
+    }
+};
+
+
 class XMLFilesTesttakersTest extends TestCase {
 
     public static function setUpBeforeClass(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/files/XMLFile.php";
-        require_once "classes/files/XMLFileTesttakers.php";
-        require_once "classes/data-collection/PotentialLogin.class.php";
-        require_once "classes/data-collection/PotentialLoginArray.class.php";
-        require_once "classes/data-collection/Group.class.php";
-
         VfsForTest::setUpBeforeClass();
         VfsForTest::setUp();
-    }
-
-    static function XMLFileTesttakersExposed() {
-
-        return new class() extends XMLFileTesttakers {
-
-            public static function collectBookletsPerCode(SimpleXMLElement $element): array {
-
-                return parent::collectBookletsPerCode($element);
-            }
-
-            public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
-
-                return parent::getCodesFromBookletElement($element);
-            }
-        };
     }
 
 
@@ -176,7 +172,7 @@ class XMLFilesTesttakersTest extends TestCase {
 </Login>
 END;
 
-        $result = self::XMLFileTesttakersExposed()::collectBookletsPerCode(new SimpleXMLElement($xml));
+        $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
 
         //print_r($result);
 
@@ -207,7 +203,7 @@ END;
 </Login>
 END;
 
-        $result = self::XMLFileTesttakersExposed()::collectBookletsPerCode(new SimpleXMLElement($xml));
+        $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
 
         //print_r($result);
 
