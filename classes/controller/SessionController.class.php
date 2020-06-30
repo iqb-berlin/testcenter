@@ -54,7 +54,7 @@ class SessionController extends Controller {
 
             $session = self::getOrCreatePersonSession($login, '');
 
-            if ($login->getMode() == 'group-monitor') {
+            if ($login->getMode() == 'monitor-group') {
                 self::registerGroup($login, $body['password']);
             }
 
@@ -94,10 +94,12 @@ class SessionController extends Controller {
 
     public static function registerGroup(Login $login, string $password): void { // TODO make private
 
-        if ($login->getMode() == 'group-monitor') {
+        if ($login->getMode() == 'monitor-group') {
 
             $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
+            $bookletsFolder = new BookletsFolder($login->getWorkspaceId());
             $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
+            $bookletLabels = [];
 
             foreach ($members as $member) {
 
@@ -111,9 +113,12 @@ class SessionController extends Controller {
 
                     foreach ($booklets as $booklet) {
 
-                        $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, "[label currently unknown]");
+                        if (!isset($bookletLabels[$booklet])) {
+                            $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
+                        }
+                        $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
                         $sessionMessage = SessionChangeMessage::login($memberLogin, $memberPerson);
-                        $sessionMessage->setTestState($test['id'], ['started' => 'unstarted'], $booklet);
+                        $sessionMessage->setTestState((int) $test['id'], ['started' => 'unstarted'], $booklet);
                         BroadcastService::sessionChange($sessionMessage);
                     }
                 }
