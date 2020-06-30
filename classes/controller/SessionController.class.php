@@ -102,14 +102,13 @@ class SessionController extends Controller {
             foreach ($members as $member) {
 
                 /* @var $member PotentialLogin */
+                $memberLogin = SessionController::sessionDAO()->getOrCreateLogin($member);
 
                 foreach ($member->getBooklets() as $code => $booklets) {
 
                     // TODO validity?
-
-                    $memberLogin = $memberLogin ?? SessionController::sessionDAO()->getOrCreateLogin($member);
                     $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, $code);
-                    BroadcastService::sessionChange(SessionChangeMessage::login($login, $memberPerson));
+                    BroadcastService::sessionChange(SessionChangeMessage::login($memberLogin, $memberPerson));
                 }
             }
         }
