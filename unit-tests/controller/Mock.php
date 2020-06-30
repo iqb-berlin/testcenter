@@ -153,3 +153,12 @@ class TesttakersFolder {
         ];
     }
 }
+
+class BookletsFolder {
+
+    function getBookletLabel(string $bookletName): string {
+
+        return "label of $bookletName";
+    }
+
+}

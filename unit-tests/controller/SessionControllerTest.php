@@ -76,7 +76,7 @@ class SessionControllerTest extends TestCase {
             require_once "Mock.php";
 
             SessionController::registerGroup(
-                new Login('monitor', 'group-monitor'), new Person()
+                new Login('monitor', 'monitor-group'), new Person()
             );
 
             print_r(BroadcastService::$log);
