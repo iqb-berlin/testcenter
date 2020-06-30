@@ -17,18 +17,24 @@
  *
  */
 
+require_once "classes/exception/HttpError.class.php";
+require_once  "classes/controller/Controller.class.php";
+require_once  "classes/controller/SessionController.class.php";
+
+//require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+//require_once "classes/data-collection/PotentialLogin.class.php";
+//require_once "classes/data-collection/Login.class.php";
+//require_once "classes/data-collection/Person.class.php";
+//require_once "classes/data-collection/SessionChangeMessage.class.php";
+//require_once "classes/data-collection/SessionChangeMessageArray.class.php";
+//
+//require_once "classes/dao/DAO.class.php";
+//require_once "classes/dao/SessionDAO.class.php";
+//require_once "classes/workspace/WorkspaceController.class.php";
+//require_once "classes/workspace/TesttakersFolder.class.php";
+
 use PHPUnit\Framework\TestCase;
 
-//use MockLogin as Login;
-
-
-class MockingObject {
-
-}
-
-class Login {
-
-}
 
 
 /**
@@ -37,17 +43,28 @@ class Login {
  */
 class SessionControllerTest extends TestCase {
 
-        static function setUpBeforeClass() {
 
-            require_once "classes/controller/SessionController.class.php";
-
-            parent::setUpBeforeClass();
-        }
+    function setUp() {
 
 
+
+        parent::setUp();
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     function test_registerGroup() {
 
-            SessionController::registerGroup(new Login(), 'some_password');
+            require_once "Mock.php";
+
+            SessionController::registerGroup(
+                new Login('monitor', 'group-monitor'), new Person()
+            );
+
+            print_r(BroadcastService::$log);
+
         }
 
 }
