@@ -21,4 +21,5 @@ alter table login_sessions change customTexts custom_texts text null;
 alter table login_sessions change groupname group_name varchar(100) not null;
 alter table unit_reviews drop column reviewer;
 
-
+-- for group-monitor
+alter table tests add running tinyint(1) default 0 not null;

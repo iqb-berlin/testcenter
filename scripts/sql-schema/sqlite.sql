@@ -30,6 +30,7 @@ CREATE TABLE `tests` (
 ,  `laststate` text DEFAULT NULL
 ,  `locked` integer NOT NULL DEFAULT 0
 ,  `label` varchar(100) DEFAULT NULL
+,  `running` integer NOT NULL DEFAULT 0
 ,  CONSTRAINT `fk_booklet_person` FOREIGN KEY (`person_id`) REFERENCES person_sessions (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE TABLE `login_sessions` (

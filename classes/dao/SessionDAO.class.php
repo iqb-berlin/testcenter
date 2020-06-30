@@ -298,7 +298,7 @@ class SessionDAO extends DAO {
         $person = $this->getPerson($personToken);
 
         $test = $this->_(
-            'SELECT tests.laststate, tests.locked, tests.label, tests.id FROM tests
+            'SELECT tests.laststate, tests.locked, tests.label, tests.id, tests.running FROM tests
             WHERE tests.person_id = :personid and tests.name = :bookletname',
             [
                 ':personid' => $person->getId(),
@@ -309,7 +309,7 @@ class SessionDAO extends DAO {
         if ($test !== null) {
 
             return [
-                'running' => true,
+                'running' => (bool) $test['running'],
                 'locked' => (bool) $test['locked'],
                 'label' => $test['label']
             ];

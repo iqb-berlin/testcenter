@@ -54,6 +54,7 @@ class TestDAO extends DAO {
             'name' => $bookletName,
             'person_id' => $personId,
             'locked' => '0',
+            'running' => '0',
             'lastState' => ''
         ];
     }
@@ -310,6 +311,17 @@ class TestDAO extends DAO {
                 ':bookletId' => $testId,
                 ':logentry' => $logEntry,
                 ':timestamp' => $timestamp
+            ]
+        );
+    }
+
+    // TODO unit test
+    public function setTestRunning(int $testId) {
+
+        $this->_('UPDATE tests SET running = :running WHERE id = :id',
+            [
+                ':running' => '1',
+                ':id' => $testId
             ]
         );
     }

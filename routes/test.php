@@ -33,6 +33,8 @@ $app->group('/test', function(App $app) {
             throw new HttpException($request,"Test #{$test['id']} `{$test['label']}` is locked.", 423);
         }
 
+        $testDAO->setTestRunning((int) $test['id']);
+
         BroadcastService::sessionChange(SessionChangeMessage::testState(
             $authToken,
             (int) $test['id'],
@@ -55,7 +57,7 @@ $app->group('/test', function(App $app) {
         $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
         $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
 
-        return $response->withJson([
+        return $response->withJson([ // TODO include running, use only one query
             'mode' => $authToken->getMode(),
             'laststate' => $testDAO->getTestLastState($testId),
             'locked' => $testDAO->isTestLocked($testId),
