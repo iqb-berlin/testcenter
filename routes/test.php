@@ -25,7 +25,8 @@ $app->group('/test', function(App $app) {
         $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
         $bookletLabel = $bookletsFolder->getBookletLabel($body['bookletName']);
 
-        // TODO lock old test if this person allready ran one
+        // TODO lock old test if this person already ran one
+
         $test = $testDAO->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
 
         if ($test['locked'] == '1') {

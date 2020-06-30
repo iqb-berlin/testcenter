@@ -36,6 +36,11 @@ class Person extends MockObject {
     function __construct(string $name = 'someone') {
         $this->name = $name;
     }
+
+    function getId() {
+
+        return 123;
+    }
 }
 
 
@@ -72,8 +77,8 @@ class PotentialLogin extends Login {
      function getBooklets(): array {
 
         return [
-            'code1' => 'a booklet',
-            'code2' => 'another booklet'
+            'code1' => ['a booklet'],
+            'code2' => ['a booklet', 'another booklet']
         ];
     }
 }
@@ -83,12 +88,12 @@ class PotentialLogin extends Login {
 class SessionChangeMessage {
 
     public $constructorFunction = "";
-    public $constrcutorArguments = [];
+    public $constructorArguments = [];
 
     public function __construct(string $function, array $arguments) {
 
         $this->constructorFunction = $function;
-        $this->constrcutorArguments = $arguments;
+        $this->constructorArguments = $arguments;
     }
 
     public static function __callStatic($name, $arguments) {
@@ -96,9 +101,14 @@ class SessionChangeMessage {
         return new SessionChangeMessage($name, $arguments);
     }
 
+    public function setTestState(int $testId, array $testState, string $bookletName = null): void {
+
+        $this->constructorArguments[] = "test: $testId: $bookletName";
+    }
+
     function __toString() {
 
-        return "{$this->constructorFunction}: " . implode(', ', $this->constrcutorArguments);
+        return "{$this->constructorFunction}: " . implode(', ', $this->constructorArguments);
     }
 }
 
@@ -111,7 +121,25 @@ class SessionDAO {
 
     public function getOrCreatePerson(Login $loginSession, string $code): Person {
 
-        return new Person($loginSession->name);
+        return new Person("{$loginSession->name}/$code");
+    }
+}
+
+
+class TestDAO {
+
+    static $counter;
+
+    public function getOrCreateTest(int $personId, string $bookletName, string $bookletLabel): array {
+
+        self::$counter++;
+
+        return [
+            'id' => self::$counter,
+            'label' => $bookletLabel,
+            'name' => $bookletName,
+            'person_id' => $personId,
+        ];
     }
 }
 

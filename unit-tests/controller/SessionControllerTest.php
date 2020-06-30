@@ -13,6 +13,22 @@
  * * testen....
  * *
  *
+ * problem:
+ * * bei der Monitor-Anmeldung könnten alle personen der gruppe bereits angelegt werden
+ * aber: wie können wir dann wissen, welche person, welchen test starten wird
+ *
+ * a) test auch bereits anlegen in einem ungestarteten zustand
+ * - ungestartete und nicht vorhandene tests müssen gleich behandelt werden...
+ * b) beim test starten wird eine freue person für diesen test ausgesucht
+ * - kompliziert
+ * + index könnte weiterhin personId sein
+ * c) bei person eine weitere Spalte, die sagt welcher Test hier kommen wird, sonst wie b
+ * d) der monitor hat information über alle potentiellen tests gecached, dann wird das jedes Mal gebroadcastet
+ * (ohne personId - kein problem nach neuem index?)
+ *
+ * PROBLEM:
+ * 1 person >> mehrere tests!!! wir wollen nicht pro booklet eine person anlegen
+ * * wiederspricht b, c, auch d (weil das mit dem neuen Index ein Problem für sich ist)
  *
  *
  */

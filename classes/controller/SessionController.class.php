@@ -108,7 +108,14 @@ class SessionController extends Controller {
 
                     // TODO validity?
                     $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, $code);
-                    BroadcastService::sessionChange(SessionChangeMessage::login($memberLogin, $memberPerson));
+
+                    foreach ($booklets as $booklet) {
+
+                        $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, "[label currently unknown]");
+                        $sessionMessage = SessionChangeMessage::login($memberLogin, $memberPerson);
+                        $sessionMessage->setTestState($test['id'], ['started' => 'unstarted'], $booklet);
+                        BroadcastService::sessionChange($sessionMessage);
+                    }
                 }
             }
         }

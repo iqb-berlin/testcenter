@@ -9,6 +9,7 @@ abstract class Controller {
 
     private static $_adminDAO;
     private static $_sessionDAO;
+    private static $_testDAO;
 
     protected static function sessionDAO(): SessionDAO {
 
@@ -27,6 +28,16 @@ abstract class Controller {
         }
 
         return self::$_adminDAO;
+    }
+
+
+    protected static function testDAO(): TestDAO {
+
+        if (!self::$_testDAO) {
+            self::$_testDAO = new TestDAO();
+        }
+
+        return self::$_testDAO;
     }
 
 

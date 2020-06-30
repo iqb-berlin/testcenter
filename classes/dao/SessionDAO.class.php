@@ -244,10 +244,10 @@ class SessionDAO extends DAO {
 
         $this->_(
             'INSERT INTO login_sessions (token, codes_to_booklets, valid_until, name, mode, workspace_id, group_name, custom_texts) 
-                VALUES(:token, :sd, :valid_until, :name, :mode, :ws, :groupname, :custom_texts)',
+                VALUES(:token, :codes_to_booklets, :valid_until, :name, :mode, :ws, :groupname, :custom_texts)',
             [
                 ':token' => $loginToken,
-                ':sd' => json_encode($loginData->getBooklets()),
+                ':codes_to_booklets' => json_encode($loginData->getBooklets()),
                 ':valid_until' => TimeStamp::toSQLFormat($validUntil),
                 ':name' => $loginData->getName(),
                 ':mode' => $loginData->getMode(),
