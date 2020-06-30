@@ -8,9 +8,8 @@ paths:
 
   /booklet/{booklet_name}:
     get:
-      summary: get status of a booklet
-      description: "Retrieves a booklet - in this context that does not mean the booklet-file's contents but status
-        information about this booklet in regard of a given login: Is there a running test for this booklet etc."
+      summary: get a booklet
+      description: "Retrieves a booklet-XML"
       parameters:
         - in: header
           name: AuthToken
@@ -25,13 +24,11 @@ paths:
             type: string
       responses:
         "200":
-          description: an object containg information about booklet
+          description: an object containing information about booklet
           content:
-            application/json:
+            application/xml:
               example:
-                running: true
-                locked: false
-                label: "Booklet's little label"
+                "SHIT"
         "401":
           description: Not authenticated
         "410":
@@ -60,14 +57,13 @@ paths:
             type: string
       responses:
         "200":
-          description: an object containg information about booklet
+          description: an object containing information about booklet
           content:
             application/json:
               example:
                 running: true
                 locked: false
                 label: "Booklet's little label"
-                xml: "some booklets xml"
         "401":
           description: Not authenticated
         "410":

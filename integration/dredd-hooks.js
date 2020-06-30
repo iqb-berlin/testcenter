@@ -187,3 +187,9 @@ dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > 
     transaction.expected.body = fs.readFileSync('../sampledata/Player.html').toString();
     done();
 });
+
+dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', function(transaction, done) {
+
+    transaction.expected.body = fs.readFileSync('../sampledata/Booklet.xml').toString();
+    done();
+});
