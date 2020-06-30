@@ -412,6 +412,6 @@ $app->group('/workspace', function(App $app) {
 
 
 })
-//    ->add(new IsWorkspaceMonitor())
+    ->add(new IsWorkspaceMonitor())
     ->add(new RequireToken('person'));
 
