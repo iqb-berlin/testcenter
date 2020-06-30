@@ -36,18 +36,6 @@ class TestDAO extends DAO {
 
         if ($test !== null) {
 
-            if ($test['locked'] != '1') {
-
-                $this->_( // TODO is this necessary?
-                    'UPDATE tests SET label = :label WHERE id = :id',
-                    [
-                        ':label' => $bookletLabel,
-                        ':id' => $test['id']
-                    ]
-                );
-
-            }
-
             return $test;
         }
 
