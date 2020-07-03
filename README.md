@@ -8,20 +8,20 @@ This is the backend of the Testcenter application.
 In older versions it's also the backend fot the meanwhile deprecated 
 Testcenter-Admin application.
 
-You can find the frontend [here](https://github.com/iqb-berlin/testcenter-iqb-ng).
+You can find the frontend [here](https://github.com/iqb-berlin/testcenter-frontend).
 
 ## Documentation
 
-Find API documentation [here](https://iqb-berlin.github.io/testcenter-iqb-php/).
+Find API documentation [here](https://iqb-berlin.github.io/testcenter-backend).
 
 ## Bug Reports
 
-File bug reports, feature requests etc. [here](https://github.com/iqb-berlin/testcenter-iqb-php/issues).
+File bug reports, feature requests etc. [here](https://github.com/iqb-berlin/testcenter-backend/issues).
 
 ## Installation
 
 ### With Docker (recommended)
-Find Docker files for a complete setup of the application [here](https://github.com/iqb-berlin/iqb-tba-docker-setup).
+Find Docker files for a complete setup of the application [here](https://github.com/iqb-berlin/testcenter-setup).
 
 ### With Installation Script on Webserver
 
