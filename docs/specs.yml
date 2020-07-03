@@ -7,7 +7,7 @@ paths:
     '/booklet/{booklet_name}':
         get:
             summary: 'get a booklet'
-            description: 'Retrieves a booklet-XML'
+            description: 'Retrieves a Booklet-XML'
             parameters:
                 -
                     in: header
@@ -24,10 +24,10 @@ paths:
                         type: string
             responses:
                 '200':
-                    description: 'an object containing information about booklet'
+                    description: 'A Booklet-XML (see: https://github.com/iqb-berlin/testcenter-backend/blob/master/definitions/vo_Booklet.xsd)'
                     content:
                         application/xml:
-                            example: SHIT
+                            example: '<?xml version="1.0" encoding="utf-8"?><Booklet...'
                 '401':
                     description: 'Not authenticated'
                 '403':
