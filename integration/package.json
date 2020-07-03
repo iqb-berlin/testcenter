@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "browser-sync": "^2.26.7",
-    "dredd": "^12.2.0",
+    "dredd": "^12.2.1",
     "gulp": "^4.0.2",
     "multi-part": "^3.0.0",
     "stream-to-string": "^1.2.0",
