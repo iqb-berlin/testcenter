@@ -31,7 +31,7 @@ class XMLFile {
 
         if (!$xml) {
 
-            throw new HttpError("Could not open XML-File: `{$xmlFilename}`");
+            throw new HttpError("Could not open XML-File: `{$xmlFilename}`", 500);
         }
 
         switch ($xml->getName()) {
