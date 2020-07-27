@@ -3,7 +3,6 @@
 
   <xs:include schemaLocation="vo_Common.xsd"/>
 
-
   <xs:element name="Testtakers" >
     <xs:complexType>
       <xs:sequence>
@@ -11,7 +10,7 @@
         <xs:element name="CustomTexts" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="CustomText" type="KeyValueType" minOccurs = "1" maxOccurs="unbounded"/>
+              <xs:element name="CustomText" type="KeyValueType" maxOccurs="unbounded"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -100,6 +99,7 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="label" type="xs:string" use="required"/>
             <xs:attribute name="validTo">
               <xs:annotation>
                 <xs:documentation>
