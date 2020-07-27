@@ -12,28 +12,22 @@
 
   <xs:complexType name="TestletRestrictionsType">
     <xs:all>
-      <xs:element name="TimeMax" type="ConfigType" minOccurs = "0" />
-      <xs:element name="CodeToEnter" type="ConfigType" minOccurs = "0" />
-      <xs:element name="Lock" type="ConfigType" minOccurs = "0" />
+      <xs:element name="TimeMax" type="ConfigType" minOccurs="0" />
+      <xs:element name="CodeToEnter" type="ConfigType" minOccurs="0" />
+      <xs:element name="Lock" type="ConfigType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
-
-  <xs:group name="unitOrTestlet">
-    <xs:choice>
-      <xs:element name="Unit" type="UnitType" maxOccurs="unbounded"/>
-      <xs:element name="Testlet" type="TestletType" maxOccurs="unbounded"/>
-    </xs:choice>
-  </xs:group>
 
   <xs:complexType name="TestletType">
     <xs:sequence>
       <xs:element name="Restrictions" type="TestletRestrictionsType" minOccurs="0" />
-      <xs:choice>
-        <xs:element name="Unit" type="UnitType" maxOccurs="unbounded"/>
-        <xs:group ref="unitOrTestlet" maxOccurs="unbounded"/>
-      </xs:choice>
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="Unit" type="UnitType" />
+          <xs:element name="Testlet" type="TestletType" />
+        </xs:choice>
+      </xs:sequence>
     </xs:sequence>
-
     <xs:attribute name="id" type="xs:string" />
     <xs:attribute name="label" type="xs:string" />
   </xs:complexType>
