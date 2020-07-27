@@ -39,8 +39,8 @@ class XMLFileTesttakers extends XMLFile {
                     if (count($booklets)) {
 
                         $testTakers[] = [
-                            'groupname' => (string) $groupElement['name'],
-                            'loginname' => (string) $loginElement['name'], // TODO add groupLabel
+                            'groupname' => (string) $groupElement['id'],
+                            'loginname' => (string) $loginElement['name'],
                             'code' => $code,
                             'booklets' => $booklets
                         ];
@@ -101,8 +101,8 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xmlfile->xpath('Group') as $groupElement) {
 
-            $groups[(string) $groupElement['name']] = new Group(
-                (string) $groupElement['name'],
+            $groups[(string) $groupElement['id']] = new Group(
+                (string) $groupElement['id'],
                 (string) $groupElement['label']
             );
         }
@@ -159,7 +159,7 @@ class XMLFileTesttakers extends XMLFile {
         return new PotentialLogin(
             (string) $loginElement['name'],
             (string) $loginElement['mode'] ?? 'run-hot-return',
-            (string) $groupElement['name'], // TODO groupLabel
+            (string) $groupElement['id'], // TODO add groupLabel
             self::collectBookletsPerCode($loginElement),
             $workspaceId,
             isset($groupElement['validTo']) ? TimeStamp::fromXMLFormat((string) $groupElement['validTo']) : 0,
