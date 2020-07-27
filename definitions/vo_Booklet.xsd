@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="vo_Booklet"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    elementFormDefault="qualified">
+<xs:schema id="vo_Booklet" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
 <xs:include schemaLocation="vo_Common.xsd"/>
 
-  <!-- ###################################################################-->
   <xs:complexType name="UnitType">
     <xs:attribute name="id" type="xs:ID" use="required"/>
     <xs:attribute name="label" type="xs:string" use="required"/>
@@ -13,7 +10,6 @@
     <xs:attribute name="alias" type="xs:string"/>
   </xs:complexType>
 
-  <!-- ###################################################################-->
   <xs:complexType name="TestletRestrictionsType">
     <xs:all>
       <xs:element name="TimeMax" type="ConfigType" minOccurs = "0" />
@@ -22,7 +18,6 @@
     </xs:all>
   </xs:complexType>
 
-  <!-- ###################################################################-->
   <xs:group name="unitOrTestlet">
     <xs:choice>
       <xs:element name="Unit" type="UnitType" maxOccurs="unbounded"/>
@@ -30,7 +25,6 @@
     </xs:choice>
   </xs:group>
 
-  <!-- ###################################################################-->
   <xs:complexType name="TestletType">
     <xs:sequence>
       <xs:element name="Restrictions" type="TestletRestrictionsType" minOccurs="0" />
@@ -39,12 +33,10 @@
         <xs:group ref="unitOrTestlet" maxOccurs="unbounded"/>
       </xs:choice>
     </xs:sequence>
+
     <xs:attribute name="id" type="xs:string" />
     <xs:attribute name="label" type="xs:string" />
   </xs:complexType>
-
-  <!-- ###################################################################-->
-  <!-- ###################################################################-->
 
   <xs:element name="Booklet">
     <xs:complexType>
@@ -60,6 +52,7 @@
         <xs:element name="Units" type="TestletType" />
       </xs:all>
     </xs:complexType>
+
     <xs:unique name="BookletConfigKey">
       <xs:selector xpath="Config"/>
       <xs:field xpath="@key"/>
