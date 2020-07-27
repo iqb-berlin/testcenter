@@ -4,10 +4,6 @@
     <Id>BOOKLET.SAMPLE</Id>
     <Label>Sample booklet</Label>
     <Description>This a sample booklet for testing/development/showcase purposes.</Description>
-    <Owner>__USER_NAME__</Owner>
-    <Lastchange>2019-10-27T13:37:00</Lastchange>
-    <Status>unknown</Status>
-    <Project>sample</Project>
   </Metadata>
 
   <BookletConfig>
@@ -19,7 +15,7 @@
   <Units>
 
     <Restrictions>
-      <TimeMax parameter="string">60</TimeMax>
+      <TimeMax minutes="60" />
     </Restrictions>
 
     <Testlet id="a_testlet_without_restrictions" label="First Group">

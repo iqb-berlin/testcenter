@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="vo_Booklet" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
-<xs:include schemaLocation="vo_Common.xsd"/>
-
   <xs:element name="Booklet">
     <xs:complexType>
       <xs:all>
-        <xs:element name="Metadata" type="MetadataType" />
-        <xs:element name="BookletConfig" minOccurs="0">
+
+        <xs:element name="Metadata">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Config" type="KeyValueType" maxOccurs="unbounded"/>
+              <xs:element name="Id" type="xs:ID" />
+              <xs:element name="Label" type="xs:string" />
+              <xs:element name="Description" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+
+        <xs:element name="BookletConfig" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Config" type="ConfigType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
         <xs:element name="Units" type="FirstTestletType" />
       </xs:all>
     </xs:complexType>
-
-    <xs:unique name="BookletConfigKey">
-      <xs:selector xpath="Config"/>
-      <xs:field xpath="@key"/>
-    </xs:unique>
   </xs:element>
 
   <xs:complexType name="TestletRestrictionsType">
@@ -45,7 +49,7 @@
 
   <xs:complexType name="FirstRestrictionsType">
     <xs:all>
-      <xs:element name="TimeMax" type="ConfigType" minOccurs="0" />
+      <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
@@ -82,4 +86,11 @@
     <xs:attribute name="alias" type="xs:string"/>
   </xs:complexType>
 
+  <xs:complexType name="ConfigType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="key" type="xs:ID" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
 </xs:schema>

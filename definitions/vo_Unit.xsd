@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="vo_Itemdefinition"
-    elementFormDefault="qualified"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema id="vo_Unit" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-<xs:include schemaLocation="vo_Common.xsd"/>
-
- 
-  <!-- ###################################################################-->
-  <!-- ###################################################################-->
   <xs:element name="Unit" >
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Metadata" type="MetadataType" minOccurs="1" maxOccurs="1"/>
+        <xs:element name="Metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" type="xs:ID" />
+              <xs:element name="Label" type="xs:string" />
+              <xs:element name="Description" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
         <xs:sequence>
-          <xs:choice minOccurs="1" maxOccurs="1">
-            <xs:element name="Definition" minOccurs="1" maxOccurs="1">
+          <xs:choice>
+            <xs:element name="Definition">
               <xs:complexType>
                 <xs:simpleContent>
                   <xs:extension base="xs:string">
@@ -23,7 +25,7 @@
                 </xs:simpleContent>
               </xs:complexType>
             </xs:element>
-            <xs:element name="DefinitionRef" minOccurs="1" maxOccurs="1">
+            <xs:element name="DefinitionRef">
               <xs:complexType>
                 <xs:simpleContent>
                   <xs:extension base="xs:string">

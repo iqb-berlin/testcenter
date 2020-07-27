@@ -1,13 +1,7 @@
-<Testtakers>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../definitions/vo_Testtakers.xsd">
 
   <Metadata>
-    <Id>TESTTAKERS.SAMPLE</Id>
-    <Label>Some logins for testing</Label>
     <Description>This file contains some logins for testing and works a a sample for developers.</Description>
-    <Owner>__USER_NAME__</Owner>
-    <Lastchange>2019-10-27T13:37:00</Lastchange>
-    <Status>string</Status>
-    <Project>string</Project>
   </Metadata>
 
   <CustomTexts>
@@ -41,7 +35,7 @@
     <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-no-pw">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
-    <Login mode="run-trial" password="" name="__TEST_LOGIN_NAME__-no-pw-trial"> <!-- TODO pw !!! -->
+    <Login mode="run-trial" name="__TEST_LOGIN_NAME__-no-pw-trial">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
