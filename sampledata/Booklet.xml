@@ -16,7 +16,7 @@
     <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
   </BookletConfig>
 
-  <Units id="units_id" label="A sample booklet">
+  <Units>
 
     <Restrictions>
       <TimeMax parameter="string">60</TimeMax>

@@ -3,18 +3,37 @@
 
 <xs:include schemaLocation="vo_Common.xsd"/>
 
-  <xs:complexType name="UnitType">
-    <xs:attribute name="id" type="xs:ID" use="required"/>
-    <xs:attribute name="label" type="xs:string" use="required"/>
-    <xs:attribute name="labelshort" type="xs:string"/>
-    <xs:attribute name="alias" type="xs:string"/>
-  </xs:complexType>
+  <xs:element name="Booklet">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="Metadata" type="MetadataType" />
+        <xs:element name="BookletConfig" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Config" type="KeyValueType" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Units" type="FirstTestletType" />
+      </xs:all>
+    </xs:complexType>
+
+    <xs:unique name="BookletConfigKey">
+      <xs:selector xpath="Config"/>
+      <xs:field xpath="@key"/>
+    </xs:unique>
+  </xs:element>
 
   <xs:complexType name="TestletRestrictionsType">
     <xs:all>
       <xs:element name="TimeMax" type="ConfigType" minOccurs="0" />
       <xs:element name="CodeToEnter" type="ConfigType" minOccurs="0" />
-      <xs:element name="Lock" type="ConfigType" minOccurs="0" />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="FirstRestrictionsType">
+    <xs:all>
+      <xs:element name="TimeMax" type="ConfigType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
@@ -28,28 +47,27 @@
         </xs:choice>
       </xs:sequence>
     </xs:sequence>
-    <xs:attribute name="id" type="xs:string" />
+    <xs:attribute name="id" type="xs:string" use="required"/>
     <xs:attribute name="label" type="xs:string" />
   </xs:complexType>
 
-  <xs:element name="Booklet">
-    <xs:complexType>
-      <xs:all>
-        <xs:element name="Metadata" type="MetadataType" />
-        <xs:element name="BookletConfig" minOccurs="0">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="Config" type="KeyValueType" maxOccurs="unbounded"/>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Units" type="TestletType" />
-      </xs:all>
-    </xs:complexType>
+  <xs:complexType name="FirstTestletType">
+    <xs:sequence>
+      <xs:element name="Restrictions" type="FirstRestrictionsType" minOccurs="0" />
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="Unit" type="UnitType" />
+          <xs:element name="Testlet" type="TestletType" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
 
-    <xs:unique name="BookletConfigKey">
-      <xs:selector xpath="Config"/>
-      <xs:field xpath="@key"/>
-    </xs:unique>
-  </xs:element>
+  <xs:complexType name="UnitType">
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="label" type="xs:string" use="required"/>
+    <xs:attribute name="labelshort" type="xs:string"/>
+    <xs:attribute name="alias" type="xs:string"/>
+  </xs:complexType>
+
 </xs:schema>
