@@ -12,4 +12,6 @@ that `<Unit>` was not allowed in some legal constellations
 - `<Units>`-element can not contain `id` or `label` (since it won't be 
 visible anywhere anyway), and first `<Restrictions>` can not contain
  `<CodeToEnter>`, which would not make any sense
- 
+- Made `<Restriction>` more readable: generic `parameter`-paremater is 
+now renamed to `minutes` in context of `<TimeMax>` and to `code` for
+ `<CodeToEnter>`-element.  

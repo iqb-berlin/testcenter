@@ -25,10 +25,22 @@
   </xs:element>
 
   <xs:complexType name="TestletRestrictionsType">
-    <xs:all>
-      <xs:element name="TimeMax" type="ConfigType" minOccurs="0" />
-      <xs:element name="CodeToEnter" type="ConfigType" minOccurs="0" />
-    </xs:all>
+    <xs:sequence>
+      <xs:element name="CodeToEnter" type="CodeToEnterRestrictionType" minOccurs="0" />
+      <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TimeMaxRestrictionType">
+    <xs:attribute name="minutes" type="xs:positiveInteger"/>
+  </xs:complexType>
+
+  <xs:complexType name="CodeToEnterRestrictionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="code" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
   <xs:complexType name="FirstRestrictionsType">

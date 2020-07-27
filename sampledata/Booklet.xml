@@ -23,15 +23,14 @@
     </Restrictions>
 
     <Testlet id="a_testlet_without_restrictions" label="First Group">
-
       <Unit id="UNIT.SAMPLE" label="The Great Sample Unit" labelshort="Sample Unit" />
     </Testlet>
 
     <Testlet id="a_testlet_with_restrictions" label="Second Group">
 
       <Restrictions>
-        <CodeToEnter parameter="sample">Please insert the word `sample`.</CodeToEnter>
-        <TimeMax parameter="1" />
+        <CodeToEnter code="sample">Please insert the word `sample`.</CodeToEnter>
+        <TimeMax minutes="1" />
       </Restrictions>
 
       <Unit id="UNIT.SAMPLE-2" label="The Seconds Sample Unit" labelshort="2nd Sample Unit" />
