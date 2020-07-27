@@ -1,4 +1,6 @@
-# 4.0.0-group-monitor
+XSD defintions changelog
+
+## 4.0.0-group-monitor
 
 #### Testtakers
 - introduced optional attribute `label` for `<group>`-element
