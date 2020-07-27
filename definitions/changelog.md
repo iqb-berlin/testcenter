@@ -1,9 +1,9 @@
 # 4.0.0-group-monitor
 
-####Testtakers
+#### Testtakers
 - introduced optional attribute `label` for `<group>`-element
 
-#####Booklet
+#### Booklet
 - changed defintion of `<Testlet>`-element to get rid of a warning, 
 that `<Unit>` was not allowed in some legal constellations 
 - `id`-attribute is now mandatory for testlets
