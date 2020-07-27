@@ -4,6 +4,7 @@
 
 
 #### Testtakers
+- `name`-attribute of `<group>`-element is now called `<id>`
 - introduced optional attribute `label` for `<group>`-element
 - in `<Metadata>`-element, only the optional `<Description>` field remains
 
