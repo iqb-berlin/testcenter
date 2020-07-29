@@ -13,7 +13,6 @@ export class ErrorHandler extends BaseExceptionFilter {
     }
 
     catch(exception: any, host: ArgumentsHost) {
-
         console.warn("error caught: ", exception);
 
         const ctx = host.switchToHttp();

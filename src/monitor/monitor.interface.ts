@@ -4,6 +4,5 @@ export interface Monitor {
 }
 
 export function isMonitor(arg: any): arg is Monitor {
-
     return (arg.token !== undefined) && (arg.groups !== undefined);
 }

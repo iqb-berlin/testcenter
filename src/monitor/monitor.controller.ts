@@ -13,9 +13,7 @@ export class MonitorController {
 
     @Post('/monitor/register')
     monitorRegister(@Req() request: Request): void {
-
         if (!isMonitor(request.body)) {
-
             throw new HttpException("not monitor data", 400);
         }
 
@@ -26,9 +24,7 @@ export class MonitorController {
 
     @Post('/monitor/unregister')
     monitorUnregister(@Req() request: Request): void {
-
         if (!('token' in request.body)) {
-
             throw new HttpException("no token in body", 400);
         }
 
@@ -39,14 +35,12 @@ export class MonitorController {
 
     @Get('/monitors')
     monitors(@Req() request: Request): Monitor[] {
-
         return this.dataService.getMonitors();
     }
 
 
     @Get('/clients')
     clients(@Req() request: Request): string[] {
-
         return this.dataService.getClientTokens();
     }
 }

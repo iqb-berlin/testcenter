@@ -5,16 +5,13 @@ import {WebsocketGateway} from './websocket.gateway';
 
 
 const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionChange): SessionChange => {
-
     if ((sessionChange.testId) && (sessionChange.testId !== testSession.testId)) {
-
         testSession.testState = {};
         testSession.unitState = {};
         testSession.bookletName = '';
     }
 
     if ((sessionChange.unitName) && (sessionChange.unitName !== testSession.unitName)) {
-
         testSession.unitState = {};
     }
 
@@ -31,7 +28,6 @@ export class DataService {
     constructor(
         private readonly eventsGateway: WebsocketGateway
     ) {
-
         this.eventsGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
             this.removeMonitor(disconnected);
         });
@@ -51,22 +47,18 @@ export class DataService {
 
 
     public applySessionChange(sessionChange: SessionChange) {
-
         console.log('sessionChange received', JSON.stringify(sessionChange));
-
         this.addSessionChange(sessionChange);
         this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
     }
 
 
     private addSessionChange(sessionChange: SessionChange): void {
-
         const group: string = sessionChange.groupName;
         const sessionId = sessionChange.personId + '|' + sessionChange.testId;
 
         // testSession is first of group
         if (typeof this.testSessions[group] === "undefined") {
-
             console.log("skipping group hence not monitored: " + group);
             return;
         }
@@ -74,7 +66,6 @@ export class DataService {
         const sessionIdWithoutTest = sessionChange.personId + '|-1';
 
         if ((sessionChange.testId > -1) && (typeof this.testSessions[group][sessionIdWithoutTest] !== "undefined")) {
-
             // testSession is already known, and needs to be updated and no test was started
             const testSession = this.testSessions[group][sessionIdWithoutTest];
             delete this.testSessions[group][sessionIdWithoutTest];
@@ -82,13 +73,11 @@ export class DataService {
 
 
         } else if (typeof this.testSessions[group][sessionId] !== "undefined") {
-
             // testSession is already known and needs to be updated
             const testSession = this.testSessions[group][sessionId];
             this.testSessions[group][sessionId] = mergeSessionChanges(testSession, sessionChange);
 
         } else {
-
             // formally unknown testSession
             this.testSessions[group][sessionId] = sessionChange;
         }
@@ -96,9 +85,7 @@ export class DataService {
 
 
     private broadcastTestSessionsToGroupMonitors(groupName: string) {
-
         if (typeof this.monitors[groupName] !== "undefined") {
-
             console.log("broadcasting data about group: " + groupName);
             const tokens = Object.keys(this.monitors[groupName]);
             const sessions = (typeof this.testSessions[groupName] !== "undefined")
@@ -110,16 +97,13 @@ export class DataService {
 
 
     public addMonitor(monitor: Monitor): void {
-
         monitor.groups.forEach((group: string) => {
 
             if (typeof this.monitors[group] === "undefined") {
-
                 this.monitors[group] = {};
             }
 
             if (typeof this.testSessions[group] === "undefined") {
-
                 this.testSessions[group] = {};
             }
 
@@ -129,11 +113,9 @@ export class DataService {
 
 
     public removeMonitor(monitorToken: string): void {
-
         console.log('remove monitor: ' + monitorToken);
 
         Object.keys(this.monitors).forEach((group: string) => {
-
             if (typeof this.monitors[group][monitorToken] !== "undefined") {
                 delete this.monitors[group][monitorToken];
 
@@ -148,7 +130,6 @@ export class DataService {
 
 
     public getMonitors(): Monitor[] {
-
         return Object.values(this.monitors)
             .reduce(
                 (allMonitors: Monitor[], groupMonitors: {[g: string]: Monitor}): Monitor[] =>
@@ -160,7 +141,6 @@ export class DataService {
 
 
     public getTestSessions(): SessionChange[] {
-
         return Object.values(this.testSessions)
             .reduce(
                 (allTestSessions: SessionChange[], groupTestSessions: {[g: string]: SessionChange}): SessionChange[] =>
@@ -171,7 +151,6 @@ export class DataService {
 
 
     public getClientTokens(): string[] {
-
         return this.eventsGateway.getClientTokens();
     }
 }

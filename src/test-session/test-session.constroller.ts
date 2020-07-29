@@ -5,7 +5,6 @@ import {DataService} from '../common/data.service';
 
 @Controller()
 export class TestSessionConstroller {
-
     constructor(
         private readonly dataService: DataService
     ) {}
@@ -13,9 +12,7 @@ export class TestSessionConstroller {
 
     @Post('/push/session-change')
     pushSessionChange(@Req() request: Request): void {
-
         if (!isSessionChange(request.body)) {
-
             throw new HttpException("not session data", 400);
         }
 
@@ -25,7 +22,6 @@ export class TestSessionConstroller {
 
     @Get('/test-sessions')
     getTestSessions(): SessionChange[] {
-
         return this.dataService.getTestSessions();
     }
 

@@ -1,5 +1,4 @@
 export interface SessionChange {
-
     personId: number;
     groupName: string;
     mode?: string;
@@ -20,6 +19,5 @@ export interface SessionChange {
 }
 
 export function isSessionChange(arg: any): arg is SessionChange {
-
     return (arg.personId !== undefined) && (arg.timestamp !== undefined) && (arg.groupName !== undefined);
 }
