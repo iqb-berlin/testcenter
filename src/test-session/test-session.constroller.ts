@@ -9,7 +9,6 @@ export class TestSessionConstroller {
         private readonly dataService: DataService
     ) {}
 
-
     @Post('/push/session-change')
     pushSessionChange(@Req() request: Request): void {
         if (!isSessionChange(request.body)) {
@@ -19,10 +18,8 @@ export class TestSessionConstroller {
         this.dataService.applySessionChange(request.body);
     }
 
-
     @Get('/test-sessions')
     getTestSessions(): SessionChange[] {
         return this.dataService.getTestSessions();
     }
-
 }
