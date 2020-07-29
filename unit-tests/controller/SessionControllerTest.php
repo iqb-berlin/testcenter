@@ -79,7 +79,7 @@ class SessionControllerTest extends TestCase {
                 new Login('monitor', 'monitor-group'), new Person()
             );
 
-            print_r(BroadcastService::$log);
+//            print_r(BroadcastService::$log);
 
         }
 

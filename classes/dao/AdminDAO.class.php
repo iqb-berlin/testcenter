@@ -425,7 +425,7 @@ class AdminDAO extends DAO {
 
         return [
             'name' => $unitData['name'],
-            'state' => $state ?? ['lol' => print_r($unitData, true)]
+            'state' => $state ?? []
         ];
     }
 

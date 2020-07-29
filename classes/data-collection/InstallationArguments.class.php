@@ -16,7 +16,6 @@ class InstallationArguments extends DataCollection {
 
         if (!isset($initData['user_name'])) {
 
-            var_dump($initData);
             throw new Exception("user name not provided. use: --user_name=...");
         }
 

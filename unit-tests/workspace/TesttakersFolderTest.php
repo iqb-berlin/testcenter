@@ -119,7 +119,7 @@ class TesttakersFolderTest extends TestCase {
             45,
             (object) ['somestr' => 'string']
         );
-//        echo "\n--->"; print_r($result); echo "\n<---";
+
         $this->assertEquals($expected, $result, "login without booklets");
 
 
