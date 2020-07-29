@@ -52,7 +52,7 @@ try {
     include_once 'routes/user.php';
 
     include_once 'routes/test.php';
-    include_once 'routes/group.php';
+    include_once 'routes/monitor.php';
     include_once 'routes/booklet.php';
     include_once 'routes/speedtest.php';
 
