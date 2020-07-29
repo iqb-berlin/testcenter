@@ -71,12 +71,18 @@ class XMLFile {
                 : new SimpleXMLElement($xmlfilename);
 
             if ($this->xmlfile == false) {
+
                 array_push($this->allErrors, "Error in `$xmlfilename`");
+
             } else {
+
                 $this->_rootTagName = $this->xmlfile->getName();
                 if (!array_key_exists($this->_rootTagName, $this->_schemaFileNames)) {
+
                     array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->_rootTagName . '" unknown.');
+
                 } else {
+
                     $mySchemaFilename = $xsdFolderName . $this->_schemaFileNames[$this->_rootTagName];
 
                     $myId = $this->xmlfile->Metadata[0]->Id[0];
@@ -84,12 +90,11 @@ class XMLFile {
                         $this->_id = strtoupper((string) $myId);
                     }
 
-                    // label is required!
-                    $this->_label = (string) $this->xmlfile->Metadata[0]->Label[0];
                     $myDescription = $this->xmlfile->Metadata[0]->Description[0];
                     if (isset($myDescription)) {
                         $this->_description = (string) $myDescription;
                     }
+
                     $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
                     if (isset($myCustomTextsNode)) {
                         foreach($myCustomTextsNode->children() as $costumTextElement) {
@@ -104,27 +109,26 @@ class XMLFile {
                                 }
                             }
                         }
-    
                     }
 
                     if ($validate) {
-                        if (strlen($this->_label) > 0) {
-                            $myReader = new XMLReader();
-                            $myReader->open($xmlfilename);
-                            $myReader->setSchema($mySchemaFilename);
 
-                            do {
-                                $continue = $myReader->read();
-                                foreach (libxml_get_errors() as $error) {
-                                    $errorString = "Error [{$error->code}] in line {$error->line}: ";
-                                    $errorString .= trim($error->message);
-                                    array_push($this->allErrors, $errorString);
-                                }
-                                libxml_clear_errors();
-                            } while ($continue);
-        
+                        $myReader = new XMLReader();
+                        $myReader->open($xmlfilename);
+                        $myReader->setSchema($mySchemaFilename);
+
+                        do {
+                            $continue = $myReader->read();
+                            foreach (libxml_get_errors() as $error) {
+                                $errorString = "Error [{$error->code}] in line {$error->line}: ";
+                                $errorString .= trim($error->message);
+                                array_push($this->allErrors, $errorString);
+                            }
+                            libxml_clear_errors();
+                        } while ($continue);
+
                         $this->_isValid = count($this->allErrors) == 0;
-                        }
+
                     } else {
                         $this->_isValid = true;
                     }

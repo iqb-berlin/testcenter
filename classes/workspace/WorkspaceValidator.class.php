@@ -403,6 +403,8 @@ class WorkspaceValidator extends WorkspaceController {
 
     private function checkIfLoginsAreUsedInOtherWorkspaces() {
 
+        // TODO use TesttakersFolder::searchAllForLogin() instead
+
         $dataDirHandle = opendir($this->_dataPath);
         while (($workspaceDirName = readdir($dataDirHandle)) !== false) {
 
@@ -425,10 +427,15 @@ class WorkspaceValidator extends WorkspaceController {
             while (($entry = readdir($otherTesttakersDirHandle)) !== false) {
 
                 $fullFilename = $otherTesttakersFolder . '/' . $entry;
+
                 if (is_file($fullFilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
+
                     $xFile = new XMLFileTesttakers($fullFilename, true);
+
                     if ($xFile->isValid()) {
+
                         foreach($xFile->getAllLoginNames() as $ln) {
+
                             if (in_array($ln, $this->allLoginNames)) {
                                 $this->reportError('double login "' . $ln . '" in Testtakers-XML-file "' . $entry . '" (other workspace "' . $wsIdOther . '")');
                             }
