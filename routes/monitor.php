@@ -34,7 +34,7 @@ $app->group('/monitor', function(App $app) {
 
         $sessionChangeMessages = $adminDAO->getTestSessions($authToken->getWorkspaceId(), [$authToken->getGroup()]);
 
-        $bsToken = md5((string)rand(0, 99999999));
+        $bsToken = md5((string) rand(0, 99999999));
 
         $broadcastServiceOnline =
             BroadcastService::push(
