@@ -4,19 +4,23 @@ declare(strict_types=1);
 // TODO unit-tests
 
 class XMLFile {
-    public $allErrors = [];
-    private $_schemaFileNames = ['Testtakers' => 'vo_Testtakers.xsd',
-                                'Booklet' => 'vo_Booklet.xsd',
-                                'SysCheck' => 'vo_SysCheck.xsd',
-                                'Unit' => 'vo_Unit.xsd'];
-    protected $_rootTagName;
-    protected $_isValid;
-    protected $_id;
-    protected $_label;
-    protected $_description;
-    protected $_filename;
-    protected $_customTexts;
 
+    private $schemaFileNames = [
+        'Testtakers' => 'vo_Testtakers.xsd',
+        'Booklet' => 'vo_Booklet.xsd',
+        'SysCheck' => 'vo_SysCheck.xsd',
+        'Unit' => 'vo_Unit.xsd'
+    ];
+
+    protected $rootTagName;
+    protected $isValid;
+    protected $id;
+    protected $label;
+    protected $description;
+    protected $filename;
+    protected $customTexts;
+
+    public $allErrors = [];
     public $xmlfile;
 
 
@@ -47,13 +51,13 @@ class XMLFile {
 
     public function __construct(string $xmlfilename, bool $validate = false, bool $isRawXml = false) {
         $this->allErrors = [];
-        $this->_rootTagName = '';
-        $this->_id = '';
-        $this->_label = '';
-        $this->_isValid = false;
+        $this->rootTagName = '';
+        $this->id = '';
+        $this->label = '';
+        $this->isValid = false;
         $this->xmlfile = false;
-        $this->_filename = $xmlfilename;
-        $this->_customTexts = [];
+        $this->filename = $xmlfilename;
+        $this->customTexts = [];
 
         $xsdFolderName = ROOT_DIR . '/definitions/';
 
@@ -76,23 +80,25 @@ class XMLFile {
 
             } else {
 
-                $this->_rootTagName = $this->xmlfile->getName();
-                if (!array_key_exists($this->_rootTagName, $this->_schemaFileNames)) {
+                $this->rootTagName = $this->xmlfile->getName();
+                if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
 
-                    array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->_rootTagName . '" unknown.');
+                    array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->rootTagName . '" unknown.');
 
                 } else {
 
-                    $mySchemaFilename = $xsdFolderName . $this->_schemaFileNames[$this->_rootTagName];
+                    $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
 
                     $myId = $this->xmlfile->Metadata[0]->Id[0];
                     if (isset($myId)) {
-                        $this->_id = strtoupper((string) $myId);
+                        $this->id = strtoupper((string) $myId);
                     }
+
+                    $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
 
                     $myDescription = $this->xmlfile->Metadata[0]->Description[0];
                     if (isset($myDescription)) {
-                        $this->_description = (string) $myDescription;
+                        $this->description = (string) $myDescription;
                     }
 
                     $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
@@ -104,7 +110,7 @@ class XMLFile {
                                 if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
                                     $costumTextKey = (string) $customTextKeyAttr;
                                     if (strlen($costumTextKey) > 0) {
-                                        $this->_customTexts[$costumTextKey] = $customTextValue;
+                                        $this->customTexts[$costumTextKey] = $customTextValue;
                                     }
                                 }
                             }
@@ -127,10 +133,10 @@ class XMLFile {
                             libxml_clear_errors();
                         } while ($continue);
 
-                        $this->_isValid = count($this->allErrors) == 0;
+                        $this->isValid = count($this->allErrors) == 0;
 
                     } else {
-                        $this->_isValid = true;
+                        $this->isValid = true;
                     }
                 }
             }
@@ -156,36 +162,36 @@ class XMLFile {
 
     public function getRoottagName() {
 
-        return $this->_rootTagName;
+        return $this->rootTagName;
     }
 
 
     public function getId() {
 
-        return $this->_id;
+        return $this->id;
     }
 
 
     public function getLabel() {
 
-        return $this->_label;
+        return $this->label;
     }
 
 
     public function getDescription() {
 
-        return $this->_description;
+        return $this->description;
     }
 
 
     public function isValid() {
 
-        return $this->_isValid;
+        return $this->isValid;
     }
 
 
     public function getCustomTexts() {
 
-        return $this->_customTexts;
+        return $this->customTexts;
     }
 }

@@ -8,7 +8,7 @@ class XMLFileTesttakers extends XMLFile {
 
     public function isValid(): bool {
 
-        return $this->_isValid and ($this->xmlfile == true) and ($this->_rootTagName === 'Testtakers');
+        return $this->isValid and ($this->xmlfile == true) and ($this->rootTagName === 'Testtakers');
     }
 
 

@@ -8,7 +8,7 @@ class XMLFileUnit extends XMLFile {
     public function getPlayer()
     {
         $myreturn = '';
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Unit')) {
+        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
             $definitionNode = $this->xmlfile->Definition[0];
             if (isset($definitionNode)) {
                 $playerAttr = $definitionNode['player'];
@@ -31,7 +31,7 @@ class XMLFileUnit extends XMLFile {
 
     public function getDefinitionRef() {
         $myreturn = '';
-        if ($this->_isValid and ($this->xmlfile != false) and ($this->_rootTagName == 'Unit')) {
+        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
             $definitionNode = $this->xmlfile->DefinitionRef[0];
             if (isset($definitionNode)) {
                 $rFilename = (string) $definitionNode;
