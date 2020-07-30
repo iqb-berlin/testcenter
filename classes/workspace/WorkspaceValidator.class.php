@@ -44,6 +44,7 @@ class WorkspaceValidator extends WorkspaceController {
         // get all logins and check booklets
         $this->readAndValidateLogins();
         $this->checkIfLoginsAreUsedInOtherWorkspaces();
+        $this->checkIfGroupsAreUsedInOtherWorkspaces();
         $this->reportInfo(strval($this->testtakersCount) . ' testtakers in ' . strval(count($this->allLoginNames)) . ' logins found');
 
         // find unused resources, units and booklets
@@ -375,9 +376,9 @@ class WorkspaceValidator extends WorkspaceController {
             }
 
             $errorBookletNames = [];
-            $myTesttakers = $xFile->getAllTesttakers();
-            $this->testtakersCount = $this->testtakersCount + count($myTesttakers);
-            foreach ($myTesttakers as $testtaker) {
+            $testtakers = $xFile->getAllTesttakers();
+            $this->testtakersCount = $this->testtakersCount + count($testtakers);
+            foreach ($testtakers as $testtaker) {
                 foreach ($testtaker['booklets'] as $bookletId) {
                     if (!$this->bookletExists($bookletId)) {
                         if (!in_array($bookletId, $errorBookletNames)) {
@@ -387,7 +388,8 @@ class WorkspaceValidator extends WorkspaceController {
                     }
                 }
                 if (!in_array($testtaker['loginname'], $this->allLoginNames)) {
-                    array_push($this->allLoginNames, $testtaker['loginname']);
+                    $this->allLoginNames[] = $testtaker['loginname'];
+                    $this->reportError("login `{$testtaker['loginname']}` in `$entry` is allready used in another file on this workspace");
                 }
             }
 
@@ -403,7 +405,7 @@ class WorkspaceValidator extends WorkspaceController {
 
     private function checkIfLoginsAreUsedInOtherWorkspaces() {
 
-        // TODO use TesttakersFolder::searchAllForLogin() instead
+        // TODO use TesttakersFolder
 
         $dataDirHandle = opendir($this->_dataPath);
         while (($workspaceDirName = readdir($dataDirHandle)) !== false) {
@@ -445,6 +447,32 @@ class WorkspaceValidator extends WorkspaceController {
             }
         }
     }
+
+
+    private function checkIfGroupsAreUsedInOtherWorkspaces() {
+
+        $testtakersFolder = new TesttakersFolder($this->_workspaceId);
+        $this->allGroups = $testtakersFolder->getAllGroups();
+
+        foreach ($this->allGroups as $group) {
+
+            /* @var Group $group */
+            foreach (TesttakersFolder::getAll() as $testtakersFolder) {
+
+                /* @var TesttakersFolder $testtakersFolder */
+                if ($testtakersFolder->getWorkspacePath() == $this->getWorkspacePath()) {
+                    continue;
+                }
+
+                if ($duplicate = $testtakersFolder->findGroup($group->getName())) {
+
+                    /* @var Group $duplicate */
+                    $this->reportError("Group-Id `{$duplicate->getName()}` also found on workspace {$testtakersFolder->_workspaceId}");
+                }
+            }
+        }
+    }
+
 
     private function findUnusedItems() {
 

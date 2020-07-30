@@ -75,4 +75,19 @@ class TesttakersFolder extends WorkspaceController {
         }
         return new PotentialLoginArray();
     }
+
+
+    // TODO unit-test
+    function getAllGroups(): array {
+
+        $groups = [];
+
+        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+
+            $xFile = new XMLFileTesttakers($fullFilePath);
+            $groups = array_merge($groups, array_values($xFile->getGroups()));
+        }
+
+        return $groups;
+    }
 }
