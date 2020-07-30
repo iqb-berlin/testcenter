@@ -102,10 +102,10 @@ class SysCheckReportFile {
     function getDigest(): array {
 
         return [
-            'os' =>  $this->getValueIfExists('envData', 'Betriebssystem') . ' '
-                . $this->getValueIfExists('envData', 'Betriebssystem-Version'),
-            'browser' => $this->getValueIfExists('envData', 'Browser') . ' '
-                . $this->getValueIfExists('envData', 'Browser-Version'),
+            'os' =>  $this->getValueIfExists('environment', 'Betriebsystem') . ' '
+                . $this->getValueIfExists('environment', 'Betriebsystem-Version'),
+            'browser' => $this->getValueIfExists('environment', 'Browser') . ' '
+                . $this->getValueIfExists('environment', 'Browser-Version'),
         ];
     }
 
