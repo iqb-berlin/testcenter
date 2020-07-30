@@ -12,8 +12,8 @@ class SysCheckReport extends DataCollection {
     public $unit = array();
     public $date = "";
 
-    public $sysCheckId = "--";
-    public $sysCheckLabel = "--";
+    public $checkId = "--";
+    public $checkLabel = "--";
 
     public function __construct($initData) {
 

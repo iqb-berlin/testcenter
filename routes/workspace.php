@@ -340,8 +340,8 @@ $app->put('/workspace/{ws_id}/sys-check/{sys-check_name}/report', function(Reque
         throw new HttpError("Wrong key `$report->keyPhrase`", 400);
     }
 
-    $report->sysCheckId = $sysCheckName;
-    $report->sysCheckLabel = $xmlFile->getLabel();
+    $report->checkId = $sysCheckName;
+    $report->checkLabel = $xmlFile->getLabel();
 
     $sysChecksFolder->saveSysCheckReport($report);
 
