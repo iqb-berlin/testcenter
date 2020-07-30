@@ -12,6 +12,9 @@ class SysCheckReport extends DataCollection {
     public $unit = array();
     public $date = "";
 
+    public $sysCheckId = "--";
+    public $sysCheckLabel = "--";
+
     public function __construct($initData) {
 
         $this->date = date('Y-m-d H:i:s', time());
