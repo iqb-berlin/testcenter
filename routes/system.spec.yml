@@ -196,3 +196,36 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
+
+  /sys-checks:
+    get:
+      summary: get a list of SysChecks
+      description: get a list of available SysChecks (from all workspaces)
+
+      responses:
+        "200":
+          description: list of SysChecks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    workspaceId:
+                      type: integer
+                    name:
+                      type: string
+                    label:
+                      type: string
+                    description:
+                      type: string
+              example:
+                - workspaceId: 1
+                  name: "SYSCHECK.SAMPLE"
+                  label: "An example SysCheck definition"
+                  description: "An example SysCheck definition with long description"
+        "204": # TODO check return code on empty folder
+          description: No SysChecks found.
+        "500":
+          description: Server Error
