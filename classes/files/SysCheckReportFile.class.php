@@ -7,12 +7,16 @@ declare(strict_types=1);
 
 class SysCheckReportFile {
 
-    const reportSections = ['envData', 'netData', 'questData', 'unitData', 'fileData'];
+    const reportSections = [
+        'envData', 'netData', 'questData', 'unitData', // deprecated section names to maintain backwards compatibility
+        'fileData',
+        'environment', 'network', 'questionnaire', 'unit'
+    ];
 
-    private $_report = [];
-    private $_checkId = '--';
-    private $_checkLabel = '--';
-    private $_fileName = '';
+    private $report = [];
+    private $checkId = '--';
+    private $checkLabel = '--';
+    private $fileName = '';
 
     function __construct($reportFilePath) {
 
@@ -26,17 +30,17 @@ class SysCheckReportFile {
             throw new HttpError("Could not read File: $reportFilePath", 500);
         }
 
-        $this->_report = JSON::decode($file, true);
+        $this->report = JSON::decode($file, true);
 
-        if (isset($this->_report['checkId']) and $this->_report['checkId']) {
-            $this->_checkId = $this->_report['checkId'];
+        if (isset($this->report['checkId']) and $this->report['checkId']) {
+            $this->checkId = $this->report['checkId'];
         }
 
-        if (isset($this->_report['checkLabel']) and $this->_report['checkLabel']) {
-            $this->_checkLabel = $this->_report['checkLabel'];
+        if (isset($this->report['checkLabel']) and $this->report['checkLabel']) {
+            $this->checkLabel = $this->report['checkLabel'];
         }
 
-        $this->_fileName = basename($reportFilePath);
+        $this->fileName = basename($reportFilePath);
 
         $this->addEntry('fileData', 'date', 'DatumTS', (string) filemtime($reportFilePath));
         $this->addEntry('fileData', 'datestr', 'Datum', date('Y-m-d H:i:s', filemtime($reportFilePath)));
@@ -46,11 +50,11 @@ class SysCheckReportFile {
 
     function addEntry(string $section, string $id, string $label, string $value): void {
 
-        if (!isset($this->_report[$section])) {
-            $this->_report[$section] = [];
+        if (!isset($this->report[$section])) {
+            $this->report[$section] = [];
         }
 
-        $this->_report[$section][] = [
+        $this->report[$section][] = [
             'id' => $id,
             'label' => $label,
             'value' => $value
@@ -60,19 +64,19 @@ class SysCheckReportFile {
 
     function get(): array {
 
-        return $this->_report;
+        return $this->report;
     }
 
 
     function getCheckLabel(): string {
 
-        return $this->_checkLabel;
+        return $this->checkLabel;
     }
 
 
     function getCheckId(): string {
 
-        return $this->_checkId;
+        return $this->checkId;
     }
 
 
@@ -82,11 +86,11 @@ class SysCheckReportFile {
 
         foreach (SysCheckReportFile::reportSections as $section) {
 
-            if (!isset($this->_report[$section])) {
+            if (!isset($this->report[$section])) {
                 continue;
             }
 
-            foreach ($this->_report[$section] as $id => $entry) {
+            foreach ($this->report[$section] as $id => $entry) {
                 $flatReport[$entry['label']] = $entry['value'];
             }
         }
@@ -109,7 +113,7 @@ class SysCheckReportFile {
     // TODO use ids instead of labels (but ids has to be set in FE)
     private function getValueIfExists(string $section, string $field, string $default = '') {
 
-        $sectionEntries = isset($this->_report[$section]) ? $this->_report[$section] : [];
+        $sectionEntries = isset($this->report[$section]) ? $this->report[$section] : [];
 
         foreach ($sectionEntries as $entry) {
 
@@ -144,7 +148,7 @@ class SysCheckReportFile {
 
     public function getFileName(): string {
 
-        return $this->_fileName;
+        return $this->fileName;
     }
 
 }
