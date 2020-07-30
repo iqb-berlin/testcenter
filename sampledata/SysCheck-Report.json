@@ -7,14 +7,14 @@
     {
       "id": "0",
       "type": "environment",
-      "label": "Betriebssystem",
+      "label": "Betriebsystem",
       "value": "Linux",
       "warning": false
     },
     {
       "id": "0",
       "type": "environment",
-      "label": "Betriebssystem-Version",
+      "label": "Betriebsystem-Version",
       "value": "x86_64",
       "warning": false
     },
