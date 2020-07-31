@@ -3,18 +3,18 @@
   "checkId": "SYSCHECK.SAMPLE",
   "checkLabel": "An example SysCheck definition",
   "title": "SAMPLE SYS-CHECK REPORT",
-  "envData": [
+  "environment": [
     {
       "id": "0",
       "type": "environment",
-      "label": "Betriebssystem",
+      "label": "Betriebsystem",
       "value": "Linux",
       "warning": false
     },
     {
       "id": "0",
       "type": "environment",
-      "label": "Betriebssystem-Version",
+      "label": "Betriebsystem-Version",
       "value": "x86_64",
       "warning": false
     },
@@ -82,7 +82,7 @@
       "warning": false
     }
   ],
-  "netData": [
+  "network": [
     {
       "id": "0",
       "type": "network",
@@ -154,7 +154,7 @@
       "value": "1.45"
     }
   ],
-  "questData": [
+  "questionnaire": [
     {
       "id": "2",
       "type": "string",
@@ -191,7 +191,7 @@
       "warning": false
     }
   ],
-  "unitData": [
+  "unit": [
     {
       "id": "0",
       "type": "unit\/player",

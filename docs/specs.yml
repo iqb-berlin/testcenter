@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: 'IQB Testcenter API - Backend'
     description: 'This a spec for the (REST-) API of the IQB-Testcenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
-    version: 3.1.1
+    version: 3.2.0
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -389,7 +389,7 @@ paths:
                                     name: super
                                     id: '1'
                                     email: null
-                                    isSuperadmin: '1'
+                                    isSuperadmin: true
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -428,6 +428,35 @@ paths:
                     description: Forbidden
                 '410':
                     description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
+    /sys-checks:
+        get:
+            summary: 'get a list of SysChecks'
+            description: 'get a list of available SysChecks'
+            responses:
+                '200':
+                    description: 'list of SysChecks'
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties: {workspaceId: {type: integer}, name: {type: string}, label: {type: string}, description: {type: string}}
+                            example:
+                                -
+                                    workspaceId: 1
+                                    name: SYSCHECK.SAMPLE
+                                    label: 'An example SysCheck definition'
+                                    description: 'An example SysCheck definition with long description'
+                '204':
+                    description: 'No SysChecks found.'
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                            example: ""
                 '500':
                     description: 'Server Error'
     '/test/{test_id}':
@@ -2519,8 +2548,8 @@ components:
                     nullable: true
                     example: null
                 isSuperadmin:
-                    type: string
-                    example: '1'
+                    type: boolean
+                    example: true
                 selected:
                     type: boolean
                     example: true
