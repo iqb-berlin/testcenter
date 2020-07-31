@@ -44,7 +44,7 @@ class WorkspaceValidator extends WorkspaceController {
         // get all logins and check booklets
         $this->readAndValidateLogins();
         $this->checkIfLoginsAreUsedInOtherWorkspaces();
-        $this->checkIfGroupsAreUsedInOtherWorkspaces();
+        $this->checkIfGroupsAreUsedInOtherFiles();
         $this->reportInfo(strval($this->testtakersCount) . ' testtakers in ' . strval(count($this->allLoginNames)) . ' logins found');
 
         // find unused resources, units and booklets
@@ -389,7 +389,7 @@ class WorkspaceValidator extends WorkspaceController {
                 }
                 if (!in_array($testtaker['loginname'], $this->allLoginNames)) {
                     $this->allLoginNames[] = $testtaker['loginname'];
-                    $this->reportError("login `{$testtaker['loginname']}` in `$entry` is allready used in another file on this workspace");
+                    $this->reportError("login `{$testtaker['loginname']}` in `$entry` is already used in another file on this workspace");
                 }
             }
 
@@ -449,25 +449,38 @@ class WorkspaceValidator extends WorkspaceController {
     }
 
 
-    private function checkIfGroupsAreUsedInOtherWorkspaces() {
+    private function checkIfGroupsAreUsedInOtherFiles() {
 
-        $testtakersFolder = new TesttakersFolder($this->_workspaceId);
-        $this->allGroups = $testtakersFolder->getAllGroups();
+        $otherTesttakersFolder = new TesttakersFolder($this->_workspaceId);
+        $this->allGroups = $otherTesttakersFolder->getAllGroups();
 
-        foreach ($this->allGroups as $group) {
+        foreach ($this->allGroups as $filePath => $groupList) {
 
             /* @var Group $group */
-            foreach (TesttakersFolder::getAll() as $testtakersFolder) {
+            foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
 
-                /* @var TesttakersFolder $testtakersFolder */
-                if ($testtakersFolder->getWorkspacePath() == $this->getWorkspacePath()) {
-                    continue;
-                }
+                /* @var TesttakersFolder $otherTesttakersFolder */
+                $allGroupsInOtherWorkspace = $otherTesttakersFolder->getAllGroups();
 
-                if ($duplicate = $testtakersFolder->findGroup($group->getName())) {
+                foreach ($allGroupsInOtherWorkspace as $otherFilePath => $otherGroupList) {
 
-                    /* @var Group $duplicate */
-                    $this->reportError("Group-Id `{$duplicate->getName()}` also found on workspace {$testtakersFolder->_workspaceId}");
+                    if ($filePath == $otherFilePath) {
+                        continue;
+                    }
+
+                    $duplicates = array_intersect_key($groupList, $otherGroupList);
+
+                    if ($duplicates) {
+
+                        foreach ($duplicates as $duplicate) {
+
+                            $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
+                                ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
+                                : "in file `" . basename($otherFilePath) . "`";
+                            $this->reportError("Duplicate Group-Id: `{$duplicate->getName()}` - $location");
+                        }
+                    }
+
                 }
             }
         }
@@ -494,7 +507,4 @@ class WorkspaceValidator extends WorkspaceController {
             }
         }
     }
-
-
-
 }

@@ -150,4 +150,20 @@ class TesttakersFolderTest extends TestCase {
         $this->assertNull($result);
     }
 
+
+    function test_getAllGroups() {
+
+        $result = $this->folder->getAllGroups();
+        $expected = [
+            'vfs://root/vo_data/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML' => [
+                'sample_group' => new Group('sample_group', 'Primary Sample Group'),
+                'review_group' => new Group('review_group', 'A Group of Reviewers'),
+                'trial_group' => new Group('trial_group', 'A Group for Trails'),
+                'passwordless_group' => new Group('passwordless_group', 'A group of persons without password'),
+                'expired_group' => new Group('expired_group', 'An already expired group'),
+                'future_group' => new Group('future_group', 'An not yet active group')
+            ]
+        ];
+        $this->assertEquals($expected, $result);
+    }
 }

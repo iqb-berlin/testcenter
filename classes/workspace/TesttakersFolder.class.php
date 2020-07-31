@@ -77,7 +77,6 @@ class TesttakersFolder extends WorkspaceController {
     }
 
 
-    // TODO unit-test
     function getAllGroups(): array {
 
         $groups = [];
@@ -85,7 +84,12 @@ class TesttakersFolder extends WorkspaceController {
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
-            $groups = array_merge($groups, array_values($xFile->getGroups()));
+
+            if ($xFile->isValid()) {
+
+                $groups[$fullFilePath] = $xFile->getGroups();
+            }
+
         }
 
         return $groups;
