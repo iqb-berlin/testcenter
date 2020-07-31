@@ -433,7 +433,7 @@ paths:
     /sys-checks:
         get:
             summary: 'get a list of SysChecks'
-            description: 'get a list of available SysChecks'
+            description: 'get a list of available SysChecks (from all workspaces)'
             responses:
                 '200':
                     description: 'list of SysChecks'
@@ -452,11 +452,6 @@ paths:
                                     description: 'An example SysCheck definition with long description'
                 '204':
                     description: 'No SysChecks found.'
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                            example: ""
                 '500':
                     description: 'Server Error'
     '/test/{test_id}':
