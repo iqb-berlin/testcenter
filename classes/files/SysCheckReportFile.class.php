@@ -17,6 +17,7 @@ class SysCheckReportFile {
     private $checkId = '--';
     private $checkLabel = '--';
     private $fileName = '';
+    private $title = '--';
 
     function __construct($reportFilePath) {
 
@@ -38,6 +39,10 @@ class SysCheckReportFile {
 
         if (isset($this->report['checkLabel']) and $this->report['checkLabel']) {
             $this->checkLabel = $this->report['checkLabel'];
+        }
+
+        if (isset($this->report['title']) and $this->report['title']) {
+            $this->title = $this->report['title'];
         }
 
         $this->fileName = basename($reportFilePath);
@@ -82,7 +87,11 @@ class SysCheckReportFile {
 
     function getFlat(): array {
 
-        $flatReport = [];
+        $flatReport = [
+            'Titel' => $this->title,
+            'SysCheck-Id' => $this->checkId,
+            'SysCheck' => $this->checkLabel
+        ];
 
         foreach (SysCheckReportFile::reportSections as $section) {
 
