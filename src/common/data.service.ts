@@ -45,13 +45,11 @@ export class DataService {
         }
     } = {};
 
-
     public applySessionChange(sessionChange: SessionChange) {
         console.log('sessionChange received', JSON.stringify(sessionChange));
         this.addSessionChange(sessionChange);
         this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
     }
-
 
     private addSessionChange(sessionChange: SessionChange): void {
         const group: string = sessionChange.groupName;
@@ -83,7 +81,6 @@ export class DataService {
         }
     }
 
-
     private broadcastTestSessionsToGroupMonitors(groupName: string) {
         if (typeof this.monitors[groupName] !== "undefined") {
             console.log("broadcasting data about group: " + groupName);
@@ -94,7 +91,6 @@ export class DataService {
             this.eventsGateway.broadCastToRegistered(tokens, "test-sessions", sessions);
         }
     }
-
 
     public addMonitor(monitor: Monitor): void {
         monitor.groups.forEach((group: string) => {
@@ -110,7 +106,6 @@ export class DataService {
             this.monitors[group][monitor.token] = monitor;
         });
     }
-
 
     public removeMonitor(monitorToken: string): void {
         console.log('remove monitor: ' + monitorToken);
@@ -128,7 +123,6 @@ export class DataService {
         this.eventsGateway.disconnectClient(monitorToken);
     }
 
-
     public getMonitors(): Monitor[] {
         return Object.values(this.monitors)
             .reduce(
@@ -139,7 +133,6 @@ export class DataService {
             .filter((v: Monitor, i: number, a: Monitor[]) => a.indexOf(v) === i);
     }
 
-
     public getTestSessions(): SessionChange[] {
         return Object.values(this.testSessions)
             .reduce(
@@ -148,7 +141,6 @@ export class DataService {
                 []
             );
     }
-
 
     public getClientTokens(): string[] {
         return this.eventsGateway.getClientTokens();
