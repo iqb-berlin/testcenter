@@ -1,7 +1,5 @@
-<Unit
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.4.1/vo_code/vo_Unit.xsd"
->
+<?xml version="1.0" encoding="utf-8"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/4.0.0/definitions/unit.xsd">
   <Metadata>
     <Id>UNIT.SAMPLE-2</Id>
     <Label>Another sample unit</Label>

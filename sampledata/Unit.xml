@@ -1,4 +1,5 @@
-<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/use-experimental-broadcast-service/definitions/vo_Unit.xsd">
+<?xml version="1.0" encoding="utf-8"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/4.0.0/definitions/vo_Unit.xsd">
   <Metadata>
     <Id>UNIT.SAMPLE</Id>
     <Label>A sample unit</Label>
