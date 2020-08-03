@@ -399,8 +399,9 @@ class AdminDAO extends DAO {
                 unit_id,
                 max(units.name) as name,
                 max(timestamp) as timestamp,
-                max(laststate) as laststate,
-                group_concat(logentry separator '||||') as log
+                max(laststate) as laststate
+                -- ,
+                -- group_concat(logentry separator '||||') as log
             from
                 units 
                 left join unit_logs on units.id = unit_logs.unit_id
@@ -419,9 +420,9 @@ class AdminDAO extends DAO {
         }
 
         $state = JSON::decode($unitData['laststate'], true) ?? [];
-        foreach (explode('||||', $unitData['log']) as $logEntry) {
-            $state = array_merge($state, $this->log2itemState($logEntry));
-        }
+//        foreach (explode('||||', $unitData['log']) as $logEntry) {
+//            $state = array_merge($state, $this->log2itemState($logEntry));
+//        }
 
         return [
             'name' => $unitData['name'],
