@@ -25,7 +25,6 @@ paths:
           schema:
             type: string
 
-
       responses:
         "200":
           description: return group data
@@ -43,5 +42,65 @@ paths:
           description: Forbidden
         "404":
           description: Group not found
+        "500":
+          description: Server Error
+
+  /monitor/test-sessions:
+    get:
+      summary: get TestSessions of a group
+      description: "Retrieves all running test sessions from group of a group-monitor.
+        Returns also an URL to a websocket to subscribe this information if available.
+        Sessions for Persons of this group which are not created right now get created."
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+
+      responses:
+        "200":
+          description: return group data
+          content:
+            application/json:
+              example:
+              - personId: 1
+                groupName: sample_group
+                personLabel: sample_user/xxx
+                groupLabel: Sample group
+                mode: run-hot-return
+                testId: 1
+                testState:
+                  LASTUNIT: '1'
+                  sample log entry: 1
+                bookletName: BOOKLET.SAMPLE
+                unitName: UNIT.SAMPLE
+                unitState:
+                  PRESENTATIONCOMPLETE: 'yes'
+                timestamp: 1596455898
+              - personId: 3
+                groupName: sample_group
+                personLabel: test-study-monitor
+                groupLabel: Sample group
+                mode: monitor-study
+                testId: -1
+                testState: []
+                unitState: []
+                timestamp: 1596455898
+              - personId: 4
+                groupName: sample_group
+                personLabel: test-group-monitor
+                groupLabel: Sample group
+                mode: monitor-group
+                testId: -1
+                testState: []
+                unitState: []
+                timestamp: 1596455898
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
         "500":
           description: Server Error
