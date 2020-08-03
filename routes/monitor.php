@@ -1,6 +1,8 @@
 <?php
 
 use Slim\App;
+use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -12,7 +14,6 @@ $app->group('/monitor', function(App $app) {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
-
         $groupName = $request->getAttribute('group_name');
 
         $testtakersFolder = new TesttakersFolder($authToken->getWorkspaceId());
@@ -20,7 +21,14 @@ $app->group('/monitor', function(App $app) {
         $group = $testtakersFolder->findGroup($groupName);
 
         if (!$group) {
-            throw new HttpError("Group `$groupName` not found.");
+
+            throw new HttpNotFoundException($request, "Group `$groupName` not found.");
+        }
+
+        // currently a group-monitor can always only monitor it's own group
+        if ($groupName !== $authToken->getGroup()) {
+
+            throw new HttpForbiddenException($request,"Group `$groupName` not allowed.");
         }
 
         return $response->withJson($group);
@@ -32,7 +40,10 @@ $app->group('/monitor', function(App $app) {
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
-        $sessionChangeMessages = $adminDAO->getTestSessions($authToken->getWorkspaceId(), [$authToken->getGroup()]);
+        // currently a group-monitor can always only monitor it's own group
+        $groupNames = [$authToken->getGroup()];
+
+        $sessionChangeMessages = $adminDAO->getTestSessions($authToken->getWorkspaceId(), $groupNames);
 
         $bsToken = md5((string) rand(0, 99999999));
 
@@ -62,4 +73,5 @@ $app->group('/monitor', function(App $app) {
     });
 
 })
+    ->add(new IsGroupMonitor())
     ->add(new RequireToken('person'));

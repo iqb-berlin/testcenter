@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-/** @noinspection PhpUnhandledExceptionInspection */
 use org\bovigo\vfs\vfsStream;
 
 // TODO unit-tests galore
@@ -123,7 +122,8 @@ class TestEnvironment {
 
         $initDAO->createSampleLoginsReviewsLogs('xxx');
         $initDAO->createSampleExpiredSessions('xxx');
-        $initDAO->createSampleMonitorSession();
+        $initDAO->createSampleMonitorSessions();
+        TestEnvironment::debugVirtualEnvironment();
     }
 
 

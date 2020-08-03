@@ -29,7 +29,10 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
             authToken = newAuthTokenData.loginToken;
             break;
         case 'm':
-            authToken = newAuthTokenData.monitorToken;
+            authToken = newAuthTokenData.workspaceMonitorToken;
+            break;
+        case 'g':
+            authToken = newAuthTokenData.groupMonitorToken;
             break;
     }
 
@@ -60,7 +63,6 @@ const changeUri = (transaction, changeMap) => {
         transaction.request.uri = transaction.request.uri.replace(key, changeMap[key]);
         transaction.fullPath = transaction.fullPath.replace(key, changeMap[key]);
     });
-
 };
 
 
@@ -93,7 +95,8 @@ dreddHooks.beforeEach(function(transaction, done) {
                 adminToken: 'static:admin:super',
                 loginToken: 'static:login:sample_user',
                 personToken: 'static:person:sample_group_sample_user_xxx',
-                monitorToken: 'static:person:sample_group_test-study-monitor_'
+                workspaceMonitorToken: 'static:person:sample_group_test-study-monitor_',
+                groupMonitorToken: 'static:person:sample_group_test-group-monitor_'
             });
             break;
         case '400':
@@ -114,7 +117,8 @@ dreddHooks.beforeEach(function(transaction, done) {
                 adminToken: '__invalid_token__',
                 loginToken: '__invalid_token__',
                 personToken: '__invalid_token__',
-                monitorToken: 'static:person:sample_group_sample_user_xxx'
+                workspaceMonitorToken: 'static:person:sample_group_sample_user_xxx',
+                groupMonitorToken: 'static:person:sample_group_sample_user_xxx'
             });
             break;
         case '404':
@@ -122,18 +126,21 @@ dreddHooks.beforeEach(function(transaction, done) {
                 adminToken: 'static:admin:super',
                 loginToken: 'static:login:sample_user',
                 personToken: 'static:person:sample_group_sample_user_xxx',
-                monitorToken: 'static:person:sample_group_test-study-monitor_'
+                workspaceMonitorToken: 'static:person:sample_group_test-study-monitor_',
+                groupMonitorToken: 'static:person:sample_group_test-group-monitor_'
             });
             changeUri(transaction, {
-                '/workspace/1/': '/workspace/13/'
+                '/workspace/1': '/workspace/13',
+                '/group/sample_group': '/group/invalid_group'
             });
             break;
         case '410':
             changeAuthToken(transaction,{
                 adminToken: 'static:admin:expired_user',
                 loginToken: 'static:login:expired_user',
-                personToken: 'static:person:sample_group_expired_user_xxx',
-                monitorToken: 'static:person:sample_group_expired_user_xxx'
+                personToken: 'static:person:expired_group_expired_user_xxx',
+                workspaceMonitorToken: 'static:person:expired_group_expired-study-monitor_',
+                groupMonitorToken: 'static:person:expired_group_expired-group-monitor_'
             });
             break;
         default:

@@ -46,6 +46,8 @@
     <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-expired">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
+    <Login mode="monitor-group" name="expired-group-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
+    <Login mode="monitor-study" name="expired-study-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
   </Group>
 
   <Group id="future_group" validFrom="26/3/2030 9:00" label="An not yet active group">

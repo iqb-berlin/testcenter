@@ -68,7 +68,7 @@ class InitDAO extends SessionDAO {
         $testSession = new PotentialLogin(
             'expired_user',
             'run-hot-return',
-            'sample_group',
+            'expired_group',
              [$loginCode => ['BOOKLET.SAMPLE']],
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
@@ -82,9 +82,9 @@ class InitDAO extends SessionDAO {
     }
 
 
-    public function createSampleMonitorSession(): void {
+    public function createSampleMonitorSessions(): void {
 
-        $testSession = new PotentialLogin(
+        $testSessionWorkspaceMonitor = new PotentialLogin(
             'test-study-monitor',
             'monitor-study',
             'sample_group',
@@ -92,8 +92,41 @@ class InitDAO extends SessionDAO {
             1,
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
-        $login = $this->createLogin($testSession);
+        $login = $this->createLogin($testSessionWorkspaceMonitor);
         $this->createPerson($login, '');
+
+        $testSessionGroupMonitor = new PotentialLogin(
+            'test-group-monitor',
+            'monitor-group',
+            'sample_group',
+            [],
+            1,
+            TimeStamp::fromXMLFormat('1/1/2030 12:00')
+        );
+        $login = $this->createLogin($testSessionGroupMonitor);
+        $this->createPerson($login, '');
+
+        $testSession = new PotentialLogin(
+            'expired-group-monitor',
+            'monitor-group',
+            'expired_group',
+            ['' => ['']],
+            1,
+            TimeStamp::fromXMLFormat('1/1/2000 12:00')
+        );
+        $login = $this->createLogin($testSession, true);
+        $this->createPerson($login, '', true);
+
+        $testSession = new PotentialLogin(
+            'expired-study-monitor',
+            'monitor-study',
+            'expired_group',
+            ['' => ['']],
+            1,
+            TimeStamp::fromXMLFormat('1/1/2000 12:00')
+        );
+        $login = $this->createLogin($testSession, true);
+        $this->createPerson($login, '', true);
     }
 
 

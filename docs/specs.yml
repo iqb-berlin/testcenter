@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-    title: 'IQB Testcenter API - Backend'
+    title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter APP. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for out vision of continuous integration.'
     version: 3.2.0
 paths:
@@ -67,6 +67,42 @@ paths:
                     description: 'Not authenticated'
                 '403':
                     description: Forbidden
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
+    '/monitor/group/{group_name}':
+        get:
+            summary: 'get a group'
+            description: 'Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the requesting user, who has to be have the role `monitor-group`.'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for group-monitor'
+                    example: 'g:user000000000.0000000000'
+                -
+                    in: path
+                    name: group_name
+                    description: 'name (id) of a group'
+                    example: sample_group
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'return group data'
+                    content:
+                        application/json:
+                            example:
+                                label: 'Primary Sample Group'
+                                name: sample_group
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '404':
+                    description: 'Group not found'
                 '410':
                     description: 'Session Expired'
                 '500':
