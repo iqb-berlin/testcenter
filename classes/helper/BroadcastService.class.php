@@ -45,18 +45,22 @@ class BroadcastService {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => $verb,
             CURLOPT_POSTFIELDS => $message,
-            CURLOPT_FAILONERROR => true,
+            CURLOPT_FAILONERROR, false, // allows to read body on error
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json"
             ],
         ]);
 
         $curlResponse = curl_exec($curl);
+        $errorCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-        if (curl_error($curl)) {
+        if (($errorCode === 0) or ($curlResponse === false)) {
+            error_log("BroadcastingService responds Error on `[$verb] $endpoint`: not available");
+            return null;
+        }
 
-            $errorCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            error_log("CURL Error ($errorCode): " . print_r($curlResponse, true));
+        if ($errorCode >= 400) {
+            error_log("BroadcastingService responds Error on `[$verb] $endpoint`: [$errorCode] $curlResponse");
             return null;
         }
 
