@@ -40,7 +40,12 @@ export class ErrorHandler extends BaseExceptionFilter {
             status = HttpStatus.BAD_REQUEST;
         }
 
-        response.status(status).send();
+        const message = exception.message;
+
+        response
+            .status(status)
+            .contentType('text')
+            .send(message);
 
         if (status >= 500) {
             this.eventsGateway.disconnectAll();
