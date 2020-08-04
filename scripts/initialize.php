@@ -66,15 +66,17 @@ try  {
     echo "\n Sys-Config";
     if (!file_exists(ROOT_DIR . '/config/system.json')) {
 
-        echo "\n System-Config not file found (`/config/system.json`). "
-            . "\nCreate it manually of provide arguments: "
-            . "\n--broadcastServiceUri=";
+        echo "\n System-Config not file found (`/config/system.json`). Will be created.";
 
-        $sysConf = new SystemConfig(getopt("", [
-            'broadcastServiceUri::'
-        ]));
+        $params = getopt("", [
+            'broadcast_service_uri::'
+        ]);
 
-        BroadcastService::setup($sysConf);
+        $sysConf = new SystemConfig([
+            'broadcastServiceUri' => $params['broadcast_service_uri'] ?? ''
+        ]);
+
+        BroadcastService::setup($sysConf->broadcastServiceUri);
 
         echo "\nProvided arguments OK.";
 
@@ -85,7 +87,6 @@ try  {
 
         echo "\nSystem-Config file written.";
     }
-
 
     echo "\n# Database config";
     if (!file_exists(ROOT_DIR . '/config/DBConnectionData.json')) {
