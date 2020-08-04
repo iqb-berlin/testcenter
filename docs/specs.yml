@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 4.0.0
+    version: 4.0.2
 paths:
     '/booklet/{booklet_name}':
         get:

@@ -65,6 +65,7 @@ class WorkspaceInitializer {
     public function importSampleData(int $workspaceId, InstallationArguments $parameters): void {
 
         $this->importSampleFile($workspaceId, 'Booklet.xml', $parameters);
+        $this->importSampleFile($workspaceId, 'Booklet2.xml', $parameters, 'Booklet');
         $this->importSampleFile($workspaceId, 'Testtakers.xml', $parameters);
         $this->importSampleFile($workspaceId, 'SysCheck.xml', $parameters);
         $this->importSampleFile($workspaceId, 'Unit.xml', $parameters);

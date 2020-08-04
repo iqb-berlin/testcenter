@@ -1,10 +1,13 @@
 <?php
 
+// TODO find a way to write unit-tests with mocked objects although we don't use namespaces
+
 /**
- * STAND problem: prcess isolation bringt nix, die echten objecte werden trotzdem geladne (evtl. nach setup verlegen?)
+ *
+ * STAND problem: process isolation bringt nix, die echten objecte werden trotzdem geladen (evtl. nach setup verlegen?)
  *
  *  clear && vendor/bin/phpunit --process-isolation
- * sehen ob man es hinkriegt, das hier alle Moduel gemocked werden können
+ * sehen ob man es hinkriegt, das hier alle Module gemocked werden können
  *
  * * testen ob richtig gebroadcatses etc. wird
  * * sampledata teststakers ->!
@@ -57,30 +60,30 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class SessionControllerTest extends TestCase {
-
-
-    function setUp() {
-
-
-
-        parent::setUp();
-    }
-
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
-    function test_registerGroup() {
-
-            require_once "Mock.php";
-
-            SessionController::registerGroup(
-                new Login('monitor', 'monitor-group'), new Person()
-            );
-
-//            print_r(BroadcastService::$log);
-
-        }
-
-}
+//class SessionControllerTest extends TestCase {
+//
+//
+//    function setUp() {
+//
+//
+//
+//        parent::setUp();
+//    }
+//
+//    /**
+//     * @runInSeparateProcess
+//     * @preserveGlobalState disabled
+//     */
+//    function test_registerGroup() {
+//
+//            require_once "Mock.php";
+//
+//            SessionController::registerGroup(
+//                new Login('monitor', 'monitor-group'), new Person()
+//            );
+//
+////            print_r(BroadcastService::$log);
+//
+//        }
+//
+//}
