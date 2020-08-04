@@ -13,7 +13,6 @@
 
     <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet codes="__TEST_PERSON_CODES__">BOOKLET.SAMPLE</Booklet>
-      <Booklet>BOOKLET.SAMPLE-2</Booklet><!-- TODO clean this up -->
     </Login>
 
     <Login mode="monitor-group" name="__TEST_LOGIN_NAME__-group-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
