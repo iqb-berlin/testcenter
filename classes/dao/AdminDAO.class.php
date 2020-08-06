@@ -356,7 +356,6 @@ class AdminDAO extends DAO {
                     $unit['name'],
                     $unit['state']
                 );
-
             }
 
             $sessionChangeMessages->add($sessionChangeMessage);
@@ -368,22 +367,7 @@ class AdminDAO extends DAO {
 
 	private function getTestFullState(array $testSessionData): array {
 
-        $testLogData = $this->_("select
-                    timestamp,
-                    logentry
-                from
-                    test_logs
-                where booklet_id = :testId
-                order by timestamp",
-            [':testId' => $testSessionData['testId']],
-            true
-        );
-
         $testState = JSON::decode($testSessionData['testState'], true);
-
-        foreach ($testLogData as $testLogDataRow) {
-            $testState = array_merge($testState, $this->log2itemState($testLogDataRow['logentry']));
-        }
 
         if ($testSessionData['locked']) {
             $testState['status'] = 'locked';
@@ -396,19 +380,12 @@ class AdminDAO extends DAO {
 	private function getLastUnit(int $testId): array {
 
         $unitData = $this->_("select
-                unit_id,
-                max(units.name) as name,
-                max(timestamp) as timestamp,
-                max(laststate) as laststate
-                -- ,
-                -- group_concat(logentry separator '||||') as log
+                name,
+                laststate
             from
                 units 
-                left join unit_logs on units.id = unit_logs.unit_id
-            where units.booklet_id = :testId
-            group by units.id
-            order by timestamp desc
-            limit 1",
+            where
+                units.booklet_id = :testId",
             [':testId' => $testId]
         );
 
@@ -420,9 +397,6 @@ class AdminDAO extends DAO {
         }
 
         $state = JSON::decode($unitData['laststate'], true) ?? [];
-//        foreach (explode('||||', $unitData['log']) as $logEntry) {
-//            $state = array_merge($state, $this->log2itemState($logEntry));
-//        }
 
         return [
             'name' => $unitData['name'],
