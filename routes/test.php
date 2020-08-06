@@ -187,6 +187,7 @@ $app->group('/test', function(App $app) {
         ->add(new IsTestWritable());
 
 
+    // todo allow more than one state change at once
     $app->patch('/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($testDAO) {
 
         /* @var $authToken AuthToken */

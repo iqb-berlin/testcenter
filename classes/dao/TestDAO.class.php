@@ -181,6 +181,7 @@ class TestDAO extends DAO {
         $state = $unitData['laststate'] ? JSON::decode($unitData['laststate'], true) : [];
         $state[$stateKey] = $stateValue;
 
+        // todo save states in separate key-value table instead of JSON blob
         $this->_(
             'UPDATE units SET laststate = :laststate WHERE id = :id',
             [
