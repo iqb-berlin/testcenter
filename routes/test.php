@@ -7,6 +7,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 
+/** @var App $app */
 $app->group('/test', function(App $app) {
 
 
@@ -196,15 +197,12 @@ $app->group('/test', function(App $app) {
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
-        $body = RequestBodyParser::getElements($request, [
-            'key' => null,
-            'value' => null
-        ]);
+        $bodyAsObject = RequestBodyParser::getElements($request);
 
-        $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
+        $updatedState = $testDAO->updateUnitLastState($testId, $unitName, $bodyAsObject);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::unitState($authToken, $testId, $unitName, [$body['key'] => $body['value']])
+            SessionChangeMessage::unitState($authToken, $testId, $unitName, $updatedState)
         );
 
         return $response->withStatus(200);

@@ -72,7 +72,6 @@ paths:
                 testId: 1
                 testState:
                   LASTUNIT: '1'
-                  sample log entry: 1
                 bookletName: BOOKLET.SAMPLE
                 unitName: UNIT.SAMPLE
                 unitState:

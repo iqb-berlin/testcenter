@@ -167,7 +167,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function updateUnitLastState(int $testId, string $unitName, string $stateKey, string $stateValue): void {
+    public function updateUnitLastState(int $testId, string $unitName, array $keyValuePairs): array {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
 
@@ -179,7 +179,9 @@ class TestDAO extends DAO {
         );
 
         $state = $unitData['laststate'] ? JSON::decode($unitData['laststate'], true) : [];
-        $state[$stateKey] = $stateValue;
+        foreach ($keyValuePairs as $key => $value) {
+            $state[$key] = $value;
+        }
 
         // todo save states in separate key-value table instead of JSON blob
         $this->_(
@@ -189,6 +191,8 @@ class TestDAO extends DAO {
                 ':id' => $unitDbId
             ]
         );
+
+        return $state;
     }
 
 
