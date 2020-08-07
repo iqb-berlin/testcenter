@@ -197,9 +197,9 @@ $app->group('/test', function(App $app) {
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
-        $bodyAsObject = RequestBodyParser::getElements($request);
+        $bodyAssoc = JSON::decode($request->getBody()->getContents(), true);
 
-        $updatedState = $testDAO->updateUnitLastState($testId, $unitName, $bodyAsObject);
+        $updatedState = $testDAO->updateUnitLastState($testId, $unitName, $bodyAssoc);
 
         BroadcastService::sessionChange(
             SessionChangeMessage::unitState($authToken, $testId, $unitName, $updatedState)

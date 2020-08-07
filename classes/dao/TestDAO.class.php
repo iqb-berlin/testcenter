@@ -151,7 +151,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function getUnitLastState(int $testId, string $unitName): stdClass {
+    public function getUnitLastState(int $testId, string $unitName): array {
 
         $unitData = $this->_(
             'SELECT units.laststate FROM units
@@ -162,7 +162,7 @@ class TestDAO extends DAO {
             ]
         );
         // TODO Exception if not found
-        return JSON::decode($unitData['laststate']);
+        return JSON::decode($unitData['laststate'], true);
     }
 
 
