@@ -10,8 +10,6 @@ const jsonTransform = require('./helper/json-transformer');
 const composerFile = require('../composer.json');
 
 
-// globals
-
 const apiUrl = process.env.TC_API_URL || 'http://localhost';
 const specialTestConfig = fs.existsSync('../config/e2eTests.json')
     ? JSON.parse(fs.readFileSync('../config/e2eTests.json').toString())
@@ -126,7 +124,7 @@ gulp.task('prepare_spec_for_dredd', done => {
         "application/octet-stream > example$": () => null, // TODO work with this in dreddHooks?
         "^paths > .*? > .*? > responses > (500|202)$": () => null,
         "schema > \\$ref$": resolveReference,
-        "items > \\$ref$": resolveReference,
+        "items > \\$ref$": resolveReference
     };
 
 
@@ -187,10 +185,10 @@ gulp.task('update_docs', done => {
     const rules = {
         "schema > \\$ref$": localizeReference,
         "items > \\$ref$": localizeReference,
-        "info > version": () => ({
-            key: 'version',
-            val: composerFile['version']
-        })
+        "> version$": (key, val) => {return {
+            key: "version",
+            val: (val === "%%%VERSION%%%") ? composerFile['version'] : val
+        }}
     };
 
     const transformed = jsonTransform(yamlTree, rules, false);

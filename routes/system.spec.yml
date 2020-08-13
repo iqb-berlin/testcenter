@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: ""
-  version: ""
+  version: "%%%VERSION%%%"
 
 paths:
   /list/routes:
@@ -22,9 +22,9 @@ paths:
   /system/config:
     get:
       summary: get system config
-      description: returns publicy avaialable parts of system config
+      description: "returns publicly available parts of system config
         - version number
-        - customTexts for UI
+        - customTexts for UI"
       responses:
         "200":
           description: OK
@@ -35,14 +35,13 @@ paths:
                 properties:
                   version:
                     type: string
-                    example: "2.0.0"
                   customTexts:
                     type: object
                 required:
                   - version
                   - customTexts
               example:
-                version: "2.0.0"
+                version: "%%%VERSION%%%"
                 customTexts: {}
         "500":
           description: Server Error
@@ -55,12 +54,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                properties:
-                  version:
-                    type: string
               example:
-                version: "2.0.0-beta"
+                version: "%%%VERSION%%%"
 
   /workspaces:
     get:
