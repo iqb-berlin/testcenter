@@ -21,7 +21,7 @@ services:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: secret_root_pw
     volumes:
-      - dbdata:/var/lib/mysql
+      - ./data/db:/var/lib/mysql
     ports:
       - "9091:3306"
 
@@ -38,8 +38,8 @@ services:
     depends_on:
       - testcenter-db
     volumes:
-      - ./testcenter-backend/data:/var/www/html/vo_data
-      - vendor_backend:/var/www/html/vendor
+      - ../vo_data:/var/www/html/vo_data
+      - ../vendor:/var/www/html/vendor
     ports:
       - "9092:80"
 
