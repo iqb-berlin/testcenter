@@ -10,8 +10,6 @@ const jsonTransform = require('./helper/json-transformer');
 const composerFile = require('../composer.json');
 
 
-// globals
-
 const apiUrl = process.env.TC_API_URL || 'http://localhost';
 const specialTestConfig = fs.existsSync('../config/e2eTests.json')
     ? JSON.parse(fs.readFileSync('../config/e2eTests.json').toString())
@@ -127,6 +125,10 @@ gulp.task('prepare_spec_for_dredd', done => {
         "^paths > .*? > .*? > responses > (500|202)$": () => null,
         "schema > \\$ref$": resolveReference,
         "items > \\$ref$": resolveReference,
+        "version": () => {return {
+            key: "version",
+            val: composerFile['version']
+        }}
     };
 
 

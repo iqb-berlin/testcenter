@@ -5,7 +5,7 @@ info:
   description: "This a spec for the (REST-) API of the IQB-Testcenter Application.
     It will be used to make backend's e2e-test and a mock-server for frontend's e2e-tests.
     It's the basis for our vision of continuous integration."
-  version: "4.0.0"
+  version: "%%%VERSION%%%"
 
 paths:
 

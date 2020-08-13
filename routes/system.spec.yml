@@ -2,7 +2,7 @@ openapi: 3.0.0
 
 info:
   title: ""
-  version: ""
+  version: "%%%VERSION%%%"
 
 paths:
   /list/routes:
@@ -42,7 +42,7 @@ paths:
                   - version
                   - customTexts
               example:
-                version: "2.0.0"
+                version: "%%%VERSION%%%"
                 customTexts: {}
         "500":
           description: Server Error
@@ -60,7 +60,7 @@ paths:
                   version:
                     type: string
               example:
-                version: "2.0.0-beta"
+                version: "%%%VERSION%%%"
 
   /workspaces:
     get:
