@@ -375,13 +375,13 @@ paths:
                             schema:
                                 type: object
                                 properties:
-                                    version: {type: string, example: 2.0.0}
+                                    version: {type: string, example: 4.0.0}
                                     customTexts: {type: object}
                                 required:
                                     - version
                                     - customTexts
                             example:
-                                version: 2.0.0
+                                version: 4.0.0
                                 customTexts: {}
                 '500':
                     description: 'Server Error'
@@ -397,7 +397,7 @@ paths:
                                 properties:
                                     version: {type: string}
                             example:
-                                version: 2.0.0-beta
+                                version: 4.0.0
     /workspaces:
         get:
             summary: 'get a list of workspaces'
