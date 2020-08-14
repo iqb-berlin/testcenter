@@ -327,8 +327,29 @@ class TestDAO extends DAO {
     }
 
     // TODO unit test
-    public function getCommands(int $testId, string $lastCommandId): array {
+    public function getCommands(int $testId, ?string $lastCommandId = null): array {
 
-        // TODO implement
+        $lastCommandCondition = $lastCommandId ? " and id > (select id from test_commands where uuid = :last_id)" : '';
+        print_r($lastCommandCondition);
+        $result = $this->_("select * 
+            from 
+                test_commands 
+            where 
+                test_id = :test_id
+                $lastCommandCondition
+            order by
+                id"
+            ,
+            [
+                ':test_id' => $testId,
+                ':last_id' => $lastCommandId
+            ],
+            true
+        );
+        $commands = [];
+        foreach ($result as $line) {
+            $commands[] = new Command($line['uuid'], $line['keyword'], ...JSON::decode($line['parameter']));
+        }
+        return $commands;
     }
 }

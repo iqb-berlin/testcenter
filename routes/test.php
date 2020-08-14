@@ -306,7 +306,7 @@ $app->group('/test', function(App $app) {
 
         // TODO to we have to check access to test?
         $testId = (int) $request->getAttribute('test_id');
-        $lastCommandId = RequestBodyParser::getRequiredElement($request,'lastCommandId');
+        $lastCommandId = RequestBodyParser::getElementWithDefault($request,'lastCommandId', null);
 
         $commands = $testDAO->getCommands($testId, $lastCommandId);
 

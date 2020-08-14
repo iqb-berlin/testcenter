@@ -609,8 +609,26 @@ class AdminDAO extends DAO {
 
 
     // TODO unit-test
-    public function addCommand(int $commanderId, int $param, Command $command): void {
+    public function addCommand(int $commanderId, int $testId, Command $command): void {
 
-        // TODO implement
+        $this->_("insert into test_commands (uuid, test_id, keyword, parameter, commander_id) 
+                values (:uuid, :test_id, :keyword, :parameter, :commander_id)",
+                [
+                    ':uuid'           => $command->getId(),
+                    ':test_id'      => $testId,
+                    ':keyword'      => $command->getKeyword(),
+                    ':parameter'    => json_encode($command->getArguments()),
+                    ':commander_id' => $commanderId
+                ]);
+    }
+
+
+    // TODO unit-test
+    public function getTest(int $testId): ?array {
+
+        return $this->_(
+            'SELECT tests.locked, tests.id, tests.laststate, tests.label FROM tests WHERE tests.id=:id',
+            [':id' => $testId]
+        );
     }
 }

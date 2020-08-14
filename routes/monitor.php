@@ -62,7 +62,7 @@ $app->group('/monitor', function(App $app) {
 
 
     // TODO add spec
-    $app->put('command', function(Request $request, Response $response) use ($adminDAO) {
+    $app->put('/command', function(Request $request, Response $response) use ($adminDAO) {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -78,6 +78,16 @@ $app->group('/monitor', function(App $app) {
         $command = new Command($body['id'], $body['keyword'], ...$body['arguments']);
 
         foreach ($body['testIds'] as $testId) {
+
+            if (!$adminDAO->getTest($testId)) {
+
+                throw new HttpNotFoundException($request, "Test `{$testId}` not found. 
+                    {$command->getKeyword()} not commited.");
+            }
+        }
+
+        foreach ($body['testIds'] as $testId) {
+
             $adminDAO->addCommand($personId, (int) $testId, $command);
         }
 
