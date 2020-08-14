@@ -325,4 +325,10 @@ class TestDAO extends DAO {
             ]
         );
     }
+
+    // TODO unit test
+    public function getCommands(int $testId, string $lastCommandId): array {
+
+        // TODO implement
+    }
 }

@@ -607,4 +607,10 @@ class AdminDAO extends DAO {
         return $returner;
     }
 
+
+    // TODO unit-test
+    public function addCommand(int $commanderId, int $param, Command $command): void {
+
+        // TODO implement
+    }
 }

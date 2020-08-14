@@ -18,7 +18,17 @@ class BroadcastService {
 
         return BroadcastService::$url;
     }
-    
+
+
+    static function registerChannel(string $channelName, array $data): ?string {
+
+        $bsToken = md5((string) rand(0, 99999999));
+        $data['token'] = $bsToken;
+        $broadcastServiceOnline = BroadcastService::push("test/register", json_encode($data)) !== null;
+        $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getUrl()) . '/' . $bsToken;
+        return $broadcastServiceOnline ? $url : null;
+    }
+
     
     static function sessionChange(SessionChangeMessage $sessionChange): ?string {
 

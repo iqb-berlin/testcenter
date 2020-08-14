@@ -299,5 +299,25 @@ $app->group('/test', function(App $app) {
         return $response->withStatus(200);
     })
         ->add(new IsTestWritable());
+
+
+    // TODO add spec
+    $app->get('/{test_id}/commands', function(Request $request, Response $response) use ($testDAO) {
+
+        // TODO to we have to check access to test?
+        $testId = (int) $request->getAttribute('test_id');
+        $lastCommandId = RequestBodyParser::getRequiredElement($request,'lastCommandId');
+
+        $commands = $testDAO->getCommands($testId, $lastCommandId);
+
+        $bsUrl = BroadcastService::registerChannel('register/test', ['testId' => $testId]);
+
+        if ($bsUrl === null) {
+
+            $response = $response->withHeader('SubscribeURI', $bsUrl);
+        }
+
+        return $response->withJson($commands);
+    });
 })
     ->add(new RequireToken('person'));

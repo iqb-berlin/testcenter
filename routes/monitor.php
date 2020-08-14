@@ -45,33 +45,44 @@ $app->group('/monitor', function(App $app) {
 
         $sessionChangeMessages = $adminDAO->getTestSessions($authToken->getWorkspaceId(), $groupNames);
 
-        $bsToken = md5((string) rand(0, 99999999));
+        $bsUrl = BroadcastService::registerChannel('register/test', ["groups" => [$authToken->getGroup()]]);
 
-        $broadcastServiceOnline =
-            BroadcastService::push(
-                "monitor/register",
-                json_encode([
-                    "token" => $bsToken,
-                    "groups" => [$authToken->getGroup()]
-                ]
-            )) !== null;
-
-        if ($broadcastServiceOnline) {
+         if ($bsUrl !== null) {
 
             foreach ($sessionChangeMessages as $sessionChangeMessage) {
 
                 BroadcastService::sessionChange($sessionChangeMessage);
             }
 
-            $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getUrl());
-            $url .= '/' . $bsToken;
-
-            $response = $response->withHeader('SubscribeURI', $url);
+            $response = $response->withHeader('SubscribeURI', $bsUrl);
         }
 
         return $response->withJson($sessionChangeMessages->asArray());
     });
 
+
+    // TODO add spec
+    $app->put('command', function(Request $request, Response $response) use ($adminDAO) {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+        $personId = $authToken->getId();
+
+        $body = RequestBodyParser::getElements($request, [
+            'id' => null,
+            'keyword' => null,
+            'arguments' => [],
+            'testIds' => []
+        ]);
+
+        $command = new Command($body['id'], $body['keyword'], ...$body['arguments']);
+
+        foreach ($body['testIds'] as $testId) {
+            $adminDAO->addCommand($personId, (int) $testId, $command);
+        }
+
+        return $response->withStatus(201);
+    });
 })
     ->add(new IsGroupMonitor())
     ->add(new RequireToken('person'));
