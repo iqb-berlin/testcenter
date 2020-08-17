@@ -236,9 +236,6 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($testDAO) {
 
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
@@ -251,19 +248,12 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
-        BroadcastService::sessionChange(SessionChangeMessage::unitState(
-            $authToken, $testId, $unitName, $testDAO->log2itemState($body['entry']))
-        );
-
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
     $app->put('/{test_id}/log', function (Request $request, Response $response) use ($testDAO) {
-
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
 
         $testId = (int) $request->getAttribute('test_id');
 
@@ -273,10 +263,6 @@ $app->group('/test', function(App $app) {
         ]);
 
         $testDAO->addBookletLog($testId, $body['entry'], $body['timestamp']);
-
-        BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken, $testId, $testDAO->log2itemState($body['entry']))
-        );
 
         return $response->withStatus(201);
     })

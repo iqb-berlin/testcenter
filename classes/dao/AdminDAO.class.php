@@ -368,22 +368,7 @@ class AdminDAO extends DAO {
 
 	private function getTestFullState(array $testSessionData): array {
 
-        $testLogData = $this->_("select
-                    timestamp,
-                    logentry
-                from
-                    test_logs
-                where booklet_id = :testId
-                order by timestamp",
-            [':testId' => $testSessionData['testId']],
-            true
-        );
-
         $testState = JSON::decode($testSessionData['testState'], true);
-
-        foreach ($testLogData as $testLogDataRow) {
-            $testState = array_merge($testState, $this->log2itemState($testLogDataRow['logentry']));
-        }
 
         if ($testSessionData['locked']) {
             $testState['status'] = 'locked';
