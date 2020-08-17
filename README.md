@@ -27,6 +27,14 @@ File bug reports, feature requests etc. [here](https://github.com/iqb-berlin/tes
 All the necessary commands for running the application and starting the tests
 can be found in the Makefile on the root directory.
 
+###### Prepare environment variables for development
+The file `docker/.env` is needed to run the docker-compose setup. A variant using default values for local development can be created with the following command:
+```
+make init-dev-config
+```
+This uses the values of `docker/.env-default`.
+
+**_For other environments, like a production setup, this file needs to be edited accordingly. Do not use the defaults (i.e. passwords) as they are!_**
 ###### Start and Stop the server
 ```
 make run
