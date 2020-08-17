@@ -1,16 +1,16 @@
 version: '3.7'
 
 x-env-mysql: &env-mysql
-  MYSQL_DATABASE: iqb_tba_testcenter
-  MYSQL_USER: iqb_tba_db_user
-  MYSQL_PASSWORD: iqb_tba_db_password
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
 x-env-initdata: &env-initdata
-  SUPERUSER_NAME: super
-  SUPERUSER_PASSWORD: user123
-  WORKSPACE_NAME: example_workspace
-  TEST_LOGIN_NAME: test
-  TEST_LOGIN_PASSWORD: user123
+  SUPERUSER_NAME: ${SUPERUSER_NAME}
+  SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
+  WORKSPACE_NAME: ${WORKSPACE_NAME}
+  TEST_LOGIN_NAME: ${TEST_LOGIN_NAME}
+  TEST_LOGIN_PASSWORD: ${TEST_LOGIN_PASSWORD}
 
 services:
 
@@ -19,7 +19,7 @@ services:
     container_name: testcenter-db
     environment:
       <<: *env-mysql
-      MYSQL_ROOT_PASSWORD: secret_root_pw
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
     ports:
