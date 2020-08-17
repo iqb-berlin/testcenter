@@ -82,7 +82,9 @@ class InitDAO extends SessionDAO {
     }
 
 
-    public function createSampleMonitorSessions(): void {
+    public function createSampleMonitorSessions(): array {
+
+        $persons = [];
 
         $testSessionWorkspaceMonitor = new PotentialLogin(
             'test-study-monitor',
@@ -93,7 +95,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $login = $this->createLogin($testSessionWorkspaceMonitor);
-        $this->createPerson($login, '');
+        $persons['test-study-monitor'] = $this->createPerson($login, '');
 
         $testSessionGroupMonitor = new PotentialLogin(
             'test-group-monitor',
@@ -104,7 +106,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $login = $this->createLogin($testSessionGroupMonitor);
-        $this->createPerson($login, '');
+        $persons['test-group-monitor'] = $this->createPerson($login, '');
 
         $testSession = new PotentialLogin(
             'expired-group-monitor',
@@ -115,7 +117,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $login = $this->createLogin($testSession, true);
-        $this->createPerson($login, '', true);
+        $persons['expired-group-monitor'] = $this->createPerson($login, '', true);
 
         $testSession = new PotentialLogin(
             'expired-study-monitor',
@@ -126,7 +128,9 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $login = $this->createLogin($testSession, true);
-        $this->createPerson($login, '', true);
+        $persons['expired-study-monitor'] = $this->createPerson($login, '', true);
+
+        return $persons;
     }
 
 
@@ -213,5 +217,11 @@ class InitDAO extends SessionDAO {
             'used' => count($tableStatus['used']),
             'missing' => count($tableStatus['missing'])
         ];
+    }
+
+    public function createSampleCommands(int $commanderId): void {
+
+        $adminDAO = new AdminDAO();
+        $adminDAO->addCommand($commanderId, );
     }
 }

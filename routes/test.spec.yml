@@ -588,3 +588,41 @@ paths:
           description: Test is locked!
         "500":
           description: Server Error
+
+  /test/{test_id}/commands:
+    put:
+      summary: get commands
+      description: |-
+        Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket
+        if available. The websocket adress is stored in header "SubscribeURI".
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                lastCommandId:
+                  description: Optional. The UUID of a command. If given, only subsequent commands will be retrieved.
+                  type: string
+              required:
+                - bookletName
+            example:
+              bookletName: 'BOOKLET.SAMPLE'
+      responses:
+        "201":
+          description:  OK, started
+          content:
+            text/plain:
+              example: "1"
+        "401":
+          description: Not authenticated - auth token header is missing or not containing a login token
+        "403":
+          description: Forbidden
+        "423":
+          description: Test is locked!
+        "500":
+          description: Server Error

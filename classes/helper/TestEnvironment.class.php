@@ -122,7 +122,9 @@ class TestEnvironment {
 
         $initDAO->createSampleLoginsReviewsLogs('xxx');
         $initDAO->createSampleExpiredSessions('xxx');
-        $initDAO->createSampleMonitorSessions();
+        $persons = $initDAO->createSampleMonitorSessions();
+        $groupMonitor = $persons['test-group-monitor']; /* @var $groupMonitor Person */
+        $initDAO->createSampleCommands($groupMonitor->getId());
         TestEnvironment::debugVirtualEnvironment();
     }
 
