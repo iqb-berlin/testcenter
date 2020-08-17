@@ -151,7 +151,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function getUnitLastState(int $testId, string $unitName): stdClass {
+    public function getUnitLastState(int $testId, string $unitName): array {
 
         $unitData = $this->_(
             'SELECT units.laststate FROM units
@@ -162,12 +162,12 @@ class TestDAO extends DAO {
             ]
         );
         // TODO Exception if not found
-        return JSON::decode($unitData['laststate']);
+        return JSON::decode($unitData['laststate'], true);
     }
 
 
     // TODO unit test
-    public function updateUnitLastState(int $testId, string $unitName, string $stateKey, string $stateValue): void {
+    public function updateUnitLastState(int $testId, string $unitName, array $keyValuePairs): array {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
 
@@ -179,8 +179,11 @@ class TestDAO extends DAO {
         );
 
         $state = $unitData['laststate'] ? JSON::decode($unitData['laststate'], true) : [];
-        $state[$stateKey] = $stateValue;
+        foreach ($keyValuePairs as $key => $value) {
+            $state[$key] = $value;
+        }
 
+        // todo save states in separate key-value table instead of JSON blob
         $this->_(
             'UPDATE units SET laststate = :laststate WHERE id = :id',
             [
@@ -188,6 +191,8 @@ class TestDAO extends DAO {
                 ':id' => $unitDbId
             ]
         );
+
+        return $state;
     }
 
 

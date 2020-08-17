@@ -35,7 +35,7 @@ class RequestBodyParser {
      *      values are default values or 0 if element is required
      * @throws HttpBadRequestException
      */
-    static function getElements(Request $request, array $elements2defaults) {
+    static function getElements(Request $request, array $elements2defaults = []): array {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
 

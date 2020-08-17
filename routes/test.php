@@ -7,6 +7,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 
+/** @var App $app */
 $app->group('/test', function(App $app) {
 
 
@@ -187,6 +188,7 @@ $app->group('/test', function(App $app) {
         ->add(new IsTestWritable());
 
 
+    // todo allow more than one state change at once
     $app->patch('/{test_id}/unit/{unit_name}/state', function (Request $request, Response $response) use ($testDAO) {
 
         /* @var $authToken AuthToken */
@@ -195,15 +197,12 @@ $app->group('/test', function(App $app) {
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
-        $body = RequestBodyParser::getElements($request, [
-            'key' => null,
-            'value' => null
-        ]);
+        $bodyAssoc = JSON::decode($request->getBody()->getContents(), true);
 
-        $testDAO->updateUnitLastState($testId, $unitName, $body['key'], $body['value']);
+        $updatedState = $testDAO->updateUnitLastState($testId, $unitName, $bodyAssoc);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::unitState($authToken, $testId, $unitName, [$body['key'] => $body['value']])
+            SessionChangeMessage::unitState($authToken, $testId, $unitName, $updatedState)
         );
 
         return $response->withStatus(200);

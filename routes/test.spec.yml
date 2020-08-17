@@ -337,7 +337,14 @@ paths:
   /test/{test_id}/unit/{unit_name}/state:
     patch:
       summary: save a state for a unit
-      description: saved a state (a key-value pair) for a unit in a running test -
+      description: "Updates the state (a key-value list) of a unit in a running test with a given key-value pair.
+        Some known state-keys are:
+         - 'PRESENTATIONCOMPLETE'
+         - 'RESPONSECOMPLETE'
+         - 'PAGE_NR'
+         - 'PAGE_COUNT'
+         - 'PAGE_NAME'
+         but all strings are allowed."
       parameters:
         - in: header
           name: AuthToken
@@ -368,12 +375,9 @@ paths:
                 value:
                   description: value of the state
                   type: string
-              required:
-                - key
-                - value
             example:
-              key: "PRESENTATIONCOMPLETE"
-              value: "1"
+              PRESENTATIONCOMPLETE: "yes"
+              SOME_OTHER_KEY: "any_value"
       responses:
         "200":
           description: OK, updated

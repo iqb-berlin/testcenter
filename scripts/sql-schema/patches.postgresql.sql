@@ -24,6 +24,14 @@ alter table login_sessions RENAME COLUMN customTexts TO custom_texts;
 alter table login_sessions RENAME COLUMN groupname TO group_name;
 alter table unit_reviews drop column reviewer;
 
+-- for new modes (!)
+ALTER TABLE "login_sessions"
+    ALTER "mode" TYPE character varying(20),
+    ALTER "mode" DROP DEFAULT,
+    ALTER "mode" SET NOT NULL;
+COMMENT ON COLUMN "login_sessions"."mode" IS '';
+COMMENT ON TABLE "login_sessions" IS '';
+
 -- for group-monitor
 alter table tests add running boolean default false;
 
