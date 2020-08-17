@@ -3,10 +3,7 @@ vendor
 composer.phar
 
 # data folder
-docker/data
-vo_data/*
-!vo_data/.gitkeep
-
+vo_data
 
 # IDE stuff
 *.iml
