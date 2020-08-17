@@ -22,9 +22,9 @@ paths:
   /system/config:
     get:
       summary: get system config
-      description: returns publicy avaialable parts of system config
+      description: "returns publicly available parts of system config
         - version number
-        - customTexts for UI
+        - customTexts for UI"
       responses:
         "200":
           description: OK
@@ -35,7 +35,6 @@ paths:
                 properties:
                   version:
                     type: string
-                    example: "2.0.0"
                   customTexts:
                     type: object
                 required:
@@ -55,10 +54,6 @@ paths:
           description: OK
           content:
             application/json:
-              schema:
-                properties:
-                  version:
-                    type: string
               example:
                 version: "%%%VERSION%%%"
 

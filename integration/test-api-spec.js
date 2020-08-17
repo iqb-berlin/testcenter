@@ -124,11 +124,7 @@ gulp.task('prepare_spec_for_dredd', done => {
         "application/octet-stream > example$": () => null, // TODO work with this in dreddHooks?
         "^paths > .*? > .*? > responses > (500|202)$": () => null,
         "schema > \\$ref$": resolveReference,
-        "items > \\$ref$": resolveReference,
-        "version": () => {return {
-            key: "version",
-            val: composerFile['version']
-        }}
+        "items > \\$ref$": resolveReference
     };
 
 
@@ -189,10 +185,10 @@ gulp.task('update_docs', done => {
     const rules = {
         "schema > \\$ref$": localizeReference,
         "items > \\$ref$": localizeReference,
-        "info > version": () => ({
-            key: 'version',
-            val: composerFile['version']
-        })
+        "> version$": (key, val) => {return {
+            key: "version",
+            val: (val === "%%%VERSION%%%") ? composerFile['version'] : val
+        }}
     };
 
     const transformed = jsonTransform(yamlTree, rules, false);

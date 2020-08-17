@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 4.0.3
+    version: 5.0.0
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -366,7 +366,7 @@ paths:
     /system/config:
         get:
             summary: 'get system config'
-            description: 'returns publicy avaialable parts of system config - version number - customTexts for UI'
+            description: 'returns publicly available parts of system config - version number - customTexts for UI'
             responses:
                 '200':
                     description: OK
@@ -375,13 +375,13 @@ paths:
                             schema:
                                 type: object
                                 properties:
-                                    version: {type: string, example: 2.0.0}
+                                    version: {type: string}
                                     customTexts: {type: object}
                                 required:
                                     - version
                                     - customTexts
                             example:
-                                version: '%%%VERSION%%%'
+                                version: 5.0.0
                                 customTexts: {}
                 '500':
                     description: 'Server Error'
@@ -393,11 +393,8 @@ paths:
                     description: OK
                     content:
                         application/json:
-                            schema:
-                                properties:
-                                    version: {type: string}
                             example:
-                                version: '%%%VERSION%%%'
+                                version: 5.0.0
     /workspaces:
         get:
             summary: 'get a list of workspaces'
