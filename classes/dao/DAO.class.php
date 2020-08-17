@@ -7,6 +7,7 @@ class DAO {
 
     const tables = [ // because we use different types of DB is difficult to get table list by command
         'admin_sessions',
+        'test_commands',
         'test_logs',
         'test_reviews',
         'tests',
@@ -100,7 +101,7 @@ class DAO {
 
         foreach ($this::tables as $table) {
 
-            $report .= "## $table\n";
+            $report .= "\n## $table\n";
             $entries = $this->_("SELECT * FROM $table", [], true);
             $report .= CSV::build($entries);
         }

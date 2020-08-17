@@ -94,4 +94,34 @@ class AdminDAOTest extends TestCase {
         $result = $this->dbc->getWorkspaceRole($token, 1);
         $this->assertEquals($result, "");
     }
+
+
+    function test_addCommand() {
+
+        $command = new Command('command-id', 'a_keyword', 'first_argument', 'second_argument');
+        $this->dbc->addCommand(1, 1, $command);
+        $expectation = [
+            "id" => 6,
+            "uuid" => 'command-id',
+            "test_id" => 1,
+            "keyword" => 'a_keyword',
+            "parameter" => '["first_argument","second_argument"]',
+            "commander_id" => 1
+        ];
+        $result = $this->dbc->_("select * from test_commands where uuid='command-id'");
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    function test_getTest() {
+
+        $expectation = [
+            'locked' => '0',
+            'id' => '1',
+            'laststate' => '{"LASTUNIT":"1"}',
+            'label' => 'first tests label'
+        ];
+        $result = $this->dbc->getTest(1);
+        $this->assertEquals($expectation, $result);
+    }
 }

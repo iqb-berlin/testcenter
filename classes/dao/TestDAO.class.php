@@ -326,29 +326,19 @@ class TestDAO extends DAO {
         );
     }
 
-    // TODO unit test
+
     public function getCommands(int $testId, ?string $lastCommandId = null): array {
 
-        $lastCommandCondition = $lastCommandId ? " and id > (select id from test_commands where uuid = :last_id)" : '';
-        print_r($lastCommandCondition);
-        $result = $this->_("select * 
-            from 
-                test_commands 
-            where 
-                test_id = :test_id
-                $lastCommandCondition
-            order by
-                id"
-            ,
-            [
-                ':test_id' => $testId,
-                ':last_id' => $lastCommandId
-            ],
-            true
-        );
+        $sql = "select * from test_commands where test_id = :test_id order by id";
+        $replacements = [':test_id' => $testId];
+        if ($lastCommandId) {
+            $replacements[':last_id'] = $lastCommandId;
+            $sql = str_replace('where', 'where id > (select id from test_commands where uuid = :last_id) and ', $sql);
+        }
+
         $commands = [];
-        foreach ($result as $line) {
-            $commands[] = new Command($line['uuid'], $line['keyword'], ...JSON::decode($line['parameter']));
+        foreach ($this->_($sql, $replacements, true) as $line) {
+            $commands[] = new Command($line['uuid'], $line['keyword'], ...JSON::decode($line['parameter'], true));
         }
         return $commands;
     }

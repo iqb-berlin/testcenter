@@ -608,13 +608,12 @@ class AdminDAO extends DAO {
     }
 
 
-    // TODO unit-test
     public function addCommand(int $commanderId, int $testId, Command $command): void {
 
         $this->_("insert into test_commands (uuid, test_id, keyword, parameter, commander_id) 
                 values (:uuid, :test_id, :keyword, :parameter, :commander_id)",
                 [
-                    ':uuid'           => $command->getId(),
+                    ':uuid'         => $command->getId(),
                     ':test_id'      => $testId,
                     ':keyword'      => $command->getKeyword(),
                     ':parameter'    => json_encode($command->getArguments()),
@@ -623,7 +622,7 @@ class AdminDAO extends DAO {
     }
 
 
-    // TODO unit-test
+    // TODO use typed class instead of array
     public function getTest(int $testId): ?array {
 
         return $this->_(
