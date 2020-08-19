@@ -49,7 +49,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
         }
     }
 
-    public broadCastToRegistered(tokens: string[], event: string, message: any): void {
+    public broadcastToRegistered(tokens: string[], event: string, message: any): void {
         const payload = JSON.stringify({event: event, data: message});
 
         tokens.forEach((token: string) => {

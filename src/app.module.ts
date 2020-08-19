@@ -6,13 +6,15 @@ import {DataService} from './common/data.service';
 import {APP_FILTER} from '@nestjs/core';
 import {ErrorHandler} from './common/error-handler';
 import {VersionController} from './version/version.controller';
+import {CommandController} from './command/command.controller';
 
 
 @Module({
   controllers: [
       TestSessionConstroller,
       MonitorController,
-      VersionController
+      VersionController,
+      CommandController
   ],
   providers: [
       WebsocketGateway,
