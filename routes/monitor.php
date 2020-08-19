@@ -81,8 +81,7 @@ $app->group('/monitor', function(App $app) {
 
             if (!$adminDAO->getTest($testId)) {
 
-                throw new HttpNotFoundException($request, "Test `{$testId}` not found. 
-                    `{$command->getKeyword()}` not committed.");
+                throw new HttpNotFoundException($request, "Test `{$testId}` not found. `{$command->getKeyword()}` not committed.");
             }
         }
 
@@ -90,6 +89,8 @@ $app->group('/monitor', function(App $app) {
 
             $adminDAO->addCommand($personId, (int) $testId, $command);
         }
+
+        BroadcastService::send('command', json_encode($body));
 
         return $response->withStatus(201);
     });

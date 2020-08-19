@@ -42,7 +42,7 @@ class BroadcastService {
             return $status;
         }
 
-        $version = BroadcastService::push('version', '', 'GET');
+        $version = BroadcastService::send('version', '', 'GET');
         $status['versionExpected'] = BroadcastService::getVersionExpected();
 
         if ($version === null) {
@@ -74,7 +74,7 @@ class BroadcastService {
 
         $bsToken = md5((string) rand(0, 99999999));
         $data['token'] = $bsToken;
-        $broadcastServiceOnline = BroadcastService::push("test/register", json_encode($data)) !== null;
+        $broadcastServiceOnline = BroadcastService::send("test/register", json_encode($data)) !== null;
         $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getUrl()) . '/' . $bsToken;
         return $broadcastServiceOnline ? $url : null;
     }
@@ -82,11 +82,11 @@ class BroadcastService {
     
     static function sessionChange(SessionChangeMessage $sessionChange): ?string {
 
-        return BroadcastService::push('push/session-change', json_encode($sessionChange));
+        return BroadcastService::send('push/session-change', json_encode($sessionChange));
     }
     
 
-    static function push(string $endpoint, string $message, string $verb = "POST"): ?string {
+    static function send(string $endpoint, string $message, string $verb = "POST"): ?string {
 
         if (!BroadcastService::$url) {
 
