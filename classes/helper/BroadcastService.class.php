@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 // TODO unit-test
 // TODO find a way to integrate this in e2e-tests
@@ -17,6 +18,55 @@ class BroadcastService {
     static function getUrl() {
 
         return BroadcastService::$url;
+    }
+
+
+    static function getVersionExpected(): string {
+
+        $composerFile = file_get_contents(ROOT_DIR . '/composer.json');
+        $composerData = JSON::decode($composerFile, true);
+        if (!isset($composerData['extra']) or !isset($composerData['extra']['broadcastingServiceVersionExpected'])) {
+
+            throw new Exception("BroadcastingService Version Expected not set.");
+        }
+        return $composerData['extra']['broadcastingServiceVersionExpected'];
+    }
+
+
+    static function getStatus(): array {
+
+        $status = [];
+
+        if (!BroadcastService::$url) {
+
+            return $status;
+        }
+
+        $version = BroadcastService::push('version', '', 'GET');
+        $status['versionExpected'] = BroadcastService::getVersionExpected();
+
+        if ($version === null) {
+
+            $status['status'] = 'offline';
+            return $status;
+        }
+
+        $status['status'] = 'online';
+        $status['version'] = $version;
+
+        if (version_compare($version, $status['versionExpected']) < 0) {
+
+            throw new Exception("BroadcastingService is set up and online but version `$version` is too old; 
+                `{$status['versionExpected']}` expected");
+        }
+
+        if (explode('.', $version)[0] >  explode('.', $status['versionExpected'])[0]) {
+
+            throw new Exception("BroadcastingService is set up and online but version `$version` is too new; 
+                `{$status['versionExpected']}` expected");
+        }
+
+        return $status;
     }
 
 
