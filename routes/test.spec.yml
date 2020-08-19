@@ -594,7 +594,7 @@ paths:
           description: Server Error
 
   /test/{test_id}/commands:
-    put:
+    get:
       summary: get commands
       description: |-
         Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket
@@ -604,6 +604,13 @@ paths:
           name: AuthToken
           description: auth-token for test-user
           example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -615,13 +622,33 @@ paths:
               required:
                 - bookletName
             example:
-              bookletName: 'BOOKLET.SAMPLE'
+              lastCommandId: 'cmd#2'
       responses:
-        "201":
-          description:  OK, started
+        "200":
+          description:  list of subsequent commands
           content:
-            text/plain:
-              example: "1"
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: a unique ID to make sure, the command get never executed twice
+                    keyword:
+                      type: string
+                      description: the command-keyword. TODO - add known keywords
+                    arguments:
+                      type: array
+                      description: a list of token as arguments provided with the keyword
+                      items:
+                        type: string
+              example:
+                - id: cmd#3
+                  keyword: COMMAND
+                  arguments:
+                    - p4
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
         "403":

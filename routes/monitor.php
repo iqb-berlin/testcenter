@@ -82,7 +82,7 @@ $app->group('/monitor', function(App $app) {
             if (!$adminDAO->getTest($testId)) {
 
                 throw new HttpNotFoundException($request, "Test `{$testId}` not found. 
-                    {$command->getKeyword()} not commited.");
+                    `{$command->getKeyword()}` not committed.");
             }
         }
 

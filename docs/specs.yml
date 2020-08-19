@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 5.0.0
+    version: 5.0.1
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -74,7 +74,7 @@ paths:
     '/monitor/group/{group_name}':
         get:
             summary: 'get a group'
-            description: 'Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the requesting user, who has to be have the role `monitor-group`.'
+            description: 'Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the requesting user, who has to have in mode `monitor-group`.'
             parameters:
                 -
                     in: header
@@ -155,6 +155,50 @@ paths:
                                     testState: []
                                     unitState: []
                                     timestamp: 1596455898
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
+    /monitor/command:
+        put:
+            summary: 'send command'
+            description: 'Send a monitor command to a set of running tests'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for group-monitor'
+                    example: 'g:user000000000.0000000000'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                id:
+                                    type: string
+                                keyword:
+                                    type: string
+                                arguments:
+                                    type: array
+                                    items: {type: string}
+                                testIds:
+                                    items: {type: integer}
+                        example:
+                            id: 'CMD#1'
+                            keyword: MY-COMMAND
+                            arguments:
+                                - arg1
+                                - arg2
+                            testIds:
+                                - 1
+            responses:
+                '201':
+                    description: 'command sent'
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -381,7 +425,7 @@ paths:
                                     - version
                                     - customTexts
                             example:
-                                version: 5.0.0
+                                version: 5.0.1
                                 customTexts: {}
                 '500':
                     description: 'Server Error'
@@ -394,7 +438,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 5.0.0
+                                version: 5.0.1
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -1112,6 +1156,59 @@ paths:
                     content:
                         text/plain:
                             example: '1'
+                '401':
+                    description: 'Not authenticated - auth token header is missing or not containing a login token'
+                '403':
+                    description: Forbidden
+                '423':
+                    description: 'Test is locked!'
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/commands':
+        get:
+            summary: 'get commands'
+            description: "Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket\nif available. The websocket adress is stored in header \"SubscribeURI\"."
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    example: 'p:0000000000000.00000000000'
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                lastCommandId:
+                                    description: 'Optional. The UUID of a command. If given, only subsequent commands will be retrieved.'
+                                    type: string
+                            required:
+                                - bookletName
+                        example:
+                            lastCommandId: 'cmd#2'
+            responses:
+                '200':
+                    description: 'list of subsequent commands'
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties: {id: {type: string, description: 'a unique ID to make sure, the command get never executed twice'}, keyword: {type: string, description: 'the command-keyword. TODO - add known keywords'}, arguments: {type: array, description: 'a list of token as arguments provided with the keyword', items: {type: string}}}
+                            example:
+                                -
+                                    id: 'cmd#3'
+                                    keyword: COMMAND
+                                    arguments: [p4]
                 '401':
                     description: 'Not authenticated - auth token header is missing or not containing a login token'
                 '403':
