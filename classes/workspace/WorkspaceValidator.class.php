@@ -183,19 +183,19 @@ class WorkspaceValidator extends WorkspaceController {
             $xFile = new XMLFileUnit($fullFilename, true);
             if (!$xFile->isValid()) {
                 foreach($xFile->getErrors() as $e) {
-                    $this->reportError('Unit "' . $entry . '" is not valid vo-XML: ' . $e);
+                    $this->reportError("[`$entry`] Invalid vo-XML: $e");
                 }
                 continue;
             }
 
             if ($xFile->getRoottagName() != 'Unit') {
-                $this->reportWarning('invalid root-tag "' . $xFile->getRoottagName() . '" in Unit-XML-file "' . $entry . '"');
+                $this->reportWarning("[`$entry`] Invalid root-tag `{$xFile->getRoottagName()}`");
                 continue;
             }
 
             $unitId = $xFile->getId();
             if (in_array($unitId, $this->allUnits)) {
-                $this->reportError('double unit id "' . $unitId . '" in Unit-XML-file "' . $entry . '"');
+                $this->reportError("[`$entry`] Duplicate unit id `$unitId`");
                 continue;
             }
 
@@ -207,7 +207,7 @@ class WorkspaceValidator extends WorkspaceController {
                 if ($this->resourceExists($definitionRef, false)) {
                     $fileSizeTotal += $this->allResourceFilesWithSize[FileName::normalize($definitionRef, false)];
                 } else {
-                    $this->reportError('definitionRef "' . $definitionRef . '" not found (required in Unit-XML-file "' . $entry . '"');
+                    $this->reportError("[`$entry`] definitionRef `$definitionRef` not found");
                     $ok = false;
                 }
             }
@@ -218,11 +218,11 @@ class WorkspaceValidator extends WorkspaceController {
                     $myPlayer = $myPlayer . '.HTML';
                 }
                 if (!$this->resourceExists($myPlayer, true)) {
-                    $this->reportError('unit definition type "' . $myPlayer . '" not found (required in Unit-XML-file "' . $entry . '")');
+                    $this->reportError("[`$entry`] unit definition type `$myPlayer` not found");
                     $ok = false;
                 }
             } else {
-                $this->reportError('no player defined in Unit-XML-file "' . $entry . '"');
+                $this->reportError("[`$entry`] no player defined");
                 $ok = false;
             }
 
@@ -253,14 +253,14 @@ class WorkspaceValidator extends WorkspaceController {
             $xFile = new XMLFileBooklet($fullFilename, true);
             if (!$xFile->isValid()) {
                 foreach ($xFile->getErrors() as $r) {
-                    $this->reportError('error reading Booklet-XML-file "' . $entry . '": ' . $r);
+                    $this->reportError("[`$entry`] Error reading Booklet-XML-file: `$r`");
                 }
                 continue;
             }
 
             $rootTagName = $xFile->getRoottagName();
             if ($rootTagName != 'Booklet') {
-                $this->reportError('invalid root-tag "' . $rootTagName . '" in Booklet-XML-file "' . $entry . '"');
+                $this->reportError("[`$entry`] invalid root-tag `$rootTagName`");
                 continue;
             }
 
@@ -268,14 +268,14 @@ class WorkspaceValidator extends WorkspaceController {
             $bookletPlayers = [];
             $bookletId = $xFile->getId();
             if (in_array($bookletId, $this->allBooklets)) {
-                $this->reportError('double booklet id "' . $bookletId . '" in Booklet-XML-file "' . $entry . '"');
+                $this->reportError("[`$entry`] booklet id `$bookletId` is already used");
                 continue;
             }
 
             foreach($xFile->getAllUnitIds() as $unitId) {
 
                 if (!$this->unitExists($unitId)) {
-                    $this->reportError('unit "' . $unitId . '" not found (required in Booklet-XML-file "' . $entry . '" (ignore booklet)');
+                    $this->reportError("[`$entry`] Unit `$unitId` not found");
                     continue;
                 }
 
@@ -289,7 +289,7 @@ class WorkspaceValidator extends WorkspaceController {
                         if (isset($this->allResourceFilesWithSize[$myPlayer])) {
                             $bookletLoad += $this->allResourceFilesWithSize[$myPlayer];
                         } else {
-                            $this->reportWarning('resource "' . $myPlayer . '" not found in filesize-list');
+                            $this->reportWarning("[`$entry`] resource `$myPlayer` not found in filesize-list");
                         }
                     }
                     array_push($bookletPlayers, $myPlayer);
@@ -321,21 +321,21 @@ class WorkspaceValidator extends WorkspaceController {
             $xFile = new XMLFileSysCheck($fullFilename, true);
             if (!$xFile->isValid()) {
                 foreach($xFile->getErrors() as $r) {
-                    $this->reportError('error reading SysCheck-XML-file "' . $entry . '": ' . $r);
+                    $this->reportError("[`$entry`] error reading SysCheck-XML-file `$r`");
                 }
                 continue;
             }
 
             $rootTagName = $xFile->getRoottagName();
             if ($rootTagName != 'SysCheck') {
-                $this->reportWarning('invalid root-tag "' . $rootTagName . '" in SysCheck-XML-file "' . $entry . '"');
+                $this->reportWarning("[`$entry`] invalid root-tag `$rootTagName`");
                 continue;
             }
 
             $unitId = $xFile->getUnitId();
             if (strlen($unitId) > 0) {
                 if (!$this->unitExists($unitId)) {
-                    $this->reportError('unit "' . $unitId . '" not found (required in SysCheck-XML-file "' . $entry . '")');
+                    $this->reportError("[`$entry`] unit `$unitId`");
                 } else {
                     $this->validSysCheckCount = $this->validSysCheckCount + 1;
                 }
@@ -354,52 +354,59 @@ class WorkspaceValidator extends WorkspaceController {
         }
 
         $testtakersFolderHandle = opendir($testTakersFolderPath);
-        while (($entry = readdir($testtakersFolderHandle)) !== false) {
+        while (($testtakersFile = readdir($testtakersFolderHandle)) !== false) {
 
-            $fullFilename = $testTakersFolderPath . '/' . $entry;
-            if (!is_file($fullFilename) or (strtoupper(substr($entry, -4)) !== '.XML')) {
+            $fullFilename = $testTakersFolderPath . '/' . $testtakersFile;
+            if (!is_file($fullFilename) or (strtoupper(substr($testtakersFile, -4)) !== '.XML')) {
                 continue;
             }
 
             $xFile = new XMLFileTesttakers($fullFilename, true);
             if (!$xFile->isValid()) {
                 foreach ($xFile->getErrors() as $r) {
-                    $this->reportError('error reading Testtakers-XML-file "' . $entry . '": ' . $r);
+                    $this->reportError("[`$testtakersFile`] Error reading Testtakers-XML-file: `$r`");
                 }
                 continue;
             }
 
             $rootTagName = $xFile->getRoottagName();
             if ($rootTagName != 'Testtakers') {
-                $this->reportWarning('invalid root-tag "' . $rootTagName . '" in Testtakers-XML-file "' . $entry . '"');
+                $this->reportWarning("[`$testtakersFile`] Invalid root-tag: `$rootTagName`");
                 continue;
             }
 
             $errorBookletNames = [];
             $testtakers = $xFile->getAllTesttakers();
+
             $this->testtakersCount = $this->testtakersCount + count($testtakers);
+
             foreach ($testtakers as $testtaker) {
                 foreach ($testtaker['booklets'] as $bookletId) {
                     if (!$this->bookletExists($bookletId)) {
                         if (!in_array($bookletId, $errorBookletNames)) {
-                            $this->reportError('booklet "' . $bookletId . '" not found for login "' . $testtaker['loginname'] . '" in Testtakers-XML-file "' . $entry . '"');
-                            array_push($errorBookletNames, $bookletId);
+                            $this->reportError("[`$testtakersFile`] booklet `$bookletId` not found for 
+                                login {$testtaker['loginname']}");
+                            $errorBookletNames[] = $bookletId;
                         }
                     }
                 }
-                if (!in_array($testtaker['loginname'], $this->allLoginNames)) {
-                    $this->allLoginNames[] = $testtaker['loginname'];
-                    $this->reportError("login `{$testtaker['loginname']}` in `$entry` is already used in another file on this workspace");
+
+                if (isset($this->allLoginNames[$testtaker['loginname']])) {
+                    if ($this->allLoginNames[$testtaker['loginname']] !== $testtakersFile) {
+                        $this->reportError("[`$testtakersFile`] login `{$testtaker['loginname']}` in 
+                            `$testtakersFile` is already used in: `{$this->allLoginNames[$testtaker['loginname']]}`");
+                    }
+                } else {
+                    $this->allLoginNames[$testtaker['loginname']] = $testtakersFile;
                 }
             }
 
             $doubleLogins = $xFile->getDoubleLoginNames();
             if (count($doubleLogins) > 0) {
                 foreach ($doubleLogins as $ln) {
-                    $this->reportError('loginname "' . $ln . '" appears more often then once in Testtakers-XML-file "' . $entry . '"');
+                    $this->reportError("[`$testtakersFile`] duplicate loginname `$ln`");
                 }
             }
-
         }
     }
 
@@ -436,10 +443,11 @@ class WorkspaceValidator extends WorkspaceController {
 
                     if ($xFile->isValid()) {
 
-                        foreach($xFile->getAllLoginNames() as $ln) {
+                        foreach($xFile->getAllLoginNames() as $loginName) {
 
-                            if (in_array($ln, $this->allLoginNames)) {
-                                $this->reportError('double login "' . $ln . '" in Testtakers-XML-file "' . $entry . '" (other workspace "' . $wsIdOther . '")');
+                            if (isset($this->allLoginNames[$loginName])) {
+                                $this->reportError("[`{$this->allLoginNames[$loginName]}`] login `$loginName` is 
+                                    already used on other workspace `$wsIdOther` (`$entry`)");
                             }
                         }
                     }
@@ -455,6 +463,8 @@ class WorkspaceValidator extends WorkspaceController {
         $this->allGroups = $otherTesttakersFolder->getAllGroups();
 
         foreach ($this->allGroups as $filePath => $groupList) {
+
+            $fileName = basename($filePath);
 
             /* @var Group $group */
             foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
@@ -476,8 +486,9 @@ class WorkspaceValidator extends WorkspaceController {
 
                             $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
                                 ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
-                                : "in file `" . basename($otherFilePath) . "`";
-                            $this->reportError("Duplicate Group-Id: `{$duplicate->getName()}` - $location");
+                                : '';
+                            $this->reportError("[`$fileName`] Duplicate Group-Id: `{$duplicate->getName()}` - $location in file `"
+                                . basename($otherFilePath) . "`");
                         }
                     }
 
@@ -491,19 +502,19 @@ class WorkspaceValidator extends WorkspaceController {
 
         foreach($this->allResources as $r) {
             if (!in_array($r, $this->allUsedResources) && !in_array(FileName::normalize($r, true), $this->allUsedVersionedResources)) {
-                $this->reportWarning('Resource "' . $r . '" never used');
+                $this->reportWarning('Resource `' . $r . '` never used');
             }
         }
 
         foreach($this->allUnits as $u) {
             if (!in_array($u, $this->allUsedUnits)) {
-                $this->reportWarning('Unit "' . $u . '" not used in booklets');
+                $this->reportWarning('Unit `' . $u . '` not used in booklets');
             }
         }
 
         foreach($this->allBooklets as $b) {
             if (!in_array($b, $this->allUsedBooklets)) {
-                $this->reportWarning('Booklet "' . $b . '" not used by testtakers');
+                $this->reportWarning('Booklet `' . $b . '` not used by testtakers');
             }
         }
     }
