@@ -5,12 +5,14 @@ import {WebsocketGateway} from './common/websocket.gateway';
 import {DataService} from './common/data.service';
 import {APP_FILTER} from '@nestjs/core';
 import {ErrorHandler} from './common/error-handler';
+import {VersionController} from './version/version.controller';
 
 
 @Module({
   controllers: [
       TestSessionConstroller,
-      MonitorController
+      MonitorController,
+      VersionController
   ],
   providers: [
       WebsocketGateway,
