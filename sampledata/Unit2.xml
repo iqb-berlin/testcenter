@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/4.0.0/definitions/unit.xsd">
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">
   <Metadata>
     <Id>UNIT.SAMPLE-2</Id>
     <Label>Another sample unit</Label>
     <Description>This is another Unit</Description>
-    <Owner>__USER_NAME__</Owner>
-    <Lastchange>2020-04-28T13:37:00</Lastchange>
-    <Project>sample</Project>
   </Metadata>
 
   <Definition player="SAMPLE_PLAYER">
