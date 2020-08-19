@@ -45,7 +45,7 @@ $app->group('/monitor', function(App $app) {
 
         $sessionChangeMessages = $adminDAO->getTestSessions($authToken->getWorkspaceId(), $groupNames);
 
-        $bsUrl = BroadcastService::registerChannel('register/test', ["groups" => [$authToken->getGroup()]]);
+        $bsUrl = BroadcastService::registerChannel('monitor', ["groups" => [$authToken->getGroup()]]);
 
          if ($bsUrl !== null) {
 

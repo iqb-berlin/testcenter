@@ -295,9 +295,9 @@ $app->group('/test', function(App $app) {
 
         $commands = $testDAO->getCommands($testId, $lastCommandId);
 
-        $bsUrl = BroadcastService::registerChannel('register/test', ['testId' => $testId]);
+        $bsUrl = BroadcastService::registerChannel('test', ['testId' => $testId]);
 
-        if ($bsUrl === null) {
+        if ($bsUrl !== null) {
 
             $response = $response->withHeader('SubscribeURI', $bsUrl);
         }
