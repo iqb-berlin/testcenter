@@ -334,17 +334,48 @@ class TestDAO extends DAO {
 
     public function getCommands(int $testId, ?string $lastCommandId = null): array {
 
-        $sql = "select * from test_commands where test_id = :test_id order by id";
+        $sql = "select * from test_commands where test_id = :test_id and executed = 0 order by timestamp";
         $replacements = [':test_id' => $testId];
         if ($lastCommandId) {
             $replacements[':last_id'] = $lastCommandId;
-            $sql = str_replace('where', 'where id > (select id from test_commands where uuid = :last_id) and ', $sql);
+            $sql = str_replace('where', 'where timestamp > (select timestamp from test_commands where uuid = :last_id) and ', $sql);
         }
 
         $commands = [];
         foreach ($this->_($sql, $replacements, true) as $line) {
-            $commands[] = new Command($line['uuid'], $line['keyword'], ...JSON::decode($line['parameter'], true));
+            $commands[] = new Command(
+                $line['uuid'],
+                $line['keyword'],
+                TimeStamp::fromSQLFormat($line['timestamp']),
+                ...JSON::decode($line['parameter'], true)
+            );
         }
         return $commands;
+    }
+
+
+    public function setCommandExecuted(int $testId, string $commandId): bool {
+
+        $command = $this->_(
+            'select executed from test_commands where test_id = :testId and uuid = :commandId',
+            [':testId' => $testId, ':commandId' => $commandId]
+        );
+
+        if (!$command) {
+
+            throw new HttpError("Command `$commandId` not found on test `$testId`", 404);
+        }
+
+        if ($command['executed']) {
+
+            return false;
+        }
+
+        $this->_(
+            'update test_commands set executed = 1 where test_id = :testId and uuid = :commandId',
+            [':testId' => $testId, ':commandId' => $commandId]
+        );
+
+        return true;
     }
 }

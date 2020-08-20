@@ -128,13 +128,17 @@ paths:
                   type: array
                   items:
                     type: string
+                timestamp:
+                  type: number
+                  description: when the command was given
                 testIds:
                   items:
                     type: integer
             example:
-              id: 'CMD#1'
+              id: 'CMD_4'
               keyword: 'MY-COMMAND'
               arguments: ['arg1', 'arg2']
+              timestamp: 1597906980
               testIds: [1]
 
       responses:

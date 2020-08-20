@@ -584,14 +584,15 @@ class AdminDAO extends DAO {
 
     public function addCommand(int $commanderId, int $testId, Command $command): void {
 
-        $this->_("insert into test_commands (uuid, test_id, keyword, parameter, commander_id) 
-                values (:uuid, :test_id, :keyword, :parameter, :commander_id)",
+        $this->_("insert into test_commands (uuid, test_id, keyword, parameter, commander_id, timestamp) 
+                values (:uuid, :test_id, :keyword, :parameter, :commander_id, :timestamp)",
                 [
                     ':uuid'         => $command->getId(),
                     ':test_id'      => $testId,
                     ':keyword'      => $command->getKeyword(),
                     ':parameter'    => json_encode($command->getArguments()),
-                    ':commander_id' => $commanderId
+                    ':commander_id' => $commanderId,
+                    ':timestamp'    => TimeStamp::toSQLFormat($command->getTimestamp())
                 ]);
     }
 

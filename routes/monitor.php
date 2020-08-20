@@ -72,10 +72,11 @@ $app->group('/monitor', function(App $app) {
             'id' => null,
             'keyword' => null,
             'arguments' => [],
+            'timestamp' => null,
             'testIds' => []
         ]);
 
-        $command = new Command($body['id'], $body['keyword'], ...$body['arguments']);
+        $command = new Command($body['id'], $body['keyword'], (int) $body['timestamp'], ...$body['arguments']);
 
         foreach ($body['testIds'] as $testId) {
 

@@ -110,6 +110,8 @@ create table `test_commands` (
 ,   `keyword` varchar(50) not null
 ,   `parameter` text null
 ,   `commander_id` bigint null
+,   `timestamp` timestamp not null
+,   `executed`  integer not null default 0
 ,    constraint `test_commands_person_sessions_id_fk` foreign key (`commander_id`) references person_sessions (`id`) on delete set null on update no action
 ,    constraint test_commands_tests_id_fk foreign key (test_id) references tests (id) on delete cascade on update no action
 );

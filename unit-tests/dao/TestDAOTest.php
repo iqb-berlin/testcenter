@@ -54,23 +54,25 @@ class TestDAOTest extends TestCase {
 
 
         $expected = [
-            new Command('cmd#3', 'COMMAND_C'),
-            new Command('cmd#4', 'COMMAND_D', "param1", "param2"),
+            new Command('cmd#3', 'COMMAND_C', 1597903000),
+            new Command('cmd#4', 'COMMAND_D', 1597904000, "param1", "param2"),
         ];
         $result = $this->dbc->getCommands(1, 'cmd#2');
+
         $this->assertEquals($expected, $result);
 
         $expected = [
-            new Command('cmd#1', 'COMMAND_A', "param1"),
-            new Command('cmd#2', 'COMMAND_B'),
-            new Command('cmd#3', 'COMMAND_C'),
-            new Command('cmd#4', 'COMMAND_D', "param1", "param2"),
+            new Command('cmd#1', 'COMMAND_A', 1597900000, "param1"),
+            new Command('cmd#2', 'COMMAND_B', 1597901000),
+            new Command('cmd#3', 'COMMAND_C', 1597903000),
+            new Command('cmd#4', 'COMMAND_D', 1597904000, "param1", "param2"),
         ];
         $result = $this->dbc->getCommands(1);
+
         $this->assertEquals($expected, $result);
 
         $expected = [
-            new Command('cmd#X', 'COMMAND_X')
+            new Command('cmd#X', 'COMMAND_X', 1597902000)
         ];
         $result = $this->dbc->getCommands(2);
         $this->assertEquals($expected, $result);

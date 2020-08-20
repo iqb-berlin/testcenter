@@ -593,6 +593,43 @@ paths:
         "500":
           description: Server Error
 
+  /test/{test_id}/command/{command_id}/executed:
+    patch:
+      summary: set command as executed
+      description: |-
+        When the frontend executed a command, we send back this information to Backend via this command,
+        to make sure it never gets executed again.
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: command_id
+          description: unique id of a command
+          example: "CMD_3"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK, command is marked as executed (or was already set as executed before)
+        "401":
+          description: Not authenticated - auth token header is missing or not containing a login token
+        "403":
+          description: Forbidden
+        "423":
+          description: Test is locked!
+        "500":
+          description: Server Error
+
   /test/{test_id}/commands:
     get:
       summary: get commands
@@ -644,8 +681,11 @@ paths:
                       description: a list of token as arguments provided with the keyword
                       items:
                         type: string
+                    timestamp:
+                      type: number
+                      description: timstamp when the command was given
               example:
-                - id: cmd#3
+                - id: cmd_3
                   keyword: COMMAND
                   arguments:
                     - p4

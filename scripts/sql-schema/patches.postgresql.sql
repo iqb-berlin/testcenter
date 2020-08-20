@@ -61,3 +61,7 @@ create unique index test_commands_id_uindex
 alter table test_commands
     add constraint test_commands_pk
         primary key (id);
+
+alter table test_commands add timestamp timestamp not null default 0;
+alter table test_commands add executed bool null;
+alter table test_commands alter column executed set default 0;

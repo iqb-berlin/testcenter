@@ -46,3 +46,7 @@ create table test_commands
 
 create unique index test_commands_id_uindex
     on test_commands (id);
+
+alter table test_commands add timestamp timestamp not null;
+alter table test_commands add executed bool null;
+alter table test_commands alter column executed set default 0;

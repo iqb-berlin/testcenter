@@ -286,10 +286,9 @@ $app->group('/test', function(App $app) {
         ->add(new IsTestWritable());
 
 
-    // TODO add spec
     $app->get('/{test_id}/commands', function(Request $request, Response $response) use ($testDAO) {
 
-        // TODO to we have to check access to test?
+        // TODO do we have to check access to test?
         $testId = (int) $request->getAttribute('test_id');
         $lastCommandId = RequestBodyParser::getElementWithDefault($request,'lastCommandId', null);
 
@@ -304,5 +303,18 @@ $app->group('/test', function(App $app) {
 
         return $response->withJson($commands);
     });
+
+
+    $app->patch('/{test_id}/command/{command_id}/executed', function(Request $request, Response $response) use ($testDAO) {
+
+        // TODO to we have to check access to test?
+        $testId = (int) $request->getAttribute('test_id');
+        $commandId = $request->getAttribute('command_id');
+
+        $changed = $testDAO->setCommandExecuted($testId, $commandId);
+
+        return $response->withStatus(200, $changed ? 'OK' : 'OK, was already marked as executed');
+    });
+
 })
     ->add(new RequireToken('person'));
