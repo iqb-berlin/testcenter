@@ -294,7 +294,7 @@ $app->group('/test', function(App $app) {
 
         $commands = $testDAO->getCommands($testId, $lastCommandId);
 
-        $bsUrl = BroadcastService::registerChannel('test', ['testId' => $testId]);
+        $bsUrl = BroadcastService::registerChannel('testee', ['testId' => $testId]);
 
         if ($bsUrl !== null) {
 

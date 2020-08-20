@@ -61,7 +61,6 @@ $app->group('/monitor', function(App $app) {
     });
 
 
-    // TODO add spec
     $app->put('/command', function(Request $request, Response $response) use ($adminDAO) {
 
         /* @var $authToken AuthToken */
@@ -91,7 +90,10 @@ $app->group('/monitor', function(App $app) {
             $adminDAO->addCommand($personId, (int) $testId, $command);
         }
 
-        BroadcastService::send('command', json_encode($body));
+        BroadcastService::send('command', json_encode([
+            'command' => $command,
+            'testIds' => $body['testIds']
+        ]));
 
         return $response->withStatus(201);
     });
