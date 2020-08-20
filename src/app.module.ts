@@ -1,5 +1,5 @@
 import {Module} from '@nestjs/common';
-import {TestSessionConstroller} from './test-session/test-session.constroller';
+import {TestSessionController} from './test-session/test-session.controller';
 import {MonitorController} from './monitor/monitor.controller';
 import {WebsocketGateway} from './common/websocket.gateway';
 import {DataService} from './common/data.service';
@@ -11,7 +11,7 @@ import {CommandController} from './command/command.controller';
 
 @Module({
   controllers: [
-      TestSessionConstroller,
+      TestSessionController,
       MonitorController,
       VersionController,
       CommandController

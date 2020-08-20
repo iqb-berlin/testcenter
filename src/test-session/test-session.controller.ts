@@ -4,7 +4,7 @@ import {isSessionChange, SessionChange} from './session-change.interface';
 import {DataService} from '../common/data.service';
 
 @Controller()
-export class TestSessionConstroller {
+export class TestSessionController {
     constructor(
         private readonly dataService: DataService
     ) {}
