@@ -7,6 +7,8 @@ import {APP_FILTER} from '@nestjs/core';
 import {ErrorHandler} from './common/error-handler';
 import {VersionController} from './version/version.controller';
 import {CommandController} from './command/command.controller';
+import {TesteeController} from './testee/testee.controller';
+import {TesteeService} from './testee/testee.service';
 
 
 @Module({
@@ -14,11 +16,13 @@ import {CommandController} from './command/command.controller';
       TestSessionController,
       MonitorController,
       VersionController,
-      CommandController
+      CommandController,
+      TesteeController
   ],
   providers: [
       WebsocketGateway,
       DataService,
+      TesteeService,
       {
         provide: APP_FILTER,
         useClass: ErrorHandler,
