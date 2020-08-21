@@ -5,17 +5,6 @@ LABEL version="1.0"
 LABEL description="The PHP backend of the test center. This container ist for DEVELOPMENT only, not for deployment since security guidelines are somehow weak."
 LABEL license="MIT"
 
-ENV SUPERUSER_NAME=super
-ENV SUPERUSER_PASSWORD=user456
-ENV TEST_LOGIN_NAME=testlogin
-ENV TEST_LOGIN_PASSWORD=user789
-ENV WORKSPACE_NAME=brand_new_workspace
-ENV MYSQL_DATABASE=iqb_tba_textcenter_1
-ENV MYSQL_USER=iqb_tba_db_user_1
-ENV MYSQL_PASSWORD=iqb_tba_db_password_1
-ENV MYSQL_PORT=3306
-ENV MYSQL_HOST=127.0.0.1
-
 # dependencies, needed for composer
 RUN apt-get update && apt-get install -y \
     wget \
