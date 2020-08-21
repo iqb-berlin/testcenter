@@ -1,13 +1,13 @@
 import {Controller, HttpException, Post, Req} from '@nestjs/common';
-import {WebsocketGateway} from '../common/websocket.gateway';
 import {Request} from 'express';
 import {isArray} from 'util';
 import {isCommand} from './command.interface';
+import {TesteeService} from '../testee/testee.service';
 
 @Controller()
 export class CommandController {
     constructor(
-        private readonly websocketGateway: WebsocketGateway
+        private readonly testeeService: TesteeService
     ) {}
 
     @Post('/command')
@@ -23,14 +23,7 @@ export class CommandController {
 
         console.log('command', request.body);
 
-        const testIdsStrings = request.body.testIds.map(testId => testId.toString());
-        this.websocketGateway.broadcastToRegistered(testIdsStrings, 'commands', [
-            {
-                id: request.body.id,
-                keyword: request.body.keyword,
-                arguments: request.body.arguments
-            }
-        ]);
+        this.testeeService.broadcastCommandToTestees(request.body.command, request.body.testIds);
     }
 }
 

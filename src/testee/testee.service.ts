@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {Testee} from './testee.interface';
 import {WebsocketGateway} from '../common/websocket.gateway';
+import {Command} from '../command/command.interface';
 
 @Injectable()
 export class TesteeService {
@@ -30,5 +31,17 @@ export class TesteeService {
 
     public getTestees(): Testee[] {
         return Object.values(this.testees);
+    }
+
+    broadcastCommandToTestees(command: Command, testIds: number[]) {
+        testIds.forEach((testId => {
+            this.websocketGateway.broadcastToRegistered(
+                Object.values(this.testees)
+                    .filter(testee => testee.testId == testId)
+                    .map(testee => testee.token),
+                'commands',
+                [command]
+            );
+        }));
     }
 }
