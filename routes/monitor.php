@@ -68,14 +68,13 @@ $app->group('/monitor', function(App $app) {
         $personId = $authToken->getId();
 
         $body = RequestBodyParser::getElements($request, [
-            'id' => null,
             'keyword' => null,
             'arguments' => [],
             'timestamp' => null,
             'testIds' => []
         ]);
 
-        $command = new Command($body['id'], $body['keyword'], (int) $body['timestamp'], ...$body['arguments']);
+        $command = new Command(-1, $body['keyword'], (int) $body['timestamp'], ...$body['arguments']);
 
         foreach ($body['testIds'] as $testId) {
 
@@ -87,7 +86,7 @@ $app->group('/monitor', function(App $app) {
 
         foreach ($body['testIds'] as $testId) {
 
-            $adminDAO->addCommand($personId, (int) $testId, $command);
+            $command = $adminDAO->storeCommand($personId, (int) $testId, $command);
         }
 
         BroadcastService::send('command', json_encode([

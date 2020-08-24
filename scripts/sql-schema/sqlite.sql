@@ -105,7 +105,6 @@ CREATE TABLE `workspaces` (
 
 create table `test_commands` (
     `id` integer not null primary key autoincrement
-,   `uuid` varchar(50) not null unique
 ,   `test_id` bigint unsigned not null
 ,   `keyword` varchar(50) not null
 ,   `parameter` text null
@@ -128,7 +127,6 @@ CREATE INDEX "idx_workspace_users_index_fk_workspace_users_user" ON "workspace_u
 CREATE INDEX "idx_workspace_users_index_fk_workspace_users_workspace" ON "workspace_users" (`workspace_id`);
 CREATE INDEX "idx_tests_index_fk_booklet_person" ON tests (`person_id`);
 
-create unique index "test_commands_id_uindex" on test_commands (`uuid`);
 create unique index "person_sessions_id_uindex" on person_sessions (`id`);
 
 

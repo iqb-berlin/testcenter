@@ -582,18 +582,24 @@ class AdminDAO extends DAO {
     }
 
 
-    public function addCommand(int $commanderId, int $testId, Command $command): void {
+    public function storeCommand(int $commanderId, int $testId, Command $command): Command {
 
-        $this->_("insert into test_commands (uuid, test_id, keyword, parameter, commander_id, timestamp) 
-                values (:uuid, :test_id, :keyword, :parameter, :commander_id, :timestamp)",
+        $this->_("insert into test_commands (test_id, keyword, parameter, commander_id, timestamp) 
+                values (:test_id, :keyword, :parameter, :commander_id, :timestamp)",
                 [
-                    ':uuid'         => $command->getId(),
                     ':test_id'      => $testId,
                     ':keyword'      => $command->getKeyword(),
                     ':parameter'    => json_encode($command->getArguments()),
                     ':commander_id' => $commanderId,
                     ':timestamp'    => TimeStamp::toSQLFormat($command->getTimestamp())
                 ]);
+
+        return new Command(
+            (int) $this->pdoDBhandle->lastInsertId(),
+            $command->getKeyword(),
+            $command->getTimestamp(),
+            ...$command->getArguments()
+        );
     }
 
 

@@ -222,8 +222,8 @@ class InitDAO extends SessionDAO {
     public function createSampleCommands(int $commanderId): void {
 
         $adminDAO = new AdminDAO();
-        $adminDAO->addCommand($commanderId, 1, new Command('CMD_3', 'COMMAND', 1597906980, 'p4'));
-        $adminDAO->addCommand($commanderId, 1, new Command('CMD_2', 'COMMAND', 1597906970, 'p3'));
-        $adminDAO->addCommand($commanderId, 1, new Command('CMD_1', 'COMMAND', 1597906960, 'p1', 'p2'));
+        $adminDAO->storeCommand($commanderId, 1, new Command(-1,  'COMMAND', 1597906980, 'p4'));
+        $adminDAO->storeCommand($commanderId, 1, new Command(-2, 'COMMAND', 1597906970, 'p3'));
+        $adminDAO->storeCommand($commanderId, 1, new Command(-3, 'COMMAND', 1597906960, 'p1', 'p2'));
     }
 }

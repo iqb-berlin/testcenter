@@ -309,7 +309,7 @@ $app->group('/test', function(App $app) {
 
         // TODO to we have to check access to test?
         $testId = (int) $request->getAttribute('test_id');
-        $commandId = $request->getAttribute('command_id');
+        $commandId = (int) $request->getAttribute('command_id');
 
         $changed = $testDAO->setCommandExecuted($testId, $commandId);
 

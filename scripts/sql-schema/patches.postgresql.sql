@@ -36,17 +36,17 @@ COMMENT ON TABLE "login_sessions" IS '';
 alter table tests add running boolean default false;
 
 -- for group-monitor command
-create unique index person_sessions_id_uindex
-    on person_sessions (id);
+create unique index person_sessions_id_uindex on person_sessions (id);
 
 create table test_commands
 (
     id serial primary key,
-    uuid varchar(50) not null unique,
     test_id integer NOT NULL,
     keyword character varying(50) not null,
     parameter text null,
     commander_id bigint null,
+    timestamp timestamp not null default 0,
+    executed bool null,
     constraint test_commands_person_sessions_id_fk
         foreign key (commander_id) references person_sessions (id)
             on delete set null,
@@ -55,13 +55,6 @@ create table test_commands
             on delete cascade
 );
 
-create unique index test_commands_id_uindex
-    on test_commands (id);
+create unique index test_commands_id_uindex on test_commands (id);
+alter table test_commands add constraint test_commands_pk primary key (id);
 
-alter table test_commands
-    add constraint test_commands_pk
-        primary key (id);
-
-alter table test_commands add timestamp timestamp not null default 0;
-alter table test_commands add executed bool null;
-alter table test_commands alter column executed set default 0;

@@ -31,11 +31,12 @@ create unique index person_sessions_id_uindex
 create table test_commands
 (
     id bigint UNSIGNED not null auto_increment primary key,
-    uuid varchar(50) not null unique,
     test_id bigint UNSIGNED not null,
     keyword varchar(50) not null,
     parameter text null,
     commander_id bigint UNSIGNED null,
+    timestamp timestamp not null,
+    executed bool null default 0,
     constraint test_commands_person_sessions_id_fk
         foreign key (commander_id) references person_sessions (id)
             on delete set null,
@@ -47,6 +48,3 @@ create table test_commands
 create unique index test_commands_id_uindex
     on test_commands (id);
 
-alter table test_commands add timestamp timestamp not null;
-alter table test_commands add executed bool null;
-alter table test_commands alter column executed set default 0;

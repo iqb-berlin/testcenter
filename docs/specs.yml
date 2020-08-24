@@ -179,8 +179,6 @@ paths:
                         schema:
                             type: object
                             properties:
-                                id:
-                                    type: string
                                 keyword:
                                     type: string
                                 arguments:
@@ -192,7 +190,6 @@ paths:
                                 testIds:
                                     items: {type: integer}
                         example:
-                            id: CMD_4
                             keyword: MY-COMMAND
                             arguments:
                                 - arg1
@@ -1190,10 +1187,10 @@ paths:
                     in: path
                     name: command_id
                     description: 'unique id of a command'
-                    example: CMD_3
+                    example: 3
                     required: true
                     schema:
-                        type: string
+                        type: number
             responses:
                 '200':
                     description: 'OK, command is marked as executed (or was already set as executed before)'
@@ -1229,12 +1226,12 @@ paths:
                         schema:
                             properties:
                                 lastCommandId:
-                                    description: 'Optional. The UUID of a command. If given, only subsequent commands will be retrieved.'
-                                    type: string
+                                    description: 'Optional. The id of a command. If given, only subsequent commands will be retrieved.'
+                                    type: integer
                             required:
                                 - bookletName
                         example:
-                            lastCommandId: 'cmd#2'
+                            lastCommandId: 2
             responses:
                 '200':
                     description: 'list of subsequent commands'
@@ -1244,10 +1241,10 @@ paths:
                                 type: array
                                 items:
                                     type: object
-                                    properties: {id: {type: string, description: 'a unique ID to make sure, the command get never executed twice'}, keyword: {type: string, description: 'the command-keyword. TODO - add known keywords'}, arguments: {type: array, description: 'a list of token as arguments provided with the keyword', items: {type: string}}, timestamp: {type: number, description: 'timstamp when the command was given'}}
+                                    properties: {id: {type: number, description: 'a unique ID to make sure, the command get never executed twice'}, keyword: {type: string, description: 'the command-keyword. TODO - add known keywords'}, arguments: {type: array, description: 'a list of token as arguments provided with the keyword', items: {type: string}}, timestamp: {type: number, description: 'timstamp when the command was given'}}
                             example:
                                 -
-                                    id: cmd_3
+                                    id: 3
                                     keyword: COMMAND
                                     arguments: [p4]
                 '401':

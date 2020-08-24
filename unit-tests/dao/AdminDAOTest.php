@@ -98,11 +98,10 @@ class AdminDAOTest extends TestCase {
 
     function test_addCommand() {
 
-        $command = new Command('command-id', 'a_keyword', 1597905000, 'first_argument', 'second_argument');
-        $this->dbc->addCommand(1, 1, $command);
+        $command = new Command(-1, 'a_keyword', 1597905000, 'first_argument', 'second_argument');
+        $this->dbc->storeCommand(1, 1, $command);
         $expectation = [
             "id" => 6,
-            "uuid" => 'command-id',
             "test_id" => 1,
             "keyword" => 'a_keyword',
             "parameter" => '["first_argument","second_argument"]',
@@ -110,7 +109,7 @@ class AdminDAOTest extends TestCase {
             'timestamp' => '2020-08-20 08:30:00',
             'executed' => '0'
         ];
-        $result = $this->dbc->_("select * from test_commands where uuid='command-id'");
+        $result = $this->dbc->_("select * from test_commands where keyword='a_keyword'");
         $this->assertEquals($expectation, $result);
     }
 

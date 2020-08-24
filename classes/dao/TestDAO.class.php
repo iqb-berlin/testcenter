@@ -332,19 +332,19 @@ class TestDAO extends DAO {
     }
 
 
-    public function getCommands(int $testId, ?string $lastCommandId = null): array {
+    public function getCommands(int $testId, ?int $lastCommandId = null): array {
 
         $sql = "select * from test_commands where test_id = :test_id and executed = 0 order by timestamp";
         $replacements = [':test_id' => $testId];
         if ($lastCommandId) {
             $replacements[':last_id'] = $lastCommandId;
-            $sql = str_replace('where', 'where timestamp > (select timestamp from test_commands where uuid = :last_id) and ', $sql);
+            $sql = str_replace('where', 'where timestamp > (select timestamp from test_commands where id = :last_id) and ', $sql);
         }
 
         $commands = [];
         foreach ($this->_($sql, $replacements, true) as $line) {
             $commands[] = new Command(
-                $line['uuid'],
+                (int) $line['id'],
                 $line['keyword'],
                 TimeStamp::fromSQLFormat($line['timestamp']),
                 ...JSON::decode($line['parameter'], true)
@@ -354,10 +354,10 @@ class TestDAO extends DAO {
     }
 
 
-    public function setCommandExecuted(int $testId, string $commandId): bool {
+    public function setCommandExecuted(int $testId, int $commandId): bool {
 
         $command = $this->_(
-            'select executed from test_commands where test_id = :testId and uuid = :commandId',
+            'select executed from test_commands where test_id = :testId and id = :commandId',
             [':testId' => $testId, ':commandId' => $commandId]
         );
 
@@ -372,7 +372,7 @@ class TestDAO extends DAO {
         }
 
         $this->_(
-            'update test_commands set executed = 1 where test_id = :testId and uuid = :commandId',
+            'update test_commands set executed = 1 where test_id = :testId and id = :commandId',
             [':testId' => $testId, ':commandId' => $commandId]
         );
 

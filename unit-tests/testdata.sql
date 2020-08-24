@@ -17,15 +17,10 @@ VALUES (3, 'monitor', 'monitor-group', 1, '2030-01-02 10:00:00', 'monitor_token'
 INSERT INTO tests (id, name, person_id, laststate, locked, label)
 VALUES (1, 'first sample test', 1, '{"LASTUNIT":"1"}', 0, 'first tests label');
 
-insert into test_commands(uuid, test_id, keyword, parameter, commander_id, timestamp)
-values ('cmd#3', 1, 'COMMAND_C', '[]', 3, 1597903000);
-insert into test_commands(uuid, test_id, keyword, parameter, commander_id, timestamp)
-values ('cmd#1', 1, 'COMMAND_A', '["param1"]', 3, 1597900000);
-insert into test_commands(uuid, test_id, keyword, parameter, commander_id, timestamp)
-values ('cmd#4', 1, 'COMMAND_D', '["param1", "param2"]', null, 1597904000);
-insert into test_commands(uuid, test_id, keyword, parameter, commander_id, timestamp)
-values ('cmd#2', 1, 'COMMAND_B', '', 3, 1597901000);
-insert into test_commands(uuid, test_id, keyword, parameter, commander_id, timestamp)
-values ('cmd#X', 2, 'COMMAND_X', '', 3, 1597902000);
+insert into test_commands(test_id, keyword, parameter, commander_id, timestamp) values (1, 'COMMAND_C', '[]', 3, 1597903000);
+insert into test_commands(test_id, keyword, parameter, commander_id, timestamp) values (1, 'COMMAND_A', '["param1"]', 3, 1597900000);
+insert into test_commands(test_id, keyword, parameter, commander_id, timestamp) values (1, 'COMMAND_D', '["param1", "param2"]', null, 1597904000);
+insert into test_commands(test_id, keyword, parameter, commander_id, timestamp) values (1, 'COMMAND_B', '', 3, 1597901000);
+insert into test_commands(test_id, keyword, parameter, commander_id, timestamp) values (2, 'COMMAND_X', '', 3, 1597902000);
 
 

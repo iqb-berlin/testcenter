@@ -120,8 +120,6 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  type: string
                 keyword:
                   type: string
                 arguments:
@@ -135,7 +133,6 @@ paths:
                   items:
                     type: integer
             example:
-              id: 'CMD_4'
               keyword: 'MY-COMMAND'
               arguments: ['arg1', 'arg2']
               timestamp: 1597906980
