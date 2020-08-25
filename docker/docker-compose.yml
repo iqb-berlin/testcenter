@@ -14,7 +14,7 @@ x-env-initdata: &env-initdata
 
 services:
 
-  testcenter-db:
+  testcenter-db-backend:
     image: mysql:5.7
     container_name: testcenter-db
     environment:
