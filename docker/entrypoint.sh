@@ -14,7 +14,8 @@ php /var/www/html/scripts/initialize.php \
   --workspace=$WORKSPACE_NAME \
   --test_login_name=$TEST_LOGIN_NAME \
   --test_login_password=$TEST_LOGIN_PASSWORD \
-  --test_person_codes="xxx yyy"
+  --test_person_codes="xxx yyy" \
+  --broadcast_service_uri=$BROADCAST_SERVICE_URI
 
 # file-rights
 chown -R www-data:www-data /var/www/html/vo_data
