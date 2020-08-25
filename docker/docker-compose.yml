@@ -29,6 +29,10 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
+      args:
+        MYSQL_HOST: testcenter-db
+        MYSQL_PORT: 3306
+        <<: *env-mysql
     container_name: testcenter-backend
     environment:
       <<: *env-mysql
