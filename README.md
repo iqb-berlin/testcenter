@@ -10,7 +10,8 @@ Testcenter-Admin application.
 
 You can find the frontend [here](https://github.com/iqb-berlin/testcenter-frontend).
 
-The repository for a complete setup of the application can be found [here](https://github.com/iqb-berlin/testcenter-setup).
+The repository for a complete setup of the application can be found
+[here](https://github.com/iqb-berlin/testcenter-setup).
 
 ## Documentation
 
@@ -28,13 +29,15 @@ All the necessary commands for running the application and starting the tests
 can be found in the Makefile on the root directory.
 
 ###### Prepare environment variables for development
-The file `docker/.env` is needed to run the docker-compose setup. A variant using default values for local development can be created with the following command:
+The file `docker/.env` is needed to run the docker-compose setup. A variant
+using default values for local development can be created with the following command:
 ```
 make init-dev-config
 ```
 This uses the values of `docker/.env-default`.
 
-**_For other environments, like a production setup, this file needs to be edited accordingly. Do not use the defaults (i.e. passwords) as they are!_**
+**_For other environments, like a production setup, this file needs to be edited accordingly.
+Do not use the defaults (i.e. passwords) as they are!_**
 ###### Start and Stop the server
 ```
 make run
@@ -87,11 +90,11 @@ sudo chown -R www-data:www-data ./integration/tmp # normal apache2 config assume
 sudo chown -R www-data:www-data ./vo_data # normal apache2 config assumed
 ```
 - create a MySQL or a PostgreSQL database
-- Run the initialize-script, that
-  - creates a superuser,
-  - creates a workspace with sample data,
-  - creates `config/DatabaseConnectionData.json` config file,
-  - creates necessary tables in the database.
+- Run the initialize-script, that creates
+  - a superuser
+  - a workspace with sample data
+  - `config/DatabaseConnectionData.json` config file
+  - necessary tables in the database
 ```
 sudo --user=www-data php scripts/initialize.php \
     --user_name=<name your future superuser> \
