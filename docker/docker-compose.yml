@@ -40,7 +40,7 @@ services:
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
     depends_on:
-      - testcenter-db
+      - testcenter-db-backend
     volumes:
       - ../vo_data:/var/www/html/vo_data
       - vendor:/var/www/html/vendor
