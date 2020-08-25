@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# db connection
-DBConnectionDataFile=/var/www/html/config/DBConnectionData.json
-if [ ! -f "$DBConnectionDataFile" ]; then
-  touch $DBConnectionDataFile
-  echo "{\"type\": \"mysql\", \"host\": \"${MYSQL_HOST}\", \"port\": \"${MYSQL_PORT}\", \"dbname\": \"${MYSQL_DATABASE}\", \"user\": \"${MYSQL_USER}\", \"password\": \"${MYSQL_PASSWORD}\"}" > $DBConnectionDataFile
-fi
-
 # init data
 php /var/www/html/scripts/initialize.php \
   --user_name=$SUPERUSER_NAME \
