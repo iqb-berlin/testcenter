@@ -99,6 +99,9 @@ psql -U username database_name < scripts/sql-schema/patches.postgresql.sql
 ```
 
 
+## Upgrade from previous versions
+Pull the version(-tag) you want and lookup UPGRADE.md for important changes!
+
 
 ## Tests
 
