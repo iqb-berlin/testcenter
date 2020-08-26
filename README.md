@@ -94,6 +94,7 @@ sudo chown -R www-data:www-data ./vo_data # normal apache2 config assumed
   - a superuser
   - a workspace with sample data
   - `config/DatabaseConnectionData.json` config file
+  - `config/system.json` config file
   - necessary tables in the database
 ```
 sudo --user=www-data php scripts/initialize.php \
@@ -107,17 +108,41 @@ sudo --user=www-data php scripts/initialize.php \
     --post=<database port, usually and by default 3306 for mysql and 5432 for postgresl> \
     --dbname=<database name> \
     --user=<mysql-/postgresql-username> \
-    --password=<mysql-/postgresql-password>
+    --password=<mysql-/postgresql-password> \
+    --broadcastServiceUriPush=<address of broadcast service to push for the backend, example: http://localhost:3000> \
+    --broadcastServiceUriSubscribe=<address of broadcast service's websocket to subscribe to from frontend, example: ws://localhost:3000>
 ```
 
 #### Options
 - See `scripts/initialize.php` for more options of the initialize-script.
+
 - Optionally you can create the file `config/DatabaseConnectionData.json` beforehand
 manually and omit the corresponding argument when calling the initialize-script.
 You may use the template file `config/DatabaseConnectionData.template.json` as a starting
 point for your own. If values are not self-explanatory, see the init-script parameter
 descriptions above.
 Check this file if you have any trouble connecting to your database.
+Example:
+```
+{
+  "type": "mysql",
+  "host": "localhost",
+  "port": "3306",
+  "dbname": "my_database",
+  "user": "my_user",
+  "password": "some_secrets"
+}
+```
+
+- You max create config/system.json by hand. Example:
+```
+{
+  "broadcastServiceUriPush": "http://localhost:3000",
+  "broadcastServiceUriSubscribe":"ws://localhost:3000"
+}
+```
+If you choose not to use the BroadcastingService, let both variables empty (but don't omit them!). 
+
 - Optionally you can create the database structure beforehand manually as well:
 ```
 mysql -u username -p database_name < scripts/sql-schema/mysql.sql

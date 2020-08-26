@@ -30,8 +30,8 @@
  * --password=(mysql-/postgresql-password)
  *
  * /config/system.json as well. you can write the file yourself or ass parameters
- * --  "broadcastServiceUriPush": (address of broadcast service to push for the backend)
- * --  "broadcastServiceUriSubscribe": (address of broadcast service to subscribe to from frontend)
+ * --broadcastServiceUriPush=(address of broadcast service to push for the backend)
+ * --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
  * Add them with empty strings if you don't want to use the broadcast service at all.
  *
  *
