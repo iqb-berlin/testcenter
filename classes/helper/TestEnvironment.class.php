@@ -20,7 +20,7 @@ class TestEnvironment {
             $dbConfig->staticTokens = true;
             DB::connect($dbConfig);
 
-            BroadcastService::setup('');
+            BroadcastService::setup('', '');
 
             TestEnvironment::resetState();
             TestEnvironment::setUpTestData();
@@ -46,7 +46,7 @@ class TestEnvironment {
                 'insecurePasswords' => true
             ]));
 
-            BroadcastService::setup('');
+            BroadcastService::setup('', '');
 
             $initDAO = new InitDAO();
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');

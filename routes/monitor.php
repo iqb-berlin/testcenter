@@ -63,10 +63,7 @@ $app->group('/monitor', function(App $app) {
                 BroadcastService::sessionChange($sessionChangeMessage);
             }
 
-            $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getUrl());
-            $url .= '/' . $bsToken;
-
-            $response = $response->withHeader('SubscribeURI', $url);
+            $response = $response->withHeader('SubscribeURI', BroadcastService::getBsUriSubscribe() . '/' . $bsToken);
         }
 
         return $response->withJson($sessionChangeMessages->asArray());
