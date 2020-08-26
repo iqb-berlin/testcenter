@@ -134,7 +134,7 @@ Example:
 }
 ```
 
-- You max create config/system.json by hand. Example:
+- You may create config/system.json by hand. Example:
 ```
 {
   "broadcastServiceUriPush": "http://localhost:3000",
