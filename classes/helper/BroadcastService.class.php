@@ -6,18 +6,20 @@ declare(strict_types=1);
 
 class BroadcastService {
 
-    private static $url = '';
+    private static $bsUriPush = '';
+    private static $bsUriSubscribe = '';
 
 
-    static function setup(string $broadcastServiceUri) {
+    static function setup(string $bsUriPush, string $bsUriSubscribe) {
 
-        self::$url = $broadcastServiceUri;
+        self::$bsUriPush = $bsUriPush;
+        self::$bsUriSubscribe = $bsUriSubscribe;
     }
 
 
-    static function getUrl() {
+    static function getBsUriSubscribe() {
 
-        return BroadcastService::$url;
+        return BroadcastService::$bsUriSubscribe;
     }
 
 
@@ -88,7 +90,7 @@ class BroadcastService {
 
     static function send(string $endpoint, string $message, string $verb = "POST"): ?string {
 
-        if (!BroadcastService::$url) {
+        if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
 
             return null;
         }
@@ -96,7 +98,7 @@ class BroadcastService {
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => BroadcastService::$url . '/' . $endpoint,
+            CURLOPT_URL => BroadcastService::$bsUriPush . '/' . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,

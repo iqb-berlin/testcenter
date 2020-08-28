@@ -1,0 +1,53 @@
+version: '3.7'
+
+x-env-mysql: &env-mysql
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+x-env-initdata: &env-initdata
+  SUPERUSER_NAME: ${SUPERUSER_NAME}
+  SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
+  WORKSPACE_NAME: ${WORKSPACE_NAME}
+  TEST_LOGIN_NAME: ${TEST_LOGIN_NAME}
+  TEST_LOGIN_PASSWORD: ${TEST_LOGIN_PASSWORD}
+
+services:
+
+  testcenter-db-backend:
+    image: mysql:5.7
+    container_name: testcenter-db
+    environment:
+      <<: *env-mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "9091:3306"
+
+  testcenter-backend:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      args:
+        MYSQL_HOST: testcenter-db
+        MYSQL_PORT: 3306
+        <<: *env-mysql
+    container_name: testcenter-backend
+    environment:
+      <<: *env-mysql
+      <<: *env-initdata
+      MYSQL_HOST: testcenter-db
+      MYSQL_PORT: 3306
+    depends_on:
+      - testcenter-db-backend
+    volumes:
+      - ../vo_data:/var/www/html/vo_data
+      - vendor:/var/www/html/vendor
+    ports:
+      - "9092:80"
+
+
+volumes:
+  db_data:
+  vendor:

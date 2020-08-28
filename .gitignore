@@ -1,10 +1,11 @@
+.env
+
 # composer
 vendor
 composer.phar
 
 # data folder
-vo_data/*
-!vo_data/.gitkeep
+vo_data
 
 # IDE stuff
 *.iml

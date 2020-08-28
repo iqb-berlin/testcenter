@@ -29,6 +29,11 @@
  * --user=(mysql-/postgresql-username)
  * --password=(mysql-/postgresql-password)
  *
+ * /config/system.json as well. you can write the file yourself or ass parameters
+ * --broadcastServiceUriPush=(address of broadcast service to push for the backend)
+ * --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
+ * Add them with empty strings if you don't want to use the broadcast service at all.
+ *
  *
  * Note: run this script as a user who can create files which can be read by the webserver or change file rights after wards
  * for example: sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
@@ -69,14 +74,16 @@ try  {
         echo "\n System-Config not file found (`/config/system.json`). Will be created.";
 
         $params = getopt("", [
-            'broadcast_service_uri::'
+            'broadcast_service_uri_push::',
+            'broadcast_service_uri_subscribe::'
         ]);
 
         $sysConf = new SystemConfig([
-            'broadcastServiceUri' => $params['broadcast_service_uri'] ?? ''
+            'broadcastServiceUriPush' => $params['broadcast_service_uri_push'] ?? '',
+            'broadcastServiceUriSubscribe' => $params['broadcast_service_uri_subscribe'] ?? ''
         ]);
 
-        BroadcastService::setup($sysConf->broadcastServiceUri);
+        BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
 
         echo "\nProvided arguments OK.";
 

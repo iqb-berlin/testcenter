@@ -1,8 +1,8 @@
 {
-  "type": "mysql or `pgsql for postgresql`",
-  "host": "localhost",
-  "port": "mysql/postgresql port, by default 3306/5432",
-  "dbname": "mysql/postgresql database name",
-  "user": "mysql/postgresql user name",
-  "password": "mysql/postgresql password"
+  "type": "<type>",
+  "host": "<host>",
+  "port": "<port>",
+  "dbname": "<name>",
+  "user": "<user>",
+  "password": "<password>"
 }
