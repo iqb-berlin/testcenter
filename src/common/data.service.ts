@@ -24,11 +24,10 @@ const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionC
 
 @Injectable()
 export class DataService {
-
     constructor(
-        private readonly eventsGateway: WebsocketGateway
+        private readonly websocketGateway: WebsocketGateway
     ) {
-        this.eventsGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
+        this.websocketGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
             this.removeMonitor(disconnected);
         });
     }
@@ -88,7 +87,7 @@ export class DataService {
             const sessions = (typeof this.testSessions[groupName] !== "undefined")
                 ? Object.values(this.testSessions[groupName])
                 : [];
-            this.eventsGateway.broadCastToRegistered(tokens, "test-sessions", sessions);
+            this.websocketGateway.broadcastToRegistered(tokens, "test-sessions", sessions);
         }
     }
 
@@ -120,7 +119,7 @@ export class DataService {
             }
         });
 
-        this.eventsGateway.disconnectClient(monitorToken);
+        this.websocketGateway.disconnectClient(monitorToken);
     }
 
     public getMonitors(): Monitor[] {
@@ -143,6 +142,6 @@ export class DataService {
     }
 
     public getClientTokens(): string[] {
-        return this.eventsGateway.getClientTokens();
+        return this.websocketGateway.getClientTokens();
     }
 }
