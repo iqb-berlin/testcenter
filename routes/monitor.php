@@ -54,7 +54,7 @@ $app->group('/monitor', function(App $app) {
                 BroadcastService::sessionChange($sessionChangeMessage);
             }
 
-            $response = $response->withHeader('SubscribeURI', $bsUrl);
+            $response = $response->withHeader('SubscribeURI', BroadcastService::getBsUriSubscribe() . '/' . $bsToken);
         }
 
         return $response->withJson($sessionChangeMessages->asArray());

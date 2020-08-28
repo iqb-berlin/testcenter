@@ -39,7 +39,7 @@ class BroadcastService {
 
         $status = [];
 
-        if (!BroadcastService::$url) {
+        if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
 
             return $status;
         }
@@ -77,7 +77,7 @@ class BroadcastService {
         $bsToken = md5((string) rand(0, 99999999));
         $data['token'] = $bsToken;
         $reponse = BroadcastService::send("$channelName/register", json_encode($data));
-        $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getUrl()) . '/' . $bsToken;
+        $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getBsUriSubscribe()) . '/' . $bsToken;
         return ($reponse !== null) ? $url : null;
     }
 
