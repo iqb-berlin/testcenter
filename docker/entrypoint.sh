@@ -2,13 +2,20 @@
 
 # init data
 php /var/www/html/scripts/initialize.php \
-  --user_name=$SUPERUSER_NAME \
-  --user_password=$SUPERUSER_PASSWORD \
-  --workspace=$WORKSPACE_NAME \
-  --test_login_name=$TEST_LOGIN_NAME \
-  --test_login_password=$TEST_LOGIN_PASSWORD \
-  --test_person_codes="xxx yyy" \
-  --broadcast_service_uri=$BROADCAST_SERVICE_URI
+--user_name=$SUPERUSER_NAME \
+--user_password=$SUPERUSER_PASSWORD \
+--workspace=$WORKSPACE_NAME \
+--test_login_name=$TEST_LOGIN_NAME \
+--test_login_password=$TEST_LOGIN_PASSWORD \
+--test_person_codes="xxx yyy" \
+--type="mysql" \
+--host=$MYSQL_HOST \
+--port=$MYSQL_PORT \
+--dbname=$MYSQL_DATABASE \
+--user=$MYSQL_USER \
+--password=$MYSQL_PASSWORD \
+--broadcast_service_uri_push=$BROADCAST_SERVICE_URI_PUSH \
+--broadcast_service_uri_subscribe=$BROADCAST_SERVICE_URI_SUBSCRIBE
 
 # file-rights
 chown -R www-data:www-data /var/www/html/vo_data

@@ -50,16 +50,6 @@ RUN export TC_API_URL=http://localhost
 COPY unit-tests unit-tests
 COPY integration integration
 
-COPY config/DBConnectionData.template.json /tmp/DBConnectionData.template.json
-RUN sed \
--e s/'<type>'/mysql/ \
--e s/'<host>'/${MYSQL_HOST}/ \
--e s/'<port>'/${MYSQL_PORT}/ \
--e s/'<name>'/${MYSQL_DATABASE}/ \
--e s/'<user>'/${MYSQL_USER}/ \
--e s/'<password>'/${MYSQL_PASSWORD}/ \
-/tmp/DBConnectionData.template.json > /var/www/html/config/DBConnectionData.json
-
 EXPOSE 80
 
 COPY docker/entrypoint.sh /root/entrypoint.sh
