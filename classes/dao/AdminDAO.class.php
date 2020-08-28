@@ -581,4 +581,34 @@ class AdminDAO extends DAO {
         return $returner;
     }
 
+
+    public function storeCommand(int $commanderId, int $testId, Command $command): Command {
+
+        $this->_("insert into test_commands (test_id, keyword, parameter, commander_id, timestamp) 
+                values (:test_id, :keyword, :parameter, :commander_id, :timestamp)",
+                [
+                    ':test_id'      => $testId,
+                    ':keyword'      => $command->getKeyword(),
+                    ':parameter'    => json_encode($command->getArguments()),
+                    ':commander_id' => $commanderId,
+                    ':timestamp'    => TimeStamp::toSQLFormat($command->getTimestamp())
+                ]);
+
+        return new Command(
+            (int) $this->pdoDBhandle->lastInsertId(),
+            $command->getKeyword(),
+            $command->getTimestamp(),
+            ...$command->getArguments()
+        );
+    }
+
+
+    // TODO use typed class instead of array
+    public function getTest(int $testId): ?array {
+
+        return $this->_(
+            'SELECT tests.locked, tests.id, tests.laststate, tests.label FROM tests WHERE tests.id=:id',
+            [':id' => $testId]
+        );
+    }
 }

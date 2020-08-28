@@ -235,9 +235,6 @@ $app->group('/test', function(App $app) {
 
     $app->put('/{test_id}/unit/{unit_name}/log', function (Request $request, Response $response) use ($testDAO) {
 
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
 
@@ -250,19 +247,12 @@ $app->group('/test', function(App $app) {
 
         $testDAO->addUnitLog($testId, $unitName, $body['entry'], $body['timestamp']);
 
-        BroadcastService::sessionChange(SessionChangeMessage::unitState(
-            $authToken, $testId, $unitName, $testDAO->log2itemState($body['entry']))
-        );
-
         return $response->withStatus(201);
     })
         ->add(new IsTestWritable());
 
 
     $app->put('/{test_id}/log', function (Request $request, Response $response) use ($testDAO) {
-
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
 
         $testId = (int) $request->getAttribute('test_id');
 
@@ -272,10 +262,6 @@ $app->group('/test', function(App $app) {
         ]);
 
         $testDAO->addBookletLog($testId, $body['entry'], $body['timestamp']);
-
-        BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken, $testId, $testDAO->log2itemState($body['entry']))
-        );
 
         return $response->withStatus(201);
     })
@@ -298,5 +284,37 @@ $app->group('/test', function(App $app) {
         return $response->withStatus(200);
     })
         ->add(new IsTestWritable());
+
+
+    $app->get('/{test_id}/commands', function(Request $request, Response $response) use ($testDAO) {
+
+        // TODO do we have to check access to test?
+        $testId = (int) $request->getAttribute('test_id');
+        $lastCommandId = RequestBodyParser::getElementWithDefault($request,'lastCommandId', null);
+
+        $commands = $testDAO->getCommands($testId, $lastCommandId);
+
+        $bsUrl = BroadcastService::registerChannel('testee', ['testId' => $testId]);
+
+        if ($bsUrl !== null) {
+
+            $response = $response->withHeader('SubscribeURI', $bsUrl);
+        }
+
+        return $response->withJson($commands);
+    });
+
+
+    $app->patch('/{test_id}/command/{command_id}/executed', function(Request $request, Response $response) use ($testDAO) {
+
+        // TODO to we have to check access to test?
+        $testId = (int) $request->getAttribute('test_id');
+        $commandId = (int) $request->getAttribute('command_id');
+
+        $changed = $testDAO->setCommandExecuted($testId, $commandId);
+
+        return $response->withStatus(200, $changed ? 'OK' : 'OK, was already marked as executed');
+    });
+
 })
     ->add(new RequireToken('person'));

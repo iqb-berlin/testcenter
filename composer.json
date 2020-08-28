@@ -2,16 +2,19 @@
   "name": "iqb/testcenter-api",
   "description": "The backend for the IQB-Testcenter application(s).",
   "version": "5.0.3",
+  "extra": {
+    "broadcastingServiceVersionExpected": "1.0.0"
+  },
   "homepage": "https://iqb-testcenter.de",
   "type": "project",
   "support": {
-    "issues": "https://github.com/iqb-berlin/testcenter-iqb-php/issues",
-    "docs": "https://iqb-berlin.github.io/testcenter-iqb-php/"
+    "issues": "https://github.com/iqb-berlin/testcenter-backend/issues",
+    "docs": "https://iqb-berlin.github.io/testcenter-backend/"
   },
   "repositories": [
     {
       "type": "github",
-      "url": "https://github.com/iqb-berlin/testcenter-iqb-php.git"
+      "url": "https://github.com/iqb-berlin/testcenter-backend.git"
     }
   ],
   "readme": "README.md",

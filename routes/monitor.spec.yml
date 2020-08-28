@@ -10,7 +10,7 @@ paths:
     get:
       summary: get a group
       description: "Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the
-       requesting user, who has to be have the role `monitor-group`."
+       requesting user, who has to have in mode `monitor-group`."
 
       parameters:
         - in: header
@@ -95,6 +95,52 @@ paths:
                 testState: []
                 unitState: []
                 timestamp: 1596455898
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /monitor/command:
+    put:
+      summary: send command
+      description: "Send a monitor command to a set of running tests"
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyword:
+                  type: string
+                arguments:
+                  type: array
+                  items:
+                    type: string
+                timestamp:
+                  type: number
+                  description: when the command was given
+                testIds:
+                  items:
+                    type: integer
+            example:
+              keyword: 'MY-COMMAND'
+              arguments: ['arg1', 'arg2']
+              timestamp: 1597906980
+              testIds: [1]
+
+      responses:
+        "201":
+          description: command sent
         "401":
           description: Not authenticated
         "410":

@@ -94,7 +94,16 @@ $app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspect
         $customTexts = [];
     }
 
-    return $response->withJson(['version' => Version::get(), 'customTexts' => $customTexts]);
+
+
+
+    return $response->withJson(
+        [
+            'version' => Version::get(),
+            'customTexts' => $customTexts,
+            'broadcastingService' => BroadcastService::getStatus()
+        ]
+    );
 });
 
 

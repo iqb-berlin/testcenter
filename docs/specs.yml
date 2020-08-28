@@ -74,7 +74,7 @@ paths:
     '/monitor/group/{group_name}':
         get:
             summary: 'get a group'
-            description: 'Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the requesting user, who has to be have the role `monitor-group`.'
+            description: 'Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the requesting user, who has to have in mode `monitor-group`.'
             parameters:
                 -
                     in: header
@@ -155,6 +155,51 @@ paths:
                                     testState: []
                                     unitState: []
                                     timestamp: 1596455898
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
+    /monitor/command:
+        put:
+            summary: 'send command'
+            description: 'Send a monitor command to a set of running tests'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for group-monitor'
+                    example: 'g:user000000000.0000000000'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                keyword:
+                                    type: string
+                                arguments:
+                                    type: array
+                                    items: {type: string}
+                                timestamp:
+                                    type: number
+                                    description: 'when the command was given'
+                                testIds:
+                                    items: {type: integer}
+                        example:
+                            keyword: MY-COMMAND
+                            arguments:
+                                - arg1
+                                - arg2
+                            timestamp: 1597906980
+                            testIds:
+                                - 1
+            responses:
+                '201':
+                    description: 'command sent'
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1112,6 +1157,96 @@ paths:
                     content:
                         text/plain:
                             example: '1'
+                '401':
+                    description: 'Not authenticated - auth token header is missing or not containing a login token'
+                '403':
+                    description: Forbidden
+                '423':
+                    description: 'Test is locked!'
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/command/{command_id}/executed':
+        patch:
+            summary: 'set command as executed'
+            description: "When the frontend executed a command, we send back this information to Backend via this command,\nto make sure it never gets executed again."
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    example: 'p:0000000000000.00000000000'
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: command_id
+                    description: 'unique id of a command'
+                    example: 3
+                    required: true
+                    schema:
+                        type: number
+            responses:
+                '200':
+                    description: 'OK, command is marked as executed (or was already set as executed before)'
+                '401':
+                    description: 'Not authenticated - auth token header is missing or not containing a login token'
+                '403':
+                    description: Forbidden
+                '423':
+                    description: 'Test is locked!'
+                '500':
+                    description: 'Server Error'
+    '/test/{test_id}/commands':
+        get:
+            summary: 'get commands'
+            description: "Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket\nif available. The websocket adress is stored in header \"SubscribeURI\"."
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for test-user'
+                    example: 'p:0000000000000.00000000000'
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            properties:
+                                lastCommandId:
+                                    description: 'Optional. The id of a command. If given, only subsequent commands will be retrieved.'
+                                    type: integer
+                            required:
+                                - bookletName
+                        example:
+                            lastCommandId: 2
+            responses:
+                '200':
+                    description: 'list of subsequent commands'
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties: {id: {type: number, description: 'a unique ID to make sure, the command get never executed twice'}, keyword: {type: string, description: 'the command-keyword. TODO - add known keywords'}, arguments: {type: array, description: 'a list of token as arguments provided with the keyword', items: {type: string}}, timestamp: {type: number, description: 'timstamp when the command was given'}}
+                            example:
+                                -
+                                    id: 3
+                                    keyword: COMMAND
+                                    arguments: [p4]
                 '401':
                     description: 'Not authenticated - auth token header is missing or not containing a login token'
                 '403':

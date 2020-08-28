@@ -102,6 +102,19 @@ CREATE TABLE `workspaces` (
 ,  `name` varchar(50) NOT NULL
 );
 
+
+create table `test_commands` (
+    `id` integer not null primary key autoincrement
+,   `test_id` bigint unsigned not null
+,   `keyword` varchar(50) not null
+,   `parameter` text null
+,   `commander_id` bigint null
+,   `timestamp` timestamp not null
+,   `executed`  integer not null default 0
+,    constraint `test_commands_person_sessions_id_fk` foreign key (`commander_id`) references person_sessions (`id`) on delete set null on update no action
+,    constraint test_commands_tests_id_fk foreign key (test_id) references tests (id) on delete cascade on update no action
+);
+
 CREATE INDEX "idx_admintokens_index_fk_users_admintokens" ON admin_sessions (`user_id`);
 CREATE INDEX "idx_unitlogs_index_fk_log_unit" ON unit_logs (`unit_id`);
 CREATE INDEX "idx_bookletlogs_index_fk_log_booklet" ON test_logs (`booklet_id`);
@@ -113,4 +126,8 @@ CREATE INDEX "idx_unitreviews_index_fk_review_unit" ON unit_reviews (`unit_id`);
 CREATE INDEX "idx_workspace_users_index_fk_workspace_users_user" ON "workspace_users" (`user_id`);
 CREATE INDEX "idx_workspace_users_index_fk_workspace_users_workspace" ON "workspace_users" (`workspace_id`);
 CREATE INDEX "idx_tests_index_fk_booklet_person" ON tests (`person_id`);
+
+create unique index "person_sessions_id_uindex" on person_sessions (`id`);
+
+
 END TRANSACTION;

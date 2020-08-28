@@ -45,30 +45,57 @@ $app->group('/monitor', function(App $app) {
 
         $sessionChangeMessages = $adminDAO->getTestSessions($authToken->getWorkspaceId(), $groupNames);
 
-        $bsToken = md5((string) rand(0, 99999999));
+        $bsUrl = BroadcastService::registerChannel('monitor', ["groups" => [$authToken->getGroup()]]);
 
-        $broadcastServiceOnline =
-            BroadcastService::push(
-                "monitor/register",
-                json_encode([
-                    "token" => $bsToken,
-                    "groups" => [$authToken->getGroup()]
-                ]
-            )) !== null;
-
-        if ($broadcastServiceOnline) {
+         if ($bsUrl !== null) {
 
             foreach ($sessionChangeMessages as $sessionChangeMessage) {
 
                 BroadcastService::sessionChange($sessionChangeMessage);
             }
 
-            $response = $response->withHeader('SubscribeURI', BroadcastService::getBsUriSubscribe() . '/' . $bsToken);
+            $response = $response->withHeader('SubscribeURI', $bsUrl);
         }
 
         return $response->withJson($sessionChangeMessages->asArray());
     });
 
+
+    $app->put('/command', function(Request $request, Response $response) use ($adminDAO) {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+        $personId = $authToken->getId();
+
+        $body = RequestBodyParser::getElements($request, [
+            'keyword' => null,
+            'arguments' => [],
+            'timestamp' => null,
+            'testIds' => []
+        ]);
+
+        $command = new Command(-1, $body['keyword'], (int) $body['timestamp'], ...$body['arguments']);
+
+        foreach ($body['testIds'] as $testId) {
+
+            if (!$adminDAO->getTest($testId)) {
+
+                throw new HttpNotFoundException($request, "Test `{$testId}` not found. `{$command->getKeyword()}` not committed.");
+            }
+        }
+
+        foreach ($body['testIds'] as $testId) {
+
+            $command = $adminDAO->storeCommand($personId, (int) $testId, $command);
+        }
+
+        BroadcastService::send('command', json_encode([
+            'command' => $command,
+            'testIds' => $body['testIds']
+        ]));
+
+        return $response->withStatus(201);
+    });
 })
     ->add(new IsGroupMonitor())
     ->add(new RequireToken('person'));

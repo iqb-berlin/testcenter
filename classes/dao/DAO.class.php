@@ -7,6 +7,7 @@ class DAO {
 
     const tables = [ // because we use different types of DB is difficult to get table list by command
         'admin_sessions',
+        'test_commands',
         'test_logs',
         'test_reviews',
         'tests',
@@ -100,7 +101,7 @@ class DAO {
 
         foreach ($this::tables as $table) {
 
-            $report .= "## $table\n";
+            $report .= "\n## $table\n";
             $entries = $this->_("SELECT * FROM $table", [], true);
             $report .= CSV::build($entries);
         }
@@ -123,18 +124,5 @@ class DAO {
         }
 
         return $workspace['name'];
-    }
-
-
-    // TODO get rid of this shit. log-items and states should be the same maybe.
-    public function log2itemState(string $logItem): array {
-
-        $parts = array_map(function($str) {return trim($str, '" ');}, explode(':', $logItem, 2));
-
-        if (count($parts) == 2) {
-            return [$parts[0] => $parts[1]];
-        }
-
-        return [$logItem => 1];
     }
 }
