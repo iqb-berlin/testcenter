@@ -24,3 +24,9 @@ test-e2e:
 
 init-dev-config:
 	cp docker/.env-default docker/.env
+
+build-image:
+	docker build -t iqbberlin/testcenter-backend -f docker/Dockerfile ./docker/
+
+push-image:
+	docker push iqbberlin/testcenter-backend:latest
