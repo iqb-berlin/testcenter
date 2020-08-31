@@ -26,7 +26,7 @@ init-dev-config:
 	cp docker/.env-default docker/.env
 
 build-image:
-	docker build -t iqbberlin/testcenter-backend -f docker/Dockerfile .
+	docker build --target prod -t iqbberlin/testcenter-backend -f docker/Dockerfile .
 
 push-image:
 	docker push iqbberlin/testcenter-backend:latest
