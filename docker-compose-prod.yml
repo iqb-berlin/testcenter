@@ -50,9 +50,7 @@ services:
     depends_on:
       - testcenter-db
     volumes:
-      - ./testcenter-backend:/var/www/html/
-      - ./testcenter-backend/vo_data:/var/www/html/vo_data
-      - testcenter_backend_vendor:/var/www/html/vendor
+      - testcenter_backend_vo_data:/var/www/html/vo_data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=Host(`${HOSTNAME}`) && PathPrefix(`/api`)"
@@ -62,9 +60,6 @@ services:
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:latest
     container_name: testcenter-frontend
-    volumes:
-      - ./testcenter-frontend:/app
-      - testcenter_frontend_node_modules:/app/node_modules
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=Host(`${HOSTNAME}`)"
@@ -80,5 +75,4 @@ services:
 
 volumes:
   dbdata:
-  testcenter_frontend_node_modules:
-  testcenter_backend_vendor:
+  testcenter_backend_vo_data:
