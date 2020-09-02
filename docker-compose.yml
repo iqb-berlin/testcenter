@@ -65,6 +65,7 @@ services:
     build:
       context: testcenter-frontend
       dockerfile: docker/Dockerfile
+      target: dev
     container_name: testcenter-frontend
     volumes:
       - ./testcenter-frontend:/app
