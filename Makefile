@@ -14,4 +14,4 @@ init-config:
 	cp .env-default .env
 	make -C testcenter-backend init-dev-config
 	cd ..
-	make -C testcenter-frontend init-prod-docker-config
+	make -C testcenter-frontend init-prod-config
