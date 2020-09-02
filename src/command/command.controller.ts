@@ -21,7 +21,7 @@ export class CommandController {
             throw new HttpException("bo testIds given", 400);
         }
 
-        console.log('command', request.body);
+        console.log('/command', request.body);
 
         this.testeeService.broadcastCommandToTestees(request.body.command, request.body.testIds);
     }

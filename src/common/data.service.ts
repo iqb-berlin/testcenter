@@ -45,7 +45,6 @@ export class DataService {
     } = {};
 
     public applySessionChange(sessionChange: SessionChange) {
-        console.log('sessionChange received', JSON.stringify(sessionChange));
         this.addSessionChange(sessionChange);
         this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
     }
@@ -56,7 +55,7 @@ export class DataService {
 
         // testSession is first of group
         if (typeof this.testSessions[group] === "undefined") {
-            console.log("skipping group hence not monitored: " + group);
+            // console.log("skipping group hence not monitored: " + group);
             return;
         }
 
@@ -82,7 +81,7 @@ export class DataService {
 
     private broadcastTestSessionsToGroupMonitors(groupName: string) {
         if (typeof this.monitors[groupName] !== "undefined") {
-            console.log("broadcasting data about group: " + groupName);
+            // console.log("broadcasting data about group: " + groupName);
             const tokens = Object.keys(this.monitors[groupName]);
             const sessions = (typeof this.testSessions[groupName] !== "undefined")
                 ? Object.values(this.testSessions[groupName])
