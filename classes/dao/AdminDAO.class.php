@@ -385,7 +385,10 @@ class AdminDAO extends DAO {
             from
                 units 
             where
-                units.booklet_id = :testId",
+                units.booklet_id = :testId
+            order by id desc limit 1", // TODO we take the last inserted unit, which is only the last one if ...
+            // the testee never went back. but atm we have no other way to find out the real last seen one ...
+            // see: https://github.com/iqb-berlin/testcenter-frontend/issues/181
             [':testId' => $testId]
         );
 
