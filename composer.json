@@ -1,9 +1,9 @@
 {
   "name": "iqb/testcenter-api",
   "description": "The backend for the IQB-Testcenter application(s).",
-  "version": "5.0.3",
+  "version": "6.0.0",
   "extra": {
-    "broadcastingServiceVersionExpected": "1.0.0"
+    "broadcastingServiceVersionExpected": "2.0.0"
   },
   "homepage": "https://iqb-testcenter.de",
   "type": "project",
