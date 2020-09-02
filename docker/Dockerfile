@@ -49,7 +49,7 @@ ENTRYPOINT ["/root/entrypoint.sh"]
 #==================
 # This image is for running E2E tests only. When building a production
 # image this step should not be used. (use: target prod)
-FROM base as tester
+FROM prod as tester
 
 RUN apt-get update && apt-get install -y npm
 
