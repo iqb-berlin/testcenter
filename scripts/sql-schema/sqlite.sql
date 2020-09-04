@@ -104,13 +104,14 @@ CREATE TABLE `workspaces` (
 
 
 create table `test_commands` (
-    `id` integer not null primary key autoincrement
+    `id` integer not null
 ,   `test_id` bigint unsigned not null
 ,   `keyword` varchar(50) not null
 ,   `parameter` text null
 ,   `commander_id` bigint null
 ,   `timestamp` timestamp not null
 ,   `executed`  integer not null default 0
+,   primary key (id, test_id)
 ,    constraint `test_commands_person_sessions_id_fk` foreign key (`commander_id`) references person_sessions (`id`) on delete set null on update no action
 ,    constraint test_commands_tests_id_fk foreign key (test_id) references tests (id) on delete cascade on update no action
 );

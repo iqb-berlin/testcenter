@@ -101,7 +101,7 @@ class AdminDAOTest extends TestCase {
         $command = new Command(-1, 'a_keyword', 1597905000, 'first_argument', 'second_argument');
         $this->dbc->storeCommand(1, 1, $command);
         $expectation = [
-            "id" => 6,
+            "id" => 5,
             "test_id" => 1,
             "keyword" => 'a_keyword',
             "parameter" => '["first_argument","second_argument"]',

@@ -76,7 +76,7 @@ $app->group('/monitor', function(App $app) {
 
         $command = new Command(-1, $body['keyword'], (int) $body['timestamp'], ...$body['arguments']);
 
-        foreach ($body['testIds'] as $testId) {
+        foreach (array_unique($body['testIds']) as $testId) {
 
             if (!$adminDAO->getTest($testId)) {
 
@@ -86,7 +86,8 @@ $app->group('/monitor', function(App $app) {
 
         foreach ($body['testIds'] as $testId) {
 
-            $command = $adminDAO->storeCommand($personId, (int) $testId, $command);
+            $commandId = $adminDAO->storeCommand($personId, (int) $testId, $command);
+            $command->setId($commandId);
         }
 
         BroadcastService::send('command', json_encode([

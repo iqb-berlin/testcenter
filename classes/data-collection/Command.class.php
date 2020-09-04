@@ -36,4 +36,9 @@ class Command extends DataCollectionTypeSafe {
 
         return $this->timestamp;
     }
+
+    public function setId($commandId) {
+
+        $this->id = $commandId;
+    }
 }

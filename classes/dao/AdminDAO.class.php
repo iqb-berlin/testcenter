@@ -585,11 +585,19 @@ class AdminDAO extends DAO {
     }
 
 
-    public function storeCommand(int $commanderId, int $testId, Command $command): Command {
+    public function storeCommand(int $commanderId, int $testId, Command $command): int {
 
-        $this->_("insert into test_commands (test_id, keyword, parameter, commander_id, timestamp) 
-                values (:test_id, :keyword, :parameter, :commander_id, :timestamp)",
+        if ($command->getId() === -1) {
+            $maxId = $this->_("select max(id) as max from test_commands");
+            $commandId = isset($maxId['max']) ? (int) $maxId['max'] + 1 : 1;
+        } else {
+            $commandId = $command->getId();
+        }
+
+        $this->_("insert into test_commands (id, test_id, keyword, parameter, commander_id, timestamp) 
+                values (:id, :test_id, :keyword, :parameter, :commander_id, :timestamp)",
                 [
+                    ':id'           => $commandId,
                     ':test_id'      => $testId,
                     ':keyword'      => $command->getKeyword(),
                     ':parameter'    => json_encode($command->getArguments()),
@@ -597,12 +605,7 @@ class AdminDAO extends DAO {
                     ':timestamp'    => TimeStamp::toSQLFormat($command->getTimestamp())
                 ]);
 
-        return new Command(
-            (int) $this->pdoDBhandle->lastInsertId(),
-            $command->getKeyword(),
-            $command->getTimestamp(),
-            ...$command->getArguments()
-        );
+        return $commandId;
     }
 
 

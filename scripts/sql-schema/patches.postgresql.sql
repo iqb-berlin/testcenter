@@ -58,3 +58,6 @@ create table test_commands
 create unique index test_commands_id_uindex on test_commands (id);
 alter table test_commands add constraint test_commands_pk primary key (id);
 
+-- 6.1.0
+
+-- TODO adapt from mysql.patches

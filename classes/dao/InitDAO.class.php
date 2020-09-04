@@ -223,7 +223,7 @@ class InitDAO extends SessionDAO {
 
         $adminDAO = new AdminDAO();
         $adminDAO->storeCommand($commanderId, 1, new Command(-1,  'COMMAND', 1597906980, 'p4'));
-        $adminDAO->storeCommand($commanderId, 1, new Command(-2, 'COMMAND', 1597906970, 'p3'));
-        $adminDAO->storeCommand($commanderId, 1, new Command(-3, 'COMMAND', 1597906960, 'p1', 'p2'));
+        $adminDAO->storeCommand($commanderId, 1, new Command(-1, 'COMMAND', 1597906970, 'p3'));
+        $adminDAO->storeCommand($commanderId, 1, new Command(-1, 'COMMAND', 1597906960, 'p1', 'p2'));
     }
 }

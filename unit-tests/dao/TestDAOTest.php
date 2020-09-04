@@ -72,7 +72,7 @@ class TestDAOTest extends TestCase {
         $this->assertEquals($expected, $result);
 
         $expected = [
-            new Command(5, 'COMMAND_X', 1597902000)
+            new Command(1, 'COMMAND_X', 1597902000)
         ];
         $result = $this->dbc->getCommands(2);
         $this->assertEquals($expected, $result);
