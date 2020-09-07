@@ -22,7 +22,8 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
     ports:
-      - "80:80"
+      - "80:80" # TODO add default-port variable to make it easier to let whole setup on different port than 80 ...
+      # ... this affects BROADCAST_SERVICE_URI_SUBSCRIBE in env files as well!
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
