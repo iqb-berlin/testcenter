@@ -60,6 +60,12 @@ When running in detached mode you may use the following command to stop.
 make stop
 ```
 
+## Update
+```
+git pull
+git submodule update --recursive
+```
+
 ## Usage
 
 Open http://localhost in your browser. You see now the testcenter application
