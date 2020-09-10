@@ -25,8 +25,8 @@ after_script:
   - make stop
 
 after_success:
-  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+  - if [ "$TRAVIS_TAG" ]; then
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
-      make build-image;
-      make push-image;
+      docker build --target prod -t iqbberlin/testcenter-backend:$TRAVIS_TAG -f docker/Dockerfile .
+      docker push iqbberlin/testcenter-backend:$TRAVIS_TAG
     fi
