@@ -1,8 +1,11 @@
 run:
 	docker-compose up
 
-run-detached:
-	docker-compose up -d
+run-prod:
+	docker-compose -f docker-compose-prod.yml up
+
+run-detached-prod:
+	docker-compose -f docker-compose-prod.yml up -d
 
 stop:
 	docker-compose stop
