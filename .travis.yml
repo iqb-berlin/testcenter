@@ -4,8 +4,8 @@ services:
   - docker
 
 script:
-  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+  - if [ "$TRAVIS_TAG" ]; then
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
-      make build-image;
-      make push-image;
+      docker build -t iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG -f docker/Dockerfile .;
+      docker push iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG;
     fi
