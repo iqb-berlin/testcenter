@@ -27,6 +27,6 @@ after_script:
 after_success:
   - if [ "$TRAVIS_TAG" ]; then
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
-      docker build --target prod -t iqbberlin/testcenter-backend:$TRAVIS_TAG -f docker/Dockerfile .
-      docker push iqbberlin/testcenter-backend:$TRAVIS_TAG
+      docker build --target prod -t iqbberlin/testcenter-backend:$TRAVIS_TAG -f docker/Dockerfile .;
+      docker push iqbberlin/testcenter-backend:$TRAVIS_TAG;
     fi
