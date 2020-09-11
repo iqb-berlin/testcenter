@@ -15,3 +15,6 @@ down:
 
 init-config:
 	cp .env-default .env
+
+init-dev-config: init-config
+	make -C testcenter-frontend init-dev-config
