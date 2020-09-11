@@ -32,7 +32,7 @@ COPY .github /var/www/html/.github
 COPY classes /var/www/html/classes
 COPY config /var/www/html/config
 COPY definitions /var/www/html/definitions
-# COPY docs /var/www/html/docs
+COPY docs /var/www/html/docs
 COPY routes /var/www/html/routes
 COPY sampledata /var/www/html/sampledata
 COPY scripts /var/www/html/scripts
