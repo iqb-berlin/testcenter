@@ -4,7 +4,7 @@ declare(strict_types=1);
 // TODO unit test
 
 
-class SysChecksFolder extends WorkspaceController {
+class SysChecksFolder extends Workspace {
 
 
     public function findAvailableSysChecks() {

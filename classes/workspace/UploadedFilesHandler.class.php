@@ -51,7 +51,7 @@ class UploadedFilesHandler {
 
         $importedFiles = [];
 
-        $workspaceController = new WorkspaceController($workspaceId);
+        $workspaceController = new Workspace($workspaceId);
 
         foreach ($uploadedFiles as $uploadedFile) { /** @var UploadedFile $uploadedFile */
 

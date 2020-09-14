@@ -4,7 +4,7 @@
 require_once "classes/data-collection/DataCollection.class.php";
 require_once "classes/data-collection/InstallationArguments.class.php";
 require_once "classes/workspace/WorkspaceInitializer.class.php";
-require_once "classes/workspace/WorkspaceController.class.php";
+require_once "classes/workspace/Workspace.class.php";
 
 
 use org\bovigo\vfs\vfsStream;

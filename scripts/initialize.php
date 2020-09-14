@@ -164,14 +164,14 @@ try  {
 
     echo "\n# Sample content";
 
-    $workspaceController = new WorkspaceController(1);
-    $filesInWorkspace = array_reduce($workspaceController->countFilesOfAllSubFolders(), function($carry, $item) {
+    $workspace = new Workspace(1);
+    $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function($carry, $item) {
         return $carry + $item;
     }, 0);
 
     if (($filesInWorkspace > 0) and !$args->overwrite_existing_installation) {
 
-        throw new FinishOkay("Workspace folder `{$workspaceController->getWorkspacePath()}` is not empty.");
+        throw new FinishOkay("Workspace folder `{$workspace->getWorkspacePath()}` is not empty.");
     }
 
     $newIds = $initDAO->createWorkspaceAndAdmin(

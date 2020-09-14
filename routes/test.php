@@ -55,7 +55,7 @@ $app->group('/test', function(App $app) {
         $testId = (int) $request->getAttribute('test_id');
 
         $bookletName = $testDAO->getBookletName($testId);
-        $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
+        $workspaceController = new Workspace($authToken->getWorkspaceId());
         $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
 
         return $response->withJson([ // TODO include running, use only one query
@@ -74,7 +74,7 @@ $app->group('/test', function(App $app) {
         $unitName = $request->getAttribute('unit_name');
         $testId = (int) $request->getAttribute('test_id');
 
-        $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
+        $workspaceController = new Workspace($authToken->getWorkspaceId());
         $unitFile = $workspaceController->getXMLFileByName('Unit', $unitName);
 
         $unit = [
@@ -95,7 +95,7 @@ $app->group('/test', function(App $app) {
         $resourceName = $request->getAttribute('resource_name');
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
-        $workspaceController = new WorkspaceController($authToken->getWorkspaceId());
+        $workspaceController = new Workspace($authToken->getWorkspaceId());
         $resourceFile = $workspaceController->getResourceFileByName($resourceName, $skipSubVersions);
 
         $response->getBody()->write($resourceFile->getContent());

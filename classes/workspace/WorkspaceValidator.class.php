@@ -3,7 +3,7 @@
 declare(strict_types=1);
 // TODO unit test
 
-class WorkspaceValidator extends WorkspaceController {
+class WorkspaceValidator extends Workspace {
 
     private $allResources = [];
     private $allVersionedResources = [];

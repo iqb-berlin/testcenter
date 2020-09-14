@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-class WorkspaceController {
+class Workspace {
 
     protected $_workspaceId = 0;
     protected $_workspacePath = '';

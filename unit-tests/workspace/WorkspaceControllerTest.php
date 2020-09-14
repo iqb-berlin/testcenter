@@ -25,7 +25,7 @@ class WorkspaceControllerTest extends TestCase {
     function setUp() {
 
         $this->vfs = VfsForTest::setUp();
-        $this->workspaceController = new WorkspaceController(1);
+        $this->workspaceController = new Workspace(1);
     }
 
 

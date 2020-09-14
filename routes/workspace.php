@@ -149,7 +149,7 @@ $app->group('/workspace', function(App $app) {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
-        $workspaceController = new WorkspaceController($workspaceId);
+        $workspaceController = new Workspace($workspaceId);
         $files = $workspaceController->getAllFiles();
 
         return $response->withJson($files);
@@ -162,7 +162,7 @@ $app->group('/workspace', function(App $app) {
         $workspaceId = (int) $request->getAttribute('ws_id');
         $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
 
-        $workspaceController = new WorkspaceController($workspaceId);
+        $workspaceController = new Workspace($workspaceId);
         $deletionReport = $workspaceController->deleteFiles($filesToDelete);
 
         return $response->withJson($deletionReport)->withStatus(207);
@@ -287,7 +287,7 @@ $app->get('/workspace/{ws_id}/sys-check/{sys-check_name}', function(Request $req
     $workspaceId = (int) $request->getAttribute('ws_id');
     $sysCheckName = $request->getAttribute('sys-check_name');
 
-    $workspaceController = new WorkspaceController($workspaceId);
+    $workspaceController = new Workspace($workspaceId);
     /* @var XMLFileSysCheck $xmlFile */
     $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
 
@@ -311,7 +311,7 @@ $app->get('/workspace/{ws_id}/sys-check/{sys-check_name}/unit-and-player', funct
     $workspaceId = (int) $request->getAttribute('ws_id');
     $sysCheckName = $request->getAttribute('sys-check_name');
 
-    $workspaceController = new WorkspaceController($workspaceId);
+    $workspaceController = new Workspace($workspaceId);
     /* @var XMLFileSysCheck $xmlFile */
     $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
 

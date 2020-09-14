@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-class TesttakersFolder extends WorkspaceController {
+class TesttakersFolder extends Workspace {
 
 
     static function searchAllForLogin(string $name, string $password = ''): ?PotentialLogin {

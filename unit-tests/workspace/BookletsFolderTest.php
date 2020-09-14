@@ -2,7 +2,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/workspace/WorkspaceController.class.php";
+require_once "classes/workspace/Workspace.class.php";
 require_once "classes/workspace/BookletsFolder.class.php";
 require_once "VfsForTest.class.php";
 
