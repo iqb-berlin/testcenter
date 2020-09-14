@@ -2,8 +2,6 @@
 declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpNotFoundException;
-use Slim\Http\Stream;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -11,165 +9,44 @@ use Slim\Http\Response;
 
 $app->group('/workspace', function(App $app) {
 
+
+
+    $app->get('/{ws_id}', [WorkspaceController::class, 'get'])
+        ->add(new IsWorkspacePermitted('MO'));
+
+    $app->get('/{ws_id}/reviews', [WorkspaceController::class, 'getReviews'])
+        ->add(new IsWorkspacePermitted('RO'));
+
+    $app->get('/{ws_id}/results', [WorkspaceController::class, 'getResults'])
+        ->add(new IsWorkspacePermitted('RO'));
+
+    $app->get('/{ws_id}/responses', [WorkspaceController::class, 'getResponses'])
+        ->add(new IsWorkspacePermitted('RO'));
+
+    $app->delete('/{ws_id}/responses', [WorkspaceController::class, 'deleteResponses'])
+        ->add(new IsWorkspacePermitted('RW'));
+
+    $app->get('/{ws_id}/logs', [WorkspaceController::class, 'getLogs'])
+        ->add(new IsWorkspacePermitted('RO'));
+
+    $app->get('/{ws_id}/validation', [WorkspaceController::class, 'validation'])
+        ->add(new IsWorkspacePermitted('RO'));
+
+    $app->get('/{ws_id}/file/{type}/{filename}', [WorkspaceController::class, 'getFile'])
+        ->add(new IsWorkspacePermitted('RO'));
+
+    $app->post('/{ws_id}/file', [WorkspaceController::class, 'postFile'])
+        ->add(new IsWorkspacePermitted('RW'));
+
+    $app->get('/{ws_id}/files', [WorkspaceController::class, 'getFiles'])
+        ->add(new IsWorkspacePermitted('RO'));
+
+    $app->delete('/{ws_id}/files', [WorkspaceController::class, 'deleteFiles'])
+        ->add(new IsWorkspacePermitted('RW'));
+
+    // TODO move the rest of functions to WorkspaceController
+
     $adminDAO = new AdminDAO();
-
-    $app->get('/{ws_id}', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-
-        return $response->withJson([
-            "id" => $workspaceId,
-            "name" => $adminDAO->getWorkspaceName($workspaceId),
-            "role" => $adminDAO->getWorkspaceRole($authToken->getToken(), $workspaceId)
-        ]);
-
-    })->add(new IsWorkspacePermitted('MO'));
-
-
-    $app->get('/{ws_id}/reviews', function(Request $request, Response $response) use ($adminDAO) {
-
-        $groups = explode(",", $request->getParam('groups'));
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        if (!$groups) {
-            throw new HttpBadRequestException($request, "Parameter groups is missing");
-        }
-
-        $reviews = $adminDAO->getReviews($workspaceId, $groups);
-
-        return $response->withJson($reviews);
-
-    })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->get('/{ws_id}/results', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        $results = $adminDAO->getAssembledResults($workspaceId);
-
-        return $response->withJson($results);
-
-    })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->get('/{ws_id}/responses', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $groups = explode(",", $request->getParam('groups'));
-
-        $results = $adminDAO->getResponses($workspaceId, $groups);
-
-        return $response->withJson($results);
-
-    })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->delete('/{ws_id}/responses', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
-
-        foreach ($groups as $group) {
-            $adminDAO->deleteResultData($workspaceId, $group);
-        }
-
-        return $response;
-
-    })->add(new IsWorkspacePermitted('RW'));
-
-
-    $app->get('/{ws_id}/logs', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $groups = explode(",", $request->getParam('groups'));
-
-        $results = $adminDAO->getLogs($workspaceId, $groups);
-
-        return $response->withJson($results);
-
-    })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->get('/{ws_id}/validation', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        $workspaceValidator = new WorkspaceValidator($workspaceId);
-        $report = $workspaceValidator->validate();
-
-        return $response->withJson($report);
-
-    })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->get('/{ws_id}/file/{type}/{filename}', function(Request $request, Response $response) use ($adminDAO) {
-
-        $workspaceId = $request->getAttribute('ws_id', 0);
-        $fileType = $request->getAttribute('type', '[type missing]');
-        $filename = $request->getAttribute('filename', '[filename missing]');
-
-        $fullFilename = DATA_DIR . "/ws_$workspaceId/$fileType/$filename";
-        if (!file_exists($fullFilename)) {
-            throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
-        }
-
-        $response->withHeader('Content-Description', 'File Transfer');
-        $response->withHeader('Content-Type', ($fileType == 'Resource') ? 'application/octet-stream' : 'text/xml' );
-        $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
-        $response->withHeader('Expires', '0');
-        $response->withHeader('Cache-Control', 'must-revalidate');
-        $response->withHeader('Pragma', 'public');
-        $response->withHeader('Content-Length', filesize($fullFilename));
-
-        $fileHandle = fopen($fullFilename, 'rb');
-
-        $fileStream = new Stream($fileHandle);
-
-        return $response->withBody($fileStream);
-
-    })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->post('/{ws_id}/file', function(Request $request, Response $response) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
-
-        return $response->withJson($importedFiles)->withStatus(201);
-
-    })->add(new IsWorkspacePermitted('RW'));
-
-
-    $app->get('/{ws_id}/files', function(Request $request, Response $response) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        $workspaceController = new Workspace($workspaceId);
-        $files = $workspaceController->getAllFiles();
-
-        return $response->withJson($files);
-
-    })->add(new IsWorkspacePermitted('RO'));
-
-
-    $app->delete('/{ws_id}/files', function(Request $request, Response $response) {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
-
-        $workspaceController = new Workspace($workspaceId);
-        $deletionReport = $workspaceController->deleteFiles($filesToDelete);
-
-        return $response->withJson($deletionReport)->withStatus(207);
-
-    })->add(new IsWorkspacePermitted('RW'));
-
-
     $app->get('/{ws_id}/sys-check/reports', function(Request $request, Response $response) use ($adminDAO) {
 
         $checkIds = explode(',', $request->getParam('checkIds', ''));

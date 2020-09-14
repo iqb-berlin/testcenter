@@ -12,10 +12,10 @@ require_once "classes/files/XMLFileTesttakers.php";
 require_once "VfsForTest.class.php";
 
 
-class WorkspaceControllerTest extends TestCase {
+class WorkspaceTest extends TestCase {
 
     private $vfs;
-    private $workspaceController;
+    private $workspace;
 
     public static function setUpBeforeClass(): void {
 
@@ -25,7 +25,7 @@ class WorkspaceControllerTest extends TestCase {
     function setUp() {
 
         $this->vfs = VfsForTest::setUp();
-        $this->workspaceController = new Workspace(1);
+        $this->workspace = new Workspace(1);
     }
 
 
@@ -48,14 +48,14 @@ class WorkspaceControllerTest extends TestCase {
 
     function test_getWorkspacePath() {
 
-        $result = $this->workspaceController->getWorkspacePath();
+        $result = $this->workspace->getWorkspacePath();
         $expectation = 'vfs://root/vo_data/ws_1';
         $this->assertEquals($expectation, $result);
     }
 
     function test_getAllFiles() {
 
-        $result = $this->workspaceController->getAllFiles();
+        $result = $this->workspace->getAllFiles();
 
         $this->assertEquals(9, count($result));
 
@@ -110,7 +110,7 @@ class WorkspaceControllerTest extends TestCase {
 
         $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
 
-        $result = $this->workspaceController->deleteFiles(array(
+        $result = $this->workspace->deleteFiles(array(
             'Resource/SAMPLE_PLAYER.HTML',
             'SysCheck/SAMPLE_SYSCHECK.XML',
             'i_dont/even.exist'
@@ -130,12 +130,12 @@ class WorkspaceControllerTest extends TestCase {
 
     function test_countFiles() {
 
-        $result = $this->workspaceController->countFiles('Testtakers');
+        $result = $this->workspace->countFiles('Testtakers');
         $this->assertEquals(2, $result);
 
         unlink('vfs://root/vo_data/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
-        $result = $this->workspaceController->countFiles('Testtakers');
+        $result = $this->workspace->countFiles('Testtakers');
         $this->assertEquals(1, $result);
     }
 
@@ -150,7 +150,7 @@ class WorkspaceControllerTest extends TestCase {
             "Resource" => 1
         ];
 
-        $result = $this->workspaceController->countFilesOfAllSubFolders();
+        $result = $this->workspace->countFilesOfAllSubFolders();
         $this->assertEquals($expectation, $result);
     }
 }
