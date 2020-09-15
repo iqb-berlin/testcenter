@@ -30,5 +30,5 @@ after_success:
     docker push iqbberlin/testcenter-backend:latest;
     if [ "$TRAVIS_TAG" ]; then
       docker tag iqbberlin/testcenter-backend:latest iqbberlin/testcenter-backend:$TRAVIS_TAG;
-      ocker push iqbberlin/testcenter-backend:$TRAVIS_TAG;
+      docker push iqbberlin/testcenter-backend:$TRAVIS_TAG;
     fi
