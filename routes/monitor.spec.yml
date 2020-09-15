@@ -71,11 +71,11 @@ paths:
                 mode: run-hot-return
                 testId: 1
                 testState:
-                  LASTUNIT: '1'
+                  "CURRENT_UNIT_ID": "1"
                 bookletName: BOOKLET.SAMPLE
                 unitName: UNIT.SAMPLE
                 unitState:
-                  PRESENTATIONCOMPLETE: 'yes'
+                  PRESENTATIONCOMPLETE: "yes"
                 timestamp: 1596455898
               - personId: 3
                 groupName: sample_group

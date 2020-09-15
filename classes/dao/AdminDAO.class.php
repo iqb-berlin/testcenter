@@ -350,7 +350,7 @@ class AdminDAO extends DAO {
                     $testSession['bookletName'] ?? ""
                 );
 
-                $unit = $this->getLastUnit((int) $testSession['testId']);
+                $unit = $this->getCurrentUnit((int) $testSession['testId']);
 
                 $sessionChangeMessage->setUnitState(
                     $unit['name'],
@@ -377,7 +377,7 @@ class AdminDAO extends DAO {
     }
 
 
-	private function getLastUnit(int $testId): array {
+	private function getCurrentUnit(int $testId): array {
 
         $unitData = $this->_("select
                 name,

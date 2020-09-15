@@ -35,23 +35,118 @@ class TestDAOTest extends TestCase {
     }
 
 
-    function test_getTestLastState() {
+    function test_getTestState() {
 
-        $expected = (object) ['LASTUNIT' => '1'];
-        $result = $this->dbc->getTestLastState(1);
-
-        $this->assertEquals($expected, $result);
-
-        $expected = (object) [];
-        $result = $this->dbc->getTestLastState(2);
+        $expected = ['CURRENT_UNIT_ID' => 'UNIT_1'];
+        $result = $this->dbc->getTestState(1);
 
         $this->assertEquals($expected, $result);
 
+        $expected = [];
+        $result = $this->dbc->getTestState(2);
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+    function test_getUnitState() {
+
+        $expected = ["SOME_STATE" => "WHATEVER"];
+        $result = $this->dbc->getUnitState(1, 'UNIT_1');
+
+        $this->assertEquals($expected, $result);
+
+        $expected = [];
+        $result = $this->dbc->getUnitState(999, 'UNIT_1');
+
+        $this->assertEquals($expected, $result);
+
+        $expected = [];
+        $result = $this->dbc->getUnitState(1, 'not_existing_unit');
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+    function test_updateTestState() {
+
+        $testState = [
+            "some_entry" => 'some_content',
+            "with_encoded_json_content" => '{"a":"b"}',
+        ];
+
+        $expected = [
+            'CURRENT_UNIT_ID' => 'UNIT_1',
+            'some_entry' => 'some_content',
+            'with_encoded_json_content' => '{"a":"b"}'
+        ];
+
+        $result = $this->dbc->updateTestState(1, $testState);
+        $this->assertEquals($expected, $result);
+
+        $resultFromGet = $this->dbc->getTestState(1);
+        $this->assertEquals($result, $resultFromGet);
+
+        $updateState = [
+            "some_entry" => 'new_content',
+            "new_entry" => 'anything',
+        ];
+
+        $expectedAfterUpdate = [
+            'CURRENT_UNIT_ID' => 'UNIT_1',
+            'some_entry' => 'new_content',
+            'with_encoded_json_content' => '{"a":"b"}',
+            "new_entry" => 'anything'
+        ];
+
+        $resultAfterUpdate = $this->dbc->updateTestState(1, $updateState);
+        $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+
+        $resultFromGetAfterUpdate = $this->dbc->getTestState(1);
+        $this->assertEquals($resultAfterUpdate, $resultFromGetAfterUpdate);
+    }
+
+
+    function test_updateUnitState() {
+
+        $testState = [
+            "some_entry" => 'some_content',
+            "with_encoded_json_content" => '{"a":"b"}',
+        ];
+
+        $expected = [
+            'SOME_STATE' => 'WHATEVER',
+            'some_entry' => 'some_content',
+            'with_encoded_json_content' => '{"a":"b"}'
+        ];
+
+        $result = $this->dbc->updateUnitState(1, 'UNIT_1', $testState);
+        $this->assertEquals($expected, $result);
+
+        $resultFromGet = $this->dbc->getUnitState(1, 'UNIT_1');
+        $this->assertEquals($result, $resultFromGet);
+
+        $updateState = [
+            "some_entry" => 'new_content',
+            "new_entry" => 'anything',
+        ];
+
+        $expectedAfterUpdate = [
+            'SOME_STATE' => 'WHATEVER',
+            'some_entry' => 'new_content',
+            'with_encoded_json_content' => '{"a":"b"}',
+            "new_entry" => 'anything',
+        ];
+
+        $resultAfterUpdate = $this->dbc->updateUnitState(1, 'UNIT_1', $updateState);
+        $this->assertEquals($expectedAfterUpdate, $resultAfterUpdate);
+
+        $resultFromGetAfterUpdate = $this->dbc->getUnitState(1, 'UNIT_1');
+        $this->assertEquals($resultAfterUpdate, $resultFromGetAfterUpdate);
     }
 
 
     function test_getCommands() {
-
 
         $expected = [
             new Command(1, 'COMMAND_C', 1597903000),

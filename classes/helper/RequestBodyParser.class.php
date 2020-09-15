@@ -38,18 +38,43 @@ class RequestBodyParser {
     static function getElements(Request $request, array $elements2defaults = []): array {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
+        return self::applyDefaults($requestBody, $elements2defaults);
+    }
+
+
+    static private function applyDefaults($element, array $elements2defaults) {
 
         $elements = [];
 
         foreach ($elements2defaults as $elementName => $default) {
 
-            if (!isset($requestBody->$elementName) and ($default === null)) {
-                throw new HttpBadRequestException($request, "Required body-parameter is missing: `$elementName`");
+            if (!isset($element->$elementName) and ($default === null)) {
+                throw new HttpError("Required body-parameter is missing: `$elementName`", 400);
             }
 
-            $elements[$elementName] = isset($requestBody->$elementName) ? $requestBody->$elementName : $default;
+            $elements[$elementName] = isset($element->$elementName) ? $element->$elementName : $default;
         }
 
         return $elements;
+    }
+
+
+    // TODO Unit Test
+    static function getElementsArray(Request $request, array $elements2defaults = []): array {
+
+        $requestBody = JSON::decode($request->getBody()->getContents());
+
+        if (!is_array($requestBody)) {
+            throw new HttpBadRequestException($request,"body has to array");
+        }
+
+        $result = [];
+
+        foreach ($requestBody as $row) {
+
+            $result[] = self::applyDefaults($row, $elements2defaults);
+        }
+
+        return $result;
     }
 }

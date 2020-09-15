@@ -15,7 +15,10 @@ VALUES (3, 'monitor', 'monitor-group', 1, '2030-01-02 10:00:00', 'monitor_token'
 
 
 INSERT INTO tests (id, name, person_id, laststate, locked, label)
-VALUES (1, 'first sample test', 1, '{"LASTUNIT":"1"}', 0, 'first tests label');
+VALUES (1, 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first tests label');
+
+INSERT INTO units (id, name, booklet_id, laststate, responses, responsetype, responses_ts, restorepoint, restorepoint_ts)
+VALUES (1, 'UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}', '"some responses"', '', 1597903000, '"restore point"', 1597903000);
 
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp) values (1, 1, 'COMMAND_C', '[]', 3, 1597903000);
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp) values (2, 1, 'COMMAND_A', '["param1"]', 3, 1597900000);

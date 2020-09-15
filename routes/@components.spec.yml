@@ -282,3 +282,56 @@ components:
           description: is this question required
           type: boolean
           example: false
+
+    state:
+      type: array
+      description: An array of state-items.
+      items:
+        $ref: '#/components/schemas/state_item'
+
+    state_item:
+      type: object
+      description: Represents a certain entry in the state. Every key-value pair can be taken. For more about test and unit states
+      properties:
+        key:
+          type: string
+          example: 'STATE_KEY'
+          description: The key of this state
+        content:
+          type: string
+          example: 'STATE_VALUE'
+          description: The value of this state. For logs this is optional, since a log can be only a single string.
+        timestamp:
+          type: number
+          example: 123456798
+          description: Because every state change gets logged a timestamp is necessary
+      required:
+        - key
+        - content
+        - timestamp
+
+    log_set:
+      type: array
+      description: An array of state-items.
+      items:
+        $ref: '#/components/schemas/log_set_item'
+
+    log_set_item:
+      type: object
+      description: Represents a certain entry in the state. Every key-value pair can be taken. For more about test and unit states
+      properties:
+        key:
+          type: string
+          example: 'STATE_KEY'
+          description: The key of this state
+        content:
+          type: string
+          example: 'STATE_VALUE'
+          description: The value of this state. For logs this is optional, since a log can be only a single string.
+        timestamp:
+          type: number
+          example: 123456798
+          description: Because every state change gets logged a timestamp is necessary
+      required:
+        - key
+        - timestamp

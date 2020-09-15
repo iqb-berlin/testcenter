@@ -114,7 +114,7 @@ class TestDAO extends DAO {
     }
 
 
-    public function getTestLastState(int $testId): StdClass {
+    public function getTestState(int $testId): array {
 
         $booklet = $this->_(
             'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
@@ -123,12 +123,12 @@ class TestDAO extends DAO {
             ]
         );
 
-        return  ($booklet) ? JSON::decode($booklet['laststate']) : (object) [];
+        return ($booklet) ? JSON::decode($booklet['laststate'], true) : [];
     }
 
 
-    // TODO unit test
-    public function updateTestLastState($testId, $stateKey, $stateValue): void {
+    // TODO use data-collection class for $statePatch (key-vale pairs)
+    public function updateTestState(int $testId, array $statePatch): array {
 
         $testData = $this->_(
             'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
@@ -137,21 +137,23 @@ class TestDAO extends DAO {
             ]
         );
 
-        $state = $testData['laststate'] ? JSON::decode($testData['laststate'], true) : [];
-        $state[$stateKey] = $stateValue;
+        $oldState = $testData['laststate'] ? JSON::decode($testData['laststate'], true) : [];
+        $newState = array_merge($oldState, $statePatch);
 
          $this->_(
              'UPDATE tests SET laststate = :laststate WHERE id = :id',
              [
-                 ':laststate' => json_encode($state),
+                 ':laststate' => json_encode($newState),
                  ':id' => $testId
              ]
          );
+
+         return $newState;
     }
 
 
     // TODO unit test
-    public function getUnitLastState(int $testId, string $unitName): array {
+    public function getUnitState(int $testId, string $unitName): array {
 
         $unitData = $this->_(
             'SELECT units.laststate FROM units
@@ -167,7 +169,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function updateUnitLastState(int $testId, string $unitName, array $keyValuePairs): array {
+    public function updateUnitState(int $testId, string $unitName, array $statePatch): array {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
 
@@ -178,21 +180,19 @@ class TestDAO extends DAO {
             ]
         );
 
-        $state = $unitData['laststate'] ? JSON::decode($unitData['laststate'], true) : [];
-        foreach ($keyValuePairs as $key => $value) {
-            $state[$key] = $value;
-        }
+        $oldState = $unitData['laststate'] ? JSON::decode($unitData['laststate'], true) : [];
+        $newState = array_merge($oldState, $statePatch);
 
         // todo save states in separate key-value table instead of JSON blob
         $this->_(
             'UPDATE units SET laststate = :laststate WHERE id = :id',
             [
-                ':laststate' => json_encode($state),
+                ':laststate' => json_encode($newState),
                 ':id' => $unitDbId
             ]
         );
 
-        return $state;
+        return $newState;
     }
 
 
@@ -288,7 +288,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function addUnitLog(int $testId, string $unitName, string $logEntry, int $timestamp): void {
+    public function addUnitLog(int $testId, string $unitName, string $logKey, int $timestamp, string $logContent = ""): void {
 
         $unitId = $this->getOrCreateUnitId($testId, $unitName);
 
@@ -301,7 +301,7 @@ class TestDAO extends DAO {
             )',
             [
                 ':unitId' => $unitId,
-                ':logentry' => $logEntry,
+                ':logentry' => $logKey . ($logContent ? ' = ' . $logContent : ''),
                 ':ts' => $timestamp
             ]
         );
@@ -309,12 +309,12 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function addBookletLog(int $testId, string $logEntry, int $timestamp): void {
+    public function addTestLog(int $testId, string $logKey, int $timestamp, string $logContent = ""): void {
 
         $this->_('INSERT INTO test_logs (booklet_id, logentry, timestamp) VALUES (:bookletId, :logentry, :timestamp)',
             [
                 ':bookletId' => $testId,
-                ':logentry' => $logEntry,
+                ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''), // TODO add value-column to log-tables instead of this shit
                 ':timestamp' => $timestamp
             ]
         );

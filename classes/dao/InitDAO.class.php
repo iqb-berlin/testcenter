@@ -50,10 +50,10 @@ class InitDAO extends SessionDAO {
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
         $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
-        $testDAO->addBookletLog((int) $test['id'], "sample log entry", $timestamp);
+        $testDAO->addTestLog((int) $test['id'], "sample log entry", $timestamp);
         $testDAO->addResponse((int) $test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
-        $testDAO->updateUnitLastState((int) $test['id'], "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
-        $testDAO->updateTestLastState((int) $test['id'], 'LASTUNIT', '1');
+        $testDAO->updateUnitState((int) $test['id'], "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
+        $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "1"]);
     }
 
     /**

@@ -119,7 +119,7 @@ class AdminDAOTest extends TestCase {
         $expectation = [
             'locked' => '0',
             'id' => '1',
-            'laststate' => '{"LASTUNIT":"1"}',
+            'laststate' => '{"CURRENT_UNIT_ID":"UNIT_1"}',
             'label' => 'first tests label'
         ];
         $result = $this->dbc->getTest(1);

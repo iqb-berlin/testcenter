@@ -43,7 +43,7 @@ paths:
             application/json:
               example:
                 mode: "run-hot-return"
-                laststate: {"LASTUNIT": "1"}
+                laststate: {"CURRENT_UNIT_ID": "1"}
                 locked: false
                 xml: "(contents of a booklet.xml)"
         "401":
@@ -82,9 +82,9 @@ paths:
           content:
             application/json:
               example:
-                "laststate": {"PRESENTATIONCOMPLETE": "yes"}
-                "restorepoint": "whatever this player needs"
-                "xml": "(contents of a unit.xml)"
+                laststate: {PRESENTATIONCOMPLETE: "yes"}
+                restorepoint: whatever this player needs
+                xml: "(contents of a unit.xml)"
         "401":
           description: Not authenticated
         "403":
@@ -344,7 +344,11 @@ paths:
          - 'PAGE_NR'
          - 'PAGE_COUNT'
          - 'PAGE_NAME'
-         but all strings are allowed."
+         but all strings are allowed.
+         For more about states see
+         - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53
+         - https://verona-interfaces.github.io/player/#operation-subscribe-vopStateChangedNotification
+         "
       parameters:
         - in: header
           name: AuthToken
@@ -368,16 +372,15 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                key:
-                  description: key of the state information
-                  type: string
-                value:
-                  description: value of the state
-                  type: string
+              $ref: './components.spec.yml#/components/schemas/state'
             example:
-              PRESENTATIONCOMPLETE: "yes"
-              SOME_OTHER_KEY: "any_value"
+            - key: PRESENTATIONCOMPLETE
+              content: |
+                yes
+              timestamp: 50003
+            - key: SOME_OTHER_KEY
+              content: any_value
+              timestamp: 50002
       responses:
         "200":
           description: OK, updated
@@ -390,8 +393,15 @@ paths:
 
   /test/{test_id}/state:
     patch:
-      summary: save a state for a runnign test
-      description: saved a state (a key-value pair) for a running test
+      summary: update state of a running test
+      description: "Updates the state (a key-value list) of a running test with a given key-value pair.
+        Some known state-keys are:
+          - 'CURRENT_UNIT'
+          - 'CONTROLLER'
+          but all strings are allowed.
+          For more about states see
+          - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53
+          "
       parameters:
         - in: header
           name: AuthToken
@@ -408,19 +418,14 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                key:
-                  description: key of the state information
-                  type: string
-                value:
-                  description: value of the state
-                  type: string
-              required:
-                - key
-                - value
+              $ref: './components.spec.yml#/components/schemas/state'
             example:
-              key: "LASTUNIT"
-              value: "1"
+              - key: "CURRENT_UNIT_ID"
+                content: "UNIT_ID_X"
+                timestamp: 60000
+              - key: "CONTROLLER"
+                content: "PAUSED"
+                timestamp: 70000
       responses:
         "200":
           description: OK, updated
@@ -434,10 +439,10 @@ paths:
   /test/{test_id}/unit/{unit_name}/log:
     put:
       summary: save a log-entry for a unit
-      description: saves a log-entry for a unit in a running test -
-        a log entry consists of a keyword and optionally, separated by a colon, a JSON-encoded value
-        currently used lognetry key words for units are- UNITENTER, UNITTRYLEAVE, PRESENTATIONCOMPLETE,
-        RESPONSESCOMPLETE, PAGENAVIGATIONSTART, PAGENAVIGATIONCOMPLETE
+      description: Saves an array of log-entries for a unit in a running test.
+        A log entry consists of a (JSON-encoded) content which is optional.
+        Some currently used lognetry key words for units are- UNITENTER, UNITTRYLEAVE, PRESENTATIONCOMPLETE,
+        RESPONSESCOMPLETE, PAGENAVIGATIONSTART, PAGENAVIGATIONCOMPLETE.
       parameters:
         - in: header
           name: AuthToken
@@ -461,19 +466,13 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                entry:
-                  description: log-entry
-                  type: string
-                timestamp:
-                  description: unix timestamp
-                  type: number
-              required:
-                - entry
-                - timestamp
+              $ref: './components.spec.yml#/components/schemas/log_set'
             example:
-              entry: 'PAGENAVIGATIONSTART: "#first"'
-              timestamp: 1582230020
+              - key: 'PAGENAVIGATIONSTART: "#first"'
+                timestamp: 1582230020
+              - key: 'PAGENAVIGATIONEND'
+                content: '#first'
+                timestamp: 1234596899
       responses:
         "201":
           description: OK, log saved
@@ -486,10 +485,10 @@ paths:
 
   /test/{test_id}/log:
     put:
-      summary: save a log-entry  for a runnign test
-      description: saves a log-entry for a running test
-        a log entry consists of a keyword and optionally, separated by a colon, a JSON-encoded value
-        currently used lognetry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE, BOOKLETLOCKEDbyTESTEE
+      summary: save log-entries for a running test
+      description: Saves an array of log-entries for a running test.
+        A log entry consists of a (JSON-encoded) content which is optional.
+        Some currently used lognetry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE, BOOKLETLOCKEDbyTESTEE.
       parameters:
         - in: header
           name: AuthToken
@@ -506,19 +505,11 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                entry:
-                  description: log-entry
-                  type: string
-                timestamp:
-                  description: unix timestamp
-                  type: number
-              required:
-                - entry
-                - timestamp
+              $ref: './components.spec.yml#/components/schemas/log_set'
             example:
-              entry: 'BOOKLETLOADSTART: {Browser:"Dredd"}'
-              timestamp: 1582230020
+              - key: 'BOOKLETLOADSTART'
+                content: '{Browser:"Dredd"}'
+                timestamp: 1582230020
       responses:
         "201":
           description:  OK, log saved
