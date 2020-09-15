@@ -10,7 +10,7 @@ use Slim\Http\Response;
 
 class TestController extends Controller {
 
-    public static function  put(Request $request, Response $response): Response {
+    public static function put(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -46,7 +46,7 @@ class TestController extends Controller {
     }
     
     
-    public static function  get(Request $request, Response $response) : Response {
+    public static function get(Request $request, Response $response) : Response {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -65,7 +65,7 @@ class TestController extends Controller {
     }
 
     
-    public static function  getUnit(Request $request, Response $response): Response {
+    public static function getUnit(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -85,7 +85,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  getResource(Request $request, Response $response): Response {
+    public static function getResource(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -102,7 +102,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  putUnitReview(Request $request, Response $response): Response {
+    public static function putUnitReview(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -125,7 +125,7 @@ class TestController extends Controller {
     }
 
     
-    public static function  putReview(Request $request, Response $response): Response {
+    public static function putReview(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
 
@@ -145,7 +145,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  putUnitResponse(Request $request, Response $response): Response {
+    public static function putUnitResponse(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -164,7 +164,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  patchUnitRestorepoint(Request $request, Response $response): Response {
+    public static function patchUnitRestorepoint(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -182,7 +182,7 @@ class TestController extends Controller {
     }
     
     
-    public static function  patchState(Request $request, Response $response): Response {
+    public static function patchState(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -213,7 +213,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  putLog(Request $request, Response $response): Response {
+    public static function putLog(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
 
@@ -231,7 +231,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  putUnitState(Request $request, Response $response): Response {
+    public static function putUnitState(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -263,7 +263,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  putUnitLog(Request $request, Response $response): Response {
+    public static function putUnitLog(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
         $unitName = $request->getAttribute('unit_name');
@@ -284,7 +284,7 @@ class TestController extends Controller {
     }
 
     
-    public static function  patchLock(Request $request, Response $response): Response {
+    public static function patchLock(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -301,7 +301,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  getCommands(Request $request, Response $response): Response {
+    public static function getCommands(Request $request, Response $response): Response {
 
         // TODO do we have to check access to test?
         $testId = (int) $request->getAttribute('test_id');
@@ -320,7 +320,7 @@ class TestController extends Controller {
     }
 
 
-    public static function  patchCommandExecuted(Request $request, Response $response): Response {
+    public static function patchCommandExecuted(Request $request, Response $response): Response {
 
         // TODO to we have to check access to test?
         $testId = (int) $request->getAttribute('test_id');
