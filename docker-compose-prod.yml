@@ -45,7 +45,7 @@ services:
       - ./config/my.cnf:/etc/mysql/conf.d/my.cnf
 
   testcenter-backend:
-    image: iqbberlin/testcenter-backend:latest
+    image: iqbberlin/testcenter-backend:6.1.1
     container_name: testcenter-backend
     environment:
       <<: *env-mysql
@@ -66,7 +66,7 @@ services:
       - "traefik.http.routers.testcenter-backend.tls=true"
 
   testcenter-frontend:
-    image: iqbberlin/testcenter-frontend:latest
+    image: iqbberlin/testcenter-frontend:5.0.6
     container_name: testcenter-frontend
     labels:
       - "traefik.enable=true"
@@ -74,7 +74,7 @@ services:
       - "traefik.http.routers.testcenter-frontend.tls=true"
 
   testcenter-broadcasting-service:
-    image: iqbberlin/testcenter-broadcasting-service:latest
+    image: iqbberlin/testcenter-broadcasting-service:2.0.0
     container_name: testcenter-broadcasting-service
     labels:
       - "traefik.enable=true"
