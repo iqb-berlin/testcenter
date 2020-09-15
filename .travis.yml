@@ -6,8 +6,8 @@ services:
 script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
     docker build -t iqbberlin/testcenter-broadcasting-service:latest -f docker/Dockerfile .;
-    docker push iqbberlin/testcenter-broadcasting-service:latest
+    docker push iqbberlin/testcenter-broadcasting-service:latest;
     if [ "$TRAVIS_TAG" ]; then
-      docker tag iqbberlin/testcenter-broadcasting-service:latest iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG
-      ocker push iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG
+      docker tag iqbberlin/testcenter-broadcasting-service:latest iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG;
+      ocker push iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG;
     fi
