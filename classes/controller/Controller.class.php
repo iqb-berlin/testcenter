@@ -8,6 +8,7 @@ abstract class Controller {
     // TODO refactor DAO to be static, than this would not be needed
 
     private static $_adminDAO;
+    private static $_superAdminDAO;
     private static $_sessionDAO;
     private static $_testDAO;
 
@@ -38,6 +39,16 @@ abstract class Controller {
         }
 
         return self::$_testDAO;
+    }
+
+
+    protected static function superAdminDAO(): SuperAdminDAO {
+
+        if (!self::$_superAdminDAO) {
+            self::$_superAdminDAO = new SuperAdminDAO();
+        }
+
+        return self::$_superAdminDAO;
     }
 
 
