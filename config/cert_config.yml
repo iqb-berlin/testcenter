@@ -1,0 +1,4 @@
+tls:
+  certificates:
+    - certFile: /certs/iqb-testcenter.de_ssl_certificate.cer
+      keyFile: /certs/iqb-testcenter.de_private_key.key
