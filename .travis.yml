@@ -9,5 +9,5 @@ script:
     docker push iqbberlin/testcenter-broadcasting-service:latest;
     if [ "$TRAVIS_TAG" ]; then
       docker tag iqbberlin/testcenter-broadcasting-service:latest iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG;
-      ocker push iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG;
+      docker push iqbberlin/testcenter-broadcasting-service:$TRAVIS_TAG;
     fi
