@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y \
   zlib1g-dev \
   libzip-dev \
   unzip
-  # npm
 
 # install php extensions
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
@@ -29,7 +28,22 @@ RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf \
 COPY docker/scripts/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
 # copy source code
-COPY --chown=www-data:www-data ./ /var/www/html
+COPY .github /var/www/html/.github
+COPY classes /var/www/html/classes
+COPY config /var/www/html/config
+COPY definitions /var/www/html/definitions
+COPY docs /var/www/html/docs
+COPY routes /var/www/html/routes
+COPY sampledata /var/www/html/sampledata
+COPY scripts /var/www/html/scripts
+COPY unit-tests /var/www/html/unit-tests
+COPY .htaccess /var/www/html/
+COPY autoload.php /var/www/html/
+COPY composer.json /var/www/html/
+COPY composer.lock /var/www/html/
+COPY index.php /var/www/html/
+
+RUN chown -R www-data:www-data /var/www/html
 
 # install composer dependencies
 RUN sh scripts/install_composer.sh
@@ -54,6 +68,8 @@ FROM prod as tester
 RUN apt-get update && apt-get install -y npm
 
 WORKDIR /var/www/html
+
+COPY integration /var/www/html/integration
 
 RUN npm install npm@latest -g
 RUN npm install -C integration
