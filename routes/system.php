@@ -94,9 +94,6 @@ $app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspect
         $customTexts = [];
     }
 
-
-
-
     return $response->withJson(
         [
             'version' => Version::get(),
@@ -106,6 +103,11 @@ $app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspect
     );
 });
 
+$app->get('/flush-broadcasting-service', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+
+    BroadcastService::send('system/clean');
+    return $response->withStatus(200);
+});
 
 $app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
 
