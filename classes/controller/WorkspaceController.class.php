@@ -27,7 +27,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  put (Request $request, Response $response): Response {
+    public static function put (Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
         if (!isset($requestBody->name)) {
@@ -40,7 +40,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  patch(Request $request, Response $response): Response {
+    public static function patch(Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
         $workspaceId = (int) $request->getAttribute('ws_id');
@@ -55,7 +55,7 @@ class WorkspaceController extends Controller {
     }
     
     
-    public static function  patchUsers(Request $request, Response $response): Response {
+    public static function patchUsers(Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
         $workspaceId = (int) $request->getAttribute('ws_id');
@@ -70,7 +70,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  getUsers(Request $request, Response $response): Response {
+    public static function getUsers(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
@@ -78,7 +78,7 @@ class WorkspaceController extends Controller {
     }
     
 
-    public static function  getReviews(Request $request, Response $response): Response {
+    public static function getReviews(Request $request, Response $response): Response {
 
         $groups = explode(",", $request->getParam('groups'));
         $workspaceId = (int) $request->getAttribute('ws_id');
@@ -93,7 +93,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  getResults(Request $request, Response $response): Response {
+    public static function getResults(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
         $results = self::adminDAO()->getAssembledResults($workspaceId);
@@ -101,7 +101,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  getResponses(Request $request, Response $response): Response {
+    public static function getResponses(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
@@ -111,7 +111,8 @@ class WorkspaceController extends Controller {
         return $response->withJson($results);
     }
 
-    public static function  deleteResponses(Request $request, Response $response): Response {
+
+    public static function deleteResponses(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
@@ -120,10 +121,13 @@ class WorkspaceController extends Controller {
             self::adminDAO()->deleteResultData($workspaceId, $group);
         }
 
+        BroadcastService::send('system/clean');
+
         return $response;
     }
 
-    public static function  getLogs(Request $request, Response $response): Response {
+
+    public static function getLogs(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
@@ -133,7 +137,8 @@ class WorkspaceController extends Controller {
         return $response->withJson($results);
     }
 
-    public static function  validation(Request $request, Response $response): Response {
+
+    public static function validation(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
@@ -170,7 +175,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  postFile(Request $request, Response $response): Response {
+    public static function postFile(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
@@ -178,7 +183,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  getFiles(Request $request, Response $response): Response {
+    public static function getFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
         $workspace = new Workspace($workspaceId);
@@ -187,7 +192,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  deleteFiles(Request $request, Response $response): Response {
+    public static function deleteFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
@@ -199,7 +204,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  getSysCheckReports(Request $request, Response $response): Response {
+    public static function getSysCheckReports(Request $request, Response $response): Response {
 
         $checkIds = explode(',', $request->getParam('checkIds', ''));
         $delimiter = $request->getParam('delimiter', ';');
@@ -224,11 +229,10 @@ class WorkspaceController extends Controller {
         $reportsArrays = array_map(function (SysCheckReportFile $report) {return $report->get();}, $reports);
 
         return $response->withJson($reportsArrays);
-
     }
 
 
-    public static function  getSysCheckReportsOverview(Request $request, Response $response): Response {
+    public static function getSysCheckReportsOverview(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
 
@@ -236,11 +240,10 @@ class WorkspaceController extends Controller {
         $reports = $sysChecksFolder->getSysCheckReportList();
 
         return $response->withJson($reports);
-
     }
 
 
-    public static function  deleteSysCheckReports(Request $request, Response $response): Response {
+    public static function deleteSysCheckReports(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $checkIds = RequestBodyParser::getElementWithDefault($request,'checkIds', []);
@@ -249,11 +252,10 @@ class WorkspaceController extends Controller {
         $fileDeletionReport = $sysChecksFolder->deleteSysCheckReports($checkIds);
 
         return $response->withJson($fileDeletionReport)->withStatus(207);
-
     }
 
 
-    public static function  getSysCheck(Request $request, Response $response): Response {
+    public static function getSysCheck(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');

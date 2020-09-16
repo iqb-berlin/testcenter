@@ -88,7 +88,7 @@ class BroadcastService {
     }
     
 
-    static function send(string $endpoint, string $message, string $verb = "POST"): ?string {
+    static function send(string $endpoint, string $message = '', string $verb = "POST"): ?string {
 
         if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
 
