@@ -261,7 +261,7 @@ paths:
                 response:
                   description: response data
                   type: string
-                timestamp:
+                timeStamp:
                   description: timestamp of the response
                   type: integer
                 responseType:
@@ -269,10 +269,10 @@ paths:
                   type: string
               required:
                 - response
-                - timestamp
+                - timeStamp
             example:
               response: I am the answers to your questions.
-              timestamp: 1582550888563
+              timeStamp: 1582550888563
       responses:
         "201":
           description: OK, created
@@ -315,15 +315,15 @@ paths:
                 restorePoint:
                   description: restore point data
                   type: string
-                timestamp:
+                timeStamp:
                   description: timestamp of the snapshot
                   type: integer
               required:
                 - response
-                - timestamp
+                - timeStamp
             example:
               restorePoint: "{\"string_example\":\"something\",\"color_example\":\"#ffa200\",\"number_example\":\"36\"}"
-              timestamp: 1582550888563
+              timeStamp: 1582550888563
       responses:
         "200":
           description: OK, updated
@@ -377,10 +377,10 @@ paths:
             - key: PRESENTATIONCOMPLETE
               content: |
                 yes
-              timestamp: 50003
+              timeStamp: 50003
             - key: SOME_OTHER_KEY
               content: any_value
-              timestamp: 50002
+              timeStamp: 50002
       responses:
         "200":
           description: OK, updated
@@ -422,10 +422,10 @@ paths:
             example:
               - key: "CURRENT_UNIT_ID"
                 content: "UNIT_ID_X"
-                timestamp: 60000
+                timeStamp: 60000
               - key: "CONTROLLER"
                 content: "PAUSED"
-                timestamp: 70000
+                timeStamp: 70000
       responses:
         "200":
           description: OK, updated
@@ -469,10 +469,10 @@ paths:
               $ref: './components.spec.yml#/components/schemas/log_set'
             example:
               - key: 'PAGENAVIGATIONSTART: "#first"'
-                timestamp: 1582230020
+                timeStamp: 1582230020
               - key: 'PAGENAVIGATIONEND'
                 content: '#first'
-                timestamp: 1234596899
+                timeStamp: 1234596899
       responses:
         "201":
           description: OK, log saved
@@ -509,7 +509,7 @@ paths:
             example:
               - key: 'BOOKLETLOADSTART'
                 content: '{Browser:"Dredd"}'
-                timestamp: 1582230020
+                timeStamp: 1582230020
       responses:
         "201":
           description:  OK, log saved
@@ -672,7 +672,7 @@ paths:
                       description: a list of token as arguments provided with the keyword
                       items:
                         type: string
-                    timestamp:
+                    timeStamp:
                       type: number
                       description: timstamp when the command was given
               example:

@@ -24,8 +24,9 @@ see `scripts/sql-schema/patches.mysql.sql`
     {
        "key": __my_key__,
        "content": __my_content__,
-       "timestamp": 1234567891
+       "timeStamp": 1234567891
     }
   ]
   ```
   * A state change automatically whites a log now.
+* `Timestamp` paramater in various endpoints is now `timeStamp` to resemble the Verona 2 Standard

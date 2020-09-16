@@ -301,14 +301,14 @@ components:
           type: string
           example: 'STATE_VALUE'
           description: The value of this state. For logs this is optional, since a log can be only a single string.
-        timestamp:
+        timeStamp:
           type: number
           example: 123456798
           description: Because every state change gets logged a timestamp is necessary
       required:
         - key
         - content
-        - timestamp
+        - timeStamp
 
     log_set:
       type: array
@@ -328,10 +328,10 @@ components:
           type: string
           example: 'STATE_VALUE'
           description: The value of this state. For logs this is optional, since a log can be only a single string.
-        timestamp:
+        timeStamp:
           type: number
           example: 123456798
           description: Because every state change gets logged a timestamp is necessary
       required:
         - key
-        - timestamp
+        - timeStamp

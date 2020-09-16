@@ -840,7 +840,7 @@ paths:
                                 response:
                                     description: 'response data'
                                     type: string
-                                timestamp:
+                                timeStamp:
                                     description: 'timestamp of the response'
                                     type: integer
                                 responseType:
@@ -848,10 +848,10 @@ paths:
                                     type: string
                             required:
                                 - response
-                                - timestamp
+                                - timeStamp
                         example:
                             response: 'I am the answers to your questions.'
-                            timestamp: 1582550888563
+                            timeStamp: 1582550888563
             responses:
                 '201':
                     description: 'OK, created'
@@ -895,15 +895,15 @@ paths:
                                 restorePoint:
                                     description: 'restore point data'
                                     type: string
-                                timestamp:
+                                timeStamp:
                                     description: 'timestamp of the snapshot'
                                     type: integer
                             required:
                                 - response
-                                - timestamp
+                                - timeStamp
                         example:
                             restorePoint: '{"string_example":"something","color_example":"#ffa200","number_example":"36"}'
-                            timestamp: 1582550888563
+                            timeStamp: 1582550888563
             responses:
                 '200':
                     description: 'OK, updated'
@@ -948,11 +948,11 @@ paths:
                             -
                                 key: PRESENTATIONCOMPLETE
                                 content: "yes\n"
-                                timestamp: 50003
+                                timeStamp: 50003
                             -
                                 key: SOME_OTHER_KEY
                                 content: any_value
-                                timestamp: 50002
+                                timeStamp: 50002
             responses:
                 '200':
                     description: 'OK, updated'
@@ -989,11 +989,11 @@ paths:
                             -
                                 key: CURRENT_UNIT_ID
                                 content: UNIT_ID_X
-                                timestamp: 60000
+                                timeStamp: 60000
                             -
                                 key: CONTROLLER
                                 content: PAUSED
-                                timestamp: 70000
+                                timeStamp: 70000
             responses:
                 '200':
                     description: 'OK, updated'
@@ -1037,11 +1037,11 @@ paths:
                         example:
                             -
                                 key: 'PAGENAVIGATIONSTART: "#first"'
-                                timestamp: 1582230020
+                                timeStamp: 1582230020
                             -
                                 key: PAGENAVIGATIONEND
                                 content: '#first'
-                                timestamp: 1234596899
+                                timeStamp: 1234596899
             responses:
                 '201':
                     description: 'OK, log saved'
@@ -1078,7 +1078,7 @@ paths:
                             -
                                 key: BOOKLETLOADSTART
                                 content: '{Browser:"Dredd"}'
-                                timestamp: 1582230020
+                                timeStamp: 1582230020
             responses:
                 '201':
                     description: 'OK, log saved'
@@ -1227,7 +1227,7 @@ paths:
                                 type: array
                                 items:
                                     type: object
-                                    properties: {id: {type: number, description: 'a unique ID to make sure, the command get never executed twice'}, keyword: {type: string, description: 'the command-keyword. TODO - add known keywords'}, arguments: {type: array, description: 'a list of token as arguments provided with the keyword', items: {type: string}}, timestamp: {type: number, description: 'timstamp when the command was given'}}
+                                    properties: {id: {type: number, description: 'a unique ID to make sure, the command get never executed twice'}, keyword: {type: string, description: 'the command-keyword. TODO - add known keywords'}, arguments: {type: array, description: 'a list of token as arguments provided with the keyword', items: {type: string}}, timeStamp: {type: number, description: 'timstamp when the command was given'}}
                             example:
                                 -
                                     id: 3
@@ -2904,14 +2904,14 @@ components:
                     type: string
                     example: STATE_VALUE
                     description: 'The value of this state. For logs this is optional, since a log can be only a single string.'
-                timestamp:
+                timeStamp:
                     type: number
                     example: 123456798
                     description: 'Because every state change gets logged a timestamp is necessary'
             required:
                 - key
                 - content
-                - timestamp
+                - timeStamp
         log_set:
             type: array
             description: 'An array of state-items.'
@@ -2929,10 +2929,10 @@ components:
                     type: string
                     example: STATE_VALUE
                     description: 'The value of this state. For logs this is optional, since a log can be only a single string.'
-                timestamp:
+                timeStamp:
                     type: number
                     example: 123456798
                     description: 'Because every state change gets logged a timestamp is necessary'
             required:
                 - key
-                - timestamp
+                - timeStamp

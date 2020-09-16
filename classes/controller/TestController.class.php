@@ -151,14 +151,14 @@ class TestController extends Controller {
         $unitName = $request->getAttribute('unit_name');
 
         $unitResponse = RequestBodyParser::getElements($request, [
-            'timestamp' => null,
+            'timeStamp' => null,
             'response' => null,
             'responseType' => 'unknown'
         ]);
 
         // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-        self::testDAO()->addResponse($testId, $unitName, $unitResponse['response'], $unitResponse['responseType'], $unitResponse['timestamp']);
+        self::testDAO()->addResponse($testId, $unitName, $unitResponse['response'], $unitResponse['responseType'], $unitResponse['timeStamp']);
 
         return $response->withStatus(201);
     }
@@ -170,13 +170,13 @@ class TestController extends Controller {
         $unitName = $request->getAttribute('unit_name');
 
         $body = RequestBodyParser::getElements($request, [
-            'timestamp' => null,
+            'timeStamp' => null,
             'restorePoint' => null
         ]);
 
         // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-        self::testDAO()->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timestamp']);
+        self::testDAO()->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timeStamp']);
 
         return $response->withStatus(200);
     }
@@ -192,7 +192,7 @@ class TestController extends Controller {
         $stateData = RequestBodyParser::getElementsArray($request, [
             'key' => null,
             'content' => null,
-            'timestamp' => null
+            'timeStamp' => null
         ]);
 
         $statePatch = TestController::stateArray2KeyValue($stateData);
@@ -202,7 +202,7 @@ class TestController extends Controller {
         $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
         foreach ($stateData as $entry) {
-            self::testDAO()->addTestLog($testId, $entry['key'], $entry['timestamp'], json_encode($entry['content']));
+            self::testDAO()->addTestLog($testId, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
         }
 
         BroadcastService::sessionChange(
@@ -220,11 +220,11 @@ class TestController extends Controller {
         $logData = RequestBodyParser::getElementsArray($request, [
             'key' => null,
             'content' => '',
-            'timestamp' => null
+            'timeStamp' => null
         ]);
 
         foreach ($logData as $entry) {
-            self::testDAO()->addTestLog($testId, $entry['key'], $entry['timestamp'], json_encode($entry['content']));
+            self::testDAO()->addTestLog($testId, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
         }
 
         return $response->withStatus(201);
@@ -244,7 +244,7 @@ class TestController extends Controller {
         $stateData = RequestBodyParser::getElementsArray($request, [
             'key' => null,
             'content' => null,
-            'timestamp' => null
+            'timeStamp' => null
         ]);
 
         $statePatch = TestController::stateArray2KeyValue($stateData);
@@ -252,7 +252,7 @@ class TestController extends Controller {
         $newState = self::testDAO()->updateUnitState($testId, $unitName, $statePatch);
 
         foreach ($stateData as $entry) {
-            self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timestamp'], $entry['content']);
+            self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], $entry['content']);
         }
 
         BroadcastService::sessionChange(
@@ -273,11 +273,11 @@ class TestController extends Controller {
         $logData = RequestBodyParser::getElementsArray($request, [
             'key' => null,
             'content' => '',
-            'timestamp' => null
+            'timeStamp' => null
         ]);
 
         foreach ($logData as $entry) {
-            self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timestamp'], json_encode($entry['content']));
+            self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], json_encode($entry['content']));
         }
 
         return $response->withStatus(201);
