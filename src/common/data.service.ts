@@ -143,4 +143,9 @@ export class DataService {
     public getClientTokens(): string[] {
         return this.websocketGateway.getClientTokens();
     }
+
+    public clean(): void {
+        this.monitors = {};
+        this.testSessions = {};
+    }
 }

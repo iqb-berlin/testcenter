@@ -44,4 +44,8 @@ export class TesteeService {
             );
         }));
     }
+
+    public clean(): void {
+        this.testees = {};
+    }
 }

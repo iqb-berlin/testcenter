@@ -9,6 +9,7 @@ import {VersionController} from './version/version.controller';
 import {CommandController} from './command/command.controller';
 import {TesteeController} from './testee/testee.controller';
 import {TesteeService} from './testee/testee.service';
+import {SystemController} from './system/system.controller';
 
 
 @Module({
@@ -17,7 +18,8 @@ import {TesteeService} from './testee/testee.service';
       MonitorController,
       VersionController,
       CommandController,
-      TesteeController
+      TesteeController,
+      SystemController,
   ],
   providers: [
       WebsocketGateway,
