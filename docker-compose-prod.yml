@@ -81,6 +81,7 @@ services:
       - "traefik.http.routers.testcenter-broadcasting-service.rule=Host(`${HOSTNAME}`) && PathPrefix(`/bs`)"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
+      - "traefik.http.routers.testcenter-frontend.tls=true"
 
 volumes:
   dbdata:
