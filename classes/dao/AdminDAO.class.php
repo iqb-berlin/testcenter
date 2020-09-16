@@ -350,12 +350,17 @@ class AdminDAO extends DAO {
                     $testSession['bookletName'] ?? ""
                 );
 
-                $unit = $this->getCurrentUnit((int) $testSession['testId']);
+                $currentUnitName = isset($testState['CURRENT_UNIT_ID']) ? $testState['CURRENT_UNIT_ID'] : null;
 
-                $sessionChangeMessage->setUnitState(
-                    $unit['name'],
-                    $unit['state']
-                );
+                if ($currentUnitName) {
+
+                    $currentUnitState = $this->getUnitState((int) $testSession['testId'], $currentUnitName);
+
+                    if ($currentUnitState) {
+
+                        $sessionChangeMessage->setUnitState($currentUnitName, (array) $currentUnitState);
+                    }
+                }
             }
 
             $sessionChangeMessages->add($sessionChangeMessage);
@@ -377,58 +382,36 @@ class AdminDAO extends DAO {
     }
 
 
-	private function getCurrentUnit(int $testId): array {
+    // TODO Unit-test
+    // TODO use data-collection class
+	private function getUnitState(int $testId, string $unitName): stdClass {
 
         $unitData = $this->_("select
-                name,
                 laststate
             from
                 units 
             where
                 units.booklet_id = :testId
-            order by id desc limit 1", // TODO we take the last inserted unit, which is only the last one if ...
-            // the testee never went back. but atm we have no other way to find out the real last seen one ...
-            // see: https://github.com/iqb-berlin/testcenter-frontend/issues/181
-            [':testId' => $testId]
+                and units.name = :unitName",
+            [
+                ':testId' => $testId,
+                ':unitName' => $unitName
+            ]
         );
 
         if (!$unitData) {
-            return [
-                'name' => '',
-                'state' => []
-            ];
+            return (object) [];
         }
 
-        $state = JSON::decode($unitData['laststate'], true) ?? [];
+        $state = JSON::decode($unitData['laststate'], true) ?? (object) [];
 
-        return [
-            'name' => $unitData['name'],
-            'state' => $state ?? []
-        ];
+        return (object) $state ?? (object) [];
     }
 
 
-	public function getBookletsResponsesGiven($workspaceId) { // TODO add unit test // TODO use dataclass an camelCase-objects
-
-		return $this->_(
-			'SELECT DISTINCT tests.name as bookletname, person_sessions.code, login_sessions.name as loginname,
-					login_sessions.group_name as groupname FROM units
-			INNER JOIN tests ON tests.id = units.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id 
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-			INNER JOIN workspaces ON workspaces.id = login_sessions.workspace_id
-            WHERE workspace_id =:workspaceId			
-            ORDER BY login_sessions.group_name, login_sessions.name, person_sessions.code, tests.name
-			',
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-	}
-
-
-	public function getResponses($workspaceId, $groups) { // TODO add unit test // TODO use dataclass an camelCase-objects
+    // TODO add unit test
+    // TODO use dataclass an camelCase-objects
+	public function getResponses($workspaceId, $groups) {
 
 		$groupsString = implode("','", $groups);
 		return $this->_(
@@ -448,7 +431,7 @@ class AdminDAO extends DAO {
 	}
 
 	// $return = []; groupname, loginname, code, bookletname, unitname, timestamp, logentry
-	public function getLogs($workspaceId, $groups) { // TODO add unit test // TODO use dataclass an camelCase-objects
+	public function getLogs($workspaceId, $groups) { // TODO add unit test // TODO use dataclass and camelCase-objects
 
 		$groupsString = implode("','", $groups);
 

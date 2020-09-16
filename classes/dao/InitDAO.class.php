@@ -53,7 +53,7 @@ class InitDAO extends SessionDAO {
         $testDAO->addTestLog((int) $test['id'], "sample log entry", $timestamp);
         $testDAO->addResponse((int) $test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
         $testDAO->updateUnitState((int) $test['id'], "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
-        $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "1"]);
+        $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
     }
 
     /**
