@@ -1,13 +1,13 @@
 import {Controller, Get, HttpException, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
 import {isMonitor, Monitor} from './monitor.interface';
-import {DataService} from '../common/data.service';
+import {TestSessionService} from '../test-session/test-session.service';
 
 @Controller()
 export class MonitorController {
 
     constructor(
-        private readonly dataService: DataService
+        private readonly dataService: TestSessionService
     ) {}
 
 

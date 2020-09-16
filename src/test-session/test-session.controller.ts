@@ -1,12 +1,12 @@
 import {Controller, Get, HttpException, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
 import {isSessionChange, SessionChange} from './session-change.interface';
-import {DataService} from '../common/data.service';
+import {TestSessionService} from "./test-session.service";
 
 @Controller()
 export class TestSessionController {
     constructor(
-        private readonly dataService: DataService
+        private readonly dataService: TestSessionService
     ) {}
 
     @Post('/push/session-change')

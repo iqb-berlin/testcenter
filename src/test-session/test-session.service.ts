@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import {SessionChange} from '../test-session/session-change.interface';
+import {SessionChange} from './session-change.interface';
 import {Monitor} from '../monitor/monitor.interface';
-import {WebsocketGateway} from './websocket.gateway';
+import {WebsocketGateway} from '../common/websocket.gateway';
 
 
 const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionChange): SessionChange => {
@@ -23,7 +23,7 @@ const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionC
 
 
 @Injectable()
-export class DataService {
+export class TestSessionService {
     constructor(
         private readonly websocketGateway: WebsocketGateway
     ) {

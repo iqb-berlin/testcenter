@@ -1,6 +1,6 @@
 import {Controller, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
-import {DataService} from '../common/data.service';
+import {TestSessionService} from '../test-session/test-session.service';
 import {TesteeService} from '../testee/testee.service';
 import {WebsocketGateway} from '../common/websocket.gateway';
 
@@ -9,7 +9,7 @@ import {WebsocketGateway} from '../common/websocket.gateway';
 export class SystemController {
 
     constructor(
-        private readonly dataService: DataService,
+        private readonly dataService: TestSessionService,
         private readonly testeeService: TesteeService,
         private readonly wsGateway: WebsocketGateway,
     ) {}
