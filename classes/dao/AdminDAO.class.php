@@ -319,6 +319,7 @@ class AdminDAO extends DAO {
                  tests.id as "testId",
                  tests.name as "bookletName",
                  tests.locked,
+                 tests.running,
                  tests.laststate as "testState"
             FROM person_sessions
                  LEFT JOIN tests ON person_sessions.id = tests.person_id
@@ -376,6 +377,10 @@ class AdminDAO extends DAO {
 
         if ($testSessionData['locked']) {
             $testState['status'] = 'locked';
+        } else if (!$testSessionData['running']) {
+            $testState['status'] = 'pending';
+        } else {
+            $testState['status'] = 'running';
         }
 
         return $testState;
