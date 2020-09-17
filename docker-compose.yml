@@ -82,7 +82,7 @@ services:
     container_name: testcenter-broadcasting-service
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=Host(`${HOSTNAME}`) && PathPrefix(`/bs`)"
+      - "traefik.http.routers.testcenter-broadcasting-service.rule=Host(`${HOSTNAME}`) && PathPrefix(`/bs/public`)"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
 
