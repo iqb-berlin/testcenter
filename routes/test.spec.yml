@@ -23,7 +23,8 @@ paths:
           `run-hot-restart`.
           * `run-trial` - run a trial round
           * `monitor-study` - TBA
-          * `monitor-login` - TBA
+          * `monitor-group` - the monitor account to supervise a group of testees
+          * `run-demo`
       parameters:
         - in: header
           name: AuthToken

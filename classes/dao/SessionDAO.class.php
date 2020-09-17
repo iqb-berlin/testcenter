@@ -148,7 +148,7 @@ class SessionDAO extends DAO {
 
     // TODO add unit-test
     // TODO get and store groupLabel as well
-    public function getOrCreateLogin(PotentialLogin $loginData): Login {
+    public function getOrCreateLogin(PotentialLogin $loginData, bool $forceCreate = false): Login {
 
         $oldLogin = $this->_(
             'SELECT
@@ -168,7 +168,7 @@ class SessionDAO extends DAO {
             ]
         );
 
-        if (($loginData->getMode() == 'run-hot-restart') or ($oldLogin == null)) {
+        if ($forceCreate or ($oldLogin == null)) {
 
             return $this->createLogin($loginData);
         }

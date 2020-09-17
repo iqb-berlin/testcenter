@@ -19,7 +19,6 @@ class PotentialLogin extends DataCollectionTypeSafe {
     protected $customTexts;
 
 
-
     function __construct(
         string $name,
         string $mode,

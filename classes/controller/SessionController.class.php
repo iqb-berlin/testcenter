@@ -12,6 +12,8 @@ use Slim\Exception\HttpException;
 
 class SessionController extends Controller {
 
+    const restartModes = ['run-hot-restart', 'run-demo'];
+
     public static function putSessionAdmin(Request $request, Response $response): Response {
 
         $body = RequestBodyParser::getElements($request, [
@@ -48,7 +50,8 @@ class SessionController extends Controller {
             throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `{$shortPw}`");
         }
 
-        $login = self::sessionDAO()->getOrCreateLogin($potentialLogin);
+        $forceCreate = in_array($potentialLogin->getMode(), self::restartModes);
+        $login = self::sessionDAO()->getOrCreateLogin($potentialLogin, $forceCreate);
 
         if (!$login->isCodeRequired()) {
 
@@ -101,9 +104,12 @@ class SessionController extends Controller {
             $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
             $bookletLabels = [];
 
-            foreach ($members as $member) {
+            foreach ($members as $member) { /* @var $member PotentialLogin */
 
-                /* @var $member PotentialLogin */
+                if (in_array($member->getMode(), self::restartModes)) {
+                    continue;
+                }
+
                 $memberLogin = SessionController::sessionDAO()->getOrCreateLogin($member);
 
                 foreach ($member->getBooklets() as $code => $booklets) {
@@ -118,7 +124,7 @@ class SessionController extends Controller {
                         }
                         $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
                         $sessionMessage = SessionChangeMessage::login($memberLogin, $memberPerson);
-                        $sessionMessage->setTestState((int) $test['id'], ['started' => 'unstarted'], $booklet);
+                        $sessionMessage->setTestState((int) $test['id'], [], $booklet);
                         BroadcastService::sessionChange($sessionMessage);
                     }
                 }

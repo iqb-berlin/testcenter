@@ -29,4 +29,7 @@ see `scripts/sql-schema/patches.mysql.sql`
   ]
   ```
   * A state change automatically whites a log now.
-* `Timestamp` paramater in various endpoints is now `timeStamp` to resemble the Verona 2 Standard
+* `Timestamp` parameter in various endpoints is now `timeStamp` to resemble the Verona 2 Standard
+## 7.4
+### XML
+* A new mode for logins is allowed now: `run-demo`

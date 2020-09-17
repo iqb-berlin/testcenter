@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 7.3.0
+    version: 7.4.0
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -426,7 +426,7 @@ paths:
                                     - version
                                     - customTexts
                             example:
-                                version: 7.2.0
+                                version: 7.4.0
                                 customTexts: {}
                 '500':
                     description: 'Server Error'
@@ -439,7 +439,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 7.2.0
+                                version: 7.4.0
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -591,7 +591,7 @@ paths:
     '/test/{test_id}':
         get:
             summary: 'get a test'
-            description: "Retrieves a certain test: It's contents, state and the mode of current login-session.\n`laststate` is an array of key-value-pairs stored for this test.\nCurrently known test-modes are:  * `run-hot-return` - hot run of testLet, can save answers etc.,\n  session gets stored and can be revoked\n  * `run-hot-restart` - hot run of testLet, can save answers etc.,\n  every session starts all tests again and have unique Tokens\n  * `run-review` - run a review round of testLet, reviewes can be saved, but no answers\n  At the moment we distinguish between hot, trial and review in the GUI and there are no real\n  checks for the mode in this backend, except for the difference between `run-hot-return` and\n  `run-hot-restart`.\n  * `run-trial` - run a trial round\n  * `monitor-study` - TBA\n  * `monitor-login` - TBA"
+            description: "Retrieves a certain test: It's contents, state and the mode of current login-session.\n`laststate` is an array of key-value-pairs stored for this test.\nCurrently known test-modes are:  * `run-hot-return` - hot run of testLet, can save answers etc.,\n  session gets stored and can be revoked\n  * `run-hot-restart` - hot run of testLet, can save answers etc.,\n  every session starts all tests again and have unique Tokens\n  * `run-review` - run a review round of testLet, reviewes can be saved, but no answers\n  At the moment we distinguish between hot, trial and review in the GUI and there are no real\n  checks for the mode in this backend, except for the difference between `run-hot-return` and\n  `run-hot-restart`.\n  * `run-trial` - run a trial round\n  * `monitor-study` - TBA\n  * `monitor-group` - the monitor account to supervise a group of testees\n  * `run-demo`"
             parameters:
                 -
                     in: header

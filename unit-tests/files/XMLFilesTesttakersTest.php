@@ -252,7 +252,7 @@ END;
             ),
             'trial_group' => new Group(
                 'trial_group',
-                'A Group for Trails'
+                'A Group for Trials and Demos'
             ),
             'passwordless_group' => new Group(
                 'passwordless_group',
@@ -310,6 +310,15 @@ END;
             [
                 "groupname" => "trial_group",
                 "loginname" => "unit_test_login-trial",
+                "code" => "",
+                "booklets" => [
+                    "BOOKLET.SAMPLE",
+                ]
+
+            ],
+            [
+                "groupname" => "trial_group",
+                "loginname" => "unit_test_login-demo",
                 "code" => "",
                 "booklets" => [
                     "BOOKLET.SAMPLE",

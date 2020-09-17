@@ -158,7 +158,7 @@ class XMLFileTesttakers extends XMLFile {
 
         return new PotentialLogin(
             (string) $loginElement['name'],
-            (string) $loginElement['mode'] ?? 'run-hot-return',
+            (string) $loginElement['mode'] ?? 'run-demo',
             (string) $groupElement['id'], // TODO add groupLabel
             self::collectBookletsPerCode($loginElement),
             $workspaceId,

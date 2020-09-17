@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Testtakers.xsd">
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/7.4.0/definitions/vo_Testtakers.xsd">
 
   <Metadata>
     <Description>This file contains some logins for testing and works a a sample for developers.</Description>
@@ -26,8 +26,11 @@
     </Login>
   </Group>
 
-  <Group id="trial_group" label="A Group for Trails">
+  <Group id="trial_group" label="A Group for Trials and Demos">
     <Login mode="run-trial" name="__TEST_LOGIN_NAME__-trial" pw="__TEST_LOGIN_PASSWORD__">
+      <Booklet>BOOKLET.SAMPLE</Booklet>
+    </Login>
+    <Login mode="run-demo" name="__TEST_LOGIN_NAME__-demo" pw="__TEST_LOGIN_PASSWORD__">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>

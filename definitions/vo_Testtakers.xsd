@@ -37,6 +37,11 @@
                   <xs:attribute name="name" type="xs:ID" use="required"/>
                   <xs:attribute name="pw" type="xs:string"/>
                   <xs:attribute name="mode">
+                    <xs:annotation>
+                      <xs:documentation>
+                        See: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md
+                      </xs:documentation>
+                    </xs:annotation>
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:enumeration value="run-hot-return">
@@ -84,6 +89,14 @@
                           <xs:annotation>
                             <xs:documentation>
                               Monitor of test execution: For the whole workspace (i. e. study).
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-demo">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with no restrictions, do not save responses permanently,
+                              don't allow review comments for the test in general and every unit
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>
