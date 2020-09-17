@@ -17,13 +17,8 @@ services:
   traefik:
     image: traefik:v2.2
     container_name: traefik
-    command:
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
     ports:
-      - "80:80" # TODO add default-port variable to make it easier to let whole setup on different port than 80 ...
-      # ... this affects BROADCAST_SERVICE_URI_SUBSCRIBE in env files as well!
+      - "80:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -39,9 +34,6 @@ services:
       - ./config/my.cnf:/etc/mysql/conf.d/my.cnf
 
   testcenter-backend:
-    build:
-      context: testcenter-backend
-      dockerfile: docker/Dockerfile
     container_name: testcenter-backend
     environment:
       <<: *env-mysql
@@ -52,10 +44,6 @@ services:
       BROADCAST_SERVICE_URI_SUBSCRIBE: ${BROADCAST_SERVICE_URI_SUBSCRIBE}
     depends_on:
       - testcenter-db
-    volumes:
-      - ./testcenter-backend:/var/www/html/
-      - ./testcenter-backend/vo_data:/var/www/html/vo_data
-      - testcenter_backend_vendor:/var/www/html/vendor
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=Host(`${HOSTNAME}`) && PathPrefix(`/api`)"
@@ -63,10 +51,6 @@ services:
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
 
   testcenter-frontend:
-    build:
-      context: testcenter-frontend
-      dockerfile: docker/Dockerfile
-      target: dev
     container_name: testcenter-frontend
     volumes:
       - ./testcenter-frontend:/app
@@ -76,9 +60,6 @@ services:
       - "traefik.http.routers.testcenter-frontend.rule=Host(`${HOSTNAME}`)"
 
   testcenter-broadcasting-service:
-    build:
-      context: testcenter-broadcasting-service
-      dockerfile: docker/Dockerfile
     container_name: testcenter-broadcasting-service
     labels:
       - "traefik.enable=true"
@@ -88,5 +69,3 @@ services:
 
 volumes:
   dbdata:
-  testcenter_frontend_node_modules:
-  testcenter_backend_vendor:
