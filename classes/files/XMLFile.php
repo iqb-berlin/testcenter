@@ -28,14 +28,14 @@ class XMLFile {
 
         if (!file_exists($xmlFilename)) {
 
-            throw new HttpError("File not found: `{$xmlFilename}`");
+            return new XMLFileError("File not found: `{$xmlFilename}`");
         }
 
         $xml = simplexml_load_file($xmlFilename);
 
         if (!$xml) {
 
-            throw new HttpError("Could not open XML-File: `{$xmlFilename}`", 500);
+            return new XMLFileError("Could not open XML-File: `{$xmlFilename}`");
         }
 
         switch ($xml->getName()) {
@@ -91,7 +91,7 @@ class XMLFile {
 
                     $myId = $this->xmlfile->Metadata[0]->Id[0];
                     if (isset($myId)) {
-                        $this->id = strtoupper((string) $myId);
+                        $this->id = trim(strtoupper((string) $myId));
                     }
 
                     $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
@@ -103,14 +103,14 @@ class XMLFile {
 
                     $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
                     if (isset($myCustomTextsNode)) {
-                        foreach($myCustomTextsNode->children() as $costumTextElement) {
-                            if ($costumTextElement->getName() == 'CustomText') {
-                                $customTextValue = (string) $costumTextElement;
-                                $customTextKeyAttr = $costumTextElement['key'];
+                        foreach($myCustomTextsNode->children() as $customTextElement) {
+                            if ($customTextElement->getName() == 'CustomText') {
+                                $customTextValue = (string) $customTextElement;
+                                $customTextKeyAttr = $customTextElement['key'];
                                 if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
-                                    $costumTextKey = (string) $customTextKeyAttr;
-                                    if (strlen($costumTextKey) > 0) {
-                                        $this->customTexts[$costumTextKey] = $customTextValue;
+                                    $customTextKey = (string) $customTextKeyAttr;
+                                    if (strlen($customTextKey) > 0) {
+                                        $this->customTexts[$customTextKey] = $customTextValue;
                                     }
                                 }
                             }

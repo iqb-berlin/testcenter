@@ -306,7 +306,6 @@ class WorkspaceValidator extends Workspace {
 
         $sysCheckFolderPath = $this->_workspacePath . '/SysCheck';
         if (!file_exists($sysCheckFolderPath) or !is_dir($sysCheckFolderPath)) {
-            $this->reportError('No SysCheck directory');
             return;
         }
 
