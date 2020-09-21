@@ -269,7 +269,7 @@ class Workspace {
         }
     }
 
-    // TODO does completely fail, if only one booklet is bogus: https://github.com/iqb-berlin/testcenter-backend/issues/130
+
     public function getXMLFileByName(string $type, string $findName): XMLFile {
 
         $dirToSearch = $this->getOrCreateSubFolderPath($type);
