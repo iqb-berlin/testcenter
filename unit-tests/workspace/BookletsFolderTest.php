@@ -17,7 +17,7 @@ class BookletsFolderTest extends TestCase {
         VfsForTest::setUpBeforeClass();
     }
 
-    function setUp() {
+    function setUp(): void {
 
         $this->vfs = VfsForTest::setUp();
         $this->bookletsFolder = new BookletsFolder(1);

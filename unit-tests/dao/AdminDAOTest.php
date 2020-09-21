@@ -18,7 +18,7 @@ class AdminDAOTest extends TestCase {
      * @throws Exception
      */
 
-    function setUp() {
+    function setUp(): void {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new AdminDAO();
@@ -27,7 +27,7 @@ class AdminDAOTest extends TestCase {
     }
 
 
-    function tearDown() {
+    function tearDown(): void {
 
         unset($this->dbc);
     }

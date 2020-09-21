@@ -22,14 +22,14 @@ class WorkspaceTest extends TestCase {
         VfsForTest::setUpBeforeClass();
     }
 
-    function setUp() {
+    function setUp(): void {
 
         $this->vfs = VfsForTest::setUp();
         $this->workspace = new Workspace(1);
     }
 
 
-    function tearDown() {
+    function tearDown(): void {
 
         unset($this->vfs);
     }

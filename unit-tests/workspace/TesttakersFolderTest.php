@@ -17,7 +17,7 @@ class TesttakersFolderTest extends TestCase {
         VfsForTest::setUpBeforeClass();
     }
 
-    function setUp() {
+    function setUp(): void {
 
         $this->vfs = VfsForTest::setUp();
         $this->folder = new TesttakersFolder(1);

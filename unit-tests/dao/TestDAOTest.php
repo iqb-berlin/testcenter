@@ -19,7 +19,7 @@ class TestDAOTest extends TestCase {
      * @throws Exception
      */
 
-    function setUp() {
+    function setUp(): void {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new TestDAO();
@@ -28,7 +28,7 @@ class TestDAOTest extends TestCase {
     }
 
 
-    function tearDown() {
+    function tearDown(): void {
 
 //        print_r($this->dbc->getDBContentDump());
         unset($this->dbc);
