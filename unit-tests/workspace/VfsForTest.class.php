@@ -8,6 +8,7 @@ require_once "classes/workspace/Workspace.class.php";
 
 
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 class VfsForTest {
 
@@ -27,7 +28,7 @@ class VfsForTest {
         }
     }
 
-    static function setUp() {
+    static function setUp(): vfsStreamDirectory {
 
         $vfs = vfsStream::setup('root', 0777);
         $sampledataDir = vfsStream::newDirectory('sampledata', 0777)->at($vfs);

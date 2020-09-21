@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class SessionTest extends TestCase {
 
-    static function setUpBeforeClass() {
+    static function setUpBeforeClass(): void {
 
         require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
         require_once "classes/data-collection/Session.class.php";
