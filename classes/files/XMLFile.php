@@ -91,7 +91,7 @@ class XMLFile {
 
                     $myId = $this->xmlfile->Metadata[0]->Id[0];
                     if (isset($myId)) {
-                        $this->id = strtoupper((string) $myId);
+                        $this->id = trim(strtoupper((string) $myId));
                     }
 
                     $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
