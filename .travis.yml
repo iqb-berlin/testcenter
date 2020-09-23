@@ -3,5 +3,8 @@ dist: bionic
 install:
   - docker build -f e2etest/Dockerfile --tag e2etest .
 
+before_script:
+  - make run-prod
+
 script:
   - docker run --network host e2etest
