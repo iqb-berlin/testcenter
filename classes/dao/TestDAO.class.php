@@ -163,7 +163,9 @@ class TestDAO extends DAO {
                 ':testId' => $testId
             ]
         );
-        // TODO Exception if not found
+        if ($unitData == null) {
+            return [];
+        }
         return JSON::decode($unitData['laststate'], true);
     }
 
