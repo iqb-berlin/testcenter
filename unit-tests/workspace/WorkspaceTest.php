@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUnhandledExceptionInspection */
+<?php
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 
 use PHPUnit\Framework\TestCase;
