@@ -5,7 +5,7 @@ install:
 
 before_script:
   - make init-config
-  - make run-prod
+  - make run-prod-detached
 
 script:
   - docker run --network host e2etest
