@@ -85,49 +85,63 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function resourceExists($r, $v) {
+    private function resourceExists(string $resourceId, bool $useVersioning): bool {
 
-        $myExistsReturn = false;
-        $rNormalised1 = FileName::normalize($r, false);
-        $rNormalised2 = FileName::normalize($r, true);
-        if (in_array($rNormalised1, $this->allResources)) {
-            if (!in_array($rNormalised1, $this->allUsedResources)) {
-                array_push($this->allUsedResources, $rNormalised1);
+        $resourceFileNameNormalized = FileName::normalize($resourceId, !$useVersioning);
+
+        if (!$useVersioning && in_array($resourceFileNameNormalized, $this->allResources)) {
+
+            if (!in_array($resourceFileNameNormalized, $this->allUsedResources)) {
+
+                $this->allUsedResources[] = $resourceFileNameNormalized;
             }
-            $myExistsReturn = true;
-        } elseif ($v && in_array($rNormalised2, $this->allVersionedResources)) {
-            if (!in_array($rNormalised2, $this->allUsedVersionedResources)) {
-                array_push($this->allUsedVersionedResources, $rNormalised2);
+
+            return true;
+
+        } else if ($useVersioning && in_array($resourceFileNameNormalized, $this->allVersionedResources)) {
+
+            if (!in_array($resourceFileNameNormalized, $this->allUsedVersionedResources)) {
+
+                $this->allUsedVersionedResources[] = $resourceFileNameNormalized;
             }
-            $myExistsReturn = true;
+
+            return true;
         }
-        return $myExistsReturn;
+
+        return false;
     }
 
 
-    private function unitExists($u) {
+    private function unitExists(string $unitName): bool {
 
-        $myExistsReturn = false;
-        if (in_array(strtoupper($u), $this->allUnits)) {
-            if (!in_array(strtoupper($u), $this->allUsedUnits)) {
-                array_push($this->allUsedUnits, strtoupper($u));
+        if (in_array(strtoupper($unitName), $this->allUnits)) {
+
+            if (!in_array(strtoupper($unitName), $this->allUsedUnits)) {
+
+                $this->allUsedUnits[] = strtoupper($unitName);
             }
-            $myExistsReturn = true;
+
+            return true;
         }
-        return $myExistsReturn;
+
+        return false;
     }
 
-    private function bookletExists($b) {
 
-        $myExistsReturn = false;
-        if (in_array(strtoupper($b), $this->allBooklets)) {
-            if (!in_array(strtoupper($b), $this->allUsedBooklets)) {
-                array_push($this->allUsedBooklets, strtoupper($b));
+    private function bookletExists(string $bookletName): bool {
+
+        if (in_array(strtoupper($bookletName), $this->allBooklets)) {
+
+            if (!in_array(strtoupper($bookletName), $this->allUsedBooklets)) {
+                array_push($this->allUsedBooklets, strtoupper($bookletName));
             }
-            $myExistsReturn = true;
+
+            return true;
         }
-        return $myExistsReturn;
+
+        return false;
     }
+
 
     private function readResources() {
 
