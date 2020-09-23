@@ -4,6 +4,7 @@ install:
   - docker build -f e2etest/Dockerfile --tag e2etest .
 
 before_script:
+  - make init-config
   - make run-prod
 
 script:
