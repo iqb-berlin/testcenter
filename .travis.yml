@@ -1,0 +1,7 @@
+dist: bionic
+
+install:
+  - docker build -f test/Dockerfile --tag e2etest .
+
+script:
+  - docker run --network host e2etest
