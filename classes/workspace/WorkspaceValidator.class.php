@@ -3,6 +3,7 @@
 declare(strict_types=1);
 // TODO unit test
 
+
 class WorkspaceValidator extends Workspace {
 
     private $allResources = [];
@@ -26,25 +27,25 @@ class WorkspaceValidator extends Workspace {
     function validate(): array {
 
         $this->readResources();
-        $this->reportInfo('`' . strval(count($this->allResources)) . '` resource files found', '.');
+        $this->reportInfo('`' . strval(count($this->allResources)) . '` resource files found');
 
         $this->readAndValidateUnits();
-        $this->reportInfo('`' . strval(count($this->allUnits)) . ' valid units found', '.');
+        $this->reportInfo('`' . strval(count($this->allUnits)) . ' valid units found');
 
         // get all booklets and check units and resources
         $this->readAndValidateBooklets();
-        $this->reportInfo('`' . strval(count($this->allBooklets)) . '` valid booklets found', '.');
+        $this->reportInfo('`' . strval(count($this->allBooklets)) . '` valid booklets found');
 
         // get all syschecks and check units
         $this->readAndValidateSysChecks();
-        $this->reportInfo('`' . strval($this->validSysCheckCount) . '` valid sys-checks found', '.');
+        $this->reportInfo('`' . strval($this->validSysCheckCount) . '` valid sys-checks found');
         
         // get all logins and check booklets
         $this->readAndValidateLogins();
         $this->checkIfLoginsAreUsedInOtherWorkspaces();
         $this->checkIfGroupsAreUsedInOtherFiles();
         $this->reportInfo('`' . strval($this->testtakersCount) . '` test-takers in `'
-            . strval(count($this->allLoginNames)) . '` logins found', '.');
+            . strval(count($this->allLoginNames)) . '` logins found');
 
         // find unused resources, units and booklets
         $this->findUnusedItems();
@@ -58,7 +59,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function reportError(string $text, string $file): void {
+    private function reportError(string $text, string $file = '.'): void {
 
         if (!isset($this->report[$file])) {
             $this->report[$file] = [];
@@ -67,7 +68,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function reportWarning(string $text, string $file): void {
+    private function reportWarning(string $text, string $file = '.'): void {
 
         if (!isset($this->report[$file])) {
             $this->report[$file] = [];
@@ -76,7 +77,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function reportInfo(string $text, string $file): void {
+    private function reportInfo(string $text, string $file = '.'): void {
 
         if (!isset($this->report[$file])) {
             $this->report[$file] = [];
@@ -147,7 +148,7 @@ class WorkspaceValidator extends Workspace {
 
         $resourceFolderPath = $this->_workspacePath . '/Resource';
         if (!file_exists($resourceFolderPath) or !is_dir($resourceFolderPath)) {
-            $this->reportError("No Resource directory", '.');
+            $this->reportError("No Resource directory");
             return;
         }
 
@@ -167,7 +168,7 @@ class WorkspaceValidator extends Workspace {
 
         $unitFolderPath = $this->_workspacePath . '/Unit';
         if (!file_exists($unitFolderPath) or !is_dir($unitFolderPath)) {
-            $this->reportError('No Unit directory', '.');
+            $this->reportError('No Unit directory');
             return;
         }
 
@@ -237,7 +238,7 @@ class WorkspaceValidator extends Workspace {
 
         $bookletFolderPath = $this->_workspacePath . '/Booklet';
         if (!file_exists($bookletFolderPath) or !is_dir($bookletFolderPath)) {
-            $this->reportError('No Booklet directory', '.');
+            $this->reportError('No Booklet directory');
             return;
         }
 
@@ -347,7 +348,7 @@ class WorkspaceValidator extends Workspace {
 
         $testTakersFolderPath = $this->_workspacePath . '/Testtakers';
         if (!file_exists($testTakersFolderPath) or !is_dir($testTakersFolderPath)) {
-            $this->reportError('No Testtakers directory', '.');
+            $this->reportError('No Testtakers directory');
             return;
         }
 
@@ -382,8 +383,7 @@ class WorkspaceValidator extends Workspace {
                 foreach ($testtaker['booklets'] as $bookletId) {
                     if (!$this->bookletExists($bookletId)) {
                         if (!in_array($bookletId, $errorBookletNames)) {
-                            $this->reportError("booklet `$bookletId` not found for 
-                                login `{$testtaker['loginname']}`", $testtakersFile);
+                            $this->reportError("booklet `$bookletId` not found for login `{$testtaker['loginname']}`", $testtakersFile);
                             $errorBookletNames[] = $bookletId;
                         }
                     }
@@ -504,6 +504,7 @@ class WorkspaceValidator extends Workspace {
             }
         }
 
+        // TODO does not work!
         foreach($this->allUnits as $u) {
             if (!in_array($u, $this->allUsedUnits)) {
                 $this->reportWarning('Unit is not used in any booklet', $u);
