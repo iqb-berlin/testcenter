@@ -33,3 +33,7 @@ see `scripts/sql-schema/patches.mysql.sql`
 ## 7.4
 ### XML
 * A new mode for logins is allowed now: `run-demo`
+
+## [next]
+#### Requirements
+* PHP 7.4 is now required
