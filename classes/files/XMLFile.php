@@ -3,7 +3,7 @@
 declare(strict_types=1);
 // TODO unit-tests
 
-class XMLFile {
+class XMLFile extends File {
 
     private $schemaFileNames = [
         'Testtakers' => 'vo_Testtakers.xsd',
@@ -12,15 +12,11 @@ class XMLFile {
         'Unit' => 'vo_Unit.xsd'
     ];
 
-    protected $rootTagName;
-    protected $isValid;
-    protected $id;
-    protected $label;
-    protected $description;
-    protected $filename;
+    protected $rootTagName = '';
+    protected string $label = '';
+    protected string $description = '';
     protected $customTexts;
 
-    public $allErrors = [];
     public $xmlfile;
 
 
@@ -41,7 +37,7 @@ class XMLFile {
         switch ($xml->getName()) {
             case 'Testtakers': return new XMLFileTesttakers($xmlFilename, $validate);
             case 'SysCheck': return new XMLFileSysCheck($xmlFilename, $validate);
-            case 'SysBooklet': return new XMLFileBooklet($xmlFilename, $validate);
+            case 'Booklet': return new XMLFileBooklet($xmlFilename, $validate);
             case 'Unit': return new XMLFileUnit($xmlFilename, $validate);
         }
 
@@ -50,103 +46,90 @@ class XMLFile {
 
 
     public function __construct(string $xmlfilename, bool $validate = false, bool $isRawXml = false) {
-        $this->allErrors = [];
-        $this->rootTagName = '';
-        $this->id = '';
-        $this->label = '';
-        $this->isValid = false;
-        $this->xmlfile = false;
-        $this->filename = $xmlfilename;
-        $this->customTexts = [];
 
         $xsdFolderName = ROOT_DIR . '/definitions/';
 
         libxml_use_internal_errors(true);
         libxml_clear_errors();
     
-        if (!$isRawXml and !file_exists($xmlfilename)) {
+        if (!$isRawXml) {
 
-            array_push($this->allErrors, "`$xmlfilename` not found`");
+            parent::__construct($xmlfilename);
+        }
+
+        $this->xmlfile = !$isRawXml
+            ? simplexml_load_file($xmlfilename)
+            : new SimpleXMLElement($xmlfilename);
+
+        if ($this->xmlfile == false) {
+
+            $this->report('error', "Error in `$xmlfilename`");
 
         } else {
 
-            $this->xmlfile = !$isRawXml
-                ? simplexml_load_file($xmlfilename)
-                : new SimpleXMLElement($xmlfilename);
+            $this->rootTagName = $this->xmlfile->getName();
+            if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
 
-            if ($this->xmlfile == false) {
-
-                array_push($this->allErrors, "Error in `$xmlfilename`");
+                $this->report('error', $xmlfilename . ': Root-Tag "' . $this->rootTagName . '" unknown.');
 
             } else {
 
-                $this->rootTagName = $this->xmlfile->getName();
-                if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
+                $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
 
-                    array_push($this->allErrors, $xmlfilename . ': Root-Tag "' . $this->rootTagName . '" unknown.');
+                $myId = $this->xmlfile->Metadata[0]->Id[0];
+                if (isset($myId)) {
+                    $this->id = trim(strtoupper((string) $myId));
+                }
 
-                } else {
+                $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
 
-                    $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
+                $myDescription = $this->xmlfile->Metadata[0]->Description[0];
+                if (isset($myDescription)) {
+                    $this->description = (string) $myDescription;
+                }
 
-                    $myId = $this->xmlfile->Metadata[0]->Id[0];
-                    if (isset($myId)) {
-                        $this->id = trim(strtoupper((string) $myId));
-                    }
-
-                    $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
-
-                    $myDescription = $this->xmlfile->Metadata[0]->Description[0];
-                    if (isset($myDescription)) {
-                        $this->description = (string) $myDescription;
-                    }
-
-                    $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
-                    if (isset($myCustomTextsNode)) {
-                        foreach($myCustomTextsNode->children() as $customTextElement) {
-                            if ($customTextElement->getName() == 'CustomText') {
-                                $customTextValue = (string) $customTextElement;
-                                $customTextKeyAttr = $customTextElement['key'];
-                                if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
-                                    $customTextKey = (string) $customTextKeyAttr;
-                                    if (strlen($customTextKey) > 0) {
-                                        $this->customTexts[$customTextKey] = $customTextValue;
-                                    }
+                $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
+                if (isset($myCustomTextsNode)) {
+                    foreach($myCustomTextsNode->children() as $customTextElement) {
+                        if ($customTextElement->getName() == 'CustomText') {
+                            $customTextValue = (string) $customTextElement;
+                            $customTextKeyAttr = $customTextElement['key'];
+                            if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
+                                $customTextKey = (string) $customTextKeyAttr;
+                                if (strlen($customTextKey) > 0) {
+                                    $this->customTexts[$customTextKey] = $customTextValue;
                                 }
                             }
                         }
                     }
+                }
 
-                    if ($validate) {
+                if ($validate) {
 
-                        $myReader = new XMLReader();
-                        $myReader->open($xmlfilename);
-                        $myReader->setSchema($mySchemaFilename);
+                    $myReader = new XMLReader();
+                    $myReader->open($xmlfilename);
+                    $myReader->setSchema($mySchemaFilename);
 
-                        do {
-                            $continue = $myReader->read();
-                            foreach (libxml_get_errors() as $error) {
-                                $errorString = "Error [{$error->code}] in line {$error->line}: ";
-                                $errorString .= trim($error->message);
-                                array_push($this->allErrors, $errorString);
-                            }
-                            libxml_clear_errors();
-                        } while ($continue);
+                    do {
+                        $continue = $myReader->read();
+                        foreach (libxml_get_errors() as $error) {
+                            $errorString = "Error [{$error->code}] in line {$error->line}: ";
+                            $errorString .= trim($error->message);
+                            $this->report('error', $errorString);
+                        }
+                        libxml_clear_errors();
+                    } while ($continue);
 
-                        $this->isValid = count($this->allErrors) == 0;
-
-                    } else {
-                        $this->isValid = true;
-                    }
                 }
             }
         }
+
         if ($validate) {
             // simplexml_load_file gibt auch Fehler nach libxml
             foreach (libxml_get_errors() as $error) {
                 $errorString = "Error [{$error->code}] in line {$error->line}: ";
                 $errorString .= trim($error->message);
-                array_push($this->allErrors, $errorString);
+                $this->report('error', $errorString);
             }
             libxml_clear_errors();
         }
@@ -156,7 +139,9 @@ class XMLFile {
 
     public function getErrors() {
 
-        return $this->allErrors;
+        return array_filter($this->validationReport, function(ValidationReportEntry $validationReportEntry): bool {
+            return $validationReportEntry->level == 'error';
+        });
     }
 
 
@@ -184,9 +169,9 @@ class XMLFile {
     }
 
 
-    public function isValid() {
+    public function isValid(): bool {
 
-        return $this->isValid;
+        return count($this->getErrors()) == 0;
     }
 
 

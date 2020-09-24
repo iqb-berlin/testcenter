@@ -89,7 +89,7 @@ class VfsForTest {
                 '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unused</Id><Label>unused</Label></Metadata>'
                 . '<Definition player="not-existing">{}</Definition></Unit>',
             "unit-unused-and-missing-ref.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unused</Id><Label>unused</Label></Metadata>'
+                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unused-and-missing</Id><Label>unused</Label></Metadata>'
                 . '<DefinitionRef player="SAMPLE_PLAYER">not-existing.voud</DefinitionRef></Unit>',
             "booklet-unused.xml" =>
                 '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>Unused-Booklet</Id><Label>Minimal Booklet</Label></Metadata>'
@@ -101,7 +101,7 @@ class VfsForTest {
         foreach ($brokenTestFiles as $fileName => $fileContents) {
 
             $type = ucfirst(explode('-', $fileName)[0]);
-            echo "\n-----[$type: $fileName]-----\n$fileContents\n------------\n";
+            //echo "\n-----[$type: $fileName]-----\n$fileContents\n------------\n";
             file_put_contents(DATA_DIR . "/ws_1/$type/$fileName", $fileContents);
         }
     }

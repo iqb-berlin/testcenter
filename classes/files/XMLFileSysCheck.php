@@ -8,7 +8,7 @@ class XMLFileSysCheck extends XMLFile {
     public function getUnitId() {
         
         $myreturn = '';
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $unitAttr = $configNode['unit'];
@@ -24,7 +24,7 @@ class XMLFileSysCheck extends XMLFile {
     public function getSaveKey() {
         
         $myreturn = '';
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $savekeyAttr = $configNode['savekey'];
@@ -52,7 +52,7 @@ class XMLFileSysCheck extends XMLFile {
     public function getCustomTexts()
     {
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 foreach($configNode->children() as $ct) {
@@ -72,7 +72,7 @@ class XMLFileSysCheck extends XMLFile {
     public function getSkipNetwork() {
 
         $myreturn = false;
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $qomAttr = $configNode['skipnetwork'];
@@ -89,7 +89,7 @@ class XMLFileSysCheck extends XMLFile {
     public function getQuestions() {
 
         $myreturn = [];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 foreach($configNode->children() as $q) { 
@@ -119,7 +119,7 @@ class XMLFileSysCheck extends XMLFile {
             'maxSequenceRepetitions' => 0,
             'sequenceSizes' >= []
         ];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $speedDefNode = $configNode->UploadSpeed[0];
@@ -160,7 +160,7 @@ class XMLFileSysCheck extends XMLFile {
             'maxSequenceRepetitions' => 0,
             'sequenceSizes' >= []
         ];
-        if ($this->isValid and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
+        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'SysCheck')) {
             $configNode = $this->xmlfile->Config[0];
             if (isset($configNode)) {
                 $speedDefNode = $configNode->DownloadSpeed[0];
@@ -202,7 +202,7 @@ class XMLFileSysCheck extends XMLFile {
         ];
         $myUnitId = $this->getUnitId();
         if (strlen($myUnitId) > 0) {
-            $workspaceDirName = dirname(dirname($this->filename));
+            $workspaceDirName = dirname(dirname($this->path));
             if (isset($workspaceDirName) && is_dir($workspaceDirName)) {
                 $unitFolder = $workspaceDirName . '/Unit';
                 $resourcesFolder = $workspaceDirName . '/Resource';
@@ -297,7 +297,7 @@ class XMLFileSysCheck extends XMLFile {
             throw new HttpError("Wrong key `$key`", 400);
         }
 
-        $workspaceDirName = dirname(dirname($this->filename));
+        $workspaceDirName = dirname(dirname($this->path));
 
         if (!isset($workspaceDirName) or !is_dir($workspaceDirName)) {
 

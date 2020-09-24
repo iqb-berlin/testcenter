@@ -6,12 +6,6 @@ declare(strict_types=1);
 class XMLFileTesttakers extends XMLFile {
 
 
-    public function isValid(): bool {
-
-        return $this->isValid and ($this->xmlfile == true) and ($this->rootTagName === 'Testtakers');
-    }
-
-
     /**
      * @return array|null
      *

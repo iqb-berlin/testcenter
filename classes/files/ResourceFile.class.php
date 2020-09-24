@@ -2,23 +2,19 @@
 declare(strict_types=1);
 
 
-class ResourceFile {
+class ResourceFile extends File {
 
     private $isXml = false;
-    private $size = 0;
-    private $filedate;
-
     private $_content = '';
 
 
-    public function __construct(string $fullFilePath, bool $infoOnly = false) {
+    public function __construct(string $path, bool $infoOnly = false) {
 
-        $this->name = basename($fullFilePath);
-        $this->filedate = date(DATE_ATOM, filemtime($fullFilePath));
-        $this->size = filesize($fullFilePath);
-        $this->isXml = preg_match("/\.(XML|xml|Xml)$/", basename($fullFilePath)) == true;
+        parent::__construct($path);
+
+        $this->isXml = preg_match("/\.(XML|xml|Xml)$/", basename($path)) == true;
         if (!$infoOnly) {
-            $this->_content = file_get_contents($fullFilePath);
+            $this->_content = file_get_contents($path);
         }
     }
 

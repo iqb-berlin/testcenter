@@ -8,6 +8,6 @@ class XMLFileError extends XMLFile {
     /** @noinspection PhpMissingParentConstructorInspection */
     public function __construct(string $errorMessage) {
 
-        $this->allErrors[] = $errorMessage;
+        $this->report('error', $errorMessage);
     }
 }

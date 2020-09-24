@@ -36,21 +36,19 @@ class WorkspaceValidatorTest extends TestCase{
         $this->validator = new WorkspaceValidator(1);
     }
 
-    private function invokeMethod($methodName, array $parameters = array()) {
-
-        $reflection = new ReflectionClass(get_class($this->validator));
-        $method = $reflection->getMethod($methodName);
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($this->validator, $parameters);
-    }
+//    private function invokeMethod($methodName, array $parameters = array()) {
+//
+//        $reflection = new ReflectionClass(get_class($this->validator));
+//        $method = $reflection->getMethod($methodName);
+//        $method->setAccessible(true);
+//
+//        return $method->invokeArgs($this->validator, $parameters);
+//    }
 
 
     function test_validate() {
 
-        $shit = $this->validator->validate();
-
-        echo "\n===================\n" . print_r(array_keys($shit), true);
+        $result = $this->validator->validate();
 
         $expected = [
             '.' => [
@@ -118,7 +116,35 @@ class WorkspaceValidatorTest extends TestCase{
             ],
         ];
 
-        $this->assertEquals($expected, $shit);
+        foreach ($result as $key => $list) {
+
+            echo "\n-- $key: " . count($list);
+
+            if (!isset($expected[$key])) {
+                var_dump($result[$key]);
+                $this->fail("key `$key` not asserted");
+            }
+
+            $resultSorted = usort($expected[$key], function(ValidationReportEntry $a, ValidationReportEntry $b) {
+                return $a->message > $b->message;
+            });
+
+            $expectationSorted = usort($list, function(ValidationReportEntry $a, ValidationReportEntry $b) {
+                return $a->message > $b->message;
+            });
+
+            $this->assertEqualsCanonicalizing($resultSorted, $expectationSorted);
+        }
+
+        foreach ($expected as $key => $list) {
+
+            echo "\n== $key: " . count($list);
+
+            if (!isset($result[$key])) {
+                echo "!!! IS MISSING !!!";
+                $this->fail("key `$key` missing");
+            }
+        }
     }
 
 }
