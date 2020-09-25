@@ -15,12 +15,14 @@ class XMLFileBooklet extends XMLFile {
 
         foreach($this->getAllUnitIds() as $unitId) {
 
-            $unit = $validator->useUnit($unitId);
+            $unit = $validator->getUnit($unitId);
 
             if ($unit == null) {
                 $this->report('error', "Unit `$unitId` not found");
                 continue;
             }
+
+            $unit->addUsedBy($this);
 
             $this->totalSize += $unit->getTotalSize();
             $player = $unit->getPlayerId();

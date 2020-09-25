@@ -13,7 +13,6 @@ class WorkspaceValidator extends Workspace {
     private $allUsedResources = [];
     private $allUsedVersionedResources = [];
     private $allUnits = []; // id -> xFile
-    private $allUsedUnits = [];
     private $allBooklets = [];
     private $allUsedBooklets = [];
 
@@ -129,15 +128,9 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    public function useUnit(string $unitId): ?XMLFileUnit {
+    public function getUnit(string $unitId): ?XMLFileUnit {
 
         if (isset($this->allUnits[$unitId])) {
-
-            if (!in_array($unitId, $this->allUsedUnits)) {
-
-                $this->allUsedUnits[] = $unitId;
-            }
-
             return $this->allUnits[$unitId];
         }
 
@@ -361,10 +354,9 @@ class WorkspaceValidator extends Workspace {
             }
         }
 
-        // TODO does not work!
         foreach($this->allUnits as $xFileUnit) {
-            if (!in_array($xFileUnit->getId(), $this->allUsedUnits)) {
-                $this->reportWarning('Unit is not used in any booklet', $xFileUnit->getId());
+            if (!$xFileUnit->isUsed()) {
+                 $this->reportWarning('Unit is not used in any booklet', $xFileUnit->getId());
             }
         }
 

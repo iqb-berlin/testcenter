@@ -116,7 +116,7 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'SAMPLE_BOOKLET2.XML' => [
                 new ValidationReportEntry('info',  'size fully loaded: `6.24 KB`'),
-            ],
+            ]
         ];
 
 

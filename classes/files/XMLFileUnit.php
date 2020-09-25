@@ -7,7 +7,7 @@ class XMLFileUnit extends XMLFile {
 
     protected int $totalSize = 0;
     protected string $playerId = '';
-
+    protected array $usedBy = [];
 
     public function setTotalSize(WorkspaceValidator $validator): void {
 
@@ -59,6 +59,17 @@ class XMLFileUnit extends XMLFile {
         return $this->playerId;
     }
 
+
+    public function addUsedBy(File $file): void {
+
+        $this->usedBy[] = ($file);
+    }
+
+
+    public function isUsed(): bool {
+
+        return count($this->usedBy) > 0;
+    }
 
 
     private function getPlayer() {
