@@ -21,9 +21,8 @@ class WorkspaceValidator extends Workspace {
     public $unitPlayers = [];
     public $unitFilesizes = [];
     public $bookletSizes = [];
-
-    private $testtakersCount = 0;
-    private $allLoginNames = [];
+    
+    public $allLoginNames = [];
 
     private array $report = [];
 
@@ -156,7 +155,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function bookletExists(string $bookletName): bool {
+    public function bookletExists(string $bookletName): bool {
 
         if (in_array(strtoupper($bookletName), $this->allBooklets)) {
 
@@ -255,8 +254,8 @@ class WorkspaceValidator extends Workspace {
 
             if ($xFile->isValid()) {
 
-                $isCrossValid = $xFile->crossValidate($this);
-                $validSysCheckCount = $validSysCheckCount + ($isCrossValid ? 1 : 0);
+                $xFile->crossValidate($this);
+                $validSysCheckCount = $validSysCheckCount + ($xFile->isValid() ? 1 : 0);
             }
         }
 
@@ -266,56 +265,25 @@ class WorkspaceValidator extends Workspace {
 
     private function readAndValidateLogins() {
 
-        $testTakersFolderPath = $this->getOrCreateSubFolderPath("Testtakers");
+        $testtakersCount = 0;
 
-        $testtakersFolderHandle = opendir($testTakersFolderPath);
-        while (($testtakersFile = readdir($testtakersFolderHandle)) !== false) {
+        foreach ($this->allFiles['Testtakers'] as $xFile) {
 
-            $fullFilename = $testTakersFolderPath . '/' . $testtakersFile;
-            if (!is_file($fullFilename) or (strtoupper(substr($testtakersFile, -4)) !== '.XML')) {
-                continue;
-            }
+            /* @var XMLFileTesttakers $xFile */
 
-            $xFile = new XMLFileTesttakers($fullFilename, true);
-            if (!$xFile->isValid()) {
-                $this->getReport($xFile);
-                continue;
-            }
+            if ($xFile->isValid()) {
 
-            $errorBookletNames = [];
-            $testtakers = $xFile->getAllTesttakers();
+                $xFile->crossValidate($this);
 
-            $this->testtakersCount = $this->testtakersCount + count($testtakers);
-
-            foreach ($testtakers as $testtaker) {
-                foreach ($testtaker['booklets'] as $bookletId) {
-                    if (!$this->bookletExists($bookletId)) {
-                        if (!in_array($bookletId, $errorBookletNames)) {
-                            $this->reportError("booklet `$bookletId` not found for login `{$testtaker['loginname']}`", $testtakersFile);
-                            $errorBookletNames[] = $bookletId;
-                        }
-                    }
-                }
-
-                if (isset($this->allLoginNames[$testtaker['loginname']])) {
-                    if ($this->allLoginNames[$testtaker['loginname']] !== $testtakersFile) {
-                        $this->reportError("login `{$testtaker['loginname']}` in 
-                            `$testtakersFile` is already used in: `{$this->allLoginNames[$testtaker['loginname']]}`", $testtakersFile);
-                    }
-                } else {
-                    $this->allLoginNames[$testtaker['loginname']] = $testtakersFile;
+                if ($xFile->isValid()) {
+                    $testtakersCount++;
                 }
             }
 
-            $doubleLogins = $xFile->getDoubleLoginNames();
-            if (count($doubleLogins) > 0) {
-                foreach ($doubleLogins as $ln) {
-                    $this->reportError("duplicate loginname `$ln`", $testtakersFile);
-                }
-            }
+            $this->getReport($xFile);
         }
 
-        $this->reportInfo('`' . strval($this->testtakersCount) . '` test-takers in `'
+        $this->reportInfo('`$testtakersCount` test-takers in `'
             . strval(count($this->allLoginNames)) . '` logins found');
     }
 

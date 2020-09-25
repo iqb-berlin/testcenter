@@ -5,6 +5,53 @@ declare(strict_types=1);
 
 class XMLFileTesttakers extends XMLFile {
 
+    protected int $testtakersCount = 0;
+
+    public function crossValidate(WorkspaceValidator $validator): void {
+
+        $reportedBooklets = [];
+        $testTakers = $this->getAllTesttakers();
+
+        $this->testtakersCount = $this->testtakersCount + count($testTakers);
+
+        foreach ($testTakers as $testtaker) {
+
+            foreach ($testtaker['booklets'] as $bookletId) {
+
+                if (!$validator->bookletExists($bookletId) && !in_array($bookletId, $reportedBooklets)) {
+
+                    $this->report('error', "booklet `$bookletId` not found for login `{$testtaker['loginname']}`");
+                    $reportedBooklets[] = $bookletId;
+                }
+            }
+
+            if (isset($validator->allLoginNames[$testtaker['loginname']])) {
+
+                $otherFilePath = $validator->allLoginNames[$testtaker['loginname']];
+
+                if ($otherFilePath !== $this->getPath()) {
+                    $this->report('error', "login `{$testtaker['loginname']}` in `{$this->getPath()}` is already used in: `$otherFilePath`");
+                }
+
+            } else {
+
+                $validator->allLoginNames[$testtaker['loginname']] = $this->getPath();
+            }
+        }
+
+        $doubleLogins = $this->getDoubleLoginNames();
+        if (count($doubleLogins) > 0) {
+            foreach ($doubleLogins as $login) {
+                $this->report('error', "duplicate loginname `$login`");
+            }
+        }
+    }
+
+    public function getTesttakersCount() {
+
+        return $this->testtakersCount;
+    }
+
 
     /**
      * @return array|null
