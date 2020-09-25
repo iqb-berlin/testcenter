@@ -18,10 +18,19 @@ class XMLFileTesttakers extends XMLFile {
 
             foreach ($testtaker['booklets'] as $bookletId) {
 
-                if (!$validator->bookletExists($bookletId) && !in_array($bookletId, $reportedBooklets)) {
+                $booklet = $validator->getBooklet($bookletId);
+
+                if ($booklet != null) {
+
+                    if (!in_array($bookletId, $reportedBooklets)) {
+
+                        $reportedBooklets[] = $bookletId;
+                        $booklet->addUsedBy($this);
+                    }
+
+                 } else {
 
                     $this->report('error', "booklet `$bookletId` not found for login `{$testtaker['loginname']}`");
-                    $reportedBooklets[] = $bookletId;
                 }
             }
 

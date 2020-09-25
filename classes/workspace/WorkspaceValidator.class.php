@@ -13,8 +13,8 @@ class WorkspaceValidator extends Workspace {
     private $allUsedResources = [];
     private $allUsedVersionedResources = [];
     private $allUnits = []; // id -> xFile
-    private $allBooklets = [];
-    private $allUsedBooklets = [];
+    private $allBooklets = []; // id -> xFile
+
 
 
     public $resourceSizes = [];
@@ -138,18 +138,13 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    public function bookletExists(string $bookletName): bool {
+    public function getBooklet(string $bookletId): ?XMLFileBooklet {
 
-        if (in_array(strtoupper($bookletName), $this->allBooklets)) {
-
-            if (!in_array(strtoupper($bookletName), $this->allUsedBooklets)) {
-                array_push($this->allUsedBooklets, strtoupper($bookletName));
-            }
-
-            return true;
+        if (isset($this->allBooklets[$bookletId])) {
+            return $this->allBooklets[$bookletId];
         }
 
-        return false;
+        return null;
     }
 
 
@@ -205,7 +200,7 @@ class WorkspaceValidator extends Workspace {
                 $xFile->setTotalSize($this);
 
                 if ($xFile->isValid()) {
-                    $this->allBooklets[] = $xFile->getId();
+                    $this->allBooklets[$xFile->getId()] = $xFile;
                 }
             }
 
@@ -360,9 +355,9 @@ class WorkspaceValidator extends Workspace {
             }
         }
 
-        foreach($this->allBooklets as $b) {
-            if (!in_array($b, $this->allUsedBooklets)) {
-                $this->reportWarning('Booklet not set up for any test-taker', $b);
+        foreach($this->allBooklets as $xFileBooklet) {
+            if (!$xFileBooklet->isUsed()) {
+                $this->reportWarning('Booklet not set up for any test-taker', $xFileBooklet->getId());
             }
         }
     }

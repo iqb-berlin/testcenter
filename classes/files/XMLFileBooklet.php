@@ -6,6 +6,19 @@ declare(strict_types=1);
 class XMLFileBooklet extends XMLFile {
 
     protected int $totalSize = 0;
+    protected array $usedBy = [];
+
+
+    public function addUsedBy(File $file): void {
+
+        $this->usedBy[] = ($file);
+    }
+
+
+    public function isUsed(): bool {
+
+        return count($this->usedBy) > 0;
+    }
 
 
     public function setTotalSize(WorkspaceValidator $validator): void {
