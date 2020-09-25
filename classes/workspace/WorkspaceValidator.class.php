@@ -12,25 +12,17 @@ class WorkspaceValidator extends Workspace {
     private $allVersionedResources = [];
     private $allUsedResources = [];
     private $allUsedVersionedResources = [];
-    private $allUnits = [];
+    private $allUnits = []; // id -> xFile
     private $allUsedUnits = [];
     private $allBooklets = [];
     private $allUsedBooklets = [];
 
-    public $unitPlayers = [];
 
     public $resourceSizes = [];
-    public $unitSizes = [];
 
     public $allLoginNames = [];
 
     private array $report = [];
-
-    function __construct(int $workspaceId) {
-
-        parent::__construct($workspaceId);
-        $this->readFiles();
-    }
 
     private function readFiles() {
 
@@ -54,11 +46,13 @@ class WorkspaceValidator extends Workspace {
 
     function validate(): array {
 
+        $this->readFiles();
+
         $this->readResources();
-        $this->readAndValidateUnits();
-        $this->readAndValidateBooklets();
-        $this->readAndValidateSysChecks();
-        $this->readAndValidateLogins();
+        $this->crossValidateUnits();
+        $this->crossValidateBooklets();
+        $this->crossValidateSysChecks();
+        $this->crossValidateLogins();
 
         // cross-file checks
         $this->checkIfLoginsAreUsedInOtherWorkspaces();
@@ -135,19 +129,19 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    public function unitExists(string $unitId): bool {
+    public function useUnit(string $unitId): ?XMLFileUnit {
 
-        if (in_array($unitId, $this->allUnits)) {
+        if (isset($this->allUnits[$unitId])) {
 
             if (!in_array($unitId, $this->allUsedUnits)) {
 
                 $this->allUsedUnits[] = $unitId;
             }
 
-            return true;
+            return $this->allUnits[$unitId];
         }
 
-        return false;
+        return null;
     }
 
 
@@ -181,7 +175,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function readAndValidateUnits(): void {
+    private function crossValidateUnits(): void {
 
         // DO duplicate unit id // $this->reportError("Duplicate unit id `$unitId`", $entry);
         // alos add test for that!
@@ -195,9 +189,7 @@ class WorkspaceValidator extends Workspace {
                 $xFile->setPlayerId($this);
 
                 if ($xFile->isValid()) {
-                    $this->allUnits[] = $xFile->getId();
-                    $this->unitSizes[$xFile->getId()] = $xFile->getTotalSize();
-                    $this->unitPlayers[$xFile->getId()] = $xFile->getPlayerId();
+                    $this->allUnits[$xFile->getId()] = $xFile;
                 }
             }
 
@@ -207,7 +199,7 @@ class WorkspaceValidator extends Workspace {
         $this->reportInfo('`' . strval(count($this->allUnits)) . '` valid units found');
     }
 
-    private function readAndValidateBooklets() {
+    private function crossValidateBooklets() {
 
         // DO duplicate booklet id // $this->reportError("Duplicate unit id `$unitId`", $entry);
 
@@ -231,7 +223,7 @@ class WorkspaceValidator extends Workspace {
         $this->reportInfo('`' . strval(count($this->allBooklets)) . '` valid booklets found');
     }
 
-    private function readAndValidateSysChecks() {
+    private function crossValidateSysChecks() {
 
         // TODO check unique id
 
@@ -252,7 +244,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function readAndValidateLogins() {
+    private function crossValidateLogins() {
 
         $testtakersCount = 0;
 
@@ -370,9 +362,9 @@ class WorkspaceValidator extends Workspace {
         }
 
         // TODO does not work!
-        foreach($this->allUnits as $u) {
-            if (!in_array($u, $this->allUsedUnits)) {
-                $this->reportWarning('Unit is not used in any booklet', $u);
+        foreach($this->allUnits as $xFileUnit) {
+            if (!in_array($xFileUnit->getId(), $this->allUsedUnits)) {
+                $this->reportWarning('Unit is not used in any booklet', $xFileUnit->getId());
             }
         }
 

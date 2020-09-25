@@ -9,10 +9,10 @@ class XMLFileSysCheck extends XMLFile {
     public function crossValidate(WorkspaceValidator $validator): void {
 
         $unitId = $this->getUnitId();
-        if (strlen($unitId) > 0) {
-            if (!$validator->unitExists($unitId)) {
-                $this->report('error', "unit `$unitId`"); // TODO is not tested
-            }
+        $unit = $validator->useUnit($unitId);
+
+        if ($unit == null) {
+            //$this->report('error', "unit `$unitId`"); // TODO is not tested
         }
     }
 
