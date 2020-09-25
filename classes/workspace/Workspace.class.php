@@ -276,8 +276,8 @@ class Workspace {
 
         foreach (Folder::glob($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
 
-            $xmlFile = XMLFile::get($fullFilePath);
-            if ($xmlFile->isValid()) {
+            $xmlFile = File::get($type, $fullFilePath);
+            if ((is_a($xmlFile, 'XMLFile')) && $xmlFile->isValid()) {
                 $itemName = $xmlFile->getId();
                 if ($itemName == strtoupper($findName)) {
                     return $xmlFile;

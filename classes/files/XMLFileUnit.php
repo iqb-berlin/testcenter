@@ -20,7 +20,7 @@ class XMLFileUnit extends XMLFile {
         }
 
         if ($validator->resourceExists($definitionRef, false)) {
-            $this->totalSize += $validator->allResourceFilesWithSize[FileName::normalize($definitionRef, false)];
+            $this->totalSize += $validator->resourceSizes[FileName::normalize($definitionRef, false)];
         } else {
             $this->report('error', "definitionRef `$definitionRef` not found");
         }

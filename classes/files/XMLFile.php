@@ -19,32 +19,6 @@ class XMLFile extends File {
 
     public $xmlfile;
 
-
-    static function get(string $xmlFilename, bool $validate = false): XMLFile {
-
-        if (!file_exists($xmlFilename)) {
-
-            return new XMLFileError("File not found: `{$xmlFilename}`");
-        }
-
-        $xml = simplexml_load_file($xmlFilename);
-
-        if (!$xml) {
-
-            return new XMLFileError("Could not open XML-File: `{$xmlFilename}`");
-        }
-
-        switch ($xml->getName()) {
-            case 'Testtakers': return new XMLFileTesttakers($xmlFilename, $validate);
-            case 'SysCheck': return new XMLFileSysCheck($xmlFilename, $validate);
-            case 'Booklet': return new XMLFileBooklet($xmlFilename, $validate);
-            case 'Unit': return new XMLFileUnit($xmlFilename, $validate);
-        }
-
-        return new XMLFile($xmlFilename, $validate);
-    }
-
-
     public function __construct(string $xmlfilename, bool $validate = false, bool $isRawXml = false) {
 
         $xsdFolderName = ROOT_DIR . '/definitions/';
@@ -151,12 +125,6 @@ class XMLFile extends File {
     }
 
 
-    public function getId() {
-
-        return $this->id;
-    }
-
-
     public function getLabel() {
 
         return $this->label;
@@ -166,12 +134,6 @@ class XMLFile extends File {
     public function getDescription() {
 
         return $this->description;
-    }
-
-
-    public function isValid(): bool {
-
-        return count($this->getErrors()) == 0;
     }
 
 

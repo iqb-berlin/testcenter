@@ -16,10 +16,12 @@ class WorkspaceValidator extends Workspace {
     private $allUsedUnits = [];
     private $allBooklets = [];
     private $allUsedBooklets = [];
-    public $allResourceFilesWithSize = [];
-    private $allUnitsWithPlayer = [];
-    private $allUnitsOnlyFilesize = [];
-    private $allBookletsFilesize = [];
+
+    public $resourceSizes = [];
+    public $unitPlayers = [];
+    public $unitFilesizes = [];
+    public $bookletSizes = [];
+
     private $validSysCheckCount = 0;
     private $testtakersCount = 0;
     private $allLoginNames = [];
@@ -45,7 +47,7 @@ class WorkspaceValidator extends Workspace {
 
             foreach ($files as $file) {
 
-                $this->allFiles[$type][$file] = new XMLFileUnit($file, true);
+                $this->allFiles[$type][$file] = XMLFile::get($type, $file, true);
             }
 
         }
@@ -67,7 +69,7 @@ class WorkspaceValidator extends Workspace {
         // find unused resources, units and booklets
         $this->findUnusedItems();
 
-        foreach($this->allBookletsFilesize as $booklet => $bytes) {
+        foreach($this->bookletSizes as $booklet => $bytes) {
             $sizeString = FileSize::asString($bytes);
             $this->reportInfo("size fully loaded: `$sizeString`", $booklet);
         }
@@ -116,10 +118,6 @@ class WorkspaceValidator extends Workspace {
 
         $resourceFileNameNormalized = FileName::normalize($resourceId, !$useVersioning);
 
-        echo "\n#### $resourceId | $resourceFileNameNormalized |";
-        print_r($this->allUsedVersionedResources);
-
-
         if (!$useVersioning && in_array($resourceFileNameNormalized, $this->allResources)) {
 
             if (!in_array($resourceFileNameNormalized, $this->allUsedResources)) {
@@ -127,27 +125,23 @@ class WorkspaceValidator extends Workspace {
                 $this->allUsedResources[] = $resourceFileNameNormalized;
             }
 
-            echo "### OK ### \n";
             return true;
 
         } else if ($useVersioning && in_array($resourceFileNameNormalized, $this->allVersionedResources)) {
 
             if (!in_array($resourceFileNameNormalized, $this->allUsedVersionedResources)) {
 
-                echo "¡¡¡¡";
                 $this->allUsedVersionedResources[] = $resourceFileNameNormalized;
             }
 
-            echo "### OK2 ### \n";
             return true;
         }
 
-        echo "### NOT-OK ### \n";
         return false;
     }
 
 
-    private function unitExists(string $unitId): bool {
+    public function unitExists(string $unitId): bool {
 
         if (in_array($unitId, $this->allUnits)) {
 
@@ -191,9 +185,9 @@ class WorkspaceValidator extends Workspace {
             if (is_file($resourceFolderPath . '/' . $entry)) {
                 $fileSize = filesize($resourceFolderPath . '/' . $entry);
                 array_push($this->allResources, FileName::normalize($entry, false));
-                $this->allResourceFilesWithSize[FileName::normalize($entry, false)] = $fileSize;
+                $this->resourceSizes[FileName::normalize($entry, false)] = $fileSize;
                 array_push($this->allVersionedResources, FileName::normalize($entry, true));
-                $this->allResourceFilesWithSize[FileName::normalize($entry, true)] = $fileSize;
+                $this->resourceSizes[FileName::normalize($entry, true)] = $fileSize;
             }
         }
 
@@ -210,23 +204,15 @@ class WorkspaceValidator extends Workspace {
 
             /* @var XMLFileUnit $xFile */
 
-            if (!$xFile->isValid()) {
-                continue;
-            }
-
-            $xFile->setTotalSize($this);
-            $xFile->setPlayerId($this);
-
-            echo "\n######> ";
-            echo $xFile->getPath();
-            echo " <######> ";
-            echo count($xFile->getValidationReport());
-            echo " <######";
-
             if ($xFile->isValid()) {
-                $this->allUnits[] = $xFile->getId();
-                $this->allUnitsOnlyFilesize[$xFile->getId()] = $xFile->getTotalSize();
-                $this->allUnitsWithPlayer[$xFile->getId()] = $xFile->getPlayerId();
+                $xFile->setTotalSize($this);
+                $xFile->setPlayerId($this);
+
+                if ($xFile->isValid()) {
+                    $this->allUnits[] = $xFile->getId();
+                    $this->unitFilesizes[$xFile->getId()] = $xFile->getTotalSize();
+                    $this->unitPlayers[$xFile->getId()] = $xFile->getPlayerId();
+                }
             }
 
             $this->getReport($xFile);
@@ -235,56 +221,24 @@ class WorkspaceValidator extends Workspace {
 
     private function readAndValidateBooklets() {
 
-        $bookletFolderPath = $this->getOrCreateSubFolderPath("Booklet");
+        // DO duplicate booklet id // $this->reportError("Duplicate unit id `$unitId`", $entry);
 
-        $resourceFolderHandle = opendir($bookletFolderPath);
-        while (($entry = readdir($resourceFolderHandle)) !== false) {
+        foreach ($this->allFiles['Booklet'] as $xFile) {
 
-            $fullFilename = $bookletFolderPath . '/' . $entry;
-            if (!is_file($fullFilename) or (strtoupper(substr($entry, -4)) !== '.XML')) {
-                continue;
-            }
+            /* @var XMLFileBooklet $xFile */
 
-            $xFile = new XMLFileBooklet($fullFilename, true);
-            if (!$xFile->isValid()) {
-                $this->getReport($xFile);
-                continue;
-            }
+            if ($xFile->isValid()) {
 
-            $bookletLoad = filesize($fullFilename);
-            $bookletPlayers = [];
-            $bookletId = $xFile->getId();
-            if (in_array($bookletId, $this->allBooklets)) {
-                $this->reportError("booklet id `$bookletId` is already used", $entry);
-                continue;
-            }
+                $xFile->setTotalSize($this);
 
-            foreach($xFile->getAllUnitIds() as $unitId) {
-
-                if (!$this->unitExists($unitId)) {
-                    $this->reportError("Unit `$unitId` not found", $entry);
-                    continue;
-                }
-
-                $bookletLoad += $this->allUnitsOnlyFilesize[$unitId];
-                $myPlayer = $this->allUnitsWithPlayer[$unitId];
-                if (!in_array($myPlayer, $bookletPlayers)) {
-                    if (isset($this->allResourceFilesWithSize[$myPlayer])) {
-                        $bookletLoad += $this->allResourceFilesWithSize[$myPlayer];
-                    } else {
-                        $myPlayer = FileName::normalize($myPlayer, true);
-                        if (isset($this->allResourceFilesWithSize[$myPlayer])) {
-                            $bookletLoad += $this->allResourceFilesWithSize[$myPlayer];
-                        } else {
-                            $this->reportWarning("Resource `$myPlayer` not found in filesize-list", $entry);
-                        }
-                    }
-                    array_push($bookletPlayers, $myPlayer);
+                if ($xFile->isValid()) {
+                    $this->allBooklets[] = $xFile->getId();
+                    $this->bookletSizes[$xFile->getId()] = $xFile->getTotalSize();
                 }
             }
 
-            array_push($this->allBooklets, $bookletId);
-            $this->allBookletsFilesize[$bookletId] = $bookletLoad;
+
+            $this->getReport($xFile);
         }
 
         $this->reportInfo('`' . strval(count($this->allBooklets)) . '` valid booklets found');

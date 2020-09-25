@@ -11,6 +11,7 @@ require_once "classes/helper/FileName.class.php";
 //require_once "classes/helper/Folder.class.php";
 //require_once "classes/files/ResourceFile.class.php";
 require_once "classes/files/XMLFile.php";
+//require_once "classes/files/XMLFileError.php";
 //require_once "classes/files/XMLFileTesttakers.php";
 require_once "classes/files/XMLFileSysCheck.php";
 require_once "classes/files/XMLFileBooklet.php";

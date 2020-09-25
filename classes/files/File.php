@@ -11,6 +11,21 @@ class File extends DataCollectionTypeSafe {
 
     protected array $validationReport = [];
 
+
+    static function get(string $type, string $path, bool $validate = false): File {
+
+        switch ($type) {
+            case 'Testtakers': return new XMLFileTesttakers($path, $validate);
+            case 'SysCheck': return new XMLFileSysCheck($path, $validate);
+            case 'Booklet': return new XMLFileBooklet($path, $validate);
+            case 'Unit': return new XMLFileUnit($path, $validate);
+            case 'Resource': return new ResourceFile($path, true);
+        }
+
+        throw new Exception("Filetype `$type` unknown!");
+    }
+
+
     public function __construct(string $path) {
         $this->path = $path;
         if (!file_exists($path)) {
@@ -44,5 +59,23 @@ class File extends DataCollectionTypeSafe {
     public function getName(): string {
 
         return $this->name;
+    }
+
+
+    public function getSize() {
+
+        return $this->size;
+    }
+
+
+    public function isValid(): bool {
+
+        return count($this->getErrors()) == 0;
+    }
+
+
+    public function getId() {
+
+        return $this->id;
     }
 }
