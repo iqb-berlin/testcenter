@@ -21,7 +21,7 @@ class WorkspaceValidator extends Workspace {
     public $unitPlayers = [];
     public $unitFilesizes = [];
     public $bookletSizes = [];
-    
+
     public $allLoginNames = [];
 
     private array $report = [];
@@ -172,21 +172,13 @@ class WorkspaceValidator extends Workspace {
 
     private function readResources() {
 
-        $resourceFolderPath = $this->_workspacePath . '/Resource';
-        if (!file_exists($resourceFolderPath) or !is_dir($resourceFolderPath)) {
-            $this->reportError("No Resource directory");
-            return;
-        }
+        foreach ($this->allFiles['Resource'] as $rFile) {
 
-        $resourceFolderHandle = opendir($resourceFolderPath);
-        while (($entry = readdir($resourceFolderHandle)) !== false) {
-            if (is_file($resourceFolderPath . '/' . $entry)) {
-                $fileSize = filesize($resourceFolderPath . '/' . $entry);
-                array_push($this->allResources, FileName::normalize($entry, false));
-                $this->resourceSizes[FileName::normalize($entry, false)] = $fileSize;
-                array_push($this->allVersionedResources, FileName::normalize($entry, true));
-                $this->resourceSizes[FileName::normalize($entry, true)] = $fileSize;
-            }
+            /* @var ResourceFile $rFile */
+            $this->allResources[] = FileName::normalize($rFile->getName(), false);
+            $this->resourceSizes[FileName::normalize($rFile->getName(), false)] = $rFile->getSize();
+            $this->allVersionedResources[] = FileName::normalize($rFile->getName(), true);
+            $this->resourceSizes[FileName::normalize($rFile->getName(), true)] = $rFile->getSize();
         }
 
         $this->reportInfo('`' . strval(count($this->allResources)) . '` resource files found');

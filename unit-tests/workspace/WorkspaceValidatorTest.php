@@ -119,7 +119,7 @@ class WorkspaceValidatorTest extends TestCase{
 
         foreach ($result as $key => $list) {
 
-            echo "\n-- $key: " . count($list);
+            echo "\n-<R>- $key: " . count($list);
 
             if (!isset($expected[$key])) {
                 var_dump($result[$key]);
@@ -139,7 +139,7 @@ class WorkspaceValidatorTest extends TestCase{
 
         foreach ($expected as $key => $list) {
 
-            echo "\n== $key: " . count($list);
+            echo "\n-<E>- $key: " . count($list);
 
             if (!isset($result[$key])) {
                 echo "!!! IS MISSING !!!";
