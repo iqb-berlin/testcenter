@@ -22,7 +22,6 @@ class WorkspaceValidator extends Workspace {
     public $unitFilesizes = [];
     public $bookletSizes = [];
 
-    private $validSysCheckCount = 0;
     private $testtakersCount = 0;
     private $allLoginNames = [];
 
@@ -246,38 +245,22 @@ class WorkspaceValidator extends Workspace {
 
     private function readAndValidateSysChecks() {
 
-        $sysCheckFolderPath = $this->getOrCreateSubFolderPath("SysCheck");
+        // TODO check unique id
 
-        $resourceFolderHandle = opendir($sysCheckFolderPath);
-        while (($entry = readdir($resourceFolderHandle)) !== false) {
+        $validSysCheckCount = 0;
 
-            $fullFilename = $sysCheckFolderPath . '/' . $entry;
-            if (!is_file($fullFilename) or (strtoupper(substr($entry, -4)) !== '.XML')) {
-                continue;
-            }
+        foreach ($this->allFiles['SysCheck'] as $xFile) {
 
-            $xFile = new XMLFileSysCheck($fullFilename, true);
-            if (!$xFile->isValid()) {
-                foreach($xFile->getErrors() as $r) {
-                    $this->reportError("Error reading SysCheck-XML-file `$r`", $entry);
-                }
-                continue;
-            }
+            /* @var XMLFileSysCheck $xFile */
 
-            // TODO check unique id
+            if ($xFile->isValid()) {
 
-            $unitId = $xFile->getUnitId();
-            if (strlen($unitId) > 0) {
-                if (!$this->unitExists($unitId)) {
-                    $this->reportError("unit `$unitId`", $entry);
-                } else {
-                    $this->validSysCheckCount = $this->validSysCheckCount + 1;
-                }
-            } else {
-                $this->validSysCheckCount = $this->validSysCheckCount + 1;
+                $isCrossValid = $xFile->crossValidate($this);
+                $validSysCheckCount = $validSysCheckCount + ($isCrossValid ? 1 : 0);
             }
         }
-        $this->reportInfo('`' . strval($this->validSysCheckCount) . '` valid sys-checks found');
+
+        $this->reportInfo("`$validSysCheckCount` valid sys-checks found");
     }
 
 

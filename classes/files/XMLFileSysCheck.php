@@ -5,6 +5,20 @@ declare(strict_types=1);
 
 class XMLFileSysCheck extends XMLFile {
 
+
+    public function crossValidate(WorkspaceValidator $validator): bool {
+
+        $unitId = $this->getUnitId();
+        if (strlen($unitId) > 0) {
+            if (!$validator->unitExists($unitId)) {
+                $this->report('error', "unit `$unitId`"); // TODO is not tested
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     public function getUnitId() {
         
         $myreturn = '';
