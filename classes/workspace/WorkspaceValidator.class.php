@@ -17,10 +17,10 @@ class WorkspaceValidator extends Workspace {
     private $allBooklets = [];
     private $allUsedBooklets = [];
 
-    public $resourceSizes = [];
     public $unitPlayers = [];
-    public $unitFilesizes = [];
-    public $bookletSizes = [];
+
+    public $resourceSizes = [];
+    public $unitSizes = [];
 
     public $allLoginNames = [];
 
@@ -67,10 +67,6 @@ class WorkspaceValidator extends Workspace {
         // find unused resources, units and booklets
         $this->findUnusedItems();
 
-        foreach($this->bookletSizes as $booklet => $bytes) {
-            $sizeString = FileSize::asString($bytes);
-            $this->reportInfo("size fully loaded: `$sizeString`", $booklet);
-        }
 
         return $this->report;
     }
@@ -200,13 +196,15 @@ class WorkspaceValidator extends Workspace {
 
                 if ($xFile->isValid()) {
                     $this->allUnits[] = $xFile->getId();
-                    $this->unitFilesizes[$xFile->getId()] = $xFile->getTotalSize();
+                    $this->unitSizes[$xFile->getId()] = $xFile->getTotalSize();
                     $this->unitPlayers[$xFile->getId()] = $xFile->getPlayerId();
                 }
             }
 
             $this->getReport($xFile);
         }
+
+        $this->reportInfo('`' . strval(count($this->allUnits)) . '` valid units found');
     }
 
     private function readAndValidateBooklets() {
@@ -223,7 +221,6 @@ class WorkspaceValidator extends Workspace {
 
                 if ($xFile->isValid()) {
                     $this->allBooklets[] = $xFile->getId();
-                    $this->bookletSizes[$xFile->getId()] = $xFile->getTotalSize();
                 }
             }
 
@@ -267,16 +264,13 @@ class WorkspaceValidator extends Workspace {
 
                 $xFile->crossValidate($this);
 
-                if ($xFile->isValid()) {
-                    $testtakersCount++;
-                }
+                $testtakersCount += $xFile->getTesttakersCount();
             }
 
             $this->getReport($xFile);
         }
 
-        $this->reportInfo('`$testtakersCount` test-takers in `'
-            . strval(count($this->allLoginNames)) . '` logins found');
+        $this->reportInfo("`$testtakersCount` test-takers in `" . count($this->allLoginNames) . '` logins found');
     }
 
     private function checkIfLoginsAreUsedInOtherWorkspaces() {

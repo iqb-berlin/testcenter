@@ -11,7 +11,7 @@ class XMLFileBooklet extends XMLFile {
     public function setTotalSize(WorkspaceValidator $validator): void {
 
         $bookletPlayers = [];
-        $bookletLoad = $this->getSize();
+        $this->totalSize = $this->getSize();
 
         foreach($this->getAllUnitIds() as $unitId) {
 
@@ -20,19 +20,24 @@ class XMLFileBooklet extends XMLFile {
                 continue;
             }
 
-            $bookletLoad += $validator->unitFilesizes[$unitId];
+            $this->totalSize += $validator->unitSizes[$unitId];
             $player = $validator->unitPlayers[$unitId];
 
             if (!in_array($player, $bookletPlayers)) {
 
                 $player = FileName::normalize($player, true);
 
-                if (isset($this->resourceSizes[$player])) {
+                if (isset($validator->resourceSizes[$player])) {
 
-                    $bookletLoad += $validator->resourceSizes[$player];
+                    $this->totalSize += $validator->resourceSizes[$player];
                 }
                 $bookletPlayers[] = $player;
             }
+        }
+
+        if ($this->isValid()) {
+            $sizeStr = FileSize::asString($this->totalSize);
+            $this->report('info', "size fully loaded: `{$sizeStr}`");
         }
     }
 

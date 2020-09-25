@@ -54,8 +54,8 @@ class WorkspaceValidatorTest extends TestCase{
         $expected = [
             '.' => [
                 new ValidationReportEntry('info', '`2` resource files found'),
-                new ValidationReportEntry('info', '`2 valid units found'),
-                new ValidationReportEntry('info', '`3` valid booklets found'),
+                new ValidationReportEntry('info', '`2` valid units found'),
+                new ValidationReportEntry('info', '`4` valid booklets found'),
                 new ValidationReportEntry('info', '`1` valid sys-checks found'),
                 new ValidationReportEntry('info', '`19` test-takers in `10` logins found'),
             ],
@@ -66,21 +66,21 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error', 'definitionRef `not-existing.voud` not found')
             ],
             'trash.xml' => [
-                new ValidationReportEntry('error', 'Error reading Booklet-XML-file: `vfs://root/vo_data/ws_1/Booklet/trash.xml: Root-Tag "Trash" unknown.`'),
-                new ValidationReportEntry('error', 'Error reading test-takers-XML-file: `vfs://root/vo_data/ws_1/Testtakers/trash.xml: Root-Tag "Trash" unknown.`'),
+                new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
             ],
             'booklet-broken.xml' => [
-                new ValidationReportEntry('error',  'Error reading Booklet-XML-file: `Error in `vfs://root/vo_data/ws_1/Booklet/booklet-broken.xml``'),
-                new ValidationReportEntry('error',  'Error reading Booklet-XML-file: `Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units`'),
-                new ValidationReportEntry('error',  'Error reading Booklet-XML-file: `Error [5] in line 36: Extra content at the end of the document`')
+                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Booklet/booklet-broken.xml`'),
+                new ValidationReportEntry('error',  'Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units'),
+                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
             ],
-            'booklet-duplicate-unit-id.xml' => [
-                new ValidationReportEntry('error',  'booklet id `BOOKLET.SAMPLE` is already used'),
+            'booklet-duplicate-id.xml' => [
+//                new ValidationReportEntry('error',  'booklet id `BOOKLET.SAMPLE` is already used'), TODO
+                new ValidationReportEntry('info', 'size fully loaded: `6.37 KB`'),
             ],
             'testtakers-broken.xml' => [
-                new ValidationReportEntry('error',  'Error reading test-takers-XML-file: `Error in `vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml``'),
-                new ValidationReportEntry('error',  'Error reading test-takers-XML-file: `Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata`'),
-                new ValidationReportEntry('error',  'Error reading test-takers-XML-file: `Error [5] in line 8: Extra content at the end of the document`')
+                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml`'),
+                new ValidationReportEntry('error',  'Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata'),
+                new ValidationReportEntry('error',  'Error [5] in line 8: Extra content at the end of the document')
             ],
             'testtakers-duplicate-login-name.xml' => [
                 new ValidationReportEntry('error',  'duplicate loginname `the-same-name`'),
@@ -105,36 +105,43 @@ class WorkspaceValidatorTest extends TestCase{
             'RESOURCE-UNUSED.VOUD' => [
                 new ValidationReportEntry('warning', 'Resource is never used'),
             ],
-            'UNUSED-BOOKLET' => [
+            "UNUSED-BOOKLET" => [ // TODO booklet-unused.xml
                 new ValidationReportEntry('warning', 'Booklet not set up for any test-taker'),
+            ],
+            "booklet-unused.xml" => [
                 new ValidationReportEntry('info', 'size fully loaded: `6.37 KB`'),
             ],
-            'BOOKLET.SAMPLE' => [
+            'SAMPLE_BOOKLET.XML' => [
                 new ValidationReportEntry('info',  'size fully loaded: `8.27 KB`'),
             ],
-            'BOOKLET.SAMPLE-2' => [
+            'SAMPLE_BOOKLET2.XML' => [
                 new ValidationReportEntry('info',  'size fully loaded: `6.24 KB`'),
             ],
         ];
 
+
         foreach ($result as $key => $list) {
 
             echo "\n-<R>- $key: " . count($list);
+
+//            var_dump($list);
 
             if (!isset($expected[$key])) {
                 var_dump($result[$key]);
                 $this->fail("key `$key` not asserted");
             }
 
-            $resultSorted = usort($expected[$key], function(ValidationReportEntry $a, ValidationReportEntry $b) {
-                return $a->message > $b->message;
+            $expect = $expected[$key];
+
+            usort($expect, function(ValidationReportEntry $a, ValidationReportEntry $b) {
+                return strcmp($a->message, $b->message);
             });
 
-            $expectationSorted = usort($list, function(ValidationReportEntry $a, ValidationReportEntry $b) {
-                return $a->message > $b->message;
+            usort($list, function(ValidationReportEntry $a, ValidationReportEntry $b) {
+                return strcmp($a->message, $b->message);
             });
 
-            $this->assertEqualsCanonicalizing($resultSorted, $expectationSorted);
+            $this->assertEquals($expect, $list);
         }
 
         foreach ($expected as $key => $list) {

@@ -35,6 +35,10 @@ class XMLFileUnit extends XMLFile {
 
     public function setPlayerId(WorkspaceValidator $validator): void {
 
+        if (!$this->isValid()) {
+            return;
+        }
+
         $playerId = strtoupper($this->getPlayer());
         if (strlen($playerId) > 0) {
             if (substr($playerId, -5) != '.HTML') {
@@ -58,25 +62,25 @@ class XMLFileUnit extends XMLFile {
 
 
     private function getPlayer() {
-        $myreturn = '';
-        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
-            $definitionNode = $this->xmlfile->Definition[0];
+
+
+        $definitionNode = $this->xmlfile->Definition[0];
+        if (isset($definitionNode)) {
+            $playerAttr = $definitionNode['player'];
+            if (isset($playerAttr)) {
+                return (string) $playerAttr;
+            }
+        } else {
+            $definitionNode = $this->xmlfile->DefinitionRef[0];
             if (isset($definitionNode)) {
                 $playerAttr = $definitionNode['player'];
                 if (isset($playerAttr)) {
-                    $myreturn = (string) $playerAttr;
-                }
-            } else {
-                $definitionNode = $this->xmlfile->DefinitionRef[0];
-                if (isset($definitionNode)) {
-                    $playerAttr = $definitionNode['player'];
-                    if (isset($playerAttr)) {
-                        $myreturn = (string) $playerAttr;
-                    }
+                    return (string) $playerAttr;
                 }
             }
         }
-        return $myreturn;
+
+        return '';
     }
 
 

@@ -44,7 +44,7 @@ class XMLFile extends File {
             $this->rootTagName = $this->xmlfile->getName();
             if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
 
-                $this->report('error', $xmlfilename . ': Root-Tag "' . $this->rootTagName . '" unknown.');
+                $this->report('error', "Invalid root-tag: `$this->rootTagName`");
 
             } else {
 
