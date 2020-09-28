@@ -32,6 +32,22 @@ VERSION_REGEX = '(?<=version": ")(.*)(?=")'
 ADDITIONAL_FILES_TO_COMMIT = ['docs/specs.yml']
 
 
+def _check_prerequisites():
+    # Parameters present?
+    if len(sys.argv) < 2:
+        sys.exit('ERROR: No parameter given. Use \'major\'/\'minor\'/\'patch\'!')
+    # on branch master?
+    result = subprocess.run("git branch --show-current",
+                            text=True, shell=True, check=True, capture_output=True)
+    if result.stdout.rstrip() != 'master':
+        sys.exit('ERROR: Not on master branch!')
+    # pulled?
+    result = subprocess.run("git fetch origin --dry-run",
+                            text=True, shell=True, check=True, capture_output=True)
+    if result.stderr.rstrip() != '':
+        sys.exit('ERROR: Not up to date with remote branch!')
+
+
 def _parse_version() -> str:
     match = pattern.search(file_content)
     if match:
@@ -90,8 +106,7 @@ def _undo_version_update_in_files():
         subprocess.run(f"git checkout {file}", shell=True, check=True)
 
 
-if len(sys.argv) < 2:
-    sys.exit('No parameter given. Use \'major\'/\'minor\'/\'patch\'!')
+_check_prerequisites()
 pattern = re.compile(VERSION_REGEX)
 with open(VERSION_FILE) as version_file:
     file_content = version_file.read()
