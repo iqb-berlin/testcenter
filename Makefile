@@ -30,3 +30,12 @@ build-image:
 
 push-image:
 	docker push iqbberlin/testcenter-backend:latest
+
+tag-major:
+	scripts/new_version.py major
+
+tag-minor:
+	scripts/new_version.py minor
+
+tag-patch:
+	scripts/new_version.py patch
