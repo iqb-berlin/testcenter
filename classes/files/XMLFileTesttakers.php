@@ -7,48 +7,25 @@ class XMLFileTesttakers extends XMLFile {
 
     const type = 'Testtakers';
 
-    protected int $testtakersCount = 0;
+    protected array $testtakers = [];
 
     public function crossValidate(WorkspaceValidator $validator): void {
 
-        $reportedBooklets = [];
-        $testTakers = $this->getAllTesttakers();
+        $this->testtakers = $this->getAllTesttakers();
 
-        $this->testtakersCount = $this->testtakersCount + count($testTakers);
+        $this->checkForDuplicateLogins();
 
-        foreach ($testTakers as $testtaker) {
+        foreach ($this->testtakers as $testtaker) {
 
-            foreach ($testtaker['booklets'] as $bookletId) {
+            /* @var PotentialLogin testtaker */
 
-                $booklet = $validator->getBooklet($bookletId);
-
-                if ($booklet != null) {
-
-                    if (!in_array($bookletId, $reportedBooklets)) {
-
-                        $reportedBooklets[] = $bookletId;
-                        $booklet->addUsedBy($this);
-                    }
-
-                 } else {
-
-                    $this->report('error', "booklet `$bookletId` not found for login `{$testtaker['loginname']}`");
-                }
-            }
-
-            if (isset($validator->allLoginNames[$testtaker['loginname']])) {
-
-                $otherFilePath = $validator->allLoginNames[$testtaker['loginname']];
-
-                if ($otherFilePath !== $this->getPath()) {
-                    $this->report('error', "login `{$testtaker['loginname']}` in `{$this->getPath()}` is already used in: `$otherFilePath`");
-                }
-
-            } else {
-
-                $validator->allLoginNames[$testtaker['loginname']] = $this->getPath();
-            }
+            $this->checkIfBookletsArePresent($testtaker, $validator);
+            $this->checkIfLoginsAreUsedInOtherFiles($testtaker, $validator);
         }
+    }
+
+
+    private function checkForDuplicateLogins(): void {
 
         $doubleLogins = $this->getDoubleLoginNames();
         if (count($doubleLogins) > 0) {
@@ -58,31 +35,51 @@ class XMLFileTesttakers extends XMLFile {
         }
     }
 
+
+    private function checkIfBookletsArePresent(PotentialLogin $testtaker, WorkspaceValidator $validator): void {
+
+        foreach ($testtaker->getBooklets() as $code => $booklets) {
+
+            foreach ($booklets as $bookletId) {
+
+                $booklet = $validator->getBooklet($bookletId);
+
+                if ($booklet != null) {
+
+                    $booklet->addUsedBy($this);
+
+                } else {
+
+                    $this->report('error', "booklet `$bookletId` not found for login `{$testtaker->getName()}`");
+                }
+            }
+        }
+    }
+
+
+    private function checkIfLoginsAreUsedInOtherFiles(PotentialLogin $testtaker, WorkspaceValidator $validator): void {
+
+        if (isset($validator->allLoginNames[$testtaker->getName()])) {
+
+            $otherFilePath = $validator->allLoginNames[$testtaker->getName()];
+
+            if ($otherFilePath !== $this->getPath()) {
+                $this->report('error', "login `{$testtaker->getName()}` in `{$this->getPath()}` is already used in: `$otherFilePath`");
+            }
+
+        } else {
+
+            $validator->allLoginNames[$testtaker->getName()] = $this->getPath();
+        }
+    }
+
+
     public function getTesttakersCount() {
 
-        return $this->testtakersCount;
+        return count($this->testtakers);
     }
 
 
-    private function setTesttakersCount(): void {
-
-        $this->testtakersCount = $this->testtakersCount + count($this->getAllTesttakers());
-    }
-
-
-    private function setTesttakersCount(): void {
-
-
-    }
-
-    /**
-     * @return array|null
-     *
-     * returns array of the structure ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-     * this should and can be replaced by a structured data-type like PotentialLogin. We keep this structure  for now
-     * to maintain compatibility with other classes which have to be refactored later.
-     * TODO refactor to return PotentialLogin[] -> affects WorkspaceValidator and BookletsFolder
-     */
     public function getAllTesttakers(): array {
 
         if (!$this->isValid()) {

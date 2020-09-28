@@ -12,7 +12,10 @@ class XMLFileBooklet extends XMLFile {
 
     public function addUsedBy(File $file): void {
 
-        $this->usedBy[] = ($file);
+        if (!in_array($file, $this->usedBy)) {
+
+            $this->usedBy[] = $file;
+        }
     }
 
 

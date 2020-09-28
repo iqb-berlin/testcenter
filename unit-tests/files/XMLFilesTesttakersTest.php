@@ -280,86 +280,140 @@ END;
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
         $expected = [
-            [
-                "groupname" => "sample_group",
-                "loginname" => "unit_test_login",
-                "code" => "abc",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                    "BOOKLET.SAMPLE-2",
-                ]
+            new PotentialLogin(
+                'unit_test_login',
+                'run-hot-return',
+                'sample_group',
+                ['abc' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2'], 'def' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']],
+                -1,
+                0,
+                1583053200,
+                45,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'unit_test_login-group-monitor',
+                'monitor-group',
+                'sample_group',
+                ['' => []],
+                -1,
+                0,
+                1583053200,
+                45,
+                (object) ["somestr" => "string"],
+            ),
+            new PotentialLogin(
+                'unit_test_login-study-monitor',
+                'monitor-study',
+                'sample_group',
+                ['' => []],
+                -1,
+                0,
+                1583053200,
+                45,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'unit_test_login-review',
+                'run-review',
+                'review_group',
+                ['' => ["BOOKLET.SAMPLE"]],
+                -1,
+                0,
+                0,
+                0,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'unit_test_login-trial',
+                'run-trial',
+                'trial_group',
+                ['' => ["BOOKLET.SAMPLE"]],
+                -1,
+                0,
+                0,
+                0,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'unit_test_login-demo',
+                'run-demo',
+                'trial_group',
+                ['' => ["BOOKLET.SAMPLE"]],
+                -1,
+                0,
+                0,
+                0,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'unit_test_login-no-pw',
+                'run-hot-restart',
+                'passwordless_group',
+                ['' => ["BOOKLET.SAMPLE"]],
+                -1,
+                0,
+                0,
+                0,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'unit_test_login-no-pw-trial',
+                'run-trial',
+                'passwordless_group',
+                ['' => ["BOOKLET.SAMPLE"]],
+                -1,
+                0,
+                0,
+                0,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'unit_test_login-expired',
+                'run-hot-restart',
+                'expired_group',
+                ['' => ["BOOKLET.SAMPLE"]],
+                -1,
+                1583087400,
+                0,
+                0,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'expired-group-monitor',
+                'monitor-group',
+                'expired_group',
+                ['' => []],
+                -1,
+                1583087400,
+                0,
+                0,
+                (object) ["somestr" => "string"]
+            ),
+            new PotentialLogin(
+                'expired-study-monitor',
+                'monitor-study',
+                'expired_group',
+                ['' => []],
+                -1,
+                1583087400,
+                0,
+                0,
+                (object) ["somestr" => "string"],
+            ),
+            new PotentialLogin(
+                'unit_test_login-future',
+                'run-hot-restart',
+                'future_group',
+                ['' => ["BOOKLET.SAMPLE"]],
+                -1,
+                0,
+                1900742400,
+                0,
+                (object) ["somestr" => "string"],
+            )
 
-            ],
-            [
-                "groupname" => "sample_group",
-                "loginname" => "unit_test_login",
-                "code" => "def",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                    "BOOKLET.SAMPLE-2",
-                ]
-
-            ],
-            [
-                "groupname" => "review_group",
-                "loginname" => "unit_test_login-review",
-                "code" => "",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                ],
-            ],
-            [
-                "groupname" => "trial_group",
-                "loginname" => "unit_test_login-trial",
-                "code" => "",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                ]
-
-            ],
-            [
-                "groupname" => "trial_group",
-                "loginname" => "unit_test_login-demo",
-                "code" => "",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                ]
-
-            ],
-            [
-                "groupname" => "passwordless_group",
-                "loginname" => "unit_test_login-no-pw",
-                "code" => "",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                ]
-            ],
-            [
-                "groupname" => "passwordless_group",
-                "loginname" => "unit_test_login-no-pw-trial",
-                "code" => "",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                ]
-            ],
-            [
-                "groupname" => "expired_group",
-                "loginname" => "unit_test_login-expired",
-                "code" => "",
-                "booklets" => [
-                    "BOOKLET.SAMPLE",
-                ],
-            ],
-            [
-                "groupname" => "future_group",
-                "loginname" => "unit_test_login-future",
-                "code" => "",
-                "booklets" => [
-                  "BOOKLET.SAMPLE",
-                ]
-            ]
         ];
-
 
         $result = $xmlFile->getAllTesttakers();
 
