@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 class File extends DataCollectionTypeSafe {
 
+    const type = 'file';
     protected string $path = '';
     protected string $name = '';
     protected int $size = 0;

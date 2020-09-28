@@ -70,14 +70,6 @@ class VfsForTest {
         $testtakersFileContents = file_get_contents(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
         $brokenTestFiles = [
-            "booklet-broken.xml" =>
-                str_replace('<Units', '###BREAK###', $bookletFileContents),
-            "booklet-duplicate-id-1.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id><Label>Duplicate Booklet</Label></Metadata>'
-                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
-            "booklet-duplicate-id-2.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id><Label>Duplicate Booklet</Label></Metadata>'
-                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
             "testtakers-broken.xml" =>
                 str_replace('<Metadata', '###BREAK###', $testtakersFileContents),
             "testtakers-duplicate-login-name.xml" =>
@@ -87,17 +79,26 @@ class VfsForTest {
                 . '<Metadata><Description>Minimal Testtakers example</Description></Metadata>'
                 . '<Group id="a_group" label="A"><Login mode="run-hot-return" name="a_login">'
                 . '<Booklet>BOOKLET.MISSING</Booklet></Login></Group></Testtakers>',
+            "booklet-broken.xml" =>
+                str_replace('<Units', '###BREAK###', $bookletFileContents),
+            "booklet-duplicate-id-1.xml" =>
+                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id>'
+                . '<Label>Duplicate Booklet</Label></Metadata>'
+                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
+            "booklet-duplicate-id-2.xml" =>
+                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id>'
+                . '<Label>Duplicate Booklet</Label></Metadata>'
+                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
+            "unit-unused-and-missing-ref.xml" =>
+                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unit_unused_and_missing_ref</Id>'
+                . '<Label>Unit with missing DefintionRef</Label></Metadata>'
+                . '<DefinitionRef player="SAMPLE_PLAYER">not-existing.voud</DefinitionRef></Unit>',
+            "unit-unused-and-missing-player.xml" =>
+                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unit_unused_and_missing_player</Id>'
+                . '<Label>Unit with missing player</Label></Metadata>'
+                . '<Definition player="missing-player">{}</Definition></Unit>',
             "resource-unused.voud" =>
                 '{}',
-            "unit-unused-and-missing-player.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unused</Id><Label>unused</Label></Metadata>'
-                . '<Definition player="not-existing">{}</Definition></Unit>',
-            "unit-unused-and-missing-ref.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unused-and-missing</Id><Label>unused</Label></Metadata>'
-                . '<DefinitionRef player="SAMPLE_PLAYER">not-existing.voud</DefinitionRef></Unit>',
-            "booklet-unused.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>Unused-Booklet</Id><Label>Minimal Booklet</Label></Metadata>'
-                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>'
         ];
 
 

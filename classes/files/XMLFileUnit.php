@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 class XMLFileUnit extends XMLFile {
 
+    const type = 'Unit';
+
     protected int $totalSize = 0;
     protected string $playerId = '';
     protected array $usedBy = [];

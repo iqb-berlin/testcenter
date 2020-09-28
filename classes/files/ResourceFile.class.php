@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class ResourceFile extends File {
 
+    const type = 'Resource';
+
     private $_content = '';
     protected array $usedBy = [];
 

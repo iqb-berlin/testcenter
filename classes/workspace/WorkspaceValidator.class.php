@@ -30,8 +30,8 @@ class WorkspaceValidator extends Workspace {
                 if (isset($this->allFiles[$type][$file->getId()])) {
 
                     $double = $this->allFiles[$type][$file->getId()];
-                    $this->reportError("Duplicate $type-Id: `{$file->getId()}` `({$double->getName()})`", $file->getName());
-                    $this->reportError("Duplicate $type-Id: `{$double->getId()}` `({$file->getName()})`", $double->getName());
+                    $this->report('error', "Duplicate $type-Id: `{$file->getId()}` `({$double->getName()})`", $file);
+                    $this->report('error', "Duplicate $type-Id: `{$double->getId()}` `({$file->getName()})`", $double);
                     unset($this->allFiles[$type][$file->getId()]);
 
                 } else {
@@ -69,37 +69,31 @@ class WorkspaceValidator extends Workspace {
 
     private function getReport(File $file) {
 
-        $report = $file->getValidationReport();
-        if (count($report)) {
-            $this->report[$file->getName()] = $report;
+        if (!count($file->getValidationReport())) {
+            return;
+        }
+
+        $fileCode = $file ? $file::type . "/{$file->getName()}" : '.';
+
+        if (!isset($this->report[$fileCode])) {
+            $this->report[$fileCode] = [];
+        }
+
+        foreach($file->getValidationReport() as /* @var ValidationReportEntry */ $entry) {
+            $this->report[$fileCode][] = $entry;
         }
     }
 
 
-    private function reportError(string $text, string $file = '.'): void {
+    private function report(string $level, string $text, ?File $file = null) {
 
-        if (!isset($this->report[$file])) {
-            $this->report[$file] = [];
+        $fileCode = $file ? $file::type . "/{$file->getName()}" : '.';
+
+        if (!isset($this->report[$fileCode])) {
+            $this->report[$fileCode] = [];
         }
-        $this->report[$file][] = new ValidationReportEntry('error', $text);
-    }
 
-
-    private function reportWarning(string $text, string $file = '.'): void {
-
-        if (!isset($this->report[$file])) {
-            $this->report[$file] = [];
-        }
-        $this->report[$file][] = new ValidationReportEntry('warning', $text);
-    }
-
-
-    private function reportInfo(string $text, string $file = '.'): void {
-
-        if (!isset($this->report[$file])) {
-            $this->report[$file] = [];
-        }
-        $this->report[$file][] = new ValidationReportEntry('info', $text);
+        $this->report[$fileCode][] = new ValidationReportEntry($level, $text);
     }
 
 
@@ -177,7 +171,7 @@ class WorkspaceValidator extends Workspace {
                 $this->getReport($file);
             }
 
-            $this->reportInfo("`$countCrossValidated` valid $type-files found");
+            $this->report('info', "`$countCrossValidated` valid $type-files found");
         }
     }
 
@@ -221,8 +215,8 @@ class WorkspaceValidator extends Workspace {
                         foreach($xFile->getAllLoginNames() as $loginName) {
 
                             if (isset($this->allLoginNames[$loginName])) {
-                                $this->reportError("[`{$this->allLoginNames[$loginName]}`] login `$loginName` is 
-                                    already used on other workspace `$wsIdOther` (`$entry`)", '?');
+                                $this->report('error', "[`{$this->allLoginNames[$loginName]}`] login `$loginName` is 
+                                    already used on other workspace `$wsIdOther` (`$entry`)", $xFile);
                             }
                         }
                     }
@@ -238,8 +232,6 @@ class WorkspaceValidator extends Workspace {
         $this->allGroups = $otherTesttakersFolder->getAllGroups();
 
         foreach ($this->allGroups as $filePath => $groupList) {
-
-            $fileName = basename($filePath);
 
             /* @var Group $group */
             foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
@@ -262,8 +254,14 @@ class WorkspaceValidator extends Workspace {
                             $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
                                 ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
                                 : '';
-                            $this->reportError("Duplicate Group-Id: `{$duplicate->getName()}` - $location in file `"
-                                . basename($otherFilePath) . "`", $fileName);
+                            $message = "Duplicate Group-Id: `{$duplicate->getName()}` - $location in file `"
+                                . basename($otherFilePath) . "`";
+
+                            $fileCode = 'Testtakers/' . basename($filePath);
+                            if (!isset($this->report[$fileCode])) {
+                                $this->report[$fileCode] = [];
+                            }
+                            $this->report[$fileCode][] = new ValidationReportEntry('error', $message);
                         }
                     }
 
@@ -278,8 +276,8 @@ class WorkspaceValidator extends Workspace {
         foreach (['Resource', 'Unit', 'Booklet'] as $type) {
 
             foreach($this->allFiles[$type] as /* @var File */ $file) {
-                if ($file->isValid() and !$file->isUsed()) {
-                    $this->reportWarning("$type is never used", $file->getId());
+                if (!$file->isUsed()) {
+                    $this->report('warning', "$type is never used", $file);
                 }
             }
         }

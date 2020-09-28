@@ -5,9 +5,10 @@ declare(strict_types=1);
 
 class XMLFileBooklet extends XMLFile {
 
+    const type = 'Booklet';
+
     protected int $totalSize = 0;
     protected array $usedBy = [];
-
 
     public function addUsedBy(File $file): void {
 

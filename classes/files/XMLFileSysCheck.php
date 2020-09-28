@@ -5,15 +5,14 @@ declare(strict_types=1);
 
 class XMLFileSysCheck extends XMLFile {
 
+    const type = 'SysCheck';
 
     public function crossValidate(WorkspaceValidator $validator): void {
 
         $unitId = $this->getUnitId();
         $unit = $validator->getUnit($unitId);
 
-        if ($unit == null) {
-            //$this->report('error', "unit `$unitId`"); // TODO is not tested
-        } else {
+        if ($unit != null) {
             $unit->addUsedBy($this);
         }
     }

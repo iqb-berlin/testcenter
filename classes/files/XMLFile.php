@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 class XMLFile extends File {
 
+    const type = 'xml';
+
     private $schemaFileNames = [
         'Testtakers' => 'vo_Testtakers.xsd',
         'Booklet' => 'vo_Booklet.xsd',

@@ -55,37 +55,12 @@ class WorkspaceValidatorTest extends TestCase{
             '.' => [
                 new ValidationReportEntry('info', '`2` valid Resource-files found'),
                 new ValidationReportEntry('info', '`2` valid Unit-files found'),
-                new ValidationReportEntry('info', '`3` valid Booklet-files found'),
+                new ValidationReportEntry('info', '`2` valid Booklet-files found'),
                 new ValidationReportEntry('info', '`1` valid SysCheck-files found'),
                 new ValidationReportEntry('info', '`1` valid Testtakers-files found'),
 //                new ValidationReportEntry('info', '`10` valid Testtakers-files in `10` logins found'),
             ],
-            'unit-unused-and-missing-player.xml' => [
-                new ValidationReportEntry('error', 'unit definition type `NOT-EXISTING.HTML` not found'),
-            ],
-            'unit-unused-and-missing-ref.xml' => [
-                new ValidationReportEntry('error', 'definitionRef `not-existing.voud` not found')
-            ],
-            'trash.xml' => [
-                new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
-            ],
-            'booklet-broken.xml' => [
-                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Booklet/booklet-broken.xml`'),
-                new ValidationReportEntry('error',  'Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units'),
-                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
-            ],
-            'booklet-duplicate-id-1.xml' => [
-                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-2.xml)`'),
-            ],
-            'booklet-duplicate-id-2.xml' => [
-                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-1.xml)`'),
-            ],
-            'testtakers-broken.xml' => [
-                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml`'),
-                new ValidationReportEntry('error',  'Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata'),
-                new ValidationReportEntry('error',  'Error [5] in line 8: Extra content at the end of the document')
-            ],
-            'testtakers-duplicate-login-name.xml' => [
+            'Testtakers/testtakers-duplicate-login-name.xml' => [
                 new ValidationReportEntry('error',  'duplicate loginname `the-same-name`'),
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `sample_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `review_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
@@ -94,10 +69,10 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `expired_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `future_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
             ],
-            'testtakers-missing-booklet.xml' => [
+            'Testtakers/testtakers-missing-booklet.xml' => [
                 new ValidationReportEntry('error', 'booklet `BOOKLET.MISSING` not found for login `a_login`')
             ],
-            'SAMPLE_TESTTAKERS.XML' => [
+            'Testtakers/SAMPLE_TESTTAKERS.XML' => [
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `sample_group` -  in file `testtakers-duplicate-login-name.xml`'),
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `review_group` -  in file `testtakers-duplicate-login-name.xml`'),
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `trial_group` -  in file `testtakers-duplicate-login-name.xml`'),
@@ -105,20 +80,46 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `expired_group` -  in file `testtakers-duplicate-login-name.xml`'),
                 new ValidationReportEntry('error',  'Duplicate Group-Id: `future_group` -  in file `testtakers-duplicate-login-name.xml`'),
             ],
-            'RESOURCE-UNUSED.VOUD' => [
-                new ValidationReportEntry('warning', 'Resource is never used'),
+            'Testtakers/trash.xml' => [
+                new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
             ],
-            "UNUSED-BOOKLET" => [ // TODO booklet-unused.xml
+            'Testtakers/testtakers-broken.xml' => [
+                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml`'),
+                new ValidationReportEntry('error',  'Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata'),
+                new ValidationReportEntry('error',  'Error [5] in line 8: Extra content at the end of the document')
+            ],
+            'Booklet/trash.xml' => [
                 new ValidationReportEntry('warning', 'Booklet is never used'),
+                new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
             ],
-            "booklet-unused.xml" => [
-                new ValidationReportEntry('info', 'size fully loaded: `6.37 KB`'),
+            'Booklet/booklet-broken.xml' => [
+                new ValidationReportEntry('warning', 'Booklet is never used'),
+                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Booklet/booklet-broken.xml`'),
+                new ValidationReportEntry('error',  'Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units'),
+                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
             ],
-            'SAMPLE_BOOKLET.XML' => [
+            'Booklet/booklet-duplicate-id-1.xml' => [
+                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-2.xml)`'),
+            ],
+            'Booklet/booklet-duplicate-id-2.xml' => [
+                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-1.xml)`'),
+            ],
+            'Booklet/SAMPLE_BOOKLET.XML' => [
                 new ValidationReportEntry('info',  'size fully loaded: `8.27 KB`'),
             ],
-            'SAMPLE_BOOKLET2.XML' => [
+            'Booklet/SAMPLE_BOOKLET2.XML' => [
                 new ValidationReportEntry('info',  'size fully loaded: `6.24 KB`'),
+            ],
+            'Unit/unit-unused-and-missing-player.xml' => [
+                new ValidationReportEntry('warning', 'Unit is never used'),
+                new ValidationReportEntry('error', 'unit definition type `MISSING-PLAYER.HTML` not found'),
+            ],
+            'Unit/unit-unused-and-missing-ref.xml' => [
+                new ValidationReportEntry('warning', 'Unit is never used'),
+                new ValidationReportEntry('error', 'definitionRef `not-existing.voud` not found')
+            ],
+            'Resource/resource-unused.voud' => [
+                new ValidationReportEntry('warning', 'Resource is never used'),
             ]
         ];
 
