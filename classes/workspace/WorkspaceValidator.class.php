@@ -104,25 +104,6 @@ class WorkspaceValidator extends Workspace {
         }
 
         return null;
-
-//        if (!$useVersioning && in_array($resourceFileNameNormalized, $this->allResources)) {
-//
-//            if (!in_array($resourceFileNameNormalized, $this->allUsedResources)) {
-//
-//                $this->allUsedResources[] = $resourceFileNameNormalized;
-//            }
-//
-//            return true;
-//
-//        } else if ($useVersioning && in_array($resourceFileNameNormalized, $this->allVersionedResources)) {
-//
-//            if (!in_array($resourceFileNameNormalized, $this->allUsedVersionedResources)) {
-//
-//                $this->allUsedVersionedResources[] = $resourceFileNameNormalized;
-//            }
-//
-//            return true;
-//        }
     }
 
 

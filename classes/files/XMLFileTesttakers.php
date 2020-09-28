@@ -64,6 +64,17 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
+    private function setTesttakersCount(): void {
+
+        $this->testtakersCount = $this->testtakersCount + count($this->getAllTesttakers());
+    }
+
+
+    private function setTesttakersCount(): void {
+
+
+    }
+
     /**
      * @return array|null
      *
@@ -84,20 +95,7 @@ class XMLFileTesttakers extends XMLFile {
 
             foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
 
-                $bookletsPerCode = $this->collectBookletsPerCode($loginElement);
-
-                foreach ($bookletsPerCode as $code => $booklets) {
-
-                    if (count($booklets)) {
-
-                        $testTakers[] = [
-                            'groupname' => (string) $groupElement['id'],
-                            'loginname' => (string) $loginElement['name'],
-                            'code' => $code,
-                            'booklets' => $booklets
-                        ];
-                    }
-                }
+                $testTakers[] = $this->getPotentialLogin($groupElement, $loginElement, -1);
             }
         }
 
