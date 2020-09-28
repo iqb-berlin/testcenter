@@ -26,8 +26,11 @@ class XMLFileUnit extends XMLFile {
             return;
         }
 
-        if ($validator->resourceExists($definitionRef, false)) {
-            $this->totalSize += $validator->resourceSizes[FileName::normalize($definitionRef, false)];
+        $resourceId = FileName::normalize($definitionRef, false);
+        $resource = $validator->getResource($resourceId);
+        if ($resource != null) {
+            $resource->addUsedBy($this);
+            $this->totalSize += $resource->getSize();
         } else {
             $this->report('error', "definitionRef `$definitionRef` not found");
         }
@@ -47,17 +50,22 @@ class XMLFileUnit extends XMLFile {
         }
 
         $playerId = strtoupper($this->getPlayer());
-        if (strlen($playerId) > 0) {
-            if (substr($playerId, -5) != '.HTML') {
-                $playerId = $playerId . '.HTML';
-            }
-            if (!$validator->resourceExists($playerId, true)) {
-                $this->report('error', "unit definition type `$playerId` not found"); // TODO better msg
-            }
-            $this->playerId = $playerId;
-        } else {
-            $this->report('error', "no player defined");
+
+        if (substr($playerId, -5) != '.HTML') {
+            $playerId = $playerId . '.HTML';
         }
+
+        $playerId = FileName::normalize($playerId, false);
+
+        $resource = $validator->getResource($playerId);
+
+        if ($resource != null) {
+            $resource->addUsedBy($this);
+        } else {
+            $this->report('error', "unit definition type `$playerId` not found"); // TODO better msg
+        }
+
+        $this->playerId = $playerId;
     }
 
 

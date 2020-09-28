@@ -38,17 +38,14 @@ class XMLFileBooklet extends XMLFile {
             $unit->addUsedBy($this);
 
             $this->totalSize += $unit->getTotalSize();
-            $player = $unit->getPlayerId();
 
-            if (!in_array($player, $bookletPlayers)) {
+            $playerId = $unit->getPlayerId();
+            $playerFile = $validator->getResource($playerId); // TODO error if player file not present?
 
-                $player = FileName::normalize($player, true);
+            if ($playerFile and !in_array($playerId, $bookletPlayers)) {
 
-                if (isset($validator->resourceSizes[$player])) {
-
-                    $this->totalSize += $validator->resourceSizes[$player];
-                }
-                $bookletPlayers[] = $player;
+                $this->totalSize += $playerFile->getSize();
+                $bookletPlayers[] = $playerId;
             }
         }
 

@@ -103,9 +103,9 @@ class Workspace {
                 $rs = new ResourceFile($fullFilePath, true);
 
                 array_push($fileList, [
-                    'filename' => $rs->getFileName(),
-                    'filesize' => $rs->getFileSize(),
-                    'filesizestr' => $rs->getFileSizeString(), // TODO is this used?
+                    'filename' => $rs->getName(),
+                    'filesize' => $rs->getSize(),
+                    'filesizestr' => FileSize::asString($rs->getSize()), // TODO is this used?
                     'filedatetime' => $rs->getFileDateTime(),
                     'filedatetimestr' => $rs->getFileDateTimeString(), // TODO is this used?
                     'type' => $subDir,

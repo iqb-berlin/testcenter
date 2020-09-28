@@ -53,9 +53,9 @@ class WorkspaceValidatorTest extends TestCase{
 
         $expected = [
             '.' => [
-                new ValidationReportEntry('info', '`2` resource files found'),
+                new ValidationReportEntry('info', '`2` valid Resource-files found'),
                 new ValidationReportEntry('info', '`2` valid Unit-files found'),
-                new ValidationReportEntry('info', '`4` valid Booklet-files found'), // TODO if duplication check works again
+                new ValidationReportEntry('info', '`3` valid Booklet-files found'),
                 new ValidationReportEntry('info', '`1` valid SysCheck-files found'),
                 new ValidationReportEntry('info', '`1` valid Testtakers-files found'),
 //                new ValidationReportEntry('info', '`10` valid Testtakers-files in `10` logins found'),
@@ -74,9 +74,11 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error',  'Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units'),
                 new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
             ],
-            'booklet-duplicate-id.xml' => [
-//                new ValidationReportEntry('error',  'booklet id `BOOKLET.SAMPLE` is already used'), TODO
-                new ValidationReportEntry('info', 'size fully loaded: `6.37 KB`'),
+            'booklet-duplicate-id-1.xml' => [
+                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-2.xml)`'),
+            ],
+            'booklet-duplicate-id-2.xml' => [
+                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-1.xml)`'),
             ],
             'testtakers-broken.xml' => [
                 new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml`'),
@@ -154,7 +156,7 @@ class WorkspaceValidatorTest extends TestCase{
             echo "\n-<E>- $key: " . count($list);
 
             if (!isset($result[$key])) {
-                echo "!!! IS MISSING !!!";
+                echo " !!! IS MISSING !!!";
                 $this->fail("key `$key` missing");
             }
         }

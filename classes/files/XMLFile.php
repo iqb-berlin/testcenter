@@ -111,14 +111,6 @@ class XMLFile extends File {
     }
 
 
-    public function getErrors() {
-
-        return array_filter($this->validationReport, function(ValidationReportEntry $validationReportEntry): bool {
-            return $validationReportEntry->level == 'error';
-        });
-    }
-
-
     public function getRoottagName() {
 
         return $this->rootTagName;

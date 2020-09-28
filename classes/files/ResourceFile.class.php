@@ -4,25 +4,36 @@ declare(strict_types=1);
 
 class ResourceFile extends File {
 
-    private $isXml = false;
     private $_content = '';
+    protected array $usedBy = [];
 
 
     public function __construct(string $path, bool $infoOnly = false) {
 
         parent::__construct($path);
 
-        $this->isXml = preg_match("/\.(XML|xml|Xml)$/", basename($path)) == true;
         if (!$infoOnly) {
             $this->_content = file_get_contents($path);
         }
     }
 
 
-    public function getFileName() {
+    public function crossValidate(WorkspaceValidator $validator): void {
 
-        return $this->name;
     }
+
+
+    public function addUsedBy(File $file): void {
+
+        $this->usedBy[] = $file;
+    }
+
+
+    public function isUsed(): bool {
+
+        return count($this->usedBy) > 0;
+    }
+
 
     public function getFileDateTime() {
 
@@ -42,24 +53,6 @@ class ResourceFile extends File {
         } else {
             return strftime('%d.%m.%Y', $filedatevalue);
         }
-    }
-
-
-    public function getFileSize() {
-
-        return $this->size;
-    }
-
-
-    public function getFileSizeString() {
-
-        return FileSize::asString($this->size);
-    }
-
-
-    public function getIsXml() {
-
-        return $this->isXml;
     }
 
 

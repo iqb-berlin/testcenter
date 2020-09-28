@@ -72,8 +72,11 @@ class VfsForTest {
         $brokenTestFiles = [
             "booklet-broken.xml" =>
                 str_replace('<Units', '###BREAK###', $bookletFileContents),
-            "booklet-duplicate-id.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>BOOKLET.SAMPLE</Id><Label>Duplicate Booklet</Label></Metadata>'
+            "booklet-duplicate-id-1.xml" =>
+                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id><Label>Duplicate Booklet</Label></Metadata>'
+                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
+            "booklet-duplicate-id-2.xml" =>
+                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id><Label>Duplicate Booklet</Label></Metadata>'
                 . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
             "testtakers-broken.xml" =>
                 str_replace('<Metadata', '###BREAK###', $testtakersFileContents),

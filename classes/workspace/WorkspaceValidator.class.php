@@ -8,17 +8,10 @@ class WorkspaceValidator extends Workspace {
 
     public $allFiles = [];
 
-    private $allResources = [];
-    private $allVersionedResources = [];
-    private $allUsedResources = [];
-    private $allUsedVersionedResources = [];
-
+    private $allResources = []; // id -> rFile
     private $allUnits = []; // id -> xFile
     private $allBooklets = []; // id -> xFile
 
-
-
-    public $resourceSizes = [];
 
     public $allLoginNames = [];
 
@@ -35,12 +28,29 @@ class WorkspaceValidator extends Workspace {
 
             $this->allFiles[$type] = [];
 
-            foreach ($files as $file) {
+            foreach ($files as $filePath) {
 
-                $this->allFiles[$type][$file] = XMLFile::get($type, $file, true);
+                $file = File::get($type, $filePath, true);
+
+                if (isset($this->allFiles[$type][$file->getId()])) {
+
+                    $double = $this->allFiles[$type][$file->getId()];
+                    $this->reportError("Duplicate $type-Id: `{$file->getId()}` `({$double->getName()})`", $file->getName());
+                    $this->reportError("Duplicate $type-Id: `{$double->getId()}` `({$file->getName()})`", $double->getName());
+                    unset($this->allFiles[$type][$file->getId()]);
+
+                } else {
+
+                    $this->allFiles[$type][$file->getId()] = $file;
+                }
+
             }
 
         }
+
+//        echo "\n =====";
+//        var_dump($this->allFiles);
+//        echo "\n =====";
     }
 
 
@@ -48,7 +58,6 @@ class WorkspaceValidator extends Workspace {
 
         $this->readFiles();
 
-        $this->readResources();
         $this->crossValidate();
 
         // cross-file checks
@@ -99,30 +108,34 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    public function resourceExists(string $resourceId, bool $useVersioning): bool {
+    public function getResource(string $resourceId): ?ResourceFile {
 
-        $resourceFileNameNormalized = FileName::normalize($resourceId, !$useVersioning);
+        // TODO duplicate ucase ID problem
 
-        if (!$useVersioning && in_array($resourceFileNameNormalized, $this->allResources)) {
-
-            if (!in_array($resourceFileNameNormalized, $this->allUsedResources)) {
-
-                $this->allUsedResources[] = $resourceFileNameNormalized;
-            }
-
-            return true;
-
-        } else if ($useVersioning && in_array($resourceFileNameNormalized, $this->allVersionedResources)) {
-
-            if (!in_array($resourceFileNameNormalized, $this->allUsedVersionedResources)) {
-
-                $this->allUsedVersionedResources[] = $resourceFileNameNormalized;
-            }
-
-            return true;
+        if (isset($this->allResources[$resourceId])) {
+            return $this->allResources[$resourceId];
         }
 
-        return false;
+        return null;
+
+//        if (!$useVersioning && in_array($resourceFileNameNormalized, $this->allResources)) {
+//
+//            if (!in_array($resourceFileNameNormalized, $this->allUsedResources)) {
+//
+//                $this->allUsedResources[] = $resourceFileNameNormalized;
+//            }
+//
+//            return true;
+//
+//        } else if ($useVersioning && in_array($resourceFileNameNormalized, $this->allVersionedResources)) {
+//
+//            if (!in_array($resourceFileNameNormalized, $this->allUsedVersionedResources)) {
+//
+//                $this->allUsedVersionedResources[] = $resourceFileNameNormalized;
+//            }
+//
+//            return true;
+//        }
     }
 
 
@@ -146,19 +159,19 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function readResources() {
-
-        foreach ($this->allFiles['Resource'] as $rFile) {
-
-            /* @var ResourceFile $rFile */
-            $this->allResources[] = FileName::normalize($rFile->getName(), false);
-            $this->resourceSizes[FileName::normalize($rFile->getName(), false)] = $rFile->getSize();
-            $this->allVersionedResources[] = FileName::normalize($rFile->getName(), true);
-            $this->resourceSizes[FileName::normalize($rFile->getName(), true)] = $rFile->getSize();
-        }
-
-        $this->reportInfo('`' . strval(count($this->allResources)) . '` resource files found');
-    }
+//    private function readResources() {
+//
+//        foreach ($this->allFiles['Resource'] as $rFile) {
+//
+//            /* @var ResourceFile $rFile */
+//            $this->allResources[] = FileName::normalize($rFile->getName(), false);
+//            $this->resourceSizes[FileName::normalize($rFile->getName(), false)] = $rFile->getSize();
+//            $this->allVersionedResources[] = FileName::normalize($rFile->getName(), true);
+//            $this->resourceSizes[FileName::normalize($rFile->getName(), true)] = $rFile->getSize();
+//        }
+//
+//        $this->reportInfo('`' . strval(count($this->allResources)) . '` resource files found');
+//    }
 
 
     private function crossValidate(): void {
@@ -168,27 +181,31 @@ class WorkspaceValidator extends Workspace {
         // DO duplicate booklet id // $this->reportError("Duplicate unit id `$unitId`", $entry);
         // DO count of teststakers
 
-        foreach (['Unit', 'Booklet', 'Testtakers', 'SysCheck'] as $type) {
+        foreach (['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'] as $type) {
 
             $countCrossValidated = 0;
 
-            foreach ($this->allFiles[$type] as $xFile) {
+            foreach ($this->allFiles[$type] as $file) {
 
+                /* @var File $file */
 
+                if ($file->isValid()) {
 
-                if ($xFile->isValid()) {
+                    $file->crossValidate($this);
 
-                    $xFile->crossValidate($this);
-
-                    if ($xFile->isValid()) {
+                    if ($file->isValid()) {
 
                         if ($type == 'Unit') {
 
-                            $this->allUnits[$xFile->getId()] = $xFile;
+                            $this->allUnits[$file->getId()] = $file;
 
                         } else if ($type == 'Booklet') {
 
-                            $this->allBooklets[$xFile->getId()] = $xFile;
+                            $this->allBooklets[$file->getId()] = $file;
+
+                        } else if ($type == 'Resource') {
+
+                            $this->allResources[$file->getId()] = $file;
 
                         }
 
@@ -196,7 +213,7 @@ class WorkspaceValidator extends Workspace {
                     }
                 }
 
-                $this->getReport($xFile);
+                $this->getReport($file);
             }
 
             $this->reportInfo("`$countCrossValidated` valid $type-files found");
@@ -297,9 +314,9 @@ class WorkspaceValidator extends Workspace {
 
     private function findUnusedItems() {
 
-        foreach($this->allResources as $r) {
-            if (!in_array($r, $this->allUsedResources) && !in_array(FileName::normalize($r, true), $this->allUsedVersionedResources)) {
-                $this->reportWarning('Resource is never used', $r);
+        foreach($this->allResources as $resourceFile) {
+            if (!$resourceFile->isUsed()) {
+                $this->reportWarning('Resource is never used', $resourceFile->getId());
             }
         }
 
