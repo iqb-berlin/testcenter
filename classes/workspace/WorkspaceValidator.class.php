@@ -12,6 +12,7 @@ class WorkspaceValidator extends Workspace {
     private $allVersionedResources = [];
     private $allUsedResources = [];
     private $allUsedVersionedResources = [];
+
     private $allUnits = []; // id -> xFile
     private $allBooklets = []; // id -> xFile
 
@@ -48,10 +49,7 @@ class WorkspaceValidator extends Workspace {
         $this->readFiles();
 
         $this->readResources();
-        $this->crossValidateUnits();
-        $this->crossValidateBooklets();
-        $this->crossValidateSysChecks();
-        $this->crossValidateLogins();
+        $this->crossValidate();
 
         // cross-file checks
         $this->checkIfLoginsAreUsedInOtherWorkspaces();
@@ -163,95 +161,51 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function crossValidateUnits(): void {
+    private function crossValidate(): void {
 
         // DO duplicate unit id // $this->reportError("Duplicate unit id `$unitId`", $entry);
         // alos add test for that!
-
-        foreach ($this->allFiles['Unit'] as $xFile) {
-
-            /* @var XMLFileUnit $xFile */
-
-            if ($xFile->isValid()) {
-                $xFile->setTotalSize($this);
-                $xFile->setPlayerId($this);
-
-                if ($xFile->isValid()) {
-                    $this->allUnits[$xFile->getId()] = $xFile;
-                }
-            }
-
-            $this->getReport($xFile);
-        }
-
-        $this->reportInfo('`' . strval(count($this->allUnits)) . '` valid units found');
-    }
-
-    private function crossValidateBooklets() {
-
         // DO duplicate booklet id // $this->reportError("Duplicate unit id `$unitId`", $entry);
+        // DO count of teststakers
 
-        foreach ($this->allFiles['Booklet'] as $xFile) {
+        foreach (['Unit', 'Booklet', 'Testtakers', 'SysCheck'] as $type) {
 
-            /* @var XMLFileBooklet $xFile */
+            $countCrossValidated = 0;
 
-            if ($xFile->isValid()) {
+            foreach ($this->allFiles[$type] as $xFile) {
 
-                $xFile->setTotalSize($this);
+
 
                 if ($xFile->isValid()) {
-                    $this->allBooklets[$xFile->getId()] = $xFile;
+
+                    $xFile->crossValidate($this);
+
+                    if ($xFile->isValid()) {
+
+                        if ($type == 'Unit') {
+
+                            $this->allUnits[$xFile->getId()] = $xFile;
+
+                        } else if ($type == 'Booklet') {
+
+                            $this->allBooklets[$xFile->getId()] = $xFile;
+
+                        }
+
+                        $countCrossValidated += 1;
+                    }
                 }
+
+                $this->getReport($xFile);
             }
 
-
-            $this->getReport($xFile);
+            $this->reportInfo("`$countCrossValidated` valid $type-files found");
         }
-
-        $this->reportInfo('`' . strval(count($this->allBooklets)) . '` valid booklets found');
-    }
-
-    private function crossValidateSysChecks() {
-
-        // TODO check unique id
-
-        $validSysCheckCount = 0;
-
-        foreach ($this->allFiles['SysCheck'] as $xFile) {
-
-            /* @var XMLFileSysCheck $xFile */
-
-            if ($xFile->isValid()) {
-
-                $xFile->crossValidate($this);
-                $validSysCheckCount = $validSysCheckCount + ($xFile->isValid() ? 1 : 0);
-            }
-        }
-
-        $this->reportInfo("`$validSysCheckCount` valid sys-checks found");
     }
 
 
-    private function crossValidateLogins() {
 
-        $testtakersCount = 0;
 
-        foreach ($this->allFiles['Testtakers'] as $xFile) {
-
-            /* @var XMLFileTesttakers $xFile */
-
-            if ($xFile->isValid()) {
-
-                $xFile->crossValidate($this);
-
-                $testtakersCount += $xFile->getTesttakersCount();
-            }
-
-            $this->getReport($xFile);
-        }
-
-        $this->reportInfo("`$testtakersCount` test-takers in `" . count($this->allLoginNames) . '` logins found');
-    }
 
     private function checkIfLoginsAreUsedInOtherWorkspaces() {
 

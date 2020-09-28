@@ -9,6 +9,13 @@ class XMLFileUnit extends XMLFile {
     protected string $playerId = '';
     protected array $usedBy = [];
 
+    public function crossValidate(WorkspaceValidator $validator) : void {
+
+        $this->setTotalSize($validator);
+        $this->setPlayerId($validator);
+    }
+
+
     public function setTotalSize(WorkspaceValidator $validator): void {
 
         $this->totalSize = $this->size;

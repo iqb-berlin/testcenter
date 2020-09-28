@@ -54,10 +54,11 @@ class WorkspaceValidatorTest extends TestCase{
         $expected = [
             '.' => [
                 new ValidationReportEntry('info', '`2` resource files found'),
-                new ValidationReportEntry('info', '`2` valid units found'),
-                new ValidationReportEntry('info', '`3` valid booklets found'), // TODO if duplication check works again
-                new ValidationReportEntry('info', '`1` valid sys-checks found'),
-                new ValidationReportEntry('info', '`19` test-takers in `10` logins found'),
+                new ValidationReportEntry('info', '`2` valid Unit-files found'),
+                new ValidationReportEntry('info', '`4` valid Booklet-files found'), // TODO if duplication check works again
+                new ValidationReportEntry('info', '`1` valid SysCheck-files found'),
+                new ValidationReportEntry('info', '`1` valid Testtakers-files found'),
+//                new ValidationReportEntry('info', '`10` valid Testtakers-files in `10` logins found'),
             ],
             'unit-unused-and-missing-player.xml' => [
                 new ValidationReportEntry('error', 'unit definition type `NOT-EXISTING.HTML` not found'),
