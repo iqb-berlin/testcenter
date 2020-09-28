@@ -84,6 +84,12 @@ def _git_tag():
     subprocess.run(f"git push origin {new_version}", shell=True, check=True)
 
 
+def _undo_version_update_in_files():
+    subprocess.run(f"git checkout {VERSION_FILE}", shell=True, check=True)
+    for file in ADDITIONAL_FILES_TO_COMMIT:
+        subprocess.run(f"git checkout {file}", shell=True, check=True)
+
+
 if len(sys.argv) < 2:
     sys.exit('No parameter given. Use \'major\'/\'minor\'/\'patch\'!')
 pattern = re.compile(VERSION_REGEX)
@@ -93,6 +99,10 @@ with open(VERSION_FILE) as version_file:
 new_version = _increment_version(old_version)
 _update_version_in_file(new_version)
 _run_software()
-_run_tests()
+try:
+    _run_tests()
+except subprocess.SubprocessError:
+    _stop_software()
+    _undo_version_update_in_files()
 _stop_software()
 _git_tag()
