@@ -105,8 +105,6 @@ class WorkspaceValidator extends Workspace {
 
     public function getResource(string $resourceId): ?ResourceFile {
 
-        // TODO duplicate ucase ID problem
-
         if (isset($this->allFiles['Resource'][$resourceId])) {
             return $this->allFiles['Resource'][$resourceId];
         }
@@ -154,26 +152,8 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-//    private function readResources() {
-//
-//        foreach ($this->allFiles['Resource'] as $rFile) {
-//
-//            /* @var ResourceFile $rFile */
-//            $this->allResources[] = FileName::normalize($rFile->getName(), false);
-//            $this->resourceSizes[FileName::normalize($rFile->getName(), false)] = $rFile->getSize();
-//            $this->allVersionedResources[] = FileName::normalize($rFile->getName(), true);
-//            $this->resourceSizes[FileName::normalize($rFile->getName(), true)] = $rFile->getSize();
-//        }
-//
-//        $this->reportInfo('`' . strval(count($this->allResources)) . '` resource files found');
-//    }
-
-
     private function crossValidate(): void {
 
-        // DO duplicate unit id // $this->reportError("Duplicate unit id `$unitId`", $entry);
-        // alos add test for that!
-        // DO duplicate booklet id // $this->reportError("Duplicate unit id `$unitId`", $entry);
         // DO count of teststakers
 
         foreach (['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'] as $type) {
