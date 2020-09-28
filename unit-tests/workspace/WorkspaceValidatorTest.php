@@ -109,7 +109,7 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('warning', 'Resource is never used'),
             ],
             "UNUSED-BOOKLET" => [ // TODO booklet-unused.xml
-                new ValidationReportEntry('warning', 'Booklet not set up for any test-taker'),
+                new ValidationReportEntry('warning', 'Booklet is never used'),
             ],
             "booklet-unused.xml" => [
                 new ValidationReportEntry('info', 'size fully loaded: `6.37 KB`'),

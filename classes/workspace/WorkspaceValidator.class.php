@@ -8,11 +8,6 @@ class WorkspaceValidator extends Workspace {
 
     public $allFiles = [];
 
-    private $allResources = []; // id -> rFile
-    private $allUnits = []; // id -> xFile
-    private $allBooklets = []; // id -> xFile
-
-
     public $allLoginNames = [];
 
     private array $report = [];
@@ -112,8 +107,8 @@ class WorkspaceValidator extends Workspace {
 
         // TODO duplicate ucase ID problem
 
-        if (isset($this->allResources[$resourceId])) {
-            return $this->allResources[$resourceId];
+        if (isset($this->allFiles['Resource'][$resourceId])) {
+            return $this->allFiles['Resource'][$resourceId];
         }
 
         return null;
@@ -141,8 +136,8 @@ class WorkspaceValidator extends Workspace {
 
     public function getUnit(string $unitId): ?XMLFileUnit {
 
-        if (isset($this->allUnits[$unitId])) {
-            return $this->allUnits[$unitId];
+        if (isset($this->allFiles['Unit'][$unitId])) {
+            return $this->allFiles['Unit'][$unitId];
         }
 
         return null;
@@ -151,8 +146,8 @@ class WorkspaceValidator extends Workspace {
 
     public function getBooklet(string $bookletId): ?XMLFileBooklet {
 
-        if (isset($this->allBooklets[$bookletId])) {
-            return $this->allBooklets[$bookletId];
+        if (isset($this->allFiles['Booklet'][$bookletId])) {
+            return $this->allFiles['Booklet'][$bookletId];
         }
 
         return null;
@@ -194,20 +189,6 @@ class WorkspaceValidator extends Workspace {
                     $file->crossValidate($this);
 
                     if ($file->isValid()) {
-
-                        if ($type == 'Unit') {
-
-                            $this->allUnits[$file->getId()] = $file;
-
-                        } else if ($type == 'Booklet') {
-
-                            $this->allBooklets[$file->getId()] = $file;
-
-                        } else if ($type == 'Resource') {
-
-                            $this->allResources[$file->getId()] = $file;
-
-                        }
 
                         $countCrossValidated += 1;
                     }
@@ -314,24 +295,13 @@ class WorkspaceValidator extends Workspace {
 
     private function findUnusedItems() {
 
-        foreach($this->allResources as $resourceFile) {
-            if (!$resourceFile->isUsed()) {
-                $this->reportWarning('Resource is never used', $resourceFile->getId());
-            }
-        }
+        foreach (['Resource', 'Unit', 'Booklet'] as $type) {
 
-        foreach($this->allUnits as $xFileUnit) {
-            if (!$xFileUnit->isUsed()) {
-                 $this->reportWarning('Unit is not used in any booklet', $xFileUnit->getId());
-            }
-        }
-
-        foreach($this->allBooklets as $xFileBooklet) {
-            if (!$xFileBooklet->isUsed()) {
-                $this->reportWarning('Booklet not set up for any test-taker', $xFileBooklet->getId());
+            foreach($this->allFiles[$type] as /* @var File */ $file) {
+                if ($file->isValid() and !$file->isUsed()) {
+                    $this->reportWarning("$type is never used", $file->getId());
+                }
             }
         }
     }
-
-
 }
