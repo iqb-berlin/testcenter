@@ -25,7 +25,7 @@ services:
       - "traefik.http.routers.testcenter-backend.tls=true"
 
   testcenter-frontend:
-    image: iqbberlin/testcenter-frontend:6.3.0
+    image: iqbberlin/testcenter-frontend:6.3.1
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
 
