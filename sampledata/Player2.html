@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample Unit Player 2</title>
+
+    <meta name="sample-player-2.0.0" content="iqb verona player dan"
+          data-version="2.0.0"
+          data-repository-url="https://github.com/iqb-berlin/testcenter-backend"
+          data-api-version="2.1.0"
+          data-not-supported-api-features=""
+          data-supported-unit-definition-types="sample-player-2.1.0"
+          data-supported-unit-state-data-types="sample-player-2.1.0"
+    /><!-- TODO supported browsers -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+
+    <style>
+        fieldset {
+            display: none
+        }
+
+        fieldset:first-child {
+            display: block
+        }
+
+        #shield {
+            display: none; position: fixed; top:0; left:0; right:0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 51000
+        }
+    </style>
+</head>
+<body>
+
+<div id="shield"></div>
+
+<div id="error-pane"></div>
+
+<div style="margin: 7em; position: relative">
+
+    <div style="position:absolute; left: 50%; top: -6em;">
+        <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
+    </div>
+
+    <div style="position:fixed; left: 50%; bottom: 1em;">
+        <button id="next-page" title="Next Page" type="button" class="btn btn-outline-primary">↓</button>
+    </div>
+
+    <h3>
+        Sample Unit Player for
+        <a href="https://github.com/verona-interface" target="_blank">Verona Interface 2.1.0</a>
+    </h3>
+    <div class="card card-body">
+        <form>
+            <div style="position:fixed; top: 50%; left: 1em;">
+                <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
+                <button id="prev-unit" title="Previous Page" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
+            </div>
+
+            <div style="position:fixed; top: 50%; right: 1em;">
+                <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
+                <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
+            </div>
+            <span class="unit"></span>
+        </form>
+    </div>
+    <a data-toggle="collapse" href="#moreInfo">
+        More Info
+    </a>
+    <div class="card card-body collapse" id="moreInfo" style="margin-bottom: 2em;">
+        <p>This is a sample unit player, mainly as showcase for developers and for software-testing.</p>
+        <p>It does implement most of the <a href="https://github.com/verona-interface" target="_blank">Verona 2.1.0</a>-Standard
+        and can be used for units containing simple forms.</p>
+        <p>While being a full-featured unit-player, it does break one important rule for productive players:
+        It uses external dependencies like jQuery, underscore, bootstrap and more. Therefore the code could be kept simple
+        and the file hand-editable.</p>
+        <p>Use the <a href="https://github.com/jsonform/jsonform" target="_blank">JSONForm-Schema</a> how to define units.</p>
+    </div>
+
+</div>
+
+
+<script>
+
+    // TODO logging
+    // TODO log-level
+
+    let sessionId = "";
+    let currentPage = 1;
+    let pageCount = 1;
+    let validPages = {1: "main"}
+    let seenPages = [1]
+
+    const isDefined = (v) => (typeof v !== "undefined");
+
+
+    const send = (messageType, p1) => {
+
+        const messages = {
+
+            "vopStateChangedNotification": () => {
+                const msg = {
+                    type: 'vopStateChangedNotification',
+                    sessionId: sessionId,
+                    timeStamp: Date.now(),
+                    unitStateDataTyp: 'sample-player-2.1.0',
+                    playerState: {
+                        validPages: validPages,
+                        currentPage: currentPage.toString()
+                    },
+                    unitState: {
+                        dataParts: {
+                            all: {
+                                answers: getAnswers(),
+                                // we have to store the audio-state in the unitState.all because testcenter as
+                                // of 7.3 does neither support custom player-states not other partition of data
+                                // than a single `all`-field
+                                audio: soundModule.getState()
+                            },
+                        },
+                        presentationProgress: presentationProgress(),
+                        responseProgress: 'some', // TODO responseProgress
+                    }
+                };
+                console.log(msg);
+                return msg;
+            },
+
+            "vopGetStateResponse": () => {
+                msg = messages.vopStateChangedNotification();
+                msg.type = 'vopGetStateResponse';
+                return msg;
+            },
+
+            "vopReadyNotification": () => {
+                return Object.assign(
+                    {type: 'vopReadyNotification'},
+                    document.querySelector('meta[name="sample-player-2.0.0"]').dataset
+                );
+            },
+
+            "vopUnitNavigationRequestedNotification": (target) => {
+                return {
+                    type: 'vopUnitNavigationRequestedNotification',
+                    sessionId: sessionId,
+                    targetRelative: target,
+                };
+            },
+
+            "vopWindowFocusChangedNotification": (hasFocus) => {
+                return {
+                    type: 'vopWindowFocusChangedNotification',
+                    sessionId: sessionId,
+                    hasFocus: hasFocus
+                }
+            }
+        };
+
+        window.parent.postMessage(messages[messageType](p1), '*')
+    };
+
+    const receive = (type, data) => {
+
+        const callbacks = {
+
+            "vopStartCommand": (data) => {
+                // TODO start on correct side
+                // TODO apply settings like scroll setting
+                if (data.unitDefinitionType !== "sample-player-2.1.0") {
+                    addAlert('warning', "Unit definition type does not match: " + data.unitDefinitionType);
+                }
+                const unitState = data.unitState || {};
+                const dataParts = unitState.dataParts || {};
+                const all = dataParts.all || {};
+                const answers = all.answers || {};
+                const audio = all.audio || {};
+                document.querySelector('form .unit').innerHTML += data.unitDefinition;
+                setAnswers(answers);
+                findPages();
+                togglePageNavButtons();
+                if (audio.position) {
+                    findMelody();
+                    if (audio.soundOn) {
+                        soundModule.play(audio.position);
+                    } else {
+                        soundModule.setPosition(audio.position);
+                    }
+                }
+                sessionId = data.sessionId;
+                send("vopStateChangedNotification");
+            },
+
+            "vopPageNavigationCommand": (data) => {
+                gotoPage(data.target);
+            },
+
+            // not implemented in testcenter 7.3.1
+            "vopGetStateRequest": (data) => {
+                if (data.stop) {
+                    togglePlayerRunning(false);
+                }
+                send('vopGetStateResponse');
+            },
+
+            // not implemented in testcenter 7.3.1
+            "vopStopCommand": () => {
+                soundModule.stop();
+                togglePlayerRunning(false);
+            },
+        };
+
+        if (sessionId && (data.sessionId !== sessionId)) {
+            throw new Error("Wrong sessionId");
+        }
+
+        if (typeof callbacks[type] !== 'undefined') {
+            callbacks[type](data);
+        }
+    };
+
+    const getAnswers = () => [...new FormData(document.querySelector("form"))]
+        .reduce((carry, entry) => {
+            carry[entry[0]] = entry[1];
+            return carry;
+        }, {});
+
+    const setAnswers = (answers) => {
+        Object.keys(answers).forEach(key => {
+            const formElementsWithThisName = document.querySelectorAll(`form [name="${key}"]`);
+            if (formElementsWithThisName.length === 0) {
+                addAlert('warning', `form field missing: "${key}"`);
+            } else if (formElementsWithThisName.length === 1) {
+                formElementsWithThisName[0].setAttribute('value', answers[key]);
+            } else {
+                addAlert('warning', `duplicate form field missing: "${key}"`);
+            }
+        });
+    }
+
+    const findPages = () => {
+        const pageElements = document.querySelectorAll("fieldset");
+        pageCount = Math.max(1, pageElements.length);
+        validPages = [...pageElements].reduce((carry, pageElement) => {
+            const pageNr = 1 + Object.keys(carry).length;
+            const legendElem = pageElement.querySelector('legend');
+            carry[pageNr.toString()] = (legendElem) ? legendElem.innerText : 'Page-' + pageNr;
+            return carry
+        }, {});
+    }
+
+    const findMelody = () => {
+        const elem = document.querySelector('#melody-play[data-sheet]');
+        const sheet = elem.dataset.sheet;
+        soundModule.sheet = JSON.parse(sheet);
+    }
+
+    const addAlert = (type, message, ...data) => {
+        console.warn(`${type}: ${message}`, ...data);
+        document.querySelector('#error-pane').innerHTML += `<div class='alert alert-${type}'>${message}</div>`;
+    }
+
+    const reportState = () => {
+        send("vopStateChangedNotification");
+    }
+
+    const gotoPage = (target) => {
+        if (target === '#next') {
+            currentPage++;
+        } else if (target === '#previous') {
+            currentPage -= 1;
+        } else if (target === '#first') {
+            currentPage = 1;
+        } else if (target === '#first') {
+            currentPage = pageCount ;
+        } else {
+            currentPage = parseInt(target);
+        }
+        document.querySelectorAll("fieldset")
+            .forEach(fieldsetElement => {fieldsetElement.style.display = 'none'});
+        document.querySelector(`fieldset:nth-child(${currentPage})`).style.display = 'block';
+        togglePageNavButtons();
+        if (seenPages.indexOf(currentPage) === -1) {
+            seenPages.push(currentPage);
+        }
+        send("vopStateChangedNotification");
+    }
+
+    const togglePlayerRunning = (running) => {
+        document.querySelector('#shield').style.display = running ? 'none' : 'block';
+        soundModule.stop();
+    }
+
+    const togglePageNavButtons = () => {
+        if ((pageCount > 1) && (currentPage < pageCount)) {
+            document.querySelector('#next-page').removeAttribute("disabled");
+        } else {
+            document.querySelector('#next-page').setAttribute("disabled", "true");
+        }
+        if ((pageCount > 1) && (currentPage > 1)) {
+            document.querySelector('#prev-page').removeAttribute("disabled");
+        } else {
+            document.querySelector('#prev-page').setAttribute("disabled", "true");
+        }
+    }
+
+    const toggleAudioButtons = (isPlaying) => {
+        const playButton = document.querySelector('#melody-play');
+        const stopButton = document.querySelector('#melody-stop');
+        if (playButton) {
+            if (isPlaying) {
+                playButton.setAttribute("disabled", "true");
+            } else {
+                playButton.removeAttribute("disabled");
+            }
+        }
+        if (stopButton) {
+            if (isPlaying) {
+                stopButton.removeAttribute("disabled");
+            } else {
+                stopButton.setAttribute("disabled", "true");
+            }
+        }
+    }
+
+    const updateSoundStateDisplay = (state) => {
+        const elem = document.querySelector('#melody-state');
+        if (!elem) {
+            return;
+        }
+        console.log("T", state);
+        elem.innerHTML = (state.soundOn ? "playing" : "stop") + ` (${state.position + 1}/${state.length})`;
+    }
+
+    const presentationProgress = () => {
+        const audioState = soundModule.getState();
+        const progress = {
+            pages: {
+                all: seenPages.length === pageCount,
+                some: seenPages.length > 0
+            },
+            audio: {
+                all: audioState.length === audioState.position + 1,
+                some: audioState.length > 1
+            }
+        }
+        console.log(progress);
+        return Object.keys(progress)
+            .reduce((carry, key) => {
+                if ((carry === 'all') && progress[key].all) {
+                    return 'all';
+                } else if ((carry !== 'none') || progress[key].some) {
+                    return 'some';
+                } else {
+                    return 'none'
+                }
+            }, 'all');
+    }
+
+    const addEventListener = (eventName, selector, listener) => {
+        document.querySelector('body').addEventListener(eventName, event => {
+            if (event.target.matches(selector)) {
+                listener(event);
+            }
+        });
+    }
+
+    const soundModule = new function() {
+        this.sheet = [];
+
+        let soundOn = false;
+        let position = 0;
+        const context = new AudioContext();
+        const speed = 3;
+        const noteValues = {'C0': 16.35, 'C#0': 17.32, 'Db0': 17.32, 'D0': 18.35, 'D#0': 19.45, 'Eb0': 19.45, 'E0': 20.60, 'F0': 21.83, 'F#0': 23.12, 'Gb0': 23.12, 'G0': 24.50, 'G#0': 25.96, 'Ab0': 25.96, 'A0': 27.50, 'A#0': 29.14, 'Bb0': 29.14, 'B0': 30.87, 'C1': 32.70, 'C#1': 34.65, 'Db1': 34.65, 'D1': 36.71, 'D#1': 38.89, 'Eb1': 38.89, 'E1': 41.20, 'F1': 43.65, 'F#1': 46.25, 'Gb1': 46.25, 'G1': 49.00, 'G#1': 51.91, 'Ab1': 51.91, 'A1': 55.00, 'A#1': 58.27, 'Bb1': 58.27, 'B1': 61.74, 'C2': 65.41, 'C#2': 69.30, 'Db2': 69.30, 'D2': 73.42, 'D#2': 77.78, 'Eb2': 77.78, 'E2': 82.41, 'F2': 87.31, 'F#2': 92.50, 'Gb2': 92.50, 'G2': 98.00, 'G#2': 103.83, 'Ab2': 103.83, 'A2': 110.00, 'A#2': 116.54, 'Bb2': 116.54, 'B2': 123.47, 'C3': 130.81, 'C#3': 138.59, 'Db3': 138.59, 'D3': 146.83, 'D#3': 155.56, 'Eb3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'Gb3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'Ab3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'Bb3': 233.08, 'B3': 246.94, 'C4': 261.63, 'C#4': 277.18, 'Db4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'Eb4': 311.13, 'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'Gb4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'Ab4': 415.30, 'A4': 440.00, 'A#4': 466.16, 'Bb4': 466.16, 'B4': 493.88, 'C5': 523.25, 'C#5': 554.37, 'Db5': 554.37, 'D5': 587.33, 'D#5': 622.25, 'Eb5': 622.25, 'E5': 659.26, 'F5': 698.46, 'F#5': 739.99, 'Gb5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'Ab5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'Bb5': 932.33, 'B5': 987.77, 'C6': 1046.50, 'C#6': 1108.73, 'Db6': 1108.73, 'D6': 1174.66, 'D#6': 1244.51, 'Eb6': 1244.51, 'E6': 1318.51, 'F6': 1396.91, 'F#6': 1479.98, 'Gb6': 1479.98, 'G6': 1567.98, 'G#6': 1661.22, 'Ab6': 1661.22, 'A6': 1760.00, 'A#6': 1864.66, 'Bb6': 1864.66, 'B6': 1975.53, 'C7': 2093.00, 'C#7': 2217.46, 'Db7': 2217.46, 'D7': 2349.32, 'D#7': 2489.02, 'Eb7': 2489.02, 'E7': 2637.02, 'F7': 2793.83, 'F#7': 2959.96, 'Gb7': 2959.96, 'G7': 3135.96, 'G#7': 3322.44, 'Ab7': 3322.44, 'A7': 3520.00, 'A#7': 3729.31, 'Bb7': 3729.31, 'B7': 3951.07, 'C8': 4186.01}
+
+        this.play = async (newPosition = position) => {
+            if (soundOn) {
+                return;
+            }
+            position = newPosition;
+            soundOn = true;
+            for(position; position < this.sheet.length; position++){
+                try {
+                    await playNote(...this.sheet[position]);
+                } catch (error) {
+                    soundOn = false;
+                    position++;
+                    return;
+                }
+            }
+            position -= 1;
+            this.stop();
+        };
+
+        this.stop = () => {
+            if (!soundOn) {
+                return;
+            }
+            soundOn = false;
+            console.log("STOP AT", position);
+            onStateChange({soundOn, position, length: this.sheet.length});
+        };
+
+        this.rewind = () => {
+            if (soundOn) {
+                return;
+            }
+            soundOn = false;
+            position = 0;
+            onStateChange({soundOn, position, length: this.sheet.length});
+        }
+
+        this.forward = (newPosition) => {
+            if (!soundOn && (newPosition !== position)) {
+                position = newPosition;
+                onStateChange({soundOn, position, length: this.sheet.length});
+            }
+        }
+
+        this.getState = () => ({soundOn, position, length: this.sheet.length});
+
+        const onStateChange = state => {
+            document.dispatchEvent(new CustomEvent('audioStateChange', {detail: state}));
+        }
+
+        const playNote = (note, length) => new Promise((resolve, reject) => {
+            setTimeout(
+                () => {
+                    if (!soundOn) {
+                        reject();
+                    }
+                    o = context.createOscillator();
+                    g = context.createGain();
+                    o.type = "sawtooth";
+                    o.connect(g);
+                    o.frequency.value = noteValues[note];
+                    g.connect(context.destination);
+                    o.start(0);
+                    g.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + speed * (1 / length));
+                    onStateChange({soundOn, position, length: this.sheet.length});
+                    resolve();
+                },
+                1000 * speed * (1 / length)
+            );
+        });
+    }();
+
+    // ##########################################################################################################
+
+    window.addEventListener('message', event => {receive(event.data.type, event.data);}, false);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        send("vopReadyNotification");
+    });
+
+    document.addEventListener('audioStateChange', event => {
+        send("vopStateChangedNotification");
+        updateSoundStateDisplay(event.detail);
+        toggleAudioButtons(event.detail.soundOn);
+    });
+
+    window.addEventListener('blur', () => {
+        send('vopWindowFocusChangedNotification', document.hasFocus());
+    });
+
+    window.addEventListener('focus', () => {
+        send('vopWindowFocusChangedNotification', document.hasFocus());
+    });
+
+    addEventListener('change', "form input", reportState);
+    addEventListener('keyup', "form input", reportState);
+    addEventListener('click', '#next-page', () => gotoPage('#next'));
+    addEventListener('click', '#prev-page', () => gotoPage('#previous'));
+
+    addEventListener('click', '#prev-unit', () => {
+        send("vopUnitNavigationRequestedNotification", "#previous");
+    });
+    addEventListener('click', '#next-unit', () => {
+        send("vopUnitNavigationRequestedNotification", "#next");
+    });
+    addEventListener('click', '#first-unit', () => {
+        send("vopUnitNavigationRequestedNotification", "#first");
+    });
+    addEventListener('click', '#last-unit', () => {
+        send("vopUnitNavigationRequestedNotification", "#last");
+    });
+    addEventListener('click', '#melody-play[data-sheet]', e => {
+        e.preventDefault();
+        findMelody();
+        soundModule.play();
+    });
+    addEventListener('click', '#melody-stop', e => {
+        e.preventDefault();
+        soundModule.stop();
+    });
+
+
+
+</script>
+
+</body>
+</html>
