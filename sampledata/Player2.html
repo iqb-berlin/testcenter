@@ -62,9 +62,9 @@
 
 <div id="error-pane"></div>
 
-<div style="margin: 6em 9em; position: relative">
+<div style="margin: 4em 9em; position: relative">
 
-    <div style="position:absolute; left: 50%; top: -6em;">
+    <div style="position:absolute; left: 50%; top: -2.5em;">
         <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
     </div>
 
@@ -95,10 +95,21 @@
     // TODO paging-mode
 
     let sessionId = "";
+
     let currentPage = 1;
     let pageCount = 1;
     let validPages = {1: "main"}
     let seenPages = [1]
+
+    let playerConfig = {
+        logPolicy: 'eager',
+        unitNumber: 0,
+        unitTitle: 'Unit',
+        unitId: 'unit',
+        unitCount: Infinity,
+        stateReportPolicy: "none",
+        pagingMode: "separate"
+    }
 
     const isDefined = (v) => (typeof v !== "undefined");
 
@@ -180,19 +191,21 @@
                 }
                 const unitState = data.unitState || {};
                 const playerState = data.playerState || {};
+                playerConfig = Object.assign(playerConfig, (data.playerConfig || {}));
                 const dataParts = unitState.dataParts || {};
-                const all = dataParts.all || {};console.log(all);
+                const all = dataParts.all || {};
                 const answers = all.answers || {};
                 const audio = all.audio || {};
                 document.querySelector('form .unit').innerHTML += data.unitDefinition;
                 setAnswers(answers);
                 findPages();
-                console.log('playerState', data);
+                console.log('playerConfig', playerConfig);
                 if (typeof playerState.currentPage !== "undefined") {
                     gotoPage()
                 }
                 findInfobox();
                 togglePageNavButtons();
+                toggleUnitNavButtons();
                 if (typeof audio.position !== "undefined") {
                     findMelody();
                     if (audio.soundOn) {
@@ -307,40 +320,40 @@
         soundModule.stop();
     }
 
-    const togglePageNavButtons = () => {
-        if ((pageCount > 1) && (currentPage < pageCount)) {
-            document.querySelector('#next-page').removeAttribute("disabled");
-        } else {
-            document.querySelector('#next-page').setAttribute("disabled", "true");
-        }
-        if ((pageCount > 1) && (currentPage > 1)) {
-            document.querySelector('#prev-page').removeAttribute("disabled");
-        } else {
-            document.querySelector('#prev-page').setAttribute("disabled", "true");
-        }
-    }
-
-    const toggleAudioButtons = state => {
-        const toggle = (button, enabled) => {
-            if (button) {
-                if (enabled) {
-                    button.removeAttribute("disabled");
-                } else {
-                    button.setAttribute("disabled", "true");
-                }
+    const toggleButton = (button, enabled) => {
+        if (button) {
+            if (enabled) {
+                button.removeAttribute("disabled");
+            } else {
+                button.setAttribute("disabled", "true");
             }
         }
-        toggle(document.querySelector('#melody-play'), !state.soundOn);
-        toggle(document.querySelector('#melody-stop'), state.soundOn);
-        toggle(document.querySelector('#melody-rewind'), !state.soundOn && (state.position > 1));
     }
 
-    const updateSoundStateDisplay = (state) => {
-        const elem = document.querySelector('#melody-state');
+    const togglePageNavButtons = () => {
+        toggleButton(document.querySelector('#next-page'), pageCount > 1 && currentPage < pageCount);
+        toggleButton(document.querySelector('#prev-page'), pageCount > 1 && currentPage > 1);
+    }
+
+    const toggleUnitNavButtons = () => {
+        toggleButton(document.querySelector('#first-unit'), playerConfig.unitNumber > 1);
+        toggleButton(document.querySelector('#prev-unit'), playerConfig.unitNumber > 1);
+        toggleButton(document.querySelector('#next-unit'), playerConfig.unitNumber < playerConfig.unitCount);
+        toggleButton(document.querySelector('#last-unit'), playerConfig.unitNumber < playerConfig.unitCount);
+    }
+
+    const toggleAudioButtons = audioState => {
+        toggleButton(document.querySelector('#melody-play'), !audioState.soundOn);
+        toggleButton(document.querySelector('#melody-stop'), audioState.soundOn);
+        toggleButton(document.querySelector('#melody-rewind'), !audioState.soundOn && (audioState.position > 1));
+    }
+
+    const updateSoundStateDisplay = audioState => {
+        const elem = document.querySelector('#melody-audioState');
         if (!elem) {
             return;
         }
-        elem.innerHTML = (state.soundOn ? "playing" : "stop") + ` (${state.position + 1}/${state.length})`;
+        elem.innerHTML = (audioState.soundOn ? "playing" : "stop") + ` (${audioState.position + 1}/${audioState.length})`;
     }
 
     const presentationProgress = () => {
