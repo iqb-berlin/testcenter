@@ -43,16 +43,21 @@
         .alert-danger {
             background: orangered;
         }
+
         fieldset {
+            min-height: 300px; margin-bottom: 2em;
+        }
+
+        .paged fieldset {
             display: none
         }
 
-        fieldset:first-child {
+        .paged fieldset:first-child {
             display: block
         }
 
         #shield {
-            display: none; position: fixed; top:0; left:0; right:0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 51000
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 51000
         }
     </style>
 </head>
@@ -83,7 +88,7 @@
     </div>
 
     <form>
-        <span class="unit"></span>
+        <span id="unit"></span>
     </form>
 
 </div>
@@ -93,7 +98,7 @@
 
     // TODO logging
     // TODO log-policy
-    // TODO paging-mode
+    // TODO paging-mode -> scroll is implemted buggy but okay, separate shoudl work, snap.scroll: todo
 
     let sessionId = "";
 
@@ -193,14 +198,18 @@
                 const unitState = data.unitState || {};
                 const playerState = data.playerState || {};
                 playerConfig = Object.assign(playerConfig, (data.playerConfig || {}));
+                console.log('playerConfig', playerConfig);
                 const dataParts = unitState.dataParts || {};
                 const all = dataParts.all || {};
                 const answers = all.answers || {};
                 const audio = all.audio || {};
-                document.querySelector('form .unit').innerHTML += data.unitDefinition;
+                document.querySelector('#unit').innerHTML += data.unitDefinition;
                 setAnswers(answers);
-                findPages();
-                console.log('playerConfig', playerConfig);
+                setPages();
+                if (playerConfig.pagingMode !== 'separate') {
+                    setScrollObserver();
+                }
+
                 if (typeof playerState.currentPage !== "undefined") {
                     gotoPage()
                 }
@@ -208,7 +217,7 @@
                 togglePageNavButtons();
                 toggleUnitNavButtons();
                 if (typeof audio.position !== "undefined") {
-                    findMelody();
+                    setMelody();
                     if (audio.soundOn) {
                         soundModule.play(audio.position);
                     } else {
@@ -266,7 +275,7 @@
         });
     }
 
-    const findPages = () => {
+    const setPages = () => {
         const pageElements = document.querySelectorAll("fieldset");
         pageCount = Math.max(1, pageElements.length);
         validPages = [...pageElements].reduce((carry, pageElement) => {
@@ -277,7 +286,27 @@
         }, {});
     }
 
-    const findMelody = () => {
+    const setScrollObserver = () => {
+        const observer = new IntersectionObserver(
+            entries => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        console.log("scroll", entry.target.dataset.pagenr);
+                        enterPage(entry.target.dataset.pagenr);
+                    }
+                });
+            }, {
+                root: null,
+                threshold: 0.5,
+                rootMargin: '150px'
+            });
+        document.querySelectorAll('fieldset').forEach((pageElem, index) => {
+            pageElem.dataset.pagenr = index + 1;
+            observer.observe(pageElem);
+        });
+    }
+
+    const setMelody = () => {
         const elem = document.querySelector('#melody-play[data-sheet]');
         if (elem) {
             const sheet = elem.dataset.sheet;
@@ -306,13 +335,26 @@
         } else {
             currentPage = parseInt(target);
         }
-        document.querySelectorAll("fieldset")
-            .forEach(fieldsetElement => {fieldsetElement.style.display = 'none'});
-        document.querySelector(`fieldset:nth-child(${currentPage})`).style.display = 'block';
-        togglePageNavButtons();
+
+        const pageElem = document.querySelector(`fieldset:nth-child(${currentPage})`);
+
+        if (playerConfig.pagingMode === "separate") {
+            document.querySelectorAll("fieldset")
+                .forEach(fieldsetElement => {fieldsetElement.style.display = 'none'});
+            pageElem.style.display = 'block';
+            togglePageNavButtons();
+            enterPage(currentPage);
+        } else {
+            pageElem.scrollIntoView({left: 0, block: 'start', behavior: 'smooth'});
+        }
+    }
+
+    const enterPage = newPage => {
+        currentPage = newPage;
         if (seenPages.indexOf(currentPage) === -1) {
             seenPages.push(currentPage);
         }
+
         send("vopStateChangedNotification");
     }
 
@@ -321,32 +363,41 @@
         soundModule.stop();
     }
 
-    const toggleButton = (button, enabled) => {
+    const toggleButton = (buttonId, enabled, visible = true) => {
+        const button = document.querySelector(`#${buttonId}`);
         if (button) {
             if (enabled) {
                 button.removeAttribute("disabled");
             } else {
                 button.setAttribute("disabled", "true");
             }
+            button.style.display = visible ? 'inline-block' : 'none';
         }
     }
 
     const togglePageNavButtons = () => {
-        toggleButton(document.querySelector('#next-page'), pageCount > 1 && currentPage < pageCount);
-        toggleButton(document.querySelector('#prev-page'), pageCount > 1 && currentPage > 1);
+        document.querySelector('#unit').classList[playerConfig.pagingMode === 'separate' ? 'add' : 'remove']('paged');
+        toggleButton('next-page',
+            pageCount > 1 && currentPage < pageCount,
+            pageCount > 1 && playerConfig.pagingMode === 'separate'
+        );
+        toggleButton('prev-page',
+            pageCount > 1 && currentPage > 1,
+            pageCount > 1 && playerConfig.pagingMode === 'separate'
+        );
     }
 
     const toggleUnitNavButtons = () => {
-        toggleButton(document.querySelector('#first-unit'), playerConfig.unitNumber > 1);
-        toggleButton(document.querySelector('#prev-unit'), playerConfig.unitNumber > 1);
-        toggleButton(document.querySelector('#next-unit'), playerConfig.unitNumber < playerConfig.unitCount);
-        toggleButton(document.querySelector('#last-unit'), playerConfig.unitNumber < playerConfig.unitCount);
+        toggleButton('first-unit', playerConfig.unitNumber > 1);
+        toggleButton('prev-unit', playerConfig.unitNumber > 1);
+        toggleButton('next-unit', playerConfig.unitNumber < playerConfig.unitCount);
+        toggleButton('last-unit', playerConfig.unitNumber < playerConfig.unitCount);
     }
 
     const toggleAudioButtons = audioState => {
-        toggleButton(document.querySelector('#melody-play'), !audioState.soundOn);
-        toggleButton(document.querySelector('#melody-stop'), audioState.soundOn);
-        toggleButton(document.querySelector('#melody-rewind'), !audioState.soundOn && (audioState.position > 1));
+        toggleButton('melody-play', !audioState.soundOn);
+        toggleButton('melody-stop', audioState.soundOn);
+        toggleButton('melody-rewind', !audioState.soundOn && (audioState.position > 1));
     }
 
     const updateSoundStateDisplay = audioState => {
@@ -422,7 +473,6 @@
             console.log("!2");
             for(position; position < this.sheet.length; position++){
                 try {
-                    console.log('x',this.sheet,position,this.sheet[position])
                     await playNote(...this.sheet[position]);
                 } catch (error) {
                     soundOn = false;
@@ -441,7 +491,6 @@
                 return;
             }
             soundOn = false;
-            console.log("STOP AT", position);
             onStateChange({soundOn, position, length: this.sheet.length});
         };
 
