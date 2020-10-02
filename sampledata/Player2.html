@@ -2,9 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sample Unit Player 2</title>
+    <title>Verona Sample Player 2</title>
 
-    <meta name="sample-player-2.0.0" content="iqb verona player dan"
+    <template id="player-info-template">
+        <h1>Verona Sample Player 2</h1>
+        <p>This is simple, dependency-less, vanilla-js-written, but full-featured unit player,
+            mainly as showcase for developers and for software-testing.
+        </p>
+        <p>It does implement the
+            <a href="https://github.com/verona-interface" target="_blank">Verona 2.1.0</a>-Standard
+            and can be used for units containing simple forms.
+        </p>
+        <p>
+            Unit Description ist the <code>form</code>-content as HTML. Just give some names to the form element,
+            and the player does the rest. Use some special Ids for some special buttons.
+        </p>
+        <hr>
+        <p>Player-Metadata:</p>
+        <table><!-- will be filled automatically --></table>
+    </template>
+
+    <meta name="player-meta" content="verona-sample-player-2.0.0"
           data-version="2.0.0"
           data-repository-url="https://github.com/iqb-berlin/testcenter-backend"
           data-api-version="2.1.0"
@@ -12,6 +30,8 @@
           data-supported-unit-definition-types="sample-player-2.1.0"
           data-supported-unit-state-data-types="sample-player-2.1.0"
     /><!-- TODO supported browsers -->
+
+
 
     <style>
         body {
@@ -52,38 +72,18 @@
         <button id="next-page" title="Next Page" type="button" class="btn btn-outline-primary">↓</button>
     </div>
 
-    <h3>
-        Sample Unit Player for
-        <a href="https://github.com/verona-interface" target="_blank">Verona Interface 2.1.0</a>
-    </h3>
-    <div class="card card-body">
-        <form>
-            <div style="position:fixed; top: 50%; left: 1em;">
-                <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
-                <button id="prev-unit" title="Previous Page" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
-            </div>
-
-            <div style="position:fixed; top: 50%; right: 1em;">
-                <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
-                <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
-            </div>
-            <span class="unit"></span>
-        </form>
-
-        <a data-toggle="collapse" href="#moreInfo">
-            More Info
-        </a>
-        <div class="card card-body collapse" id="moreInfo" style="margin-bottom: 2em;">
-            <p>This is a sample unit player, mainly as showcase for developers and for software-testing.</p>
-            <p>It does implement most of the <a href="https://github.com/verona-interface" target="_blank">Verona 2.1.0</a>-Standard
-                and can be used for units containing simple forms.</p>
-            <p>While being a full-featured unit-player, it does break one important rule for productive players:
-                It uses external dependencies like jQuery, underscore, bootstrap and more. Therefore the code could be kept simple
-                and the file hand-editable.</p>
-            <p>Use the <a href="https://github.com/jsonform/jsonform" target="_blank">JSONForm-Schema</a> how to define units.</p>
+    <form>
+        <div style="position:fixed; top: 50%; left: 1em;">
+            <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
+            <button id="prev-unit" title="Previous Page" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
         </div>
-    </div>
 
+        <div style="position:fixed; top: 50%; right: 1em;">
+            <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
+            <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
+        </div>
+        <span class="unit"></span>
+    </form>
 
 </div>
 
@@ -144,7 +144,7 @@
             "vopReadyNotification": () => {
                 return Object.assign(
                     {type: 'vopReadyNotification'},
-                    document.querySelector('meta[name="sample-player-2.0.0"]').dataset
+                    document.querySelector('meta[name="player-meta"]').dataset
                 );
             },
 
@@ -179,6 +179,7 @@
                     addAlert('warning', "Unit definition type does not match: " + data.unitDefinitionType);
                 }
                 const unitState = data.unitState || {};
+                const playerState = data.playerState || {};
                 const dataParts = unitState.dataParts || {};
                 const all = dataParts.all || {};console.log(all);
                 const answers = all.answers || {};
@@ -186,6 +187,11 @@
                 document.querySelector('form .unit').innerHTML += data.unitDefinition;
                 setAnswers(answers);
                 findPages();
+                console.log('playerState', data);
+                if (typeof playerState.currentPage !== "undefined") {
+                    gotoPage()
+                }
+                findInfobox();
                 togglePageNavButtons();
                 if (typeof audio.position !== "undefined") {
                     findMelody();
@@ -259,8 +265,10 @@
 
     const findMelody = () => {
         const elem = document.querySelector('#melody-play[data-sheet]');
-        const sheet = elem.dataset.sheet;
-        soundModule.sheet = JSON.parse(sheet);
+        if (elem) {
+            const sheet = elem.dataset.sheet;
+            soundModule.sheet = JSON.parse(sheet);
+        }
     }
 
     const addAlert = (type, message, ...data) => {
@@ -364,6 +372,19 @@
             if (event.target.matches(selector)) {
                 listener(event);
             }
+        });
+    }
+
+    const findInfobox = () => {
+        const infoBoxElem = document.querySelector('#player-info');
+        if (!infoBoxElem) {
+            return;
+        }
+        infoBoxElem.innerHTML = document.querySelector('#player-info-template').innerHTML;
+        const meta = {...document.querySelector('meta[name="player-meta"]').dataset};
+        const tableEleme = document.querySelector('#player-info table');
+        Object.keys(meta).forEach(key => {
+            tableEleme.innerHTML += `<tr><td>${key}</td><td>${meta[key]}</td></tr>`;
         });
     }
 
