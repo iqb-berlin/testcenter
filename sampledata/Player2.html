@@ -13,9 +13,16 @@
           data-supported-unit-state-data-types="sample-player-2.1.0"
     /><!-- TODO supported browsers -->
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
-
     <style>
+        body {
+            font-family: sans-serif;
+        }
+        .alert-warning {
+            background: yellow;
+        }
+        .alert-danger {
+            background: orangered;
+        }
         fieldset {
             display: none
         }
@@ -35,7 +42,7 @@
 
 <div id="error-pane"></div>
 
-<div style="margin: 7em; position: relative">
+<div style="margin: 6em 9em; position: relative">
 
     <div style="position:absolute; left: 50%; top: -6em;">
         <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
@@ -62,19 +69,21 @@
             </div>
             <span class="unit"></span>
         </form>
+
+        <a data-toggle="collapse" href="#moreInfo">
+            More Info
+        </a>
+        <div class="card card-body collapse" id="moreInfo" style="margin-bottom: 2em;">
+            <p>This is a sample unit player, mainly as showcase for developers and for software-testing.</p>
+            <p>It does implement most of the <a href="https://github.com/verona-interface" target="_blank">Verona 2.1.0</a>-Standard
+                and can be used for units containing simple forms.</p>
+            <p>While being a full-featured unit-player, it does break one important rule for productive players:
+                It uses external dependencies like jQuery, underscore, bootstrap and more. Therefore the code could be kept simple
+                and the file hand-editable.</p>
+            <p>Use the <a href="https://github.com/jsonform/jsonform" target="_blank">JSONForm-Schema</a> how to define units.</p>
+        </div>
     </div>
-    <a data-toggle="collapse" href="#moreInfo">
-        More Info
-    </a>
-    <div class="card card-body collapse" id="moreInfo" style="margin-bottom: 2em;">
-        <p>This is a sample unit player, mainly as showcase for developers and for software-testing.</p>
-        <p>It does implement most of the <a href="https://github.com/verona-interface" target="_blank">Verona 2.1.0</a>-Standard
-            and can be used for units containing simple forms.</p>
-        <p>While being a full-featured unit-player, it does break one important rule for productive players:
-            It uses external dependencies like jQuery, underscore, bootstrap and more. Therefore the code could be kept simple
-            and the file hand-editable.</p>
-        <p>Use the <a href="https://github.com/jsonform/jsonform" target="_blank">JSONForm-Schema</a> how to define units.</p>
-    </div>
+
 
 </div>
 
