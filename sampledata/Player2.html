@@ -64,24 +64,25 @@
 
 <div style="margin: 4em 9em; position: relative">
 
-    <div style="position:absolute; left: 50%; top: -2.5em;">
+    <div style="position:absolute; width: 100%; text-align: center; top: -3em;">
         <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
     </div>
 
-    <div style="position:fixed; left: 50%; bottom: 1em;">
+    <div style="position:fixed; bottom: 1em; left: 9em; right: 9em; text-align: center;">
         <button id="next-page" title="Next Page" type="button" class="btn btn-outline-primary">↓</button>
     </div>
 
-    <form>
-        <div style="position:fixed; top: 50%; left: 1em;">
-            <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
-            <button id="prev-unit" title="Previous Page" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
-        </div>
+    <div style="position:fixed; top: 50%; left: 1em;">
+        <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
+        <button id="prev-unit" title="Previous Page" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
+    </div>
 
-        <div style="position:fixed; top: 50%; right: 1em;">
-            <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
-            <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
-        </div>
+    <div style="position:fixed; top: 50%; right: 1em;">
+        <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
+        <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
+    </div>
+
+    <form>
         <span class="unit"></span>
     </form>
 
