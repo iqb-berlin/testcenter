@@ -13,6 +13,11 @@ run-prod-tls:
 run-prod-tls-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d
 
+run-prod-tls-acme:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.acme.yml up
+run-prod-tls-acme-detached:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.acme.yml up -d
+
 stop:
 	docker-compose stop
 
