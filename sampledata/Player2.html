@@ -44,28 +44,13 @@
             height: 100vh; overflow: hidden; font-family: sans-serif; margin: 0;
         }
 
-        .alert-warning {
-            background: yellow;
-        }
-        .alert-danger {
-            background: orangered;
-        }
-
         fieldset {
             min-height: 80vh; margin-bottom: 2em;
-        }
-
-        #error-pane {
-            position: fixed;
-            right: 0;
-            top: 0;
-            left: 0
         }
 
         #shield {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 51000
         }
-
 
         #unit {
             overflow: auto; height: 100vh; margin: 0 9em;
@@ -104,8 +89,6 @@
 
 <div id="shield"></div>
 
-<div id="error-pane"></div>
-
 <div style="position:fixed; width: 100%; text-align: center; top: 1em;">
     <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
 </div>
@@ -140,82 +123,107 @@
     let validPages = {1: "main"}
     let seenPages = [1]
 
+    let logStash = [];
+
     let playerConfig = {
-        logPolicy: 'eager',
+        logPolicy: 'eager', // "disabled" | "lean" | "rich" | "debug"
         unitNumber: 0,
         unitTitle: 'Unit',
         unitId: 'unit',
         unitCount: Infinity,
-        stateReportPolicy: "none",
+        stateReportPolicy: "none", // none" | "eager" | "on-demand" = "eager"
         pagingMode: "separate"
     }
 
+    // TODO log policy: more logs, is it writteN?
+
     const isDefined = (v) => (typeof v !== "undefined");
 
-    const send = (messageType, p1) => {
+    const send = new function() {
 
-        const messages = {
+        let lastStateMsg = {
+            playerState: null,
+            unitState: null,
+            log: null
+        };
 
-            "vopStateChangedNotification": () => {
-                const msg = {
-                    type: 'vopStateChangedNotification',
-                    sessionId: sessionId,
-                    timeStamp: Date.now(),
-                    unitStateDataTyp: 'sample-player-2.1.0',
-                    playerState: {
-                        validPages: validPages,
-                        currentPage: currentPage.toString()
-                    },
-                    unitState: {
-                        dataParts: {
-                            all: {
-                                answers: getAnswers(),
-                                // we have to store the audio-state in the unitState.all because testcenter as
-                                // of 7.3 does neither support custom player-states not other partition of data
-                                // than a single `all`-field
-                                audio: soundModule.getState()
-                            },
-                        },
-                        presentationProgress: presentationProgress(),
-                        responseProgress: 'some', // TODO responseProgress
-                    }
-                };
-                console.log(msg);
-                return msg;
-            },
-
-            "vopGetStateResponse": () => {
-                msg = messages.vopStateChangedNotification();
-                msg.type = 'vopGetStateResponse';
-                return msg;
-            },
-
-            "vopReadyNotification": () => {
-                return Object.assign(
-                    {type: 'vopReadyNotification'},
-                    document.querySelector('meta[name="player-meta"]').dataset
-                );
-            },
-
-            "vopUnitNavigationRequestedNotification": (target) => {
-                return {
-                    type: 'vopUnitNavigationRequestedNotification',
-                    sessionId: sessionId,
-                    targetRelative: target,
-                };
-            },
-
-            "vopWindowFocusChangedNotification": (hasFocus) => {
-                return {
-                    type: 'vopWindowFocusChangedNotification',
-                    sessionId: sessionId,
-                    hasFocus: hasFocus
-                }
+        this.vopStateChangedNotification = () => {
+            if (playerConfig.stateReportPolicy === "eager") {
+                console.log("HUIBOO");
+                send(createStateMsg());
             }
         };
 
-        window.parent.postMessage(messages[messageType](p1), '*')
-    };
+        this.vopGetStateResponse = () => {
+            const msg = createStateMsg(true);
+            msg.type = 'vopGetStateResponse';
+            send(msg);
+        };
+
+        this.vopReadyNotification = () => {
+            send(Object.assign(
+                {type: 'vopReadyNotification'},
+                document.querySelector('meta[name="player-meta"]').dataset
+            ));
+        };
+
+        this.vopUnitNavigationRequestedNotification = (target) => {
+            send({
+                type: 'vopUnitNavigationRequestedNotification',
+                sessionId: sessionId,
+                targetRelative: target,
+            });
+        };
+
+        this.vopWindowFocusChangedNotification = (hasFocus) => {
+            send({
+                type: 'vopWindowFocusChangedNotification',
+                sessionId: sessionId,
+                hasFocus: hasFocus
+            });
+        }
+
+        const send = msg => window.parent.postMessage(msg, '*')
+
+        const createStateMsg = (forceIncludeState = false) => {
+            const message = {
+                type: 'vopStateChangedNotification',
+                sessionId: sessionId,
+                timeStamp: Date.now(),
+                unitStateDataTyp: 'sample-player-2.1.0',
+            };
+            const playerState = {
+                validPages: validPages,
+                currentPage: currentPage.toString()
+            };
+            const unitState = {
+                dataParts: {
+                    all: {
+                        answers: getAnswers(),
+                        // we have to store the audio-state in the unitState.all because testcenter as
+                        // of 7.3 does neither support custom player-states not other partition of data
+                        // than a single `all`-field
+                        audio: soundModule.getState()
+                    },
+                },
+                presentationProgress: presentationProgress(),
+                responseProgress: 'some', // TODO responseProgress
+            };
+            if (forceIncludeState || JSON.stringify(playerState) !== JSON.stringify(lastStateMsg.playerState)) {
+                message.playerState = playerState;
+            }
+            if (forceIncludeState || JSON.stringify(unitState) !== JSON.stringify(lastStateMsg.unitState)) {
+                message.unitState = unitState;
+            }
+            if (logStash.length) {
+                message.log = logStash;
+                logStash = [];
+            }
+            lastStateMsg = message;
+            console.log(message);
+            return message;
+        }
+    }();
 
     const receive = (type, data) => {
 
@@ -223,10 +231,7 @@
 
             "vopStartCommand": (data) => {
                 // TODO start on correct side
-                // TODO apply settings like scroll setting
-                if (data.unitDefinitionType !== "sample-player-2.1.0") {
-                    addAlert('warning', "Unit definition type does not match: " + data.unitDefinitionType);
-                }
+
                 const unitState = data.unitState || {};
                 const playerState = data.playerState || {};
                 const dataParts = unitState.dataParts || {};
@@ -264,9 +269,13 @@
                     }
                 }
 
+                if (data.unitDefinitionType !== "sample-player-2.1.0") {
+                    warn("Unit definition type does not match: " + data.unitDefinitionType);
+                }
+
                 sessionId = data.sessionId;
 
-                send("vopStateChangedNotification");
+                send.vopStateChangedNotification();
             },
 
             "vopPageNavigationCommand": (data) => {
@@ -278,7 +287,7 @@
                 if (data.stop) {
                     togglePlayerRunning(false);
                 }
-                send('vopGetStateResponse');
+                send.vopGetStateResponse();
             },
 
             // not implemented in testcenter 7.3.1
@@ -297,6 +306,8 @@
         }
     };
 
+
+
     const getAnswers = () => [...new FormData(document.querySelector("form"))]
         .reduce((carry, entry) => {
             carry[entry[0]] = entry[1];
@@ -307,11 +318,12 @@
         Object.keys(answers).forEach(key => {
             const formElementsWithThisName = document.querySelectorAll(`form [name="${key}"]`);
             if (formElementsWithThisName.length === 0) {
-                addAlert('warning', `form field missing: "${key}"`);
+                warn(`form field missing: "${key}"`);
             } else if (formElementsWithThisName.length === 1) {
                 formElementsWithThisName[0].setAttribute('value', answers[key]);
             } else {
-                addAlert('warning', `duplicate form field missing: "${key}"`);
+                formElementsWithThisName[0].setAttribute('value', answers[key]);
+                warn(`duplicate form field: "${key}"`);
             }
         });
     }
@@ -367,13 +379,24 @@
         }
     }
 
-    const addAlert = (type, message, ...data) => {
-        console.warn(`${type}: ${message}`, ...data);
-        document.querySelector('#error-pane').innerHTML += `<div class='alert alert-${type}'>${message}</div>`;
+    const warn = (message, ...data) => {
+        console.warn(message, ...data);
+        if (playerConfig.logPolicy === "debug") {
+            log('warning', message);
+            send.vopStateChangedNotification();
+        }
+    }
+
+    const log = (type, message) => {
+        logStash.push({
+            timeStamp: Date.now(),
+            key: type,
+            content: message
+        });
     }
 
     const reportState = () => {
-        send("vopStateChangedNotification");
+        send.vopStateChangedNotification();
     }
 
     const gotoPage = (target) => {
@@ -408,7 +431,7 @@
             seenPages.push(currentPage);
         }
 
-        send("vopStateChangedNotification");
+        send.vopStateChangedNotification();
     }
 
     const togglePlayerRunning = (running) => {
@@ -454,7 +477,7 @@
     }
 
     const updateSoundStateDisplay = audioState => {
-        const elem = document.querySelector('#melody-audioState');
+        const elem = document.querySelector('#melody-state');
         if (!elem) {
             return;
         }
@@ -527,7 +550,6 @@
                 } catch (error) {
                     soundOn = false;
                     position++;
-                    console.log("!e", error, position, this.sheet);
                     return;
                 }
             }
@@ -592,21 +614,21 @@
     window.addEventListener('message', event => {receive(event.data.type, event.data);}, false);
 
     document.addEventListener("DOMContentLoaded", () => {
-        send("vopReadyNotification");
+        send.vopReadyNotification();
     });
 
     document.addEventListener('audioStateChange', event => {
-        send("vopStateChangedNotification");
+        send.vopStateChangedNotification();
         updateSoundStateDisplay(event.detail);
         toggleAudioButtons(event.detail);
     });
 
     window.addEventListener('blur', () => {
-        send('vopWindowFocusChangedNotification', document.hasFocus());
+        send.vopWindowFocusChangedNotification(document.hasFocus());
     });
 
     window.addEventListener('focus', () => {
-        send('vopWindowFocusChangedNotification', document.hasFocus());
+        send.vopWindowFocusChangedNotification(document.hasFocus());
     });
 
     addEventListener('change', "form select, form textarea, form input", reportState);
@@ -615,16 +637,16 @@
     addEventListener('click', '#prev-page', () => gotoPage('#previous'));
 
     addEventListener('click', '#prev-unit', () => {
-        send("vopUnitNavigationRequestedNotification", "#previous");
+        send.vopUnitNavigationRequestedNotification("#previous");
     });
     addEventListener('click', '#next-unit', () => {
-        send("vopUnitNavigationRequestedNotification", "#next");
+        send.vopUnitNavigationRequestedNotification("#next");
     });
     addEventListener('click', '#first-unit', () => {
-        send("vopUnitNavigationRequestedNotification", "#first");
+        send.vopUnitNavigationRequestedNotification("#first");
     });
     addEventListener('click', '#last-unit', () => {
-        send("vopUnitNavigationRequestedNotification", "#last");
+        send.vopUnitNavigationRequestedNotification("#last");
     });
     addEventListener('click', '#melody-play[data-sheet]', e => {
         e.preventDefault();
