@@ -23,6 +23,7 @@
                 </p>
             </div>
             <div style="flex: 50%; padding: 2px">
+                <h3>Player Specs</h3>
                 <table id="player-meta" style="width:100%"><!-- will be filled automatically --></table>
             </div>
         </div>
@@ -39,9 +40,10 @@
     />
 
     <style>
-        body {
-            font-family: sans-serif;
+        html, body {
+            height: 100vh; overflow: hidden; font-family: sans-serif; margin: 0;
         }
+
         .alert-warning {
             background: yellow;
         }
@@ -50,22 +52,50 @@
         }
 
         fieldset {
-            min-height: 400px; margin-bottom: 2em;
+            min-height: 80vh; margin-bottom: 2em;
         }
 
-        .paged fieldset {
-            display: none
-        }
-
-        .paged fieldset:first-child {
-            display: block
+        #error-pane {
+            position: fixed;
+            right: 0;
+            top: 0;
+            left: 0
         }
 
         #shield {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 51000
         }
-        #player-meta td {
-            padding: 3px
+
+
+        #unit {
+            overflow: auto; height: 100vh; margin: 0 9em;
+        }
+
+        #unit.paged.separate {
+            padding-top: 3.2em;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #unit.paged fieldset {
+            display: none
+        }
+
+        #unit.paged fieldset:first-child {
+            display: block
+        }
+
+        #unit.paged.separate fieldset {
+            overflow-y: auto;
+            height: 84vh;
+        }
+
+        #unit.concat-scroll-snap {
+            scroll-snap-type: y mandatory;
+        }
+
+        #unit.concat-scroll-snap fieldset {
+            scroll-snap-align: start;
         }
     </style>
 
@@ -76,36 +106,32 @@
 
 <div id="error-pane"></div>
 
-<div style="margin: 4em 9em; position: relative">
-
-    <div style="position:absolute; width: 100%; text-align: center; top: -3em;">
-        <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
-    </div>
-
-    <div style="position:fixed; bottom: 1em; left: 9em; right: 9em; text-align: center;">
-        <button id="next-page" title="Next Page" type="button" class="btn btn-outline-primary">↓</button>
-    </div>
-
-    <div style="position:fixed; top: 50%; left: 1em;">
-        <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
-        <button id="prev-unit" title="Previous Page" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
-    </div>
-
-    <div style="position:fixed; top: 50%; right: 1em;">
-        <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
-        <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
-    </div>
-
-    <form>
-        <span id="unit"></span>
-    </form>
+<div style="position:fixed; width: 100%; text-align: center; top: 1em;">
+    <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
 </div>
+
+<div style="position:fixed; bottom: 1em; left: 9em; right: 9em; text-align: center;">
+    <button id="next-page" title="Next Page" type="button" class="btn btn-outline-primary">↓</button>
+</div>
+
+<div style="position:fixed; top: 50%; left: 1em;">
+    <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
+    <button id="prev-unit" title="Previous Page" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
+</div>
+
+<div style="position:fixed; top: 50%; right: 1em;">
+    <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
+    <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
+</div>
+
+<form>
+    <div id="unit"><!-- will be filled automatically --></div>
+</form>
 
 <script>
 
     // TODO logging
     // TODO log-policy
-    // TODO paging-mode -> scroll is implemted buggy but okay, separate shoudl work, snap.scroll: todo
 
     let sessionId = "";
 
@@ -203,25 +229,32 @@
                 }
                 const unitState = data.unitState || {};
                 const playerState = data.playerState || {};
-                playerConfig = Object.assign(playerConfig, (data.playerConfig || {}));
-                console.log('playerConfig', playerConfig);
                 const dataParts = unitState.dataParts || {};
                 const all = dataParts.all || {};
                 const answers = all.answers || {};
                 const audio = all.audio || {};
+
+                playerConfig = Object.assign(playerConfig, (data.playerConfig || {}));
+
+                console.log('data', data);
+                console.log('playerConfig', playerConfig);
+
                 document.querySelector('#unit').innerHTML += data.unitDefinition;
+
                 setAnswers(answers);
-                setPages();
-                if (playerConfig.pagingMode !== 'separate') {
-                    setScrollObserver();
-                }
+
+                setPages()
+
+                setPagingMode(playerConfig.pagingMode);
 
                 if (typeof playerState.currentPage !== "undefined") {
-                    gotoPage()
+                    gotoPage(playerState.currentPage)
                 }
-                findInfobox();
+
+                findAndFillInfobox();
                 togglePageNavButtons();
                 toggleUnitNavButtons();
+
                 if (typeof audio.position !== "undefined") {
                     setMelody();
                     if (audio.soundOn) {
@@ -230,7 +263,9 @@
                         soundModule.forward(audio.position);
                     }
                 }
+
                 sessionId = data.sessionId;
+
                 send("vopStateChangedNotification");
             },
 
@@ -290,6 +325,18 @@
             carry[pageNr.toString()] = (legendElem) ? legendElem.innerText : 'Page-' + pageNr;
             return carry
         }, {});
+    }
+
+    const setPagingMode = mode => {
+        document.querySelector('#unit').classList.add(mode);
+        switch (mode) {
+            case 'separate':
+                break;
+            case 'concat-scroll-snap':
+            case 'concat-scroll':
+                setScrollObserver();
+                break;
+        }
     }
 
     const setScrollObserver = () => {
@@ -446,7 +493,7 @@
         });
     }
 
-    const findInfobox = () => {
+    const findAndFillInfobox = () => {
         const infoBoxElem = document.querySelector('#player-info');
         if (!infoBoxElem) {
             return;
