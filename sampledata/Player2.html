@@ -29,6 +29,13 @@
         </div>
     </template>
 
+    <!--
+    developement rules
+    * don't ever use the form-element, it's up to the player
+    *
+
+    -->
+
     <meta name="player-meta" content="verona-sample-player-2.0.0"
           data-version="2.0.0"
           data-repository-url="https://github.com/iqb-berlin/testcenter-backend"
@@ -201,7 +208,7 @@
                     },
                 },
                 presentationProgress: presentationProgress(),
-                responseProgress: 'some', // TODO responseProgress
+                responseProgress: responseProgress(),
             };
             if (forceIncludeState || JSON.stringify(playerState) !== JSON.stringify(lastStateMsg.playerState)) {
                 message.playerState = playerState;
@@ -302,26 +309,84 @@
         }
     };
 
+    const getAnswers = _ => ({...getAnswersFromForm(), ...getAnswersFromEditables()});
 
-
-    const getAnswers = () => [...new FormData(document.querySelector("form"))]
+    const getAnswersFromForm = _ => [...new FormData(document.querySelector("form"))]
         .reduce((carry, entry) => {
-            carry[entry[0]] = entry[1];
+            if (isDefined(carry[entry[0]])) {
+                carry[entry[0]] = Array.isArray(carry[entry[0]]) ? [...carry[entry[0]], entry[1]] : [carry[entry[0]], entry[1]];
+            } else {
+                carry[entry[0]] = entry[1];
+            }
+            return carry;
+        }, {});
+
+    const getAnswersFromEditables = _ => ([...document.querySelectorAll('form [name][contenteditable]')] || [])
+        .reduce((carry, element) => {
+            const name = element.getAttribute("name");
+            if (isDefined(carry[name])) {
+                carry[name] = Array.isArray(carry[name])
+                    ? [...carry[name], element.innerText]
+                    : [carry[name], element.innerText];
+            } else {
+                carry[name] = element.innerText;
+            }
             return carry;
         }, {});
 
     const setAnswers = (answers) => {
-        Object.keys(answers).forEach(key => {
-            const formElementsWithThisName = document.querySelectorAll(`form [name="${key}"]`);
-            if (formElementsWithThisName.length === 0) {
-                log.debug(`form field missing: "${key}"`);
-            } else if (formElementsWithThisName.length === 1) {
-                formElementsWithThisName[0].setAttribute('value', answers[key]);
-            } else {
-                formElementsWithThisName[0].setAttribute('value', answers[key]);
-                log.debug(`duplicate form field: "${key}"`);
-            }
-        });
+        Object.keys(answers).forEach(key => {setAnswer(key, answers[key]);});
+    }
+
+    // TODO editable field -> test multi
+    const setAnswer = (name, value, index = 0) => {
+
+        const formElementsWithThisName = document.querySelectorAll(`form [name="${name}"]`);
+
+        if (formElementsWithThisName.length === 0) {
+            log.debug(`form field missing: "${name}"`);
+            return;
+        }
+
+        if (Array.isArray(value)) {
+            console.log("PIW", value);
+            value.forEach((valueEntry, i) => setAnswer(name, valueEntry, i));
+            return;
+        }
+
+        const element = formElementsWithThisName[index] || formElementsWithThisName[0];
+
+        console.log("SET", element.tagName, element.type, value, index );
+
+        switch (element.tagName) {
+            case "INPUT":
+                switch (element.type) {
+                    case 'radio':
+                        formElementsWithThisName.forEach(radioElem => {
+                            if (radioElem.value === value) {
+                                radioElem.setAttribute('checked', 'checked');
+                            } else {
+                                radioElem.removeAttribute('checked')
+                            }
+                        });
+                        break;
+                    case 'checkbox':
+                        if (value === "on") {
+                            element.setAttribute('checked', 'checked');
+                        } else {
+                            element.removeAttribute('checked');
+                        }
+                        break;
+                    default:
+                        element.setAttribute('value', value);
+                }
+                break;
+            case "SELECT":
+                element.querySelector(`option[value="${value}"]`)?.setAttribute('selected', 'on');
+                break;
+            default:
+                element.innerText = value;
+        }
     }
 
     const setPages = () => {
@@ -518,6 +583,14 @@
             }, 'all');
     }
 
+    const responseProgress = () => {
+        // "none" "some" "complete" "complete-and-valid"
+        document.querySelectorAll("form select, form textarea, form input, [contenteditable]")
+            .forEach(formElem => {
+                console.log(formElem.name, formElem.value, formElem.valid)
+            });
+    }
+
     const addEventListener = (eventName, selector, listener) => {
         document.querySelector('body').addEventListener(eventName, event => {
             if (event.target.matches(selector)) {
@@ -643,8 +716,8 @@
         send.vopWindowFocusChangedNotification(document.hasFocus());
     });
 
-    addEventListener('change', "form select, form textarea, form input", reportState);
-    addEventListener('keyup', "form select, form textarea, form input", reportState);
+    addEventListener('change', "form select, form textarea, form input, [contenteditable]", reportState);
+    addEventListener('keyup', "form select, form textarea, form input, [contenteditable]", reportState);
     addEventListener('click', '#next-page', () => gotoPage('#next'));
     addEventListener('click', '#prev-page', () => gotoPage('#previous'));
 
