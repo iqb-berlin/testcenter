@@ -113,9 +113,6 @@
 
 <script>
 
-    // TODO logging
-    // TODO log-policy
-
     let sessionId = "";
 
     let currentPage = 1;
@@ -135,8 +132,6 @@
         pagingMode: "separate"
     }
 
-    // TODO log policy: more logs, is it writteN?
-
     const isDefined = (v) => (typeof v !== "undefined");
 
     const send = new function() {
@@ -149,7 +144,6 @@
 
         this.vopStateChangedNotification = () => {
             if (playerConfig.stateReportPolicy === "eager") {
-                console.log("HUIBOO");
                 send(createStateMsg());
             }
         };
@@ -244,7 +238,8 @@
                 console.log('data', data);
                 console.log('playerConfig', playerConfig);
 
-                document.querySelector('#unit').innerHTML += data.unitDefinition;
+                document.querySelector('#unit')
+                    .append(document.createRange().createContextualFragment(data.unitDefinition));
 
                 setAnswers(answers);
 
@@ -270,7 +265,7 @@
                 }
 
                 if (data.unitDefinitionType !== "sample-player-2.1.0") {
-                    warn("Unit definition type does not match: " + data.unitDefinitionType);
+                    log.debug("Unit definition type does not match: " + data.unitDefinitionType);
                 }
 
                 sessionId = data.sessionId;
@@ -303,6 +298,7 @@
 
         if (typeof callbacks[type] !== 'undefined') {
             callbacks[type](data);
+            document.dispatchEvent(new CustomEvent(type, {detail: data}));
         }
     };
 
@@ -318,12 +314,12 @@
         Object.keys(answers).forEach(key => {
             const formElementsWithThisName = document.querySelectorAll(`form [name="${key}"]`);
             if (formElementsWithThisName.length === 0) {
-                warn(`form field missing: "${key}"`);
+                log.debug(`form field missing: "${key}"`);
             } else if (formElementsWithThisName.length === 1) {
                 formElementsWithThisName[0].setAttribute('value', answers[key]);
             } else {
                 formElementsWithThisName[0].setAttribute('value', answers[key]);
-                warn(`duplicate form field: "${key}"`);
+                log.debug(`duplicate form field: "${key}"`);
             }
         });
     }
@@ -379,21 +375,35 @@
         }
     }
 
-    const warn = (message, ...data) => {
-        console.warn(message, ...data);
-        if (playerConfig.logPolicy === "debug") {
-            log('warning', message);
+    const log = new function() {
+        this.debug = (message) => {
+            console.warn(message);
+            if (playerConfig.logPolicy === "debug") {
+                log('debug', message);
+            }
+        }
+
+        this.rich = (type, message) => {
+            if (["debug", "rich"].indexOf(playerConfig.logPolicy) > -1) {
+                console.log(message);
+                log(type, message);
+            }
+        }
+
+        this.lean = (type, message) => {
+            console.log(message);
+            log(type, message);
+        }
+
+        const log = (type, message) => {
+            logStash.push({
+                timeStamp: Date.now(),
+                key: type,
+                content: message
+            });
             send.vopStateChangedNotification();
         }
-    }
-
-    const log = (type, message) => {
-        logStash.push({
-            timeStamp: Date.now(),
-            key: type,
-            content: message
-        });
-    }
+    }();
 
     const reportState = () => {
         send.vopStateChangedNotification();
@@ -622,6 +632,8 @@
         updateSoundStateDisplay(event.detail);
         toggleAudioButtons(event.detail);
     });
+
+
 
     window.addEventListener('blur', () => {
         send.vopWindowFocusChangedNotification(document.hasFocus());
