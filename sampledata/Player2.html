@@ -321,9 +321,9 @@
             return carry;
         }, {});
 
-    const getAnswersFromEditables = _ => ([...document.querySelectorAll('form [name][contenteditable]')] || [])
+    const getAnswersFromEditables = _ => ([...document.querySelectorAll('form [contenteditable]')] || [])
         .reduce((carry, element) => {
-            const name = element.getAttribute("name");
+            const name = element.getAttribute("name") || '';
             if (isDefined(carry[name])) {
                 carry[name] = Array.isArray(carry[name])
                     ? [...carry[name], element.innerText]
@@ -338,31 +338,33 @@
         Object.keys(answers).forEach(key => {setAnswer(key, answers[key]);});
     }
 
-    // TODO editable field -> test multi
     const setAnswer = (name, value, index = 0) => {
 
-        const formElementsWithThisName = document.querySelectorAll(`form [name="${name}"]`);
+        const elements = document.querySelectorAll(name
+            ? `form [name="${name}"]`
+            : "form select:not([name]), form textarea:not([name]), form input:not([name]), form [contenteditable]:not([name])"
+        );
+        console.log("!", elements)
 
-        if (formElementsWithThisName.length === 0) {
+        if (elements.length === 0) {
             log.debug(`form field missing: "${name}"`);
             return;
         }
 
         if (Array.isArray(value)) {
-            console.log("PIW", value);
             value.forEach((valueEntry, i) => setAnswer(name, valueEntry, i));
             return;
         }
 
-        const element = formElementsWithThisName[index] || formElementsWithThisName[0];
+        const element = elements[index] || elements[0];
 
-        console.log("SET", element.tagName, element.type, value, index );
+        element.dataset.touched = true;
 
         switch (element.tagName) {
             case "INPUT":
                 switch (element.type) {
                     case 'radio':
-                        formElementsWithThisName.forEach(radioElem => {
+                        elements.forEach(radioElem => {
                             if (radioElem.value === value) {
                                 radioElem.setAttribute('checked', 'checked');
                             } else {
@@ -583,12 +585,26 @@
             }, 'all');
     }
 
+    const itemElements = "form select, form textarea, form input, form [contenteditable]";
+
     const responseProgress = () => {
         // "none" "some" "complete" "complete-and-valid"
-        document.querySelectorAll("form select, form textarea, form input, [contenteditable]")
-            .forEach(formElem => {
-                console.log(formElem.name, formElem.value, formElem.valid)
-            });
+        const elements = [...document.querySelectorAll(itemElements)];
+        const touchedCount = elements.filter(formElem => formElem.dataset.touched).length;
+        const validCount = elements.filter(formElem => formElem.validity.valid).length;
+        if (elements.length === touchedCount && touchedCount === validCount) {
+            return 'complete-and-valid'
+        } else if (elements.length === touchedCount) {
+            return 'complete'
+        } else if (touchedCount) {
+            return 'some'
+        } else {
+            return 'none';
+        }
+    }
+
+    const markElementTouched = elem => {
+        elem.dataset.touched = true;
     }
 
     const addEventListener = (eventName, selector, listener) => {
@@ -597,6 +613,28 @@
                 listener(event);
             }
         });
+    }
+
+    const throttle = (callback, limit) => {
+        let waiting = false;
+        return function() {
+            if (waiting) return;
+            callback.apply(this, arguments);
+            waiting = true;
+            setTimeout(() => {
+                waiting = false;
+            }, limit);
+        }
+    }
+
+    const debounce = (callback, limit) => {
+        let handle = null;
+        return function() {
+            clearTimeout(handle);
+            handle = setTimeout(() => {
+                callback.apply(this, arguments);
+            }, limit);
+        }
     }
 
     const findAndFillInfobox = () => {
@@ -716,8 +754,12 @@
         send.vopWindowFocusChangedNotification(document.hasFocus());
     });
 
-    addEventListener('change', "form select, form textarea, form input, [contenteditable]", reportState);
-    addEventListener('keyup', "form select, form textarea, form input, [contenteditable]", reportState);
+    addEventListener('change', itemElements, reportState);
+    addEventListener('keyup', itemElements, debounce(reportState, 1000));
+    addEventListener('mouseover', itemElements, event => markElementTouched(event.target));
+    addEventListener('keyup', itemElements, event => markElementTouched(event.target));
+
+
     addEventListener('click', '#next-page', () => gotoPage('#next'));
     addEventListener('click', '#prev-page', () => gotoPage('#previous'));
 
