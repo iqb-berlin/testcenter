@@ -4,18 +4,28 @@
     <meta charset="UTF-8">
     <title>Verona Sample Player 2</title>
 
+    <meta name="player-meta" content="verona-sample-player-2.0.0"
+          data-version="2.0.0"
+          data-repository-url="https://github.com/iqb-berlin/testcenter-backend"
+          data-api-version="2.1.0"
+          data-not-supported-api-features=""
+          data-supported-unit-definition-types="sample-player-2.1.0"
+          data-supported-unit-state-data-types="sample-player-2.1.0"
+          data-supported-browsers='{"Firefox": 55, "Chrome": 51, "Edge": 18}'
+    />
+
     <template id="player-info-template">
         <div style="display: flex;">
             <div style="flex: 50%; padding: 2px">
                 <h1>Verona Sample Player 2</h1>
                 <p>
-                    This is simple, dependency-less, vanilla-js-written, but full-featured unit player,
+                    This is a simple, dependency-less, vanilla-js-written, but full-featured unit player,
                     mainly as showcase for developers and for software-testing.
                 </p>
                 <p>
                     It does implement the
                     <a href="https://github.com/verona-interface" target="_blank">Verona 2.1.0</a>-Standard
-                    and can be used for units containing simple forms.
+                    and can be used for units containing simple any content in HTML-format.
                 </p>
                 <p>
                     Unit Description ist the <code>form</code>-content as HTML. Just give some names to the form element,
@@ -30,21 +40,18 @@
     </template>
 
     <!--
-    development rules
-    * don't ever use the form-element, it's up to the player
-    *
-
+    # Development rules for units
+    The Unit can contain any HTMl-content, even `<script>`-tags!
+    * Don't use the `<form>`-element, since the whole unit will put into one.
+    * use the `<fieldset>` to define pages if you want to have a multi-page unit.
+    * Any `<input>`-, `<textarea>`- and `<select>`-element will be tracked and content stored as well as any element
+      containing the `contenteditable`-attribute. In both cases use the name element to set up variable names.
+    * The player contains some JS-Classes which can be used in unit-code to extend functionality.
+    * Whenever a Verona-message is received an event with the same name is thrown, whenever a message is sent,
+      an event called `sent:{MessageName}` gets thrown afterwards. Use these events to hook into the player's
+      functionality if you want to.
+    * that's it.
     -->
-
-    <meta name="player-meta" content="verona-sample-player-2.0.0"
-          data-version="2.0.0"
-          data-repository-url="https://github.com/iqb-berlin/testcenter-backend"
-          data-api-version="2.1.0"
-          data-not-supported-api-features=""
-          data-supported-unit-definition-types="sample-player-2.1.0"
-          data-supported-unit-state-data-types="sample-player-2.1.0"
-          data-supported-browsers='{"Firefox": 55, "Chrome": 51, "Edge": 18}'
-    />
 
     <style>
         html, body {
@@ -132,9 +139,7 @@
         pagingMode: "separate" // "separate" | "concat-scroll" | "concat-scroll-snap"
     }
 
-    // TODO reloadPlayerConfig-fn?
-
-    const isDefined = (v) => (typeof v !== "undefined");
+    const isDefined = v => (typeof v !== "undefined");
 
     const Message = new class {
         send = new class {
@@ -179,7 +184,10 @@
                 });
             }
 
-            _send = msg => window.parent.postMessage(msg, '*')
+            _send = msg => {
+                window.parent.postMessage(msg, '*');
+                document.dispatchEvent(new CustomEvent('sent:' + msg.type, {detail: msg}));
+            }
 
             _createStateMsg = (forceIncludeState = false) => {
                 const message = {
@@ -203,9 +211,8 @@
                 if (forceIncludeState || JSON.stringify(unitState) !== JSON.stringify(this._lastStateMsg.unitState)) {
                     message.unitState = unitState;
                 }
-                if (Log.get().length) {
-                    message.log = Log.get();
-                    Log.clear();
+                if (Log.hasNew()) {
+                    message.log = Log.next();
                 }
                 this._lastStateMsg = message;
                 console.log(message);
@@ -422,7 +429,6 @@
     }
 
     const Pages = new class {
-
         currentPage = 1;
         pageCount = 1;
         validPages = {1: "main"}
@@ -517,7 +523,10 @@
 
     const Log = new class {
 
-        _logStash = [];
+        _logStash = {
+            sent: [],
+            new: []
+        }; // log-items get stashed in case stateReportPolicy === 'on-demand'
 
         debug = (message) => {
             console.warn(message);
@@ -538,12 +547,19 @@
             this._log(type, message);
         }
 
-        get = () => this._logStash;
+        getAll = _ => [...this._logStash.sent.map(msg => {msg.sent = true; return msg}), ...this._logStash.new];
 
-        clear = () => this._logStash = [];
+        next = _ => {
+            const toSent = [...this._logStash.new];
+            this._logStash.sent.push(...toSent);
+            this._logStash.new.clear();
+            return toSent;
+        }
+
+        hasNew = _ => (this._logStash.new.length > 0);
 
         _log = (type, message) => {
-            this._logStash.push({
+            this._logStash.sent.push({
                 timeStamp: Date.now(),
                 key: type,
                 content: message
