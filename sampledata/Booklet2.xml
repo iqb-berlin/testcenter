@@ -6,6 +6,6 @@
   </Metadata>
 
   <Units>
-     <Unit id="UNIT.SAMPLE-2" label="The Seconds Sample Unit" labelshort="2nd Sample Unit" />
+     <Unit id="UNIT.SAMPLE-2" label="A very Simple Sample Unit" labelshort="2nd Sample Unit" />
   </Units>
 </Booklet>

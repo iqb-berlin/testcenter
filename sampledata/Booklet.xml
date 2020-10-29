@@ -7,7 +7,9 @@
   </Metadata>
 
   <BookletConfig>
-    <Config key="log_mode">RICH</Config>
+    <Config key="logPolicy">debug</Config>
+    <Config key="pagingMode">concat-scroll-snap</Config>
+    <Config key="stateReportPolicy">eager</Config>
     <Config key="page_navibuttons">SEPARATE_BOTTOM</Config>
     <Config key="unit_screenheader">WITH_BOOKLET_TITLE</Config>
   </BookletConfig>
@@ -19,7 +21,7 @@
     </Restrictions>
 
     <Testlet id="a_testlet_without_restrictions" label="First Group">
-      <Unit id="UNIT.SAMPLE" label="The Great Sample Unit" labelshort="Sample Unit" />
+      <Unit id="UNIT.SAMPLE" label="A Sample Unit to demonstrate the SamplePLayer2" labelshort="Sample Unit" />
     </Testlet>
 
     <Testlet id="a_testlet_with_restrictions" label="Second Group">
@@ -29,7 +31,7 @@
         <TimeMax minutes="1" />
       </Restrictions>
 
-      <Unit id="UNIT.SAMPLE-2" label="The Seconds Sample Unit" labelshort="2nd Sample Unit" />
+      <Unit id="UNIT.SAMPLE-2" label="A very Simple Sample Unit" labelshort="2nd Sample Unit" />
     </Testlet>
 
   </Units>

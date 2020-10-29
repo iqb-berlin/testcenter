@@ -1,50 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.4.1/vo_code/vo_Unit.xsd">
   <Metadata>
     <Id>UNIT.SAMPLE</Id>
     <Label>A sample unit</Label>
-    <Description>This is an Unit</Description>
+    <Description>This is a sample unit showing the possibilities of the sample player.</Description>
   </Metadata>
 
-  <Definition player="SAMPLE_PLAYER">
-    {
-      "schema": {
-
-        "string_example": {
-          "type": "string",
-          "title": "Text answers",
-          "required": true
-        },
-        "number_example": {
-          "type": "integer",
-          "title": "Numeric answers",
-          "description": "Numeric values can be displayed as a slider!",
-          "default": 25,
-          "minimum": 5,
-          "exclusiveMinimum": true,
-          "maximum": 85
-        },
-        "color_example": {
-          "type": "string",
-          "title": "Even exotic form elements like colorpicker are possible",
-          "format": "color"
-        }
-      },
-
-      "form": [
-        "string_example",
-        "color_example",
-        {
-          "key": "number_example",
-          "type": "range",
-          "step": 1
-        },
-        {
-          "type": "submit",
-          "title": "Next"
-        }
-      ]
-    }
-  </Definition>
-
+  <DefinitionRef player="SAMPLE_PLAYER2">SAMPLE_UNIT.HTM</DefinitionRef>
 </Unit>
