@@ -41,7 +41,7 @@
 
     <!--
     # Development rules for units
-    The Unit can contain any HTMl-content, even `<script>`-tags!
+    The Unit can contain any HTMl-content, even `<script>`- and `<style>`-tags!
     * Don't use the `<form>`-element, since the whole unit will put into one.
     * use the `<fieldset>` to define pages if you want to have a multi-page unit.
     * Any `<input>`-, `<textarea>`- and `<select>`-element will be tracked and content stored as well as any element
@@ -141,6 +141,30 @@
 
     const isDefined = v => (typeof v !== "undefined");
 
+    const Time = new class {
+        throttle = (callback, limit) => {
+            let waiting = false;
+            return function() {
+                if (waiting) return;
+                callback.apply(this, arguments);
+                waiting = true;
+                setTimeout(() => {
+                    waiting = false;
+                }, limit);
+            }
+        }
+
+        debounce = (callback, limit) => {
+            let handle = null;
+            return function() {
+                clearTimeout(handle);
+                handle = setTimeout(() => {
+                    callback.apply(this, arguments);
+                }, limit);
+            }
+        }
+    }
+
     const Message = new class {
         send = new class {
             _lastStateMsg = {
@@ -151,9 +175,11 @@
 
             vopStateChangedNotification = _ => {
                 if (playerConfig.stateReportPolicy === "eager") {
-                    this._send(this._createStateMsg());
+                    this._sendVopStateChangedNotification();
                 }
             };
+
+            _sendVopStateChangedNotification = Time.debounce(() => this._send(this._createStateMsg()), 500);
 
             vopGetStateResponse = _ => {
                 const msg = this._createStateMsg(true);
@@ -185,6 +211,10 @@
             }
 
             _send = msg => {
+                if (msg.type === 'vopStateChangedNotification') {
+                    console.log('sent:' + msg.type, msg);
+
+                }
                 window.parent.postMessage(msg, '*');
                 document.dispatchEvent(new CustomEvent('sent:' + msg.type, {detail: msg}));
             }
@@ -211,11 +241,11 @@
                 if (forceIncludeState || JSON.stringify(unitState) !== JSON.stringify(this._lastStateMsg.unitState)) {
                     message.unitState = unitState;
                 }
+                console.log(Log._logStash)
                 if (Log.hasNew()) {
                     message.log = Log.next();
                 }
                 this._lastStateMsg = message;
-                console.log(message);
                 return message;
             }
         }
@@ -247,6 +277,8 @@
 
         start = data => {
 
+            sessionId = data.sessionId || new Error("session ID missing");
+
             this._setUnit(data["unitDefinition"] || new Error("unitDefinition missing"));
             this._setPlayerConfig(data["playerConfig"] || {});
             this._setPlayerState(data["playerState"] || {});
@@ -257,11 +289,9 @@
 
             if (data['unitDefinitionType'] !== "sample-player-2.1.0") {
                 Log.debug("Unit definition type does not match: " + data['unitDefinitionType']);
+            } else {
+                // Message.send.vopStateChangedNotification();
             }
-
-            sessionId = data.sessionId || new Error("session ID missing");
-
-            Message.send.vopStateChangedNotification();
         }
 
         getData = () => ({
@@ -349,7 +379,7 @@
     const Answers = new class {
         get = _ => ({...this._getAnswersFromForm(), ...this._getAnswersFromEditableElements()});
 
-        set = (answers) => {
+        set = answers => {
             Object.keys(answers).forEach(key => {this._setAnswer(key, answers[key]);});
         }
 
@@ -435,7 +465,7 @@
         seenPages = [1];
         _observer = null;
 
-        get = () => {
+        get = _ => {
             const pageElements = document.querySelectorAll("fieldset");
             this.pageCount = Math.max(1, pageElements.length);
             this.validPages = [...pageElements].reduce((carry, pageElement) => {
@@ -462,7 +492,7 @@
             }
         }
 
-        goto = (target) => {
+        goto = target => {
             if (target === '#next') {
                 this.currentPage++;
             } else if (target === '#previous') {
@@ -475,7 +505,7 @@
                 this.currentPage = parseInt(target);
             }
 
-            const pageElem = document.querySelector(`fieldset:nth-child(${this.currentPage})`);
+            const pageElem = document.querySelector(`fieldset:nth-of-type(${this.currentPage})`);
 
             if (playerConfig.pagingMode === "separate") {
                 document.querySelectorAll("fieldset")
@@ -497,12 +527,11 @@
             Message.send.vopStateChangedNotification();
         }
 
-        setScrollObserver = () => {
+        setScrollObserver = _ => {
             this._observer = new IntersectionObserver(
                 entries => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting) {
-                            console.log("scroll", entry.target.dataset.pagenr);
                             this.enterPage(entry.target.dataset.pagenr);
                         }
                     });
@@ -528,7 +557,7 @@
             new: []
         }; // log-items get stashed in case stateReportPolicy === 'on-demand'
 
-        debug = (message) => {
+        debug = message => {
             console.warn(message);
             if (playerConfig.logPolicy === "debug") {
                 this._log('debug', message);
@@ -552,19 +581,20 @@
         next = _ => {
             const toSent = [...this._logStash.new];
             this._logStash.sent.push(...toSent);
-            this._logStash.new.clear();
+            this._logStash.new.length = 0
             return toSent;
         }
 
         hasNew = _ => (this._logStash.new.length > 0);
 
         _log = (type, message) => {
-            this._logStash.sent.push({
+            this._logStash.new.push({
                 timeStamp: Date.now(),
                 key: type,
                 content: message
             });
             Message.send.vopStateChangedNotification();
+            document.dispatchEvent(new CustomEvent('updateLog'));
         }
     };
 
@@ -588,7 +618,7 @@
             }
         }
 
-        togglePageNavButtons = () => { // TODO take arg?
+        togglePageNavButtons = _ => { // TODO take arg?
             document.querySelector('#unit').classList[playerConfig.pagingMode === 'separate' ? 'add' : 'remove']('paged');
             this.toggleButton('next-page',
                 Pages.pageCount > 1 && Pages.currentPage < Pages.pageCount,
@@ -600,7 +630,7 @@
             );
         }
 
-        toggleUnitNavButtons = () => {
+        toggleUnitNavButtons = _ => {
             this.toggleButton('first-unit', playerConfig.unitNumber > 1);
             this.toggleButton('prev-unit', playerConfig.unitNumber > 1);
             this.toggleButton('next-unit', playerConfig.unitNumber < playerConfig.unitCount);
@@ -611,7 +641,7 @@
             elem.dataset.touched = "true";
         }
 
-        getPlayerInfoHTML = () => {
+        getPlayerInfoHTML = _ => {
             const infoBoxElem = document.createElement('div');
             infoBoxElem.innerHTML = document.querySelector('#player-info-template').innerHTML;
             const meta = {...document.querySelector('meta[name="player-meta"]').dataset};
@@ -628,28 +658,6 @@
                     listener(event);
                 }
             });
-        }
-
-        throttle = (callback, limit) => {
-            let waiting = false;
-            return function() {
-                if (waiting) return;
-                callback.apply(this, arguments);
-                waiting = true;
-                setTimeout(() => {
-                    waiting = false;
-                }, limit);
-            }
-        }
-
-        debounce = (callback, limit) => {
-            let handle = null;
-            return function() {
-                clearTimeout(handle);
-                handle = setTimeout(() => {
-                    callback.apply(this, arguments);
-                }, limit);
-            }
         }
     }
 
@@ -670,7 +678,7 @@
     });
 
     PlayerUI.addEventListener('change', PlayerUI.itemElements, Message.send.vopStateChangedNotification);
-    PlayerUI.addEventListener('keyup', PlayerUI.itemElements, PlayerUI.debounce(Message.send.vopStateChangedNotification, 1000));
+    PlayerUI.addEventListener('keyup', PlayerUI.itemElements, Time.debounce(Message.send.vopStateChangedNotification, 1000));
     PlayerUI.addEventListener('mouseover', PlayerUI.itemElements, event => PlayerUI.markElementTouched(event.target));
     PlayerUI.addEventListener('keyup', PlayerUI.itemElements, event => PlayerUI.markElementTouched(event.target));
 
