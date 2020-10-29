@@ -135,7 +135,7 @@
         unitTitle: 'Unit',
         unitId: 'unit',
         unitCount: Infinity,
-        stateReportPolicy: "none", // none" | "eager" | "on-demand" = "eager"
+        stateReportPolicy: "eager", // none" | "eager" | "on-demand"
         pagingMode: "separate" // "separate" | "concat-scroll" | "concat-scroll-snap"
     }
 
@@ -269,7 +269,7 @@
 
         progressFactors = {
             pages: {
-                all: () => Pages.seenPages.length === Pages.pageCount,
+                complete: () => Pages.seenPages.length === Pages.pageCount,
                 some: () => Pages.seenPages.length > 0
             },
         }
@@ -294,7 +294,7 @@
         }
 
         getData = () => ({
-            all:
+            complete:
                 Object.keys(this.dataPartsCollectors)
                     .reduce((carry, key) => {
                         carry[key] = this.dataPartsCollectors[key]();
@@ -304,14 +304,14 @@
 
         getPresentationProgress = () => Object.keys(this.progressFactors)
             .reduce((carry, key) => {
-                if ((carry === 'all') && this.progressFactors[key].all()) {
-                    return 'all';
+                if ((carry === 'complete') && this.progressFactors[key].complete()) {
+                    return 'complete';
                 } else if ((carry !== 'none') || this.progressFactors[key].some()) {
                     return 'some';
                 } else {
                     return 'none'
                 }
-            }, 'all');
+            }, 'complete');
 
         getResponseProgress = () => {
             /**
@@ -357,7 +357,7 @@
         }
 
         _setPlayerConfig = newPlayerConfig => {
-            playerConfig = newPlayerConfig;
+            playerConfig = Object.assign(playerConfig, newPlayerConfig);
             Pages.setPagingMode(playerConfig.pagingMode);
         }
 
