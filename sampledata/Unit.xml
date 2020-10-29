@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-iqb-php/1.4.1/vo_code/vo_Unit.xsd">
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/7.4.0/definitions/vo_Unit.xsd">
   <Metadata>
     <Id>UNIT.SAMPLE</Id>
     <Label>A sample unit</Label>
     <Description>This is a sample unit showing the possibilities of the sample player.</Description>
   </Metadata>
 
-  <DefinitionRef player="SAMPLE_PLAYER2">SAMPLE_UNIT.HTM</DefinitionRef>
+  <DefinitionRef player="SAMPLE_PLAYER2">SAMPLE_UNITCONTENTS.HTM</DefinitionRef>
 </Unit>
