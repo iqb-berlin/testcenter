@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Verona Sample Player 2</title>
 
-    <meta name="player-meta" content="verona-sample-player-2.0.0"
+    <meta name="application-name" content="verona-sample-player-2.0.0"
           data-version="2.0.0"
           data-repository-url="https://github.com/iqb-berlin/testcenter-backend"
           data-api-version="2.1.0"
@@ -190,7 +190,7 @@
             vopReadyNotification = () => {
                 this._send(Object.assign(
                     {type: 'vopReadyNotification'},
-                    document.querySelector('meta[name="player-meta"]').dataset
+                    document.querySelector('meta[name="application-name"]').dataset
                 ));
             };
 
@@ -642,7 +642,7 @@
         getPlayerInfoHTML = () => {
             const infoBoxElem = document.createElement('div');
             infoBoxElem.innerHTML = document.querySelector('#player-info-template').innerHTML;
-            const meta = {...document.querySelector('meta[name="player-meta"]').dataset};
+            const meta = {...document.querySelector('meta[name="application-name"]').dataset};
             const tableElement = infoBoxElem.querySelector('table');
             Object.keys(meta).forEach(key => {
                 tableElement.innerHTML += `<tr><td>${key}</td><td>${meta[key]}</td></tr>`;
