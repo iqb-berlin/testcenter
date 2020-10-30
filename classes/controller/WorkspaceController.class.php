@@ -358,7 +358,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  getStatus(Request $request, Response $response): Response {
+    public static function getStatus(Request $request, Response $response): Response {
     
         $workspaceId = (int) $request->getAttribute('ws_id');
         $bookletsFolder = new BookletsFolder($workspaceId);
@@ -367,7 +367,7 @@ class WorkspaceController extends Controller {
     }
     
     
-    public static function  getBookletsStarted(Request $request, Response $response): Response {
+    public static function getBookletsStarted(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups', ''));

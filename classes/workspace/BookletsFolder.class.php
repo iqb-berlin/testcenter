@@ -43,71 +43,81 @@ class BookletsFolder extends Workspace {
     }
 
 
-    public function getTesttakersSortedByGroups(): array {
+
+
+    public function getLogins(): array {
 
         $testTakerDirPath = $this->_workspacePath . '/Testtakers';
         if (!file_exists($testTakerDirPath)) {
             throw new Exception("Folder not found: $testTakerDirPath");
         }
-        $preparedBooklets = [];
+        $testtakers = [];
 
         foreach (Folder::glob($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
 
-            $testTakersFile = new XMLFileTesttakers($fullFilePath);
-            if (!$testTakersFile->isValid()) {
+            $testtakersFile = new XMLFileTesttakers($fullFilePath);
+            if (!$testtakersFile->isValid()) { // TODO cross-file-validity?!
 
                 continue;
             }
 
-            foreach ($testTakersFile->getAllTesttakers() as $testtaker) {
+            array_push($testtakers, ...$testtakersFile->getAllTesttakers());
+        }
+        return $testtakers;
+    }
 
-                /* @var PotentialLogin $testtaker */
 
-                if (isset($preparedBooklets[$testtaker->getGroupName()])) {
+    function getTestStatusOverviewNEW(array $bookletsStarted): array {
 
-                    $preparedBooklets[$testtaker->getGroupName()] = [];
-                }
+        $logins = $this->getLogins();
 
-                $preparedBooklets[$testtaker->getGroupName()][] = $testtaker;
+        $allGroupStatistics = [];
+        $codes = [];
+
+        foreach ($logins as $login) {
+
+            /* @var PotentialLogin $login */
+            $groupName = $login->getGroupName();
+
+            if (!isset($allGroupStatistics[$groupName])) {
+                $allGroupStatistics[$groupName] = [
+                    'groupname' => $groupName,
+                    'loginsPrepared' => 0,
+                    'personsPrepared' => 0,
+                    'bookletsPrepared' => 0,
+                    'bookletsStarted' => 0,
+                    'bookletsLocked' => 0,
+                    'laststart' => strtotime("1/1/2000"),
+                    'laststartStr' => ''
+                ];
             }
+
+            if (!isset($codes[$login->getName()])) {
+                $codes[$login->getName()] = [];
+            }
+
+            $codesInLogin = array_keys($login->getBooklets());
+            if ($codesInLogin != [""]) {
+                array_push($codes[$login->getName()], ...$codesInLogin);
+            }
+
+            $allGroupStatistics[$groupName]['loginsPrepared'] += 1;
+            $allGroupStatistics[$groupName]['personsPrepared'] += max(1, count(array_unique($codes[$login->getName()])));
+            $allGroupStatistics[$groupName]['bookletsPrepared'] += array_reduce($login->getBooklets(),
+                function($carry, $bookletList) {
+                    return $carry + count($bookletList);
+                },
+                0
+            );
         }
 
-        return $preparedBooklets;
+        return $allGroupStatistics;
     }
 
 
     function getTestStatusOverview(array $bookletsStarted): array {
 
-        $allGroupStatistics = [];
-
-        foreach ($this->getTesttakersSortedByGroups() as $groupName => $groupOfTesttakers) {
-
-            $groupStats = array_reduce($groupOfTesttakers, function(array $carry, PotentialLogin $testtaker) {
-                return [
-                    'logins' => $carry['logins'] + 1,
-                    'persons' => $carry['persons'] + count($testtaker->getBooklets()),
-                    'booklets' => $carry['booklets']
-                        + array_reduce($testtaker->getBooklets(), function(int $carry, array $booklets) {
-                            return $carry + count($booklets);
-                        }, 0)
-                ];
-            }, [
-                'logins' => 0,
-                'persons' => 0,
-                'booklets' => 0
-            ]);
-
-            $allGroupStatistics[$groupName] = [
-                'groupname' => $groupName,
-                'loginsPrepared' => $groupStats['logins'],
-                'personsPrepared' => $groupStats['persons'],
-                'bookletsPrepared' => $groupStats['booklets'],
-                'bookletsStarted' => 0,
-                'bookletsLocked' => 0,
-                'laststart' => strtotime("1/1/2000"),
-                'laststartStr' => ''
-            ];
-        }
+        $allGroupStatistics = $this->getTestStatusOverviewNEW($bookletsStarted);
 
         foreach($bookletsStarted as $startedBooklet) {
 
@@ -124,7 +134,7 @@ class BookletsFolder extends Workspace {
             $tmpTime = strtotime($startedBooklet['laststart'] ?? "1/1/2000");
             if ($tmpTime > $allGroupStatistics[$startedBooklet['groupname']]['laststart']) {
                 $allGroupStatistics[$startedBooklet['groupname']]['laststart'] = $tmpTime;
-                $allGroupStatistics[$startedBooklet['groupname']]['laststartStr'] = strftime('%d.%m.%Y',$tmpTime);
+                $allGroupStatistics[$startedBooklet['groupname']]['laststartStr'] = strftime('%d.%m.%Y', $tmpTime);
             }
         }
 

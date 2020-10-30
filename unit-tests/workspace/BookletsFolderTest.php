@@ -27,8 +27,8 @@ class BookletsFolderTest extends TestCase {
     function test_getTestStatusOverview() {
 
         $result = $this->bookletsFolder->getTestStatusOverview(
-            array(
-                array(
+            [
+                [
                     'groupname' => 'sample_group',
                     'loginname' => 'test',
                     'code' => 'abc',
@@ -36,45 +36,31 @@ class BookletsFolderTest extends TestCase {
                     'locked' => 0,
                     'lastlogin' => '2003-03-33 03:33:33',
                     'laststart' => '2003-03-33 03:33:33'
-                ),
-                array(
+                ],
+                [
                     'groupname' => 'sample_group',
                     'loginname' => 'test',
-                    'code' => 'abc',
+                    'code' => 'def',
                     'bookletname' => 'BOOKLET.SAMPLE',
                     'locked' => 1,
                     'lastlogin' => '2003-03-33 03:33:33',
                     'laststart' => '2003-03-33 03:33:33'
-                ),
-                array(
-                    'groupname' => 'fake_group',
-                    'loginname' => 'test',
-                    'code' => 'abc',
-                    'bookletname' => 'BOOKLET.SAMPLE',
-                    'locked' => 1,
-                    'lastlogin' => '2003-03-33 03:33:33',
-                    'laststart' => '2003-03-33 03:33:33'
-                )
-            )
+                ]
+            ]
         );
 
-        echo "\n ======================================================================";
-        print_r($result); // STAND -> die fake group wird nicht mehr verarbeitet
-        echo "\n ======================================================================";
-
         $this->assertEquals('sample_group', $result[0]['groupname']);
-        $this->assertEquals(1, $result[0]['loginsPrepared']);
-        $this->assertEquals(2, $result[0]['personsPrepared']);
-        $this->assertEquals(4, $result[0]['bookletsPrepared']);
+        $this->assertEquals(3, $result[0]['loginsPrepared']); // test login, 2 monitors
+        $this->assertEquals(4, $result[0]['personsPrepared']); // two codes for login, 2 monitor accounts
+        $this->assertEquals(4, $result[0]['bookletsPrepared']); // two odes on two booklets
         $this->assertEquals(2, $result[0]['bookletsStarted']);
         $this->assertEquals(1, $result[0]['bookletsLocked']);
-        $this->assertEquals('fake_group', $result[6]['groupname']);
-        $this->assertEquals(0, $result[6]['loginsPrepared']);
-        $this->assertEquals(0, $result[6]['personsPrepared']);
-        $this->assertEquals(0, $result[6]['bookletsPrepared']);
-        $this->assertEquals(1, $result[6]['bookletsStarted']);
-        $this->assertEquals(1, $result[6]['bookletsLocked']);
-
+        $this->assertEquals('future_group', $result[5]['groupname']);
+        $this->assertEquals(1, $result[5]['loginsPrepared']);
+        $this->assertEquals(1, $result[5]['personsPrepared']);
+        $this->assertEquals(1, $result[5]['bookletsPrepared']);
+        $this->assertEquals(0, $result[5]['bookletsStarted']);
+        $this->assertEquals(0, $result[5]['bookletsLocked']);
     }
 
 
