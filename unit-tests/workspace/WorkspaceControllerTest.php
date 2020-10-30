@@ -57,7 +57,7 @@ class WorkspaceTest extends TestCase {
 
         $result = $this->workspace->getAllFiles();
 
-        $this->assertEquals(9, count($result));
+        $this->assertEquals(10, count($result));
 
         $this->assertEquals('SAMPLE_BOOKLET.XML', $result[0]['filename']);
         $this->assertEquals('Booklet', $result[0]['type']);
@@ -99,10 +99,15 @@ class WorkspaceTest extends TestCase {
         $this->assertArrayHasKey('filesize', $result[7]);
         $this->assertArrayHasKey('filedatetime', $result[7]);
 
-        $this->assertEquals('SAMPLE_PLAYER.HTML', $result[8]['filename']);
+        $this->assertEquals('SAMPLE_UNITCONTENTS.HTM', $result[8]['filename']);
         $this->assertEquals('Resource', $result[8]['type']);
         $this->assertArrayHasKey('filesize', $result[8]);
         $this->assertArrayHasKey('filedatetime', $result[8]);
+
+        $this->assertEquals('SAMPLE_PLAYER2.HTML', $result[9]['filename']);
+        $this->assertEquals('Resource', $result[9]['type']);
+        $this->assertArrayHasKey('filesize', $result[9]);
+        $this->assertArrayHasKey('filedatetime', $result[9]);
     }
 
 
@@ -111,20 +116,20 @@ class WorkspaceTest extends TestCase {
         $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
 
         $result = $this->workspace->deleteFiles(array(
-            'Resource/SAMPLE_PLAYER.HTML',
+            'Resource/SAMPLE_PLAYER2.HTML',
             'SysCheck/SAMPLE_SYSCHECK.XML',
             'i_dont/even.exist'
         ));
 
         $resources = scandir('vfs://root/vo_data/ws_1/Resource');
         $expectation = array(
-            'deleted' => array('Resource/SAMPLE_PLAYER.HTML'),
+            'deleted' => array('Resource/SAMPLE_PLAYER2.HTML'),
             'did_not_exist' => array('i_dont/even.exist'),
             'not_allowed' => array('SysCheck/SAMPLE_SYSCHECK.XML')
         );
 
         $this->assertEquals($expectation, $result);
-        $this->assertEquals($resources, array('.', '..'));
+        $this->assertEquals($resources, array('.', '..', 'SAMPLE_UNITCONTENTS.HTM'));
     }
 
 
@@ -147,7 +152,7 @@ class WorkspaceTest extends TestCase {
             "SysCheck" => 1,
             "Booklet" => 3,
             "Unit" => 2,
-            "Resource" => 1
+            "Resource" => 2
         ];
 
         $result = $this->workspace->countFilesOfAllSubFolders();
