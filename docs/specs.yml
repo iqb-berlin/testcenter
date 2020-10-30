@@ -687,7 +687,7 @@ paths:
                     in: path
                     name: resource_name
                     description: 'resource_name (filename without XML-extension)'
-                    example: SAMPLE_PLAYER.HTML
+                    example: SAMPLE_PLAYER2.HTML
                     required: true
                     schema:
                         type: string
