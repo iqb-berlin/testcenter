@@ -664,7 +664,12 @@
     document.addEventListener("DOMContentLoaded", Message.send.vopReadyNotification);
 
     document.addEventListener("vopPageNavigationCommand", event => Pages.goto(event.detail.target));
-    document.addEventListener("vopGetStateRequest", Message.send.vopGetStateResponse); // not implemented in IQB-testcenter 7.3.1
+    document.addEventListener("vopGetStateRequest", event => {
+        if (event.detail.stop) {
+            PlayerUI.togglePlayerRunning(false);
+        }
+        Message.send.vopGetStateResponse();
+    }); // not implemented in IQB-testcenter 7.3.1
     document.addEventListener("vopStopCommand", () => PlayerUI.togglePlayerRunning(false)); // not implemented in IQB-testcenter 7.3.1
     document.addEventListener("vopContinueCommand", () => PlayerUI.togglePlayerRunning(true)); // not implemented in IQB-testcenter 7.3.1
 
