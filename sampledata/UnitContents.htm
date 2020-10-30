@@ -136,6 +136,7 @@
           sheet = [];
 
           _soundOn = false;
+          _onHold = false;
           _position = 0;
           _context = new AudioContext();
           _speed = 3;
@@ -162,11 +163,19 @@
 
           stop = () => {
             if (!this._soundOn) {
+              this._onHold = false;
               return;
             }
             this._soundOn = false;
+            this._onHold = true;
             this._onStateChange();
           };
+
+          continue = () => {
+            if (!this._soundOn && this._onHold) {
+              this.play();
+            }
+          }
 
           rewind = () => {
             if (this._soundOn) {
@@ -177,7 +186,7 @@
             this._onStateChange();
           }
 
-          forward = (newPosition) => {
+          forward = newPosition => {
             if (!this._soundOn) {
               this._position = newPosition;
               this._onStateChange();
@@ -228,18 +237,18 @@
           AudioUI.setAudioState(Unit.selectDataPartFromUnitState(event.detail["unitState"] || {}, 'audio'));
         });
 
-        document.removeEventListener("vopStopCommand", PlayerUI.togglePlayerRunning);
-        document.addEventListener('vopStopCommand', () => {
-          SoundModule.stop();
-          PlayerUI.togglePlayerRunning(false);
+        document.addEventListener('vopContinueCommand', () => {
+          SoundModule.continue();
         });
 
-        document.removeEventListener("vopGetStateRequest", Message.send.vopGetStateResponse);
+        document.addEventListener('vopStopCommand', () => {
+          SoundModule.stop();
+        });
+
         document.addEventListener('vopGetStateRequest', data => {
           if (data.stop) {
             PlayerUI.togglePlayerRunning(false);
           }
-          send.vopGetStateResponse();
         });
 
         PlayerUI.addEventListener('click', '#melody-play', e => {
@@ -265,8 +274,8 @@
       </label>
     </div>
     <div style="flex: 50%; padding: 2px">
-      <p><b>Besides form-elements every element with <code>contenteditable</code>-attribute
-        is considered as item and gets tracked!</b></p>
+      <p><b>Besides form-elements every element with <code>contenteditable</code>-attribute is considered as item
+        and gets tracked!</b></p>
       <table style="border-collapse: collapse; width: 100%">
         <tr>
           <td style="border: 1px solid silver"><div contenteditable>a</div></td>
