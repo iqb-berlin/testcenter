@@ -82,10 +82,17 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function getErrors() {
+    public function getErrors(): array {
 
         return array_filter($this->validationReport, function(ValidationReportEntry $validationReportEntry): bool {
             return $validationReportEntry->level == 'error';
         });
+    }
+
+    public function getErrorString(): string {
+
+        return implode(", ", array_map(function (ValidationReportEntry $entry): string {
+            return "[{$entry->level}] {$entry->message}";
+        }, $this->getErrors()));
     }
 }

@@ -182,7 +182,7 @@ class Workspace {
             if ($xFile->isValid()) {
                 $targetFolder = $this->_workspacePath . '/' . $xFile->getRoottagName();
             } else {
-                throw new HttpError(implode("\n", $xFile->getErrors()), 422);
+                throw new HttpError($xFile->getErrorString(), 422);
             }
         }
 
