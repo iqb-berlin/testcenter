@@ -1,10 +1,8 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
-// TODO unit test
 
 class BookletsFolder extends Workspace {
-
 
     public function getBookletLabel(string $bookletId): string {
 
