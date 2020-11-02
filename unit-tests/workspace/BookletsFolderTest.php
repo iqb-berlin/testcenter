@@ -28,23 +28,17 @@ class BookletsFolderTest extends TestCase {
 
         $result = $this->bookletsFolder->getTestStatusOverview(
             [
-                [
-                    'groupname' => 'sample_group',
-                    'loginname' => 'test',
-                    'code' => 'abc',
-                    'bookletname' => 'BOOKLET.SAMPLE',
-                    'locked' => 0,
-                    'lastlogin' => '2003-03-33 03:33:33',
-                    'laststart' => '2003-03-33 03:33:33'
+                'sample_group' => [
+                    'bookletsStarted' => 2,
+                    'bookletsLocked' => 1,
+                    'laststart' => strtotime("3/3/2003"),
+                    'laststartStr' => '3.3.2003'
                 ],
-                [
-                    'groupname' => 'sample_group',
-                    'loginname' => 'test',
-                    'code' => 'def',
-                    'bookletname' => 'BOOKLET.SAMPLE',
-                    'locked' => 1,
-                    'lastlogin' => '2003-03-33 03:33:33',
-                    'laststart' => '2003-03-33 03:33:33'
+                'orphaned_group' => [
+                    'bookletsStarted' => 2,
+                    'bookletsLocked' => 0,
+                    'laststart' => strtotime("3/3/2003"),
+                    'laststartStr' => '3.3.2003'
                 ]
             ]
         );
@@ -61,10 +55,11 @@ class BookletsFolderTest extends TestCase {
         $this->assertEquals(1, $result[5]['bookletsPrepared']);
         $this->assertEquals(0, $result[5]['bookletsStarted']);
         $this->assertEquals(0, $result[5]['bookletsLocked']);
+        $this->assertEquals(true, $result[6]['orphaned']);
     }
 
 
-    function test_getBookletName() {
+    function test_getBookletLabel() {
 
         $result = $this->bookletsFolder->getBookletLabel('BOOKLET.SAMPLE');
         $expectation = 'Sample booklet';

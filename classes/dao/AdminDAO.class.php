@@ -276,7 +276,7 @@ class AdminDAO extends DAO {
 	}
 
 
-    public function getBookletsStarted($workspaceId): array { // TODO add unit test  // TODO use dataclass and camelCase-objects
+    public function getBookletsStarted(int $workspaceId): array { // TODO add unit test  // TODO use dataclass and camelCase-objects
 
         return $this->_(
             'SELECT login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code, 
@@ -291,6 +291,39 @@ class AdminDAO extends DAO {
             ],
             true
         );
+    }
+
+
+    public function getTestStatus(int $workspaceId): array {
+
+        $tests = $this->getBookletsStarted($workspaceId);
+        $testStatus = [];
+
+        foreach($tests as $test) {
+
+            if (!isset($testStatus[$test['groupname']])) {
+                $testStatus[$test['groupname']] = [
+                    'bookletsStarted' => 0, // TODO rename booklets into tests
+                    'bookletsLocked' => 0, // TODO rename booklets into tests
+                    'laststart' => strtotime("1/1/2000"),
+                    'laststartStr' => '' // TODO do we need this?
+                ];
+            }
+
+            $testStatus[$test['groupname']]['bookletsStarted'] += 1;
+
+            if ($test['locked'] == '1') {
+                $testStatus[$test['groupname']]['bookletsLocked'] += 1;
+            }
+
+            $tmpTime = strtotime($test['laststart'] ?? "1/1/2000");
+            if ($tmpTime > $testStatus[$test['groupname']]['laststart']) {
+                $testStatus[$test['groupname']]['laststart'] = $tmpTime;
+                $testStatus[$test['groupname']]['laststartStr'] = strftime('%d.%m.%Y', $tmpTime);
+            }
+        }
+
+        return $testStatus;
     }
 
 

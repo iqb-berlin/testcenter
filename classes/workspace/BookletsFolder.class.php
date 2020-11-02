@@ -43,9 +43,7 @@ class BookletsFolder extends Workspace {
     }
 
 
-
-
-    public function getLogins(): array {
+    public function getLogins(): PotentialLoginArray {
 
         $testTakerDirPath = $this->_workspacePath . '/Testtakers';
         if (!file_exists($testTakerDirPath)) {
@@ -63,11 +61,39 @@ class BookletsFolder extends Workspace {
 
             array_push($testtakers, ...$testtakersFile->getAllTesttakers());
         }
-        return $testtakers;
+        return new PotentialLoginArray(...$testtakers);
     }
 
 
-    function getTestStatusOverviewNEW(array $bookletsStarted): array {
+    function getTestStatusOverview(array $testStatusFromDB): array {
+
+        $testStatus = $this->getTestStatus();
+
+        foreach ($testStatus as $groupName => $status) {
+
+            if (isset($testStatusFromDB[$groupName])) {
+                $testStatus[$groupName] = array_merge($testStatus[$groupName], $testStatusFromDB[$groupName]);
+            } else {
+                $testStatus[$groupName]['bookletsStarted'] = 0;
+                $testStatus[$groupName]['bookletsLocked'] = 0;
+                $testStatus[$groupName]['laststart'] = strtotime("1/1/2000");
+                $testStatus[$groupName]['laststartStr'] = '';
+            }
+        }
+
+        foreach ($testStatusFromDB as $groupName => $status) {
+
+            if (!isset($testStatus[$groupName])) {
+                $testStatus[$groupName] = $status;
+                $testStatus[$groupName]['groupname'] = $groupName;
+                $testStatus[$groupName]['orphaned'] = true; // group is in Db, but file is vanished
+            }
+        }
+
+        return array_values($testStatus);
+    }
+
+    private function getTestStatus(): array {
 
         $logins = $this->getLogins();
 
@@ -85,10 +111,6 @@ class BookletsFolder extends Workspace {
                     'loginsPrepared' => 0,
                     'personsPrepared' => 0,
                     'bookletsPrepared' => 0,
-                    'bookletsStarted' => 0,
-                    'bookletsLocked' => 0,
-                    'laststart' => strtotime("1/1/2000"),
-                    'laststartStr' => ''
                 ];
             }
 
@@ -112,32 +134,5 @@ class BookletsFolder extends Workspace {
         }
 
         return $allGroupStatistics;
-    }
-
-
-    function getTestStatusOverview(array $bookletsStarted): array {
-
-        $allGroupStatistics = $this->getTestStatusOverviewNEW($bookletsStarted);
-
-        foreach($bookletsStarted as $startedBooklet) {
-
-            if (!isset($allGroupStatistics[$startedBooklet['groupname']])) {
-                continue;
-            }
-
-            $allGroupStatistics[$startedBooklet['groupname']]['bookletsStarted'] += 1;
-
-            if ($startedBooklet['locked'] == '1') {
-                $allGroupStatistics[$startedBooklet['groupname']]['bookletsLocked'] += 1;
-            }
-
-            $tmpTime = strtotime($startedBooklet['laststart'] ?? "1/1/2000");
-            if ($tmpTime > $allGroupStatistics[$startedBooklet['groupname']]['laststart']) {
-                $allGroupStatistics[$startedBooklet['groupname']]['laststart'] = $tmpTime;
-                $allGroupStatistics[$startedBooklet['groupname']]['laststartStr'] = strftime('%d.%m.%Y', $tmpTime);
-            }
-        }
-
-        return array_values($allGroupStatistics);
     }
 }
