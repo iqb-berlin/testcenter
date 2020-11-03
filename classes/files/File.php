@@ -28,10 +28,14 @@ class File extends DataCollectionTypeSafe {
 
 
     public function __construct(string $path) {
+
         $this->path = $path;
         if (!file_exists($path)) {
+
             $this->report('error', "file does not exist `" . dirname($path) . '/'. basename($path) . "`");
+
         } else {
+
             $this->size = filesize($path);
             $this->name = basename($path);
             $this->filedate = date(DATE_ATOM, filemtime($path));

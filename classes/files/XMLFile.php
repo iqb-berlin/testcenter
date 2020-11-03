@@ -14,14 +14,14 @@ class XMLFile extends File {
         'Unit' => 'vo_Unit.xsd'
     ];
 
-    protected $rootTagName = '';
+    protected string $rootTagName = '';
     protected string $label = '';
     protected string $description = '';
     protected $customTexts;
 
-    public $xmlfile;
+    public SimpleXMLElement $xmlfile;
 
-    public function __construct(string $xmlfilename, bool $validate = false, bool $isRawXml = false) {
+    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
 
         $xsdFolderName = ROOT_DIR . '/definitions/';
 
@@ -30,18 +30,21 @@ class XMLFile extends File {
     
         if (!$isRawXml) {
 
-            parent::__construct($xmlfilename);
+            parent::__construct($path);
         }
 
-        $this->xmlfile = !$isRawXml
-            ? simplexml_load_file($xmlfilename)
-            : new SimpleXMLElement($xmlfilename);
+        $xmlElem = !$isRawXml ? simplexml_load_file($path) : new SimpleXMLElement($path);
 
-        if ($this->xmlfile == false) {
+        if ($xmlElem === false) {
 
-            $this->report('error', "Error in `$xmlfilename`");
+            $this->xmlfile = new SimpleXMLElement('<error />');
+            if (!count($this->validationReport)) {
+                $this->validationReport[] = new ValidationReportEntry('error', "Invalid File");
+            }
 
         } else {
+
+            $this->xmlfile = $xmlElem;
 
             $this->rootTagName = $this->xmlfile->getName();
             if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
@@ -83,7 +86,7 @@ class XMLFile extends File {
                 if ($validate) {
 
                     $myReader = new XMLReader();
-                    $myReader->open($xmlfilename);
+                    $myReader->open($path);
                     $myReader->setSchema($mySchemaFilename);
 
                     do {
@@ -131,7 +134,7 @@ class XMLFile extends File {
     }
 
 
-    public function getCustomTexts() {
+    public function getCustomTexts() { // TODO maybe move to where it is allowed: syscheck, testtakers
 
         return $this->customTexts;
     }

@@ -84,9 +84,9 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
             ],
             'Testtakers/testtakers-broken.xml' => [
-                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml`'),
                 new ValidationReportEntry('error',  'Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata'),
-                new ValidationReportEntry('error',  'Error [5] in line 8: Extra content at the end of the document')
+                new ValidationReportEntry('error',  'Error [5] in line 8: Extra content at the end of the document'),
+                new ValidationReportEntry('error',  'Invalid File')
             ],
             'Booklet/trash.xml' => [
                 new ValidationReportEntry('warning', 'Booklet is never used'),
@@ -94,9 +94,9 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Booklet/booklet-broken.xml' => [
                 new ValidationReportEntry('warning', 'Booklet is never used'),
-                new ValidationReportEntry('error',  'Error in `vfs://root/vo_data/ws_1/Booklet/booklet-broken.xml`'),
                 new ValidationReportEntry('error',  'Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units'),
-                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
+                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document'),
+                new ValidationReportEntry('error',  'Invalid File')
             ],
             'Booklet/booklet-duplicate-id-1.xml' => [
                 new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-2.xml)`'),
@@ -130,12 +130,12 @@ class WorkspaceValidatorTest extends TestCase{
 //                continue;
 //            }
 
-            echo "\n-<R>- $key: " . count($list);
+//            echo "\n-<R>- $key: " . count($list);
 
 //            var_dump($list);
 
             if (!isset($expected[$key])) {
-                var_dump($result[$key]);
+//                var_dump($result[$key]);
                 $this->fail("key `$key` not asserted");
             }
 
@@ -154,10 +154,10 @@ class WorkspaceValidatorTest extends TestCase{
 
         foreach ($expected as $key => $list) {
 
-            echo "\n-<E>- $key: " . count($list);
+//            echo "\n-<E>- $key: " . count($list);
 
             if (!isset($result[$key])) {
-                echo " !!! IS MISSING !!!";
+//                echo " !!! IS MISSING !!!";
                 $this->fail("key `$key` missing");
             }
         }
