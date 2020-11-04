@@ -5,6 +5,17 @@ declare(strict_types=1);
 
 class WorkspaceInitializer {
 
+    const sampleDataPaths = [
+      "sampledata/Booklet.xml" => "Booklet/SAMPLE_BOOKLET.XML",
+      "sampledata/Booklet2.xml" => "Booklet/SAMPLE_BOOKLET2.XML",
+      "sampledata/Testtakers.xml" => "Testtakers/SAMPLE_TESTTAKERS.XML",
+      "sampledata/SysCheck.xml" => "SysCheck/SAMPLE_SYSCHECK.XML",
+      "sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",
+      "vendor/iqb-berlin/verona-player-simple/sample-data/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
+      "sampledata/Unit2.xml" => "Unit/SAMPLE_UNIT2.XML",
+      "vendor/iqb-berlin/verona-player-simple/verona-simple-player-1.html" => "Resource/verona-simple-player-1.html",
+      "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
+    ];
 
     /**
      * creates missing subdirectories for a missing path,
@@ -33,25 +44,25 @@ class WorkspaceInitializer {
     }
 
 
-    private function importSampleFile(int $workspaceId, string $filename,
-                                      InstallationArguments $vars, string $destination = null) {
+    private function importSampleFile(int $workspaceId, string $source, string $target, InstallationArguments $vars) {
 
-        $importFileName = ROOT_DIR . "/sampledata/$filename";
-        $sampleFileContent = file_get_contents($importFileName);
+        $importFileName = ROOT_DIR . '/' . $source;
+        $fileContent = file_get_contents($importFileName);
 
-        if (!$sampleFileContent) {
-            throw new Exception("Sample file not found: $importFileName");
+        if (!$fileContent) {
+            throw new Exception("File not found: `$importFileName`");
         }
 
         foreach ($vars as $key => $value) {
-            $sampleFileContent = str_replace('__' . strtoupper($key) . '__', $value, $sampleFileContent);
+            $fileContent = str_replace('__' . strtoupper($key) . '__', $value, $fileContent);
         }
 
-        $destinationSubDir = $destination ? $destination : basename($filename, '.xml');
-        $fileNameToWrite = $this->createSubdirectories(DATA_DIR . "/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
+        $dir = pathinfo($target, PATHINFO_DIRNAME);;
+        $fileName = basename($target);
+        $fileName = $this->createSubdirectories(DATA_DIR . "/ws_$workspaceId/$dir") . $fileName;
 
-        if (@file_put_contents($fileNameToWrite, $sampleFileContent) === false) {
-            throw new Exception("Could not write file: $fileNameToWrite");
+        if (@file_put_contents($fileName, $fileContent) === false) {
+            throw new Exception("Could not write file: $fileName");
         }
     }
 
@@ -64,15 +75,17 @@ class WorkspaceInitializer {
      */
     public function importSampleData(int $workspaceId, InstallationArguments $parameters): void {
 
-        $this->importSampleFile($workspaceId, 'Booklet.xml', $parameters);
-        $this->importSampleFile($workspaceId, 'Booklet2.xml', $parameters, 'Booklet');
-        $this->importSampleFile($workspaceId, 'Testtakers.xml', $parameters);
-        $this->importSampleFile($workspaceId, 'SysCheck.xml', $parameters);
-        $this->importSampleFile($workspaceId, 'Unit.xml', $parameters);
-        $this->importSampleFile($workspaceId, 'UnitContents.htm', $parameters, 'Resource');
-        $this->importSampleFile($workspaceId, 'Unit2.xml', $parameters, 'Unit');
-        $this->importSampleFile($workspaceId, 'Player2.html', $parameters, 'Resource');
-        $this->importSampleFile($workspaceId, 'SysCheck-Report.json', $parameters, 'SysCheck/reports');
+        foreach ($this::sampleDataPaths as $source => $target) {
+
+            if (!file_exists(ROOT_DIR . '/' . $source)) {
+                throw new Exception("File not found: `$source`");
+            }
+        }
+
+        foreach ($this::sampleDataPaths as $source => $target) {
+
+            $this->importSampleFile($workspaceId, $source, $target, $parameters);
+        }
     }
 
 

@@ -112,7 +112,7 @@ paths:
         - in: path
           name: resource_name
           description: resource_name (filename without XML-extension)
-          example: SAMPLE_PLAYER2.HTML
+          example: verona-simple-player-1.html
           required: true
           schema:
             type: string

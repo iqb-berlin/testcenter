@@ -104,7 +104,7 @@ class WorkspaceTest extends TestCase {
         $this->assertArrayHasKey('filesize', $result[8]);
         $this->assertArrayHasKey('filedatetime', $result[8]);
 
-        $this->assertEquals('SAMPLE_PLAYER2.HTML', $result[9]['filename']);
+        $this->assertEquals('verona-simple-player-1.html', $result[9]['filename']);
         $this->assertEquals('Resource', $result[9]['type']);
         $this->assertArrayHasKey('filesize', $result[9]);
         $this->assertArrayHasKey('filedatetime', $result[9]);
@@ -116,14 +116,14 @@ class WorkspaceTest extends TestCase {
         $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
 
         $result = $this->workspace->deleteFiles(array(
-            'Resource/SAMPLE_PLAYER2.HTML',
+            'Resource/verona-simple-player-1.html',
             'SysCheck/SAMPLE_SYSCHECK.XML',
             'i_dont/even.exist'
         ));
 
         $resources = scandir('vfs://root/vo_data/ws_1/Resource');
         $expectation = array(
-            'deleted' => array('Resource/SAMPLE_PLAYER2.HTML'),
+            'deleted' => array('Resource/verona-simple-player-1.html'),
             'did_not_exist' => array('i_dont/even.exist'),
             'not_allowed' => array('SysCheck/SAMPLE_SYSCHECK.XML')
         );
