@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-iqb-php?style=flat-square)](https://travis-ci.com/iqb-berlin/textcenter-iqb-php)
+[![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-backend?style=flat-square)](https://travis-ci.com/iqb-berlin/testcenter-backend)
 
 # Testcenter Backend
 
