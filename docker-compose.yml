@@ -12,6 +12,10 @@ x-env-initdata: &env-initdata
   TEST_LOGIN_NAME: ${TEST_LOGIN_NAME}
   TEST_LOGIN_PASSWORD: ${TEST_LOGIN_PASSWORD}
 
+x-env-logging-conf: &env-logging-conf
+  max-size: "200m"
+  max-file: "10"
+
 services:
 
   traefik:
@@ -44,6 +48,9 @@ services:
       BROADCAST_SERVICE_URI_SUBSCRIBE: ${BROADCAST_SERVICE_URI_SUBSCRIBE}
     depends_on:
       - testcenter-db
+    logging:
+      options:
+        <<: *env-logging-conf
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=Host(`${HOSTNAME}`) && PathPrefix(`/api`)"
@@ -52,12 +59,18 @@ services:
 
   testcenter-frontend:
     container_name: testcenter-frontend
+    logging:
+      options:
+        <<: *env-logging-conf
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=Host(`${HOSTNAME}`)"
 
   testcenter-broadcasting-service:
     container_name: testcenter-broadcasting-service
+    logging:
+      options:
+        <<: *env-logging-conf
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-broadcasting-service.rule=Host(`${HOSTNAME}`) && PathPrefix(`/bs/public`)"
