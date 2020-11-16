@@ -29,3 +29,6 @@ init-config:
 
 init-dev-config: init-config
 	make -C testcenter-frontend init-dev-config
+
+update-submodules:
+	git submodule update --remote --merge
