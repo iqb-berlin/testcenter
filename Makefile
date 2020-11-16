@@ -32,3 +32,7 @@ init-dev-config: init-config
 
 update-submodules:
 	git submodule update --remote --merge
+
+make test-e2e: run-prod-detached
+	docker build -f e2etest/Dockerfile --tag e2etest .
+	docker run --network host e2etest
