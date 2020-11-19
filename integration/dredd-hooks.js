@@ -191,7 +191,7 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 422', async f
 
 dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
 
-    transaction.expected.body = fs.readFileSync('../sampledata/Player.html').toString();
+    transaction.expected.body = fs.readFileSync('../vendor/iqb-berlin/verona-player-simple/verona-simple-player-1.html').toString();
     done();
 });
 

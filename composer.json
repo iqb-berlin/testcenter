@@ -1,7 +1,7 @@
 {
   "name": "iqb/testcenter-api",
   "description": "The backend for the IQB-Testcenter application(s).",
-  "version": "7.4.8",
+  "version": "7.6.1",
   "extra": {
     "broadcastingServiceVersionExpected": "2.0.2"
   },
@@ -15,6 +15,18 @@
     {
       "type": "github",
       "url": "https://github.com/iqb-berlin/testcenter-backend.git"
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "iqb-berlin/verona-player-simple",
+        "version": "1",
+        "source": {
+          "url": "https://github.com/iqb-berlin/verona-player-simple.git",
+          "type": "git",
+          "reference": "1.0.1"
+        }
+      }
     }
   ],
   "readme": "README.md",
@@ -36,6 +48,7 @@
   },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
-    "phpunit/phpunit":  "^8"
+    "phpunit/phpunit":  "^8",
+    "iqb-berlin/verona-player-simple": "1"
   }
 }

@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
   wget \
   zlib1g-dev \
   libzip-dev \
-  unzip
+  unzip \
+  git
 
 # install php extensions
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
