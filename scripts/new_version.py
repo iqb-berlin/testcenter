@@ -37,7 +37,7 @@ def _check_prerequisites():
     if len(sys.argv) < 2:
         sys.exit('ERROR: No parameter given. Use \'major\'/\'minor\'/\'patch\'!')
     # on branch master?
-    result = subprocess.run("git branch --show-current",
+    result = subprocess.run("git rev-parse --abbrev-ref HEAD",
                             text=True, shell=True, check=True, capture_output=True)
     if result.stdout.rstrip() != 'master':
         sys.exit('ERROR: Not on master branch!')
