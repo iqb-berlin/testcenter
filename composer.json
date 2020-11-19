@@ -24,7 +24,7 @@
         "source": {
           "url": "https://github.com/iqb-berlin/verona-player-simple.git",
           "type": "git",
-          "reference": "1.0.0"
+          "reference": "1.0.1"
         }
       }
     }
