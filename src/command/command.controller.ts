@@ -1,4 +1,4 @@
-import {Controller, HttpException, Post, Req} from '@nestjs/common';
+import {Controller, HttpException, Logger, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
 import {isArray} from 'util';
 import {isCommand} from './command.interface';
@@ -9,6 +9,8 @@ export class CommandController {
     constructor(
         private readonly testeeService: TesteeService
     ) {}
+
+    private readonly logger = new Logger(CommandController.name);
 
     @Post('/command')
     postCommand(@Req() request: Request): void {
@@ -21,7 +23,7 @@ export class CommandController {
             throw new HttpException("bo testIds given", 400);
         }
 
-        console.log('/command', request.body);
+        this.logger.log('/command', request.body);
 
         this.testeeService.broadcastCommandToTestees(request.body.command, request.body.testIds);
     }

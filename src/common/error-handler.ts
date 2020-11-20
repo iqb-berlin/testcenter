@@ -1,4 +1,4 @@
-import {Catch, ArgumentsHost, HttpStatus} from '@nestjs/common';
+import {Catch, ArgumentsHost, HttpStatus, Logger} from '@nestjs/common';
 import {BaseExceptionFilter} from '@nestjs/core';
 import {WebsocketGateway} from './websocket.gateway';
 import {Response} from 'express';
@@ -12,9 +12,9 @@ export class ErrorHandler extends BaseExceptionFilter {
         super();
     }
 
-    catch(exception: any, host: ArgumentsHost) {
-        console.warn("error caught: ", exception);
+    private readonly logger = new Logger(ErrorHandler.name);
 
+    catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response: Response = ctx.getResponse();
 
@@ -41,6 +41,8 @@ export class ErrorHandler extends BaseExceptionFilter {
         }
 
         const message = exception.message;
+
+        this.logger.error(`(${status}) ${message}`);
 
         response
             .status(status)

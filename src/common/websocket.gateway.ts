@@ -9,6 +9,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Server, Client} from "ws";
 import {IncomingMessage} from 'http';
+import {Logger} from '@nestjs/common';
 
 
 function getLastUrlPart(url: string) {
@@ -18,6 +19,9 @@ function getLastUrlPart(url: string) {
 
 @WebSocketGateway()
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
+
+    private readonly logger = new Logger(WebsocketGateway.name);
+
     @WebSocketServer()
     private server: Server;
 
@@ -30,7 +34,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
         this.clients[token] = client;
         this.clientsCount$.next(Object.values(this.clients).length);
-        console.log("client connected: " + token);
+        this.logger.log("client connected: " + token);
     }
 
     handleDisconnect(client: Client): void {
@@ -45,7 +49,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
         if (disconnectedToken !== "") {
             this.clientLost$.next(disconnectedToken);
             this.clientsCount$.next(Object.values(this.clients).length);
-            console.log("client disconnected: " + disconnectedToken);
+            this.logger.log("client disconnected: " + disconnectedToken);
         }
     }
 
@@ -54,7 +58,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
         tokens.forEach((token: string) => {
             if (typeof this.clients[token] !== "undefined") {
-                console.log("sending to client: " + token);
+                this.logger.log("sending to client: " + token);
                 this.clients[token].send(payload);
             }
         });
@@ -63,7 +67,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     public disconnectClient(monitorToken: string): void {
 
         if (typeof this.clients[monitorToken] !== "undefined") {
-            console.log('disconnect client: ' + monitorToken);
+            this.logger.log('disconnect client: ' + monitorToken);
             this.clients[monitorToken].close();
             delete this.clients[monitorToken];
         }

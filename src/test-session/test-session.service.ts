@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {SessionChange} from './session-change.interface';
 import {Monitor} from '../monitor/monitor.interface';
 import {WebsocketGateway} from '../common/websocket.gateway';
@@ -32,6 +32,8 @@ export class TestSessionService {
         });
     }
 
+    private readonly logger = new Logger(TestSessionService.name);
+
     private testSessions: {
         [group: string]: {
             [sessionId: string]: SessionChange
@@ -55,7 +57,7 @@ export class TestSessionService {
 
         // testSession is first of group
         if (typeof this.testSessions[group] === "undefined") {
-            // console.log("skipping group hence not monitored: " + group);
+            // this.logger.log("skipping group hence not monitored: " + group);
             return;
         }
 
@@ -81,7 +83,7 @@ export class TestSessionService {
 
     private broadcastTestSessionsToGroupMonitors(groupName: string) {
         if (typeof this.monitors[groupName] !== "undefined") {
-            // console.log("broadcasting data about group: " + groupName);
+            // this.logger.log("broadcasting data about group: " + groupName);
             const tokens = Object.keys(this.monitors[groupName]);
             const sessions = (typeof this.testSessions[groupName] !== "undefined")
                 ? Object.values(this.testSessions[groupName])
@@ -106,7 +108,7 @@ export class TestSessionService {
     }
 
     public removeMonitor(monitorToken: string): void {
-        console.log('remove monitor: ' + monitorToken);
+        this.logger.log('remove monitor: ' + monitorToken);
 
         Object.keys(this.monitors).forEach((group: string) => {
             if (typeof this.monitors[group][monitorToken] !== "undefined") {

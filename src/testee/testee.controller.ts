@@ -1,4 +1,4 @@
-import {Controller, Get, HttpException, Post, Req} from '@nestjs/common';
+import {Controller, Get, HttpException, Logger, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
 import {TesteeService} from './testee.service';
 import {isTestee, Testee} from './testee.interface';
@@ -10,13 +10,15 @@ export class TesteeController {
     ) {
     }
 
+    private readonly logger = new Logger(TesteeController.name);
+
     @Post('/testee/register')
     monitorRegister(@Req() request: Request): void {
         if (!isTestee(request.body)) {
             throw new HttpException("not testee data", 400);
         }
 
-        console.log("testee registered:" + JSON.stringify(request.body));
+        this.logger.log("testee registered:" + JSON.stringify(request.body));
         this.testeeService.addTestee(request.body);
     }
 
@@ -26,7 +28,7 @@ export class TesteeController {
             throw new HttpException("no token in body", 400);
         }
 
-        console.log("testee unregistered:", request.body);
+        this.logger.log("testee unregistered:", request.body);
         this.testeeService.removeTestee(request.body['token']);
     }
 

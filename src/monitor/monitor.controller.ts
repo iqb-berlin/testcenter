@@ -1,4 +1,4 @@
-import {Controller, Get, HttpException, Post, Req} from '@nestjs/common';
+import {Controller, Get, HttpException, Logger, Post, Req} from '@nestjs/common';
 import {Request} from 'express';
 import {isMonitor, Monitor} from './monitor.interface';
 import {TestSessionService} from '../test-session/test-session.service';
@@ -10,6 +10,7 @@ export class MonitorController {
         private readonly dataService: TestSessionService
     ) {}
 
+    private readonly logger = new Logger(MonitorController.name);
 
     @Post('/monitor/register')
     monitorRegister(@Req() request: Request): void {
@@ -17,7 +18,7 @@ export class MonitorController {
             throw new HttpException("not monitor data", 400);
         }
 
-        console.log("monitor registered:" + JSON.stringify(request.body));
+        this.logger.log("monitor registered:" + JSON.stringify(request.body));
         this.dataService.addMonitor(request.body);
     }
 
@@ -28,7 +29,7 @@ export class MonitorController {
             throw new HttpException("no token in body", 400);
         }
 
-        console.log("monitor unregistered:", request.body);
+        this.logger.log("monitor unregistered:", request.body);
         this.dataService.removeMonitor(request.body['token']);
     }
 

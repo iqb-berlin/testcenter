@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {Testee} from './testee.interface';
 import {WebsocketGateway} from '../common/websocket.gateway';
 import {Command} from '../command/command.interface';
@@ -13,6 +13,8 @@ export class TesteeService {
         });
     }
 
+    private readonly logger = new Logger(TesteeService.name);
+
     private testees: {[token: string]: Testee} = {};
 
     public addTestee(testee: Testee): void {
@@ -20,7 +22,7 @@ export class TesteeService {
     }
 
     public removeTestee(testeeToken: string): void {
-        console.log('remove testee: ' + testeeToken);
+        this.logger.log('remove testee: ' + testeeToken);
 
         if (typeof this.testees[testeeToken] !== "undefined") {
             delete (this.testees[testeeToken]);
