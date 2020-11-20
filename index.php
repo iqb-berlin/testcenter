@@ -62,7 +62,8 @@ try {
 
     // this can only happen if slim itself or slim error handler fails or some class fails in constructor
     http_response_code(500);
-    error_log('Fatal error:' . $e->getMessage());
-    error_log($errorPlace = $e->getFile() . ' | line ' . $e->getLine());
-    echo "Fatal error: " . $e->getMessage();
+    $id = uniqid('fatal-', true);
+    header('Error-ID:' . $id);
+    error_log("$id (500) at {$e->getFile()}:{$e->getLine()}");
+    echo "Fatal error!";
 }

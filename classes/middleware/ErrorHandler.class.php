@@ -3,43 +3,38 @@
 declare(strict_types=1);
 // TODO unit test
 
+use Slim\Exception\HttpException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class ErrorHandler {
-
 
     static function logException(Throwable $throwable, bool $logTrace = false): string {
 
         $errorUniqueId = uniqid('error-', true);
         $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
 
-        $log = [];
+        $logHeadline = [$errorUniqueId];
 
-        $log[] = $errorUniqueId;
-
-        if (method_exists($throwable, 'getTitle')) {
-            $log[] =  $throwable->getTitle();
+        if (method_exists($throwable, 'getTitle') and $throwable->getTitle()) {
+            $logHeadline[] = "({$throwable->getTitle()})";
+        } else {
+            $logHeadline[] = "($code)";
         }
 
-        if (method_exists($throwable, 'getDescription')) {
-            $log[] =  $throwable->getDescription();
-        }
+        $logHeadline[] = "`{$throwable->getMessage()}`";
 
-        $log[] = $throwable->getMessage();
+        if (is_a($throwable, "Slim\Exception\HttpException")) {
+            $request = $throwable->getRequest();
+            $serverParams = $request->getServerParams();
+            $logHeadline[] = "on `[{$serverParams['REQUEST_METHOD']}] {$serverParams['REQUEST_URI']}`";
+        }
 
         if ($logTrace) {
-            $trace = explode("\n", $throwable->getTraceAsString());
-            $log = array_merge($log, $trace);
-        } else {
-            $log[] = $throwable->getFile() . ' | line ' . $throwable->getLine();
+            $logHeadline[] = "at {$throwable->getFile()}:{$throwable->getLine()}";
         }
 
-        foreach ($log as $logLine) {
-            if ($logLine) {
-                error_log("[Error: $code] $logLine");
-            }
-        }
+        error_log(implode(' ', $logHeadline));
 
         return $errorUniqueId;
     }
@@ -61,10 +56,11 @@ class ErrorHandler {
         $errorUniqueId = ErrorHandler::logException($throwable, $code >= 500);
 
         if (!is_a($throwable, "Slim\Exception\HttpException")) {
-            $throwable = new \Slim\Exception\HttpException($request, $throwable->getMessage(), $code, $throwable);
+            $newThrowable = new HttpException($request, $throwable->getMessage(), $code, $throwable);
             if (method_exists($throwable, 'getTitle')) {
-                $throwable->setTitle($throwable->getTitle());
+                $newThrowable->setTitle($throwable->getTitle());
             }
+            $throwable = $newThrowable;
         }
 
         return $response
