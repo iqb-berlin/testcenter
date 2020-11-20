@@ -41,7 +41,6 @@ services:
     volumes:
       - ../vo_data:/var/www/html/vo_data
       - ../classes:/var/www/html/classes
-      - ../integration:/var/www/html/integration
       - ../routes:/var/www/html/routes
       - ../sampledata:/var/www/html/sampledata
       - ../definitions:/var/www/html/definitions
