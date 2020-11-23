@@ -18,7 +18,7 @@ services:
       - ./config/cert_config.yml:/cert_config.yml
 
   testcenter-backend:
-    image: iqbberlin/testcenter-backend:7.4.8
+    image: iqbberlin/testcenter-backend:7.4.2
     volumes:
       - testcenter_backend_vo_data:/var/www/html/vo_data
     labels:
@@ -30,7 +30,7 @@ services:
       - "traefik.http.routers.testcenter-frontend.tls=true"
 
   testcenter-broadcasting-service:
-    image: iqbberlin/testcenter-broadcasting-service:2.0.2
+    image: iqbberlin/testcenter-broadcasting-service:2.0.3
     labels:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
 
