@@ -1,16 +1,17 @@
 #!/usr/bin/python3
-"""Create new tagged version.
+"""Update and create new tagged version.
 
 This script does (in order):
-- check if git master branch is checked out and up to date
+- (check if git master branch is checked out and up to date)
 - update git submodules
 - extract version strings of components (submodules)
-- update docker compose files with new version strings
+- update docker-compose files (all prod variants) with new version strings
 - run e2e tests
 - git:
-    - create commit with updated submodules and versions
+    - create commit with updated submodules and compose files
     - create tag with updated versions
-    - push
+      (in form: <frontend_version>@<backend_version>+<bs_version>)
+    - push commit and tag
 
 The path to the necessary files and the regex to extract the version string
 can be updated easily using the constant variables on top the script.
@@ -73,13 +74,13 @@ def update_compose_file_versions(backend_version, frontend_version, bs_version):
     backend_pattern = re.compile('(?<=iqbberlin\\/testcenter-backend:)(.*)')
     frontend_pattern = re.compile('(?<=iqbberlin\\/testcenter-frontend:)(.*)')
     bs_pattern = re.compile('(?<=iqbberlin\\/testcenter-broadcasting-service:)(.*)')
-    for conmpose_file in COMPOSE_FILE_PATHS:
-        with open(conmpose_file, 'r') as f:
+    for compose_file in COMPOSE_FILE_PATHS:
+        with open(compose_file, 'r') as f:
             file_content = f.read()
         new_file_content = backend_pattern.sub(backend_version, file_content)
         new_file_content = frontend_pattern.sub(frontend_version, new_file_content)
         new_file_content = bs_pattern.sub(bs_version, new_file_content)
-        with open(conmpose_file, 'w') as f:
+        with open(compose_file, 'w') as f:
             f.write(new_file_content)
 
 
