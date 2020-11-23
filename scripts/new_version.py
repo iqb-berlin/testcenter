@@ -1,9 +1,22 @@
 #!/usr/bin/python3
 """Create new tagged version.
 
-Script to update git submodules, pull out their version strings
-and add them into the docker compose files.
-After running the tests a new tag is created and all updates are commited.
+This script does (in order):
+- check if git master branch is checked out and up to date
+- update git submodules
+- extract version strings of components (submodules)
+- update docker compose files with new version strings
+- run e2e tests
+- git:
+    - create commit with updated submodules and versions
+    - create tag with updated versions
+    - push
+
+The path to the necessary files and the regex to extract the version string
+can be updated easily using the constant variables on top the script.
+
+Author: Richard Henck
+Email: richard.henck@iqb.hu-berlin.de
 """
 
 import sys
@@ -75,7 +88,7 @@ def run_tests():
     subprocess.run('make test-e2e', shell=True, check=True)
 
 
-def git_tag(backend_version, frontend_version, bs_version):
+def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
     """Add updated compose files and submodules hashes and commit them to repo."""
     new_version_string = f"{frontend_version}@{backend_version}+{bs_version}"
     print(f"Creating git tag for version {new_version_string}")
@@ -99,4 +112,4 @@ frontend_version = get_version_from_file(FRONTEND_VERSION_FILE_PATH, FRONTEND_VE
 bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
 update_compose_file_versions(backend_version, frontend_version, bs_version)
 run_tests()
-git_tag(backend_version, frontend_version, bs_version)
+git_tag_commit_and_push(backend_version, frontend_version, bs_version)
