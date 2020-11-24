@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 7.4.2
+    version: 8.0.0
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -138,16 +138,6 @@ paths:
                                 -
                                     personId: 3
                                     groupName: sample_group
-                                    personLabel: test-study-monitor
-                                    groupLabel: 'Sample group'
-                                    mode: monitor-study
-                                    testId: -1
-                                    testState: []
-                                    unitState: []
-                                    timestamp: 1596455898
-                                -
-                                    personId: 4
-                                    groupName: sample_group
                                     personLabel: test-group-monitor
                                     groupLabel: 'Sample group'
                                     mode: monitor-group
@@ -226,9 +216,6 @@ paths:
                         adminToken:
                             description: 'auth-token for admin'
                             value: 'a:user000000000.rw00000000'
-                        monitorToken:
-                            description: 'auth-token for workspace-monitor'
-                            value: 'm:user000000000.rw00000000'
             responses:
                 '200':
                     description: 'OK, get session data'
@@ -242,9 +229,7 @@ paths:
                                 loginToken:
                                     value: {token: 'static:login:test', displayName: sample_group/sample_user, access: {}, customTexts: {}, flags: [codeRequired]}
                                 adminToken:
-                                    value: {token: 'static:admin:super', displayName: super, access: {superAdmin: [], workspaceAdmin: ['1']}, customTexts: {}, flags: []}
-                                monitorToken:
-                                    value: {token: 'static:person:sample_group_test-study-monitor_', displayName: super, access: {workspaceMonitor: ['1']}, customTexts: {}, flags: []}
+                                    value: {token: 'static:admin:super', displayName: super, access: {superAdmin: []}, customTexts: {}, flags: []}
                 '401':
                     description: 'No token qualifies for authentication'
                 '410':
@@ -426,7 +411,7 @@ paths:
                                     - version
                                     - customTexts
                             example:
-                                version: 7.4.2
+                                version: 8.0.0
                                 customTexts: {}
                 '500':
                     description: 'Server Error'
@@ -439,7 +424,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 7.4.2
+                                version: 8.0.0
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -1436,62 +1421,6 @@ paths:
                     description: 'Session Expired'
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/booklets/started':
-        get:
-            summary: 'get started booklets'
-            description: 'retrieves an overview about started booklets'
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for person with mode `monitor-study`'
-                    example: 'm:user000000000.mo00000000'
-                -
-                    in: path
-                    name: ws_id
-                    required: true
-                    description: workspace-Id
-                    schema:
-                        type: integer
-                    example: 1
-                -
-                    in: query
-                    name: groups
-                    schema:
-                        type: array
-                        description: 'a list'
-                        items:
-                            type: string
-                    example: sample_group
-            responses:
-                '200':
-                    description: 'OK, list of started booklets'
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: object
-                                    properties: {groupname: {type: string}, loginname: {type: string}, code: {type: string, description: 'person code'}, bookletname: {type: string}, locked: {type: boolean}, lastlogin: {type: string, description: 'date of last login and time in US format: YYYY-mm-dd HH:mm:SS'}, laststart: {type: string, description: 'date of last start and time in US format: YYYY-mm-dd HH:mm:SS'}}
-                            example:
-                                -
-                                    groupname: sample_group
-                                    loginname: test
-                                    code: dlu
-                                    bookletname: BOOKLET.SAMPLE
-                                    locked: false
-                                    lastlogin: '2019-09-10 13:29:36'
-                                    laststart: '2019-09-10 13:29:37'
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
     '/workspace/{ws_id}/file/{type}/{filename}':
         get:
             summary: 'get file'
@@ -1818,54 +1747,6 @@ paths:
                     description: 'Session Expired'
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/status':
-        get:
-            summary: 'get status'
-            description: 'Retrieves an overview about running tests'
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for person with mode `monitor-study`'
-                    example: 'm:user000000000.mo00000000'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-            responses:
-                '200':
-                    description: 'OK, list of monitor data'
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: object
-                                    properties: {groupname: {type: string}, loginsPrepared: {type: integer}, personsPrepared: {type: integer}, bookletsPrepared: {type: integer}, bookletsStarted: {type: integer}, bookletsLocked: {type: integer}, laststart: {type: integer, description: 'timestamp of last start'}, laststartStr: {type: string, description: 'date of last start in human readable format (german date format: dd.MM.yyyy)'}}
-                            example:
-                                -
-                                    groupname: sample_group
-                                    loginsPrepared: 1
-                                    personsPrepared: 10
-                                    bookletsPrepared: 10
-                                    bookletsStarted: 1
-                                    bookletsLocked: 0
-                                    laststart: 1567783156
-                                    laststartStr: 06.09.2019
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
     '/workspace/{ws_id}/validation':
         get:
             summary: 'check workspace'
@@ -2091,92 +1972,6 @@ paths:
                                     - a/b
                                 not_allowed:
                                     - ../../README.md
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
-    '/workspace/{ws_id}/tests/lock':
-        patch:
-            summary: 'lock tests'
-            description: 'locks a group of booklets in a workspace'
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for person with mode `monitor-study`'
-                    example: 'm:user000000000.mo00000000'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            properties:
-                                groups:
-                                    type: array
-                                    description: 'array of group names'
-                                    items: {type: string}
-                        example:
-                            groups:
-                                - group1
-            responses:
-                '200':
-                    description: OK
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
-    '/workspace/{ws_id}/tests/unlock':
-        patch:
-            summary: 'unlock tests'
-            description: 'unlocks a group of booklets in a workspace'
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for person with mode `monitor-study`'
-                    example: 'm:user000000000.mo00000000'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            properties:
-                                groups:
-                                    type: array
-                                    description: 'array of group names'
-                                    items: {type: string}
-                        example:
-                            groups:
-                                - group1
-            responses:
-                '200':
-                    description: OK
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -2701,9 +2496,6 @@ components:
                         test:
                             type: string
                             description: 'Elements are booklet-names (not test-ids because unstarted tests don''t have one. Through the endpoint `[GET] /booklet/{test_name}` the corresponding ids, and if startet, status etc. can be obtained.'
-                        workspaceMonitor:
-                            type: string
-                            description: workspace(s)
                         testGroupMonitor:
                             type: string
                             description: workspace(s)

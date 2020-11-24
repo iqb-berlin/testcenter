@@ -72,16 +72,3 @@ $app->group('/workspace/{ws_id}/sys-check', function(App $app) {
     $app->put('/{sys-check_name}/report', [WorkspaceController::class, 'putSysCheckReport']);
 });
 
-$app->group('/workspace', function(App $app) {
-
-    $app->patch('/{ws_id}/tests/unlock', [WorkspaceController::class, 'patchUnlock']);  // TODO name more RESTful
-
-    $app->patch('/{ws_id}/tests/lock', [WorkspaceController::class, 'patchLock']);
-
-    $app->get('/{ws_id}/status', [WorkspaceController::class, 'getStatus']);
-
-    $app->get('/{ws_id}/booklets/started', [WorkspaceController::class, 'getBookletsStarted']);
-})
-    ->add(new IsWorkspaceMonitor())
-    ->add(new RequireToken('person'));
-

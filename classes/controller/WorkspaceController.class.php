@@ -278,7 +278,7 @@ class WorkspaceController extends Controller {
         ]));
     }
 
-    public static function  getSysCheckUnitAndPLayer(Request $request, Response $response): Response {
+    public static function getSysCheckUnitAndPLayer(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
@@ -290,7 +290,7 @@ class WorkspaceController extends Controller {
         return $response->withJson($xmlFile->getUnitData());
     }
     
-    public static function  putSysCheckReport(Request $request, Response $response): Response {
+    public static function putSysCheckReport(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
@@ -317,61 +317,5 @@ class WorkspaceController extends Controller {
         $sysChecksFolder->saveSysCheckReport($report);
     
         return $response->withStatus(201);
-    }
-
-    
-    public static function  patchUnlock(Request $request, Response $response): Response { 
-
-        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        foreach($groups as $groupName) {
-            self::adminDAO()->changeBookletLockStatus($workspaceId, $groupName, false);
-        }
-
-        return $response;
-    }
-    
-    
-    public static function  patchLock(Request $request, Response $response): Response { // TODO name more RESTful
-
-        $groups = RequestBodyParser::getRequiredElement($request, 'groups');
-        $workspaceId = (int) $request->getAttribute('ws_id');
-    
-        foreach($groups as $groupName) {
-            self::adminDAO()->changeBookletLockStatus($workspaceId, $groupName, true);
-        }
-    
-        return $response;
-    }
-
-
-    public static function  getStatus(Request $request, Response $response): Response {
-    
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $bookletsFolder = new BookletsFolder($workspaceId);
-    
-        return $response->withJson($bookletsFolder->getTestStatusOverview(self::adminDAO()->getBookletsStarted($workspaceId)));
-    }
-    
-    
-    public static function  getBookletsStarted(Request $request, Response $response): Response {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $groups = explode(",", $request->getParam('groups', ''));
-    
-        $bookletsStarted = [];
-        foreach(self::adminDAO()->getBookletsStarted($workspaceId) as $booklet) {
-            if (in_array($booklet['groupname'], $groups)) {
-                if ($booklet['locked'] == '1') {
-                    $booklet['locked'] = true;
-                } else {
-                    $booklet['locked'] = false;
-                }
-                array_push($bookletsStarted, $booklet);
-            }
-        }
-    
-        return $response->withJson($bookletsStarted);
     }
 }

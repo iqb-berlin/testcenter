@@ -28,9 +28,6 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
         case 'l':
             authToken = newAuthTokenData.loginToken;
             break;
-        case 'm':
-            authToken = newAuthTokenData.workspaceMonitorToken;
-            break;
         case 'g':
             authToken = newAuthTokenData.groupMonitorToken;
             break;

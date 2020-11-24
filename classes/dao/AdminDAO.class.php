@@ -151,29 +151,6 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function changeBookletLockStatus(int $workspace_id, string $group_name, bool $lock): void { // TODO write unit test
-
-		$lockStr = $lock ? '1' : '0';
-
-		$this->_(
-			'UPDATE tests SET locked=:locked WHERE id IN (
-                SELECT inner_select.id from (
-                    SELECT tests.id FROM tests
-                        INNER JOIN person_sessions ON (person_sessions.id = tests.person_id)
-                        INNER JOIN login_sessions ON (person_sessions.login_id = login_sessions.id)
-                        INNER JOIN workspaces ON (login_sessions.workspace_id = workspaces.id)
-                        WHERE workspaces.id=:workspace_id AND login_sessions.group_name=:groupname
-                    ) as inner_select
-                )',
-			[
-				':locked' => $lockStr,
-				':workspace_id' => $workspace_id,
-				':groupname' => $group_name
-            ]
-		);
-	}
-
-
 	public function deleteResultData(int $workspaceId, string $groupName): void { // TODO write unit test
 
 		$this->_(
@@ -274,24 +251,6 @@ class AdminDAO extends DAO {
 			true
 		);
 	}
-
-
-    public function getBookletsStarted($workspaceId): array { // TODO add unit test  // TODO use dataclass and camelCase-objects
-
-        return $this->_(
-            'SELECT login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code, 
-					tests.name as bookletname, tests.locked,
-					login_sessions.valid_until as lastlogin, person_sessions.valid_until as laststart
-				FROM tests
-				INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-				INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-				WHERE login_sessions.workspace_id = :workspaceId and tests.running = 1',
-            [
-                ':workspaceId' => $workspaceId
-            ],
-            true
-        );
-    }
 
 
 	public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray { // TODO add unit test

@@ -86,17 +86,6 @@ class InitDAO extends SessionDAO {
 
         $persons = [];
 
-        $testSessionWorkspaceMonitor = new PotentialLogin(
-            'test-study-monitor',
-            'monitor-study',
-            'sample_group',
-            [],
-            1,
-            TimeStamp::fromXMLFormat('1/1/2030 12:00')
-        );
-        $login = $this->createLogin($testSessionWorkspaceMonitor);
-        $persons['test-study-monitor'] = $this->createPerson($login, '');
-
         $testSessionGroupMonitor = new PotentialLogin(
             'test-group-monitor',
             'monitor-group',
@@ -118,17 +107,6 @@ class InitDAO extends SessionDAO {
         );
         $login = $this->createLogin($testSession, true);
         $persons['expired-group-monitor'] = $this->createPerson($login, '', true);
-
-        $testSession = new PotentialLogin(
-            'expired-study-monitor',
-            'monitor-study',
-            'expired_group',
-            ['' => ['']],
-            1,
-            TimeStamp::fromXMLFormat('1/1/2000 12:00')
-        );
-        $login = $this->createLogin($testSession, true);
-        $persons['expired-study-monitor'] = $this->createPerson($login, '', true);
 
         return $persons;
     }

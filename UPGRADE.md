@@ -31,5 +31,15 @@ see `scripts/sql-schema/patches.mysql.sql`
   * A state change automatically whites a log now.
 * `Timestamp` parameter in various endpoints is now `timeStamp` to resemble the Verona 2 Standard
 ## 7.4
-### XML
+#### XML
 * A new mode for logins is allowed now: `run-demo`
+## 8.0
+The role `monitor-study` / `workspaceMonitor` was removed completely and all functions and endpoints depending on it.
+#### XML
+* Mode `monitor-study` was removed from the `mode`-attribute
+#### Endpoints
+* The following endpoints where removed
+ * `[PATCH] /{ws_id}/tests/unlock`
+ * `[PATCH] /{ws_id}/tests/lock` 
+ * `[GET] /{ws_id}/status`
+ * `[GET] /{ws_id}/booklets/started`
