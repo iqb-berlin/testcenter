@@ -23,7 +23,7 @@ Email: richard.henck@iqb.hu-berlin.de
 import sys
 import subprocess
 import re
-
+import socket
 
 BACKEND_VERSION_FILE_PATH = 'testcenter-backend/composer.json'
 BACKEND_VERSION_REGEX = '(?<=version": ")(.*)(?=")'
@@ -54,6 +54,15 @@ def check_prerequisites():
                             text=True, shell=True, check=True, capture_output=True)
     if result.stderr.rstrip() != '':
         sys.exit('ERROR: Not up to date with remote branch!')
+    # port 80 in use?
+    # result = subprocess.run("netstat -tulpn 2>/dev/null  | grep $':80\t'",
+    #                         text=True, shell=True, check=True, capture_output=True)
+    if is_port_in_use(80):
+        sys.exit('ERROR: Port 80 in use!' + result.stderr)
+
+def is_port_in_use(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
 
 
 def update_submodules():
@@ -107,10 +116,10 @@ def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
 
 
 check_prerequisites()
-update_submodules()
-backend_version = get_version_from_file(BACKEND_VERSION_FILE_PATH, BACKEND_VERSION_REGEX)
-frontend_version = get_version_from_file(FRONTEND_VERSION_FILE_PATH, FRONTEND_VERSION_REGEX)
-bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
-update_compose_file_versions(backend_version, frontend_version, bs_version)
-run_tests()
-git_tag_commit_and_push(backend_version, frontend_version, bs_version)
+# update_submodules()
+# backend_version = get_version_from_file(BACKEND_VERSION_FILE_PATH, BACKEND_VERSION_REGEX)
+# frontend_version = get_version_from_file(FRONTEND_VERSION_FILE_PATH, FRONTEND_VERSION_REGEX)
+# bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
+# update_compose_file_versions(backend_version, frontend_version, bs_version)
+# run_tests()
+# git_tag_commit_and_push(backend_version, frontend_version, bs_version)
