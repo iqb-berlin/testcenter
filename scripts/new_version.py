@@ -116,10 +116,10 @@ def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
 
 
 check_prerequisites()
-# update_submodules()
-# backend_version = get_version_from_file(BACKEND_VERSION_FILE_PATH, BACKEND_VERSION_REGEX)
-# frontend_version = get_version_from_file(FRONTEND_VERSION_FILE_PATH, FRONTEND_VERSION_REGEX)
-# bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
-# update_compose_file_versions(backend_version, frontend_version, bs_version)
-# run_tests()
-# git_tag_commit_and_push(backend_version, frontend_version, bs_version)
+update_submodules()
+backend_version = get_version_from_file(BACKEND_VERSION_FILE_PATH, BACKEND_VERSION_REGEX)
+frontend_version = get_version_from_file(FRONTEND_VERSION_FILE_PATH, FRONTEND_VERSION_REGEX)
+bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
+update_compose_file_versions(backend_version, frontend_version, bs_version)
+run_tests()
+git_tag_commit_and_push(backend_version, frontend_version, bs_version)
