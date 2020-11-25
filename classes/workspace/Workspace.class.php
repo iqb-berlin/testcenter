@@ -14,17 +14,17 @@ class Workspace {
 
     static function getAll(): array {
 
-        $workspaceControllers = [];
+        $workspaces = [];
         $class = get_called_class();
 
         foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
 
             $workspaceFolderNameParts = explode('_', $workspaceDir);
             $workspaceId = (int) array_pop($workspaceFolderNameParts);
-            $workspaceControllers[$workspaceId] = new $class($workspaceId);
+            $workspaces[$workspaceId] = new $class($workspaceId);
         }
 
-        return $workspaceControllers;
+        return $workspaces;
     }
 
 
@@ -68,6 +68,12 @@ class Workspace {
             }
         }
         return $subFolderPath;
+    }
+
+
+    public function getId() {
+
+        return $this->_workspaceId;
     }
 
 

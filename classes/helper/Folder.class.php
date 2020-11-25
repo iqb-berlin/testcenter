@@ -64,6 +64,7 @@ class Folder {
             } else if ($entry->isDir()) {
 
                 Folder::deleteContentsRecursive($entry->getPathname());
+                rmdir($entry->getPathname());
             }
         }
     }

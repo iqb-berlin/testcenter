@@ -45,14 +45,14 @@ class DB {
 
             try {
 
-                error_log("Database Connection attempt");
+                echo("\n Database Connection attempt");
                 DB::connect($config);
-                error_log("Database Connection successful");
+                echo("\n Database Connection successful");
                 return;
 
             } catch (Throwable $t) {
 
-                error_log("Database Connection failed! Retry: $retries attempts left.");
+                echo("\n Database Connection failed! Retry: $retries attempts left.");
                 usleep(20 * 1000000); // give database container time to come up
             }
         }

@@ -112,57 +112,62 @@ class InitDAO extends SessionDAO {
     }
 
 
-    /**
-     * @param string $username
-     * @param string $password
-     * @param string $workspaceName
-     * @return array
-     * @throws HttpError
-     */
-    public function createWorkspaceAndAdmin(string $username, string $password, string $workspaceName): array {
+    public function createAdmin(string $username, string $password): int {
 
         $superAdminDAO = new SuperAdminDAO();
-        $adminDAO = new AdminDAO();
         $admin = $superAdminDAO->createUser($username, $password, true);
-        $adminDAO->createAdminToken($username, $password);
-        $workspace = $superAdminDAO->createWorkspace($workspaceName);
+        $adminDAO = new AdminDAO();
+        $adminDAO->createAdminToken($username, $password); // TODO why?
+        return (int) $admin['id'];
+    }
 
+
+    public function createWorkspace(string $workspaceName): int {
+
+        $superAdminDAO = new SuperAdminDAO();
+        $workspace = $superAdminDAO->createWorkspace($workspaceName);
+        return (int) $workspace['id'];
+    }
+
+
+    public function addWorkspaceToAdmin(int $adminId, int $workspaceId): void {
+
+        $superAdminDAO = new SuperAdminDAO();
         $superAdminDAO->setWorkspaceRightsByUser(
-            (int) $admin['id'],
+            $adminId,
             [
                 (object) [
-                    "id" => (int) $workspace['id'],
+                    "id" => $workspaceId,
                     "role" => "RW"
                 ]
             ]
         );
-
-        return [
-            "workspaceId" => (int) $workspace['id'],
-            "userId" => (int) $admin['id'],
-        ];
     }
 
 
-    public function clearDb(): string {
+    public function clearDb(): array {
 
-        $report = "";
+        $droppedTables = [];
 
         if ($this->getDBType() == 'mysql') {
             $this->_('SET FOREIGN_KEY_CHECKS = 0');
         }
 
+        $status = $this->getDbStatus();
+
         foreach ($this::tables as $table) {
 
-            $report .= "\n## DROP TABLE `$table`";
-            $this->_("Drop table if exists $table cascade ");
+            if (!in_array($table, $status['list']['missing'])) {
+                $droppedTables[] = $table;
+                $this->_("drop table $table");
+            }
         }
 
         if ($this->getDBType() == 'mysql') {
             $this->_('SET FOREIGN_KEY_CHECKS = 1');
         }
 
-        return $report;
+        return $droppedTables;
     }
 
 
@@ -190,12 +195,17 @@ class InitDAO extends SessionDAO {
 
         return [
             'message' =>
-                "Missing Tables: " . implode(', ', $tableStatus['missing']) . '. ' .
-                "Used Tables: " . implode(', ', $tableStatus['used']) . '.',
+                  "Missing Tables: "
+                . (count($tableStatus['missing']) ? implode(', ', $tableStatus['missing']) : 'none')
+                . ". Used Tables: "
+                . (count($tableStatus['used']) ? implode(', ', $tableStatus['used']) : 'none')
+                . '.',
             'used' => count($tableStatus['used']),
-            'missing' => count($tableStatus['missing'])
+            'missing' => count($tableStatus['missing']),
+            'list' => $tableStatus
         ];
     }
+
 
     public function createSampleCommands(int $commanderId): void {
 
@@ -203,5 +213,35 @@ class InitDAO extends SessionDAO {
         $adminDAO->storeCommand($commanderId, 1, new Command(-1,  'COMMAND', 1597906980, 'p4'));
         $adminDAO->storeCommand($commanderId, 1, new Command(-1, 'COMMAND', 1597906970, 'p3'));
         $adminDAO->storeCommand($commanderId, 1, new Command(-1, 'COMMAND', 1597906960, 'p1', 'p2'));
+    }
+
+
+    public function adminExists(): bool {
+
+        $admins = $this->_("select count(*) as count from users where is_superadmin = 1");
+        return (int) $admins['count'] > 0;
+    }
+
+    public function createWorkspaceIfMissing(Workspace $workspace): array {
+
+        $workspaceFromDb = $this->_(
+            "SELECT workspaces.id, workspaces.name FROM workspaces WHERE `id` = :ws_id",
+            [':ws_id' => $workspace->getId()]
+        );
+
+        if ($workspaceFromDb == null) {
+
+            $name = "restored workspace (former id: {$workspace->getId()})";
+            $id = $this->createWorkspace($name);
+            return [
+                "name" => $name,
+                "restored" => true,
+                "id" => $id
+            ];
+
+        } else {
+
+            return $workspaceFromDb;
+        }
     }
 }
