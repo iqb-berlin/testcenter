@@ -9,7 +9,7 @@ services:
       - "--entrypoints.web.address=:80"
 
   testcenter-backend:
-    image: iqbberlin/testcenter-backend:7.4.2
+    image: iqbberlin/testcenter-backend:8.0.0
     volumes:
       - testcenter_backend_vo_data:/var/www/html/vo_data
 
