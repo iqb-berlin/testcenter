@@ -197,8 +197,6 @@ class TestController extends Controller {
 
         $statePatch = TestController::stateArray2KeyValue($stateData);
 
-        error_log('OUT OUT OUT:' . print_r($statePatch, true));
-
         $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
         foreach ($stateData as $entry) {
@@ -330,9 +328,27 @@ class TestController extends Controller {
 
         return $response->withStatus(200, $changed ? 'OK' : 'OK, was already marked as executed');
     }
-    
-    
-    // TODO replace this and use proper data-class
+
+
+    public static function postConnectionLost(Request $request, Response $response): Response {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $testId = (int) $request->getAttribute('test_id');
+
+        $newState = self::testDAO()->updateTestState($testId, ['CONNECTION' => 'lost']);
+        // TODO write log also (?)
+
+        BroadcastService::sessionChange(
+            SessionChangeMessage::testState($authToken, $testId, $newState)
+        );
+
+        return $response->withStatus(200);
+    }
+
+
+        // TODO replace this and use proper data-class
     private static function stateArray2KeyValue(array $stateData): array {
         $statePatch = [];
         foreach ($stateData as $stateEntry) {

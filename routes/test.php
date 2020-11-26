@@ -46,3 +46,9 @@ $app->group('/test', function(App $app) {
 
 })
     ->add(new RequireToken('person'));
+
+$app->group('/test', function(App $app) { // TODO Spec
+
+    $app->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
+});
+
