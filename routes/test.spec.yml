@@ -689,3 +689,25 @@ paths:
           description: Test is locked!
         "500":
           description: Server Error
+
+  /test/{test_id}/connection-lost:
+    post:
+      summary: Notify Closing Test
+      description: |-
+        A closing browser or such can use this window to notify, that a running test was closed. Because it has to
+        be called under special circumstances, it does not need any authetication.
+      parameters:
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK, test was marked as disconnected
+        "404":
+          description: Test not found
+        "500":
+          description: Server Error

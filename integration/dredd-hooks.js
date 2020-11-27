@@ -128,7 +128,8 @@ dreddHooks.beforeEach(function(transaction, done) {
             });
             changeUri(transaction, {
                 '/workspace/1': '/workspace/13',
-                '/group/sample_group': '/group/invalid_group'
+                '/group/sample_group': '/group/invalid_group',
+                '/test/1/connection-lost': '/test/13/connection-lost'
             });
             break;
         case '410':
