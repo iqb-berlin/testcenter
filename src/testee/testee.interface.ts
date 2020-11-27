@@ -1,6 +1,7 @@
 export interface Testee {
     token: string;
     testId: number;
+    disconnectNotificationUri: string;
 }
 
 export function isTestee(arg: any): arg is Testee {

@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {HttpService, Injectable, Logger} from '@nestjs/common';
 import {Testee} from './testee.interface';
 import {WebsocketGateway} from '../common/websocket.gateway';
 import {Command} from '../command/command.interface';
@@ -6,9 +6,11 @@ import {Command} from '../command/command.interface';
 @Injectable()
 export class TesteeService {
     constructor(
-        private readonly websocketGateway: WebsocketGateway
+        private readonly websocketGateway: WebsocketGateway,
+        private http: HttpService
     ) {
         this.websocketGateway.getDisconnectionObservable().subscribe((disconnected: string) => {
+            this.notifyDisconnection(disconnected);
             this.removeTestee(disconnected);
         });
     }
@@ -25,7 +27,7 @@ export class TesteeService {
         this.logger.log('remove testee: ' + testeeToken);
 
         if (typeof this.testees[testeeToken] !== "undefined") {
-            delete (this.testees[testeeToken]);
+            delete this.testees[testeeToken];
         }
 
         this.websocketGateway.disconnectClient(testeeToken);
@@ -33,6 +35,23 @@ export class TesteeService {
 
     public getTestees(): Testee[] {
         return Object.values(this.testees);
+    }
+
+    notifyDisconnection(testeeToken: string): void {
+        if (typeof this.testees[testeeToken] === "undefined") {
+            return;
+        }
+        if (this.testees[testeeToken].disconnectNotificationUri) {
+            this.http.post(this.testees[testeeToken].disconnectNotificationUri).subscribe(
+                () => {
+                    this.logger.log(`sent connection-lost signal to ${this.testees[testeeToken].disconnectNotificationUri}`)
+                },
+                error => {
+                    this.logger.warn(`could not sent connection-lost signal to 
+                        ${this.testees[testeeToken].disconnectNotificationUri}: ${error.message}`)
+                }
+            );
+        }
     }
 
     broadcastCommandToTestees(command: Command, testIds: number[]) {

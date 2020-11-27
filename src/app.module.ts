@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {HttpModule, Module} from '@nestjs/common';
 import {TestSessionController} from './test-session/test-session.controller';
 import {MonitorController} from './monitor/monitor.controller';
 import {WebsocketGateway} from './common/websocket.gateway';
@@ -20,6 +20,7 @@ import {SystemController} from './system/system.controller';
       CommandController,
       TesteeController,
       SystemController,
+
   ],
   providers: [
       WebsocketGateway,
@@ -30,5 +31,8 @@ import {SystemController} from './system/system.controller';
         useClass: ErrorHandler,
       }
   ],
+  imports: [
+      HttpModule
+  ]
 })
 export class AppModule {}
