@@ -13,7 +13,7 @@ export class TesteeController {
     private readonly logger = new Logger(TesteeController.name);
 
     @Post('/testee/register')
-    monitorRegister(@Req() request: Request): void {
+    testeeRegister(@Req() request: Request): void {
         if (!isTestee(request.body)) {
             throw new HttpException("not testee data", 400);
         }
@@ -23,7 +23,7 @@ export class TesteeController {
     }
 
     @Post('/testee/unregister')
-    monitorUnregister(@Req() request: Request): void {
+    testeeUnregister(@Req() request: Request): void {
         if (!('token' in request.body)) {
             throw new HttpException("no token in body", 400);
         }
@@ -33,7 +33,7 @@ export class TesteeController {
     }
 
     @Get('/testees')
-    monitors(@Req() request: Request): Testee[] {
+    testees(@Req() request: Request): Testee[] {
         return this.testeeService.getTestees();
     }
 }
