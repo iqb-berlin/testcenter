@@ -307,7 +307,11 @@ class TestController extends Controller {
 
         $commands = self::testDAO()->getCommands($testId, $lastCommandId);
 
-        $bsUrl = BroadcastService::registerChannel('testee', ['testId' => $testId]);
+        $testee = [
+            'testId' => $testId,
+            'disconnectNotificationUri' => "{$request->getUri()->getBaseUrl()}/test/{$testId}/connection-lost"
+        ];
+        $bsUrl = BroadcastService::registerChannel('testee', $testee);
 
         if ($bsUrl !== null) {
 
@@ -332,17 +336,25 @@ class TestController extends Controller {
 
     public static function postConnectionLost(Request $request, Response $response): Response {
 
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-
         $testId = (int) $request->getAttribute('test_id');
 
-        $newState = self::testDAO()->updateTestState($testId, ['CONNECTION' => 'lost']);
+        $testSession = self::testDAO()->getTestSession($testId);
+
+        if (isset($testSession['laststate']['CONNECTION']) && ($testSession['laststate']['CONNECTION'] == 'LOST')) {
+
+            return $response->withStatus(200, "connection already set as lost");
+        }
+
+        $newState = self::testDAO()->updateTestState($testId, ['CONNECTION' => 'LOST']);
         // TODO write log also (?)
 
-        BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken, $testId, $newState)
-        );
+        if (!isset($testSession['group_name'])) {
+            error_log(print_r($testSession, true));
+        }
+
+        $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name']);
+        $sessionChangeMessage->setTestState($testId, $newState);
+        BroadcastService::sessionChange($sessionChangeMessage);
 
         return $response->withStatus(200);
     }

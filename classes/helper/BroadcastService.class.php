@@ -76,17 +76,17 @@ class BroadcastService {
 
         $bsToken = md5((string) rand(0, 99999999));
         $data['token'] = $bsToken;
-        $reponse = BroadcastService::send("$channelName/register", json_encode($data));
+        $response = BroadcastService::send("$channelName/register", json_encode($data));
         $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getBsUriSubscribe()) . '/' . $bsToken;
-        return ($reponse !== null) ? $url : null;
+        return ($response !== null) ? $url : null;
     }
 
-    
+
     static function sessionChange(SessionChangeMessage $sessionChange): ?string {
 
         return BroadcastService::send('push/session-change', json_encode($sessionChange));
     }
-    
+
 
     static function send(string $endpoint, string $message = '', string $verb = "POST"): ?string {
 

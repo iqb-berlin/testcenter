@@ -116,14 +116,52 @@ class TestDAO extends DAO {
 
     public function getTestState(int $testId): array {
 
-        $booklet = $this->_(
+        $test = $this->_(
             'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
             [
                 ':testId' => $testId
             ]
         );
 
-        return ($booklet) ? JSON::decode($booklet['laststate'], true) : [];
+        return ($test) ? JSON::decode($test['laststate'], true) : [];
+    }
+
+
+    public function getTestSession(int $testId): array {
+
+        $testSession = $this->_(
+            'SELECT
+                    login_sessions.id as login_id,
+                    login_sessions.mode,
+                    login_sessions.workspace_id,
+                    login_sessions.group_name as group_name,
+                    login_sessions.token as login_token,
+                    person_sessions.code,
+                    person_sessions.token as person_token,
+                    tests.person_id, 
+                    tests.laststate,
+                    tests.id,
+                    tests.locked,
+                    tests.running,
+                    tests.label
+                FROM 
+                    tests 
+                    LEFT JOIN person_sessions on person_sessions.id = tests.person_id
+                    LEFT JOIN login_sessions on person_sessions.login_id = login_sessions.id
+                WHERE 
+                    tests.id=:testId',
+            [
+                ':testId' => $testId
+            ]
+        );
+
+        if ($testSession == null) {
+            throw new HttpError("Test not found", 404);
+        }
+
+        $testSession['laststate'] = $testSession['laststate'] ? JSON::decode($testSession['laststate'], true) : [];
+
+        return $testSession;
     }
 
 
@@ -137,16 +175,24 @@ class TestDAO extends DAO {
             ]
         );
 
+        if ($testData == null) {
+            throw new HttpError("Test not found", 404);
+        }
+
         $oldState = $testData['laststate'] ? JSON::decode($testData['laststate'], true) : [];
         $newState = array_merge($oldState, $statePatch);
 
-         $this->_(
-             'UPDATE tests SET laststate = :laststate WHERE id = :id',
+        if ($oldState == $newState) {
+            return $newState;
+        }
+
+        $this->_(
+         'UPDATE tests SET laststate = :laststate WHERE id = :id',
              [
                  ':laststate' => json_encode($newState),
                  ':id' => $testId
              ]
-         );
+        );
 
          return $newState;
     }
