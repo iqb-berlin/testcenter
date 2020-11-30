@@ -289,7 +289,7 @@ class TestController extends Controller {
 
         $testId = (int) $request->getAttribute('test_id');
 
-        self::testDAO()->lockBooklet($testId);
+        self::testDAO()->lockTest($testId);
 
         BroadcastService::sessionChange(
             SessionChangeMessage::testState($authToken, $testId, ['status' => 'locked'])

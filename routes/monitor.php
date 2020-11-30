@@ -97,6 +97,9 @@ $app->group('/monitor', function(App $app) {
 
         return $response->withStatus(201);
     });
+
+
+    $app->post('/group/{group_name}/tests/unlock', [MonitorController::class, 'postUnlock']);
 })
     ->add(new IsGroupMonitor())
     ->add(new RequireToken('person'));

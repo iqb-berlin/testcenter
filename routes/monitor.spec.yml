@@ -77,6 +77,17 @@ paths:
                 unitState:
                   PRESENTATIONCOMPLETE: "yes"
                 timestamp: 1596455898
+              - personId: 1
+                groupName: "sample_group"
+                personLabel: "sample_user/xxx"
+                groupLabel: "Sample group"
+                mode: "run-hot-return"
+                testId: 2,
+                testState:
+                  status: "locked"
+                bookletName: "BOOKLET.SAMPLE2"
+                unitState: []
+                timestamp: 1606736826
               - personId: 3
                 groupName: sample_group
                 personLabel: test-group-monitor
@@ -86,6 +97,8 @@ paths:
                 testState: []
                 unitState: []
                 timestamp: 1596455898
+
+
         "401":
           description: Not authenticated
         "410":
@@ -132,6 +145,43 @@ paths:
       responses:
         "201":
           description: command sent
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /monitor/group/{group_name}/tests/unlock:
+    post:
+      summary: unlock a bunch of tests
+      description: "Unlock a bunch of running tests"
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+        - in: path
+          name: group_name
+          description: name (id) of a group
+          example: "sample_group"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: number
+            example:
+              - 2
+      responses:
+        "200":
+          description: tests unlocked
         "401":
           description: Not authenticated
         "410":

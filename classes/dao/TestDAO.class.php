@@ -242,11 +242,23 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function lockBooklet(int $testId): void {
+    public function lockTest(int $testId): void {
 
         $this->_('UPDATE tests SET locked = :locked WHERE id = :id',
             [
                 ':locked' => '1',
+                ':id' => $testId
+            ]
+        );
+    }
+
+
+    // TODO unit test
+    public function unlockTest(int $testId): void {
+
+        $this->_('UPDATE tests SET locked = :locked WHERE id = :id',
+            [
+                ':locked' => '0',
                 ':id' => $testId
             ]
         );

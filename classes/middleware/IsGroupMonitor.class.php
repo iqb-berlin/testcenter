@@ -14,6 +14,8 @@ class IsGroupMonitor {
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
+        // TODo verify if it's the correct group!
+
         if ($authToken->getMode() !== 'monitor-group') {
 
             throw new HttpForbiddenException($request, "Access Denied: 
