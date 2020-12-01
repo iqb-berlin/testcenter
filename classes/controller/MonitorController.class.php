@@ -101,11 +101,17 @@ class MonitorController extends Controller {
 
     public static function postUnlock(Request $request, Response $response): Response {
 
+        $groupName = $request->getAttribute('group_name');
         $testIds = RequestBodyParser::getElementWithDefault($request, 'testIds', []);
 
         foreach($testIds as $testId) {
             // TODO check if test is in group
             self::testDAO()->unlockTest((int) $testId);
+
+            $testSession = self::testDAO()->getTestSession($testId);
+            $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName);
+            $sessionChangeMessage->setTestState((int) $testId, $testSession['laststate']);
+            BroadcastService::sessionChange($sessionChangeMessage);
         }
 
         return $response->withStatus(200);

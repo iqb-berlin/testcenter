@@ -328,23 +328,7 @@ class AdminDAO extends DAO {
 
 		return $sessionChangeMessages;
 	}
-
-
-	private function getTestFullState(array $testSessionData): array {
-
-        $testState = JSON::decode($testSessionData['testState'], true);
-
-        if ($testSessionData['locked']) {
-            $testState['status'] = 'locked';
-        } else if (!$testSessionData['running']) {
-            $testState['status'] = 'pending';
-        } else {
-            $testState['status'] = 'running';
-        }
-
-        return $testState;
-    }
-
+	
 
     // TODO Unit-test
     // TODO use data-collection class

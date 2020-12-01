@@ -32,12 +32,10 @@ class TestController extends Controller {
 
         self::testDAO()->setTestRunning((int) $test['id']);
 
-        error_log('OUT OUT OUT:' . print_r($test['lastState'], true));
-
         BroadcastService::sessionChange(SessionChangeMessage::testState(
             $authToken,
             (int) $test['id'],
-            $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
+            $test['laststate'] ? json_decode($test['laststate'], true) : ['status' => 'running'],
             $body['bookletName']
         ));
 
@@ -350,10 +348,6 @@ class TestController extends Controller {
         // We need to solve https://github.com/iqb-berlin/testcenter-backend/issues/162 first (syncing of server and
         // client time), before we should do this.
         // See also: https://github.com/iqb-berlin/testcenter-backend/issues/172
-
-        if (!isset($testSession['group_name'])) {
-            error_log(print_r($testSession, true));
-        }
 
         $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name']);
         $sessionChangeMessage->setTestState($testId, $newState);

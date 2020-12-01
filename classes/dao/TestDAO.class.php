@@ -139,7 +139,7 @@ class TestDAO extends DAO {
                     person_sessions.code,
                     person_sessions.token as person_token,
                     tests.person_id, 
-                    tests.laststate,
+                    tests.laststate as testState,
                     tests.id,
                     tests.locked,
                     tests.running,
@@ -159,7 +159,7 @@ class TestDAO extends DAO {
             throw new HttpError("Test not found", 404);
         }
 
-        $testSession['laststate'] = $testSession['laststate'] ? JSON::decode($testSession['laststate'], true) : [];
+        $testSession['laststate'] = $this->getTestFullState($testSession);
 
         return $testSession;
     }
