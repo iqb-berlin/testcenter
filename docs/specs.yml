@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 8.0.0
+    version: 8.0.0-nextmajor
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -445,7 +445,7 @@ paths:
     /system/config:
         get:
             summary: 'get system config'
-            description: 'returns publicly available parts of system config - version number - customTexts for UI'
+            description: 'returns publicly available parts of system config - version number - customTexts for UI - information about a broadcastingService - serverTimestamp (in milliseconds)'
             responses:
                 '200':
                     description: OK
@@ -456,12 +456,21 @@ paths:
                                 properties:
                                     version: {type: string}
                                     customTexts: {type: object}
+                                    broadcastingService: {type: object, properties: {versionExpected: {type: string}, status: {type: string}, version: {type: string}}}
+                                    serverTimestamp: {type: string}
                                 required:
                                     - version
                                     - customTexts
+                                    - broadcastingService
+                                    - serverTimestamp
                             example:
-                                version: 8.0.0
+                                version: 8.0.0-nextmajor
                                 customTexts: {}
+                                broadcastingService:
+                                    versionExpected: 1.0.0
+                                    status: online
+                                    version: 1.0.0
+                                serverTimestamp: 1607262304686.265
                 '500':
                     description: 'Server Error'
     /version:
@@ -473,7 +482,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 8.0.0
+                                version: 8.0.0-nextmajor
     /workspaces:
         get:
             summary: 'get a list of workspaces'

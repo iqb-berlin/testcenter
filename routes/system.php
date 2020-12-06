@@ -98,7 +98,8 @@ $app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspect
         [
             'version' => Version::get(),
             'customTexts' => $customTexts,
-            'broadcastingService' => BroadcastService::getStatus()
+            'broadcastingService' => BroadcastService::getStatus(),
+            'serverTimestamp' => microtime(true) * 1000
         ]
     );
 });

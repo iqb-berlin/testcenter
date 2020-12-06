@@ -24,7 +24,9 @@ paths:
       summary: get system config
       description: "returns publicly available parts of system config
         - version number
-        - customTexts for UI"
+        - customTexts for UI
+        - information about a broadcastingService
+        - serverTimestamp (in milliseconds)"
       responses:
         "200":
           description: OK
@@ -37,12 +39,30 @@ paths:
                     type: string
                   customTexts:
                     type: object
+                  broadcastingService:
+                    type: object
+                    properties:
+                      versionExpected:
+                        type: string
+                      status:
+                        type: string
+                      version:
+                        type: string
+                  serverTimestamp:
+                    type: string
                 required:
                   - version
                   - customTexts
+                  - broadcastingService
+                  - serverTimestamp
               example:
                 version: "%%%VERSION%%%"
                 customTexts: {}
+                broadcastingService:
+                  versionExpected: 1.0.0
+                  status: online
+                  version: 1.0.0
+                serverTimestamp: 1607262304686.265
         "500":
           description: Server Error
 

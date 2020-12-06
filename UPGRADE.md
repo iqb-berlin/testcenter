@@ -43,3 +43,7 @@ The role `monitor-study` / `workspaceMonitor` was removed completely and all fun
  * `[PATCH] /{ws_id}/tests/lock` 
  * `[GET] /{ws_id}/status`
  * `[GET] /{ws_id}/booklets/started`
+## next-major
+#### Endpoints
+* `[GET] /system/config` now provides an argument `serverTimestamp` holding the current timestamp *in 
+  milliseconds*

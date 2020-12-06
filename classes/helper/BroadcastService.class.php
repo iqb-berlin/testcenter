@@ -37,7 +37,11 @@ class BroadcastService {
 
     static function getStatus(): array {
 
-        $status = [];
+        $status = [
+            "versionExpected" => "none",
+            "version" => "none",
+            "status" => "not installed"
+        ];
 
         if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
 
