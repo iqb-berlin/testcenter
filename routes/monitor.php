@@ -15,6 +15,8 @@ $app->group('/monitor', function(App $app) {
     $app->put('/command', [MonitorController::class, 'putCommand']);
 
     $app->post('/group/{group_name}/tests/unlock', [MonitorController::class, 'postUnlock']);
+
+    $app->post('/group/{group_name}/tests/lock', [MonitorController::class, 'postLock']);
 })
     ->add(new IsGroupMonitor())
     ->add(new RequireToken('person'));

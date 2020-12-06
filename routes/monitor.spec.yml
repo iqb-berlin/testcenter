@@ -157,7 +157,44 @@ paths:
   /monitor/group/{group_name}/tests/unlock:
     post:
       summary: unlock a bunch of tests
-      description: "Unlock a bunch of running tests"
+      description: "Unlocks a bunch of running tests"
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+        - in: path
+          name: group_name
+          description: name (id) of a group
+          example: "sample_group"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: number
+            example:
+              - 2
+      responses:
+        "200":
+          description: tests unlocked
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /monitor/group/{group_name}/tests/lock:
+    post:
+      summary: Lock a bunch of tests
+      description: "Locks a bunch of running tests"
       parameters:
         - in: header
           name: AuthToken

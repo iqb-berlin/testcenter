@@ -254,11 +254,11 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function unlockTest(int $testId): void {
+    public function changeTestLockStatus(int $testId, bool $unlock = true): void {
 
         $this->_('UPDATE tests SET locked = :locked WHERE id = :id',
             [
-                ':locked' => '0',
+                ':locked' => $unlock ? '0' : '1',
                 ':id' => $testId
             ]
         );
