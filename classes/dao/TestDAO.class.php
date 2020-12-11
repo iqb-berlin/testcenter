@@ -36,6 +36,7 @@ class TestDAO extends DAO {
 
         if ($test !== null) {
 
+            $test['_newlyCreated'] = false;
             return $test;
         }
 
@@ -55,7 +56,8 @@ class TestDAO extends DAO {
             'person_id' => $personId,
             'locked' => '0',
             'running' => '0',
-            'lastState' => ''
+            'lastState' => '',
+            '_newlyCreated' => true
         ];
     }
 

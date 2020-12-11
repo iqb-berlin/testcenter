@@ -6,7 +6,7 @@ use Slim\App;
 $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}', [WorkspaceController::class, 'get'])
-        ->add(new IsWorkspacePermitted('MO'));
+        ->add(new IsWorkspacePermitted('RO'));
 
     $app->get('/{ws_id}/reviews', [WorkspaceController::class, 'getReviews'])
         ->add(new IsWorkspacePermitted('RO'));

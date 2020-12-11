@@ -13,7 +13,12 @@ class SessionChangeMessage implements JsonSerializable {
      * @var string
      */
     protected $groupName;
-        
+
+    /**
+     * @var int
+     */
+    protected $testId;
+
     /**
      * @var string
      */
@@ -23,16 +28,11 @@ class SessionChangeMessage implements JsonSerializable {
      * @var string
      */
     protected $groupLabel = "";
-    
+
     /**
      * @var string
      */
     protected $mode = "";
-    
-    /**
-     * @var int
-     */
-    protected $testId = -1;
 
     /**
      * @var string
@@ -60,18 +60,19 @@ class SessionChangeMessage implements JsonSerializable {
     protected $timestamp = 0;
 
 
-    public function __construct(int $personId, string $groupName) {
+    public function __construct(int $personId, string $groupName, int $testId) {
 
         $this->personId = $personId;
         $this->groupName = $groupName;
+        $this->testId = $testId;
 
         $this->timestamp = TimeStamp::now();
     }
 
 
-    public static function login(Login $login, Person $person): SessionChangeMessage {
+    public static function newSession(Login $login, Person $person, int $testId): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($person->getId(), $person->getGroup());
+        $message = new SessionChangeMessage($person->getId(), $person->getGroup(), $testId);
         $message->setLogin(
             $login->getName(),
             $login->getMode(),
@@ -84,15 +85,15 @@ class SessionChangeMessage implements JsonSerializable {
 
     public static function testState(AuthToken $authToken, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup());
-        $message->setTestState($testId, $testState, $bookletName);
+        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), $testId);
+        $message->setTestState($testState, $bookletName);
         return $message;
     }
 
 
     public static function unitState(AuthToken $authToken, int $testId, string $unitName, array $unitState): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup());
+        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), $testId);
         $message->testId = $testId;
         $message->setUnitState($unitName, $unitState);
         return $message;
@@ -107,9 +108,8 @@ class SessionChangeMessage implements JsonSerializable {
     }
 
 
-    public function setTestState(int $testId, array $testState, string $bookletName = null): void {
+    public function setTestState(array $testState, string $bookletName = null): void {
 
-        $this->testId = $testId;
         $this->testState = $testState;
         if ($bookletName !== null) {
             $this->bookletName = $bookletName;

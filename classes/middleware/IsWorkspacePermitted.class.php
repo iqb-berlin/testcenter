@@ -42,7 +42,7 @@ class IsWorkspacePermitted {
 
         $userRoleOnWorkspace = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
 
-        if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Role::withChildren($userRoleOnWorkspace)))) {
+        if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Mode::withChildren($userRoleOnWorkspace)))) {
 
             throw new HttpForbiddenException($request,"Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");
         }

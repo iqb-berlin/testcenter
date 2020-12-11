@@ -94,9 +94,7 @@ class SessionController extends Controller {
     private static function getOrCreatePersonSession(Login $login, string $code): Session {
 
         $person = self::sessionDAO()->getOrCreatePerson($login, $code);
-        $session = Session::createFromLogin($login, $person);
-        BroadcastService::sessionChange(SessionChangeMessage::login($login, $person));
-        return $session;
+        return Session::createFromLogin($login, $person);
     }
 
 
@@ -152,8 +150,8 @@ class SessionController extends Controller {
                         $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
                     }
                     $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
-                    $sessionMessage = SessionChangeMessage::login($memberLogin, $memberPerson);
-                    $sessionMessage->setTestState((int) $test['id'], [], $booklet);
+                    $sessionMessage = SessionChangeMessage::newSession($memberLogin, $memberPerson, (int) $test['id']);
+                    $sessionMessage->setTestState([], $booklet);
                     BroadcastService::sessionChange($sessionMessage);
                 }
             }
@@ -182,8 +180,6 @@ class SessionController extends Controller {
 
                 $session->addAccessObjects('test', ...$booklets);
             }
-
-            BroadcastService::sessionChange(SessionChangeMessage::login($loginWithPerson->getLogin(), $loginWithPerson->getPerson()));
 
             return $response->withJson($session);
         }

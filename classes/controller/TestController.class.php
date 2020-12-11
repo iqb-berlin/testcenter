@@ -32,18 +32,28 @@ class TestController extends Controller {
 
         self::testDAO()->setTestRunning((int) $test['id']);
 
-        BroadcastService::sessionChange(SessionChangeMessage::testState(
-            $authToken,
-            (int) $test['id'],
+        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), (int) $test['id']);
+        if ($test['_newlyCreated']) {
+            // can happen when mode is run-hot-return for example
+            $personLogin = self::sessionDAO()->getPersonLogin($authToken->getToken());
+            $message->setLogin(
+                $personLogin->getLogin()->getName(),
+                $authToken->getMode(),
+                $personLogin->getLogin()->getGroupLabel(),
+                $personLogin->getPerson()->getCode()
+            );
+        }
+        $message->setTestState(
             $test['laststate'] ? json_decode($test['laststate'], true) : ['status' => 'running'],
             $body['bookletName']
-        ));
+        );
+        BroadcastService::sessionChange($message);
 
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
     }
-    
-    
+
+
     public static function get(Request $request, Response $response) : Response {
 
         /* @var $authToken AuthToken */
@@ -62,7 +72,7 @@ class TestController extends Controller {
         ]);
     }
 
-    
+
     public static function getUnit(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -122,7 +132,7 @@ class TestController extends Controller {
         return $response->withStatus(201);
     }
 
-    
+
     public static function putReview(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
@@ -178,8 +188,8 @@ class TestController extends Controller {
 
         return $response->withStatus(200);
     }
-    
-    
+
+
     public static function patchState(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -279,7 +289,7 @@ class TestController extends Controller {
         return $response->withStatus(201);
     }
 
-    
+
     public static function patchLock(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -349,8 +359,8 @@ class TestController extends Controller {
         // client time), before we should do this.
         // See also: https://github.com/iqb-berlin/testcenter-backend/issues/172
 
-        $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name']);
-        $sessionChangeMessage->setTestState($testId, $newState);
+        $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name'], $testId);
+        $sessionChangeMessage->setTestState($newState);
         BroadcastService::sessionChange($sessionChangeMessage);
 
         return $response->withStatus(200);

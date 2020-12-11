@@ -255,19 +255,13 @@ class AdminDAO extends DAO {
 
 	public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray { // TODO add unit test
 
-        $replacements = [];
-
+        $groupSelector = false;
         if (count($groups)) {
 
-            foreach ($groups as $index => $group) {
-
-                $replacements[":group_$index"] = $group;
-            }
-
-            $in = implode(',', array_keys($replacements));
+            $groupSelector = "'" . implode("', '", $groups) . "'";
         }
 
-        $replacements[':workspaceId'] = $workspaceId;
+        $modeSelector = "'" . implode("', '", Mode::getByCapability('monitorable')) . "'";
 
         $sql = 'SELECT
                  person_sessions.id as "personId",
@@ -283,52 +277,55 @@ class AdminDAO extends DAO {
             FROM person_sessions
                  LEFT JOIN tests ON person_sessions.id = tests.person_id
                  LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-            WHERE login_sessions.workspace_id = :workspaceId'
-            . (count($groups) ? " AND login_sessions.group_name IN ($in)" : '');
+            WHERE 
+                login_sessions.workspace_id = :workspaceId
+                AND tests.id is not null'
+                . ($groupSelector ? " AND login_sessions.group_name IN ($groupSelector)" : '')
+                . " AND login_sessions.mode IN ($modeSelector)";
 
-		$testSessionsData = $this->_($sql, $replacements,true);
+		$testSessionsData = $this->_($sql, [':workspaceId' => $workspaceId],true);
 
         $sessionChangeMessages = new SessionChangeMessageArray();
 
 		foreach ($testSessionsData as $testSession) {
 
-		    $sessionChangeMessage = new SessionChangeMessage((int) $testSession['personId'], $testSession['groupName']);
+            $testState = $this->getTestFullState($testSession);
+
+		    $sessionChangeMessage = new SessionChangeMessage(
+		        (int) $testSession['personId'],
+                $testSession['groupName'],
+                (int) $testSession['testId']
+            );
 		    $sessionChangeMessage->setLogin(
                 $testSession['loginName'],
                 $testSession['mode'],
                 ucfirst(str_replace('_', " ", $testSession['groupName'])),
                 $testSession['code']
             );
+            $sessionChangeMessage->setTestState(
+                $testState,
+                $testSession['bookletName'] ?? ""
+            );
 
-		    if ($testSession['testId']) {
+            $currentUnitName = isset($testState['CURRENT_UNIT_ID']) ? $testState['CURRENT_UNIT_ID'] : null;
 
-                $testState = $this->getTestFullState($testSession);
+            if ($currentUnitName) {
 
-                $sessionChangeMessage->setTestState(
-                    (int) $testSession['testId'],
-                    $testState,
-                    $testSession['bookletName'] ?? ""
-                );
+                $currentUnitState = $this->getUnitState((int) $testSession['testId'], $currentUnitName);
 
-                $currentUnitName = isset($testState['CURRENT_UNIT_ID']) ? $testState['CURRENT_UNIT_ID'] : null;
+                if ($currentUnitState) {
 
-                if ($currentUnitName) {
-
-                    $currentUnitState = $this->getUnitState((int) $testSession['testId'], $currentUnitName);
-
-                    if ($currentUnitState) {
-
-                        $sessionChangeMessage->setUnitState($currentUnitName, (array) $currentUnitState);
-                    }
+                    $sessionChangeMessage->setUnitState($currentUnitName, (array) $currentUnitState);
                 }
             }
+
 
             $sessionChangeMessages->add($sessionChangeMessage);
         }
 
 		return $sessionChangeMessages;
 	}
-	
+
 
     // TODO Unit-test
     // TODO use data-collection class

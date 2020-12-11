@@ -47,3 +47,4 @@ The role `monitor-study` / `workspaceMonitor` was removed completely and all fun
 #### Endpoints
 * `[GET] /system/config` now provides an argument `serverTimestamp` holding the current timestamp *in 
   milliseconds*
+* workspace-access-mode `MO` was removed entirely
