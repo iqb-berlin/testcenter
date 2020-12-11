@@ -3,8 +3,7 @@ export interface SessionChange {
     groupName: string;
     mode?: string;
     groupLabel?: string;
-    personStatus?: string;
-    testId?: number;
+    testId: number;
     bookletName?: string;
     testState: {
         [testStateKey: string]: string

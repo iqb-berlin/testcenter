@@ -61,16 +61,7 @@ export class TestSessionService {
             return;
         }
 
-        const sessionIdWithoutTest = sessionChange.personId + '|-1';
-
-        if ((sessionChange.testId > -1) && (typeof this.testSessions[group][sessionIdWithoutTest] !== "undefined")) {
-            // testSession is already known, and needs to be updated and no test was started
-            const testSession = this.testSessions[group][sessionIdWithoutTest];
-            delete this.testSessions[group][sessionIdWithoutTest];
-            this.testSessions[group][sessionId] = mergeSessionChanges(testSession, sessionChange);
-
-
-        } else if (typeof this.testSessions[group][sessionId] !== "undefined") {
+        if (typeof this.testSessions[group][sessionId] !== "undefined") {
             // testSession is already known and needs to be updated
             const testSession = this.testSessions[group][sessionId];
             this.testSessions[group][sessionId] = mergeSessionChanges(testSession, sessionChange);
