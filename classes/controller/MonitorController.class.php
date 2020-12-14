@@ -109,8 +109,8 @@ class MonitorController extends Controller {
             self::testDAO()->changeTestLockStatus((int) $testId, true);
 
             $testSession = self::testDAO()->getTestSession($testId);
-            $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName);
-            $sessionChangeMessage->setTestState((int) $testId, $testSession['laststate']);
+            $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName, $testId);
+            $sessionChangeMessage->setTestState($testSession['laststate']);
             BroadcastService::sessionChange($sessionChangeMessage);
         }
 
@@ -127,8 +127,8 @@ class MonitorController extends Controller {
             self::testDAO()->changeTestLockStatus((int) $testId, false);
 
             $testSession = self::testDAO()->getTestSession($testId);
-            $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName);
-            $sessionChangeMessage->setTestState((int) $testId, $testSession['laststate']);
+            $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName, $testId);
+            $sessionChangeMessage->setTestState($testSession['laststate']);
             BroadcastService::sessionChange($sessionChangeMessage);
         }
 

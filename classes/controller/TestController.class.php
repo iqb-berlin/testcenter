@@ -326,7 +326,27 @@ class TestController extends Controller {
             $response = $response->withHeader('SubscribeURI', $bsUrl);
         }
 
+        $testSession = self::testDAO()->getTestSession($testId);
+        if (isset($testSession['laststate']['CONNECTION']) && ($testSession['laststate']['CONNECTION'] == 'LOST')) {
+
+            self::updateTestState($testId, $testSession, 'CONNECTION', 'POLLING');
+        }
+
         return $response->withJson($commands);
+    }
+
+
+    private static function updateTestState(int $testId, array $testSession, string $field, string $value) {
+
+        $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
+        // TODO write log also -> can not safely be written since the lack of a timestamp.
+        // We need to solve https://github.com/iqb-berlin/testcenter-backend/issues/162 first (syncing of server and
+        // client time), before we should do this.
+        // See also: https://github.com/iqb-berlin/testcenter-backend/issues/172
+
+        $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name'], $testId);
+        $sessionChangeMessage->setTestState($newState);
+        BroadcastService::sessionChange($sessionChangeMessage);
     }
 
 
@@ -353,21 +373,13 @@ class TestController extends Controller {
             return $response->withStatus(200, "connection already set as lost");
         }
 
-        $newState = self::testDAO()->updateTestState($testId, ['CONNECTION' => 'LOST']);
-        // TODO write log also -> can not safely be written since the lack of a timestamp.
-        // We need to solve https://github.com/iqb-berlin/testcenter-backend/issues/162 first (syncing of server and
-        // client time), before we should do this.
-        // See also: https://github.com/iqb-berlin/testcenter-backend/issues/172
-
-        $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name'], $testId);
-        $sessionChangeMessage->setTestState($newState);
-        BroadcastService::sessionChange($sessionChangeMessage);
+        self::updateTestState($testId, $testSession, 'CONNECTION', 'LOST');
 
         return $response->withStatus(200);
     }
 
 
-        // TODO replace this and use proper data-class
+    // TODO replace this and use proper data-class
     private static function stateArray2KeyValue(array $stateData): array {
         $statePatch = [];
         foreach ($stateData as $stateEntry) {
