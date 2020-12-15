@@ -20,8 +20,10 @@ class XMLFileTesttakers extends XMLFile {
             /* @var PotentialLogin testtaker */
 
             $this->checkIfBookletsArePresent($testtaker, $validator);
-            $this->checkIfLoginsAreUsedInOtherFiles($testtaker, $validator);
         }
+
+        $this->checkIfLoginsAreUsedInOtherFiles($validator);
+
     }
 
 
@@ -57,19 +59,33 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function checkIfLoginsAreUsedInOtherFiles(PotentialLogin $testtaker, WorkspaceValidator $validator): void {
+    private function checkIfLoginsAreUsedInOtherFiles(WorkspaceValidator $validator): void {
 
-        if (isset($validator->allLoginNames[$testtaker->getName()])) {
+        $loginList = $this->getAllLoginNames();
 
-            $otherFilePath = $validator->allLoginNames[$testtaker->getName()];
+        foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
 
-            if ($otherFilePath !== $this->getPath()) {
-                $this->report('error', "login `{$testtaker->getName()}` in `{$this->getPath()}` is already used in: `$otherFilePath`");
+            /* @var TesttakersFolder $otherTesttakersFolder */
+            $allLoginsInOtherWorkspace = $otherTesttakersFolder->getAllLoginNames();
+
+            foreach ($allLoginsInOtherWorkspace as $otherFilePath => $otherLoginList) {
+
+                if ($this->getPath() == $otherFilePath) {
+                    continue;
+                }
+
+                $duplicates = array_intersect($loginList, $otherLoginList);
+
+                foreach ($duplicates as $duplicate) {
+
+                    $location = ($validator->getWorkspaceId() !== $otherTesttakersFolder->getWorkspaceId())
+                        ? "on workspace {$otherTesttakersFolder->getWorkspaceId()} "
+                        : '';
+                    $location .=  "in file `" . basename($otherFilePath) . '`';
+
+                    $this->report('error', "Duplicate Login: `$duplicate` - also $location");
+                }
             }
-
-        } else {
-
-            $validator->allLoginNames[$testtaker->getName()] = $this->getPath();
         }
     }
 

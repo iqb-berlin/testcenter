@@ -8,8 +8,6 @@ class WorkspaceValidator extends Workspace {
 
     public $allFiles = [];
 
-    public $allLoginNames = [];
-
     private array $report = [];
 
     private function readFiles() {
@@ -56,7 +54,6 @@ class WorkspaceValidator extends Workspace {
         $this->crossValidate();
 
         // cross-file checks
-        $this->checkIfLoginsAreUsedInOtherWorkspaces();
         $this->checkIfGroupsAreUsedInOtherFiles();
 
         // find unused resources, units and booklets
@@ -155,62 +152,6 @@ class WorkspaceValidator extends Workspace {
             $this->report('info', "`$countCrossValidated` valid $type-files found");
         }
     }
-
-    /* STAND
-     * a) diese Funktion ersetzt das eingebaute crossvalidate, was den validator asl argument übernimmt
-     * (+) seltsames konstrukt fällt weg
-     * b) das eingebaute kann auch super-cross-validieren
-     * (-) funktion wird komplexer
-     * (+) validator wird kleiner
-     * (+) konzept wird mehr durchgehalten
-     * c) super-cross-validation ist nochmal was anderes
-     * (?) kann evtl. konzeptuelles problem lösen: was passiert beim hochladen? soll dann schon abgelehnt werden, was super-cross-validate fehlschlägt
-     */
-
-    private function checkIfLoginsAreUsedInOtherWorkspaces() {
-
-        $thisTesttakersFolder = new TesttakersFolder($this->_workspaceId);
-        $allLogins = $thisTesttakersFolder->getAllLogins();
-
-        foreach ($allLogins as $filePath => $loginList) {
-
-            /* @var Group $group */
-            foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
-
-                /* @var TesttakersFolder $otherTesttakersFolder */
-
-                if ($otherTesttakersFolder->_workspaceId === $this->_workspaceId) {
-                    continue;
-                }
-
-                $allGroupsInOtherWorkspace = $otherTesttakersFolder->getAllLogins();
-
-                foreach ($allGroupsInOtherWorkspace as $otherFilePath => $otherLoginList) {
-
-                    if ($filePath == $otherFilePath) {
-                        continue;
-                    }
-
-                    $duplicates = array_intersect($loginList, $otherLoginList);
-
-                    foreach ($duplicates as $duplicate) {
-
-                        $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
-                            ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
-                            : '';
-                        $message = "Duplicate Login: `$duplicate` - $location in file `" . basename($otherFilePath) . "`";
-
-                        $fileCode = 'Testtakers/' . basename($filePath);
-                        if (!isset($this->report[$fileCode])) {
-                            $this->report[$fileCode] = [];
-                        }
-                        $this->report[$fileCode][] = new ValidationReportEntry('error', $message);
-                    }
-                }
-            }
-        }
-    }
-
 
     private function checkIfGroupsAreUsedInOtherFiles() {
 

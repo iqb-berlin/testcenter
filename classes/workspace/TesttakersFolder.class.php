@@ -97,7 +97,7 @@ class TesttakersFolder extends Workspace {
 
 
     // TODO unit-test
-    function getAllLogins(): array {
+    function getAllLoginNames(): array {
 
         $logins = [];
 

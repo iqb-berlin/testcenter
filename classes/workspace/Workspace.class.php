@@ -77,6 +77,12 @@ class Workspace {
     }
 
 
+    public function getWorkspaceId() {
+
+        return $this->_workspaceId;
+    }
+
+
     public function getAllFiles(): array {
 
         $fileList = [];

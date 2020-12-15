@@ -101,6 +101,16 @@ class VfsForTest {
                     . '<Definition player="missing-player">{}</Definition></Unit>',
                 "resource-unused.voud" =>
                     '{}',
+                "testtakers-duplicate-login-name-cross-file-1.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+                    . '<Metadata><Description>Teststakers with id which is used on other file in same ws</Description></Metadata>'
+                    . '<Group id="double_group" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
+                    . '</Login></Group></Testtakers>',
+                "testtakers-duplicate-login-name-cross-file-2.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+                    . '<Metadata><Description>Teststakers with id which is used on other file in same ws</Description></Metadata>'
+                    . '<Group id="double_group_1" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
+                    . '</Login></Group></Testtakers>',
                 "testtakers-duplicate-login-name-cross-ws.xml" =>
                     '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
                     . '<Metadata><Description>Teststakers with id which is used on other ws</Description></Metadata>'

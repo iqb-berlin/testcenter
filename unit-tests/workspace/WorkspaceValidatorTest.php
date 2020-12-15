@@ -54,7 +54,7 @@ class WorkspaceValidatorTest extends TestCase{
 
         $expected = [
             '.' => [
-                new ValidationReportEntry('info', '`2` valid Testtakers-files found'),
+                new ValidationReportEntry('info', '`1` valid Testtakers-files found'),
                 new ValidationReportEntry('info', '`2` valid Booklet-files found'),
                 new ValidationReportEntry('info', '`2` valid Resource-files found'),
                 new ValidationReportEntry('info', '`2` valid Unit-files found'),
@@ -122,12 +122,20 @@ class WorkspaceValidatorTest extends TestCase{
             'Resource/resource-unused.voud' => [
                 new ValidationReportEntry('warning', 'Resource is never used'),
             ],
+            'Testtakers/testtakers-duplicate-login-name-cross-file-1.xml' => [
+                new ValidationReportEntry('error', "Duplicate Login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-2.xml`")
+            ],
+            'Testtakers/testtakers-duplicate-login-name-cross-file-2.xml' => [
+                new ValidationReportEntry('error', "Duplicate Login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-1.xml`")
+            ],
             'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
                 new ValidationReportEntry('error', "Duplicate Group-Id: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
                 new ValidationReportEntry('error', "Duplicate Login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`")
             ]
         ];
 
+
+//        var_dump($result);
 
         foreach ($result as $key => $list) {
 
