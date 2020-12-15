@@ -6,13 +6,8 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-//require_once "classes/helper/FileSize.class.php";
 require_once "classes/helper/FileName.class.php";
-//require_once "classes/helper/Folder.class.php";
-//require_once "classes/files/ResourceFile.class.php";
 require_once "classes/files/XMLFile.php";
-//require_once "classes/files/XMLFileError.php";
-//require_once "classes/files/XMLFileTesttakers.php";
 require_once "classes/files/XMLFileSysCheck.php";
 require_once "classes/files/XMLFileBooklet.php";
 require_once "classes/files/XMLFileUnit.php";
@@ -31,21 +26,13 @@ class WorkspaceValidatorTest extends TestCase{
         VfsForTest::setUpBeforeClass();
     }
 
+
     function setUp(): void {
 
         $this->vfs = VfsForTest::setUp(true);
 
         $this->validator = new WorkspaceValidator(1);
     }
-
-//    private function invokeMethod($methodName, array $parameters = array()) {
-//
-//        $reflection = new ReflectionClass(get_class($this->validator));
-//        $method = $reflection->getMethod($methodName);
-//        $method->setAccessible(true);
-//
-//        return $method->invokeArgs($this->validator, $parameters);
-//    }
 
 
     function test_validate() {
@@ -59,7 +46,7 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('info', '`2` valid Resource-files found'),
                 new ValidationReportEntry('info', '`2` valid Unit-files found'),
                 new ValidationReportEntry('info', '`1` valid SysCheck-files found'),
-//                new ValidationReportEntry('info', '`10` valid Testtakers-files in `10` logins found'),
+                new ValidationReportEntry('info', '`12` valid testtaker-logins found'),
             ],
             'Testtakers/testtakers-duplicate-login-name.xml' => [
                 new ValidationReportEntry('error',  'Duplicate login: `duplicate_login`'),
@@ -120,21 +107,9 @@ class WorkspaceValidatorTest extends TestCase{
             ]
         ];
 
-
-//        var_dump($result);
-
         foreach ($result as $key => $list) {
 
-//            if ($key === '.') {
-//                continue;
-//            }
-
-//            echo "\n-<R>- $key: " . count($list);
-
-//            var_dump($list);
-
             if (!isset($expected[$key])) {
-//                var_dump($result[$key]);
                 $this->fail("key `$key` not asserted");
             }
 
@@ -153,13 +128,9 @@ class WorkspaceValidatorTest extends TestCase{
 
         foreach ($expected as $key => $list) {
 
-//            echo "\n-<E>- $key: " . count($list);
-
             if (!isset($result[$key])) {
-//                echo " !!! IS MISSING !!!";
                 $this->fail("key `$key` missing");
             }
         }
     }
-
 }

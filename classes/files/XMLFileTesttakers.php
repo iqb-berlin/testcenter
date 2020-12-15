@@ -17,13 +17,17 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach ($this->testtakers as $testtaker) {
 
-            /* @var PotentialLogin testtaker */
-
+            /* @var PotentialLogin $testtaker */
             $this->checkIfBookletsArePresent($testtaker, $validator);
         }
 
         $this->checkIfIdsAreUsedInOtherFiles($validator);
+    }
 
+
+    public function getTesttakerCount() {
+
+        return count($this->testtakers);
     }
 
 
@@ -198,7 +202,7 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xmlfile->xpath('Group') as $groupElement) {
 
-            $selector = "@name='$name'" . ($password ?  " and  @pw='$password'" : '');
+            $selector = "@name='$name'" . ($password ?  " and @pw='$password'" : '');
             foreach($groupElement->xpath("Login[$selector]") as $loginElement) {
 
                 return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
