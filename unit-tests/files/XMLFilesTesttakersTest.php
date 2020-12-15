@@ -54,6 +54,9 @@ class XMLFilesTesttakersTest extends TestCase {
     }
 
 
+    // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
+
+
     function test_getMembersOfLogin() {
 
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');

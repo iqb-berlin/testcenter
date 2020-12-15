@@ -66,7 +66,7 @@ class XMLFileBooklet extends XMLFile {
     }
 
 
-    private function getAllUnitIds() {
+    protected function getAllUnitIds() {
 
         $allUnitIds = [];
         if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'Booklet')) {
