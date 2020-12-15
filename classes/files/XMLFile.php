@@ -55,29 +55,32 @@ class XMLFile extends File {
 
                 $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
 
-                $myId = $this->xmlfile->Metadata[0]->Id[0];
-                if (isset($myId)) {
-                    $this->id = trim(strtoupper((string) $myId));
-                }
+                if (count($this->xmlfile->Metadata)) {
 
-                $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
+                    $myId = $this->xmlfile->Metadata[0]->Id[0];
+                    if (isset($myId)) {
+                        $this->id = trim(strtoupper((string) $myId));
+                    }
 
-                $myDescription = $this->xmlfile->Metadata[0]->Description[0];
-                if (isset($myDescription)) {
-                    $this->description = (string) $myDescription;
-                }
+                    $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
 
-                $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
-                if (isset($myCustomTextsNode)) {
-                    // TODO mopve to testtakers, because it is ONLY used there... SysCheck is made differently
-                    foreach($myCustomTextsNode->children() as $customTextElement) {
-                        if ($customTextElement->getName() == 'CustomText') {
-                            $customTextValue = (string) $customTextElement;
-                            $customTextKeyAttr = $customTextElement['key'];
-                            if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
-                                $customTextKey = (string) $customTextKeyAttr;
-                                if (strlen($customTextKey) > 0) {
-                                    $this->customTexts[$customTextKey] = $customTextValue;
+                    $myDescription = $this->xmlfile->Metadata[0]->Description[0];
+                    if (isset($myDescription)) {
+                        $this->description = (string) $myDescription;
+                    }
+
+                    $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
+                    if (isset($myCustomTextsNode)) {
+                        // TODO move to testtakers, because it is ONLY used there... SysCheck is made differently
+                        foreach($myCustomTextsNode->children() as $customTextElement) {
+                            if ($customTextElement->getName() == 'CustomText') {
+                                $customTextValue = (string) $customTextElement;
+                                $customTextKeyAttr = $customTextElement['key'];
+                                if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
+                                    $customTextKey = (string) $customTextKeyAttr;
+                                    if (strlen($customTextKey) > 0) {
+                                        $this->customTexts[$customTextKey] = $customTextValue;
+                                    }
                                 }
                             }
                         }
