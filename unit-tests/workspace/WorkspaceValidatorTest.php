@@ -62,24 +62,10 @@ class WorkspaceValidatorTest extends TestCase{
 //                new ValidationReportEntry('info', '`10` valid Testtakers-files in `10` logins found'),
             ],
             'Testtakers/testtakers-duplicate-login-name.xml' => [
-                new ValidationReportEntry('error',  'duplicate loginname `the-same-name`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `sample_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `review_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `trial_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `passwordless_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `expired_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `future_group` -  in file `SAMPLE_TESTTAKERS.XML`'),
+                new ValidationReportEntry('error',  'Duplicate login: `duplicate_login`'),
             ],
             'Testtakers/testtakers-missing-booklet.xml' => [
-                new ValidationReportEntry('error', 'booklet `BOOKLET.MISSING` not found for login `a_login`')
-            ],
-            'Testtakers/SAMPLE_TESTTAKERS.XML' => [
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `sample_group` -  in file `testtakers-duplicate-login-name.xml`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `review_group` -  in file `testtakers-duplicate-login-name.xml`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `trial_group` -  in file `testtakers-duplicate-login-name.xml`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `passwordless_group` -  in file `testtakers-duplicate-login-name.xml`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `expired_group` -  in file `testtakers-duplicate-login-name.xml`'),
-                new ValidationReportEntry('error',  'Duplicate Group-Id: `future_group` -  in file `testtakers-duplicate-login-name.xml`'),
+                new ValidationReportEntry('error', 'Booklet `BOOKLET.MISSING` not found for login `a_login`')
             ],
             'Testtakers/trash.xml' => [
                 new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
@@ -123,14 +109,14 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('warning', 'Resource is never used'),
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-file-1.xml' => [
-                new ValidationReportEntry('error', "Duplicate Login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-2.xml`")
+                new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-2.xml`")
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-file-2.xml' => [
-                new ValidationReportEntry('error', "Duplicate Login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-1.xml`")
+                new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-1.xml`")
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
-                new ValidationReportEntry('error', "Duplicate Group-Id: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
-                new ValidationReportEntry('error', "Duplicate Login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`")
+                new ValidationReportEntry('error', "Duplicate group: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
+                new ValidationReportEntry('error', "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`")
             ]
         ];
 

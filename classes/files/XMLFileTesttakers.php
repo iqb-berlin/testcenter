@@ -22,7 +22,7 @@ class XMLFileTesttakers extends XMLFile {
             $this->checkIfBookletsArePresent($testtaker, $validator);
         }
 
-        $this->checkIfLoginsAreUsedInOtherFiles($validator);
+        $this->checkIfIdsAreUsedInOtherFiles($validator);
 
     }
 
@@ -32,7 +32,7 @@ class XMLFileTesttakers extends XMLFile {
         $doubleLogins = $this->getDoubleLoginNames();
         if (count($doubleLogins) > 0) {
             foreach ($doubleLogins as $login) {
-                $this->report('error', "duplicate loginname `$login`");
+                $this->report('error', "Duplicate login: `$login`");
             }
         }
     }
@@ -52,47 +52,63 @@ class XMLFileTesttakers extends XMLFile {
 
                 } else {
 
-                    $this->report('error', "booklet `$bookletId` not found for login `{$testtaker->getName()}`");
+                    $this->report('error', "Booklet `$bookletId` not found for login `{$testtaker->getName()}`");
                 }
             }
         }
     }
 
 
-    private function checkIfLoginsAreUsedInOtherFiles(WorkspaceValidator $validator): void {
+    private function checkIfIdsAreUsedInOtherFiles(WorkspaceValidator $validator): void {
 
         $loginList = $this->getAllLoginNames();
+        $groupList = array_keys($this->getGroups());
 
         foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
 
             /* @var TesttakersFolder $otherTesttakersFolder */
-            $allLoginsInOtherWorkspace = $otherTesttakersFolder->getAllLoginNames();
 
-            foreach ($allLoginsInOtherWorkspace as $otherFilePath => $otherLoginList) {
+            foreach ($otherTesttakersFolder->getAllLoginNames() as $otherFilePath => $otherLoginList) {
 
                 if ($this->getPath() == $otherFilePath) {
                     continue;
                 }
 
-                $duplicates = array_intersect($loginList, $otherLoginList);
+                $this->reportDuplicates(
+                    'login',
+                    array_intersect($loginList, $otherLoginList),
+                    basename($otherFilePath),
+                    $validator->getWorkspaceId(),
+                    $otherTesttakersFolder->getWorkspaceId()
+                );
+            }
 
-                foreach ($duplicates as $duplicate) {
+            foreach ($otherTesttakersFolder->getAllGroups() as $otherFilePath => $otherGroupList) {
 
-                    $location = ($validator->getWorkspaceId() !== $otherTesttakersFolder->getWorkspaceId())
-                        ? "on workspace {$otherTesttakersFolder->getWorkspaceId()} "
-                        : '';
-                    $location .=  "in file `" . basename($otherFilePath) . '`';
-
-                    $this->report('error', "Duplicate Login: `$duplicate` - also $location");
+                if ($this->getPath() == $otherFilePath) {
+                    continue;
                 }
+
+                $this->reportDuplicates(
+                    'group',
+                    array_intersect($groupList, array_keys($otherGroupList)),
+                    basename($otherFilePath),
+                    $validator->getWorkspaceId(),
+                    $otherTesttakersFolder->getWorkspaceId()
+                );
             }
         }
     }
 
 
-    public function getTesttakersCount() {
+    private function reportDuplicates(string $type, array $duplicates, string $otherFileName, int $thisWsId, int $otherWsId) {
 
-        return count($this->testtakers);
+        foreach ($duplicates as $duplicate) {
+
+            $location = ($thisWsId !== $otherWsId) ? "on workspace $otherWsId " : '';
+            $location .=  "in file `$otherFileName`";
+            $this->report('error', "Duplicate $type: `$duplicate` - also $location");
+        }
     }
 
 

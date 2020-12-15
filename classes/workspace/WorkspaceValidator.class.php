@@ -53,9 +53,6 @@ class WorkspaceValidator extends Workspace {
 
         $this->crossValidate();
 
-        // cross-file checks
-        $this->checkIfGroupsAreUsedInOtherFiles();
-
         // find unused resources, units and booklets
         $this->findUnusedItems();
 
@@ -150,45 +147,6 @@ class WorkspaceValidator extends Workspace {
             }
 
             $this->report('info', "`$countCrossValidated` valid $type-files found");
-        }
-    }
-
-    private function checkIfGroupsAreUsedInOtherFiles() {
-
-        $thisTesttakersFolder = new TesttakersFolder($this->_workspaceId);
-        $allGroups = $thisTesttakersFolder->getAllGroups();
-
-        foreach ($allGroups as $filePath => $groupList) {
-
-            /* @var Group $group */
-            foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
-
-                /* @var TesttakersFolder $otherTesttakersFolder */
-                $allGroupsInOtherWorkspace = $otherTesttakersFolder->getAllGroups();
-
-                foreach ($allGroupsInOtherWorkspace as $otherFilePath => $otherGroupList) {
-
-                    if ($filePath == $otherFilePath) {
-                        continue;
-                    }
-
-                    $duplicates = array_intersect_key($groupList, $otherGroupList);
-
-                    foreach ($duplicates as $duplicate) {
-
-                        $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
-                            ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
-                            : '';
-                        $message = "Duplicate Group-Id: `{$duplicate->getName()}` - $location in file `" . basename($otherFilePath) . "`";
-
-                        $fileCode = 'Testtakers/' . basename($filePath);
-                        if (!isset($this->report[$fileCode])) {
-                            $this->report[$fileCode] = [];
-                        }
-                        $this->report[$fileCode][] = new ValidationReportEntry('error', $message);
-                    }
-                }
-            }
         }
     }
 

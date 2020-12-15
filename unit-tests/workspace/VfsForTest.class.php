@@ -74,8 +74,6 @@ class VfsForTest {
             1 => [
                 "testtakers-broken.xml" =>
                     str_replace('<Metadata', '###BREAK###', $testtakersFileContents),
-                "testtakers-duplicate-login-name.xml" =>
-                    preg_replace('/name="\S+?"/m', 'name="the-same-name"', $testtakersFileContents),
                 "testtakers-missing-booklet.xml" =>
                     '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
                     . '<Metadata><Description>Minimal Testtakers example</Description></Metadata>'
@@ -101,14 +99,21 @@ class VfsForTest {
                     . '<Definition player="missing-player">{}</Definition></Unit>',
                 "resource-unused.voud" =>
                     '{}',
+                "testtakers-duplicate-login-name.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+                    . '<Metadata><Description>Teststakers with duplicate login in same file</Description></Metadata>'
+                    . '<Group id="some_group" label="A">'
+                    . '<Login mode="monitor-group" name="duplicate_login" pw="13245678"></Login>'
+                    . '<Login mode="monitor-group" name="duplicate_login" pw="13245678"></Login>'
+                    . '</Group></Testtakers>',
                 "testtakers-duplicate-login-name-cross-file-1.xml" =>
                     '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
-                    . '<Metadata><Description>Teststakers with id which is used on other file in same ws</Description></Metadata>'
+                    . '<Metadata><Description>Teststakers with id which is used on other file in same ws (1/2)</Description></Metadata>'
                     . '<Group id="double_group" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
                     . '</Login></Group></Testtakers>',
                 "testtakers-duplicate-login-name-cross-file-2.xml" =>
                     '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
-                    . '<Metadata><Description>Teststakers with id which is used on other file in same ws</Description></Metadata>'
+                    . '<Metadata><Description>Teststakers with id which is used on other file in same ws (2/2)</Description></Metadata>'
                     . '<Group id="double_group_1" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
                     . '</Login></Group></Testtakers>',
                 "testtakers-duplicate-login-name-cross-ws.xml" =>
