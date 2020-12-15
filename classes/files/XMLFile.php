@@ -27,7 +27,7 @@ class XMLFile extends File {
 
         libxml_use_internal_errors(true);
         libxml_clear_errors();
-    
+
         if (!$isRawXml) {
 
             parent::__construct($path);
@@ -69,6 +69,7 @@ class XMLFile extends File {
 
                 $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
                 if (isset($myCustomTextsNode)) {
+                    // TODO mopve to testtakers, because it is ONLY used there... SysCheck is made differently
                     foreach($myCustomTextsNode->children() as $customTextElement) {
                         if ($customTextElement->getName() == 'CustomText') {
                             $customTextValue = (string) $customTextElement;

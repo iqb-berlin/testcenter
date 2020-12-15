@@ -57,7 +57,7 @@ class XMLFileUnit extends XMLFile {
             $playerId = $playerId . '.HTML';
         }
 
-        $playerId = FileName::normalize($playerId, false);
+        $playerId = FileName::normalize($playerId, true);
 
         $resource = $validator->getResource($playerId);
 
@@ -109,6 +109,25 @@ class XMLFileUnit extends XMLFile {
         }
 
         return '';
+    }
+
+
+    public function getContent(WorkspaceValidator $workspaceValidator): string {
+
+        $this->crossValidate($workspaceValidator);
+        if (!$this->isValid()) {
+            return '';
+        }
+
+        $definition = $this->xmlfile->xpath('/Unit/Definition');
+        if (count($definition)) {
+            return (string) $definition[0];
+        }
+
+        $definitionRef = (string) $this->xmlfile->xpath('/Unit/DefinitionRef')[0];
+        $unitContentFile = $workspaceValidator->getResource($definitionRef);
+
+        return $unitContentFile->getContent();
     }
 
 

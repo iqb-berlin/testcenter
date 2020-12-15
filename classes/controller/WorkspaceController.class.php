@@ -4,7 +4,9 @@ declare(strict_types=1);
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
+use slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Stream;
@@ -35,7 +37,7 @@ class WorkspaceController extends Controller {
         }
 
         self::superAdminDAO()->createWorkspace($requestBody->name);
-        
+
         return $response->withStatus(201);
     }
 
@@ -50,11 +52,11 @@ class WorkspaceController extends Controller {
         }
 
         self::superAdminDAO()->setWorkspaceName($workspaceId, $requestBody->name);
-        
+
         return $response;
     }
-    
-    
+
+
     public static function patchUsers(Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
@@ -65,7 +67,7 @@ class WorkspaceController extends Controller {
         }
 
         self::superAdminDAO()->setUserRightsForWorkspace($workspaceId, $requestBody->u);
-        
+
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8');
     }
 
@@ -76,7 +78,7 @@ class WorkspaceController extends Controller {
 
         return $response->withJson(self::superAdminDAO()->getUsersByWorkspace($workspaceId));
     }
-    
+
 
     public static function getReviews(Request $request, Response $response): Response {
 
@@ -271,11 +273,11 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
-    
+
         $workspaceController = new Workspace($workspaceId);
         /* @var XMLFileSysCheck $xmlFile */
         $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
-    
+
         return $response->withJson(new SysCheck([
             'name' => $xmlFile->getId(),
             'label' => $xmlFile->getLabel(),
@@ -290,49 +292,85 @@ class WorkspaceController extends Controller {
         ]));
     }
 
-    public static function  getSysCheckUnitAndPLayer(Request $request, Response $response): Response {
+    public static function getSysCheckUnitAndPLayer(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
-    
-        $workspaceController = new Workspace($workspaceId);
-        /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
-    
-        return $response->withJson($xmlFile->getUnitData());
+
+        $workspaceValidator = new WorkspaceValidator($workspaceId);
+
+        /* @var XMLFileSysCheck $sysCheck */
+        $sysCheck = $workspaceValidator->getSysCheck($sysCheckName);
+        if (($sysCheck == null)) {
+            throw new NotFoundException($request, $response);
+        }
+
+        if (!$sysCheck->hasUnit()) {
+            return $response->withJson([
+                'player_id' => '',
+                'def' => '',
+                'player' => ''
+            ]);
+        }
+
+        $sysCheck->crossValidate($workspaceValidator);
+        if (!$sysCheck->isValid()) {
+
+            throw new HttpInternalServerErrorException($request, 'SysCheck is invalid');
+        }
+
+        $unit = $workspaceValidator->getUnit($sysCheck->getUnitId());
+        $unit->crossValidate($workspaceValidator);
+        if (!$unit->isValid()) {
+
+            throw new HttpInternalServerErrorException($request,  'Unit is invalid');
+        }
+
+        $player = $workspaceValidator->getResource($unit->getPlayerId()); // TODO versioning!
+        $player->crossValidate($workspaceValidator);
+        if (!$unit->isValid()) {
+
+            throw new HttpInternalServerErrorException($request, 'Player is invalid');
+        }
+
+        return $response->withJson([
+            'player_id' => $unit->getPlayerId(),
+            'def' => $unit->getContent($workspaceValidator),
+            'player' => $player->getContent()
+        ]);
     }
-    
-    public static function  putSysCheckReport(Request $request, Response $response): Response {
+
+    public static function putSysCheckReport(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
         $report = new SysCheckReport(JSON::decode($request->getBody()->getContents()));
-    
+
         $sysChecksFolder = new SysChecksFolder($workspaceId);
-    
+
         /* @var XMLFileSysCheck $xmlFile */
         $xmlFile = $sysChecksFolder->getXMLFileByName('SysCheck', $sysCheckName);
-    
+
         if (strlen($report->keyPhrase) <= 0) {
-    
+
             throw new HttpBadRequestException($request,"No key `$report->keyPhrase`");
         }
-    
+
         if (strtoupper($report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
-    
+
             throw new HttpError("Wrong key `$report->keyPhrase`", 400);
         }
-    
+
         $report->checkId = $sysCheckName;
         $report->checkLabel = $xmlFile->getLabel();
-    
+
         $sysChecksFolder->saveSysCheckReport($report);
-    
+
         return $response->withStatus(201);
     }
 
-    
-    public static function  patchUnlock(Request $request, Response $response): Response { 
+
+    public static function  patchUnlock(Request $request, Response $response): Response {
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = (int) $request->getAttribute('ws_id');
@@ -343,35 +381,35 @@ class WorkspaceController extends Controller {
 
         return $response;
     }
-    
-    
+
+
     public static function  patchLock(Request $request, Response $response): Response { // TODO name more RESTful
 
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
         $workspaceId = (int) $request->getAttribute('ws_id');
-    
+
         foreach($groups as $groupName) {
             self::adminDAO()->changeBookletLockStatus($workspaceId, $groupName, true);
         }
-    
+
         return $response;
     }
 
 
     public static function getStatus(Request $request, Response $response): Response {
-    
+
         $workspaceId = (int) $request->getAttribute('ws_id');
         $bookletsFolder = new BookletsFolder($workspaceId);
-    
+
         return $response->withJson($bookletsFolder->getTestStatusOverview(self::adminDAO()->getBookletsStarted($workspaceId)));
     }
-    
-    
+
+
     public static function getBookletsStarted(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups', ''));
-    
+
         $bookletsStarted = [];
         foreach(self::adminDAO()->getBookletsStarted($workspaceId) as $booklet) {
             if (in_array($booklet['groupname'], $groups)) {
@@ -383,7 +421,7 @@ class WorkspaceController extends Controller {
                 array_push($bookletsStarted, $booklet);
             }
         }
-    
+
         return $response->withJson($bookletsStarted);
     }
 }

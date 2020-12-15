@@ -53,6 +53,16 @@ class WorkspaceValidator extends Workspace {
         return null;
     }
 
+
+    public function getSysCheck(string $sysCheckId): ?XMLFileSysCheck {
+
+        if (isset($this->allFiles['SysCheck'][$sysCheckId])) {
+            return $this->allFiles['SysCheck'][$sysCheckId];
+        }
+
+        return null;
+    }
+
     private function readFiles() {
 
         $this->allFiles = [];
