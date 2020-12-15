@@ -34,6 +34,7 @@ class WorkspaceValidatorTest extends TestCase{
     function setUp(): void {
 
         $this->vfs = VfsForTest::setUp(true);
+
         $this->validator = new WorkspaceValidator(1);
     }
 
@@ -53,11 +54,11 @@ class WorkspaceValidatorTest extends TestCase{
 
         $expected = [
             '.' => [
+                new ValidationReportEntry('info', '`2` valid Testtakers-files found'),
+                new ValidationReportEntry('info', '`2` valid Booklet-files found'),
                 new ValidationReportEntry('info', '`2` valid Resource-files found'),
                 new ValidationReportEntry('info', '`2` valid Unit-files found'),
-                new ValidationReportEntry('info', '`2` valid Booklet-files found'),
                 new ValidationReportEntry('info', '`1` valid SysCheck-files found'),
-                new ValidationReportEntry('info', '`1` valid Testtakers-files found'),
 //                new ValidationReportEntry('info', '`10` valid Testtakers-files in `10` logins found'),
             ],
             'Testtakers/testtakers-duplicate-login-name.xml' => [
@@ -120,6 +121,10 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Resource/resource-unused.voud' => [
                 new ValidationReportEntry('warning', 'Resource is never used'),
+            ],
+            'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
+                new ValidationReportEntry('error', "Duplicate Group-Id: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
+                new ValidationReportEntry('error', "Duplicate Login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`")
             ]
         ];
 

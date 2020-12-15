@@ -131,7 +131,7 @@ class TestEnvironment {
     }
 
 
-    private static function debugVirtualEnvironment() {
+    public static function debugVirtualEnvironment() {
 
         $initDAO = new InitDAO();
         $fullState = "# State of DATA_DIR\n\n";

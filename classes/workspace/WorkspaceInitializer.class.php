@@ -15,8 +15,10 @@ class WorkspaceInitializer {
      *
      * @param $dirPath - a full path
      * @return string - the path, again
+     * @throws Exception
      */
-    private function createSubdirectories(string $dirPath) {
+    public function createSubdirectories(string $dirPath): string
+    {
 
         $pathParts = parse_url($dirPath);
         return array_reduce(explode('/', $pathParts['path']), function($agg, $item) {

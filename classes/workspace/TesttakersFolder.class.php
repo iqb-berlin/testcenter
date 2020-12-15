@@ -94,4 +94,24 @@ class TesttakersFolder extends Workspace {
 
         return $groups;
     }
+
+
+    // TODO unit-test
+    function getAllLogins(): array {
+
+        $logins = [];
+
+        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+
+            $xFile = new XMLFileTesttakers($fullFilePath);
+
+            if ($xFile->isValid()) {
+
+                $logins[$fullFilePath] = $xFile->getAllLoginNames();
+            }
+
+        }
+
+        return $logins;
+    }
 }

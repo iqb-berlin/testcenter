@@ -156,50 +156,55 @@ class WorkspaceValidator extends Workspace {
         }
     }
 
-
-
-
+    /* STAND
+     * a) diese Funktion ersetzt das eingebaute crossvalidate, was den validator asl argument übernimmt
+     * (+) seltsames konstrukt fällt weg
+     * b) das eingebaute kann auch super-cross-validieren
+     * (-) funktion wird komplexer
+     * (+) validator wird kleiner
+     * (+) konzept wird mehr durchgehalten
+     * c) super-cross-validation ist nochmal was anderes
+     * (?) kann evtl. konzeptuelles problem lösen: was passiert beim hochladen? soll dann schon abgelehnt werden, was super-cross-validate fehlschlägt
+     */
 
     private function checkIfLoginsAreUsedInOtherWorkspaces() {
 
-        // TODO use TesttakersFolder
+        $thisTesttakersFolder = new TesttakersFolder($this->_workspaceId);
+        $allLogins = $thisTesttakersFolder->getAllLogins();
 
-        $dataDirHandle = opendir($this->_dataPath);
-        while (($workspaceDirName = readdir($dataDirHandle)) !== false) {
+        foreach ($allLogins as $filePath => $loginList) {
 
-            if (!is_dir($this->_dataPath . '/' . $workspaceDirName) or (substr($workspaceDirName, 0, 3) !== 'ws_')) {
-                continue;
-            }
+            /* @var Group $group */
+            foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
 
-            $wsIdOther = intval(substr($workspaceDirName, 3));
-            if (($wsIdOther < 0) or ($wsIdOther == $this->_workspaceId)) {
-                continue;
-            }
+                /* @var TesttakersFolder $otherTesttakersFolder */
 
-            $otherTesttakersFolder = $this->_dataPath . '/' . $workspaceDirName . '/Testtakers';
-            if (!file_exists($otherTesttakersFolder) || !is_dir($otherTesttakersFolder)) {
-                continue;
-            }
+                if ($otherTesttakersFolder->_workspaceId === $this->_workspaceId) {
+                    continue;
+                }
 
-            $otherTesttakersDirHandle = opendir($otherTesttakersFolder);
+                $allGroupsInOtherWorkspace = $otherTesttakersFolder->getAllLogins();
 
-            while (($entry = readdir($otherTesttakersDirHandle)) !== false) {
+                foreach ($allGroupsInOtherWorkspace as $otherFilePath => $otherLoginList) {
 
-                $fullFilename = $otherTesttakersFolder . '/' . $entry;
+                    if ($filePath == $otherFilePath) {
+                        continue;
+                    }
 
-                if (is_file($fullFilename) && (strtoupper(substr($entry, -4)) == '.XML')) {
+                    $duplicates = array_intersect($loginList, $otherLoginList);
 
-                    $xFile = new XMLFileTesttakers($fullFilename, true);
+                    foreach ($duplicates as $duplicate) {
 
-                    if ($xFile->isValid()) {
+                        $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
+                            ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
+                            : '';
+                        $message = "Duplicate Login: `$duplicate` - $location in file `" . basename($otherFilePath) . "`";
 
-                        foreach($xFile->getAllLoginNames() as $loginName) {
-
-                            if (isset($this->allLoginNames[$loginName])) {
-                                $this->report('error', "[`{$this->allLoginNames[$loginName]}`] login `$loginName` is 
-                                    already used on other workspace `$wsIdOther` (`$entry`)", $xFile);
-                            }
+                        $fileCode = 'Testtakers/' . basename($filePath);
+                        if (!isset($this->report[$fileCode])) {
+                            $this->report[$fileCode] = [];
                         }
+                        $this->report[$fileCode][] = new ValidationReportEntry('error', $message);
                     }
                 }
             }
@@ -209,10 +214,10 @@ class WorkspaceValidator extends Workspace {
 
     private function checkIfGroupsAreUsedInOtherFiles() {
 
-        $otherTesttakersFolder = new TesttakersFolder($this->_workspaceId);
-        $this->allGroups = $otherTesttakersFolder->getAllGroups();
+        $thisTesttakersFolder = new TesttakersFolder($this->_workspaceId);
+        $allGroups = $thisTesttakersFolder->getAllGroups();
 
-        foreach ($this->allGroups as $filePath => $groupList) {
+        foreach ($allGroups as $filePath => $groupList) {
 
             /* @var Group $group */
             foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
@@ -228,24 +233,19 @@ class WorkspaceValidator extends Workspace {
 
                     $duplicates = array_intersect_key($groupList, $otherGroupList);
 
-                    if ($duplicates) {
+                    foreach ($duplicates as $duplicate) {
 
-                        foreach ($duplicates as $duplicate) {
+                        $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
+                            ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
+                            : '';
+                        $message = "Duplicate Group-Id: `{$duplicate->getName()}` - $location in file `" . basename($otherFilePath) . "`";
 
-                            $location = ($this->_workspaceId !== $otherTesttakersFolder->_workspaceId)
-                                ? "also on workspace {$otherTesttakersFolder->_workspaceId}"
-                                : '';
-                            $message = "Duplicate Group-Id: `{$duplicate->getName()}` - $location in file `"
-                                . basename($otherFilePath) . "`";
-
-                            $fileCode = 'Testtakers/' . basename($filePath);
-                            if (!isset($this->report[$fileCode])) {
-                                $this->report[$fileCode] = [];
-                            }
-                            $this->report[$fileCode][] = new ValidationReportEntry('error', $message);
+                        $fileCode = 'Testtakers/' . basename($filePath);
+                        if (!isset($this->report[$fileCode])) {
+                            $this->report[$fileCode] = [];
                         }
+                        $this->report[$fileCode][] = new ValidationReportEntry('error', $message);
                     }
-
                 }
             }
         }

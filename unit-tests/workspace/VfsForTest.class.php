@@ -49,6 +49,7 @@ class VfsForTest {
 
         self::insertTrashFiles();
         if ($includeBogusMaterial) {
+            $initializer->createSubdirectories(DATA_DIR . '/ws_2/Testtakers');
             self::insertBogusFiles();
         }
 
@@ -70,44 +71,59 @@ class VfsForTest {
         $testtakersFileContents = file_get_contents(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
         $brokenTestFiles = [
-            "testtakers-broken.xml" =>
-                str_replace('<Metadata', '###BREAK###', $testtakersFileContents),
-            "testtakers-duplicate-login-name.xml" =>
-                preg_replace('/name="\S+?"/m', 'name="the-same-name"', $testtakersFileContents),
-            "testtakers-missing-booklet.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
-                . '<Metadata><Description>Minimal Testtakers example</Description></Metadata>'
-                . '<Group id="a_group" label="A"><Login mode="run-hot-return" name="a_login">'
-                . '<Booklet>BOOKLET.MISSING</Booklet></Login></Group></Testtakers>',
-            "booklet-broken.xml" =>
-                str_replace('<Units', '###BREAK###', $bookletFileContents),
-            "booklet-duplicate-id-1.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id>'
-                . '<Label>Duplicate Booklet</Label></Metadata>'
-                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
-            "booklet-duplicate-id-2.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id>'
-                . '<Label>Duplicate Booklet</Label></Metadata>'
-                . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
-            "unit-unused-and-missing-ref.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unit_unused_and_missing_ref</Id>'
-                . '<Label>Unit with missing DefintionRef</Label></Metadata>'
-                . '<DefinitionRef player="SAMPLE_PLAYER">not-existing.voud</DefinitionRef></Unit>',
-            "unit-unused-and-missing-player.xml" =>
-                '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unit_unused_and_missing_player</Id>'
-                . '<Label>Unit with missing player</Label></Metadata>'
-                . '<Definition player="missing-player">{}</Definition></Unit>',
-            "resource-unused.voud" =>
-                '{}',
+            1 => [
+                "testtakers-broken.xml" =>
+                    str_replace('<Metadata', '###BREAK###', $testtakersFileContents),
+                "testtakers-duplicate-login-name.xml" =>
+                    preg_replace('/name="\S+?"/m', 'name="the-same-name"', $testtakersFileContents),
+                "testtakers-missing-booklet.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+                    . '<Metadata><Description>Minimal Testtakers example</Description></Metadata>'
+                    . '<Group id="a_group" label="A"><Login mode="run-hot-return" name="a_login">'
+                    . '<Booklet>BOOKLET.MISSING</Booklet></Login></Group></Testtakers>',
+                "booklet-broken.xml" =>
+                    str_replace('<Units', '###BREAK###', $bookletFileContents),
+                "booklet-duplicate-id-1.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id>'
+                    . '<Label>Duplicate Booklet</Label></Metadata>'
+                    . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
+                "booklet-duplicate-id-2.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Booklet><Metadata><Id>duplicate_booklet_id</Id>'
+                    . '<Label>Duplicate Booklet</Label></Metadata>'
+                    . '<Units><Unit id="UNIT.SAMPLE" label="l" /></Units></Booklet>',
+                "unit-unused-and-missing-ref.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unit_unused_and_missing_ref</Id>'
+                    . '<Label>Unit with missing DefintionRef</Label></Metadata>'
+                    . '<DefinitionRef player="SAMPLE_PLAYER">not-existing.voud</DefinitionRef></Unit>',
+                "unit-unused-and-missing-player.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Unit><Metadata><Id>unit_unused_and_missing_player</Id>'
+                    . '<Label>Unit with missing player</Label></Metadata>'
+                    . '<Definition player="missing-player">{}</Definition></Unit>',
+                "resource-unused.voud" =>
+                    '{}',
+                "testtakers-duplicate-login-name-cross-ws.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+                    . '<Metadata><Description>Teststakers with id which is used on other ws</Description></Metadata>'
+                    . '<Group id="another_group" label="A"><Login mode="monitor-group" name="another_login" pw="13245678">'
+                    . '</Login></Group></Testtakers>'
+                ],
+            2 => [
+                "testtakers-duplicate-login-name-cross-ws.xml" =>
+                    '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
+                    . '<Metadata><Description>Teststakers with id which is used on other ws</Description></Metadata>'
+                    . '<Group id="another_group" label="A"><Login mode="monitor-group" name="another_login" pw="13245678">'
+                    . '</Login></Group></Testtakers>'
+            ]
         ];
 
+        foreach ($brokenTestFiles as $wsId => $brokenTestFilesWS) {
 
+            foreach ($brokenTestFilesWS as $fileName => $fileContents) {
 
-        foreach ($brokenTestFiles as $fileName => $fileContents) {
-
-            $type = ucfirst(explode('-', $fileName)[0]);
-            //echo "\n-----[$type: $fileName]-----\n$fileContents\n------------\n";
-            file_put_contents(DATA_DIR . "/ws_1/$type/$fileName", $fileContents);
+                $type = ucfirst(explode('-', $fileName)[0]);
+                //echo "\n-----[$type: $fileName]-----\n$fileContents\n------------\n";
+                file_put_contents(DATA_DIR . "/ws_$wsId/$type/$fileName", $fileContents);
+            }
         }
     }
 
