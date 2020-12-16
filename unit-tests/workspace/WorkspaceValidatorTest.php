@@ -86,7 +86,7 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Unit/unit-unused-and-missing-player.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
-                new ValidationReportEntry('error', 'unit definition type `MISSING-PLAYER.HTML` not found'),
+                new ValidationReportEntry('error', 'No suitable version of `MISSING-PLAYER.HTML` found'),
             ],
             'Unit/unit-unused-and-missing-ref.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
@@ -132,5 +132,17 @@ class WorkspaceValidatorTest extends TestCase{
                 $this->fail("key `$key` missing");
             }
         }
+    }
+
+    function test_getResource() {
+
+        $result = $this->validator->getResource('sample_player.html', true);
+        $expectation = "SAMPLE_PLAYER.HTML";
+        $this->assertEquals($expectation, $result->getName());
+
+        $result = $this->validator->getResource('missing_player.html', true);
+        $this->assertNull($result);
+
+        // more scenarios are implicitly tested with test_getPlayerIfExists in XMLFilesUnitTest
     }
 }

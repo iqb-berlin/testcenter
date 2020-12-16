@@ -326,9 +326,8 @@ class WorkspaceController extends Controller {
             throw new HttpInternalServerErrorException($request,  'Unit is invalid');
         }
 
-        $player = $workspaceValidator->getResource($unit->getPlayerId()); // TODO versioning!
-        $player->crossValidate($workspaceValidator);
-        if (!$unit->isValid()) {
+        $player = $unit->getPlayerIfExists($workspaceValidator);
+        if (!$player or !$player->isValid()) {
 
             throw new HttpInternalServerErrorException($request, 'Player is invalid');
         }

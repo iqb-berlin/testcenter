@@ -5,7 +5,8 @@ declare(strict_types=1);
 
 class WorkspaceValidator extends Workspace {
 
-    private array $allFiles = [];
+    protected array $allFiles = [];
+    protected array $versionMap = [];
     private array $report = [];
 
 
@@ -13,10 +14,11 @@ class WorkspaceValidator extends Workspace {
 
         parent::__construct($workspaceId);
         $this->readFiles();
+        $this->createVersionMap();
     }
 
 
-    function validate(): array {
+    public function validate(): array {
         $this->crossValidate();
         $this->findUnusedItems();
         $this->countTestTakers();
@@ -24,9 +26,27 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    public function getResource(string $resourceId): ?ResourceFile {
+    public function getResource(string $resourceId, bool $ignoreMinorAndPatchVersion): ?ResourceFile {
+
+        if ($ignoreMinorAndPatchVersion) {
+
+            $mayorVersionResourceId = FileName::normalize($resourceId, true);
+
+            // minor version given, and exact this version exists
+            if (($mayorVersionResourceId !== $resourceId) and isset($this->allFiles['Resource'][$resourceId])) {
+
+                return $this->allFiles['Resource'][$resourceId];
+            }
+
+            // other major version exists, or no minor version specified
+            if (isset($this->versionMap[$mayorVersionResourceId])) {
+
+                return $this->allFiles['Resource'][$this->versionMap[$mayorVersionResourceId]];
+            }
+        }
 
         if (isset($this->allFiles['Resource'][$resourceId])) {
+
             return $this->allFiles['Resource'][$resourceId];
         }
 
@@ -89,9 +109,21 @@ class WorkspaceValidator extends Workspace {
 
                     $this->allFiles[$type][$file->getId()] = $file;
                 }
-
             }
+        }
+    }
 
+
+    protected function createVersionMap(): void {
+
+        uksort($this->allFiles['Resource'], function($rId1, $rId2) {
+            $rId1 = substr($rId1, 0, strrpos($rId1, "."));
+            $rId2 = substr($rId2, 0, strrpos($rId2, "."));
+            return strcasecmp($rId1, $rId2);
+        });
+        $this->versionMap = [];
+        foreach ($this->allFiles['Resource'] as $key => $value) {
+            $this->versionMap[FileName::normalize($key, true)] = $key;
         }
     }
 

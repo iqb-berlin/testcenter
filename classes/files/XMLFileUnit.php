@@ -11,14 +11,41 @@ class XMLFileUnit extends XMLFile {
     protected string $playerId = '';
     protected array $usedBy = [];
 
+    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
+
+        parent::__construct($path, $validate, $isRawXml);
+
+        if ($this->isValid()) {
+            $this->playerId = $this->getPlayerId();
+        }
+    }
+
     public function crossValidate(WorkspaceValidator $validator) : void {
 
-        $this->setTotalSize($validator);
-        $this->setPlayerId($validator);
+        $this->checkIfResourceExists($validator);
+        $this->getPlayerIfExists($validator);
     }
 
 
-    public function setTotalSize(WorkspaceValidator $validator): void {
+    public function getPlayerIfExists(WorkspaceValidator $validator): ?ResourceFile {
+
+        if (!$this->isValid()) {
+            return null;
+        }
+
+        $resource = $validator->getResource($this->playerId, true);
+
+        if ($resource != null) {
+            $resource->addUsedBy($this);
+        } else {
+            $this->report('error', "No suitable version of `{$this->playerId}` found");
+        }
+
+        return $resource;
+    }
+
+
+    private function checkIfResourceExists(WorkspaceValidator $validator): void {
 
         $this->totalSize = $this->size;
 
@@ -29,7 +56,7 @@ class XMLFileUnit extends XMLFile {
         }
 
         $resourceId = FileName::normalize($definitionRef, false);
-        $resource = $validator->getResource($resourceId);
+        $resource = $validator->getResource($resourceId, false);
         if ($resource != null) {
             $resource->addUsedBy($this);
             $this->totalSize += $resource->getSize();
@@ -44,36 +71,22 @@ class XMLFileUnit extends XMLFile {
         return $this->totalSize;
     }
 
-
-    public function setPlayerId(WorkspaceValidator $validator): void {
-
-        if (!$this->isValid()) {
-            return;
-        }
-
-        $playerId = strtoupper($this->getPlayer());
-
-        if (substr($playerId, -5) != '.HTML') {
-            $playerId = $playerId . '.HTML';
-        }
-
-        $playerId = FileName::normalize($playerId, true);
-
-        $resource = $validator->getResource($playerId);
-
-        if ($resource != null) {
-            $resource->addUsedBy($this);
-        } else {
-            $this->report('error', "unit definition type `$playerId` not found"); // TODO better msg
-        }
-
-        $this->playerId = $playerId;
-    }
-
-
     public function getPlayerId(): string {
 
-        return $this->playerId;
+        if (!$this->isValid()) {
+            return '';
+        }
+
+        $definition = $this->xmlfile->xpath('/Unit/Definition | /Unit/DefinitionRef');
+        if (count($definition)) {
+            $playerId = strtoupper((string) $definition[0]['player']);
+            if (substr($playerId, -5) != '.HTML') {
+                $playerId = $playerId . '.HTML';
+            }
+            return $playerId;
+        }
+
+        return '';
     }
 
 
@@ -89,29 +102,6 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    private function getPlayer() {
-
-
-        $definitionNode = $this->xmlfile->Definition[0];
-        if (isset($definitionNode)) {
-            $playerAttr = $definitionNode['player'];
-            if (isset($playerAttr)) {
-                return (string) $playerAttr;
-            }
-        } else {
-            $definitionNode = $this->xmlfile->DefinitionRef[0];
-            if (isset($definitionNode)) {
-                $playerAttr = $definitionNode['player'];
-                if (isset($playerAttr)) {
-                    return (string) $playerAttr;
-                }
-            }
-        }
-
-        return '';
-    }
-
-
     public function getContent(WorkspaceValidator $workspaceValidator): string {
 
         $this->crossValidate($workspaceValidator);
@@ -119,13 +109,13 @@ class XMLFileUnit extends XMLFile {
             return '';
         }
 
-        $definition = $this->xmlfile->xpath('/Unit/Definition');
-        if (count($definition)) {
-            return (string) $definition[0];
+        $definitionNode = $this->xmlfile->xpath('/Unit/Definition');
+        if (count($definitionNode)) {
+            return (string) $definitionNode[0];
         }
 
         $definitionRef = (string) $this->xmlfile->xpath('/Unit/DefinitionRef')[0];
-        $unitContentFile = $workspaceValidator->getResource($definitionRef);
+        $unitContentFile = $workspaceValidator->getResource($definitionRef, false);
 
         return $unitContentFile->getContent();
     }
@@ -133,16 +123,7 @@ class XMLFileUnit extends XMLFile {
 
     private function getDefinitionRef(): string {
 
-        $myreturn = '';
-        if ($this->isValid() and ($this->xmlfile != false) and ($this->rootTagName == 'Unit')) {
-            $definitionNode = $this->xmlfile->DefinitionRef[0];
-            if (isset($definitionNode)) {
-                $rFilename = (string) $definitionNode;
-                if (isset($rFilename)) {
-                    $myreturn = $rFilename;
-                }
-            }
-        }
-        return $myreturn;
+        $definitionRefNodes = $this->xmlfile->xpath('/Unit/DefinitionRef');
+        return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
     }
 }

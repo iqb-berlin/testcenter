@@ -43,13 +43,17 @@ class XMLFileBooklet extends XMLFile {
 
             $this->totalSize += $unit->getTotalSize();
 
-            $playerId = $unit->getPlayerId();
-            $playerFile = $validator->getResource($playerId); // TODO error if player file not present?
+            $playerFile = $unit->getPlayerIfExists($validator);
 
-            if ($playerFile and !in_array($playerId, $bookletPlayers)) {
+            if (!$playerFile) {
+
+                $this->report('error', "No suitable version of `{$unit->getPlayerId()}` found");
+            }
+
+            if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
 
                 $this->totalSize += $playerFile->getSize();
-                $bookletPlayers[] = $playerId;
+                $bookletPlayers[] = $playerFile->getId();
             }
         }
 

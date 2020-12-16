@@ -6,7 +6,7 @@ class ResourceFile extends File {
 
     const type = 'Resource';
 
-    private $_content = '';
+    protected $_content = '';
     protected array $usedBy = [];
 
 

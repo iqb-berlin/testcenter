@@ -39,7 +39,7 @@ class File extends DataCollectionTypeSafe {
             $this->size = filesize($path);
             $this->name = basename($path);
             $this->filedate = date(DATE_ATOM, filemtime($path));
-            $this->id = FileName::normalize($this->getName(), false); // TODO versioning?
+            $this->id = FileName::normalize($this->getName(), false);
         }
     }
 
