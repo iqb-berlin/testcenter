@@ -323,26 +323,14 @@ class XMLFileTesttakers extends XMLFile {
         return $codeBooklets;
     }
 
-    public function getCustomTexts(): stdClass { // TODO refactor, unit-test
+
+    public function getCustomTexts(): stdClass {
 
         $customTexts = [];
+        foreach ($this->xml->xpath('/Testtakers/CustomTexts/CustomText') as $customTextElement) {
 
-        $myCustomTextsNode = $this->xml->CustomTexts[0];
-        if (isset($myCustomTextsNode)) {
-            foreach($myCustomTextsNode->children() as $customTextElement) {
-                if ($customTextElement->getName() == 'CustomText') {
-                    $customTextValue = (string) $customTextElement;
-                    $customTextKeyAttr = $customTextElement['key'];
-                    if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
-                        $customTextKey = (string) $customTextKeyAttr;
-                        if (strlen($customTextKey) > 0) {
-                            $customTexts[$customTextKey] = $customTextValue;
-                        }
-                    }
-                }
-            }
+            $customTexts[(string) $customTextElement['key'] ?? ''] = (string) $customTextElement;
         }
-
         return (object) $customTexts;
     }
 }

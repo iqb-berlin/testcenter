@@ -15,6 +15,11 @@ $exampleXML1 = <<<END
   <Metadata>
     <Id>example</Id>
   </Metadata>
+  
+  <CustomTexts>
+    <CustomText key="first_key">first_value</CustomText>
+    <CustomText key="second_key">second_value</CustomText>
+  </CustomTexts>
 
   <Group name="first_group">
     <Login mode="run-hot-return" name="duplicateInSameGroup" pw="one" />
@@ -450,6 +455,22 @@ END;
         ];
 
         $result = $xmlFile->getAllLoginNames();
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+    function test_getCustomTexts() {
+
+        global $exampleXML1;
+        $xmlFile = new XMLFileTesttakers($exampleXML1, false, true);
+
+        $expected = (object) [
+            'first_key' => 'first_value',
+            'second_key' => 'second_value'
+        ];
+
+        $result = $xmlFile->getCustomTexts();
 
         $this->assertEquals($expected, $result);
     }
