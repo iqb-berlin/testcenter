@@ -59,8 +59,7 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Testtakers/testtakers-broken.xml' => [
                 new ValidationReportEntry('error',  'Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata'),
-                new ValidationReportEntry('error',  'Error [5] in line 8: Extra content at the end of the document'),
-                new ValidationReportEntry('error',  'Invalid File')
+                new ValidationReportEntry('error',  'Error [5] in line 8: Extra content at the end of the document')
             ],
             'Booklet/trash.xml' => [
                 new ValidationReportEntry('warning', 'Booklet is never used'),
@@ -69,8 +68,7 @@ class WorkspaceValidatorTest extends TestCase{
             'Booklet/booklet-broken.xml' => [
                 new ValidationReportEntry('warning', 'Booklet is never used'),
                 new ValidationReportEntry('error',  'Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units'),
-                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document'),
-                new ValidationReportEntry('error',  'Invalid File')
+                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
             ],
             'Booklet/booklet-duplicate-id-1.xml' => [
                 new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-2.xml)`'),

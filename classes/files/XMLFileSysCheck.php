@@ -24,7 +24,7 @@ class XMLFileSysCheck extends XMLFile {
             return "";
         }
 
-        $configNode = $this->xmlfile->xpath('/SysCheck/Config[@savekey]');
+        $configNode = $this->xml->xpath('/SysCheck/Config[@savekey]');
         return count($configNode) ? strtoupper((string) $configNode[0]['savekey']) : '';
     }
 
@@ -47,7 +47,7 @@ class XMLFileSysCheck extends XMLFile {
             return "";
         }
 
-        $configNode = $this->xmlfile->xpath('/SysCheck/Config[@unit]');
+        $configNode = $this->xml->xpath('/SysCheck/Config[@unit]');
         return count($configNode) ? strtoupper((string) $configNode[0]['unit']) : '';
     }
 
@@ -58,7 +58,7 @@ class XMLFileSysCheck extends XMLFile {
             return [];
         }
 
-        $customTextNodes = $this->xmlfile->xpath('/SysCheck/Config/CustomText');
+        $customTextNodes = $this->xml->xpath('/SysCheck/Config/CustomText');
         $customTexts = [];
         foreach ($customTextNodes as $customTextNode) {
             $customTexts[] = [
@@ -76,7 +76,7 @@ class XMLFileSysCheck extends XMLFile {
             return false;
         }
 
-        $configNode = $this->xmlfile->xpath('/SysCheck/Config[@skipnetwork]');
+        $configNode = $this->xml->xpath('/SysCheck/Config[@skipnetwork]');
         return count($configNode) ? ($configNode[0]['skipnetwork'] == 'true') : false;
     }
 
@@ -88,7 +88,7 @@ class XMLFileSysCheck extends XMLFile {
         }
 
         $questions = [];
-        $questionNodes = $this->xmlfile->xpath('/SysCheck/Config/Q');
+        $questionNodes = $this->xml->xpath('/SysCheck/Config/Q');
         foreach($questionNodes as $questionNode) {
             $questions[] = [
                 'id'        => (string) $questionNode['id'],
@@ -129,7 +129,7 @@ class XMLFileSysCheck extends XMLFile {
             return $speedtestParams;
         }
 
-        $node = $this->xmlfile->xpath('/SysCheck/Config/' . ($upload ? 'UploadSpeed' : 'DownloadSpeed'));
+        $node = $this->xml->xpath('/SysCheck/Config/' . ($upload ? 'UploadSpeed' : 'DownloadSpeed'));
 
         if (!count($node)) {
             return $speedtestParams;

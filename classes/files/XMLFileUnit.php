@@ -77,7 +77,7 @@ class XMLFileUnit extends XMLFile {
             return '';
         }
 
-        $definition = $this->xmlfile->xpath('/Unit/Definition | /Unit/DefinitionRef');
+        $definition = $this->xml->xpath('/Unit/Definition | /Unit/DefinitionRef');
         if (count($definition)) {
             $playerId = strtoupper((string) $definition[0]['player']);
             if (substr($playerId, -5) != '.HTML') {
@@ -109,12 +109,12 @@ class XMLFileUnit extends XMLFile {
             return '';
         }
 
-        $definitionNode = $this->xmlfile->xpath('/Unit/Definition');
+        $definitionNode = $this->xml->xpath('/Unit/Definition');
         if (count($definitionNode)) {
             return (string) $definitionNode[0];
         }
 
-        $definitionRef = (string) $this->xmlfile->xpath('/Unit/DefinitionRef')[0];
+        $definitionRef = (string) $this->xml->xpath('/Unit/DefinitionRef')[0];
         $unitContentFile = $workspaceValidator->getResource($definitionRef, false);
 
         return $unitContentFile->getContent();
@@ -123,7 +123,7 @@ class XMLFileUnit extends XMLFile {
 
     private function getDefinitionRef(): string {
 
-        $definitionRefNodes = $this->xmlfile->xpath('/Unit/DefinitionRef');
+        $definitionRefNodes = $this->xml->xpath('/Unit/DefinitionRef');
         return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
     }
 }

@@ -54,7 +54,7 @@ $app->group('/booklet', function(App $app) {
 
         $bookletName = $request->getAttribute('booklet_name');
         $bookletsFolder = new BookletsFolder((int) $authToken->getWorkspaceId());
-        $xml = $bookletsFolder->getXMLFileByName('Booklet', $bookletName)->xmlfile->asXML();
+        $xml = $bookletsFolder->getXMLFileByName('Booklet', $bookletName)->xml->asXML();
 
         $response->withHeader('Content-Type', 'application/xml')->write($xml);
     });

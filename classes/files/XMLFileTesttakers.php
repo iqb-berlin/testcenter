@@ -124,7 +124,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $testTakers = [];
 
-        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+        foreach($this->xml->xpath('Group') as $groupElement) {
 
             foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
 
@@ -144,7 +144,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xmlfile->xpath('Group/Login[@name]') as $loginElement) {
+        foreach($this->xml->xpath('Group/Login[@name]') as $loginElement) {
 
             $loginNames[] = (string) $loginElement['name'];
         }
@@ -163,7 +163,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xmlfile->xpath('Group/Login[@name]') as $loginElement) {
+        foreach($this->xml->xpath('Group/Login[@name]') as $loginElement) {
 
             if (!in_array((string) $loginElement['name'], $loginNames)) {
                 $loginNames[] = (string) $loginElement['name'];
@@ -182,7 +182,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $groups = [];
 
-        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+        foreach($this->xml->xpath('Group') as $groupElement) {
 
             $groups[(string) $groupElement['id']] = new Group(
                 (string) $groupElement['id'],
@@ -200,7 +200,7 @@ class XMLFileTesttakers extends XMLFile {
             return null;
         }
 
-        foreach($this->xmlfile->xpath('Group') as $groupElement) {
+        foreach($this->xml->xpath('Group') as $groupElement) {
 
             $selector = "@name='$name'" . ($password ?  " and @pw='$password'" : '');
             foreach($groupElement->xpath("Login[$selector]") as $loginElement) {
@@ -220,7 +220,7 @@ class XMLFileTesttakers extends XMLFile {
         }
 
         $selector = "@name='$name'" . ($password ?  " and  @pw='$password'" : '');
-        foreach($this->xmlfile->xpath("Group[Login[$selector]]") as $groupElement) {
+        foreach($this->xml->xpath("Group[Login[$selector]]") as $groupElement) {
 
             $groupMembers = new PotentialLoginArray();
 
@@ -248,7 +248,7 @@ class XMLFileTesttakers extends XMLFile {
             isset($groupElement['validTo']) ? TimeStamp::fromXMLFormat((string) $groupElement['validTo']) : 0,
             TimeStamp::fromXMLFormat((string) $groupElement['validFrom']),
             (int) ($groupElement['validFor'] ?? 0),
-            (object) $this->getCustomTexts()
+            $this->getCustomTexts()
         );
     }
 
@@ -321,5 +321,28 @@ class XMLFileTesttakers extends XMLFile {
         }
 
         return $codeBooklets;
+    }
+
+    public function getCustomTexts(): stdClass { // TODO refactor, unit-test
+
+        $customTexts = [];
+
+        $myCustomTextsNode = $this->xml->CustomTexts[0];
+        if (isset($myCustomTextsNode)) {
+            foreach($myCustomTextsNode->children() as $customTextElement) {
+                if ($customTextElement->getName() == 'CustomText') {
+                    $customTextValue = (string) $customTextElement;
+                    $customTextKeyAttr = $customTextElement['key'];
+                    if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
+                        $customTextKey = (string) $customTextKeyAttr;
+                        if (strlen($customTextKey) > 0) {
+                            $customTexts[$customTextKey] = $customTextValue;
+                        }
+                    }
+                }
+            }
+        }
+
+        return (object) $customTexts;
     }
 }

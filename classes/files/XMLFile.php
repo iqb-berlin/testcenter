@@ -17,9 +17,8 @@ class XMLFile extends File {
     protected string $rootTagName = '';
     protected string $label = '';
     protected string $description = '';
-    protected $customTexts;
 
-    public SimpleXMLElement $xmlfile;
+    public SimpleXMLElement $xml;
 
     public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
 
@@ -31,92 +30,88 @@ class XMLFile extends File {
         if (!$isRawXml) {
 
             parent::__construct($path);
+
+            if (!$this->isValid()) {
+
+                libxml_use_internal_errors(false);
+                return;
+            }
+
+            $xmlElem = simplexml_load_file($path);
+            $this->importLibXmlErrors();
+
+        } else {
+
+            $xmlElem = new SimpleXMLElement($path);
         }
 
-        $xmlElem = !$isRawXml ? simplexml_load_file($path) : new SimpleXMLElement($path);
 
         if ($xmlElem === false) {
 
-            $this->xmlfile = new SimpleXMLElement('<error />');
+            $this->xml = new SimpleXMLElement('<error />');
+
             if (!count($this->validationReport)) {
                 $this->validationReport[] = new ValidationReportEntry('error', "Invalid File");
             }
 
-        } else {
-
-            $this->xmlfile = $xmlElem;
-
-            $this->rootTagName = $this->xmlfile->getName();
-            if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
-
-                $this->report('error', "Invalid root-tag: `$this->rootTagName`");
-
-            } else {
-
-                $mySchemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
-
-                if (count($this->xmlfile->Metadata)) {
-
-                    $myId = $this->xmlfile->Metadata[0]->Id[0];
-                    if (isset($myId)) {
-                        $this->id = trim(strtoupper((string) $myId));
-                    }
-
-                    $this->label = (string) $this->xmlfile->Metadata[0]->Label[0];
-
-                    $myDescription = $this->xmlfile->Metadata[0]->Description[0];
-                    if (isset($myDescription)) {
-                        $this->description = (string) $myDescription;
-                    }
-
-                    $myCustomTextsNode = $this->xmlfile->CustomTexts[0];
-                    if (isset($myCustomTextsNode)) {
-                        // TODO move to testtakers, because it is ONLY used there... SysCheck is made differently
-                        foreach($myCustomTextsNode->children() as $customTextElement) {
-                            if ($customTextElement->getName() == 'CustomText') {
-                                $customTextValue = (string) $customTextElement;
-                                $customTextKeyAttr = $customTextElement['key'];
-                                if ((strlen($customTextValue) > 0) && isset($customTextKeyAttr)) {
-                                    $customTextKey = (string) $customTextKeyAttr;
-                                    if (strlen($customTextKey) > 0) {
-                                        $this->customTexts[$customTextKey] = $customTextValue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if ($validate) {
-
-                    $myReader = new XMLReader();
-                    $myReader->open($path);
-                    $myReader->setSchema($mySchemaFilename);
-
-                    do {
-                        $continue = $myReader->read();
-                        foreach (libxml_get_errors() as $error) {
-                            $errorString = "Error [{$error->code}] in line {$error->line}: ";
-                            $errorString .= trim($error->message);
-                            $this->report('error', $errorString);
-                        }
-                        libxml_clear_errors();
-                    } while ($continue);
-
-                }
-            }
+            libxml_use_internal_errors(false);
+            return;
         }
+
+        $this->xml = $xmlElem;
+        $this->rootTagName = $this->xml->getName();
+
+        if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
+
+            $this->report('error', "Invalid root-tag: `$this->rootTagName`");
+            libxml_use_internal_errors(false);
+            return;
+        }
+
+        $this->readMetadata();
 
         if ($validate) {
-            // simplexml_load_file gibt auch Fehler nach libxml
-            foreach (libxml_get_errors() as $error) {
-                $errorString = "Error [{$error->code}] in line {$error->line}: ";
-                $errorString .= trim($error->message);
-                $this->report('error', $errorString);
-            }
-            libxml_clear_errors();
+
+            $schemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
+            $xmlReader = new XMLReader();
+            $xmlReader->open($path);
+            $xmlReader->setSchema($schemaFilename);
+            do {
+                $continue = $xmlReader->read();
+                $this->importLibXmlErrors();
+            } while ($continue);
         }
+
         libxml_use_internal_errors(false);
+    }
+
+    private function readMetadata(): void {
+
+        $id = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Id");
+        if ($id) {
+            $this->id = trim(strtoupper($id));
+        }
+
+        $this->label = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Label");
+        $this->description = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Description");
+    }
+
+
+    private function importLibXmlErrors(): void {
+
+        foreach (libxml_get_errors() as $error) {
+            $errorString = "Error [{$error->code}] in line {$error->line}: ";
+            $errorString .= trim($error->message);
+            $this->report('error', $errorString);
+        }
+        libxml_clear_errors();
+    }
+
+
+    protected function xmlGetNodeContentIfPresent(string $nodePath): string {
+
+        $nodes = $this->xml->xpath($nodePath);
+        return count($nodes) ? (string) $nodes[0] : '';
     }
 
 
@@ -135,11 +130,5 @@ class XMLFile extends File {
     public function getDescription() {
 
         return $this->description;
-    }
-
-
-    public function getCustomTexts() { // TODO maybe move to where it is allowed: syscheck, testtakers
-
-        return $this->customTexts;
     }
 }

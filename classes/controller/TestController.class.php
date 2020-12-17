@@ -44,8 +44,8 @@ class TestController extends Controller {
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
     }
-    
-    
+
+
     public static function get(Request $request, Response $response) : Response {
 
         /* @var $authToken AuthToken */
@@ -60,11 +60,11 @@ class TestController extends Controller {
             'mode' => $authToken->getMode(),
             'laststate' => self::testDAO()->getTestState($testId),
             'locked' => self::testDAO()->isTestLocked($testId),
-            'xml' => $bookletFile->xmlfile->asXML()
+            'xml' => $bookletFile->xml->asXML()
         ]);
     }
 
-    
+
     public static function getUnit(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -78,7 +78,7 @@ class TestController extends Controller {
         $unit = [
             'laststate' => self::testDAO()->getUnitState($testId, $unitName),
             'restorepoint' => self::testDAO()->getRestorePoint($testId, $unitName),
-            'xml' => $unitFile->xmlfile->asXML()
+            'xml' => $unitFile->xml->asXML()
         ];
 
         return $response->withJson($unit);
@@ -124,7 +124,7 @@ class TestController extends Controller {
         return $response->withStatus(201);
     }
 
-    
+
     public static function putReview(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
@@ -180,8 +180,8 @@ class TestController extends Controller {
 
         return $response->withStatus(200);
     }
-    
-    
+
+
     public static function patchState(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -283,7 +283,7 @@ class TestController extends Controller {
         return $response->withStatus(201);
     }
 
-    
+
     public static function patchLock(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -330,8 +330,8 @@ class TestController extends Controller {
 
         return $response->withStatus(200, $changed ? 'OK' : 'OK, was already marked as executed');
     }
-    
-    
+
+
     // TODO replace this and use proper data-class
     private static function stateArray2KeyValue(array $stateData): array {
         $statePatch = [];
