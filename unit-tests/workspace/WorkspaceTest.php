@@ -54,54 +54,23 @@ class WorkspaceTest extends TestCase {
 
     function test_getAllFiles() {
 
-        $result = $this->workspace->getAllFiles();
+        $result = $this->workspace->getFiles();
 
-        $this->assertEquals(9, count($result));
+        $resultDigest = array_map(function(File $file) { return $file->getName(); }, $result);
 
-        $this->assertEquals('SAMPLE_BOOKLET.XML', $result[0]['filename']);
-        $this->assertEquals('Booklet', $result[0]['type']);
-        $this->assertArrayHasKey('filesize', $result[0]);
-        $this->assertArrayHasKey('filedatetime', $result[0]);
+        $expectation = [
+            'SAMPLE_TESTTAKERS.XML',
+            'trash.xml',
+            'SAMPLE_SYSCHECK.XML',
+            'SAMPLE_BOOKLET.XML',
+            'SAMPLE_BOOKLET2.XML',
+            'trash.xml',
+            'SAMPLE_UNIT.XML',
+            'SAMPLE_UNIT2.XML',
+            'SAMPLE_PLAYER.HTML'
+        ];
 
-        $this->assertEquals('SAMPLE_BOOKLET2.XML', $result[1]['filename']);
-        $this->assertEquals('Booklet', $result[1]['type']);
-        $this->assertArrayHasKey('filesize', $result[1]);
-        $this->assertArrayHasKey('filedatetime', $result[1]);
-
-        $this->assertEquals('trash.xml', $result[2]['filename']);
-        $this->assertEquals('Booklet', $result[2]['type']);
-        $this->assertArrayHasKey('filesize', $result[2]);
-        $this->assertArrayHasKey('filedatetime', $result[2]);
-
-        $this->assertEquals('SAMPLE_TESTTAKERS.XML', $result[3]['filename']);
-        $this->assertEquals('Testtakers', $result[3]['type']);
-        $this->assertArrayHasKey('filesize', $result[3]);
-        $this->assertArrayHasKey('filedatetime', $result[3]);
-
-        $this->assertEquals('trash.xml', $result[4]['filename']);
-        $this->assertEquals('Testtakers', $result[4]['type']);
-        $this->assertArrayHasKey('filesize', $result[4]);
-        $this->assertArrayHasKey('filedatetime', $result[4]);
-
-        $this->assertEquals('SAMPLE_SYSCHECK.XML', $result[5]['filename']);
-        $this->assertEquals('SysCheck', $result[5]['type']);
-        $this->assertArrayHasKey('filesize', $result[5]);
-        $this->assertArrayHasKey('filedatetime', $result[5]);
-
-        $this->assertEquals('SAMPLE_UNIT.XML', $result[6]['filename']);
-        $this->assertEquals('Unit', $result[6]['type']);
-        $this->assertArrayHasKey('filesize', $result[6]);
-        $this->assertArrayHasKey('filedatetime', $result[6]);
-
-        $this->assertEquals('SAMPLE_UNIT2.XML', $result[7]['filename']);
-        $this->assertEquals('Unit', $result[7]['type']);
-        $this->assertArrayHasKey('filesize', $result[7]);
-        $this->assertArrayHasKey('filedatetime', $result[7]);
-
-        $this->assertEquals('SAMPLE_PLAYER.HTML', $result[8]['filename']);
-        $this->assertEquals('Resource', $result[8]['type']);
-        $this->assertArrayHasKey('filesize', $result[8]);
-        $this->assertArrayHasKey('filedatetime', $result[8]);
+        $this->assertEquals($expectation, $resultDigest);
     }
 
 

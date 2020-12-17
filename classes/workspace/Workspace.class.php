@@ -83,49 +83,23 @@ class Workspace {
     }
 
 
-    public function getAllFiles(): array {
+    public function getFiles(): array {
 
-        $fileList = [];
+        $files = [];
 
-        $workspaceDirHandle = opendir($this->_workspacePath);
-        while (($subDir = readdir($workspaceDirHandle)) !== false) {
-            if (($subDir === '.') or ($subDir === '..')) {
-                continue;
+        foreach ($this::subFolders as $type) {
+
+            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+            $filePaths = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
+
+            foreach ($filePaths as $filePath) {
+
+                $files[] = new File($filePath, $type);
             }
-
-            $fullSubDirPath = $this->_workspacePath . '/' . $subDir;
-
-            if (!is_dir($fullSubDirPath)) {
-                continue;
-            }
-
-            $subDirHandle = opendir($fullSubDirPath);
-            while (($entry = readdir($subDirHandle)) !== false) {
-                $fullFilePath = $fullSubDirPath . '/' . $entry;
-                if (!is_file($fullFilePath)) {
-                    continue;
-                }
-
-                $f = new File($fullFilePath);
-
-                $fileList[] = [
-                    'filename' => $f->getName(),
-                    'filesize' => $f->getSize(),
-                    'filesizestr' => FileSize::asString($f->getSize()), // TODO is this used?
-                    'filedatetime' => $f->getModificationTime(),
-                    'filedatetimestr' =>
-                        ($f->getModificationTime() == 0) ? 'n/a' : strftime('%d.%m.%Y', $f->getModificationTime()),
-                    'type' => $subDir,
-                    'typelabel' => $subDir // TODO is this used?
-                ];
-
-            }
-
         }
 
-        return $fileList;
+        return $files;
     }
-
 
     /**
      * @param $filesToDelete - array containing file paths local relative to this workspace

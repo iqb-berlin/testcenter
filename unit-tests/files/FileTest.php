@@ -25,7 +25,7 @@ class FileTest extends TestCase {
 
     function test_get() {
 
-        $file = File::get('Booklet', DATA_DIR . '/Booklets/SAMPLE_BOOKLET.XML');
+        $file = File::get('Booklet', DATA_DIR . '/Booklet/SAMPLE_BOOKLET.XML');
         $this->assertEquals('XMLFileBooklet', get_class($file));
 
         $file = File::get('Resource', DATA_DIR . '/Resource/SAMPLE_PLAYER.HTML');

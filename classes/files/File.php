@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 class File extends DataCollectionTypeSafe {
 
-    const type = 'file';
+    private const type = 'file';
+    protected ?string $type;
     protected string $path = '';
     protected string $name = '';
     protected int $size = 0;
     protected int $modificationTime = 0;
     protected string $id = '';
-
     protected array $validationReport = [];
 
 
@@ -27,9 +27,11 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function __construct(string $path) {
+    public function __construct(string $path, string $type = null) {
 
         $this->path = $path;
+        $this->type = $type;
+
         if (!file_exists($path)) {
 
             $this->report('error', "file does not exist `" . dirname($path) . '/'. basename($path) . "`");
@@ -44,15 +46,9 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function report(string $level, string $message): void {
+    public function getType(): string {
 
-        $this->validationReport[] = new ValidationReportEntry($level, $message);
-    }
-
-
-    public function getValidationReport(): array {
-
-        return $this->validationReport;
+        return $this->type ?? $this::type;
     }
 
 
@@ -74,12 +70,6 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function isValid(): bool {
-
-        return count($this->getErrors()) == 0;
-    }
-
-
     public function getId() {
 
         return $this->id;
@@ -92,8 +82,25 @@ class File extends DataCollectionTypeSafe {
     }
 
 
+    public function isValid(): bool {
+
+        return count($this->getErrors()) == 0;
+    }
+
+
+    public function report(string $level, string $message): void {
+
+        $this->validationReport[] = new ValidationReportEntry($level, $message);
+    }
+
+
     public function crossValidate(WorkspaceValidator $validator): void {
 
+    }
+
+    public function getValidationReport(): array {
+
+        return $this->validationReport;
     }
 
 

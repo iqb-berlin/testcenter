@@ -201,8 +201,21 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
         $workspace = new Workspace($workspaceId);
-        $files = $workspace->getAllFiles();
-        return $response->withJson($files);
+        $files = $workspace->getFiles();
+        return $response->withJson(
+            array_map(function(File $f): array {
+                return [
+                    'filename' => $f->getName(),
+                    'filesize' => $f->getSize(),
+                    'filesizestr' => FileSize::asString($f->getSize()),
+                    'filedatetime' => $f->getModificationTime(),
+                    'filedatetimestr' =>
+                        ($f->getModificationTime() == 0) ? 'n/a' : strftime('%d.%m.%Y', $f->getModificationTime()),
+                    'type' => $f->getType(),
+                    'typelabel' => $f->getType()
+                ];
+            }, $files)
+        );
     }
 
 

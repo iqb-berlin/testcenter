@@ -162,7 +162,7 @@ class WorkspaceValidator extends Workspace {
             return;
         }
 
-        $fileCode = $file ? $file::type . "/{$file->getName()}" : '.';
+        $fileCode = $file ? "{$file->getType()}/{$file->getName()}" : '.';
 
         if (!isset($this->report[$fileCode])) {
             $this->report[$fileCode] = [];
@@ -176,7 +176,7 @@ class WorkspaceValidator extends Workspace {
 
     private function report(string $level, string $text, ?File $file = null) {
 
-        $fileCode = $file ? $file::type . "/{$file->getName()}" : '.';
+        $fileCode = $file ? "{$file->getType()}/{$file->getName()}" : '.';
 
         if (!isset($this->report[$fileCode])) {
             $this->report[$fileCode] = [];
