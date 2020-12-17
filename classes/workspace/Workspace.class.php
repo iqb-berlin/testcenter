@@ -106,17 +106,18 @@ class Workspace {
                     continue;
                 }
 
-                $rs = new ResourceFile($fullFilePath, true);
+                $f = new File($fullFilePath);
 
-                array_push($fileList, [
-                    'filename' => $rs->getName(),
-                    'filesize' => $rs->getSize(),
-                    'filesizestr' => FileSize::asString($rs->getSize()), // TODO is this used?
-                    'filedatetime' => $rs->getFileDateTime(),
-                    'filedatetimestr' => $rs->getFileDateTimeString(), // TODO is this used?
+                $fileList[] = [
+                    'filename' => $f->getName(),
+                    'filesize' => $f->getSize(),
+                    'filesizestr' => FileSize::asString($f->getSize()), // TODO is this used?
+                    'filedatetime' => $f->getModificationTime(),
+                    'filedatetimestr' =>
+                        ($f->getModificationTime() == 0) ? 'n/a' : strftime('%d.%m.%Y', $f->getModificationTime()),
                     'type' => $subDir,
                     'typelabel' => $subDir // TODO is this used?
-                ]);
+                ];
 
             }
 

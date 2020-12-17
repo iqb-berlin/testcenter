@@ -7,7 +7,7 @@ class File extends DataCollectionTypeSafe {
     protected string $path = '';
     protected string $name = '';
     protected int $size = 0;
-    protected string $filedate;
+    protected int $modificationTime = 0;
     protected string $id = '';
 
     protected array $validationReport = [];
@@ -20,7 +20,7 @@ class File extends DataCollectionTypeSafe {
             case 'SysCheck': return new XMLFileSysCheck($path, $validate);
             case 'Booklet': return new XMLFileBooklet($path, $validate);
             case 'Unit': return new XMLFileUnit($path, $validate);
-            case 'Resource': return new ResourceFile($path, true);
+            case 'Resource': return new ResourceFile($path);
         }
 
         throw new Exception("Filetype `$type` unknown!");
@@ -38,7 +38,7 @@ class File extends DataCollectionTypeSafe {
 
             $this->size = filesize($path);
             $this->name = basename($path);
-            $this->filedate = date(DATE_ATOM, filemtime($path));
+            $this->modificationTime = filemtime($path);
             $this->id = FileName::normalize($this->getName(), false);
         }
     }
@@ -86,12 +86,24 @@ class File extends DataCollectionTypeSafe {
     }
 
 
+    public function getModificationTime() {
+
+        return $this->modificationTime;
+    }
+
+
+    public function crossValidate(WorkspaceValidator $validator): void {
+
+    }
+
+
     public function getErrors(): array {
 
         return array_filter($this->validationReport, function(ValidationReportEntry $validationReportEntry): bool {
             return $validationReportEntry->level == 'error';
         });
     }
+
 
     public function getErrorString(): string {
 

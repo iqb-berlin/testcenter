@@ -26,7 +26,7 @@ class ResourceFileMock extends ResourceFile {
     public function __construct(string $name) {
         $this->id = $name;
         $this->name = $name;
-        $this->_content = 'content of: ' . $name;
+        $this->content = 'content of: ' . $name;
     }
 }
 

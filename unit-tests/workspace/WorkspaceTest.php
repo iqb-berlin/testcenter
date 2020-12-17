@@ -1,7 +1,6 @@
 <?php
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
-
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 
@@ -10,8 +9,7 @@ require_once "classes/helper/Folder.class.php";
 require_once "classes/files/ResourceFile.class.php";
 require_once "classes/files/XMLFile.php";
 require_once "classes/files/XMLFileTesttakers.php";
-require_once "VfsForTest.class.php";
-
+require_once "unit-tests/VfsForTest.class.php";
 
 class WorkspaceTest extends TestCase {
 
@@ -74,7 +72,7 @@ class WorkspaceTest extends TestCase {
         $this->assertEquals('Booklet', $result[2]['type']);
         $this->assertArrayHasKey('filesize', $result[2]);
         $this->assertArrayHasKey('filedatetime', $result[2]);
-        
+
         $this->assertEquals('SAMPLE_TESTTAKERS.XML', $result[3]['filename']);
         $this->assertEquals('Testtakers', $result[3]['type']);
         $this->assertArrayHasKey('filesize', $result[3]);

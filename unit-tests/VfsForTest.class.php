@@ -32,9 +32,9 @@ class VfsForTest {
 
         $vfs = vfsStream::setup('root', 0777);
         $sampledataDir = vfsStream::newDirectory('sampledata', 0777)->at($vfs);
-        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../../sampledata'), $sampledataDir);
+        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../sampledata'), $sampledataDir);
         $definitionsDir = vfsStream::newDirectory('definitions', 0777)->at($vfs);
-        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../../definitions'), $definitionsDir);
+        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../definitions'), $definitionsDir);
         vfsStream::newDirectory('vo_data', 0777)->at($vfs);
 
         $initializer = new WorkspaceInitializer();

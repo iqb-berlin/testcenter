@@ -4,7 +4,7 @@
 use PHPUnit\Framework\TestCase;
 require_once "classes/workspace/Workspace.class.php";
 require_once "classes/workspace/BookletsFolder.class.php";
-require_once "VfsForTest.class.php";
+require_once "unit-tests/VfsForTest.class.php";
 
 
 class BookletsFolderTest extends TestCase {

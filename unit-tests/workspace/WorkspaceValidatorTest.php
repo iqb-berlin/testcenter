@@ -11,9 +11,10 @@ require_once "classes/files/XMLFile.php";
 require_once "classes/files/XMLFileSysCheck.php";
 require_once "classes/files/XMLFileBooklet.php";
 require_once "classes/files/XMLFileUnit.php";
-require_once "VfsForTest.class.php";
+require_once "unit-tests/VfsForTest.class.php";
 require_once "classes/workspace/WorkspaceValidator.class.php";
 require_once "classes/data-collection/ValidationReportEntry.class.php";
+
 
 class WorkspaceValidatorTest extends TestCase{
 
