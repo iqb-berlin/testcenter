@@ -6,23 +6,17 @@ declare(strict_types=1);
 class XMLFile extends File {
 
     const type = 'xml';
-
-    private $schemaFileNames = [
-        'Testtakers' => 'vo_Testtakers.xsd',
-        'Booklet' => 'vo_Booklet.xsd',
-        'SysCheck' => 'vo_SysCheck.xsd',
-        'Unit' => 'vo_Unit.xsd'
-    ];
+    const knownTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Unit'];
 
     protected string $rootTagName = '';
     protected string $label = '';
     protected string $description = '';
+    protected ?array $schema;
 
     public SimpleXMLElement $xml;
 
-    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
 
-        $xsdFolderName = ROOT_DIR . '/definitions/';
+    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
 
         libxml_use_internal_errors(true);
         libxml_clear_errors();
@@ -61,7 +55,7 @@ class XMLFile extends File {
         $this->xml = $xmlElem;
         $this->rootTagName = $this->xml->getName();
 
-        if (!array_key_exists($this->rootTagName, $this->schemaFileNames)) {
+        if (!in_array($this->rootTagName, $this::knownTypes)) {
 
             $this->report('error', "Invalid root-tag: `$this->rootTagName`");
             libxml_use_internal_errors(false);
@@ -72,14 +66,7 @@ class XMLFile extends File {
 
         if ($validate) {
 
-            $schemaFilename = $xsdFolderName . $this->schemaFileNames[$this->rootTagName];
-            $xmlReader = new XMLReader();
-            $xmlReader->open($path);
-            $xmlReader->setSchema($schemaFilename);
-            do {
-                $continue = $xmlReader->read();
-                $this->importLibXmlErrors();
-            } while ($continue);
+            $this->validateAgainstSchema();
         }
 
         libxml_use_internal_errors(false);
@@ -94,6 +81,38 @@ class XMLFile extends File {
 
         $this->label = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Label");
         $this->description = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Description");
+    }
+
+
+    private function readSchema(): void {
+
+        $schemaUrl = (string) $this->xml->attributes('xsi', true)->noNamespaceSchemaLocation;
+        $this->schema = XMLSchema::parseSchemaUrl($schemaUrl, true);
+
+        if (!$this->schema || !isset($this->schema['filePath'])) {
+
+            // TODO distinguish between NO schema (use fallback) and outdated - throw error
+            $this->report('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong');
+            $this->schema = XMLSchema::getLocalSchema($this->getRoottagName());
+        }
+    }
+
+
+    private function validateAgainstSchema(): void {
+
+        $this->readSchema();
+        if (!$this->schema['filePath']) {
+
+            return;
+        }
+
+        $xmlReader = new XMLReader();
+        $xmlReader->open($this->path);
+        $xmlReader->setSchema($this->schema['filePath']);
+        do {
+            $continue = $xmlReader->read();
+            $this->importLibXmlErrors();
+        } while ($continue);
     }
 
 
@@ -115,7 +134,7 @@ class XMLFile extends File {
     }
 
 
-    public function getRoottagName() {
+    public function getRoottagName() { // TODO is this needed?
 
         return $this->rootTagName;
     }

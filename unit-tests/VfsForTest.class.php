@@ -5,6 +5,7 @@ require_once "classes/data-collection/DataCollection.class.php";
 require_once "classes/data-collection/InstallationArguments.class.php";
 require_once "classes/workspace/WorkspaceInitializer.class.php";
 require_once "classes/workspace/Workspace.class.php";
+require_once "classes/helper/Folder.class.php";
 
 
 use org\bovigo\vfs\vfsStream;
@@ -49,7 +50,7 @@ class VfsForTest {
 
         self::insertTrashFiles();
         if ($includeBogusMaterial) {
-            $initializer->createSubdirectories(DATA_DIR . '/ws_2/Testtakers');
+            Folder::createPath(DATA_DIR . '/ws_2/Testtakers');
             self::insertBogusFiles();
         }
 

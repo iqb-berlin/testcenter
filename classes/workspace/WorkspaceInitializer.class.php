@@ -5,37 +5,6 @@ declare(strict_types=1);
 
 class WorkspaceInitializer {
 
-
-    /**
-     * creates missing subdirectories for a missing path,
-     * for example: let /var/www/html/vo_data exist
-     * and $filePath be /var/www/html/vo_data/ws_5/Testtakers
-     * this functions creates ws_5 and ws_5/Testtakers in /var/www/html/vo_data
-     * Note: dont' use paths containing filenames!
-     *
-     * difference to getOrCreateSubFolderPath -> can also create workspace-dir itself as well as sub-sub dirs like SysCheck/reports
-     *
-     * @param $dirPath - a full path
-     * @return string - the path, again
-     * @throws Exception
-     */
-    public function createSubdirectories(string $dirPath): string {
-
-        $pathParts = parse_url($dirPath);
-        return array_reduce(explode('/', $pathParts['path']), function($agg, $item) {
-            $agg .= "$item/";
-            if (file_exists($agg) and !is_dir($agg)) {
-                throw new Exception("$agg is not a directory, but should be!");
-            }
-            if (!file_exists($agg)) {
-                mkdir($agg);
-            }
-            return $agg;
-        }, isset($pathParts['scheme']) ? "{$pathParts['scheme']}://{$pathParts['host']}" : '');
-
-    }
-
-
     private function importSampleFile(int $workspaceId, string $filename,
                                       InstallationArguments $vars, string $destination = null) {
 
@@ -51,7 +20,7 @@ class WorkspaceInitializer {
         }
 
         $destinationSubDir = $destination ? $destination : basename($filename, '.xml');
-        $fileNameToWrite = $this->createSubdirectories(DATA_DIR . "/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
+        $fileNameToWrite = Folder::createPath(DATA_DIR . "/ws_$workspaceId/$destinationSubDir") . strtoupper("sample_$filename");
 
         if (@file_put_contents($fileNameToWrite, $sampleFileContent) === false) {
             throw new Exception("Could not write file: $fileNameToWrite");

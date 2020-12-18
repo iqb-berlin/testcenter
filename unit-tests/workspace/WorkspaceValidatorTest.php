@@ -18,7 +18,6 @@ require_once "classes/data-collection/ValidationReportEntry.class.php";
 
 class WorkspaceValidatorTest extends TestCase{
 
-
     private $vfs;
     private WorkspaceValidator $validator;
 
@@ -51,9 +50,11 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Testtakers/testtakers-duplicate-login-name.xml' => [
                 new ValidationReportEntry('error',  'Duplicate login: `duplicate_login`'),
+                new ValidationReportEntry('warning', "File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong")
             ],
             'Testtakers/testtakers-missing-booklet.xml' => [
-                new ValidationReportEntry('error', 'Booklet `BOOKLET.MISSING` not found for login `a_login`')
+                new ValidationReportEntry('error', 'Booklet `BOOKLET.MISSING` not found for login `a_login`'),
+                new ValidationReportEntry('warning', "File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong")
             ],
             'Testtakers/trash.xml' => [
                 new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
@@ -85,24 +86,29 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Unit/unit-unused-and-missing-player.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
+                new ValidationReportEntry('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong'),
                 new ValidationReportEntry('error', 'No suitable version of `MISSING-PLAYER.HTML` found'),
             ],
             'Unit/unit-unused-and-missing-ref.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
+                new ValidationReportEntry('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong'),
                 new ValidationReportEntry('error', 'definitionRef `not-existing.voud` not found')
             ],
             'Resource/resource-unused.voud' => [
                 new ValidationReportEntry('warning', 'Resource is never used'),
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-file-1.xml' => [
-                new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-2.xml`")
+                new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-2.xml`"),
+                new ValidationReportEntry('warning', "File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong")
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-file-2.xml' => [
-                new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-1.xml`")
+                new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-1.xml`"),
+                new ValidationReportEntry('warning', "File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong")
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
                 new ValidationReportEntry('error', "Duplicate group: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
-                new ValidationReportEntry('error', "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`")
+                new ValidationReportEntry('error', "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
+                new ValidationReportEntry('warning', "File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong")
             ]
         ];
 
