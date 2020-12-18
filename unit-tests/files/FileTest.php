@@ -25,10 +25,10 @@ class FileTest extends TestCase {
 
     function test_get() {
 
-        $file = File::get('Booklet', DATA_DIR . '/Booklet/SAMPLE_BOOKLET.XML');
+        $file = File::get(DATA_DIR . '/Booklet/SAMPLE_BOOKLET.XML', 'Booklet');
         $this->assertEquals('XMLFileBooklet', get_class($file));
 
-        $file = File::get('Resource', DATA_DIR . '/Resource/SAMPLE_PLAYER.HTML');
+        $file = File::get(DATA_DIR . '/Resource/SAMPLE_PLAYER.HTML', 'Resource');
         $this->assertEquals('ResourceFile', get_class($file));
     }
 

@@ -96,7 +96,7 @@ class WorkspaceValidator extends Workspace {
 
             foreach ($files as $filePath) {
 
-                $file = File::get($type, $filePath, true);
+                $file = File::get($filePath, $type, true);
 
                 if (isset($this->allFiles[$type][$file->getId()])) {
 

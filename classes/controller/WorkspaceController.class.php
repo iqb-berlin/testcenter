@@ -289,7 +289,7 @@ class WorkspaceController extends Controller {
 
         $workspaceController = new Workspace($workspaceId);
         /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
+        $xmlFile = $workspaceController->findFileById('SysCheck', $sysCheckName);
 
         return $response->withJson(new SysCheck([
             'name' => $xmlFile->getId(),
@@ -361,7 +361,7 @@ class WorkspaceController extends Controller {
         $sysChecksFolder = new SysChecksFolder($workspaceId);
 
         /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $sysChecksFolder->getXMLFileByName('SysCheck', $sysCheckName);
+        $xmlFile = $sysChecksFolder->findFileById('SysCheck', $sysCheckName);
 
         if (strlen($report->keyPhrase) <= 0) {
 

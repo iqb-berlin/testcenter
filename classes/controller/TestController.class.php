@@ -54,7 +54,7 @@ class TestController extends Controller {
 
         $bookletName = self::testDAO()->getBookletName($testId);
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
+        $bookletFile = $workspaceController->findFileById('Booklet', $bookletName);
 
         return $response->withJson([ // TODO include running, use only one query
             'mode' => $authToken->getMode(),
@@ -73,7 +73,7 @@ class TestController extends Controller {
         $testId = (int) $request->getAttribute('test_id');
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $unitFile = $workspaceController->getXMLFileByName('Unit', $unitName);
+        $unitFile = $workspaceController->findFileById('Unit', $unitName);
 
         $unit = [
             'laststate' => self::testDAO()->getUnitState($testId, $unitName),
@@ -94,7 +94,7 @@ class TestController extends Controller {
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $resourceFile = $workspaceController->getResourceFileByName($resourceName, $skipSubVersions);
+        $resourceFile = $workspaceController->findFileById('Resource', $resourceName, $skipSubVersions);
 
         $response->getBody()->write($resourceFile->getContent());
 

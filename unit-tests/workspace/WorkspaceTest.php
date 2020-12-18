@@ -16,6 +16,9 @@ class WorkspaceTest extends TestCase {
     private $vfs;
     private $workspace;
 
+    private $validFile = "<Unit><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player='p'>d</Definition></Unit>";
+    private $invalidFile = "<Unit><Metadata><Id>id</Id></Metadata></Unit>";
+
     public static function setUpBeforeClass(): void {
 
         VfsForTest::setUpBeforeClass();
@@ -120,5 +123,68 @@ class WorkspaceTest extends TestCase {
 
         $result = $this->workspace->countFilesOfAllSubFolders();
         $this->assertEquals($expectation, $result);
+    }
+
+
+    function test_importUnsortedResource() {
+
+        file_put_contents(DATA_DIR . '/ws_1/valid.xml', $this->validFile);
+        $result = $this->workspace->importUnsortedResource('valid.xml');
+        $expectation = ["valid.xml" => true];
+        $this->assertEquals($expectation, $result);
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'));
+
+        file_put_contents(DATA_DIR . '/ws_1/invalid.xml', $this->invalidFile);
+        try {
+            $this->workspace->importUnsortedResource('invalid.xml');
+            $this->fail("expected exception");
+        } catch (Exception $exception) {}
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'));
+
+        // Zip-Archive import can not be tesed, bevause
+        // ext/zip does not support userland stream wrappers - so no vfs-support
+        // see https://github.com/bovigo/vfsStream/wiki/Known-Issues
+        // TODO find a solution to test ZIP-import
+    }
+
+
+    function test_findFileById() {
+
+        $result = $this->workspace->findFileById('SysCheck', 'SYSCHECK.SAMPLE');
+        $this->assertEquals('XMLFileSysCheck', get_class($result));
+        $this->assertEquals('vfs://root/vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', $result->getPath());
+
+        try {
+            $this->workspace->findFileById('SysCheck', 'not-existing-id');
+            $this->fail("expected exception");
+        } catch (Exception $exception) {}
+
+        try {
+            $this->workspace->findFileById('SysCheck', 'not-existing-id');
+            $this->fail("expected exception");
+        } catch (Exception $exception) {}
+
+        try {
+            $this->workspace->findFileById('not-existing-type', 'SYSCHECK.SAMPLE');
+            $this->fail("expected exception");
+        } catch (Exception $exception) {}
+
+        $result = $this->workspace->findFileById('Resource', 'SAMPLE_PLAYER.1.HTML', true);
+        $this->assertEquals('ResourceFile', get_class($result));
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/SAMPLE_PLAYER.HTML', $result->getPath());
+
+        $result = $this->workspace->findFileById('Resource','SAMPLE_PLAYER.HTML', true);
+        $this->assertEquals('ResourceFile', get_class($result));
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/SAMPLE_PLAYER.HTML', $result->getPath());
+
+        try {
+            $this->workspace->findFileById('Resource','SAMPLE_PLAYER.1.HTML', false);
+            $this->fail("expected exception");
+        } catch (Exception $exception) {}
+
+        try {
+            $this->workspace->findFileById('Resource','not-existing-id', true);
+            $this->fail("expected exception");
+        } catch (Exception $exception) {}
     }
 }

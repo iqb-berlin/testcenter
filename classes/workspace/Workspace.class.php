@@ -57,7 +57,7 @@ class Workspace {
 
         $subFolderPath = $this->_workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
-            throw new Exception("Invalid SubFolder type {$type}!");
+            throw new Exception("Invalid type {$type}!");
         }
         if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
             throw new Exception("Workspace dir `{$subFolderPath}` seems not to be a proper directory!");
@@ -133,14 +133,13 @@ class Workspace {
 
 
     /**
-     * takes a file from the workspcae-dir toplevel and puts it to the correct subdir
-     *
+     * takes a file from the workspace-dir toplevel and puts it to the correct subdir
      *
      * @param $fileName
      * @return array - keys: imported files; value true or error message
      * @throws Exception
      */
-    public function importUnsortedResource($fileName) {
+    public function importUnsortedResource(string $fileName): array {
 
         if (strtoupper(substr($fileName, -4)) == '.ZIP') {
             return $this->importUnsortedZipArchive($fileName);
@@ -154,7 +153,7 @@ class Workspace {
     }
 
 
-    protected function sortAndValidateUnsortedResource($fileName) {
+    protected function sortAndValidateUnsortedResource(string $fileName): void {
 
         $targetFolder = $this->_workspacePath . '/Resource';
 
@@ -190,7 +189,7 @@ class Workspace {
     }
 
 
-    protected function importUnsortedZipArchive($fileName) {
+    protected function importUnsortedZipArchive(string $fileName): array {
 
         $extractedFiles = [];
 
@@ -199,14 +198,13 @@ class Workspace {
         $extractionPath = "{$this->_workspacePath}/$extractionFolder";
 
         if (!mkdir($extractionPath)) {
-            throw new Exception('Konnte Verzeichnis für ZIP-Ziel nicht anlegen: ' . $extractionPath);
+            throw new Exception("Could not create directory for extracted files: `$extractionPath`");
         }
 
         $zip = new ZipArchive;
         if ($zip->open($filePath) !== TRUE) {
-            throw new Exception('Konnte ZIP-Datei nicht entpacken.');
+            throw new Exception('Could not extract Zip-File');
         }
-
         $zip->extractTo($extractionPath . '/');
         $zip->close();
 
@@ -251,41 +249,20 @@ class Workspace {
     }
 
 
-    public function getXMLFileByName(string $type, string $findName): XMLFile {
+    public function findFileById(string $type, string $findId, bool $skipSubVersions = false): File {
 
         $dirToSearch = $this->getOrCreateSubFolderPath($type);
+        $findId = FileName::normalize($findId, $skipSubVersions);
 
-        foreach (Folder::glob($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($dirToSearch, "*.*") as $fullFilePath) {
 
-            $xmlFile = File::get($type, $fullFilePath);
-            if ((is_a($xmlFile, 'XMLFile')) && $xmlFile->isValid()) {
-                $itemName = $xmlFile->getId();
-                if ($itemName == strtoupper($findName)) {
-                    return $xmlFile;
-                }
+            $file = File::get($fullFilePath, $type);
+            if ($file->isValid() && ($file->getId() == $findId)) {
+                return $file;
             }
         }
 
-        throw new HttpError("No $type with name `$findName` found on Workspace`{$this->_workspaceId}`!", 404);
-    }
-
-
-    public function getResourceFileByName(string $resourceName, bool $skipSubVersions): ResourceFile {
-
-        $resourceFolder = $this->getOrCreateSubFolderPath('Resource');
-
-        $resourceFileName = FileName::normalize(basename($resourceName), $skipSubVersions);
-
-        foreach (Folder::glob($resourceFolder, "*.*") as $fullFilePath) {
-
-            $normalizedFilename = FileName::normalize(basename($fullFilePath), $skipSubVersions);
-
-            if ($normalizedFilename == $resourceFileName) {
-                return new ResourceFile($fullFilePath);
-            }
-        }
-
-        throw new HttpError("No resource with name `$resourceName` found!", 404);
+        throw new HttpError("No $type with name `$findId` found on Workspace`{$this->_workspaceId}`!", 404);
     }
 
 

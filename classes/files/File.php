@@ -4,7 +4,7 @@ declare(strict_types=1);
 class File extends DataCollectionTypeSafe {
 
     private const type = 'file';
-    protected ?string $type;
+    private ?string $type;
     protected string $path = '';
     protected string $name = '';
     protected int $size = 0;
@@ -13,7 +13,7 @@ class File extends DataCollectionTypeSafe {
     protected array $validationReport = [];
 
 
-    static function get(string $type, string $path, bool $validate = false): File {
+    static function get(string $path, string $type, bool $validate = false): File {
 
         switch ($type) {
             case 'Testtakers': return new XMLFileTesttakers($path, $validate);
@@ -23,7 +23,7 @@ class File extends DataCollectionTypeSafe {
             case 'Resource': return new ResourceFile($path);
         }
 
-        throw new Exception("Filetype `$type` unknown!");
+        return new File($path, $type);
     }
 
 
