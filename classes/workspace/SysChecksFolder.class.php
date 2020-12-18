@@ -1,13 +1,12 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
-// TODO unit test
 
 
 class SysChecksFolder extends Workspace {
 
 
-    public function findAvailableSysChecks() {
+    public function findAvailableSysChecks(): array {
 
         $sysChecks = [];
 
@@ -16,14 +15,7 @@ class SysChecksFolder extends Workspace {
             $xFile = new XMLFileSysCheck($fullFilePath);
 
             if ($xFile->isValid()) {
-                if ($xFile->getRoottagName()  == 'SysCheck') {
-                    $sysChecks[] = [
-                        'workspaceId' => $this->_workspaceId,
-                        'name' => $xFile->getId(),
-                        'label' => $xFile->getLabel(),
-                        'description' => $xFile->getDescription()
-                    ];
-                }
+                $sysChecks[] = $xFile;
             }
         }
 
@@ -31,6 +23,7 @@ class SysChecksFolder extends Workspace {
     }
 
 
+    // TODO unit test
     public function getSysCheckReportList(): array {
 
         $allReports = $this->collectSysCheckReports();
@@ -56,6 +49,7 @@ class SysChecksFolder extends Workspace {
     }
 
 
+    // TODO unit test
     public function collectSysCheckReports(array $filterCheckIds = null): array {
 
         $reportFolderName = $this->getSysCheckReportsPath();
@@ -96,6 +90,7 @@ class SysChecksFolder extends Workspace {
     }
 
 
+    // TODO unit test
     public function deleteSysCheckReports(array $checkIds) : array {
 
         $reports = $this->collectSysCheckReports($checkIds);
@@ -108,6 +103,7 @@ class SysChecksFolder extends Workspace {
     }
 
 
+    // TODO unit test
     public function saveSysCheckReport(SysCheckReport $report): void {
 
         $reportFilename = $this->getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';

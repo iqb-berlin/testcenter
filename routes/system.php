@@ -123,6 +123,11 @@ $app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection
         return $response->withStatus(204, "No SysChecks found.");
     }
 
-    return $response->withJson($availableSysChecks);
+    return $response->withJson(array_map(function(XMLFileSysCheck $file) { return [
+        'workspaceId' => $this->_workspaceId,
+        'name' => $file->getId(),
+        'label' => $file->getLabel(),
+        'description' => $file->getDescription()
+    ]; }, $availableSysChecks));
 });
 
