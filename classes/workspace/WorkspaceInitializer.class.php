@@ -13,12 +13,13 @@ class WorkspaceInitializer {
      * this functions creates ws_5 and ws_5/Testtakers in /var/www/html/vo_data
      * Note: dont' use paths containing filenames!
      *
+     * difference to getOrCreateSubFolderPath -> can also create workspace-dir itself as well as sub-sub dirs like SysCheck/reports
+     *
      * @param $dirPath - a full path
      * @return string - the path, again
      * @throws Exception
      */
-    public function createSubdirectories(string $dirPath): string
-    {
+    public function createSubdirectories(string $dirPath): string {
 
         $pathParts = parse_url($dirPath);
         return array_reduce(explode('/', $pathParts['path']), function($agg, $item) {

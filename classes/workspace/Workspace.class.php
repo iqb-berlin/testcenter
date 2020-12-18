@@ -38,7 +38,7 @@ class Workspace {
     }
 
 
-    protected function getOrCreateWorkspacePath() {
+    protected function getOrCreateWorkspacePath(): string {
 
         $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
         if (file_exists($workspacePath) and !is_dir($workspacePath)) {
