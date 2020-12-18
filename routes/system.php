@@ -115,7 +115,18 @@ $app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection
 
     foreach (SysChecksFolder::getAll() as $sysChecksFolder) { /* @var SysChecksFolder $sysChecksFolder */
 
-        $availableSysChecks = array_merge($availableSysChecks, $sysChecksFolder->findAvailableSysChecks());
+        $availableSysChecks = array_merge(
+            $availableSysChecks,
+            array_map(
+                function(XMLFileSysCheck $file) use ($sysChecksFolder) { return [
+                    'workspaceId' => $sysChecksFolder->getWorkspaceId(),
+                    'name' => $file->getId(),
+                    'label' => $file->getLabel(),
+                    'description' => $file->getDescription()
+                ]; },
+                $sysChecksFolder->findAvailableSysChecks()
+            )
+        );
     }
 
     if (!count($availableSysChecks)) {
@@ -123,11 +134,6 @@ $app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection
         return $response->withStatus(204, "No SysChecks found.");
     }
 
-    return $response->withJson(array_map(function(XMLFileSysCheck $file) { return [
-        'workspaceId' => $this->_workspaceId,
-        'name' => $file->getId(),
-        'label' => $file->getLabel(),
-        'description' => $file->getDescription()
-    ]; }, $availableSysChecks));
+    return $response->withJson($availableSysChecks);
 });
 
