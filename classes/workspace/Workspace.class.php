@@ -266,13 +266,6 @@ class Workspace {
     }
 
 
-    public function countFiles(string $type): int {
-
-        $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-        return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
-    }
-
-
     public function countFilesOfAllSubFolders(): array {
 
         $result = [];
@@ -283,5 +276,12 @@ class Workspace {
         }
 
         return $result;
+    }
+
+
+    private function countFiles(string $type): int {
+
+        $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+        return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
     }
 }

@@ -99,18 +99,6 @@ class WorkspaceTest extends TestCase {
     }
 
 
-    function test_countFiles() {
-
-        $result = $this->workspace->countFiles('Testtakers');
-        $this->assertEquals(2, $result);
-
-        unlink('vfs://root/vo_data/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
-
-        $result = $this->workspace->countFiles('Testtakers');
-        $this->assertEquals(1, $result);
-    }
-
-
     function test_countFilesOfAllSubFolders() {
 
         $expectation = [
