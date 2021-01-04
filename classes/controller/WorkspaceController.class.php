@@ -200,7 +200,8 @@ class WorkspaceController extends Controller {
     public static function getFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
-        $workspace = new Workspace($workspaceId);
+        $workspace = new WorkspaceValidator($workspaceId);
+        $workspace->validate();
         $files = $workspace->getFiles();
         return $response->withJson(
             array_map(function(File $f): array {
@@ -212,7 +213,15 @@ class WorkspaceController extends Controller {
                     'filedatetimestr' =>
                         ($f->getModificationTime() == 0) ? 'n/a' : strftime('%d.%m.%Y', $f->getModificationTime()),
                     'type' => $f->getType(),
-                    'typelabel' => $f->getType()
+                    'typelabel' => $f->getType(),
+                    'report' => array_reduce( // TODO maybe store report sorted by level at the first time
+                        $f->getValidationReport(),
+                        function(array $carry, ValidationReportEntry $a) {
+                            $carry[$a->level][] = $a->message;
+                            return $carry;
+                        },
+                        []
+                    )
                 ];
             }, $files)
         );

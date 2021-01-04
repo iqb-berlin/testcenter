@@ -26,6 +26,12 @@ class WorkspaceValidator extends Workspace {
     }
 
 
+    public function getFiles(): array {
+
+        return call_user_func_array('array_merge', array_map('array_values', $this->allFiles));
+    }
+
+
     public function getResource(string $resourceId, bool $ignoreMinorAndPatchVersion): ?ResourceFile {
 
         if ($ignoreMinorAndPatchVersion) {
