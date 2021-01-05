@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class XMLSchema {
 
-    // TODO use defined class instead or plain array
+    // TODO use defined class instead of plain array
     static function parseSchemaUrl(string $schemaUrl, bool $detectFilePath = false): ?array {
 
         $regex = '#^(http)?.*?((\d+).(\d+).(\d+))?\/?definitions\/v?o?_?(\S*).xsd$#';
