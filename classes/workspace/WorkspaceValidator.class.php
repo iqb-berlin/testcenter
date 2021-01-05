@@ -107,9 +107,9 @@ class WorkspaceValidator extends Workspace {
                 if (isset($this->allFiles[$type][$file->getId()])) {
 
                     $double = $this->allFiles[$type][$file->getId()];
-                    $this->report('error', "Duplicate $type-Id: `{$file->getId()}` `({$double->getName()})`", $file);
-                    $this->report('error', "Duplicate $type-Id: `{$double->getId()}` `({$file->getName()})`", $double);
-                    unset($this->allFiles[$type][$file->getId()]);
+                    $file->report('error', "Duplicate $type-Id: `{$file->getId()}` `({$double->getName()})`");
+                    $double->report('error', "Duplicate $type-Id: `{$double->getId()}` `({$file->getName()})`");
+                    $this->allFiles[$type][$this->getDuplicateId($type, $file->getId())] = $file;
 
                 } else {
 
@@ -117,6 +117,16 @@ class WorkspaceValidator extends Workspace {
                 }
             }
         }
+    }
+
+
+    private function getDuplicateId(string $type, string $id): string {
+
+        $i = 2;
+        while (isset($this->allFiles[$type]["$id.$i"])) {
+            $i++;
+        }
+        return "$id.$i";
     }
 
 
@@ -198,7 +208,7 @@ class WorkspaceValidator extends Workspace {
 
             foreach($this->allFiles[$type] as /* @var File */ $file) {
                 if (!$file->isUsed()) {
-                    $this->report('warning', "$type is never used", $file);
+                    $file->report('warning', "$type is never used");
                 }
             }
         }
