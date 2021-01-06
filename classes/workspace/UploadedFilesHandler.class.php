@@ -51,7 +51,7 @@ class UploadedFilesHandler {
 
         $importedFiles = [];
 
-        $workspaceController = new Workspace($workspaceId);
+        $workspaceController = new WorkspaceValidator($workspaceId);
 
         foreach ($uploadedFiles as $uploadedFile) { /** @var UploadedFile $uploadedFile */
 

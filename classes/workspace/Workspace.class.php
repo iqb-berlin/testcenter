@@ -155,16 +155,19 @@ class Workspace {
 
     protected function sortAndValidateUnsortedResource(string $fileName): void {
 
-        $targetFolder = $this->_workspacePath . '/Resource';
-
         if (strtoupper(substr($fileName, -4)) == '.XML') {
-            $xFile = new XMLFile($this->_workspacePath . '/' . $fileName, true);
-            if ($xFile->isValid()) {
-                $targetFolder = $this->_workspacePath . '/' . $xFile->getRoottagName();
-            } else {
-                throw new HttpError($xFile->getErrorString(), 422);
-            }
+            $file = new XMLFile($this->_workspacePath . '/' . $fileName, true);
+        } else {
+            $file = new ResourceFile($this->_workspacePath . '/' . $fileName);
         }
+
+        $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId()));; // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
+
+        if (!$file->isValid()) {
+            throw new HttpError($file->getErrorString(), 422);
+        }
+
+        $targetFolder = $this->_workspacePath . '/' . $file->getType();
 
         // move file from testcenter-tmp-folder to targetfolder
         if (!file_exists($targetFolder)) {
