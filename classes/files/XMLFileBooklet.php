@@ -100,4 +100,10 @@ class XMLFileBooklet extends XMLFile {
         }
         return $unitIds;
     }
+
+
+    public function getSpecialInfo(): array {
+
+        return ['totalSize' => $this->getTotalSize()];
+    }
 }

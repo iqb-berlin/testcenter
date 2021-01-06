@@ -7,7 +7,6 @@ class WorkspaceValidator extends Workspace {
 
     protected array $allFiles = [];
     protected array $versionMap = [];
-    private array $report = [];
 
 
     function __construct(int $workspaceId) {
@@ -21,8 +20,8 @@ class WorkspaceValidator extends Workspace {
     public function validate(): array {
         $this->crossValidate();
         $this->findUnusedItems();
-        $this->countTestTakers();
-        return $this->report;
+
+        return $this->fullReport();
     }
 
 
@@ -109,7 +108,7 @@ class WorkspaceValidator extends Workspace {
                     $double = $this->allFiles[$type][$file->getId()];
                     $file->report('error', "Duplicate $type-Id: `{$file->getId()}` `({$double->getName()})`");
                     $double->report('error', "Duplicate $type-Id: `{$double->getId()}` `({$file->getName()})`");
-                    $this->allFiles[$type][$this->getDuplicateId($type, $file->getId())] = $file;
+                    $this->allFiles[$type][$this->getPseudoIdForDuplicate($type, $file->getId())] = $file;
 
                 } else {
 
@@ -120,7 +119,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function getDuplicateId(string $type, string $id): string {
+    private function getPseudoIdForDuplicate(string $type, string $id): string {
 
         $i = 2;
         while (isset($this->allFiles[$type]["$id.$i"])) {
@@ -148,8 +147,6 @@ class WorkspaceValidator extends Workspace {
 
         foreach (['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'] as $type) {
 
-            $countCrossValidated = 0;
-
             foreach ($this->allFiles[$type] as $file) {
 
                 /* @var File $file */
@@ -157,48 +154,30 @@ class WorkspaceValidator extends Workspace {
                 if ($file->isValid()) {
 
                     $file->crossValidate($this);
+                }
+            }
+        }
+    }
 
-                    if ($file->isValid()) {
 
-                        $countCrossValidated += 1;
-                    }
+    private function fullReport(): array {
+
+        $report = [];
+
+        foreach (array_keys($this->allFiles) as $type) {
+
+            foreach ($this->allFiles[$type] as $file) {
+
+                if (!count($file->getValidationReport())) {
+                    continue;
                 }
 
-                $this->importReport($file);
+                $fileCode = "{$file->getType()}/{$file->getName()}";
+                $report[$fileCode] = $file->getValidationReport();
             }
-
-            $this->report('info', "`$countCrossValidated` valid $type-files found");
-        }
-    }
-
-
-    private function importReport(File $file) {
-
-        if (!count($file->getValidationReport())) {
-            return;
         }
 
-        $fileCode = $file ? "{$file->getType()}/{$file->getName()}" : '.';
-
-        if (!isset($this->report[$fileCode])) {
-            $this->report[$fileCode] = [];
-        }
-
-        foreach($file->getValidationReport() as /* @var ValidationReportEntry */ $entry) {
-            $this->report[$fileCode][] = $entry;
-        }
-    }
-
-
-    private function report(string $level, string $text, ?File $file = null) {
-
-        $fileCode = $file ? "{$file->getType()}/{$file->getName()}" : '.';
-
-        if (!isset($this->report[$fileCode])) {
-            $this->report[$fileCode] = [];
-        }
-
-        $this->report[$fileCode][] = new ValidationReportEntry($level, $text);
+        return $report;
     }
 
 
@@ -212,19 +191,5 @@ class WorkspaceValidator extends Workspace {
                 }
             }
         }
-    }
-
-
-    private function countTestTakers() {
-
-        $count = 0;
-        foreach ($this->allFiles['Testtakers'] as $testtakersFile) {
-
-            /* @var XMLFileTesttakers $testtakersFile */
-            if ($testtakersFile->isValid()) {
-                $count += $testtakersFile->getTesttakerCount();
-            }
-        }
-        $this->report('info', "`$count` valid testtaker-logins found");
     }
 }

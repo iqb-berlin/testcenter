@@ -221,7 +221,8 @@ class WorkspaceController extends Controller {
                             return $carry;
                         },
                         []
-                    )
+                    ),
+                    'info' => $f->getSpecialInfo()
                 ];
             }, $files)
         );

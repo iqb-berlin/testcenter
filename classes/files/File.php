@@ -118,4 +118,10 @@ class File extends DataCollectionTypeSafe {
             return "[{$entry->level}] {$entry->message}";
         }, $this->getErrors()));
     }
+
+
+    public function getSpecialInfo(): array {
+
+        return [];
+    }
 }

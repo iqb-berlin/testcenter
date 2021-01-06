@@ -40,14 +40,6 @@ class WorkspaceValidatorTest extends TestCase{
         $result = $this->validator->validate();
 
         $expected = [
-            '.' => [
-                new ValidationReportEntry('info', '`1` valid Testtakers-files found'),
-                new ValidationReportEntry('info', '`2` valid Booklet-files found'),
-                new ValidationReportEntry('info', '`2` valid Resource-files found'),
-                new ValidationReportEntry('info', '`2` valid Unit-files found'),
-                new ValidationReportEntry('info', '`1` valid SysCheck-files found'),
-                new ValidationReportEntry('info', '`12` valid testtaker-logins found'),
-            ],
             'Testtakers/testtakers-duplicate-login-name.xml' => [
                 new ValidationReportEntry('error',  'Duplicate login: `duplicate_login`'),
                 new ValidationReportEntry('warning', "File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong")
@@ -73,9 +65,13 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
             ],
             'Booklet/booklet-duplicate-id-1.xml' => [
+                new ValidationReportEntry('warning', 'Booklet is never used'),
+                new ValidationReportEntry('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong'),
                 new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-2.xml)`'),
             ],
             'Booklet/booklet-duplicate-id-2.xml' => [
+                new ValidationReportEntry('warning', 'Booklet is never used'),
+                new ValidationReportEntry('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong'),
                 new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-1.xml)`'),
             ],
             'Booklet/SAMPLE_BOOKLET.XML' => [
@@ -115,7 +111,7 @@ class WorkspaceValidatorTest extends TestCase{
         foreach ($result as $key => $list) {
 
             if (!isset($expected[$key])) {
-                $this->fail("key `$key` not asserted");
+                $this->fail("File-Report `$key` not expected");
             }
 
             $expect = $expected[$key];
@@ -128,13 +124,13 @@ class WorkspaceValidatorTest extends TestCase{
                 return strcmp($a->message, $b->message);
             });
 
-            $this->assertEquals($expect, $list);
+            $this->assertEquals($expect, $list, "File-Report of `$key`:");
         }
 
         foreach ($expected as $key => $list) {
 
             if (!isset($result[$key])) {
-                $this->fail("key `$key` missing");
+                $this->fail("File-Report `$key` is missing");
             }
         }
     }

@@ -126,4 +126,10 @@ class XMLFileUnit extends XMLFile {
         $definitionRefNodes = $this->xml->xpath('/Unit/DefinitionRef');
         return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
     }
+
+
+    public function getSpecialInfo(): array {
+
+        return ['totalSize' => $this->getTotalSize()];
+    }
 }

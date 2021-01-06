@@ -333,4 +333,10 @@ class XMLFileTesttakers extends XMLFile {
         }
         return (object) $customTexts;
     }
+
+
+    public function getSpecialInfo(): array {
+
+        return ['testtakers' => $this->getTesttakerCount()];
+    }
 }
