@@ -208,12 +208,8 @@ class WorkspaceController extends Controller {
                 return [
                     'filename' => $f->getName(),
                     'filesize' => $f->getSize(),
-                    'filesizestr' => FileSize::asString($f->getSize()),
                     'filedatetime' => $f->getModificationTime(),
-                    'filedatetimestr' =>
-                        ($f->getModificationTime() == 0) ? 'n/a' : strftime('%d.%m.%Y', $f->getModificationTime()),
                     'type' => $f->getType(),
-                    'typelabel' => $f->getType(),
                     'report' => array_reduce( // TODO maybe store report sorted by level at the first time
                         $f->getValidationReport(),
                         function(array $carry, ValidationReportEntry $a) {
