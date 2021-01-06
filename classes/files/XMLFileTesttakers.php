@@ -337,6 +337,8 @@ class XMLFileTesttakers extends XMLFile {
 
     public function getSpecialInfo(): array {
 
-        return ['testtakers' => $this->getTesttakerCount()];
+        $meta = parent::getSpecialInfo();
+        $meta['testtakers'] = $this->getTesttakerCount();
+        return $meta;
     }
 }

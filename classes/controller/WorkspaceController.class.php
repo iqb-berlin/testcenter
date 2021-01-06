@@ -206,10 +206,11 @@ class WorkspaceController extends Controller {
         return $response->withJson(
             array_map(function(File $f): array {
                 return [
-                    'filename' => $f->getName(),
-                    'filesize' => $f->getSize(),
-                    'filedatetime' => $f->getModificationTime(),
+                    'name' => $f->getName(),
+                    'size' => $f->getSize(),
+                    'modificationTime' => $f->getModificationTime(),
                     'type' => $f->getType(),
+                    'id' => $f->getId(),
                     'report' => array_reduce( // TODO maybe store report sorted by level at the first time
                         $f->getValidationReport(),
                         function(array $carry, ValidationReportEntry $a) {

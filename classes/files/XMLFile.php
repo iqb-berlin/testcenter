@@ -150,4 +150,14 @@ class XMLFile extends File {
 
         return $this->description;
     }
+
+
+    public function getSpecialInfo(): array {
+
+        return [
+            'id' => $this->getId(),
+            'description' => $this->getDescription(),
+            'label' => $this->getLabel()
+        ];
+    }
 }

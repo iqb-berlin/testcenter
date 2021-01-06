@@ -104,6 +104,8 @@ class XMLFileBooklet extends XMLFile {
 
     public function getSpecialInfo(): array {
 
-        return ['totalSize' => $this->getTotalSize()];
+        $meta = parent::getSpecialInfo();
+        $meta['totalSize'] = $this->getTotalSize();
+        return $meta;
     }
 }
