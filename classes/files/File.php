@@ -104,6 +104,21 @@ class File extends DataCollectionTypeSafe {
     }
 
 
+    // TODO maybe store report sorted by level at the first time
+    // TODO unit-test
+    public function getValidationReportSorted(): array {
+
+        return array_reduce(
+            $this->getValidationReport(),
+            function(array $carry, ValidationReportEntry $a) {
+                $carry[$a->level][] = $a->message;
+                return $carry;
+            },
+            []
+        );
+    }
+
+
     public function getErrors(): array {
 
         return array_filter($this->validationReport, function(ValidationReportEntry $validationReportEntry): bool {

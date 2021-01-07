@@ -145,15 +145,15 @@ class Workspace {
             return $this->importUnsortedZipArchive($fileName);
         }
 
-        $this->sortAndValidateUnsortedResource($fileName);
+        $uploadedFile = $this->sortAndValidateUnsortedResource($fileName);
 
         return [
-            $fileName => true
+            $fileName => $uploadedFile->getValidationReportSorted()
         ];
     }
 
 
-    protected function sortAndValidateUnsortedResource(string $fileName): void {
+    protected function sortAndValidateUnsortedResource(string $fileName): File {
 
         if (strtoupper(substr($fileName, -4)) == '.XML') {
             $file = new XMLFile($this->_workspacePath . '/' . $fileName, true);
@@ -161,10 +161,10 @@ class Workspace {
             $file = new ResourceFile($this->_workspacePath . '/' . $fileName);
         }
 
-        $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId()));; // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
+        $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId())); // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
 
         if (!$file->isValid()) {
-            throw new HttpError($file->getErrorString(), 422);
+            return $file;
         }
 
         $targetFolder = $this->_workspacePath . '/' . $file->getType();
@@ -179,9 +179,12 @@ class Workspace {
         $targetFilePath = $targetFolder . '/' . basename($fileName);
 
         if (file_exists($targetFilePath)) {
+            $oldFile = new File($targetFilePath);
             if (!unlink($targetFilePath)) {
                 throw new Exception("Could not delete file: `$targetFolder/$fileName`");
             }
+            // TODO better reaction, compare IDs etc.
+            $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
         }
 
         if (strlen($targetFilePath) > 0) {
@@ -189,6 +192,8 @@ class Workspace {
                 throw new Exception("Could not move file to `$targetFolder/$fileName`");
             }
         }
+
+        return $file;
     }
 
 
@@ -216,10 +221,10 @@ class Workspace {
             while (($entry = readdir($zipFolderDir)) !== false) {
                 if (is_file($extractionPath . '/' .  $entry)) {
                     try { // we don't want to fail if one file fails
-                        $this->sortAndValidateUnsortedResource("$extractionFolder/$entry");
-                        $extractedFiles["$extractionFolder/$entry"] = true;
+                        $file = $this->sortAndValidateUnsortedResource("$extractionFolder/$entry");
+                        $extractedFiles["$extractionFolder/$entry"] = $file->getValidationReportSorted();
                     } catch (Exception $e) {
-                        $extractedFiles["$extractionFolder/$entry"] = $e->getMessage();
+                        $extractedFiles["$extractionFolder/$entry"] = ['error' => [$e->getMessage()]];
                     }
                 }
             }

@@ -211,14 +211,7 @@ class WorkspaceController extends Controller {
                     'modificationTime' => $f->getModificationTime(),
                     'type' => $f->getType(),
                     'id' => $f->getId(),
-                    'report' => array_reduce( // TODO maybe store report sorted by level at the first time
-                        $f->getValidationReport(),
-                        function(array $carry, ValidationReportEntry $a) {
-                            $carry[$a->level][] = $a->message;
-                            return $carry;
-                        },
-                        []
-                    ),
+                    'report' => $f->getValidationReportSorted(),
                     'info' => $f->getSpecialInfo()
                 ];
             }, $files)

@@ -66,6 +66,4 @@ class UploadedFilesHandler {
 
         return $importedFiles;
     }
-
-
 }
