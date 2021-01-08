@@ -139,13 +139,13 @@ class Workspace {
      * @return array - keys: imported files; value true or error message
      * @throws Exception
      */
-    public function importUnsortedResource(string $fileName): array {
+    public function importUnsortedFile(string $fileName): array {
 
         if (strtoupper(substr($fileName, -4)) == '.ZIP') {
             return $this->importUnsortedZipArchive($fileName);
         }
 
-        $uploadedFile = $this->sortAndValidateUnsortedResource($fileName);
+        $uploadedFile = $this->sortAndValidateUnsortedFile($fileName);
 
         return [
             $fileName => $uploadedFile->getValidationReportSorted()
@@ -153,13 +153,9 @@ class Workspace {
     }
 
 
-    protected function sortAndValidateUnsortedResource(string $fileName): File {
+    protected function sortAndValidateUnsortedFile(string $fileName): File {
 
-        if (strtoupper(substr($fileName, -4)) == '.XML') {
-            $file = new XMLFile($this->_workspacePath . '/' . $fileName, true);
-        } else {
-            $file = new ResourceFile($this->_workspacePath . '/' . $fileName);
-        }
+        $file = File::get($this->_workspacePath . '/' . $fileName, null, true);
 
         $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId())); // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
 
@@ -221,7 +217,7 @@ class Workspace {
             while (($entry = readdir($zipFolderDir)) !== false) {
                 if (is_file($extractionPath . '/' .  $entry)) {
                     try { // we don't want to fail if one file fails
-                        $file = $this->sortAndValidateUnsortedResource("$extractionFolder/$entry");
+                        $file = $this->sortAndValidateUnsortedFile("$extractionFolder/$entry");
                         $extractedFiles["$extractionFolder/$entry"] = $file->getValidationReportSorted();
                     } catch (Exception $e) {
                         $extractedFiles["$extractionFolder/$entry"] = ['error' => [$e->getMessage()]];

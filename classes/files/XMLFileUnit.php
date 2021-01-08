@@ -22,6 +22,8 @@ class XMLFileUnit extends XMLFile {
 
     public function crossValidate(WorkspaceValidator $validator) : void {
 
+        parent::crossValidate($validator);
+
         $this->checkIfResourceExists($validator);
         $this->getPlayerIfExists($validator);
     }

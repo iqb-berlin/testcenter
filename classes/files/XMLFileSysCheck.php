@@ -9,6 +9,8 @@ class XMLFileSysCheck extends XMLFile {
 
     public function crossValidate(WorkspaceValidator $validator): void {
 
+        parent::crossValidate($validator);
+
         $unitId = $this->getUnitId();
         $unit = $validator->getUnit($unitId);
 

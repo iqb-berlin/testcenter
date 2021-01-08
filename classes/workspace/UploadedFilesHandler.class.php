@@ -51,18 +51,17 @@ class UploadedFilesHandler {
 
         $importedFiles = [];
 
-        $workspaceController = new WorkspaceValidator($workspaceId);
+        $workspace = new Workspace($workspaceId);
 
         foreach ($uploadedFiles as $uploadedFile) { /** @var UploadedFile $uploadedFile */
 
             if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
-                error_log('unknown: ' . print_r($uploadedFile->getError(), true));
                 throw new HttpBadRequestException($request, UploadedFilesHandler::errorMessages[$uploadedFile->getError()] ?? 'unknown error');
             }
 
             $originalFileName = $uploadedFile->getClientFilename();
-            $uploadedFile->moveTo($workspaceController->getWorkspacePath() . '/' . $originalFileName);
-            $importedFiles = array_merge($importedFiles, $workspaceController->importUnsortedResource($originalFileName));
+            $uploadedFile->moveTo($workspace->getWorkspacePath() . '/' . $originalFileName);
+            $importedFiles = array_merge($importedFiles, $workspace->importUnsortedFile($originalFileName));
         }
 
         return $importedFiles;

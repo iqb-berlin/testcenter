@@ -117,14 +117,14 @@ class WorkspaceTest extends TestCase {
     function test_importUnsortedResource() {
 
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', $this->validFile);
-        $result = $this->workspace->importUnsortedResource('valid.xml');
+        $result = $this->workspace->importUnsortedFile('valid.xml');
         $expectation = ["valid.xml" => true];
         $this->assertEquals($expectation, $result);
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'));
 
         file_put_contents(DATA_DIR . '/ws_1/invalid.xml', $this->invalidFile);
         try {
-            $this->workspace->importUnsortedResource('invalid.xml');
+            $this->workspace->importUnsortedFile('invalid.xml');
             $this->fail("expected exception");
         } catch (Exception $exception) {}
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'));

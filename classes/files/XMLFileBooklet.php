@@ -27,6 +27,8 @@ class XMLFileBooklet extends XMLFile {
 
     public function crossValidate(WorkspaceValidator $validator): void {
 
+        parent::crossValidate($validator);
+
         $bookletPlayers = [];
         $this->totalSize = $this->getSize();
 

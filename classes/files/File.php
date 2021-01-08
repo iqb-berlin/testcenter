@@ -13,7 +13,11 @@ class File extends DataCollectionTypeSafe {
     protected array $validationReport = [];
 
 
-    static function get(string $path, string $type, bool $validate = false): File {
+    static function get(string $path, string $type = null, bool $validate = false): File {
+
+        if (!$type) {
+            $type = File::determineType($path);
+        }
 
         switch ($type) {
             case 'Testtakers': return new XMLFileTesttakers($path, $validate);
@@ -21,9 +25,25 @@ class File extends DataCollectionTypeSafe {
             case 'Booklet': return new XMLFileBooklet($path, $validate);
             case 'Unit': return new XMLFileUnit($path, $validate);
             case 'Resource': return new ResourceFile($path);
+            case 'xml': return new XMLFile($path, $validate);
         }
 
         return new File($path, $type);
+    }
+
+
+    // TODO unit-test
+    private static function determineType(string $path): string {
+
+        if (strtoupper(substr($path, -4)) == '.XML') {
+            $asGenericXmlFile = new XMLFile($path, false);
+            if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownTypes)) {
+                return 'xml';
+            }
+            return $asGenericXmlFile->rootTagName;
+        } else {
+            return 'Resource';
+        }
     }
 
 
@@ -94,8 +114,18 @@ class File extends DataCollectionTypeSafe {
     }
 
 
+    // TODO unit-test
     public function crossValidate(WorkspaceValidator $validator): void {
 
+        $duplicates = $validator->findDuplicates($this);
+
+        if (count($duplicates)) {
+
+            $duplicateNames = implode(', ', array_map(function(File $file): string {
+                return "`{$file->getName()}`";
+            }, $duplicates));
+            $this->report('error', "Duplicate {$this->getType()}-Id: `{$this->getId()}` ({$duplicateNames})");
+        }
     }
 
     public function getValidationReport(): array {

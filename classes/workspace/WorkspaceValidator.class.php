@@ -31,6 +31,30 @@ class WorkspaceValidator extends Workspace {
     }
 
 
+    // TODO unit-check
+    public function findDuplicates(File $ofFile): array {
+
+        $files = [];
+
+        foreach ($this->allFiles as $type => $fileList) {
+
+            if ($ofFile->getType() !== substr($type, 0, strlen($ofFile->getType()))) {
+                continue;
+            }
+
+            foreach ($fileList as $id => $file) {
+
+                if (($id === $ofFile->getId()) and ($file->getName() !== $ofFile->getName())) {
+
+                    $files[] = $file;
+                }
+            }
+        }
+
+        return $files;
+    }
+
+
     public function getResource(string $resourceId, bool $ignoreMinorAndPatchVersion): ?ResourceFile {
 
         if ($ignoreMinorAndPatchVersion) {
@@ -105,10 +129,7 @@ class WorkspaceValidator extends Workspace {
 
                 if (isset($this->allFiles[$type][$file->getId()])) {
 
-                    $double = $this->allFiles[$type][$file->getId()];
-                    $file->report('error', "Duplicate $type-Id: `{$file->getId()}` `({$double->getName()})`");
-                    $double->report('error', "Duplicate $type-Id: `{$double->getId()}` `({$file->getName()})`");
-                    $this->allFiles[$type][$this->getPseudoIdForDuplicate($type, $file->getId())] = $file;
+                    $this->allFiles[$this->getPseudoTypeForDuplicate($type, $file->getId())][$file->getId()] = $file;
 
                 } else {
 
@@ -119,13 +140,13 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    private function getPseudoIdForDuplicate(string $type, string $id): string {
+    protected function getPseudoTypeForDuplicate(string $type, string $id): string {
 
         $i = 2;
-        while (isset($this->allFiles[$type]["$id.$i"])) {
+        while (isset($this->allFiles["$type/duplicates/$id/$i"])) {
             $i++;
         }
-        return "$id.$i";
+        return "$type/duplicates/$id/$i";
     }
 
 
@@ -145,9 +166,9 @@ class WorkspaceValidator extends Workspace {
 
     private function crossValidate(): void {
 
-        foreach (['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'] as $type) {
+        foreach ($this->allFiles as $type => $fileList) {
 
-            foreach ($this->allFiles[$type] as $file) {
+            foreach ($fileList as $file) {
 
                 /* @var File $file */
 
