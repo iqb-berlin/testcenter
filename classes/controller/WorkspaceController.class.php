@@ -140,28 +140,6 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function validation(Request $request, Response $response): Response {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        $workspaceValidator = new WorkspaceValidator($workspaceId);
-        $report = $workspaceValidator->validate();
-
-        if (!isset($_GET['test'])) {
-            // TODO remove temporal report reformation below and change FE
-            $oldFormatReport = ['warnings'=>[],'errors'=>[],'infos'=>[]];
-            foreach ($report as $file => $reportEntries) {
-                foreach ($reportEntries as $reportEntry) {
-                    /* @var ValidationReportEntry $reportEntry */
-                    $oldFormatReport[$reportEntry->level . 's'][] = "`[$file]` {$reportEntry->message}";
-                }
-            }
-            $report = $oldFormatReport;
-        }
-
-        return $response->withJson($report);
-    }
-
     public static function  getFile(Request $request, Response $response): Response {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
