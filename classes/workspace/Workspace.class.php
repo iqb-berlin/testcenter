@@ -146,6 +146,7 @@ class Workspace {
         }
 
         $uploadedFile = $this->sortAndValidateUnsortedFile($fileName);
+        unlink($uploadedFile->getPath());
 
         return [
             $fileName => $uploadedFile->getValidationReportSorted()
@@ -168,29 +169,38 @@ class Workspace {
         // move file from testcenter-tmp-folder to targetfolder
         if (!file_exists($targetFolder)) {
             if (!mkdir($targetFolder)) {
-                unlink($file->getPath());
-                throw new Exception("Could not create folder: `$targetFolder`.");
+                $file->report('error', "Could not create folder: `$targetFolder`.");
+                return $file;
             }
         }
 
         $targetFilePath = $targetFolder . '/' . basename($fileName);
 
         if (file_exists($targetFilePath)) {
-            $oldFile = new File($targetFilePath);
-            if (!unlink($targetFilePath)) {
-                unlink($file->getPath());
-                throw new Exception("Could not delete file: `$targetFolder/$fileName`");
+            $oldFile = File::get($targetFilePath);
+
+            if ($oldFile->getId() !== $file->getId()) {
+
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. 
+                    Overwriting was rejected since new file's ID (`{$file->getId()}`) 
+                    differs from old one (`{$oldFile->getId()}`)."
+                );
+                return $file;
             }
-            // TODO better reaction, compare IDs etc.
+
+            if (!unlink($targetFilePath)) {
+                $file->report('error', "Could not delete file: `$targetFolder/$fileName`");
+                return $file;
+            }
+
             $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
         }
 
         if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
-            unlink($file->getPath());
-            throw new Exception("Could not move file to `$targetFolder/$fileName`");
+            $file->report('error', "Could not move file to `$targetFolder/$fileName`");
+            return $file;
         }
 
-        unlink($file->getPath());
         return $file;
     }
 
@@ -218,12 +228,8 @@ class Workspace {
         if ($zipFolderDir !== false) {
             while (($entry = readdir($zipFolderDir)) !== false) {
                 if (is_file($extractionPath . '/' .  $entry)) {
-                    try { // we don't want to fail if one file fails
-                        $file = $this->sortAndValidateUnsortedFile("$extractionFolder/$entry");
-                        $extractedFiles["$extractionFolder/$entry"] = $file->getValidationReportSorted();
-                    } catch (Exception $e) {
-                        $extractedFiles["$extractionFolder/$entry"] = ['error' => [$e->getMessage()]];
-                    }
+                    $file = $this->sortAndValidateUnsortedFile("$extractionFolder/$entry");
+                    $extractedFiles["$fileName/$entry"] = $file->getValidationReportSorted();
                 }
             }
         }
