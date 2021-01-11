@@ -168,6 +168,7 @@ class Workspace {
         // move file from testcenter-tmp-folder to targetfolder
         if (!file_exists($targetFolder)) {
             if (!mkdir($targetFolder)) {
+                unlink($file->getPath());
                 throw new Exception("Could not create folder: `$targetFolder`.");
             }
         }
@@ -177,18 +178,19 @@ class Workspace {
         if (file_exists($targetFilePath)) {
             $oldFile = new File($targetFilePath);
             if (!unlink($targetFilePath)) {
+                unlink($file->getPath());
                 throw new Exception("Could not delete file: `$targetFolder/$fileName`");
             }
             // TODO better reaction, compare IDs etc.
             $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
         }
 
-        if (strlen($targetFilePath) > 0) {
-            if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
-                throw new Exception("Could not move file to `$targetFolder/$fileName`");
-            }
+        if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
+            unlink($file->getPath());
+            throw new Exception("Could not move file to `$targetFolder/$fileName`");
         }
 
+        unlink($file->getPath());
         return $file;
     }
 
