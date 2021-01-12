@@ -204,11 +204,11 @@ class WorkspaceValidator extends Workspace {
 
     private function findUnusedItems() {
 
-        foreach (['Resource', 'Unit', 'Booklet'] as $type) {
+        foreach (array_keys($this->allFiles) as $type) {
 
-            foreach($this->allFiles[$type] as /* @var File */ $file) {
-                if (!$file->isUsed()) {
-                    $file->report('warning', "$type is never used");
+            foreach($this->allFiles[$type] as $file) { /* @var $file File */
+                if (method_exists($file, 'isUsed') && !$file->isUsed()) {
+                    $file->report('warning', "{$file->getType()} is never used");
                 }
             }
         }
