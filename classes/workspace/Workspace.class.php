@@ -9,7 +9,8 @@ class Workspace {
     protected $_workspacePath = '';
     protected $_dataPath = '';
 
-    const subFolders = ['Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource'];
+    // dont' change order, it's the order of possible dependencies
+    const subFolders = ['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'];
 
 
     static function getAll(): array {
