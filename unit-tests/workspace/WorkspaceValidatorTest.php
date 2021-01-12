@@ -7,10 +7,10 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 require_once "classes/helper/FileName.class.php";
-require_once "classes/files/XMLFile.php";
-require_once "classes/files/XMLFileSysCheck.php";
-require_once "classes/files/XMLFileBooklet.php";
-require_once "classes/files/XMLFileUnit.php";
+require_once "classes/files/XMLFile.class.php";
+require_once "classes/files/XMLFileSysCheck.class.php";
+require_once "classes/files/XMLFileBooklet.class.php";
+require_once "classes/files/XMLFileUnit.class.php";
 require_once "unit-tests/VfsForTest.class.php";
 require_once "classes/workspace/WorkspaceValidator.class.php";
 require_once "classes/data-collection/ValidationReportEntry.class.php";
@@ -65,14 +65,14 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
             ],
             'Booklet/booklet-duplicate-id-1.xml' => [
-                new ValidationReportEntry('warning', 'Booklet is never used'),
                 new ValidationReportEntry('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong'),
-                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-2.xml)`'),
+                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` (`booklet-duplicate-id-2.xml`)'),
+                new ValidationReportEntry('warning', 'Booklet is never used'),
             ],
             'Booklet/booklet-duplicate-id-2.xml' => [
-                new ValidationReportEntry('warning', 'Booklet is never used'),
+                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` (`booklet-duplicate-id-1.xml`)'),
                 new ValidationReportEntry('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong'),
-                new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` `(booklet-duplicate-id-1.xml)`'),
+                new ValidationReportEntry('warning', 'Booklet is never used'),
             ],
             'Booklet/SAMPLE_BOOKLET.XML' => [
                 new ValidationReportEntry('info',  'size fully loaded: `8.27 KB`'),

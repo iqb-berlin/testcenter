@@ -7,8 +7,8 @@ use org\bovigo\vfs\vfsStream;
 require_once "classes/helper/FileSize.class.php";
 require_once "classes/helper/Folder.class.php";
 require_once "classes/files/ResourceFile.class.php";
-require_once "classes/files/XMLFile.php";
-require_once "classes/files/XMLFileTesttakers.php";
+require_once "classes/files/XMLFile.class.php";
+require_once "classes/files/XMLFileTesttakers.class.php";
 require_once "unit-tests/VfsForTest.class.php";
 
 class WorkspaceTest extends TestCase {

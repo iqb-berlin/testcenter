@@ -2,9 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once "classes/files/File.php";
-require_once "classes/files/XMLFile.php";
-require_once "classes/files/XMLFileBooklet.php";
+require_once "classes/files/File.class.php";
+require_once "classes/files/XMLFile.class.php";
+require_once "classes/files/XMLFileBooklet.class.php";
 require_once "classes/files/ResourceFile.class.php";
 require_once "unit-tests/VfsForTest.class.php";
 
