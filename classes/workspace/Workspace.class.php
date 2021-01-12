@@ -147,7 +147,10 @@ class Workspace {
         }
 
         $uploadedFile = $this->sortAndValidateUnsortedFile($fileName);
-        unlink($uploadedFile->getPath());
+
+        if (file_exists($uploadedFile->getPath())) {
+            unlink($uploadedFile->getPath());
+        }
 
         return [
             $fileName => $uploadedFile->getValidationReportSorted()
@@ -182,7 +185,7 @@ class Workspace {
 
             if ($oldFile->getId() !== $file->getId()) {
 
-                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. 
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist.
                     Overwriting was rejected since new file's ID (`{$file->getId()}`) 
                     differs from old one (`{$oldFile->getId()}`)."
                 );
