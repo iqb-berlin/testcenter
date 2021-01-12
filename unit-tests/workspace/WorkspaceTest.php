@@ -11,13 +11,19 @@ require_once "classes/files/XMLFile.class.php";
 require_once "classes/files/XMLFileTesttakers.class.php";
 require_once "unit-tests/VfsForTest.class.php";
 
+require_once "classes/helper/Folder.class.php";
+
 class WorkspaceTest extends TestCase {
 
     private $vfs;
     private $workspace;
 
-    private $validFile = "<Unit><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player='p'>d</Definition></Unit>";
-    private $invalidFile = "<Unit><Metadata><Id>id</Id></Metadata></Unit>";
+    private $validFile = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">'
+        . '<Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
+    private $invalidFile = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">'
+        . "<Metadata><Id>id</Id></Metadata></Unit>";
+    private $validFile2 = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">'
+    . '<Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">2nd valid file</Definition></Unit>';
 
     public static function setUpBeforeClass(): void {
 
@@ -62,15 +68,15 @@ class WorkspaceTest extends TestCase {
         $resultDigest = array_map(function(File $file) { return $file->getName(); }, $result);
 
         $expectation = [
-            'SAMPLE_TESTTAKERS.XML',
-            'trash.xml',
-            'SAMPLE_SYSCHECK.XML',
+            'SAMPLE_PLAYER.HTML',
+            'SAMPLE_UNIT.XML',
+            'SAMPLE_UNIT2.XML',
             'SAMPLE_BOOKLET.XML',
             'SAMPLE_BOOKLET2.XML',
             'trash.xml',
-            'SAMPLE_UNIT.XML',
-            'SAMPLE_UNIT2.XML',
-            'SAMPLE_PLAYER.HTML'
+            'SAMPLE_TESTTAKERS.XML',
+            'trash.xml',
+            'SAMPLE_SYSCHECK.XML',
         ];
 
         $this->assertEquals($expectation, $resultDigest);
@@ -117,19 +123,37 @@ class WorkspaceTest extends TestCase {
     function test_importUnsortedResource() {
 
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', $this->validFile);
+        file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
         $result = $this->workspace->importUnsortedFile('valid.xml');
-        $expectation = ["valid.xml" => true];
-        $this->assertEquals($expectation, $result);
-        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'));
+        $expectation = ["valid.xml" => []];
+        $this->assertEquals($expectation, $result, 'valid file hat no report');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
 
         file_put_contents(DATA_DIR . '/ws_1/invalid.xml', $this->invalidFile);
-        try {
-            $this->workspace->importUnsortedFile('invalid.xml');
-            $this->fail("expected exception");
-        } catch (Exception $exception) {}
-        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'));
+        $result = $this->workspace->importUnsortedFile('invalid.xml');
+        $this->assertGreaterThan(0, count($result["invalid.xml"]['error']), 'invalid file has error report');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
 
-        // Zip-Archive import can not be tesed, bevause
+        file_put_contents(DATA_DIR . '/ws_1/valid3.xml', $this->validFile2);
+        $result = $this->workspace->importUnsortedFile('valid3.xml');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid3.xml'), 'reject on duplicate id if file names are not the same');
+        $this->assertStringContainsString(
+            '1st valid file',
+            file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
+            "don't overwrite on duplicate id if file names are not the same"
+        );
+        $this->assertGreaterThan(0, count($result["valid3.xml"]['error']), 'return warning on duplicate id if file names are not the same');
+
+        file_put_contents(DATA_DIR . '/ws_1/valid.xml', $this->validFile2);
+        $result = $this->workspace->importUnsortedFile('valid.xml');
+        $this->assertStringContainsString(
+            '2nd valid file',
+            file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
+            'allow overwriting if filename and id is the same'
+        );
+        $this->assertGreaterThan(0, count($result["valid.xml"]['warning']), 'return warning if filename and id is the same');
+
+        // Zip-Archive import can not be tested, because
         // ext/zip does not support userland stream wrappers - so no vfs-support
         // see https://github.com/bovigo/vfsStream/wiki/Known-Issues
         // TODO find a solution to test ZIP-import
