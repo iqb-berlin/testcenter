@@ -140,7 +140,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function  getFile(Request $request, Response $response): Response {
+    public static function getFile(Request $request, Response $response): Response {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
         $fileType = $request->getAttribute('type', '[type missing]');
@@ -171,7 +171,10 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
-        return $response->withJson($importedFiles)->withStatus(201);
+        $containsErrors = array_reduce($importedFiles, function($carry, $item) {
+            return $carry or count($item['error']);
+        }, false);
+        return $response->withJson($importedFiles)->withStatus($containsErrors ? 207 : 201);
     }
 
 

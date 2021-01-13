@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 7.4.2
+    version: 8.0.0
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -426,7 +426,7 @@ paths:
                                     - version
                                     - customTexts
                             example:
-                                version: 7.4.2
+                                version: 8.0.0
                                 customTexts: {}
                 '500':
                     description: 'Server Error'
@@ -439,7 +439,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 7.4.2
+                                version: 8.0.0
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -1866,60 +1866,10 @@ paths:
                     description: 'Session Expired'
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/validation':
-        get:
-            summary: 'check workspace'
-            description: 'triggers a check of all xmls in the workspace and retrieves the results'
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    example: 'a:user000000000.superadmin0'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-            responses:
-                '200':
-                    description: 'OK, list of reviews'
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    errors: {type: array, items: {type: string}}
-                                    warnings: {type: array, items: {type: string}}
-                                    infos: {type: array, items: {type: string}}
-                            example:
-                                errors: []
-                                warnings: []
-                                infos:
-                                    - '1 resource files found'
-                                    - '1 valid units found'
-                                    - '1 valid booklets found'
-                                    - '0 valid syschecks found'
-                                    - '10 testtakers in 1 logins found'
-                                    - 'booklet loads (bytes, sorted):'
-                                    - '    BOOKLET.SAMPLE: 5.365'
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
     '/workspace/{ws_id}/file':
         post:
             summary: 'upload file'
-            description: 'uploads a Resource, Unit, Booklet, SysCheck or Testtakers file'
+            description: "Uploads a Resource, Unit, Booklet, SysCheck or Testtakers file. The File gets imported to the workspace if it\nis valid, and passes the cross-validation checks. So a file which depends of a non-existing player will get\nrejected as well as an invalid xml file.\n\nWhen a file with the same filename and type exists in the workspace, it gets overwritten! Except if the the\ninternal id (the <ID>-Tag as used in Unit-files for example) of the old and the new file differs. In this case\nit's assumed, that the file-name-duplication is inintentional an the new import gets rejected.\n\nThe endpoint accepts all kinds of files. Zip-achrives get extracted an treated the same as multi-file-upload."
             parameters:
                 -
                     in: header
@@ -1951,11 +1901,19 @@ paths:
                                 - fileforvo
             responses:
                 '201':
-                    description: 'upload successful'
+                    description: 'Upload Successful'
                     content:
                         application/json:
                             example:
-                                Unit.xml: true
+                                SAMPLE_UNIT.XML:
+                                    warning: ['File of name `SAMPLE_UNIT.XML` did already exist and was overwritten.']
+                '207':
+                    description: 'Upload Successful, import of one or more files was rejected'
+                    content:
+                        application/json:
+                            example:
+                                SAMPLE_UNIT.XML:
+                                    error: ['Invalid root-tag: `Invalid`']
                 '400':
                     description: 'file could not be uploaded or is invalid.'
                 '401':
@@ -1966,8 +1924,8 @@ paths:
                     description: 'workspace not found'
                 '410':
                     description: 'Session Expired'
-                '422':
-                    description: 'Provided XML file is invalid'
+                '413':
+                    description: 'File too large'
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/files':
@@ -1997,45 +1955,61 @@ paths:
                                 $ref: '#/components/schemas/file_list'
                             example:
                                 -
-                                    filename: SAMPLE_TESTTAKERS.XML
-                                    filesize: 823
-                                    filesizestr: '823 Bytes'
-                                    filedatetime: 1567610586
-                                    filedatetimestr: 04.09.2019
-                                    type: Testtakers
-                                    typelabel: Testtakers
-                                -
-                                    filename: SAMPLE_BOOKLET.XML
-                                    filesize: 1284
-                                    filesizestr: '1.25 KB'
-                                    filedatetime: 1567610586
-                                    filedatetimestr: 04.09.2019
-                                    type: Booklet
-                                    typelabel: Booklet
-                                -
-                                    filename: SAMPLE_PLAYER.HTML
-                                    filesize: 3386
-                                    filesizestr: '3.31 KB'
-                                    filedatetime: 1567610586
-                                    filedatetimestr: 04.09.2019
+                                    name: SAMPLE_PLAYER.HTML
+                                    size: 5034
+                                    modificationTime: 1610447809
                                     type: Resource
-                                    typelabel: Resource
+                                    id: SAMPLE_PLAYER.HTML
+                                    report: []
+                                    info: []
                                 -
-                                    filename: SAMPLE_UNIT.XML
-                                    filesize: 696
-                                    filesizestr: '696 Bytes'
-                                    filedatetime: 1567610586
-                                    filedatetimestr: 04.09.2019
+                                    name: SAMPLE_UNIT.XML
+                                    size: 1303
+                                    modificationTime: 1610447809
                                     type: Unit
-                                    typelabel: Unit
+                                    id: UNIT.SAMPLE
+                                    report: []
+                                    info: {id: UNIT.SAMPLE, description: 'This is an Unit', label: 'A sample unit', totalSize: 1303}
                                 -
-                                    filename: SAMPLE_SYSCHECK.XML
-                                    filesize: 960
-                                    filesizestr: '960 Bytes'
-                                    filedatetime: 1567610586
-                                    filedatetimestr: 04.09.2019
+                                    name: SAMPLE_UNIT2.XML
+                                    size: 900
+                                    modificationTime: 1610447809
+                                    type: Unit
+                                    id: UNIT.SAMPLE-2
+                                    report: []
+                                    info: {id: UNIT.SAMPLE-2, description: 'This is another Unit', label: 'Another sample unit', totalSize: 900}
+                                -
+                                    name: SAMPLE_BOOKLET.XML
+                                    size: 1236
+                                    modificationTime: 1610447809
+                                    type: Booklet
+                                    id: BOOKLET.SAMPLE
+                                    report: {info: ['size fully loaded: `8.27 KB`']}
+                                    info: {id: BOOKLET.SAMPLE, description: 'This a sample booklet for testing/development/showcase purposes.', label: 'Sample booklet', totalSize: 8473}
+                                -
+                                    name: SAMPLE_BOOKLET2.XML
+                                    size: 451
+                                    modificationTime: 1610447809
+                                    type: Booklet
+                                    id: BOOKLET.SAMPLE-2
+                                    report: {info: ['size fully loaded: `6.24 KB`']}
+                                    info: {id: BOOKLET.SAMPLE-2, description: "", label: 'Reduced Booklet', totalSize: 6385}
+                                -
+                                    name: SAMPLE_TESTTAKERS.XML
+                                    size: 2255
+                                    modificationTime: 1610447809
+                                    type: Testtakers
+                                    id: SAMPLE_TESTTAKERS.XML
+                                    report: []
+                                    info: {id: SAMPLE_TESTTAKERS.XML, description: 'This file contains some logins for testing and works a a sample for developers.', label: "", testtakers: 12}
+                                -
+                                    name: SAMPLE_SYSCHECK.XML
+                                    size: 1237
+                                    modificationTime: 1610447809
                                     type: SysCheck
-                                    typelabel: SysCheck
+                                    id: SYSCHECK.SAMPLE
+                                    report: []
+                                    info: {id: SYSCHECK.SAMPLE, description: 'An example SysCheck definition with long description', label: 'An example SysCheck definition'}
                 '401':
                     description: 'Not authenticated'
                 '403':
