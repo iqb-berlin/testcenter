@@ -35,5 +35,18 @@ see `scripts/sql-schema/patches.mysql.sql`
 * A new mode for logins is allowed now: `run-demo`
 
 ## [next]
+The main content of this update is a complete refactoring of the (XML-)File-classes,
+Workspace validation and XML-File-Handling. The main goal was to keep validity and
+consistency of the workspaces. The refactoring shall also allow more and deeper validation
+checks, update scripts and more in the future. The whole part of teh software is now backed
+with unit-tests galore.
 #### Requirements
-* PHP 7.4 is now required
+* **PHP 7.4 is now required**
+#### Endpoints
+* The `[GET] /workspace/{id}/validation` endpoint **was removed completely**.
+  Validation takes now place on file upload and on `[GET] /workspace/{id}/files`.
+* Return-Values and Status-Codes of `[POST] /workspace/{id}/file`
+  and `[GET] /workspace/{id}/files` where changed **significantly** to contain the
+  file's validation information as well as some metadata to display in the frontend.
+### XML
+* XML-files without a reference to a XSD-Schema generate a warning now.
