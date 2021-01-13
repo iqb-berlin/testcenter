@@ -17,7 +17,6 @@
     </Login>
 
     <Login mode="monitor-group" name="__TEST_LOGIN_NAME__-group-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
-    <Login mode="monitor-study" name="__TEST_LOGIN_NAME__-study-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
   </Group>
 
   <Group id="review_group" label="A Group of Reviewers">
@@ -49,7 +48,6 @@
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
     <Login mode="monitor-group" name="expired-group-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
-    <Login mode="monitor-study" name="expired-study-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
   </Group>
 
   <Group id="future_group" validFrom="26/3/2030 9:00" label="An not yet active group">

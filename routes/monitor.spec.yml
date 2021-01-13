@@ -79,15 +79,6 @@ paths:
                 timestamp: 1596455898
               - personId: 3
                 groupName: sample_group
-                personLabel: test-study-monitor
-                groupLabel: Sample group
-                mode: monitor-study
-                testId: -1
-                testState: []
-                unitState: []
-                timestamp: 1596455898
-              - personId: 4
-                groupName: sample_group
                 personLabel: test-group-monitor
                 groupLabel: Sample group
                 mode: monitor-group

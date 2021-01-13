@@ -1,5 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-iqb-php?style=flat-square)](https://travis-ci.com/iqb-berlin/textcenter-iqb-php)
+[![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-backend?style=flat-square)](https://travis-ci.com/iqb-berlin/testcenter-backend)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/iqb-berlin/testcenter-backend?style=flat-square)
 
 # Testcenter Backend
 
@@ -28,6 +29,8 @@ File bug reports, feature requests etc. [here](https://github.com/iqb-berlin/tes
 All the necessary commands for running the application and starting the tests
 can be found in the Makefile on the root directory.
 
+Alternatively you can download the container [here](https://hub.docker.com/repository/docker/iqbberlin/testcenter-backend).
+
 ###### Prepare environment variables for development
 The file `docker/.env` is needed to run the docker-compose setup. A variant
 using default values for local development can be created with the following command:
@@ -38,6 +41,7 @@ This uses the values of `docker/.env-default`.
 
 **_For other environments, like a production setup, this file needs to be edited accordingly.
 Do not use the defaults (i.e. passwords) as they are!_**
+
 ###### Start and Stop the server
 ```
 make run

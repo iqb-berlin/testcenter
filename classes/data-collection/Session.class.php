@@ -7,8 +7,7 @@ class Session extends DataCollectionTypeSafe {
         'test',
         'superAdmin',
         'workspaceAdmin',
-        'testGroupMonitor',
-        'workspaceMonitor'
+        'testGroupMonitor'
     ];
 
     protected $token;
@@ -29,10 +28,6 @@ class Session extends DataCollectionTypeSafe {
         );
 
         switch ($login->getMode()) {
-
-            case "monitor-study":
-                $session->addAccessObjects('workspaceMonitor', (string) $login->getWorkspaceId());
-                break;
 
             case "monitor-group":
                 $session->addAccessObjects('testGroupMonitor', (string) $login->getGroupName());

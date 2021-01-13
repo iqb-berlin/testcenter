@@ -10,11 +10,10 @@ let skipTheRest = false;
 
 const changeAuthToken = (transaction, newAuthTokenData) => {
   if (typeof transaction.request.headers['AuthToken'] === "undefined") {
-    return;
+      return;
   }
 
   let authToken = '';
-
   let tokenType = transaction.request.headers['AuthToken'].split(':')[0];
 
   switch (tokenType) {
@@ -27,9 +26,6 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
       break;
     case 'l':
       authToken = newAuthTokenData.loginToken;
-      break;
-    case 'm':
-      authToken = newAuthTokenData.workspaceMonitorToken;
       break;
     case 'g':
       authToken = newAuthTokenData.groupMonitorToken;
@@ -187,9 +183,10 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
 });
 
 
-dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', (transaction, done) => {
-  transaction.expected.body = fs.readFileSync('../sampledata/Player.html').toString();
-  done();
+dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
+    transaction.expected.body = fs.readFileSync('../vendor/iqb-berlin/verona-player-simple/verona-simple-player-1.html').toString();
+    done();
+
 });
 
 

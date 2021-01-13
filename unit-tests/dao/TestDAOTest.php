@@ -53,17 +53,14 @@ class TestDAOTest extends TestCase {
 
         $expected = ["SOME_STATE" => "WHATEVER"];
         $result = $this->dbc->getUnitState(1, 'UNIT_1');
-
         $this->assertEquals($expected, $result);
 
         $expected = [];
         $result = $this->dbc->getUnitState(999, 'UNIT_1');
-
         $this->assertEquals($expected, $result);
 
         $expected = [];
         $result = $this->dbc->getUnitState(1, 'not_existing_unit');
-
         $this->assertEquals($expected, $result);
     }
 

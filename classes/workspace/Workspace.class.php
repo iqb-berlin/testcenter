@@ -15,17 +15,17 @@ class Workspace {
 
     static function getAll(): array {
 
-        $workspaceControllers = [];
+        $workspaces = [];
         $class = get_called_class();
 
         foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
 
             $workspaceFolderNameParts = explode('_', $workspaceDir);
             $workspaceId = (int) array_pop($workspaceFolderNameParts);
-            $workspaceControllers[$workspaceId] = new $class($workspaceId);
+            $workspaces[$workspaceId] = new $class($workspaceId);
         }
 
-        return $workspaceControllers;
+        return $workspaces;
     }
 
 
@@ -69,6 +69,12 @@ class Workspace {
             }
         }
         return $subFolderPath;
+    }
+
+
+    public function getId() {
+
+        return $this->_workspaceId;
     }
 
 
@@ -295,7 +301,7 @@ class Workspace {
     }
 
 
-    private function countFiles(string $type): int {
+    public function countFiles(string $type): int {
 
         $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
         return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));

@@ -85,13 +85,6 @@
                             </xs:documentation>
                           </xs:annotation>
                         </xs:enumeration>
-                        <xs:enumeration value="monitor-study">
-                          <xs:annotation>
-                            <xs:documentation>
-                              Monitor of test execution: For the whole workspace (i. e. study).
-                            </xs:documentation>
-                          </xs:annotation>
-                        </xs:enumeration>
                         <xs:enumeration value="run-demo">
                           <xs:annotation>
                             <xs:documentation>

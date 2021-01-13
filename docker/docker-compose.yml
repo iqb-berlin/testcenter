@@ -40,6 +40,12 @@ services:
       - testcenter-db-backend
     volumes:
       - ../vo_data:/var/www/html/vo_data
+      - ../classes:/var/www/html/classes
+      - ../routes:/var/www/html/routes
+      - ../sampledata:/var/www/html/sampledata
+      - ../definitions:/var/www/html/definitions
+      - ../docs/specs.yml:/var/www/html/docs/specs.yml
+      - ../composer.json:/var/www/html/composer.json
       - vendor:/var/www/html/vendor
     ports:
       - "9092:80"

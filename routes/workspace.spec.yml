@@ -5,79 +5,6 @@ info:
   version: "%%%VERSION%%%"
 
 paths:
-  /workspace/{ws_id}/booklets/started:
-    get:
-      summary: get started booklets
-      description: retrieves an overview about started booklets
-
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for person with mode `monitor-study`
-          example: "m:user000000000.mo00000000"
-        - in: path
-          name: ws_id
-          required: true
-          description: workspace-Id
-          schema:
-            type: integer
-          example: 1
-        - in: query
-          name: groups
-          schema:
-              type: array
-              description: a list
-              items:
-                type: string
-          example:
-            sample_group
-      responses:
-        "200":
-          description: OK, list of started booklets
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    groupname:
-                      type: string
-                    loginname:
-                      type: string
-                    code:
-                      type: string
-                      description: person code
-                    bookletname:
-                      type: string
-                    locked:
-                      type: boolean
-                    lastlogin:
-                      type: string
-                      description: "date of last login and time in US format: YYYY-mm-dd HH:mm:SS"
-                    laststart:
-                      type: string
-                      description: "date of last start and time in US format: YYYY-mm-dd HH:mm:SS"
-              example:
-                - groupname: sample_group
-                  loginname: test
-                  code: dlu
-                  bookletname: BOOKLET.SAMPLE
-                  locked: false
-                  lastlogin: '2019-09-10 13:29:36'
-                  laststart: '2019-09-10 13:29:37'
-
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "404":
-          description: Workspace not found
-        "410":
-          description: Session Expired
-        "500":
-          description: Server Error
-
   /workspace/{ws_id}/file/{type}/{filename}:
     get:
       summary: get file
@@ -481,72 +408,6 @@ paths:
         "500":
           description: Server Error
 
-  /workspace/{ws_id}/status:
-    get:
-      summary: get status
-      description: Retrieves an overview about running tests
-
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for person with mode `monitor-study`
-          example: "m:user000000000.mo00000000"
-
-        - in: path
-          name: ws_id
-          description: workspace-id
-          example: 1
-          required: true
-          schema:
-            type: integer
-
-      responses:
-        "200":
-          description: OK, list of monitor data
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    groupname:
-                      type: string
-                    loginsPrepared:
-                      type: integer
-                    personsPrepared:
-                      type: integer
-                    bookletsPrepared:
-                      type: integer
-                    bookletsStarted:
-                      type: integer
-                    bookletsLocked:
-                      type: integer
-                    laststart:
-                      type: integer
-                      description: timestamp of last start
-                    laststartStr:
-                      type: string
-                      description: "date of last start in human readable format (german date format: dd.MM.yyyy)"
-              example:
-                - groupname: sample_group
-                  loginsPrepared: 1
-                  personsPrepared: 10
-                  bookletsPrepared: 10
-                  bookletsStarted: 1
-                  bookletsLocked: 0
-                  laststart: 1567783156
-                  laststartStr: 06.09.2019
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "404":
-          description: Workspace not found
-        "410":
-          description: Session Expired
-        "500":
-          description: Server Error
 
   /workspace/{ws_id}/file: # gets manipulated in hooks.file, change summary carefully
     post:
@@ -647,64 +508,71 @@ paths:
               schema:
                 $ref: './components.spec.yml#/components/schemas/file_list'
               example: # TODO add schema
-                - name: SAMPLE_PLAYER.HTML
-                  size: 5034
-                  modificationTime: 1610447809
+                - name: SAMPLE_UNITCONTENTS.HTM
+                  size: 13392
+                  modificationTime: 1610547959
                   type: Resource
-                  id: SAMPLE_PLAYER.HTML
+                  id: SAMPLE_UNITCONTENTS.HTM
+                  report: []
+                  info: []
+                - name: verona-simple-player-1.html
+                  size: 29960
+                  modificationTime: 1610547959
+                  type: Resource
+                  id: VERONA-SIMPLE-PLAYER-1.HTML
                   report: []
                   info: []
                 - name: SAMPLE_UNIT.XML
-                  size: 1303
-                  modificationTime: 1610447809
+                  size: 497
+                  modificationTime: 1610547959
                   type: Unit
                   id: UNIT.SAMPLE
                   report: []
                   info:
                     id: UNIT.SAMPLE
-                    description: This is an Unit
+                    description: This is a sample unit showing the possibilities of the sample player.
                     label: A sample unit
-                    totalSize: 1303
+                    totalSize: 13889
                 - name: SAMPLE_UNIT2.XML
-                  size: 900
-                  modificationTime: 1610447809
+                  size: 1737
+                  modificationTime: 1610547959
                   type: Unit
                   id: UNIT.SAMPLE-2
                   report: []
                   info:
                     id: UNIT.SAMPLE-2
-                    description: This is another Unit
-                    label: Another sample unit
-                    totalSize: 900
+                    description: This is an Unit
+                    label: A sample unit
+                    totalSize: 1737
                 - name: SAMPLE_BOOKLET.XML
-                  size: 1236
-                  modificationTime: 1610447809
+                  size: 1213
+                  modificationTime: 1610547959
                   type: Booklet
                   id: BOOKLET.SAMPLE
                   report:
                     info:
-                      - 'size fully loaded: `8.27 KB`'
+                      - 'size fully loaded: `45.7 KB`'
                   info:
                     id: BOOKLET.SAMPLE
                     description: This a sample booklet for testing/development/showcase purposes.
                     label: Sample booklet
-                    totalSize: 8473
+                    totalSize: 46799
                 - name: SAMPLE_BOOKLET2.XML
-                  size: 451
-                  modificationTime: 1610447809
+                  size: 564
+                  modificationTime: 1610547959
                   type: Booklet
                   id: BOOKLET.SAMPLE-2
                   report:
                     info:
-                      - 'size fully loaded: `6.24 KB`'
+                      - 'size fully loaded: `45.07 KB`'
                   info:
                     id: BOOKLET.SAMPLE-2
                     description: ''
                     label: Reduced Booklet
-                    totalSize: 6385
+                    totalSize: 46150
                 - name: SAMPLE_TESTTAKERS.XML
-                  size: 2255
-                  modificationTime: 1610447809
+                  size: 2106
+                  modificationTime: 1610547959
                   type: Testtakers
                   id: SAMPLE_TESTTAKERS.XML
                   report: []
@@ -713,10 +581,10 @@ paths:
                     description: This file contains some logins for testing and works a a sample for
                       developers.
                     label: ''
-                    testtakers: 12
+                    testtakers: 10
                 - name: SAMPLE_SYSCHECK.XML
-                  size: 1237
-                  modificationTime: 1610447809
+                  size: 1239
+                  modificationTime: 1610547959
                   type: SysCheck
                   id: SYSCHECK.SAMPLE
                   report: []
@@ -778,92 +646,6 @@ paths:
                   - "a/b"
                 not_allowed:
                   - "../../README.md"
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "404":
-          description: Workspace not found
-        "410":
-          description: Session Expired
-        "500":
-          description: Server Error
-
-  /workspace/{ws_id}/tests/lock:
-    patch:
-      summary: lock tests
-      description: locks a group of booklets in a workspace
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for person with mode `monitor-study`
-          example: "m:user000000000.mo00000000"
-        - in: path
-          name: ws_id
-          description: workspace-id
-          example: 1
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                groups:
-                  type: array
-                  description: array of group names
-                  items:
-                    type: string
-            example:
-              groups:
-                - group1
-      responses:
-        "200":
-          description: OK
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "404":
-          description: Workspace not found
-        "410":
-          description: Session Expired
-        "500":
-          description: Server Error
-
-  /workspace/{ws_id}/tests/unlock:
-    patch:
-      summary: unlock tests
-      description: unlocks a group of booklets in a workspace
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for person with mode `monitor-study`
-          example: "m:user000000000.mo00000000"
-        - in: path
-          name: ws_id
-          description: workspace-id
-          example: 1
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                groups:
-                  type: array
-                  description: array of group names
-                  items:
-                    type: string
-            example:
-              groups:
-                - group1
-      responses:
-        "200":
-          description: OK
         "401":
           description: Not authenticated
         "403":
