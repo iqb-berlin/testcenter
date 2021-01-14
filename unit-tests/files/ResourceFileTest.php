@@ -25,8 +25,8 @@ class ResourceFileTest extends TestCase {
 
     function test_getContent() {
 
-        $file = new ResourceFile(DATA_DIR . '/ws_1/Resource/SAMPLE_PLAYER.HTML');
-        $fileContents = file_get_contents(DATA_DIR . '/ws_1/Resource/SAMPLE_PLAYER.HTML');
+        $file = new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-simple-player-1.html');
+        $fileContents = file_get_contents(DATA_DIR . '/ws_1/Resource/verona-simple-player-1.html');
         $this->assertEquals($fileContents, $file->getContent());
 
         $file = new ResourceFile('schmu');

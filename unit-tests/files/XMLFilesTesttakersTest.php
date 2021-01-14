@@ -311,17 +311,6 @@ END;
                 (object) ["somestr" => "string"],
             ),
             new PotentialLogin(
-                'unit_test_login-study-monitor',
-                'monitor-study',
-                'sample_group',
-                ['' => []],
-                -1,
-                0,
-                1583053200,
-                45,
-                (object) ["somestr" => "string"]
-            ),
-            new PotentialLogin(
                 'unit_test_login-review',
                 'run-review',
                 'review_group',
@@ -397,17 +386,6 @@ END;
                 0,
                 0,
                 (object) ["somestr" => "string"]
-            ),
-            new PotentialLogin(
-                'expired-study-monitor',
-                'monitor-study',
-                'expired_group',
-                ['' => []],
-                -1,
-                1583087400,
-                0,
-                0,
-                (object) ["somestr" => "string"],
             ),
             new PotentialLogin(
                 'unit_test_login-future',

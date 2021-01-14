@@ -61,8 +61,8 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Booklet/booklet-broken.xml' => [
                 new ValidationReportEntry('warning', 'Booklet is never used'),
-                new ValidationReportEntry('error',  'Error [76] in line 35: Opening and ending tag mismatch: Booklet line 2 and Units'),
-                new ValidationReportEntry('error',  'Error [5] in line 36: Extra content at the end of the document')
+                new ValidationReportEntry('error',  'Error [5] in line 30: Extra content at the end of the document'),
+                new ValidationReportEntry('error',  'Error [76] in line 29: Opening and ending tag mismatch: Booklet line 2 and Units'),
             ],
             'Booklet/booklet-duplicate-id-1.xml' => [
                 new ValidationReportEntry('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong'),
@@ -75,10 +75,10 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('warning', 'Booklet is never used'),
             ],
             'Booklet/SAMPLE_BOOKLET.XML' => [
-                new ValidationReportEntry('info',  'size fully loaded: `8.27 KB`'),
+                new ValidationReportEntry('info',  'size fully loaded: `45.7 KB`'),
             ],
             'Booklet/SAMPLE_BOOKLET2.XML' => [
-                new ValidationReportEntry('info',  'size fully loaded: `6.24 KB`'),
+                new ValidationReportEntry('info',  'size fully loaded: `45.07 KB`'),
             ],
             'Unit/unit-unused-and-missing-player.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
@@ -137,8 +137,8 @@ class WorkspaceValidatorTest extends TestCase{
 
     function test_getResource() {
 
-        $result = $this->validator->getResource('sample_player.html', true);
-        $expectation = "SAMPLE_PLAYER.HTML";
+        $result = $this->validator->getResource('verona-simple-player-1.html', true);
+        $expectation = "verona-simple-player-1.html";
         $this->assertEquals($expectation, $result->getName());
 
         $result = $this->validator->getResource('missing_player.html', true);

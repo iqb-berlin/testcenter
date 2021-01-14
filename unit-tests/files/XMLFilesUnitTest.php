@@ -44,7 +44,7 @@ class XMLFilesUnitTest extends TestCase {
     function test_getPlayerId() {
 
         $xmlFile = new XMLFileUnit(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
-        $expected = 'SAMPLE_PLAYER.HTML';
+        $expected = 'VERONA-SIMPLE-PLAYER-1.0.0.HTML';
         $result = $xmlFile->getPlayerId();
         $this->assertEquals($expected, $result);
 

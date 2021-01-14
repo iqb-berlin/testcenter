@@ -44,9 +44,9 @@ class BookletsFolderTest extends TestCase {
         );
 
         $this->assertEquals('sample_group', $result[0]['groupname']);
-        $this->assertEquals(3, $result[0]['loginsPrepared']); // test login, 2 monitors
-        $this->assertEquals(4, $result[0]['personsPrepared']); // two codes for login, 2 monitor accounts
-        $this->assertEquals(4, $result[0]['bookletsPrepared']); // two odes on two booklets
+        $this->assertEquals(2, $result[0]['loginsPrepared']); // test login, group- monitor
+        $this->assertEquals(3, $result[0]['personsPrepared']); // two codes for login, 1 monitor account
+        $this->assertEquals(4, $result[0]['bookletsPrepared']); // two codes on two booklets
         $this->assertEquals(2, $result[0]['bookletsStarted']);
         $this->assertEquals(1, $result[0]['bookletsLocked']);
         $this->assertEquals('future_group', $result[5]['groupname']);
@@ -75,15 +75,13 @@ class BookletsFolderTest extends TestCase {
         $result = $this->bookletsFolder->getLogins();
         $this->assertEquals('unit_test_login', $result->asArray()[0]->getName());
         $this->assertEquals('unit_test_login-group-monitor', $result->asArray()[1]->getName());
-        $this->assertEquals('unit_test_login-study-monitor', $result->asArray()[2]->getName());
-        $this->assertEquals('unit_test_login-review', $result->asArray()[3]->getName());
-        $this->assertEquals('unit_test_login-trial', $result->asArray()[4]->getName());
-        $this->assertEquals('unit_test_login-demo', $result->asArray()[5]->getName());
-        $this->assertEquals('unit_test_login-no-pw', $result->asArray()[6]->getName());
-        $this->assertEquals('unit_test_login-no-pw-trial', $result->asArray()[7]->getName());
-        $this->assertEquals('unit_test_login-expired', $result->asArray()[8]->getName());
-        $this->assertEquals('expired-group-monitor', $result->asArray()[9]->getName());
-        $this->assertEquals('expired-study-monitor', $result->asArray()[10]->getName());
-        $this->assertEquals('unit_test_login-future', $result->asArray()[11]->getName());
+        $this->assertEquals('unit_test_login-review', $result->asArray()[2]->getName());
+        $this->assertEquals('unit_test_login-trial', $result->asArray()[3]->getName());
+        $this->assertEquals('unit_test_login-demo', $result->asArray()[4]->getName());
+        $this->assertEquals('unit_test_login-no-pw', $result->asArray()[5]->getName());
+        $this->assertEquals('unit_test_login-no-pw-trial', $result->asArray()[6]->getName());
+        $this->assertEquals('unit_test_login-expired', $result->asArray()[7]->getName());
+        $this->assertEquals('expired-group-monitor', $result->asArray()[8]->getName());
+        $this->assertEquals('unit_test_login-future', $result->asArray()[9]->getName());
     }
 }

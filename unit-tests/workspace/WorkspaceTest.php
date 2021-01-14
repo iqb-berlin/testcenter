@@ -68,7 +68,8 @@ class WorkspaceTest extends TestCase {
         $resultDigest = array_map(function(File $file) { return $file->getName(); }, $result);
 
         $expectation = [
-            'SAMPLE_PLAYER.HTML',
+            'SAMPLE_UNITCONTENTS.HTM',
+            'verona-simple-player-1.html',
             'SAMPLE_UNIT.XML',
             'SAMPLE_UNIT2.XML',
             'SAMPLE_BOOKLET.XML',
@@ -88,20 +89,20 @@ class WorkspaceTest extends TestCase {
         $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
 
         $result = $this->workspace->deleteFiles(array(
-            'Resource/SAMPLE_PLAYER.HTML',
+            'Resource/verona-simple-player-1.html',
             'SysCheck/SAMPLE_SYSCHECK.XML',
             'i_dont/even.exist'
         ));
 
         $resources = scandir('vfs://root/vo_data/ws_1/Resource');
         $expectation = array(
-            'deleted' => array('Resource/SAMPLE_PLAYER.HTML'),
+            'deleted' => array('Resource/verona-simple-player-1.html'),
             'did_not_exist' => array('i_dont/even.exist'),
             'not_allowed' => array('SysCheck/SAMPLE_SYSCHECK.XML')
         );
 
         $this->assertEquals($expectation, $result);
-        $this->assertEquals($resources, array('.', '..'));
+        $this->assertEquals($resources, array('.', '..', 'SAMPLE_UNITCONTENTS.HTM'));
     }
 
 
@@ -112,7 +113,7 @@ class WorkspaceTest extends TestCase {
             "SysCheck" => 1,
             "Booklet" => 3,
             "Unit" => 2,
-            "Resource" => 1
+            "Resource" => 2
         ];
 
         $result = $this->workspace->countFilesOfAllSubFolders();
@@ -181,22 +182,22 @@ class WorkspaceTest extends TestCase {
             $this->fail("expected exception");
         } catch (Exception $exception) {}
 
-        $result = $this->workspace->findFileById('Resource', 'SAMPLE_PLAYER.1.HTML', true);
+        $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-1.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/SAMPLE_PLAYER.HTML', $result->getPath());
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-1.html', $result->getPath());
+    }
 
-        $result = $this->workspace->findFileById('Resource','SAMPLE_PLAYER.HTML', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/SAMPLE_PLAYER.HTML', $result->getPath());
 
-        try {
-            $this->workspace->findFileById('Resource','SAMPLE_PLAYER.1.HTML', false);
-            $this->fail("expected exception");
-        } catch (Exception $exception) {}
+    function test_findFileById_wrongVersion() {
 
-        try {
-            $this->workspace->findFileById('Resource','not-existing-id', true);
-            $this->fail("expected exception");
-        } catch (Exception $exception) {}
+        $this->expectException('HttpError');
+        $this->workspace->findFileById('Resource','VERONA-SIMPLE-PLAYER-2.HTML', false);
+    }
+
+
+    function test_findFileById_notExisting() {
+
+        $this->expectException('HttpError');
+        $this->workspace->findFileById('Resource','NOT-EXISTING-ID', false);
     }
 }
