@@ -41,7 +41,8 @@
     "ext-libxml": "*",
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-dom": "*"
   },
   "suggest": {
     "ext-apache": "*"

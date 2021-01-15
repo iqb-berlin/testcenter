@@ -11,7 +11,8 @@ class File extends DataCollectionTypeSafe {
     protected int $modificationTime = 0;
     protected string $id = '';
     protected array $validationReport = [];
-
+    protected string $label = '';
+    protected string $description = '';
 
     static function get(string $path, string $type = null, bool $validate = false): File {
 
@@ -84,21 +85,33 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function getSize() {
+    public function getSize(): int {
 
         return $this->size;
     }
 
 
-    public function getId() {
+    public function getId(): string {
 
         return $this->id;
     }
 
 
-    public function getModificationTime() {
+    public function getModificationTime(): int {
 
         return $this->modificationTime;
+    }
+
+
+    public function getLabel(): string {
+
+        return $this->label;
+    }
+
+
+    public function getDescription(): string {
+
+        return $this->description;
     }
 
 
@@ -167,6 +180,13 @@ class File extends DataCollectionTypeSafe {
 
     public function getSpecialInfo(): array {
 
-        return [];
+        $meta = [];
+        if ($this->getDescription()) {
+            $meta['description'] = $this->getDescription();
+        }
+        if ($this->getLabel()) {
+            $meta['label'] = $this->getLabel();
+        }
+        return $meta;
     }
 }

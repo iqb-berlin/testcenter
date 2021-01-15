@@ -9,8 +9,6 @@ class XMLFile extends File {
     const knownTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Unit'];
 
     protected string $rootTagName = '';
-    protected string $label = '';
-    protected string $description = '';
     protected ?array $schema;
 
     public SimpleXMLElement $xml;
@@ -137,27 +135,5 @@ class XMLFile extends File {
     public function getRoottagName() { // TODO is this needed?
 
         return $this->rootTagName;
-    }
-
-
-    public function getLabel() {
-
-        return $this->label;
-    }
-
-
-    public function getDescription() {
-
-        return $this->description;
-    }
-
-
-    public function getSpecialInfo(): array {
-
-        return [
-            'id' => $this->getId(),
-            'description' => $this->getDescription(),
-            'label' => $this->getLabel()
-        ];
     }
 }
