@@ -33,6 +33,9 @@ class ResourceFile extends File {
     private function isPlayer(): bool {
 
         $pathInfo = pathinfo($this->getPath());
+        if (!isset($pathInfo['extension'])) {
+            return false;
+        }
         return in_array(strtoupper($pathInfo['extension']), ['HTML']);
     }
 
@@ -41,8 +44,12 @@ class ResourceFile extends File {
     // TODO make player and resource two different types
     private function validatePlayer() {
 
+        if (!$this->content) {
+            return;
+        }
+
         $document = new DOMDocument();
-        $document->loadHTML($this->content);
+        $document->loadHTML($this->content, LIBXML_NOERROR);
 
         $this->readPlayerMetaData($document);
         $this->createLabelFromMeta();
@@ -128,7 +135,12 @@ class ResourceFile extends File {
     }
 
 
-//    private function createTypeFromMeta()
+//    private function createTypeFromMeta() {
+//
+//        if ($this->isPlayer()) {
+//            $this->type = 'Player';
+//        }
+//    }
 
 
     public function getSpecialInfo(): array {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 class File extends DataCollectionTypeSafe {
 
     private const type = 'file';
-    private ?string $type;
+    protected ?string $type;
     protected string $path = '';
     protected string $name = '';
     protected int $size = 0;
@@ -25,7 +25,7 @@ class File extends DataCollectionTypeSafe {
             case 'SysCheck': return new XMLFileSysCheck($path, $validate);
             case 'Booklet': return new XMLFileBooklet($path, $validate);
             case 'Unit': return new XMLFileUnit($path, $validate);
-            case 'Resource': return new ResourceFile($path);
+            case 'Resource': return new ResourceFile($path, $validate);
             case 'xml': return new XMLFile($path, $validate);
         }
 
