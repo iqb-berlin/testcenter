@@ -1849,8 +1849,8 @@ paths:
                                     modificationTime: 1610547959
                                     type: Resource
                                     id: VERONA-SIMPLE-PLAYER-1.HTML
-                                    report: []
-                                    info: []
+                                    report: {info: 'Verona-Version supported: 2.1.0'}
+                                    info: {label: 'Simple Verona Player 1 - 1.0.1', verona-version: 2.1.0, version: 1.0.1}
                                 -
                                     name: SAMPLE_UNIT.XML
                                     size: 497
@@ -1858,7 +1858,7 @@ paths:
                                     type: Unit
                                     id: UNIT.SAMPLE
                                     report: []
-                                    info: {id: UNIT.SAMPLE, description: 'This is a sample unit showing the possibilities of the sample player.', label: 'A sample unit', totalSize: 13889}
+                                    info: {description: 'This is a sample unit showing the possibilities of the sample player.', label: 'A sample unit', totalSize: 13889}
                                 -
                                     name: SAMPLE_UNIT2.XML
                                     size: 1737
@@ -1866,7 +1866,7 @@ paths:
                                     type: Unit
                                     id: UNIT.SAMPLE-2
                                     report: []
-                                    info: {id: UNIT.SAMPLE-2, description: 'This is an Unit', label: 'A sample unit', totalSize: 1737}
+                                    info: {description: 'This is an Unit', label: 'A sample unit', totalSize: 1737}
                                 -
                                     name: SAMPLE_BOOKLET.XML
                                     size: 1213
@@ -1874,7 +1874,7 @@ paths:
                                     type: Booklet
                                     id: BOOKLET.SAMPLE
                                     report: {info: ['size fully loaded: `45.7 KB`']}
-                                    info: {id: BOOKLET.SAMPLE, description: 'This a sample booklet for testing/development/showcase purposes.', label: 'Sample booklet', totalSize: 46799}
+                                    info: {description: 'This a sample booklet for testing/development/showcase purposes.', label: 'Sample booklet', totalSize: 46799}
                                 -
                                     name: SAMPLE_BOOKLET2.XML
                                     size: 564
@@ -1882,7 +1882,7 @@ paths:
                                     type: Booklet
                                     id: BOOKLET.SAMPLE-2
                                     report: {info: ['size fully loaded: `45.07 KB`']}
-                                    info: {id: BOOKLET.SAMPLE-2, description: "", label: 'Reduced Booklet', totalSize: 46150}
+                                    info: {label: 'Reduced Booklet', totalSize: 46150}
                                 -
                                     name: SAMPLE_TESTTAKERS.XML
                                     size: 2106
@@ -1890,7 +1890,7 @@ paths:
                                     type: Testtakers
                                     id: SAMPLE_TESTTAKERS.XML
                                     report: []
-                                    info: {id: SAMPLE_TESTTAKERS.XML, description: 'This file contains some logins for testing and works a a sample for developers.', label: "", testtakers: 10}
+                                    info: {description: 'This file contains some logins for testing and works a a sample for developers.', testtakers: 10}
                                 -
                                     name: SAMPLE_SYSCHECK.XML
                                     size: 1239
@@ -1898,7 +1898,7 @@ paths:
                                     type: SysCheck
                                     id: SYSCHECK.SAMPLE
                                     report: []
-                                    info: {id: SYSCHECK.SAMPLE, description: 'An example SysCheck definition with long description', label: 'An example SysCheck definition'}
+                                    info: {description: 'An example SysCheck definition with long description', label: 'An example SysCheck definition'}
                 '401':
                     description: 'Not authenticated'
                 '403':
