@@ -15,7 +15,14 @@ with unit-tests galore.
   and `[GET] /workspace/{id}/files` where changed **significantly** to contain the
   file's validation information as well as some metadata to display in the frontend.
 ### XML
-* XML-files without a reference to a XSD-Schema generate a warning now.
+* XML-files without a reference to a XSD-Schema generate a warning now. Currently, 
+  the reference can only be done with the `noNamespaceSchemaLocation`-tag! 
+* Player-Metadata as defined in [verona2](https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md)
+  is supported now.
+### Config
+* `config/system.json` contains a new (optional) value: `allowExternalXMLSchema` 
+  (boolean, defaults to true) . It defines wether the program is allowed to fetch
+  XSD schemas from external URLs.
 
 ## 8.0.0
 The role `monitor-study` / `workspaceMonitor` was removed completely and all functions and endpoints depending on it.

@@ -21,6 +21,7 @@ class TestEnvironment {
             DB::connect($dbConfig);
 
             BroadcastService::setup('', '');
+            XMLSchema::setup(false);
 
             TestEnvironment::resetState();
             TestEnvironment::setUpTestData();
@@ -47,6 +48,7 @@ class TestEnvironment {
             ]));
 
             BroadcastService::setup('', '');
+            XMLSchema::setup(false);
 
             $initDAO = new InitDAO();
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');

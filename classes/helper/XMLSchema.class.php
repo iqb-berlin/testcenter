@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 class XMLSchema {
 
+    private static bool $allowExternalXMLSchema = true;
+
+    static function setup(bool $allowExternalXMLSchema): void {
+
+        self::$allowExternalXMLSchema = $allowExternalXMLSchema;
+    }
+
     // TODO use defined class instead of plain array
     static function parseSchemaUrl(string $schemaUrl, bool $detectFilePath = false): ?array {
 
@@ -63,7 +70,7 @@ class XMLSchema {
             return '';
         }
 
-        if (!$schemaData['isUrl']) {
+        if (!self::$allowExternalXMLSchema or !$schemaData['isUrl']) {
             return XMLSchema::accessDefinitionsDir($schemaData);
         } else {
             return XMLSchema::accessSchemaCache($schemaData);
@@ -115,12 +122,11 @@ class XMLSchema {
 
         } catch (Exception $e) {
 
-            file_put_contents("$folder$fileName", '');
-            return "";
+            $fileContent = "";
         }
 
         file_put_contents("$folder$fileName", $fileContent);
 
-        return "$folder$fileName";
+        return $fileContent ? "$folder$fileName" : '';
     }
 }

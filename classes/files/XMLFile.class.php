@@ -84,10 +84,11 @@ class XMLFile extends File {
 
     private function readSchema(): void {
 
+        // TODO support other ways of defining the schema (schemaLocation)
         $schemaUrl = (string) $this->xml->attributes('xsi', true)->noNamespaceSchemaLocation;
         $this->schema = XMLSchema::parseSchemaUrl($schemaUrl, true);
 
-        if (!$this->schema || !isset($this->schema['filePath']) || !$this->schema['filePath']) {
+        if (!$this->schema or !isset($this->schema['filePath']) or !$this->schema['filePath']) {
 
             // TODO distinguish between NO schema (use fallback) and outdated - throw error
             $this->report('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong');
