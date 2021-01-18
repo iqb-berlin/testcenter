@@ -13,7 +13,6 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class VfsForTest {
 
-
     static function setUpBeforeClass(): void {
 
         ini_set('max_execution_time', 3);

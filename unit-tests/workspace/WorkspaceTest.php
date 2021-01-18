@@ -4,14 +4,26 @@
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 
+require_once "unit-tests/VfsForTest.class.php";
+require_once "unit-tests/mock-classes/VersionMock.php";
+require_once "unit-tests/mock-classes/ExternalFileMock.php";
+
 require_once "classes/helper/FileSize.class.php";
 require_once "classes/helper/Folder.class.php";
+require_once "classes/helper/FileName.class.php";
+require_once "classes/helper/XMLSchema.class.php";
+require_once "classes/exception/HttpError.class.php";
+require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+require_once "classes/data-collection/ValidationReportEntry.class.php";
+require_once "classes/files/File.class.php";
 require_once "classes/files/ResourceFile.class.php";
 require_once "classes/files/XMLFile.class.php";
+require_once "classes/files/XMLFileUnit.class.php";
 require_once "classes/files/XMLFileTesttakers.class.php";
-require_once "unit-tests/VfsForTest.class.php";
+require_once "classes/files/XMLFileBooklet.class.php";
+require_once "classes/files/XMLFileSysCheck.class.php";
+require_once "classes/workspace/WorkspaceValidator.class.php";
 
-require_once "classes/helper/Folder.class.php";
 
 class WorkspaceTest extends TestCase {
 
@@ -127,7 +139,7 @@ class WorkspaceTest extends TestCase {
         file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
         $result = $this->workspace->importUnsortedFile('valid.xml');
         $expectation = ["valid.xml" => []];
-        $this->assertEquals($expectation, $result, 'valid file hat no report');
+        $this->assertEquals($expectation, $result, 'valid file has no report');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
 
         file_put_contents(DATA_DIR . '/ws_1/invalid.xml', $this->invalidFile);

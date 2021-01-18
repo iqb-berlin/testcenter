@@ -116,14 +116,7 @@ class XMLSchema {
             throw new Exception("`$folder` is not writeable!");
         }
 
-        try {
-
-            $fileContent = file_get_contents($schemaData['url']);
-
-        } catch (Exception $e) {
-
-            $fileContent = "";
-        }
+        $fileContent = ExternalFile::download($schemaData['url']);
 
         file_put_contents("$folder$fileName", $fileContent);
 

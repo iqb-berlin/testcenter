@@ -7,12 +7,6 @@ require_once "unit-tests/VfsForTest.class.php";
 
 use PHPUnit\Framework\TestCase;
 
-class Version {
-    static function get() {
-        return "7.7.7";
-    }
-}
-
 
 class XMLSchemaTest extends TestCase {
 
