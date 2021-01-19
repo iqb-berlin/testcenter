@@ -74,12 +74,6 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function getFolderType(): string {
-
-        return $this::type;
-    }
-
-
     public function getPath(): string {
 
         return $this->path;

@@ -174,7 +174,7 @@ class Workspace {
             return $file;
         }
 
-        $targetFolder = $this->_workspacePath . '/' . $file->getFolderType();
+        $targetFolder = $this->_workspacePath . '/' . $file->getType();
 
         // move file from testcenter-tmp-folder to targetfolder
         if (!file_exists($targetFolder)) {

@@ -109,7 +109,7 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error', "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
-            'Player/verona-simple-player-1.html' => [
+            'Resource/verona-simple-player-1.html' => [
                 new ValidationReportEntry('info', 'Verona-Version supported: 2.1.0')
             ]
         ];

@@ -53,9 +53,6 @@ class ResourceFile extends File {
         $this->readPlayerMetaData($document);
         $this->createLabelFromMeta();
         $this->analyzeMeta();
-        if ($this->isPlayer()) {
-            $this->type = 'Player';
-        }
     }
 
 
