@@ -5,10 +5,9 @@ declare(strict_types=1);
 class ResourceFile extends File {
 
     const type = 'Resource';
-
-    protected $content = '';
+    protected string $content = '';
     protected array $usedBy = [];
-    protected $meta = [];
+    protected array $meta = [];
 
     public function __construct(string $path, bool $validate = true) {
 
@@ -54,6 +53,9 @@ class ResourceFile extends File {
         $this->readPlayerMetaData($document);
         $this->createLabelFromMeta();
         $this->analyzeMeta();
+        if ($this->isPlayer()) {
+            $this->type = 'Player';
+        }
     }
 
 
