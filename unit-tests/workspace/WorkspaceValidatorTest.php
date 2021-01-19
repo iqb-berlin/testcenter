@@ -7,6 +7,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 require_once "classes/helper/FileName.class.php";
+require_once "classes/helper/Version.class.php";
 require_once "classes/files/XMLFile.class.php";
 require_once "classes/files/XMLFileSysCheck.class.php";
 require_once "classes/files/XMLFileBooklet.class.php";
@@ -39,14 +40,16 @@ class WorkspaceValidatorTest extends TestCase{
 
         $result = $this->validator->validate();
 
+        $version = Version::get();
+
         $expected = [
             'Testtakers/testtakers-duplicate-login-name.xml' => [
                 new ValidationReportEntry('error',  'Duplicate login: `duplicate_login`'),
-                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current Version will be tried.")
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
             'Testtakers/testtakers-missing-booklet.xml' => [
                 new ValidationReportEntry('error', 'Booklet `BOOKLET.MISSING` not found for login `a_login`'),
-                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current Version will be tried.")
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
             'Testtakers/trash.xml' => [
                 new ValidationReportEntry('error', 'Invalid root-tag: `Trash`'),
@@ -65,13 +68,13 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error',  'Error [76] in line 29: Opening and ending tag mismatch: Booklet line 2 and Units'),
             ],
             'Booklet/booklet-duplicate-id-1.xml' => [
-                new ValidationReportEntry('warning', 'File has no link to XSD-Schema. Current Version will be tried.'),
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),
                 new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` (`booklet-duplicate-id-2.xml`)'),
                 new ValidationReportEntry('warning', 'Booklet is never used'),
             ],
             'Booklet/booklet-duplicate-id-2.xml' => [
                 new ValidationReportEntry('error',  'Duplicate Booklet-Id: `DUPLICATE_BOOKLET_ID` (`booklet-duplicate-id-1.xml`)'),
-                new ValidationReportEntry('warning', 'File has no link to XSD-Schema. Current Version will be tried.'),
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),
                 new ValidationReportEntry('warning', 'Booklet is never used'),
             ],
             'Booklet/SAMPLE_BOOKLET.XML' => [
@@ -82,12 +85,12 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Unit/unit-unused-and-missing-player.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
-                new ValidationReportEntry('warning', 'File has no link to XSD-Schema. Current Version will be tried.'),
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),
                 new ValidationReportEntry('error', 'No suitable version of `MISSING-PLAYER.HTML` found'),
             ],
             'Unit/unit-unused-and-missing-ref.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
-                new ValidationReportEntry('warning', 'File has no link to XSD-Schema. Current Version will be tried.'),
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),
                 new ValidationReportEntry('error', 'definitionRef `not-existing.voud` not found')
             ],
             'Resource/resource-unused.voud' => [
@@ -95,16 +98,16 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-file-1.xml' => [
                 new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-2.xml`"),
-                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current Version will be tried.")
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-file-2.xml' => [
                 new ValidationReportEntry('error', "Duplicate login: `double_login` - also in file `testtakers-duplicate-login-name-cross-file-1.xml`"),
-                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current Version will be tried.")
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
             'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
                 new ValidationReportEntry('error', "Duplicate group: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
                 new ValidationReportEntry('error', "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
-                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current Version will be tried.")
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
             'Resource/verona-simple-player-1.html' => [
                 new ValidationReportEntry('info', 'Verona-Version supported: 2.1.0')

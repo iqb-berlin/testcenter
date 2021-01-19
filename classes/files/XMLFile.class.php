@@ -86,36 +86,11 @@ class XMLFile extends File {
 
         // TODO support other ways of defining the schema (schemaLocation)
 
-        /**
-             * a) kein schema
-             * -> B)
-         * b) valides, aber nicht beziehbares schema
-         * -> B) (!)
-             * c) komplett anderes schema
-             * -> A)
-             * d) keine version, aber typ erkennbar
-             * -> B)
-         * e) version aber typ nicht erkennbar
-         * -> B) (typ aus root-tag folgern) ?!?!?
-         * f) schema OK
-         * -> C)
-         * g) OK, aber veraltet!
-         * -> D)
-         *
-         * Reaktionen
-         * A) Error
-         * B) current assumen
-         * C) acceppt
-         * D) accept + warning
-         *
-         */
-
         $schemaUrl = (string) $this->xml->attributes('xsi', true)->noNamespaceSchemaLocation;
 
         if (!$schemaUrl) {
 
-            $this->report('warning', 'File has no link to XSD-Schema. Current Version will be tried.');
-            $this->schema = XMLSchema::getLocalSchema($this->getRoottagName());
+            $this->fallBackToCurrentSchemaVersion('File has no link to XSD-Schema.');
             return;
         }
 
@@ -135,11 +110,17 @@ class XMLFile extends File {
 
         if (!Version::isCompatible($this->schema['version'])) {
 
-            $this->report('warning', "Outdated or wrong Version of XSD-Schema ({$this->schema['version']})
-                ({$this->schema['version']}). Current version will be used instead.");
-            $this->schema = XMLSchema::getLocalSchema($this->getRoottagName());
+            $this->fallBackToCurrentSchemaVersion("Outdated or wrong Version of XSD-Schema (`{$this->schema['version']}`).");
             return;
         }
+    }
+
+
+    private function fallBackToCurrentSchemaVersion(string $message): void {
+
+        $currentVersion = Version::get();
+        $this->report('warning', "{$message} Current version (`$currentVersion`) will be used instead.");
+        $this->schema = XMLSchema::getLocalSchema($this->getRoottagName());
     }
 
 
@@ -149,9 +130,8 @@ class XMLFile extends File {
         $filePath = XMLSchema::getSchemaFilePath($this->schema);
         if (!$filePath) {
 
-            $this->report('warning', "XSD-Schema ({$this->schema['version']})
-                could not be obtained. Current version will be tried instead.");
-            return;
+            $this->fallBackToCurrentSchemaVersion("XSD-Schema (´{$this->schema['version']}´) could not be obtained.");
+            $filePath = XMLSchema::getSchemaFilePath($this->schema);
         }
 
         $xmlReader = new XMLReader();
