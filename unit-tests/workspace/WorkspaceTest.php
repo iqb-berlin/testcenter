@@ -5,12 +5,12 @@ use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 
 require_once "unit-tests/VfsForTest.class.php";
-require_once "unit-tests/mock-classes/VersionMock.php";
 require_once "unit-tests/mock-classes/ExternalFileMock.php";
 
 require_once "classes/helper/FileSize.class.php";
 require_once "classes/helper/Folder.class.php";
 require_once "classes/helper/FileName.class.php";
+require_once "classes/helper/Version.class.php";
 require_once "classes/helper/XMLSchema.class.php";
 require_once "classes/exception/HttpError.class.php";
 require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
@@ -30,12 +30,9 @@ class WorkspaceTest extends TestCase {
     private $vfs;
     private $workspace;
 
-    private $validFile = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">'
-        . '<Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
-    private $invalidFile = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">'
-        . "<Metadata><Id>id</Id></Metadata></Unit>";
-    private $validFile2 = '<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_Unit.xsd">'
-    . '<Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">2nd valid file</Definition></Unit>';
+    private $validFile = '<Unit ><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
+    private $invalidFile = '<Unit><Metadata><Id>id</Id></Metadata></Unit>';
+    private $validFile2 = '<Unit><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">2nd valid file</Definition></Unit>';
 
     public static function setUpBeforeClass(): void {
 
@@ -138,8 +135,7 @@ class WorkspaceTest extends TestCase {
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', $this->validFile);
         file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
         $result = $this->workspace->importUnsortedFile('valid.xml');
-        $expectation = ["valid.xml" => []];
-        $this->assertEquals($expectation, $result, 'valid file has no report');
+        $this->assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
 
         file_put_contents(DATA_DIR . '/ws_1/invalid.xml', $this->invalidFile);

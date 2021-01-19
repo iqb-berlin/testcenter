@@ -8,7 +8,8 @@ class ExternalFile {
 
         try {
 
-            return file_get_contents($url);
+            $content = file_get_contents($url);
+            return $content ? $content : "";
 
         } catch (Exception $e) {
 

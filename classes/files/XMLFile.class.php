@@ -85,14 +85,60 @@ class XMLFile extends File {
     private function readSchema(): void {
 
         // TODO support other ways of defining the schema (schemaLocation)
+
+        /**
+             * a) kein schema
+             * -> B)
+         * b) valides, aber nicht beziehbares schema
+         * -> B) (!)
+             * c) komplett anderes schema
+             * -> A)
+             * d) keine version, aber typ erkennbar
+             * -> B)
+         * e) version aber typ nicht erkennbar
+         * -> B) (typ aus root-tag folgern) ?!?!?
+         * f) schema OK
+         * -> C)
+         * g) OK, aber veraltet!
+         * -> D)
+         *
+         * Reaktionen
+         * A) Error
+         * B) current assumen
+         * C) acceppt
+         * D) accept + warning
+         *
+         */
+
         $schemaUrl = (string) $this->xml->attributes('xsi', true)->noNamespaceSchemaLocation;
-        $this->schema = XMLSchema::parseSchemaUrl($schemaUrl, true);
 
-        if (!$this->schema or !isset($this->schema['filePath']) or !$this->schema['filePath']) {
+        if (!$schemaUrl) {
 
-            // TODO distinguish between NO schema (use fallback) and outdated - throw error
-            $this->report('warning', 'File has no (valid) link to XSD-Schema. Current Version will be assumed but maybe wrong');
+            $this->report('warning', 'File has no link to XSD-Schema. Current Version will be tried.');
             $this->schema = XMLSchema::getLocalSchema($this->getRoottagName());
+            return;
+        }
+
+        $this->schema = XMLSchema::parseSchemaUrl($schemaUrl);
+
+        if (!$this->schema) {
+
+            $this->report('error', 'File has no valid link to XSD-Schema.');
+            return;
+        }
+
+        if ($this->schema['type'] !== $this->getRoottagName()) {
+
+            $this->report('error', 'File has no valid link to XSD-Schema.');
+            return;
+        }
+
+        if (!Version::isCompatible($this->schema['version'])) {
+
+            $this->report('warning', "Outdated or wrong Version of XSD-Schema ({$this->schema['version']})
+                ({$this->schema['version']}). Current version will be used instead.");
+            $this->schema = XMLSchema::getLocalSchema($this->getRoottagName());
+            return;
         }
     }
 
@@ -100,14 +146,17 @@ class XMLFile extends File {
     private function validateAgainstSchema(): void {
 
         $this->readSchema();
-        if (!$this->schema['filePath']) {
+        $filePath = XMLSchema::getSchemaFilePath($this->schema);
+        if (!$filePath) {
 
+            $this->report('warning', "XSD-Schema ({$this->schema['version']})
+                could not be obtained. Current version will be tried instead.");
             return;
         }
 
         $xmlReader = new XMLReader();
         $xmlReader->open($this->path);
-        $xmlReader->setSchema($this->schema['filePath']);
+        $xmlReader->setSchema($filePath);
         do {
             $continue = $xmlReader->read();
             $this->importLibXmlErrors();

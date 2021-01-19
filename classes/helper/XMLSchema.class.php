@@ -11,31 +11,28 @@ class XMLSchema {
         self::$allowExternalXMLSchema = $allowExternalXMLSchema;
     }
 
+
     // TODO use defined class instead of plain array
-    static function parseSchemaUrl(string $schemaUrl, bool $detectFilePath = false): ?array {
+    static function parseSchemaUrl(string $schemaUri): ?array {
 
         $regex = '#^(http)?.*?((\d+).(\d+).(\d+))?\/?definitions\/v?o?_?(\S*).xsd$#';
-        preg_match_all($regex, $schemaUrl, $matches, PREG_SET_ORDER, 0);
+        preg_match_all($regex, $schemaUri, $matches, PREG_SET_ORDER, 0);
 
         if (!count($matches)) {
             return null;
         }
-        $urlParts = $matches[0]; // TODO handle multiple schemas
+
+        $urlParts = $matches[0];
 
         $schemaData = [
-            "isUrl"         => ($urlParts[1] === 'http') && isset($urlParts[2]),
+            "isExternal"    => ($urlParts[1] === 'http') && isset($urlParts[2]),
             "version"       => isset($urlParts[2]) ? $urlParts[2] : '',
             "mayor"         => isset($urlParts[3]) ? (int) $urlParts[3] : 0,
             "minor"         => isset($urlParts[4]) ? (int) $urlParts[4] : 0,
             "patch"         => isset($urlParts[5]) ? (int) $urlParts[5] : 0,
             "type"          => isset($urlParts[6]) ? $urlParts[6] : 'unknown',
-            "url"           => $schemaUrl,
-            "filePath"      => false
+            "uri"           => $schemaUri
         ];
-
-        if ($detectFilePath) {
-            $schemaData["filePath"] = XMLSchema::getSchemaFilePath($schemaData);
-        }
 
         return $schemaData;
     }
@@ -52,25 +49,24 @@ class XMLSchema {
         $versionParts = explode('.', $version);
 
         return [
-            "isUrl"         => false,
+            "isExternal"    => false,
             "version"       => $version,
             "mayor"         => isset($versionParts[0]) ? (int) $versionParts[0] : 0,
             "minor"         => isset($versionParts[1]) ? (int) $versionParts[1] : 0,
             "patch"         => isset($versionParts[2]) ? (int) $versionParts[2] : 0,
             "type"          => $type,
-            "url"           => false,
-            "filePath"      => ROOT_DIR . "/definitions/vo_$type.xsd"
+            "uri"           => false
         ];
     }
 
 
-    private static function getSchemaFilePath(array $schemaData): string {
+    static function getSchemaFilePath(array $schemaData): string {
 
         if (!$schemaData) {
             return '';
         }
 
-        if (!self::$allowExternalXMLSchema or !$schemaData['isUrl']) {
+        if (!self::$allowExternalXMLSchema or !$schemaData['isExternal']) {
             return XMLSchema::accessDefinitionsDir($schemaData);
         } else {
             return XMLSchema::accessSchemaCache($schemaData);
@@ -92,7 +88,7 @@ class XMLSchema {
 
     private static function accessSchemaCache(array $schemaData): string {
 
-        if (!$schemaData['isUrl']) {
+        if (!$schemaData['isExternal']) {
             return '';
         }
 
@@ -116,7 +112,7 @@ class XMLSchema {
             throw new Exception("`$folder` is not writeable!");
         }
 
-        $fileContent = ExternalFile::download($schemaData['url']);
+        $fileContent = ExternalFile::download($schemaData['uri']);
 
         file_put_contents("$folder$fileName", $fileContent);
 

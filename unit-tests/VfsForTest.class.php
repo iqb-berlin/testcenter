@@ -40,6 +40,7 @@ class VfsForTest {
         vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../sampledata'), $sampledataDir);
         vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../vendor/iqb-berlin'), $iqbDir);
         vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../definitions'), $definitionsDir);
+        copy(realpath(__DIR__ . '/../composer.json'), $vfs->url() . '/composer.json');
 
         vfsStream::newDirectory('vo_data', 0777)->at($vfs);
 

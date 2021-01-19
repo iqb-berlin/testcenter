@@ -56,7 +56,7 @@ class BroadcastService {
         $status['status'] = 'online';
         $status['version'] = $version;
 
-        if (version_compare($version, $status['versionExpected']) < 0) {
+        if (version_compare($version, $status['versionExpected']) < 0) { // TODO use Version::isCompatible instead
 
             throw new Exception("BroadcastingService is set up and online but version `$version` is too old; 
                 `{$status['versionExpected']}` expected");
@@ -81,12 +81,12 @@ class BroadcastService {
         return ($reponse !== null) ? $url : null;
     }
 
-    
+
     static function sessionChange(SessionChangeMessage $sessionChange): ?string {
 
         return BroadcastService::send('push/session-change', json_encode($sessionChange));
     }
-    
+
 
     static function send(string $endpoint, string $message = '', string $verb = "POST"): ?string {
 

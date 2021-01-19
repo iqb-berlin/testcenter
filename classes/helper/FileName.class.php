@@ -15,6 +15,7 @@ class FileName {
             return $normalizedFilename;
         }
 
+        // TODO use Version::isCompatable instead
         $firstDotPos = strpos($normalizedFilename, '.');
         if ($firstDotPos) {
             $lastDotPos = strrpos($normalizedFilename, '.');
