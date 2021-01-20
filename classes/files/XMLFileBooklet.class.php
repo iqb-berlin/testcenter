@@ -58,11 +58,6 @@ class XMLFileBooklet extends XMLFile {
                 $bookletPlayers[] = $playerFile->getId();
             }
         }
-
-        if ($this->isValid()) {
-            $sizeStr = FileSize::asString($this->totalSize);
-            $this->report('info', "size fully loaded: `{$sizeStr}`");
-        }
     }
 
 

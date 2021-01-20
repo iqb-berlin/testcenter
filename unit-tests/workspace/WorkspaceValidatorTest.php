@@ -77,12 +77,6 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),
                 new ValidationReportEntry('warning', 'Booklet is never used'),
             ],
-            'Booklet/SAMPLE_BOOKLET.XML' => [
-                new ValidationReportEntry('info',  'size fully loaded: `45.7 KB`'),
-            ],
-            'Booklet/SAMPLE_BOOKLET2.XML' => [
-                new ValidationReportEntry('info',  'size fully loaded: `45.07 KB`'),
-            ],
             'Unit/unit-unused-and-missing-player.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),

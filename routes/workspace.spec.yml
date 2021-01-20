@@ -552,9 +552,7 @@ paths:
                   modificationTime: 1610547959
                   type: Booklet
                   id: BOOKLET.SAMPLE
-                  report:
-                    info:
-                      - 'size fully loaded: `45.7 KB`'
+                  report: []
                   info:
                     description: This a sample booklet for testing/development/showcase purposes.
                     label: Sample booklet
@@ -564,9 +562,7 @@ paths:
                   modificationTime: 1610547959
                   type: Booklet
                   id: BOOKLET.SAMPLE-2
-                  report:
-                    info:
-                      - 'size fully loaded: `45.07 KB`'
+                  report: []
                   info:
                     label: Reduced Booklet
                     totalSize: 46150
