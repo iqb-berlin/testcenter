@@ -25,6 +25,8 @@ class TesttakersFolder extends Workspace {
 
     public function findLoginData(string $name, string $password): ?PotentialLogin { // TODO unit-test
 
+        // STAND Validator hier!
+
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
