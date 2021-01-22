@@ -31,7 +31,7 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    // TODO unit-check
+    // TODO unit-test
     public function findDuplicates(File $ofFile): array {
 
         $files = [];

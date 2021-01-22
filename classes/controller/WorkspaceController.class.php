@@ -183,20 +183,23 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $workspace = new WorkspaceValidator($workspaceId);
         $workspace->validate();
-        $files = $workspace->getFiles();
-        return $response->withJson(
-            array_map(function(File $f): array {
-                return [
-                    'name' => $f->getName(),
-                    'size' => $f->getSize(),
-                    'modificationTime' => $f->getModificationTime(),
-                    'type' => $f->getType(),
-                    'id' => $f->getId(),
-                    'report' => $f->getValidationReportSorted(),
-                    'info' => $f->getSpecialInfo()
-                ];
-            }, $files)
-        );
+        $fileDigestList = [];
+        foreach ($workspace->getFiles() as $file) {
+
+            if (!isset($fileDigestList[$file->getType()])) {
+                $fileDigestList[$file->getType()] = [];
+            }
+            $fileDigestList[$file->getType()][] = [
+                'name' => $file->getName(),
+                'size' => $file->getSize(),
+                'modificationTime' => $file->getModificationTime(),
+                'type' => $file->getType(),
+                'id' => $file->getId(),
+                'report' => $file->getValidationReportSorted(),
+                'info' => $file->getSpecialInfo()
+            ];
+        }
+        return $response->withJson($fileDigestList);
     }
 
 
