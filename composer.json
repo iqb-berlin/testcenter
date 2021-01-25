@@ -33,7 +33,7 @@
   "license": "MIT",
   "require": {
     "slim/slim": "^3.12.0",
-    "php": "^7.3",
+    "php": "^7.4",
     "ext-pdo_mysql": "*",
     "ext-json": "*",
     "ext-pdo": "*",
@@ -41,7 +41,8 @@
     "ext-libxml": "*",
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-dom": "*"
   },
   "suggest": {
     "ext-apache": "*"

@@ -52,13 +52,13 @@ class TestController extends Controller {
 
         $bookletName = self::testDAO()->getBookletName($testId);
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $bookletFile = $workspaceController->getXMLFileByName('Booklet', $bookletName);
+        $bookletFile = $workspaceController->findFileById('Booklet', $bookletName);
 
         return $response->withJson([ // TODO include running, use only one query
             'mode' => $authToken->getMode(),
             'laststate' => self::testDAO()->getTestState($testId),
             'locked' => self::testDAO()->isTestLocked($testId),
-            'xml' => $bookletFile->xmlfile->asXML()
+            'xml' => $bookletFile->xml->asXML()
         ]);
     }
 
@@ -71,12 +71,12 @@ class TestController extends Controller {
         $testId = (int) $request->getAttribute('test_id');
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $unitFile = $workspaceController->getXMLFileByName('Unit', $unitName);
+        $unitFile = $workspaceController->findFileById('Unit', $unitName);
 
         $unit = [
             'laststate' => self::testDAO()->getUnitState($testId, $unitName),
             'restorepoint' => self::testDAO()->getRestorePoint($testId, $unitName),
-            'xml' => $unitFile->xmlfile->asXML()
+            'xml' => $unitFile->xml->asXML()
         ];
 
         return $response->withJson($unit);
@@ -92,7 +92,7 @@ class TestController extends Controller {
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $resourceFile = $workspaceController->getResourceFileByName($resourceName, $skipSubVersions);
+        $resourceFile = $workspaceController->findFileById('Resource', $resourceName, $skipSubVersions);
 
         $response->getBody()->write($resourceFile->getContent());
 

@@ -1,10 +1,8 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
-// TODO unit test
 
 class BookletsFolder extends Workspace {
-
 
     public function getBookletLabel(string $bookletId): string {
 
@@ -43,110 +41,96 @@ class BookletsFolder extends Workspace {
     }
 
 
-    public function assemblePreparedBookletsFromFiles(): array {
+    public function getLogins(): PotentialLoginArray {
 
         $testTakerDirPath = $this->_workspacePath . '/Testtakers';
         if (!file_exists($testTakerDirPath)) {
             throw new Exception("Folder not found: $testTakerDirPath");
         }
-        $preparedBooklets = [];
+        $testtakers = [];
 
         foreach (Folder::glob($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
 
-            $testTakersFile = new XMLFileTesttakers($fullFilePath);
-            if (!$testTakersFile->isValid()) {
+            $testtakersFile = new XMLFileTesttakers($fullFilePath);
+            if (!$testtakersFile->isValid()) { // TODO cross-file-validity?!
 
                 continue;
             }
 
-            if ($testTakersFile->getRoottagName() != 'Testtakers') {
-
-                continue;
-            }
-
-            foreach ($testTakersFile->getAllTesttakers() as $prepared) {
-
-                $localGroupName = $prepared['groupname'];
-                $localLoginData = $prepared;
-                // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-                if (!isset($preparedBooklets[$localGroupName])) {
-                    $preparedBooklets[$localGroupName] = [];
-                }
-                array_push($preparedBooklets[$localGroupName], $localLoginData);
-            }
+            array_push($testtakers, ...$testtakersFile->getAllTesttakers());
         }
-        return $this->sortPreparedBooklets($preparedBooklets);
+        return new PotentialLoginArray(...$testtakers);
     }
 
 
-    private function sortPreparedBooklets(array $preparedBooklets): array {
+    function getTestStatusOverview(array $testStatusFromDB): array {
 
-        $preparedBookletsSorted = [];
-        // error_log(print_r($preparedBooklets, true));
-        // !! no cross checking, so it's not checked whether a prepared booklet is started or a started booklet has been prepared // TODO overthink this
-        foreach($preparedBooklets as $group => $preparedData) {
-            $alreadyCountedLogins = [];
-            foreach($preparedData as $pd) {
-                // ['groupname' => string, 'loginname' => string, 'code' => string, 'booklets' => string[]]
-                if (!isset($preparedBookletsSorted[$group])) {
-                    $preparedBookletsSorted[$group] = [
-                        'groupname' => $group,
-                        'loginsPrepared' => 0,
-                        'personsPrepared' => 0,
-                        'bookletsPrepared' => 0,
-                        'bookletsStarted' => 0,
-                        'bookletsLocked' => 0,
-                        'laststart' => strtotime("1/1/2000"),
-                        'laststartStr' => ''
-                    ];
-                }
-                if (!in_array($pd['loginname'], $alreadyCountedLogins)) {
-                    array_push($alreadyCountedLogins, $pd['loginname']);
-                    $preparedBookletsSorted[$group]['loginsPrepared'] += 1;
-                }
-                $preparedBookletsSorted[$group]['personsPrepared'] += 1;
-                $preparedBookletsSorted[$group]['bookletsPrepared'] += count($pd['booklets']);
+        $testStatus = $this->getTestStatus();
+
+        foreach ($testStatus as $groupName => $status) {
+
+            if (isset($testStatusFromDB[$groupName])) {
+                $testStatus[$groupName] = array_merge($testStatus[$groupName], $testStatusFromDB[$groupName]);
+            } else {
+                $testStatus[$groupName]['bookletsStarted'] = 0;
+                $testStatus[$groupName]['bookletsLocked'] = 0;
+                $testStatus[$groupName]['laststart'] = strtotime("1/1/2000");
+                $testStatus[$groupName]['laststartStr'] = '';
             }
         }
-        return $preparedBookletsSorted;
+
+        foreach ($testStatusFromDB as $groupName => $status) {
+
+            if (!isset($testStatus[$groupName])) {
+                $testStatus[$groupName] = $status;
+                $testStatus[$groupName]['groupname'] = $groupName;
+                $testStatus[$groupName]['orphaned'] = true; // group is in Db, but file is vanished
+            }
+        }
+
+        return array_values($testStatus);
     }
 
+    private function getTestStatus(): array {
 
-    function getTestStatusOverview(array $bookletsStarted): array {
+        $logins = $this->getLogins();
 
-        $preparedBooklets = $this->assemblePreparedBookletsFromFiles();
+        $allGroupStatistics = [];
+        $codes = [];
 
-        foreach($bookletsStarted as $startedBooklet) {
-            // groupname, loginname, code, bookletname, locked
-            if (!isset($preparedBooklets[$startedBooklet['groupname']])) {
-                $preparedBooklets[$startedBooklet['groupname']] = [
-                    'groupname' => $startedBooklet['groupname'],
+        foreach ($logins as $login) {
+
+            /* @var PotentialLogin $login */
+            $groupName = $login->getGroupName();
+
+            if (!isset($allGroupStatistics[$groupName])) {
+                $allGroupStatistics[$groupName] = [
+                    'groupname' => $groupName,
                     'loginsPrepared' => 0,
                     'personsPrepared' => 0,
                     'bookletsPrepared' => 0,
-                    'bookletsStarted' => 0,
-                    'bookletsLocked' => 0,
-                    'laststart' => strtotime("1/1/2000"),
-                    'laststartStr' => ''
                 ];
             }
-            $preparedBooklets[$startedBooklet['groupname']]['bookletsStarted'] += 1;
-            if ($startedBooklet['locked'] == '1') {
-                $preparedBooklets[$startedBooklet['groupname']]['bookletsLocked'] += 1;
+
+            if (!isset($codes[$login->getName()])) {
+                $codes[$login->getName()] = [];
             }
-            $tmpTime = strtotime($startedBooklet['laststart'] ?? "1/1/2000");
-            if ($tmpTime > $preparedBooklets[$startedBooklet['groupname']]['laststart']) {
-                $preparedBooklets[$startedBooklet['groupname']]['laststart'] = $tmpTime;
-                $preparedBooklets[$startedBooklet['groupname']]['laststartStr'] = strftime('%d.%m.%Y',$tmpTime);
+
+            $codesInLogin = array_keys($login->getBooklets());
+            if ($codesInLogin != [""]) {
+                array_push($codes[$login->getName()], ...$codesInLogin);
             }
+
+            $allGroupStatistics[$groupName]['loginsPrepared'] += 1;
+            $allGroupStatistics[$groupName]['personsPrepared'] += max(1, count(array_unique($codes[$login->getName()])));
+            $allGroupStatistics[$groupName]['bookletsPrepared'] += array_reduce($login->getBooklets(),
+                function($carry, $bookletList) {
+                    return $carry + count($bookletList);
+                },
+                0
+            );
         }
 
-        // get rid of the key
-        $returner = [];
-        foreach($preparedBooklets as $group => $groupData) {
-            array_push($returner, $groupData);
-        }
-
-        return $returner;
+        return $allGroupStatistics;
     }
 }

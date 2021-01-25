@@ -9,7 +9,8 @@ class Workspace {
     protected $_workspacePath = '';
     protected $_dataPath = '';
 
-    const subFolders = ['Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource'];
+    // dont' change order, it's the order of possible dependencies
+    const subFolders = ['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'];
 
 
     static function getAll(): array {
@@ -38,7 +39,7 @@ class Workspace {
     }
 
 
-    protected function getOrCreateWorkspacePath() {
+    protected function getOrCreateWorkspacePath(): string {
 
         $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
         if (file_exists($workspacePath) and !is_dir($workspacePath)) {
@@ -57,7 +58,7 @@ class Workspace {
 
         $subFolderPath = $this->_workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
-            throw new Exception("Invalid SubFolder type {$type}!");
+            throw new Exception("Invalid type {$type}!");
         }
         if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
             throw new Exception("Workspace dir `{$subFolderPath}` seems not to be a proper directory!");
@@ -83,48 +84,29 @@ class Workspace {
     }
 
 
-    public function getAllFiles(): array {
+    public function getWorkspaceId() {
 
-        $fileList = [];
-
-        $workspaceDirHandle = opendir($this->_workspacePath);
-        while (($subDir = readdir($workspaceDirHandle)) !== false) {
-            if (($subDir === '.') or ($subDir === '..')) {
-                continue;
-            }
-
-            $fullSubDirPath = $this->_workspacePath . '/' . $subDir;
-
-            if (!is_dir($fullSubDirPath)) {
-                continue;
-            }
-
-            $subDirHandle = opendir($fullSubDirPath);
-            while (($entry = readdir($subDirHandle)) !== false) {
-                $fullFilePath = $fullSubDirPath . '/' . $entry;
-                if (!is_file($fullFilePath)) {
-                    continue;
-                }
-
-                $rs = new ResourceFile($fullFilePath, true);
-
-                array_push($fileList, [
-                    'filename' => $rs->getFileName(),
-                    'filesize' => $rs->getFileSize(),
-                    'filesizestr' => $rs->getFileSizeString(), // TODO is this used?
-                    'filedatetime' => $rs->getFileDateTime(),
-                    'filedatetimestr' => $rs->getFileDateTimeString(), // TODO is this used?
-                    'type' => $subDir,
-                    'typelabel' => $subDir // TODO is this used?
-                ]);
-
-            }
-
-        }
-
-        return $fileList;
+        return $this->_workspaceId;
     }
 
+
+    public function getFiles(): array {
+
+        $files = [];
+
+        foreach ($this::subFolders as $type) {
+
+            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+            $filePaths = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
+
+            foreach ($filePaths as $filePath) {
+
+                $files[] = new File($filePath, $type);
+            }
+        }
+
+        return $files;
+    }
 
     /**
      * @param $filesToDelete - array containing file paths local relative to this workspace
@@ -158,64 +140,82 @@ class Workspace {
 
 
     /**
-     * takes a file from the workspcae-dir toplevel and puts it to the correct subdir
-     *
+     * takes a file from the workspace-dir toplevel and puts it to the correct subdir
      *
      * @param $fileName
      * @return array - keys: imported files; value true or error message
      * @throws Exception
      */
-    public function importUnsortedResource($fileName) {
+    public function importUnsortedFile(string $fileName): array {
 
         if (strtoupper(substr($fileName, -4)) == '.ZIP') {
             return $this->importUnsortedZipArchive($fileName);
         }
 
-        $this->sortAndValidateUnsortedResource($fileName);
+        $uploadedFile = $this->sortAndValidateUnsortedFile($fileName);
+
+        if (file_exists($uploadedFile->getPath())) {
+            unlink($uploadedFile->getPath());
+        }
 
         return [
-            $fileName => true
+            $fileName => $uploadedFile->getValidationReportSorted()
         ];
     }
 
 
-    protected function sortAndValidateUnsortedResource($fileName) {
+    protected function sortAndValidateUnsortedFile(string $fileName): File {
 
-        $targetFolder = $this->_workspacePath . '/Resource';
+        $file = File::get($this->_workspacePath . '/' . $fileName, null, true);
 
-        if (strtoupper(substr($fileName, -4)) == '.XML') {
-            $xFile = new XMLFile($this->_workspacePath . '/' . $fileName, true);
-            if ($xFile->isValid()) {
-                $targetFolder = $this->_workspacePath . '/' . $xFile->getRoottagName();
-            } else {
-                throw new HttpError(implode("\n", $xFile->getErrors()), 422);
-            }
+        $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId())); // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
+
+        if (!$file->isValid()) {
+            return $file;
         }
+
+        $targetFolder = $this->_workspacePath . '/' . $file->getType();
 
         // move file from testcenter-tmp-folder to targetfolder
         if (!file_exists($targetFolder)) {
             if (!mkdir($targetFolder)) {
-                throw new Exception("Could not create folder: `$targetFolder`.");
+                $file->report('error', "Could not create folder: `$targetFolder`.");
+                return $file;
             }
         }
 
         $targetFilePath = $targetFolder . '/' . basename($fileName);
 
         if (file_exists($targetFilePath)) {
-            if (!unlink($targetFilePath)) {
-                throw new Exception("Could not delete file: `$targetFolder/$fileName`");
+            $oldFile = File::get($targetFilePath);
+
+            if ($oldFile->getId() !== $file->getId()) {
+
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist.
+                    Overwriting was rejected since new file's ID (`{$file->getId()}`) 
+                    differs from old one (`{$oldFile->getId()}`)."
+                );
+                return $file;
             }
+
+            if (!unlink($targetFilePath)) {
+                $file->report('error', "Could not delete file: `$targetFolder/$fileName`");
+                return $file;
+            }
+
+            $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
         }
 
-        if (strlen($targetFilePath) > 0) {
-            if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
-                throw new Exception("Could not move file to `$targetFolder/$fileName`");
-            }
+        if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
+            $file->report('error', "Could not move file to `$targetFolder/$fileName`");
+            return $file;
         }
+
+        return $file;
     }
 
 
-    protected function importUnsortedZipArchive($fileName) {
+    protected function importUnsortedZipArchive(string $fileName): array {
 
         $extractedFiles = [];
 
@@ -224,14 +224,13 @@ class Workspace {
         $extractionPath = "{$this->_workspacePath}/$extractionFolder";
 
         if (!mkdir($extractionPath)) {
-            throw new Exception('Konnte Verzeichnis für ZIP-Ziel nicht anlegen: ' . $extractionPath);
+            throw new Exception("Could not create directory for extracted files: `$extractionPath`");
         }
 
         $zip = new ZipArchive;
         if ($zip->open($filePath) !== TRUE) {
-            throw new Exception('Konnte ZIP-Datei nicht entpacken.');
+            throw new Exception('Could not extract Zip-File');
         }
-
         $zip->extractTo($extractionPath . '/');
         $zip->close();
 
@@ -239,12 +238,8 @@ class Workspace {
         if ($zipFolderDir !== false) {
             while (($entry = readdir($zipFolderDir)) !== false) {
                 if (is_file($extractionPath . '/' .  $entry)) {
-                    try { // we don't want to fail if one file fails
-                        $this->sortAndValidateUnsortedResource("$extractionFolder/$entry");
-                        $extractedFiles["$extractionFolder/$entry"] = true;
-                    } catch (Exception $e) {
-                        $extractedFiles["$extractionFolder/$entry"] = $e->getMessage();
-                    }
+                    $file = $this->sortAndValidateUnsortedFile("$extractionFolder/$entry");
+                    $extractedFiles["$fileName/$entry"] = $file->getValidationReportSorted();
                 }
             }
         }
@@ -276,48 +271,20 @@ class Workspace {
     }
 
 
-    public function getXMLFileByName(string $type, string $findName): XMLFile {
+    public function findFileById(string $type, string $findId, bool $skipSubVersions = false): File {
 
         $dirToSearch = $this->getOrCreateSubFolderPath($type);
+        $findId = FileName::normalize($findId, $skipSubVersions);
 
-        foreach (Folder::glob($dirToSearch, "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($dirToSearch, "*.*") as $fullFilePath) {
 
-            $xmlFile = XMLFile::get($fullFilePath);
-            if ($xmlFile->isValid()) {
-                $itemName = $xmlFile->getId();
-                if ($itemName == strtoupper($findName)) {
-                    return $xmlFile;
-                }
+            $file = File::get($fullFilePath, $type);
+            if ($file->isValid() && ($file->getId() == $findId)) {
+                return $file;
             }
         }
 
-        throw new HttpError("No $type with name `$findName` found on Workspace`{$this->_workspaceId}`!", 404);
-    }
-
-
-    public function getResourceFileByName(string $resourceName, bool $skipSubVersions): ResourceFile {
-
-        $resourceFolder = $this->getOrCreateSubFolderPath('Resource');
-
-        $resourceFileName = FileName::normalize(basename($resourceName), $skipSubVersions);
-
-        foreach (Folder::glob($resourceFolder, "*.*") as $fullFilePath) {
-
-            $normalizedFilename = FileName::normalize(basename($fullFilePath), $skipSubVersions);
-
-            if ($normalizedFilename == $resourceFileName) {
-                return new ResourceFile($fullFilePath);
-            }
-        }
-
-        throw new HttpError("No resource with name `$resourceName` found!", 404);
-    }
-
-
-    public function countFiles(string $type): int {
-
-        $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-        return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
+        throw new HttpError("No $type with name `$findId` found on Workspace`{$this->_workspaceId}`!", 404);
     }
 
 
@@ -331,5 +298,12 @@ class Workspace {
         }
 
         return $result;
+    }
+
+
+    public function countFiles(string $type): int {
+
+        $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+        return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
     }
 }

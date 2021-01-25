@@ -21,6 +21,7 @@ class TestEnvironment {
             DB::connect($dbConfig);
 
             BroadcastService::setup('', '');
+            XMLSchema::setup(false);
 
             TestEnvironment::resetState();
             TestEnvironment::setUpTestData();
@@ -47,6 +48,7 @@ class TestEnvironment {
             ]));
 
             BroadcastService::setup('', '');
+            XMLSchema::setup(false);
 
             $initDAO = new InitDAO();
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');
@@ -129,7 +131,7 @@ class TestEnvironment {
     }
 
 
-    private static function debugVirtualEnvironment() {
+    public static function debugVirtualEnvironment() {
 
         $initDAO = new InitDAO();
         $fullState = "# State of DATA_DIR\n\n";

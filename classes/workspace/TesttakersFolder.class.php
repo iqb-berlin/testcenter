@@ -25,6 +25,8 @@ class TesttakersFolder extends Workspace {
 
     public function findLoginData(string $name, string $password): ?PotentialLogin { // TODO unit-test
 
+        // STAND Validator hier!
+
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
@@ -93,5 +95,25 @@ class TesttakersFolder extends Workspace {
         }
 
         return $groups;
+    }
+
+
+    // TODO unit-test
+    function getAllLoginNames(): array {
+
+        $logins = [];
+
+        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+
+            $xFile = new XMLFileTesttakers($fullFilePath);
+
+            if ($xFile->isValid()) {
+
+                $logins[$fullFilePath] = $xFile->getAllLoginNames();
+            }
+
+        }
+
+        return $logins;
     }
 }

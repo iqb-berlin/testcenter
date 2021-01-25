@@ -32,6 +32,7 @@ try {
         $config = SystemConfig::fromFile(ROOT_DIR . '/config/system.json');
         define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
         BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
+        XMLSchema::setup($config->allowExternalXMLSchema);
 
         DB::connect();
     }
