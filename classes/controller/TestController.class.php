@@ -32,12 +32,10 @@ class TestController extends Controller {
 
         self::testDAO()->setTestRunning((int) $test['id']);
 
-        error_log('OUT OUT OUT:' . print_r($test['lastState'], true));
-
         BroadcastService::sessionChange(SessionChangeMessage::testState(
             $authToken,
             (int) $test['id'],
-            $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
+            isset($test['lastState']) && $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
             $body['bookletName']
         ));
 
