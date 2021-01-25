@@ -32,20 +32,18 @@ class TestController extends Controller {
 
         self::testDAO()->setTestRunning((int) $test['id']);
 
-        error_log('OUT OUT OUT:' . print_r($test['lastState'], true));
-
         BroadcastService::sessionChange(SessionChangeMessage::testState(
             $authToken,
             (int) $test['id'],
-            $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
+            isset($test['lastState']) && $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
             $body['bookletName']
         ));
 
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
     }
-    
-    
+
+
     public static function get(Request $request, Response $response) : Response {
 
         /* @var $authToken AuthToken */
@@ -64,7 +62,7 @@ class TestController extends Controller {
         ]);
     }
 
-    
+
     public static function getUnit(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -124,7 +122,7 @@ class TestController extends Controller {
         return $response->withStatus(201);
     }
 
-    
+
     public static function putReview(Request $request, Response $response): Response {
 
         $testId = (int) $request->getAttribute('test_id');
@@ -180,8 +178,8 @@ class TestController extends Controller {
 
         return $response->withStatus(200);
     }
-    
-    
+
+
     public static function patchState(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -283,7 +281,7 @@ class TestController extends Controller {
         return $response->withStatus(201);
     }
 
-    
+
     public static function patchLock(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -330,8 +328,8 @@ class TestController extends Controller {
 
         return $response->withStatus(200, $changed ? 'OK' : 'OK, was already marked as executed');
     }
-    
-    
+
+
     // TODO replace this and use proper data-class
     private static function stateArray2KeyValue(array $stateData): array {
         $statePatch = [];
