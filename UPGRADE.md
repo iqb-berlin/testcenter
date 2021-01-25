@@ -1,6 +1,6 @@
 # Changelog & Upgrade Information
 
-## [next]
+## 9.0.0
 The main content of this update is a complete refactoring of the (XML-)File-classes,
 Workspace validation and XML-File-Handling. The main goal was to keep validity and
 consistency of the workspaces. The refactoring shall also allow more and deeper validation
