@@ -172,7 +172,7 @@ class WorkspaceController extends Controller {
         $workspaceId = (int) $request->getAttribute('ws_id');
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
         $containsErrors = array_reduce($importedFiles, function($carry, $item) {
-            return $carry or count($item['error']);
+            return $carry or ($item['error'] and count($item['error']));
         }, false);
         return $response->withJson($importedFiles)->withStatus($containsErrors ? 207 : 201);
     }
