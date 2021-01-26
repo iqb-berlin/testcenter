@@ -255,6 +255,15 @@ exports.repeat = gulp.series(
   'delete_special_config_file',
 );
 
+exports.run_dredd_test_no_specs = gulp.series(
+  'start',
+  'clear_tmp_dir',
+  'compile_spec_files',
+  'prepare_spec_for_dredd',
+  'run_dredd',
+  'delete_special_config_file',
+);
+
 
 exports.update_specs = gulp.series(
   'start',

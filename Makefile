@@ -22,6 +22,12 @@ test-unit:
 test-e2e:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec testcenter-backend npm --prefix=integration run dredd_test
 
+test-e2e-no-spec-update:
+	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec testcenter-backend npm --prefix=integration run dredd_test_no_specs
+
+update-docs:
+	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec testcenter-backend npm --prefix=integration run update_specs
+
 init-dev-config:
 	cp docker/.env-default docker/.env
 

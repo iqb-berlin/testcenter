@@ -86,8 +86,11 @@ def _run_tests():
     time.sleep(10)
     subprocess.run('make test-unit', shell=True, check=True)
     time.sleep(10)
-    subprocess.run('make test-e2e', shell=True, check=True)
+    subprocess.run('make test-e2e-no-spec-update', shell=True, check=True)
 
+def _update_docs():
+    time.sleep(10)
+    subprocess.run('make update-docs', shell=True, check=True)
 
 def _git_tag():
     print(f"Creating git tag for version {new_version}")
@@ -111,13 +114,15 @@ pattern = re.compile(VERSION_REGEX)
 with open(VERSION_FILE) as version_file:
     file_content = version_file.read()
     old_version = _parse_version()
-new_version = _increment_version(old_version)
-_update_version_in_file(new_version)
-_run_software()
+
 try:
+    _run_software()
     _run_tests()
+    new_version = _increment_version(old_version)
+    _update_version_in_file(new_version)
+    _update_docs()
+    _stop_software()
+    _git_tag()
 except subprocess.SubprocessError:
     _stop_software()
     _undo_version_update_in_files()
-_stop_software()
-_git_tag()
