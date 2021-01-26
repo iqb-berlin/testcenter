@@ -30,9 +30,14 @@ class XMLSchema {
             "mayor"         => isset($urlParts[3]) ? (int) $urlParts[3] : 0,
             "minor"         => isset($urlParts[4]) ? (int) $urlParts[4] : 0,
             "patch"         => isset($urlParts[5]) ? (int) $urlParts[5] : 0,
-            "type"          => isset($urlParts[6]) ? $urlParts[6] : 'unknown',
+            "type"          => isset($urlParts[6]) ? $urlParts[6] : '',
             "uri"           => $schemaUri
         ];
+
+        if ($schemaData['version'] and $schemaData['type'] and ($schemaData['version'] === Version::get())) {
+
+            return XMLSchema::getLocalSchema($schemaData['type']);
+        }
 
         return $schemaData;
     }
