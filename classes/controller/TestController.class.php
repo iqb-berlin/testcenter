@@ -195,8 +195,6 @@ class TestController extends Controller {
 
         $statePatch = TestController::stateArray2KeyValue($stateData);
 
-        error_log('OUT OUT OUT:' . print_r($statePatch, true));
-
         $newState = self::testDAO()->updateTestState($testId, $statePatch);
 
         foreach ($stateData as $entry) {
