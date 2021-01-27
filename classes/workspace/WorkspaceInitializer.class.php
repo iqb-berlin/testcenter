@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 class WorkspaceInitializer {
 
+
     const sampleDataPaths = [
       "sampledata/Booklet.xml" => "Booklet/SAMPLE_BOOKLET.XML",
       "sampledata/Booklet2.xml" => "Booklet/SAMPLE_BOOKLET2.XML",

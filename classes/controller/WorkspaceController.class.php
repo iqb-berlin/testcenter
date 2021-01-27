@@ -4,7 +4,9 @@ declare(strict_types=1);
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
+use slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Stream;
@@ -35,7 +37,7 @@ class WorkspaceController extends Controller {
         }
 
         self::superAdminDAO()->createWorkspace($requestBody->name);
-        
+
         return $response->withStatus(201);
     }
 
@@ -50,11 +52,11 @@ class WorkspaceController extends Controller {
         }
 
         self::superAdminDAO()->setWorkspaceName($workspaceId, $requestBody->name);
-        
+
         return $response;
     }
-    
-    
+
+
     public static function patchUsers(Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
@@ -65,7 +67,7 @@ class WorkspaceController extends Controller {
         }
 
         self::superAdminDAO()->setUserRightsForWorkspace($workspaceId, $requestBody->u);
-        
+
         return $response->withHeader('Content-type', 'text/plain;charset=UTF-8');
     }
 
@@ -76,7 +78,7 @@ class WorkspaceController extends Controller {
 
         return $response->withJson(self::superAdminDAO()->getUsersByWorkspace($workspaceId));
     }
-    
+
 
     public static function getReviews(Request $request, Response $response): Response {
 
@@ -138,17 +140,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function validation(Request $request, Response $response): Response {
-
-        $workspaceId = (int) $request->getAttribute('ws_id');
-
-        $workspaceValidator = new WorkspaceValidator($workspaceId);
-        $report = $workspaceValidator->validate();
-
-        return $response->withJson($report);
-    }
-
-    public static function  getFile(Request $request, Response $response): Response {
+    public static function getFile(Request $request, Response $response): Response {
 
         $workspaceId = $request->getAttribute('ws_id', 0);
         $fileType = $request->getAttribute('type', '[type missing]');
@@ -179,16 +171,35 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
-        return $response->withJson($importedFiles)->withStatus(201);
+        $containsErrors = array_reduce($importedFiles, function($carry, $item) {
+            return $carry or ($item['error'] and count($item['error']));
+        }, false);
+        return $response->withJson($importedFiles)->withStatus($containsErrors ? 207 : 201);
     }
 
 
     public static function getFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
-        $workspace = new Workspace($workspaceId);
-        $files = $workspace->getAllFiles();
-        return $response->withJson($files);
+        $workspace = new WorkspaceValidator($workspaceId);
+        $workspace->validate();
+        $fileDigestList = [];
+        foreach ($workspace->getFiles() as $file) {
+
+            if (!isset($fileDigestList[$file->getType()])) {
+                $fileDigestList[$file->getType()] = [];
+            }
+            $fileDigestList[$file->getType()][] = [
+                'name' => $file->getName(),
+                'size' => $file->getSize(),
+                'modificationTime' => $file->getModificationTime(),
+                'type' => $file->getType(),
+                'id' => $file->getId(),
+                'report' => $file->getValidationReportSorted(),
+                'info' => $file->getSpecialInfo()
+            ];
+        }
+        return $response->withJson($fileDigestList);
     }
 
 
@@ -259,11 +270,11 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
-    
+
         $workspaceController = new Workspace($workspaceId);
         /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
-    
+        $xmlFile = $workspaceController->findFileById('SysCheck', $sysCheckName);
+
         return $response->withJson(new SysCheck([
             'name' => $xmlFile->getId(),
             'label' => $xmlFile->getLabel(),
@@ -282,40 +293,75 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
-    
-        $workspaceController = new Workspace($workspaceId);
-        /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $workspaceController->getXMLFileByName('SysCheck', $sysCheckName);
-    
-        return $response->withJson($xmlFile->getUnitData());
+
+        $workspaceValidator = new WorkspaceValidator($workspaceId);
+
+        /* @var XMLFileSysCheck $sysCheck */
+        $sysCheck = $workspaceValidator->getSysCheck($sysCheckName);
+        if (($sysCheck == null)) {
+            throw new NotFoundException($request, $response);
+        }
+
+        if (!$sysCheck->hasUnit()) {
+            return $response->withJson([
+                'player_id' => '',
+                'def' => '',
+                'player' => ''
+            ]);
+        }
+
+        $sysCheck->crossValidate($workspaceValidator);
+        if (!$sysCheck->isValid()) {
+
+            throw new HttpInternalServerErrorException($request, 'SysCheck is invalid');
+        }
+
+        $unit = $workspaceValidator->getUnit($sysCheck->getUnitId());
+        $unit->crossValidate($workspaceValidator);
+        if (!$unit->isValid()) {
+
+            throw new HttpInternalServerErrorException($request,  'Unit is invalid');
+        }
+
+        $player = $unit->getPlayerIfExists($workspaceValidator);
+        if (!$player or !$player->isValid()) {
+
+            throw new HttpInternalServerErrorException($request, 'Player is invalid');
+        }
+
+        return $response->withJson([
+            'player_id' => $unit->getPlayerId(),
+            'def' => $unit->getContent($workspaceValidator),
+            'player' => $player->getContent()
+        ]);
     }
-    
+
     public static function putSysCheckReport(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
         $report = new SysCheckReport(JSON::decode($request->getBody()->getContents()));
-    
+
         $sysChecksFolder = new SysChecksFolder($workspaceId);
-    
+
         /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $sysChecksFolder->getXMLFileByName('SysCheck', $sysCheckName);
-    
+        $xmlFile = $sysChecksFolder->findFileById('SysCheck', $sysCheckName);
+
         if (strlen($report->keyPhrase) <= 0) {
-    
+
             throw new HttpBadRequestException($request,"No key `$report->keyPhrase`");
         }
-    
+
         if (strtoupper($report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
-    
+
             throw new HttpError("Wrong key `$report->keyPhrase`", 400);
         }
-    
+
         $report->checkId = $sysCheckName;
         $report->checkLabel = $xmlFile->getLabel();
-    
+
         $sysChecksFolder->saveSysCheckReport($report);
-    
+
         return $response->withStatus(201);
     }
 }

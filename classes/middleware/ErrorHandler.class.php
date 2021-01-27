@@ -11,10 +11,13 @@ class ErrorHandler {
 
     static function logException(Throwable $throwable, bool $logTrace = false): string {
 
+        $ip = explode(".", $_SERVER['REMOTE_ADDR']);
+        $ipAnon = "user-" . md5($ip[0] . $ip[1] . $ip[2] . $_SERVER['HTTP_USER_AGENT']);
+
         $errorUniqueId = uniqid('error-', true);
         $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
 
-        $logHeadline = [$errorUniqueId];
+        $logHeadline = [$ipAnon, $errorUniqueId];
 
         if (method_exists($throwable, 'getTitle') and $throwable->getTitle()) {
             $logHeadline[] = "({$throwable->getTitle()})";

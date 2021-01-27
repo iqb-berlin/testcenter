@@ -23,9 +23,6 @@ $app->group('/workspace', function(App $app) {
     $app->get('/{ws_id}/logs', [WorkspaceController::class, 'getLogs'])
         ->add(new IsWorkspacePermitted('RO'));
 
-    $app->get('/{ws_id}/validation', [WorkspaceController::class, 'validation'])
-        ->add(new IsWorkspacePermitted('RO'));
-
     $app->get('/{ws_id}/file/{type}/{filename}', [WorkspaceController::class, 'getFile'])
         ->add(new IsWorkspacePermitted('RO'));
 

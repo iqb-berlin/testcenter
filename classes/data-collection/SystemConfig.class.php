@@ -3,7 +3,8 @@
 
 class SystemConfig extends DataCollection {
 
-    public $broadcastServiceUriPush = "";
-    public $broadcastServiceUriSubscribe = "";
+    public string $broadcastServiceUriPush = "";
+    public string $broadcastServiceUriSubscribe = "";
+    public bool $allowExternalXMLSchema = true;
 
 }

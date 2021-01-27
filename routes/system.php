@@ -116,7 +116,18 @@ $app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection
 
     foreach (SysChecksFolder::getAll() as $sysChecksFolder) { /* @var SysChecksFolder $sysChecksFolder */
 
-        $availableSysChecks = array_merge($availableSysChecks, $sysChecksFolder->findAvailableSysChecks());
+        $availableSysChecks = array_merge(
+            $availableSysChecks,
+            array_map(
+                function(XMLFileSysCheck $file) use ($sysChecksFolder) { return [
+                    'workspaceId' => $sysChecksFolder->getWorkspaceId(),
+                    'name' => $file->getId(),
+                    'label' => $file->getLabel(),
+                    'description' => $file->getDescription()
+                ]; },
+                $sysChecksFolder->findAvailableSysChecks()
+            )
+        );
     }
 
     if (!count($availableSysChecks)) {
