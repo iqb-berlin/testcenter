@@ -279,7 +279,10 @@ class Workspace {
         foreach (Folder::glob($dirToSearch, "*.*") as $fullFilePath) {
 
             $file = File::get($fullFilePath, $type);
-            if ($file->isValid() && ($file->getId() == $findId)) {
+
+            $compareId = $skipSubVersions ? FileName::normalize($file->getId(), $skipSubVersions) : $file->getId();
+
+            if ($file->isValid() && ($compareId == $findId)) {
                 return $file;
             }
         }

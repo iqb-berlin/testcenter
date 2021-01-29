@@ -193,6 +193,21 @@ class WorkspaceTest extends TestCase {
         $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-1.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
         $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-1.html', $result->getPath());
+
+        $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-1.0.99.HTML', true);
+        $this->assertEquals('ResourceFile', get_class($result));
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-1.html', $result->getPath());
+
+        copy('vfs://root/vo_data/ws_1/Resource/verona-simple-player-1.html',
+            'vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.0.99.html');
+
+        $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-2.HTML', true);
+        $this->assertEquals('ResourceFile', get_class($result));
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.0.99.html', $result->getPath());
+
+        $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-2.0.99.HTML', true);
+        $this->assertEquals('ResourceFile', get_class($result));
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.0.99.html', $result->getPath());
     }
 
 
