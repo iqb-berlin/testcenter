@@ -9,15 +9,15 @@ services:
       - "--entrypoints.web.address=:80"
 
   testcenter-backend:
-    image: iqbberlin/testcenter-backend:7.4.0
+    image: iqbberlin/testcenter-backend:9.1.0
     volumes:
       - testcenter_backend_vo_data:/var/www/html/vo_data
 
   testcenter-frontend:
-    image: iqbberlin/testcenter-frontend:6.3.1
+    image: iqbberlin/testcenter-frontend:6.5.0
 
   testcenter-broadcasting-service:
-    image: iqbberlin/testcenter-broadcasting-service:2.0.2
+    image: iqbberlin/testcenter-broadcasting-service:2.0.3
 
 volumes:
   testcenter_backend_vo_data:

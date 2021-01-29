@@ -6,7 +6,6 @@ services:
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
 
   testcenter-backend:
     build:

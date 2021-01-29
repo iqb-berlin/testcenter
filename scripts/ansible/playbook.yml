@@ -1,0 +1,68 @@
+---
+- hosts: local
+  vars:
+    remote_username: iqb
+  remote_user: "{{ remote_username }}"
+  tasks:
+    - name: Install git and make
+      apt:
+        pkg:
+          - git
+          - make
+      become: yes
+    - name: Clone testcenter setup repo
+      git:
+        repo: 'https://github.com/iqb-berlin/testcenter-setup'
+        dest: /home/iqb/testcenter-setup
+        recursive: no
+    - name: Add Docker apt repo
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+        update_cache: no
+      become: yes
+    - name: Add an apt key by id from a keyserver
+      apt_key:
+        url: http://download.docker.com/linux/ubuntu/gpg
+        state: present
+      become: yes
+    - name: Install docker
+      apt:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        update_cache: yes
+      become: yes
+    - name: Create docker group
+      group:
+        name: docker
+        state: present
+      become: yes
+    - name: Add user to docker group
+      user:
+        name: "{{ remote_username }}"
+        groups:
+          - docker
+          - sudo
+      become: yes
+    - name: Download docker-compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+      become: yes
+    - name: Fix docker-compose executable permission
+      file:
+        path: /usr/local/bin/docker-compose
+        mode: 'u=rwx,g=rx,o=rx'
+      become: yes
+    - name: Run config initialisation via make
+      command: make init-config
+      args:
+        chdir: testcenter-setup
+        creates: .env
+    - name: Restart docker service
+      service:
+        name: docker
+        state: restarted
+      become: yes
