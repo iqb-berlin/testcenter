@@ -18,14 +18,14 @@ services:
       - ./config/cert_config.yml:/cert_config.yml
 
   testcenter-backend:
-    image: iqbberlin/testcenter-backend:8.0.0
+    image: iqbberlin/testcenter-backend:9.1.0
     volumes:
       - testcenter_backend_vo_data:/var/www/html/vo_data
     labels:
       - "traefik.http.routers.testcenter-backend.tls=true"
 
   testcenter-frontend:
-    image: iqbberlin/testcenter-frontend:6.3.1
+    image: iqbberlin/testcenter-frontend:6.5.0
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
 
