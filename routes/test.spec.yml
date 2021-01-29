@@ -57,7 +57,11 @@ paths:
   /test/{test_id}/unit/{unit_name}:
     get:
       summary: get a unit of a test
-      description: retrieves a certain unit from a certain executed test - the booklet-file XML, last state and lock status
+      description: |-
+        Retrieves a certain unit from a certain executed test - the booklet-file XML, last state and lock status.
+
+        You can insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with
+        an alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261.
       parameters:
         - in: header
           name: AuthToken

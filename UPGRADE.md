@@ -1,5 +1,10 @@
 # Changelog & Upgrade Information
 
+## [next-minor]
+### Endpoints
+* You can now insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with
+an alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261.
+
 ## 9.0.0
 The main content of this update is a complete refactoring of the (XML-)File-classes,
 Workspace validation and XML-File-Handling. The main goal was to keep validity and

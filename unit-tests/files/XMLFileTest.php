@@ -23,7 +23,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals('BOOKLET.SAMPLE', $xf->getId());
         $this->assertEquals('vfs://root/vo_data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
         $this->assertEquals('Sample booklet', $xf->getLabel());
-        $this->assertEquals(1213, $xf->getSize());
+        $this->assertEquals(1331, $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRoottagName());
         $this->assertEquals('This a sample booklet for testing/development/showcase purposes.', $xf->getDescription());
         $this->assertEquals('', $xf->getErrorString());
@@ -85,7 +85,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals('BOOKLET.SAMPLE', $xf->getId());
         $this->assertEquals('vfs://root/vo_data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
         $this->assertEquals('Sample booklet', $xf->getLabel());
-        $this->assertEquals(1213, $xf->getSize());
+        $this->assertEquals(1331, $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRoottagName());
         $this->assertEquals('This a sample booklet for testing/development/showcase purposes.', $xf->getDescription());
         $this->assertEquals('', $xf->getErrorString());

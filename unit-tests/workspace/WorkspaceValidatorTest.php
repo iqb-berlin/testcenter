@@ -64,8 +64,8 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Booklet/booklet-broken.xml' => [
                 new ValidationReportEntry('warning', 'Booklet is never used'),
-                new ValidationReportEntry('error',  'Error [5] in line 30: Extra content at the end of the document'),
-                new ValidationReportEntry('error',  'Error [76] in line 29: Opening and ending tag mismatch: Booklet line 2 and Units'),
+                new ValidationReportEntry('error',  'Error [5] in line 31: Extra content at the end of the document'),
+                new ValidationReportEntry('error',  'Error [76] in line 30: Opening and ending tag mismatch: Booklet line 2 and Units'),
             ],
             'Booklet/booklet-duplicate-id-1.xml' => [
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),
