@@ -115,7 +115,7 @@ or
 ```
 make run-dev-detached
 ```
-For production setups you may use the respective counterparts. take care in using the one for TLS or not.
+For production setups you may use the respective counterparts. Take care in using the one for TLS or not.
 ```
 make run-prod-nontls
 ```
