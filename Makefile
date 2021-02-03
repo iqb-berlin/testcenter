@@ -1,22 +1,12 @@
-run:
-	docker-compose up
-run-detached:
-	docker-compose up -d
+run-dev:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+run-dev-detached:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
-run-prod:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
-run-prod-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
-run-prod-tls:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up
-run-prod-tls-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d
-
-run-prod-tls-acme:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.acme.yml up
-run-prod-tls-acme-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.acme.yml up -d
+run-dev-tls:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.tls.yml up
+run-dev-tls-detached:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.tls.yml up -d
 
 stop:
 	docker-compose stop

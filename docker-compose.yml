@@ -1,3 +1,5 @@
+# Base compose file defining services and their settings
+# For concrete images check the evironment specific override files.
 version: '3.7'
 
 x-env-mysql: &env-mysql
