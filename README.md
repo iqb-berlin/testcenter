@@ -15,7 +15,7 @@ The most needed commands for installation and usage are kept in a
 Makefile in the root directory. You can run `make <command>` on the command
 line.
 
-## Installation & Start
+## Installation & Configuration
 
 There are 2 ways to install and use the software suite. One is for
 development purposes, where the source code for the components is downloaded
@@ -61,19 +61,7 @@ The other setting is the address of the broadcasting service.
 Replace _localhost_ in variable _BROADCAST_SERVICE_URI_SUBSCRIBE_ with the
 actual hostname.
 
-
-#### Running the application
-
-```
-make run
-```
-To stop the application simply terminate the process (Ctrl+C under Linux).
-When running in detached mode you may use the following command to stop.
-```
-make stop
-```
-
-#### Update
+#### Updating
 ```
 git pull
 git submodule update --recursive
@@ -82,54 +70,69 @@ git submodule update --recursive
 ### Production environment
 
 #### Installation
-Installation of the needed software (make, git and docker) can be done via
-Ansible playbook, located in the scripts folder.
+- Download the [installation script](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh) and the release [package] (https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz) from the _dist_ folder.
+- Run the script _install.sh_ with sudo privileges
+```
+sudo ./install.sh
+```
+The script will create a user account on your machine with which the software will be run and unpack files to the specified directory.
+You can also specify an existing user and a custom install directory.
 
-- Make sure you have a SSH access to the remote machine and a user with
-sudo privileges. This user must be specified at the top of the ansible playbook file, under the setting _remote_user_.
-- Change the target host name in the file _hosts_. You may also change the host identifier, but make sure to also update it in the playbook file under the setting _hosts_.
-- Run the playbook
-```
-ansible-playbook playbook.yml -K -i hosts
-```
-- Enter the _sudo_ password of the remote user.
+- After the script has run, edit the file _.env_ in the target directory.
+  - Change passwords for:
+    - MYSQL_ROOT_PASSWORD
+    - MYSQL_PASSWORD
+  - Change all occurences of _localhost_ to either
+  the IP or the hostname of the machine under which it is reachable. This is the first line _HOSTNAME_ and the setting _BROADCAST_SERVICE_URI_SUBSCRIBE_
 
-#### Configuration
+##### SSL
 
-```
-make init-config
-```
-> :warning: This creates a dummy configuration file. Be sure to customize the settings and most importantly change the passwords.
-
-- There is one important setting to be made in the generated file `.env`.
-On the first line set the variable _HOSTNAME_ to either
-the IP or the hostname of the machine under which it is reachable.
-- The other setting is the address of the broadcasting service.
-Replace _localhost_ in variable _BROADCAST_SERVICE_URI_SUBSCRIBE_ with the
-actual hostname.
-
-#### Running the application
-This will start the production configuration and send the process to the background.
-```
-make run-prod-detached
-```
-For a setup using SSL certificates (HTTPS connection), you may use the following command. The certificates need to be placed under _config/certs_ and
+For a setup using SSL certificates (HTTPS connection), the certificates need to be placed under _config/certs_ and
 their name be put in _config/cert_config.yml_.
-```
-make run-prod-tls-detached
-```
 
-You may use the following command to stop the applications.
+#### Updating
+
+To update the components you need to manually edit the files
+`docker-compose.prod.nontls.yml`
+or `docker-compose.prod.tls.yml` depending on your usage of SSL certificates.
+Find the lines starting with **image** and edit the version tag at the end.
+
+## Usage
+
+Depending on which setup you are using different commands may be used for starting and stopping the application suite.
+Most commands are usable via Makefile-targets: `make <command>`.
+
+For specific commands refer to the [docker-compose](https://docs.docker.com/compose/) documentation.
+
+### Starting
+Every startup command can be used in detached mode, which will free up the console or in blocking mode which uses the current console window
+for all logging. Refer to the OS commands for sending processes to the background etc.
+
+```
+make run-dev
+```
+or
+```
+make run-dev-detached
+```
+For production setups you may use the respective counterparts. take care in using the one for TLS or not.
+```
+make run-prod-nontls
+```
+...
+
+### Stopping
+For attached console mode simply terminate the process (Ctrl+C under Linux).
+
+When in detached mode you may use the following command to stop the applications.
 ```
 make stop
 ```
 
-#### Update
-```
-git pull
-```
+### Logs
+> :warning: TODO
 
-## Usage
+### Application access
 
 Open the target hostname (http://localhost for the development version)
 in your browser. You see now the testcenter application with testdata.

@@ -1,0 +1,34 @@
+#  Compose file for production environment. Images are NOT locally built but
+#  downloaded from Docker-Hub. This is the non-TLS variant using unencrypted
+#  communication.
+version: '3.7'
+
+services:
+
+  traefik:
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+
+  testcenter-backend:
+    image: iqbberlin/testcenter-backend:9.1.0
+    volumes:
+      - testcenter_backend_vo_data:/var/www/html/vo_data
+
+  testcenter-frontend:
+    image: iqbberlin/testcenter-frontend:6.5.0
+
+  testcenter-broadcasting-service:
+    image: iqbberlin/testcenter-broadcasting-service:2.0.3
+
+volumes:
+  testcenter_backend_vo_data:
+
+# networks:
+#   default:
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#       - subnet:  192.168.16.1/20
