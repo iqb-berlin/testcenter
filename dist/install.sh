@@ -69,6 +69,7 @@ service docker restart
 # Unpack application
 mkdir $TARGET_DIR
 tar -xzf dist.tar.gz -C $TARGET_DIR
+mv $TARGET_DIR/.env-default $TARGET_DIR/.env
 chown -R $TARGET_USER:$TARGET_USER $TARGET_DIR
 
 echo '
