@@ -70,7 +70,7 @@ git submodule update --recursive
 ### Production environment
 
 #### Installation
-- Download the [installation script](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh) and the release [package] (https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz) from the _dist_ folder.
+- Download the [installation script](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh) and the release [package](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz) from the _dist_ folder.
 - Run the script _install.sh_ with sudo privileges
 ```
 sudo ./install.sh
@@ -128,7 +128,12 @@ When in detached mode you may use the following command to stop the applications
 ```
 make stop
 ```
-
+Should this produce an error, you may have to build the command manually. Refer the the Makefile-target
+you used and replace `up` with `stop`.
+For example if you ran `make run-prod-nontls-detached`, you can stop with:
+```
+docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml stop
+```
 ### Logs
 > :warning: TODO
 
