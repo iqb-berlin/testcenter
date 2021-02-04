@@ -69,7 +69,7 @@ git submodule update --recursive
 
 ### Production environment
 
-#### Installation
+#### Installation via install script
 - Download the [installation script](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh) and the release [package](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz) from the _dist_ folder.
 - Run the script _install.sh_ with sudo privileges
 ```
@@ -84,6 +84,16 @@ You can also specify an existing user and a custom install directory.
     - MYSQL_PASSWORD
   - Change all occurences of _localhost_ to either
   the IP or the hostname of the machine under which it is reachable. This is the first line _HOSTNAME_ and the setting _BROADCAST_SERVICE_URI_SUBSCRIBE_
+
+#### Manual installation
+
+- Install [docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
+- Install [docker-compose](https://docs.docker.com/compose/install/)
+- (optional) create user to run docker-compose
+- add user to the group `docker`
+- extract distribution [package](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz
+- rename `.env-default` to `.env` and edit it (see above)
+
 
 ##### SSL
 
