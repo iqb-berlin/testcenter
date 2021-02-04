@@ -97,6 +97,8 @@ To update the components you need to manually edit the files
 or `docker-compose.prod.tls.yml` depending on your usage of SSL certificates.
 Find the lines starting with **image** and edit the version tag at the end.
 
+Check out the [IQB Docker Hub Page](https://hub.docker.com/u/iqbberlin) for latest images.
+
 ## Usage
 
 Depending on which setup you are using different commands may be used for starting and stopping the application suite.
