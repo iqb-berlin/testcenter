@@ -155,6 +155,9 @@ class XMLFilesTesttakersTest extends TestCase {
         $result = $xmlFile->getLogin('unit_test_login', 'wrong password', 1);
         $this->assertNull($result, "login with wrong password");
 
+        $result = $xmlFile->getLogin('unit_test_login', '', 1);
+        $this->assertNull($result, "login with no password");
+
 
         $result = $xmlFile->getLogin('wrong username', '__TEST_LOGIN_PASSWORD__', 1);
         $this->assertNull($result, "login with wrong username");
