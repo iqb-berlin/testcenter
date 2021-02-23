@@ -164,11 +164,33 @@ class XMLFilesTesttakersTest extends TestCase {
 
 
         $result = $xmlFile->getLogin('unit_test_login-no-pw', 'some password', 1);
-        $this->assertNull($result, "login with password if none is required (attribute omitted)");
+        $expected = new PotentialLogin(
+            'unit_test_login-no-pw',
+            'run-hot-restart',
+            'passwordless_group',
+            ['' => ['BOOKLET.SAMPLE']],
+            1,
+            0,
+            0,
+            0,
+            (object) ['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login with password if none is required (attribute omitted)");
 
 
         $result = $xmlFile->getLogin('unit_test_login-no-pw-trial', 'some password', 1);
-        $this->assertNull($result, "login with password if none is required (attribute empty)");
+        $expected = new PotentialLogin(
+            'unit_test_login-no-pw-trial',
+            'run-trial',
+            'passwordless_group',
+            ['' => ['BOOKLET.SAMPLE']],
+            1,
+            0,
+            0,
+            0,
+            (object) ['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login with password if none is required (attribute empty)");
     }
 
 
@@ -456,5 +478,3 @@ END;
         $this->assertEquals($expected, $result);
     }
 }
-
-
