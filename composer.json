@@ -1,7 +1,7 @@
 {
   "name": "iqb/testcenter-api",
   "description": "The backend for the IQB-Testcenter application(s).",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "extra": {
     "broadcastingServiceVersionExpected": "2.0.2"
   },
@@ -20,7 +20,7 @@
       "type": "package",
       "package": {
         "name": "iqb-berlin/verona-player-simple",
-        "version": "9.1.1",
+        "version": "9.1.2",
         "source": {
           "url": "https://github.com/iqb-berlin/verona-player-simple.git",
           "type": "git",
