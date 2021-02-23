@@ -1,4 +1,5 @@
 .env
+!docker/.env
 
 # composer
 vendor
