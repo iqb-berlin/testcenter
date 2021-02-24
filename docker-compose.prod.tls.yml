@@ -20,7 +20,7 @@ services:
       - ./config/cert_config.yml:/cert_config.yml
 
   testcenter-backend:
-    image: iqbberlin/testcenter-backend:9.1.0
+    image: iqbberlin/testcenter-backend:9.1.2
     volumes:
       - testcenter_backend_vo_data:/var/www/html/vo_data
     labels:
