@@ -70,8 +70,8 @@ git submodule update --recursive
 ### Production environment
 
 #### Installation via install script
-- Download the installer and release package from the [releases section](https://github.com/iqb-berlin/testcenter-setup/releases)
-  - Alternatively download [installation script](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh) and the release [package](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz) from the _dist_ folder.
+- Download the installer and release package from the [releases section](https://github.com/iqb-berlin/testcenter-setup/releases/)
+  - Alternatively download the latest installation script and release package from the [dist](https://github.com/iqb-berlin/testcenter-setup/tree/master/dist) folder.
 - Install required software (docker, docker-compose, make)
 - Run the script _install.sh_
 ```
