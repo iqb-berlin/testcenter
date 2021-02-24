@@ -24,6 +24,8 @@ import sys
 import subprocess
 import re
 import socket
+import os
+import tarfile
 
 BACKEND_VERSION_FILE_PATH = 'testcenter-backend/composer.json'
 BACKEND_VERSION_REGEX = '(?<=version": ")(.*)(?=")'
@@ -33,9 +35,9 @@ BS_VERSION_FILE_PATH = 'testcenter-broadcasting-service/package.json'
 BS_VERSION_REGEX = BACKEND_VERSION_REGEX
 
 COMPOSE_FILE_PATHS = [
-    'docker-compose.prod.yml',
+    'docker-compose.prod.nontls.yml',
     'docker-compose.prod.tls.yml',
-    'docker-compose.prod.tls.acme.yml']
+    'docker-compose.dev.tls.yml']
 
 backend_version = ''
 frontend_version = ''
@@ -105,12 +107,37 @@ def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
     subprocess.run("git add testcenter-broadcasting-service", shell=True, check=True)
     for compose_file in COMPOSE_FILE_PATHS:
         subprocess.run(f"git add {compose_file}", shell=True, check=True)
+    subprocess.run(f"git add dist/{frontend_version}@{backend_version}+{bs_version}.tar",
+                   shell=True, check=True)
+    subprocess.run("git add dist/install.sh", shell=True, check=True)
 
     subprocess.run(f"git commit -m \"Update version to {new_version_string}\"", shell=True, check=True)
     subprocess.run("git push origin master", shell=True, check=True)
 
     subprocess.run(f"git tag {new_version_string}", shell=True, check=True)
     subprocess.run(f"git push origin {new_version_string}", shell=True, check=True)
+
+
+def create_release_package(backend_version, frontend_version, bs_version):
+    """Create dist tar file from compose files, config and makefile template."""
+    subprocess.run('rm -rf dist/*', shell=True, check=True)
+    subprocess.run('cp scripts/Makefile-template dist/Makefile-template', shell=True, check=True)
+    subprocess.run('cp -r config dist/config', shell=True, check=True)
+    subprocess.run('cp docker-compose.yml dist/docker-compose.yml', shell=True, check=True)
+    subprocess.run('cp docker-compose.prod.nontls.yml dist/docker-compose.prod.nontls.yml',
+                   shell=True, check=True)
+    subprocess.run('cp docker-compose.prod.tls.yml dist/docker-compose.prod.tls.yml', shell=True, check=True)
+    subprocess.run('cp .env-default dist/.env', shell=True, check=True)
+
+    filename = f"dist/{frontend_version}@{backend_version}+{bs_version}.tar"
+    with tarfile.open(filename, "w") as tar:
+        for file in os.listdir('dist'):
+            tar.add('dist/' + file, file)
+    subprocess.run('cp scripts/install.sh dist/install.sh', shell=True, check=True)
+
+    subprocess.run('rm dist/*.yml', shell=True, check=True)
+    subprocess.run('rm -rf dist/config', shell=True, check=True)
+    subprocess.run('rm dist/.env', shell=True, check=True)
 
 
 check_prerequisites()
@@ -120,4 +147,5 @@ frontend_version = get_version_from_file(FRONTEND_VERSION_FILE_PATH, FRONTEND_VE
 bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
 update_compose_file_versions(backend_version, frontend_version, bs_version)
 run_tests()
+create_release_package(backend_version, frontend_version, bs_version)
 git_tag_commit_and_push(backend_version, frontend_version, bs_version)

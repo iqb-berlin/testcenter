@@ -24,12 +24,14 @@ The other is for production environments. Here pre-built image are downloaded
 from Docker Hub and there is less possibility for accessing and configuring
 the components.
 
-### Development environment
-
 #### Software Prerequisites
-- docker version 19.03.1
-- docker-compose version 1.24.1
-- (optional) make
+- docker version >19.03.1
+[docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
+- docker-compose version >1.24.1
+- Install [docker-compose](https://docs.docker.com/compose/install/)
+- (recommended) make
+
+### Development environment
 
 #### Cloning the repository
 
@@ -70,30 +72,16 @@ git submodule update --recursive
 ### Production environment
 
 #### Installation via install script
-- Download the [installation script](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh) and the release [package](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz) from the _dist_ folder.
-- Run the script _install.sh_ with sudo privileges
+- Download the installer and release package from the [releases section](https://github.com/iqb-berlin/testcenter-setup/releases)
+  - Alternatively download [installation script](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh) and the release [package](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz) from the _dist_ folder.
+- Install required software (docker, docker-compose, make)
+- Run the script _install.sh_
 ```
-sudo ./install.sh
+./install.sh
 ```
-The script will create a user account on your machine with which the software will be run and unpack files to the specified directory.
-You can also specify an existing user and a custom install directory.
+The script will check required software packages and unpack files to the specified directory.
 
-- After the script has run, edit the file _.env_ in the target directory.
-  - Change passwords for:
-    - MYSQL_ROOT_PASSWORD
-    - MYSQL_PASSWORD
-  - Change all occurences of _localhost_ to either
-  the IP or the hostname of the machine under which it is reachable. This is the first line _HOSTNAME_ and the setting _BROADCAST_SERVICE_URI_SUBSCRIBE_
-
-#### Manual installation
-
-- Install [docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
-- Install [docker-compose](https://docs.docker.com/compose/install/)
-- (optional) create user to run docker-compose
-- add user to the group `docker`
-- extract distribution [package](https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/dist.tar.gz
-- rename `.env-default` to `.env` and edit it (see above)
-
+- After the script has run, you may edit the file _.env_ in the target directory and change any password or other settings.
 
 ##### SSL
 
@@ -121,17 +109,12 @@ Every startup command can be used in detached mode, which will free up the conso
 for all logging. Refer to the OS commands for sending processes to the background etc.
 
 ```
-make run-dev
+make run
 ```
 or
 ```
-make run-dev-detached
+make run-detached
 ```
-For production setups you may use the respective counterparts. Take care in using the one for TLS or not.
-```
-make run-prod-nontls
-```
-...
 
 ### Stopping
 For attached console mode simply terminate the process (Ctrl+C under Linux).
@@ -139,12 +122,6 @@ For attached console mode simply terminate the process (Ctrl+C under Linux).
 When in detached mode you may use the following command to stop the applications.
 ```
 make stop
-```
-Should this produce an error, you may have to build the command manually. Refer the the Makefile-target
-you used and replace `up` with `stop`.
-For example if you ran `make run-prod-nontls-detached`, you can stop with:
-```
-docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml stop
 ```
 ### Logs
 > :warning: TODO
@@ -173,3 +150,10 @@ When you rebuild make sure, that you not only delete all previous volumes but
 delete all contents of `testcenter-backend/src/vo_data` as well.
 Otherwise, you get an erroneous application state.
 [Will be fixed](https://github.com/iqb-berlin/testcenter-setup/issues/9).
+
+### Error when using Make commands
+Should any produce an error, you may have to build the command manually. Refer the the Makefile-target you used and replace `up` with `stop`.
+For example if you ran `make run-prod-nontls-detached`, you can stop with:
+```
+docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml stop
+```

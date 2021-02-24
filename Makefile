@@ -1,6 +1,6 @@
-run-dev:
+run:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-run-dev-detached:
+run-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 run-dev-tls:
@@ -8,17 +8,19 @@ run-dev-tls:
 run-dev-tls-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.tls.yml up -d
 
+run-prod:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up
+run-prod-detached:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up -d
+
 stop:
-	docker-compose stop
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop
 
 build:
-	docker-compose build
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
 
-init-config:
-	cp .env-default .env
-
-init-dev-config: init-config
-	make -C testcenter-frontend init-dev-config
+pull:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml pull
 
 update-submodules:
 	git submodule update --remote --merge
