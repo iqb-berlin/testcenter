@@ -37,7 +37,7 @@ read  -p 'Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
 
 ### Unpack application ###
 mkdir $TARGET_DIR
-tar -xzf dist.tar.gz -C $TARGET_DIR
+tar -xf *.tar -C $TARGET_DIR
 
 # ### Set up config ###
 read  -p 'Server Address (hostname or IP): ' -e -i $(hostname) HOSTNAME
