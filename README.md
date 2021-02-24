@@ -25,10 +25,8 @@ from Docker Hub and there is less possibility for accessing and configuring
 the components.
 
 #### Software Prerequisites
-- docker version >19.03.1
-[docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
-- docker-compose version >1.24.1
-- Install [docker-compose](https://docs.docker.com/compose/install/)
+- [docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
+- [docker-compose](https://docs.docker.com/compose/install/)
 - (recommended) make
 
 ### Development environment
