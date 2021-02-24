@@ -136,6 +136,7 @@ def create_release_package(backend_version, frontend_version, bs_version):
     subprocess.run('cp scripts/install.sh dist/install.sh', shell=True, check=True)
 
     subprocess.run('rm dist/*.yml', shell=True, check=True)
+    subprocess.run('rm dist/Makefile-template', shell=True, check=True)
     subprocess.run('rm -rf dist/config', shell=True, check=True)
     subprocess.run('rm dist/.env', shell=True, check=True)
 
