@@ -62,10 +62,9 @@ class XMLFilesTesttakersTest extends TestCase {
     // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
 
-    function test_getMembersOfLogin() {
+    function test_getPersonsInSameGroup() {
 
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
-
         $expected = new PotentialLoginArray(
             new PotentialLogin(
                 'unit_test_login',
@@ -88,9 +87,7 @@ class XMLFilesTesttakersTest extends TestCase {
                 (object) ['somestr' => 'string']
             )
         );
-
-        $result = $xmlFile->getMembersOfLogin('unit_test_login-group-monitor', 'unit_test_password', 13);
-
+        $result = $xmlFile->getPersonsInSameGroup('unit_test_login-group-monitor', 13);
         $this->assertEquals($expected, $result);
     }
 

@@ -218,15 +218,13 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getMembersOfLogin(string $name, string $password, int $workspaceId): ?PotentialLoginArray {
+    public function getPersonsInSameGroup(string $name, int $workspaceId): ?PotentialLoginArray {
 
         if (!$this->isValid()) {
             return null;
         }
 
-        // TODO check for $password empty but @pw is set
-        $selector = "@name='$name'" . ($password ?  " and  @pw='$password'" : '');
-        foreach($this->xml->xpath("Group[Login[$selector]]") as $groupElement) {
+        foreach($this->xml->xpath("Group[Login[@name='$name']]") as $groupElement) {
 
             $groupMembers = new PotentialLoginArray();
 

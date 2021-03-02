@@ -58,7 +58,7 @@ class SessionController extends Controller {
             $session = self::getOrCreatePersonSession($login, '');
 
             if ($login->getMode() == 'monitor-group') {
-                self::registerGroup($login, $body['password']);
+                self::registerGroup($login);
             }
 
         } else {
@@ -95,13 +95,13 @@ class SessionController extends Controller {
     }
 
 
-    public static function registerGroup(Login $login, string $password): void { // TODO make private
+    public static function registerGroup(Login $login): void { // TODO make private
 
         if ($login->getMode() == 'monitor-group') {
 
             $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
             $bookletsFolder = new BookletsFolder($login->getWorkspaceId());
-            $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
+            $members = $testtakersFolder->getPersonsInSameGroup($login->getName());
             $bookletLabels = [];
 
             foreach ($members as $member) { /* @var $member PotentialLogin */
