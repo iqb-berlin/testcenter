@@ -40,11 +40,12 @@ make test-e2e
 ```
 
 ### Manual installation on Webserver
-See [Manual Installation](./manual_installation.md)
+See [Manual Installation](https://iqb-berlin.github.io/testcenter-backend/manual_installation.md)
 
 ## Upgrade from previous versions
 Pull the version(-tag) you want and lookup UPGRADE.md for important changes!
 
+* Find Changelog [here](https://iqb-berlin.github.io/testcenter-backend/UPGRADE.md)
 
 ## Development
 ### Coding Standards
