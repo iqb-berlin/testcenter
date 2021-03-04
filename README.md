@@ -6,9 +6,6 @@
 
 This is the backend of the Testcenter application.  
 
-In older versions it's also the backend for the now deprecated
-Testcenter-Admin application.
-
 You can find the frontend [here](https://github.com/iqb-berlin/testcenter-frontend).
 
 The repository for a complete setup of the application can be found
@@ -24,7 +21,7 @@ File bug reports, feature requests etc. [here](https://github.com/iqb-berlin/tes
 
 ## Installation
 
-### With Docker (recommended)
+### With Docker
 
 All the necessary commands for running the application and starting the tests
 can be found in the Makefile on the root directory.
