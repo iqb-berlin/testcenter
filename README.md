@@ -42,54 +42,11 @@ make test-unit
 make test-e2e
 ```
 
-###### Manual installation on Webserver
-* See [Manual Installation](./manual_installation.md)
+### Manual installation on Webserver
+See [Manual Installation](./manual_installation.md)
 
 ## Upgrade from previous versions
 Pull the version(-tag) you want and lookup UPGRADE.md for important changes!
-
-## Tests
-
-### With Docker (recommended)
-```
-make test-unit
-make test-e2e
-```
-
-### Run tests on your (host) machine
-#### Unit tests
-
-```
-vendor/bin/phpunit unit-tests
-```
-
-#### E2E/API-Tests
-
-These tests test the in-/output of all endpoints against the API Specification using [Dredd](https://dredd.org).
-
-##### Preparation:
-* install Node modules
-```
-npm --prefix=integration install
-```
-
-* If your backend is not running under `http://localhost`, use env `TC_API_URL` variable to set up it's URI
-```
-export TC_API_URL=http://localhost/testcenter-iqb-php
-  &&  npm --prefix=integration run dredd_test
-```
-
-##### Run the E2E/API-Tests
-```
- npm --prefix=integration run dredd_test
-```
-
-##### Run E2E/API-Tests against persistent database
-If you want to run the e2e-tests against a persistent database, MySQL or PostgreSQL, do the following:
-- in `/config` create a file `DBConnectionData.e2etest.json` analogous to `DBConnectionData.json` with your connection
-- also in `/config` create a file `e2eTests.json`with the content `{"configFile": "e2etest"}`
-- **Be really careful**: Running the tests this way will *erase all your data* from the data dir `vo_data` and the
-specified database.
 
 
 ## Development
