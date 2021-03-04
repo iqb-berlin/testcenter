@@ -13,7 +13,7 @@ The repository for a complete setup of the application can be found
 
 ## Documentation
 
-Find API documentation and other docs [here](https://iqb-berlin.github.io/testcenter-backend).
+Find API documentation [here](https://iqb-berlin.github.io/testcenter-backend/api/).
 
 ## Bug Reports
 
