@@ -1,3 +1,3 @@
 # IQB Testcenter Backend
-* [API](/docs/).
+* [API](./docs).
 * Upgrade Information
