@@ -59,7 +59,7 @@ class SessionController extends Controller {
 
             if ($login->getMode() == 'monitor-group') {
 
-                self::registerGroup($login, $body['password']);
+                self::registerGroup($login);
 
                 $booklets = self::getBookletsOfMonitor($login, $body['password']);
 
@@ -94,65 +94,44 @@ class SessionController extends Controller {
     private static function getOrCreatePersonSession(Login $login, string $code): Session {
 
         $person = self::sessionDAO()->getOrCreatePerson($login, $code);
-        return Session::createFromLogin($login, $person);
-    }
-
-
-    // TODO write unit test
-    // TODO make private
-    public static function getBookletsOfMonitor(Login $login, string $password): array {
-
-        $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
-        $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
-        $booklets = [];
-
-        foreach ($members as $member) { /* @var $member PotentialLogin */
-
-            $codes2booklets = $member->getBooklets();
-            $codes2booklets = !$codes2booklets ? [] : $codes2booklets;
-
-            foreach ($codes2booklets as $code => $bookletList) {
-
-                foreach ($bookletList as $booklet) {
-
-                    $booklets[] = $booklet;
-                }
-            }
-        }
-
-        return array_unique($booklets);
+        $session = Session::createFromLogin($login, $person);
+        BroadcastService::sessionChange(SessionChangeMessage::login($login, $person));
+        return $session;
     }
 
 
     public static function registerGroup(Login $login, string $password): void { // TODO make private
 
-        $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
-        $bookletsFolder = new BookletsFolder($login->getWorkspaceId());
-        $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
-        $bookletLabels = [];
+        if ($login->getMode() == 'monitor-group') {
 
-        foreach ($members as $member) { /* @var $member PotentialLogin */
+            $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
+            $bookletsFolder = new BookletsFolder($login->getWorkspaceId());
+            $members = $testtakersFolder->getMembersOfLogin($login->getName(), $password);
+            $bookletLabels = [];
 
-            if (in_array($member->getMode(), self::restartModes)) {
-                continue;
-            }
+            foreach ($members as $member) { /* @var $member PotentialLogin */
 
-            $memberLogin = SessionController::sessionDAO()->getOrCreateLogin($member);
+                if (in_array($member->getMode(), self::restartModes)) {
+                    continue;
+                }
 
-            foreach ($member->getBooklets() as $code => $booklets) {
+                $memberLogin = SessionController::sessionDAO()->getOrCreateLogin($member);
 
-                // TODO validity?
-                $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, $code);
+                foreach ($member->getBooklets() as $code => $booklets) {
 
-                foreach ($booklets as $booklet) {
+                    // TODO validity?
+                    $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, $code);
 
-                    if (!isset($bookletLabels[$booklet])) {
-                        $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
+                    foreach ($booklets as $booklet) {
+
+                        if (!isset($bookletLabels[$booklet])) {
+                            $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
+                        }
+                        $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
+                        $sessionMessage = SessionChangeMessage::login($memberLogin, $memberPerson);
+                        $sessionMessage->setTestState((int) $test['id'], [], $booklet);
+                        BroadcastService::sessionChange($sessionMessage);
                     }
-                    $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
-                    $sessionMessage = SessionChangeMessage::newSession($memberLogin, $memberPerson, (int) $test['id']);
-                    $sessionMessage->setTestState([], $booklet);
-                    BroadcastService::sessionChange($sessionMessage);
                 }
             }
         }
@@ -174,12 +153,7 @@ class SessionController extends Controller {
             $loginWithPerson = self::sessionDAO()->getPersonLogin($authToken->getToken());
             $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
-            if ($authToken->getMode() == 'monitor-group') {
-
-                $booklets = self::getBookletsOfMonitor($loginWithPerson->getLogin(), "");
-
-                $session->addAccessObjects('test', ...$booklets);
-            }
+            BroadcastService::sessionChange(SessionChangeMessage::login($loginWithPerson->getLogin(), $loginWithPerson->getPerson()));
 
             return $response->withJson($session);
         }

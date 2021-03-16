@@ -204,10 +204,13 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xml->xpath('Group') as $groupElement) {
 
-            $selector = "@name='$name'" . ($password ?  " and @pw='$password'" : '');
-            foreach($groupElement->xpath("Login[$selector]") as $loginElement) {
-
-                return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
+            foreach($groupElement->xpath("Login[@name='$name']") as $loginElement) {
+                $pw = (string) $loginElement['pw'];
+                if (!$pw or ($password === $pw)) {
+                    return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -215,14 +218,13 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getMembersOfLogin(string $name, string $password, int $workspaceId): ?PotentialLoginArray {
+    public function getPersonsInSameGroup(string $name, int $workspaceId): ?PotentialLoginArray {
 
         if (!$this->isValid()) {
             return null;
         }
 
-        $selector = "@name='$name'" . ($password ?  " and  @pw='$password'" : '');
-        foreach($this->xml->xpath("Group[Login[$selector]]") as $groupElement) {
+        foreach($this->xml->xpath("Group[Login[@name='$name']]") as $groupElement) {
 
             $groupMembers = new PotentialLoginArray();
 

@@ -65,7 +65,7 @@ class XMLSchema {
     }
 
 
-    static function getSchemaFilePath(array $schemaData): string {
+    static function getSchemaFilePath(?array $schemaData): string {
 
         if (!$schemaData) {
             return '';

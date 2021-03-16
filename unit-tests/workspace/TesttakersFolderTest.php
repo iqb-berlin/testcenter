@@ -132,11 +132,33 @@ class TesttakersFolderTest extends TestCase {
 
 
         $result = $this->folder->findLoginData('unit_test_login-no-pw', 'some password');
-        $this->assertNull($result, "login with password if none is required (attribute omitted)");
+        $expected = new PotentialLogin(
+            'unit_test_login-no-pw',
+            'run-hot-restart',
+            'passwordless_group',
+            ['' => ['BOOKLET.SAMPLE']],
+            1,
+            0,
+            0,
+            0,
+            (object) ['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login with password if none is required (attribute omitted)");
 
 
         $result = $this->folder->findLoginData('unit_test_login-no-pw-trial', 'some password');
-        $this->assertNull($result, "login with password if none is required (attribute empty)");
+        $expected = new PotentialLogin(
+            'unit_test_login-no-pw-trial',
+            'run-trial',
+            'passwordless_group',
+            ['' => ['BOOKLET.SAMPLE']],
+            1,
+            0,
+            0,
+            0,
+            (object) ['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login with password if none is required (attribute empty)");
     }
 
 

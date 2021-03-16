@@ -9,7 +9,7 @@ $app->group('/test', function(App $app) {
 
     $app->get('/{test_id}', [TestController::class, 'get']);
 
-    $app->get('/{test_id}/unit/{unit_name}', [TestController::class, 'getUnit']);
+    $app->get('/{test_id}/unit/{unit_name}[/alias/{alias}]', [TestController::class, 'getUnit']);
 
     $app->get('/{test_id}/resource/{resource_name}', [TestController::class, 'getResource']);
 

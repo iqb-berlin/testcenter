@@ -20,6 +20,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "gulp-yaml-merge": "^2.0.0"
+    "gulp-yaml-merge": "^2.0.0",
+    "is-promise": "^4.0.0"
   }
 }

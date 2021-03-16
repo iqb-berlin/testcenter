@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 9.0.2
+    version: 9.1.2
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -502,7 +502,7 @@ paths:
                                     - broadcastingService
                                     - serverTimestamp
                             example:
-                                version: 9.0.2
+                                version: 9.1.2
                                 customTexts: {}
                                 broadcastingService:
                                     versionExpected: 1.0.0
@@ -520,7 +520,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 9.0.2
+                                version: 9.1.2
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -707,7 +707,7 @@ paths:
     '/test/{test_id}/unit/{unit_name}':
         get:
             summary: 'get a unit of a test'
-            description: 'retrieves a certain unit from a certain executed test - the booklet-file XML, last state and lock status'
+            description: "Retrieves a certain unit from a certain executed test - the booklet-file XML, last state and lock status.\n\nYou can insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with\nan alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261."
             parameters:
                 -
                     in: header

@@ -1,41 +1,29 @@
 run:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env up
+	cd docker && docker-compose up
 
 run-detached:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env up -d
+	cd docker && docker-compose up -d
 
 stop:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env stop
+	cd docker && docker-compose stop
 
 down:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env down
+	cd docker && docker-compose down
 
 build:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env build
-
-# TODO does not wait for server to start and fails
-# test: run-detached test-unit test-e2e stop
+	cd docker && docker-compose build
 
 test-unit:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec testcenter-backend vendor/bin/phpunit unit-tests/.
+	cd docker && docker-compose exec testcenter-backend vendor/bin/phpunit unit-tests/.
 
 test-e2e:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec testcenter-backend npm --prefix=integration run dredd_test
+	cd docker && docker-compose exec testcenter-backend npm --prefix=integration run dredd_test
 
 test-e2e-no-spec-update:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec testcenter-backend npm --prefix=integration run dredd_test_no_specs
+	cd docker && docker-compose exec testcenter-backend npm --prefix=integration run dredd_test_no_specs
 
 update-docs:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec testcenter-backend npm --prefix=integration run update_specs
-
-init-dev-config:
-	cp docker/.env-default docker/.env
-
-build-image:
-	docker build --target prod -t iqbberlin/testcenter-backend -f docker/Dockerfile .
-
-push-image:
-	docker push iqbberlin/testcenter-backend:latest
+	cd docker && docker-compose exec testcenter-backend npm --prefix=integration run update_specs
 
 tag-major:
 	scripts/new_version.py major

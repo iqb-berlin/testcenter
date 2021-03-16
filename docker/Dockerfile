@@ -50,8 +50,6 @@ RUN chown -R www-data:www-data /var/www/html
 RUN sh scripts/install_composer.sh
 RUN php composer.phar install
 
-RUN vendor/bin/phpunit unit-tests/.
-
 COPY docker/entrypoint.sh /root/entrypoint.sh
 
 EXPOSE 80

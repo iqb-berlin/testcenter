@@ -30,7 +30,7 @@ class XMLFilesBookletTest extends TestCase {
 
         $xmlFile = new XMLFileBookletExposed(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
 
-        $expected = ['UNIT.SAMPLE', 'UNIT.SAMPLE-2'];
+        $expected = ['UNIT.SAMPLE', 'UNIT.SAMPLE-2', 'UNIT.SAMPLE'];
 
         $result = $xmlFile->getAllUnitIds();
 

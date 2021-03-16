@@ -78,14 +78,19 @@ class TestController extends Controller {
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
         $unitName = $request->getAttribute('unit_name');
+        $unitAlias = $request->getAttribute('alias');
         $testId = (int) $request->getAttribute('test_id');
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
         $unitFile = $workspaceController->findFileById('Unit', $unitName);
 
+        if (!$unitAlias) {
+            $unitAlias = $unitName;
+        }
+
         $unit = [
-            'laststate' => self::testDAO()->getUnitState($testId, $unitName),
-            'restorepoint' => self::testDAO()->getRestorePoint($testId, $unitName),
+            'laststate' => self::testDAO()->getUnitState($testId, $unitAlias),
+            'restorepoint' => self::testDAO()->getRestorePoint($testId, $unitAlias),
             'xml' => $unitFile->xml->asXML()
         ];
 
@@ -100,6 +105,10 @@ class TestController extends Controller {
 
         $resourceName = $request->getAttribute('resource_name');
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
+
+//        if (strtoupper(substr($resourceName, -5)) == '.HTML') {
+//            $resourceName = substr($resourceName, 0, strlen($resourceName) - 5);
+//        }
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
         $resourceFile = $workspaceController->findFileById('Resource', $resourceName, $skipSubVersions);

@@ -62,10 +62,9 @@ class XMLFilesTesttakersTest extends TestCase {
     // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
 
-    function test_getMembersOfLogin() {
+    function test_getPersonsInSameGroup() {
 
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
-
         $expected = new PotentialLoginArray(
             new PotentialLogin(
                 'unit_test_login',
@@ -88,9 +87,7 @@ class XMLFilesTesttakersTest extends TestCase {
                 (object) ['somestr' => 'string']
             )
         );
-
-        $result = $xmlFile->getMembersOfLogin('unit_test_login-group-monitor', 'unit_test_password', 13);
-
+        $result = $xmlFile->getPersonsInSameGroup('unit_test_login-group-monitor', 13);
         $this->assertEquals($expected, $result);
     }
 
@@ -155,17 +152,42 @@ class XMLFilesTesttakersTest extends TestCase {
         $result = $xmlFile->getLogin('unit_test_login', 'wrong password', 1);
         $this->assertNull($result, "login with wrong password");
 
+        $result = $xmlFile->getLogin('unit_test_login', '', 1);
+        $this->assertNull($result, "login with no password");
+
 
         $result = $xmlFile->getLogin('wrong username', '__TEST_LOGIN_PASSWORD__', 1);
         $this->assertNull($result, "login with wrong username");
 
 
         $result = $xmlFile->getLogin('unit_test_login-no-pw', 'some password', 1);
-        $this->assertNull($result, "login with password if none is required (attribute omitted)");
+        $expected = new PotentialLogin(
+            'unit_test_login-no-pw',
+            'run-hot-restart',
+            'passwordless_group',
+            ['' => ['BOOKLET.SAMPLE']],
+            1,
+            0,
+            0,
+            0,
+            (object) ['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login with password if none is required (attribute omitted)");
 
 
         $result = $xmlFile->getLogin('unit_test_login-no-pw-trial', 'some password', 1);
-        $this->assertNull($result, "login with password if none is required (attribute empty)");
+        $expected = new PotentialLogin(
+            'unit_test_login-no-pw-trial',
+            'run-trial',
+            'passwordless_group',
+            ['' => ['BOOKLET.SAMPLE']],
+            1,
+            0,
+            0,
+            0,
+            (object) ['somestr' => 'string']
+        );
+        $this->assertEquals($expected, $result, "login with password if none is required (attribute empty)");
     }
 
 
@@ -453,5 +475,3 @@ END;
         $this->assertEquals($expected, $result);
     }
 }
-
-
