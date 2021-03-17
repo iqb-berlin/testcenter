@@ -108,13 +108,13 @@ paths:
                       type: string
               example:
                 - unitname: UNIT.SAMPLE
-                  bookletname: BOOKLET.SAMPLE
+                  bookletname: BOOKLET.SAMPLE-1
                   groupname: sample_group
                   loginname: test
                   code: sxx
                   timestamp: '1568026665043'
                   logentry: sample unit log
-                - bookletname: BOOKLET.SAMPLE
+                - bookletname: BOOKLET.SAMPLE-1
                   groupname: sample_group
                   loginname: test
                   code: sxx
@@ -201,7 +201,7 @@ paths:
                     responses: '{"name":"Sam Sample","age":34}'
                     responsetype: ''
                     laststate: '{"PRESENTATIONCOMPLETE":"yes"}'
-                    bookletname: BOOKLET.SAMPLE
+                    bookletname: BOOKLET.SAMPLE-1
                     restorepoint_ts: '0'
                     responses_ts: '1567778660869'
                     restorepoint:
@@ -380,7 +380,7 @@ paths:
 
               example:
                 - unitname: UNIT.SAMPLE
-                  bookletname: BOOKLET.SAMPLE
+                  bookletname: BOOKLET.SAMPLE-1
                   groupname: sample_group
                   loginname: test
                   code: euf
@@ -388,7 +388,7 @@ paths:
                   entry: this is a sample unit review
                   priority: '1'
                   categories: ''
-                - bookletname: BOOKLET.SAMPLE
+                - bookletname: BOOKLET.SAMPLE-1
                   groupname: sample_group
                   loginname: test
                   code: euf
@@ -511,19 +511,19 @@ paths:
                 Resource:
                   - name: SAMPLE_UNITCONTENTS.HTM
                     size: 13392
-                    modificationTime: 1610547959
+                    modificationTime: 1615970109
                     type: Resource
                     id: SAMPLE_UNITCONTENTS.HTM
                     report: []
                     info: []
                   - name: verona-simple-player-1.html
                     size: 29960
-                    modificationTime: 1610547959
+                    modificationTime: 1615970109
                     type: Resource
                     id: VERONA-SIMPLE-PLAYER-1.HTML
                     report:
-                      "info":
-                        "Verona-Version supported: 2.1.0"
+                      info:
+                        - 'Verona-Version supported: 2.1.0'
                     info:
                       label: Simple Verona Player 1 - 1.0.1
                       verona-version: 2.1.0
@@ -531,7 +531,7 @@ paths:
                 Unit:
                   - name: SAMPLE_UNIT.XML
                     size: 497
-                    modificationTime: 1610547959
+                    modificationTime: 1615970109
                     type: Unit
                     id: UNIT.SAMPLE
                     report: []
@@ -541,7 +541,7 @@ paths:
                       totalSize: 13889
                   - name: SAMPLE_UNIT2.XML
                     size: 1737
-                    modificationTime: 1610547959
+                    modificationTime: 1615970109
                     type: Unit
                     id: UNIT.SAMPLE-2
                     report: []
@@ -551,28 +551,42 @@ paths:
                       totalSize: 1737
                 Booklet:
                   - name: SAMPLE_BOOKLET.XML
-                    size: 1213
-                    modificationTime: 1610547959
+                    size: 1404
+                    modificationTime: 1615970109
                     type: Booklet
-                    id: BOOKLET.SAMPLE
+                    id: BOOKLET.SAMPLE-1
                     report: []
                     info:
                       description: This a sample booklet for testing/development/showcase purposes.
                       label: Sample booklet
-                      totalSize: 46799
+                      totalSize: 60879
                   - name: SAMPLE_BOOKLET2.XML
                     size: 564
-                    modificationTime: 1610547959
+                    modificationTime: 1615970109
                     type: Booklet
                     id: BOOKLET.SAMPLE-2
                     report: []
                     info:
                       label: Reduced Booklet
                       totalSize: 46150
+                  - name: SAMPLE_BOOKLET3.XML
+                    size: 1284
+                    modificationTime: 1615970109
+                    type: Booklet
+                    id: BOOKLET.SAMPLE-3
+                    report: []
+                    info:
+                      description: "\n      This booklet has the same species as sample Booklet 1. The
+                      term booklet species indicates that both booklets can\n      be controlled by
+                      the group-monitor as if they where the same.\n      The species is currently
+                      defined as having the same number of testlets on the first level (called blocks).
+                      This\n      definition may change later.\n    "
+                      label: Similar Booklet to Sample 1
+                      totalSize: 60759
                 Testtakers:
                   - name: SAMPLE_TESTTAKERS.XML
-                    size: 2106
-                    modificationTime: 1610547959
+                    size: 2180
+                    modificationTime: 1615970109
                     type: Testtakers
                     id: SAMPLE_TESTTAKERS.XML
                     report: []
@@ -583,13 +597,14 @@ paths:
                 SysCheck:
                   - name: SAMPLE_SYSCHECK.XML
                     size: 1239
-                    modificationTime: 1610547959
+                    modificationTime: 1615970109
                     type: SysCheck
                     id: SYSCHECK.SAMPLE
                     report: []
                     info:
                       description: An example SysCheck definition with long description
                       label: An example SysCheck definition
+
         "401":
           description: Not authenticated
         "403":

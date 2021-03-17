@@ -72,11 +72,13 @@ class XMLFilesTesttakersTest extends TestCase {
                 'sample_group',
                 [
                     "abc" => [
-                        "BOOKLET.SAMPLE",
+                        "BOOKLET.SAMPLE-1",
+                        "BOOKLET.SAMPLE-3",
                         "BOOKLET.SAMPLE-2"
                     ],
                     "def" => [
-                        "BOOKLET.SAMPLE",
+                        "BOOKLET.SAMPLE-1",
+                        "BOOKLET.SAMPLE-3",
                         "BOOKLET.SAMPLE-2"
                     ]
                 ],
@@ -103,11 +105,13 @@ class XMLFilesTesttakersTest extends TestCase {
             'sample_group',
             [
                 "abc" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ],
                 "def" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ]
             ],
@@ -124,7 +128,7 @@ class XMLFilesTesttakersTest extends TestCase {
             'unit_test_login-no-pw',
             'run-hot-restart',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -139,7 +143,7 @@ class XMLFilesTesttakersTest extends TestCase {
             'unit_test_login-no-pw-trial',
             'run-trial',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -165,7 +169,7 @@ class XMLFilesTesttakersTest extends TestCase {
             'unit_test_login-no-pw',
             'run-hot-restart',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -180,7 +184,7 @@ class XMLFilesTesttakersTest extends TestCase {
             'unit_test_login-no-pw-trial',
             'run-trial',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -314,7 +318,18 @@ END;
                 'unit_test_login',
                 'run-hot-return',
                 'sample_group',
-                ['abc' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2'], 'def' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']],
+                [
+                    'abc' => [
+                        'BOOKLET.SAMPLE-1',
+                        'BOOKLET.SAMPLE-3',
+                        'BOOKLET.SAMPLE-2'
+                ],
+                    'def' => [
+                        'BOOKLET.SAMPLE-1',
+                        'BOOKLET.SAMPLE-3',
+                        'BOOKLET.SAMPLE-2'
+                    ]
+                ],
                 -1,
                 0,
                 1583053200,
@@ -336,7 +351,7 @@ END;
                 'unit_test_login-review',
                 'run-review',
                 'review_group',
-                ['' => ["BOOKLET.SAMPLE"]],
+                ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
                 0,
@@ -347,7 +362,7 @@ END;
                 'unit_test_login-trial',
                 'run-trial',
                 'trial_group',
-                ['' => ["BOOKLET.SAMPLE"]],
+                ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
                 0,
@@ -358,7 +373,7 @@ END;
                 'unit_test_login-demo',
                 'run-demo',
                 'trial_group',
-                ['' => ["BOOKLET.SAMPLE"]],
+                ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
                 0,
@@ -369,7 +384,7 @@ END;
                 'unit_test_login-no-pw',
                 'run-hot-restart',
                 'passwordless_group',
-                ['' => ["BOOKLET.SAMPLE"]],
+                ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
                 0,
@@ -380,7 +395,7 @@ END;
                 'unit_test_login-no-pw-trial',
                 'run-trial',
                 'passwordless_group',
-                ['' => ["BOOKLET.SAMPLE"]],
+                ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
                 0,
@@ -391,7 +406,7 @@ END;
                 'unit_test_login-expired',
                 'run-hot-restart',
                 'expired_group',
-                ['' => ["BOOKLET.SAMPLE"]],
+                ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 1583087400,
                 0,
@@ -413,7 +428,7 @@ END;
                 'unit_test_login-future',
                 'run-hot-restart',
                 'future_group',
-                ['' => ["BOOKLET.SAMPLE"]],
+                ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
                 1900742400,

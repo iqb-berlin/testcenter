@@ -573,7 +573,7 @@ paths:
               required:
                 - bookletName
             example:
-              bookletName: 'BOOKLET.SAMPLE'
+              bookletName: 'BOOKLET.SAMPLE-1'
       responses:
         "201":
           description:  OK, started

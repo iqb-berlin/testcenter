@@ -5,10 +5,10 @@ INSERT INTO `workspace_users` VALUES (1,1,'RW');
 INSERT INTO `workspaces` VALUES (1,'example_workspace');
 
 INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
-VALUES (1, 'test', 'run-hot-return', 1, '2030-01-02 10:00:00', 'nice_token', '{"xxx":["BOOKLET.SAMPLE"]}', 'sample_group');
+VALUES (1, 'test', 'run-hot-return', 1, '2030-01-02 10:00:00', 'nice_token', '{"xxx":["BOOKLET.SAMPLE-1"]}', 'sample_group');
 
 INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
-VALUES (2, 'test', 'run-hot-return', 1, '2000-01-02 10:00:00', 'expired_token', '{"xxx":["BOOKLET.SAMPLE"]}', 'sample_group');
+VALUES (2, 'test', 'run-hot-return', 1, '2000-01-02 10:00:00', 'expired_token', '{"xxx":["BOOKLET.SAMPLE-1"]}', 'sample_group');
 
 INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
 VALUES (3, 'monitor', 'monitor-group', 1, '2030-01-02 10:00:00', 'monitor_token', '', 'sample_group');

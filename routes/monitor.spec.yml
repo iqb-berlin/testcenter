@@ -72,7 +72,7 @@ paths:
                 testId: 1
                 testState:
                   "CURRENT_UNIT_ID": "1"
-                bookletName: BOOKLET.SAMPLE
+                bookletName: BOOKLET.SAMPLE-1
                 unitName: UNIT.SAMPLE
                 unitState:
                   PRESENTATIONCOMPLETE: "yes"
@@ -85,7 +85,7 @@ paths:
                 testId: 2,
                 testState:
                   status: "locked"
-                bookletName: "BOOKLET.SAMPLE2"
+                bookletName: "BOOKLET.SAMPLE-2"
                 unitState: []
                 timestamp: 1606736826
               - personId: 3

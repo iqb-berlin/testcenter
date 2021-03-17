@@ -34,11 +34,13 @@ class TesttakersFolderTest extends TestCase {
             'sample_group',
             [
                 "abc" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ],
                 "def" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ]
             ],
@@ -61,11 +63,13 @@ class TesttakersFolderTest extends TestCase {
             'sample_group',
             [
                 "abc" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ],
                 "def" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ]
             ],
@@ -82,7 +86,7 @@ class TesttakersFolderTest extends TestCase {
             'unit_test_login-no-pw',
             'run-hot-restart',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -97,7 +101,7 @@ class TesttakersFolderTest extends TestCase {
             'unit_test_login-no-pw-trial',
             'run-trial',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -136,7 +140,7 @@ class TesttakersFolderTest extends TestCase {
             'unit_test_login-no-pw',
             'run-hot-restart',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -151,7 +155,7 @@ class TesttakersFolderTest extends TestCase {
             'unit_test_login-no-pw-trial',
             'run-trial',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,

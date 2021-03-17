@@ -36,7 +36,7 @@ paths:
                     token:  "static:person:sample_group_sample_user_xxx"
                     displayName: "sample_group/sample_user/xxx"
                     access:
-                      test:  ["BOOKLET.SAMPLE"]
+                      test:  ["BOOKLET.SAMPLE-1"]
                     customTexts: {}
                     flags: []
                 loginToken:
@@ -166,7 +166,7 @@ paths:
                 displayName: "sample_group/sample_user/xxx"
                 access:
                   test:
-                    - ["BOOKLET.SAMPLE"]
+                    - ["BOOKLET.SAMPLE-1"]
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
                 flags: []
         "400":
