@@ -145,7 +145,7 @@ class TestDAO {
 
 class TesttakersFolder {
 
-    function getMembersOfLogin(string $name): array {
+    function getPersonsInSameGroup(string $name): array {
 
         return [
             new PotentialLogin("{$name}_1", "hot"),

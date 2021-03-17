@@ -103,7 +103,7 @@ class SessionController extends Controller {
     public static function getBookletsOfMonitor(Login $login): array {
 
         $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
-        $members = $testtakersFolder->getMembersOfLogin($login->getName());
+        $members = $testtakersFolder->getPersonsInSameGroup($login->getName());
         $booklets = [];
 
         foreach ($members as $member) { /* @var $member PotentialLogin */
@@ -130,7 +130,7 @@ class SessionController extends Controller {
 
             $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
             $bookletsFolder = new BookletsFolder($login->getWorkspaceId());
-            $members = $testtakersFolder->getMembersOfLogin($login->getName());
+            $members = $testtakersFolder->getPersonsInSameGroup($login->getName());
             $bookletLabels = [];
 
             foreach ($members as $member) { /* @var $member PotentialLogin */
