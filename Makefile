@@ -22,6 +22,9 @@ build:
 pull:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml pull
 
+init-config:
+	cp .env-default .env
+
 update-submodules:
 	git submodule update --remote --merge
 
