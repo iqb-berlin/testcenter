@@ -28,10 +28,10 @@ init-config:
 update-submodules:
 	git submodule update --remote --merge
 
-make test-e2e: run-prod-detached
+test-e2e: run-prod-detached
 	docker build -f e2etest/Dockerfile --tag e2etest .
 	docker run --network host e2etest
 	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml stop
 
-make new-version:
+new-version:
 	scripts/new_version.py
