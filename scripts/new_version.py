@@ -27,6 +27,8 @@ import socket
 import os
 import tarfile
 
+DIST_PACKAGE_NAME = 'testcenter'
+
 BACKEND_VERSION_FILE_PATH = 'testcenter-backend/composer.json'
 BACKEND_VERSION_REGEX = '(?<=version": ")(.*)(?=")'
 FRONTEND_VERSION_FILE_PATH = 'testcenter-frontend/package.json'
@@ -59,6 +61,7 @@ def check_prerequisites():
     # port 80 in use?
     if is_port_in_use(80):
         sys.exit('ERROR: Port 80 in use!' + result.stderr)
+
 
 def is_port_in_use(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -107,9 +110,7 @@ def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
     subprocess.run("git add testcenter-broadcasting-service", shell=True, check=True)
     for compose_file in COMPOSE_FILE_PATHS:
         subprocess.run(f"git add {compose_file}", shell=True, check=True)
-    subprocess.run(f"git add dist/{frontend_version}@{backend_version}+{bs_version}.tar",
-                   shell=True, check=True)
-    subprocess.run("git add dist/install.sh", shell=True, check=True)
+    subprocess.run("git add dist/*", shell=True, check=True)
 
     subprocess.run(f"git commit -m \"Update version to {new_version_string}\"", shell=True, check=True)
     subprocess.run("git push origin master", shell=True, check=True)
@@ -128,8 +129,9 @@ def create_release_package(backend_version, frontend_version, bs_version):
                    shell=True, check=True)
     subprocess.run('cp docker-compose.prod.tls.yml dist/docker-compose.prod.tls.yml', shell=True, check=True)
     subprocess.run('cp .env-default dist/.env', shell=True, check=True)
+    subprocess.run('cp scripts/update.sh dist/update.sh', shell=True, check=True)
 
-    filename = f"dist/{frontend_version}@{backend_version}+{bs_version}.tar"
+    filename = f"dist/{DIST_PACKAGE_NAME}-{frontend_version}@{backend_version}+{bs_version}.tar"
     with tarfile.open(filename, "w") as tar:
         for file in os.listdir('dist'):
             tar.add('dist/' + file, file)
@@ -149,4 +151,4 @@ bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
 update_compose_file_versions(backend_version, frontend_version, bs_version)
 run_tests()
 create_release_package(backend_version, frontend_version, bs_version)
-# git_tag_commit_and_push(backend_version, frontend_version, bs_version)
+git_tag_commit_and_push(backend_version, frontend_version, bs_version)
