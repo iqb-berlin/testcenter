@@ -2,6 +2,8 @@ run:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 run-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+stop:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop
 
 run-dev-tls:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.tls.yml up
@@ -13,14 +15,9 @@ run-prod:
 run-prod-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up -d
 
-stop:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop
 
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
-
-pull:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml pull
 
 init-config:
 	cp .env-default .env
