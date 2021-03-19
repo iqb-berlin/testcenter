@@ -33,13 +33,45 @@ else
   echo "Make found"
 fi
 
-read  -p 'Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
+### Download package ###
+DOWNLOAD='y'
+if ls testcenter-*.tar 1> /dev/null 2>&1
+  then
+    PACKAGE_FOUND=true
+    if [ $(ls testcenter-*.tar | wc -l) -gt 1 ]
+      then
+        echo "Multiple packages found. Remove all but the one you want!"
+        exit 1
+    fi
+    read -p "Installation package found. Do you want to check for and download the latest release anyway? [Y/n]:" -e DOWNLOAD
+  else
+    PACKAGE_FOUND=false
+    read -p "No installation package found. Do you want to download the latest release? [Y/n]:" -e DOWNLOAD
+fi
+
+if [ "$PACKAGE_FOUND" = 'false' ] && [ "$DOWNLOAD" = 'n' ]
+  then
+    echo "Can not continue without install package."
+    exit 1
+fi
+
+if [[ $DOWNLOAD != "n" ]]
+  then
+    echo 'downloading latest'
+    rm -f testcenter-*.tar;
+    curl -s https://api.github.com/repos/iqb-berlin/testcenter-setup/releases/latest \
+    | grep "browser_download_url.*tar" \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -qi -;
+fi
 
 ### Unpack application ###
+read  -p 'Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
 mkdir $TARGET_DIR
 tar -xf *.tar -C $TARGET_DIR
 
-# ### Set up config ###
+### Set up config ###
 read  -p 'Server Address (hostname or IP): ' -e -i $(hostname) HOSTNAME
 sed -i "s/localhost/$HOSTNAME/" .env
 
