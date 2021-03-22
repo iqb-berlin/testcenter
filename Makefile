@@ -15,6 +15,11 @@ run-prod:
 run-prod-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up -d
 
+run-prod-tls:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up
+run-prod-tls-detached:
+	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d
+
 
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
