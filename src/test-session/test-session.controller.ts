@@ -1,28 +1,30 @@
-import {Controller, Get, HttpException, Logger, Post, Req} from '@nestjs/common';
-import {Request} from 'express';
-import {isSessionChange, SessionChange} from './session-change.interface';
-import {TestSessionService} from "./test-session.service";
+import {
+  Controller, Get, HttpException, Logger, Post, Req
+} from '@nestjs/common';
+import { Request } from 'express';
+import { isSessionChange, SessionChange } from './session-change.interface';
+import { TestSessionService } from './test-session.service';
 
 @Controller()
 export class TestSessionController {
-    constructor(
-        private readonly dataService: TestSessionService
-    ) {}
+  constructor(
+    private readonly dataService: TestSessionService
+  ) {}
 
-    private readonly logger = new Logger(TestSessionController.name);
+  private readonly logger = new Logger(TestSessionController.name);
 
-    @Post('/push/session-change')
-    pushSessionChange(@Req() request: Request): void {
-        if (!isSessionChange(request.body)) {
-            throw new HttpException("not session data", 400);
-        }
-
-        this.logger.log('/push/session-change', JSON.stringify(request.body));
-        this.dataService.applySessionChange(request.body);
+  @Post('/push/session-change')
+  pushSessionChange(@Req() request: Request): void {
+    if (!isSessionChange(request.body)) {
+      throw new HttpException('not session data', 400);
     }
 
-    @Get('/test-sessions')
-    getTestSessions(): SessionChange[] {
-        return this.dataService.getTestSessions();
-    }
+    this.logger.log('/push/session-change', JSON.stringify(request.body));
+    this.dataService.applySessionChange(request.body);
+  }
+
+  @Get('/test-sessions')
+  getTestSessions(): SessionChange[] {
+    return this.dataService.getTestSessions();
+  }
 }
