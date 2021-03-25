@@ -14,16 +14,19 @@ build:
 	cd docker && docker-compose build
 
 test-unit:
-	cd docker && docker-compose exec testcenter-backend vendor/bin/phpunit unit-tests/.
+	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend vendor/bin/phpunit unit-tests/.
 
 test-e2e:
-	cd docker && docker-compose exec testcenter-backend npm --prefix=integration run dredd_test
+	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run dredd_test
 
 test-e2e-no-spec-update:
-	cd docker && docker-compose exec testcenter-backend npm --prefix=integration run dredd_test_no_specs
+	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run dredd_test_no_specs
 
 update-docs:
-	cd docker && docker-compose exec testcenter-backend npm --prefix=integration run update_specs
+	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs
+
+init-dev-config:
+	cp docker/.env-default docker/.env
 
 tag-major:
 	scripts/new_version.py major
