@@ -42,8 +42,8 @@ compare_version_string $NEW_FRONTEND_VERSION $OLD_FRONTEND_VERSION
 if [ $NEWER_VERSION = 'true' ]
   then
     echo "Newer version found:
-$OLD_BACKEND_VERSION -> $NEW_BACKEND_VERSION
-$OLD_FRONTEND_VERSION -> $NEW_FRONTEND_VERSION"
+Backend: $OLD_BACKEND_VERSION -> $NEW_BACKEND_VERSION
+Frontend: $OLD_FRONTEND_VERSION -> $NEW_FRONTEND_VERSION"
   else
     echo 'Up to date'
     exit 0
@@ -59,7 +59,7 @@ fi
 read -p "Update applied. Do you want to restart the server? This may take a few minutes. [Y/n]:" -e RESTART
 if [[ $RESTART != "n" ]]
   then
-    make stop
+    make down
     make pull
-    make run
+    make run-detached
 fi

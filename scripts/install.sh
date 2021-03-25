@@ -57,7 +57,7 @@ fi
 
 if [[ $DOWNLOAD != "n" ]]
   then
-    echo 'downloading latest'
+    echo 'Downloading latest package...'
     rm -f testcenter-*.tar;
     curl -s https://api.github.com/repos/iqb-berlin/testcenter-setup/releases/latest \
     | grep "browser_download_url.*tar" \
@@ -70,6 +70,7 @@ fi
 read  -p 'Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
 mkdir $TARGET_DIR
 tar -xf *.tar -C $TARGET_DIR
+cd $TARGET_DIR
 
 ### Set up config ###
 read  -p 'Server Address (hostname or IP): ' -e -i $(hostname) HOSTNAME
@@ -93,7 +94,7 @@ read  -p 'Database user password: ' -e -i $MYSQL_PASSWORD MYSQL_PASSWORD
 sed -i "s/iqb_tba_db_password/$MYSQL_PASSWORD/" .env
 
 read  -p 'Use TLS? (y/N): ' -e TLS
-if [ $TLS = 'y' ]
+if [ $TLS != 'n' ]
 then
   echo "The certificates need to be placed in config/certs and their name configured in config/cert_config.yml."
   sed -i 's/http:/https:/' .env
@@ -101,18 +102,18 @@ then
 fi
 
 ### Populate Makefile ###
-if [ $TLS = 'y' ]
+if [ $TLS != 'n' ]
 then
   rm docker-compose.prod.nontls.yml
   sed -i 's/<run-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up/' Makefile-template
-  sed -i 's/<run-datached-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d/' Makefile-template
+  sed -i 's/<run-detached-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d/' Makefile-template
   sed -i 's/<stop-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml stop/' Makefile-template
   sed -i 's/<down-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml down/' Makefile-template
   sed -i 's/<pull-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml pull/' Makefile-template
 else
   rm docker-compose.prod.tls.yml
   sed -i 's/<run-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up/' Makefile-template
-  sed -i 's/<run-datached-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up -d/' Makefile-template
+  sed -i 's/<run-detached-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up -d/' Makefile-template
   sed -i 's/<stop-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml stop/' Makefile-template
   sed -i 's/<down-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml down/' Makefile-template
   sed -i 's/<pull-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml pull/' Makefile-template
