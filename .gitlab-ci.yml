@@ -86,5 +86,4 @@ deploy-tagged-docker-image:
     - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
     - docker push iqbberlin/testcenter-backend:$CI_COMMIT_TAG
   rules:
-    - if: '$CI_COMMIT_TAG'
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: "$CI_COMMIT_TAG != null && $CI_COMMIT_BRANCH == 'master'"
