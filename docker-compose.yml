@@ -22,7 +22,7 @@ services:
 
   traefik:
     image: traefik:v2.2
-    container_name: traefik
+    container_name: testcenter-traefik
     ports:
       - "80:80"
     volumes:
