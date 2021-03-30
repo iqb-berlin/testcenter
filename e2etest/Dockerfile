@@ -24,4 +24,4 @@ COPY ./e2etest/protractor.conf.js /e2e/protractor.conf.js
 RUN npx webdriver-manager update
 
 CMD [ "sh", "-c", \
-     "./node_modules/protractor/bin/protractor --baseUrl http://localhost protractor.conf.js"]
+     "./node_modules/protractor/bin/protractor --baseUrl http://testcenter-frontend protractor.conf.js"]
