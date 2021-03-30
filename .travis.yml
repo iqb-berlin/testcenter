@@ -1,7 +1,0 @@
-dist: bionic
-
-before_script:
-  - make init-config
-
-script:
-  - make test-e2e
