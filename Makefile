@@ -34,8 +34,8 @@ update-submodules:
 
 test-e2e: run-prod-detached
 	docker build -f e2etest/Dockerfile --tag e2etest .
-	docker run --network host e2etest
-	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml stop
+	docker run --network "testcenter-setup_default" e2etest
+	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml down
 
 new-version:
 	scripts/new_version.py
