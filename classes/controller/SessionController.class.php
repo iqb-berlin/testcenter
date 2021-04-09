@@ -177,6 +177,12 @@ class SessionController extends Controller {
             $loginWithPerson = self::sessionDAO()->getPersonLogin($authToken->getToken());
             $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
+            if ($authToken->getMode() == 'monitor-group') {
+
+                $booklets = self::getBookletsOfMonitor($loginWithPerson->getLogin(), "");
+                $session->addAccessObjects('test', ...$booklets);
+            }
+
             return $response->withJson($session);
         }
 
