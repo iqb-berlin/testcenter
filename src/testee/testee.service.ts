@@ -42,13 +42,13 @@ export class TesteeService {
       return;
     }
     if (this.testees[testeeToken].disconnectNotificationUri) {
+      const disconnectNotificationUri = this.testees[testeeToken].disconnectNotificationUri;
       this.http.post(this.testees[testeeToken].disconnectNotificationUri).subscribe(
         () => {
-          this.logger.log(`sent connection-lost signal to ${this.testees[testeeToken].disconnectNotificationUri}`);
+          this.logger.log(`sent connection-lost signal to ${disconnectNotificationUri}`);
         },
         error => {
-          this.logger.warn(`could not sent connection-lost signal to 
-                        ${this.testees[testeeToken].disconnectNotificationUri}: ${error.message}`);
+          this.logger.warn(`could not send connection-lost signal to ${disconnectNotificationUri}: ${error.message}`);
         }
       );
     }
