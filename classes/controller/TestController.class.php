@@ -32,6 +32,7 @@ class TestController extends Controller {
 
         self::testDAO()->setTestRunning((int) $test['id']);
 
+        // TODO check for Mode::hasCapability('monitorable'))
         $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), (int) $test['id']);
         if ($test['_newlyCreated']) {
             // can happen when mode is run-hot-return for example
