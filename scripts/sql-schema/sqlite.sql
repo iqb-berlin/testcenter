@@ -4,7 +4,7 @@ BEGIN TRANSACTION;
 CREATE TABLE `admin_sessions` (
   `token` varchar(50) NOT NULL
 ,  `user_id` integer  NOT NULL
-,  `valid_until` timestamp NOT NULL DEFAULT current_timestamp 
+,  `valid_until` timestamp NOT NULL DEFAULT current_timestamp
 ,  PRIMARY KEY (`token`)
 ,  CONSTRAINT `fk_users_admintokens` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
@@ -13,6 +13,7 @@ CREATE TABLE `test_logs` (
   `booklet_id` integer  NOT NULL
 ,  `timestamp` integer NOT NULL DEFAULT 0
 ,  `logentry` text DEFAULT NULL
+,  `timestamp_server` timestamp NOT NULL DEFAULT current_timestamp
 ,  CONSTRAINT `fk_log_test` FOREIGN KEY (`booklet_id`) REFERENCES tests (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE TABLE `test_reviews` (
@@ -31,6 +32,7 @@ CREATE TABLE `tests` (
 ,  `locked` integer NOT NULL DEFAULT 0
 ,  `label` varchar(100) DEFAULT NULL
 ,  `running` integer NOT NULL DEFAULT 0
+,  `timestamp_server` timestamp NOT NULL DEFAULT current_timestamp
 ,  CONSTRAINT `fk_booklet_person` FOREIGN KEY (`person_id`) REFERENCES person_sessions (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE TABLE `login_sessions` (

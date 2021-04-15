@@ -349,10 +349,7 @@ class TestController extends Controller {
     private static function updateTestState(int $testId, array $testSession, string $field, string $value) {
 
         $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
-        // TODO write log also -> can not safely be written since the lack of a timestamp.
-        // We need to solve https://github.com/iqb-berlin/testcenter-backend/issues/162 first (syncing of server and
-        // client time), before we should do this.
-        // See also: https://github.com/iqb-berlin/testcenter-backend/issues/172
+        self::testDAO()->addTestLog($testId, $field, 0, $value);
 
         $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name'], $testId);
         $sessionChangeMessage->setTestState($newState);

@@ -71,3 +71,10 @@ create table test_commands
 );
 
 create unique index test_commands_id_uindex on test_commands (id, test_id);
+
+-- 10.0.0
+alter table test_logs
+    add timestamp_server timestamp default CURRENT_TIMESTAMP null;
+
+alter table tests
+    add timestamp_server timestamp default CURRENT_TIMESTAMP null;

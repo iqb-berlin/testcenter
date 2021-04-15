@@ -60,13 +60,13 @@ class SessionChangeMessage implements JsonSerializable {
     protected $timestamp = 0;
 
 
-    public function __construct(int $personId, string $groupName, int $testId) {
+    public function __construct(int $personId, string $groupName, int $testId, int $timestamp = null) {
 
         $this->personId = $personId;
         $this->groupName = $groupName;
         $this->testId = $testId;
 
-        $this->timestamp = TimeStamp::now();
+        $this->timestamp = $timestamp ?? TimeStamp::now();
     }
 
 

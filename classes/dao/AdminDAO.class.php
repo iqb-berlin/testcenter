@@ -273,7 +273,8 @@ class AdminDAO extends DAO {
                  tests.name as "bookletName",
                  tests.locked,
                  tests.running,
-                 tests.laststate as "testState"
+                 tests.laststate as "testState",
+                 tests.timestamp_server as "testTimestampServer"
             FROM person_sessions
                  LEFT JOIN tests ON person_sessions.id = tests.person_id
                  LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_id
@@ -294,7 +295,8 @@ class AdminDAO extends DAO {
 		    $sessionChangeMessage = new SessionChangeMessage(
 		        (int) $testSession['personId'],
                 $testSession['groupName'],
-                (int) $testSession['testId']
+                (int) $testSession['testId'],
+                TimeStamp::fromSQLFormat($testSession['testTimestampServer']),
             );
 		    $sessionChangeMessage->setLogin(
                 $testSession['loginName'],

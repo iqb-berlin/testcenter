@@ -184,15 +184,12 @@ class TestDAO extends DAO {
         $oldState = $testData['laststate'] ? JSON::decode($testData['laststate'], true) : [];
         $newState = array_merge($oldState, $statePatch);
 
-        if ($oldState == $newState) {
-            return $newState;
-        }
-
         $this->_(
-         'UPDATE tests SET laststate = :laststate WHERE id = :id',
+         'UPDATE tests SET laststate = :laststate, timestamp_server = :timestamp WHERE id = :id',
              [
                  ':laststate' => json_encode($newState),
-                 ':id' => $testId
+                 ':id' => $testId,
+                 ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
              ]
         );
 
@@ -246,10 +243,11 @@ class TestDAO extends DAO {
     // TODO unit test
     public function lockTest(int $testId): void {
 
-        $this->_('UPDATE tests SET locked = :locked WHERE id = :id',
+        $this->_('UPDATE tests SET locked = :locked , timestamp_server = :timestamp WHERE id = :id',
             [
                 ':locked' => '1',
-                ':id' => $testId
+                ':id' => $testId,
+                ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
             ]
         );
     }
@@ -258,10 +256,11 @@ class TestDAO extends DAO {
     // TODO unit test
     public function changeTestLockStatus(int $testId, bool $unlock = true): void {
 
-        $this->_('UPDATE tests SET locked = :locked WHERE id = :id',
+        $this->_('UPDATE tests SET locked = :locked , timestamp_server = :timestamp WHERE id = :id',
             [
                 ':locked' => $unlock ? '0' : '1',
-                ':id' => $testId
+                ':id' => $testId,
+                ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
             ]
         );
     }
@@ -382,10 +381,11 @@ class TestDAO extends DAO {
     // TODO unit test
     public function setTestRunning(int $testId) {
 
-        $this->_('UPDATE tests SET running = :running WHERE id = :id',
+        $this->_('UPDATE tests SET running = :running , timestamp_server = :timestamp WHERE id = :id',
             [
                 ':running' => '1',
-                ':id' => $testId
+                ':id' => $testId,
+                ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
             ]
         );
     }
