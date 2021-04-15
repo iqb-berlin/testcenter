@@ -56,8 +56,6 @@ class TestEnvironment {
 
             TestEnvironment::makeRandomStatic();
 
-            TestEnvironment::debugVirtualEnvironment();
-
         } catch (Throwable $exception) {
 
             TestEnvironment::bailOut($exception);
