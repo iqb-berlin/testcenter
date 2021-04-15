@@ -8,8 +8,7 @@ RUN npm install \
   ts-node \
   typescript \
   tslib \
-  @types/jest \
-  webdriver-manager
+  @types/jest
 
 # install chrome for protractor tests
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -21,7 +20,10 @@ COPY ./testcenter-frontend/e2e /e2e
 COPY ./e2etest/tsconfig.json /e2e/tsconfig.json
 COPY ./e2etest/protractor.conf.js /e2e/protractor.conf.js
 
-RUN npx webdriver-manager update
+# install webdriver for browser testing
+RUN npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
+RUN npx webdriver-manager clean
+RUN npx webdriver-manager update --versions.chrome=`google-chrome --product-version`
 
 CMD [ "sh", "-c", \
      "./node_modules/protractor/bin/protractor --baseUrl http://testcenter-frontend protractor.conf.js"]
