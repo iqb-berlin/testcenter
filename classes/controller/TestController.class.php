@@ -349,7 +349,7 @@ class TestController extends Controller {
     private static function updateTestState(int $testId, array $testSession, string $field, string $value) {
 
         $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
-        self::testDAO()->addTestLog($testId, $field, 0, $value);
+        self::testDAO()->addTestLog($testId, '"' . $field . '"', 0, $value);
 
         $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name'], $testId);
         $sessionChangeMessage->setTestState($newState);
