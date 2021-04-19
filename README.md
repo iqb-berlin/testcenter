@@ -34,9 +34,11 @@ the components.
 #### Cloning the repository
 
 Because git submodules are used you need to clone them as well as the main
-repository. You can use the following command.
-
-`git clone --recurse-submodules https://github.com/iqb-berlin/testcenter-setup`
+repository. You can use the following command after cloning this repo:
+```
+git submodule init
+git submodule update
+```
 
 #### Configuration
 
