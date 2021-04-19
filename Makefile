@@ -28,6 +28,7 @@ build:
 
 init-config:
 	cp .env-default .env
+	make -C testcenter-frontend init-dev-config
 
 update-submodules:
 	git submodule update --remote --merge
