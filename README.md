@@ -1,13 +1,12 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Travis (.com)](https://img.shields.io/travis/com/iqb-berlin/testcenter-backend?style=flat-square)](https://travis-ci.com/iqb-berlin/testcenter-backend)
-![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/iqb-berlin/testcenter-backend?style=flat-square)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://scm.cms.hu-berlin.de/iqb/testcenter-backend/badges/master/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/testcenter-backend)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/iqb-berlin/testcenter-backend)
+
+
 
 # Testcenter Backend
 
 This is the backend of the Testcenter application.  
-
-In older versions it's also the backend for the now deprecated
-Testcenter-Admin application.
 
 You can find the frontend [here](https://github.com/iqb-berlin/testcenter-frontend).
 
@@ -16,7 +15,7 @@ The repository for a complete setup of the application can be found
 
 ## Documentation
 
-Find API documentation [here](https://iqb-berlin.github.io/testcenter-backend).
+Find API documentation [here](https://iqb-berlin.github.io/testcenter-backend/api/).
 
 ## Bug Reports
 
@@ -24,7 +23,7 @@ File bug reports, feature requests etc. [here](https://github.com/iqb-berlin/tes
 
 ## Installation
 
-### With Docker (recommended)
+### With Docker
 
 All the necessary commands for running the application and starting the tests
 can be found in the Makefile on the root directory.
@@ -42,157 +41,13 @@ make test-unit
 make test-e2e
 ```
 
-### With Installation Script on Webserver
+### Manual installation on Webserver
 
-#### Prerequisites
-
-* Apache2 (other Webservers possible, but untested) with
-  * mod_rewrite extension
-  * header extension
-* PHP >= 7.3
-  * pdo extension
-  * json extension
-  * zip extension
-  * libxml extension
-  * simplexml extension
-  * xmlreader extension
-  * apache
-* MySQL or PostgreSQL
-* for tests / doc-building: NPM
-
-#### Installation Steps
-
-- Clone this repository:
-```
-git clone https://github.com/iqb-berlin/testcenter-iqb-php.git
-```
-
-- Install dependencies with Composer:
-```
-sh scripts/install_composer.sh # or install composer manually
-php composer.phar install
-```
-
-- Make sure, Apache2 accepts `.htacess`-files (`AllowOverride All`-setting in your Vhost-config) and
-required extensions are present. *Make sure, config and data files are not exposed to the outside*.
-If the `.htacess`-files is accepted by Apache2 correctly this would be the case.
-
-- Ensure that PHP has _write_ access to `/tmp` and `/vo_data`:
-```
-sudo chown -R www-data:www-data ./integration/tmp # normal apache2 config assumed
-sudo chown -R www-data:www-data ./vo_data # normal apache2 config assumed
-```
-- create a MySQL or a PostgreSQL database
-- Run the initialize-script, that creates
-  - a superuser
-  - a workspace with sample data
-  - `config/DatabaseConnectionData.json` config file
-  - `config/system.json` config file
-  - necessary tables in the database
-```
-sudo --user=www-data php scripts/initialize.php \
-    --user_name=<name your future superuser> \
-    --user_password=<set up a password for him> \
-    --workspace=<name your first workspace> \
-    --test_login_name=<name the login for your sample data test> \
-    --test_login_password=<password the login for your sample data test> \
-    --type=<your database type: `mysql` or `pgsql`> \
-    --host=<database host, `localhost` by default> \
-    --post=<database port, usually and by default 3306 for mysql and 5432 for postgresl> \
-    --dbname=<database name> \
-    --user=<mysql-/postgresql-username> \
-    --password=<mysql-/postgresql-password> \
-    --broadcastServiceUriPush=<address of broadcast service to push for the backend, example: http://localhost:3000> \
-    --broadcastServiceUriSubscribe=<address of broadcast service's websocket to subscribe to from frontend, example: ws://localhost:3000>
-```
-
-#### Options
-- See `scripts/initialize.php` for more options of the initialize-script.
-
-- Optionally you can create the file `config/DatabaseConnectionData.json` beforehand
-manually and omit the corresponding argument when calling the initialize-script.
-You may use the template file `config/DatabaseConnectionData.template.json` as a starting
-point for your own. If values are not self-explanatory, see the init-script parameter
-descriptions above.
-Check this file if you have any trouble connecting to your database.
-Example:
-```
-{
-  "type": "mysql",
-  "host": "localhost",
-  "port": "3306",
-  "dbname": "my_database",
-  "user": "my_user",
-  "password": "some_secrets"
-}
-```
-
-- You may create config/system.json by hand. Example:
-```
-{
-  "broadcastServiceUriPush": "http://localhost:3000",
-  "broadcastServiceUriSubscribe":"ws://localhost:3000"
-}
-```
-If you choose not to use the BroadcastingService, let both variables empty (but don't omit them!). 
-
-- Optionally you can create the database structure beforehand manually as well:
-```
-mysql -u username -p database_name < scripts/sql-schema/mysql.sql
-mysql -u username -p database_name < scripts/sql-schema/patches.mysql.sql
-# or
-psql -U username database_name < scripts/sql-schema/postgresql.sql
-psql -U username database_name < scripts/sql-schema/patches.postgresql.sql
-```
-
+See [Manual Installation](https://iqb-berlin.github.io/testcenter-backend/manual_installation.html)
 
 ## Upgrade from previous versions
-Pull the version(-tag) you want and lookup UPGRADE.md for important changes!
 
-
-## Tests
-
-### With Docker (recommended)
-```
-make test-unit
-make test-e2e
-```
-
-### Run tests on your (host) machine
-#### Unit tests
-
-```
-vendor/bin/phpunit unit-tests
-```
-
-#### E2E/API-Tests
-
-These tests test the in-/output of all endpoints against the API Specification using [Dredd](https://dredd.org).
-
-##### Preparation:
-* install Node modules
-```
-npm --prefix=integration install
-```
-
-* If your backend is not running under `http://localhost`, use env `TC_API_URL` variable to set up it's URI
-```
-export TC_API_URL=http://localhost/testcenter-iqb-php
-  &&  npm --prefix=integration run dredd_test
-```
-
-##### Run the E2E/API-Tests
-```
- npm --prefix=integration run dredd_test
-```
-
-##### Run E2E/API-Tests against persistent database
-If you want to run the e2e-tests against a persistent database, MySQL or PostgreSQL, do the following:
-- in `/config` create a file `DBConnectionData.e2etest.json` analogous to `DBConnectionData.json` with your connection
-- also in `/config` create a file `e2eTests.json`with the content `{"configFile": "e2etest"}`
-- **Be really careful**: Running the tests this way will *erase all your data* from the data dir `vo_data` and the
-specified database.
-
+Find Changelog [here](https://iqb-berlin.github.io/testcenter-backend/UPGRADE.html)
 
 ## Development
 ### Coding Standards

@@ -1,151 +1,34 @@
 <?php
 declare(strict_types=1);
 
-use Slim\Exception\HttpBadRequestException;
-use Slim\Route;
-use Slim\Http\Request;
-use Slim\Http\Response;
-
 global $app;
 
-$app->get('/', function(Request $request, Response $response) use ($app) {
+$app->get('/', [SystemController::class, 'get']);
 
-    return $response->withJson(['version' => Version::get()]);
-});
-
-
-$app->get('/workspaces', function (Request $request, Response $response) {
-
-    $superAdminDAO = new SuperAdminDAO();
-    $workspaces = $superAdminDAO->getWorkspaces();
-    return $response->withJson($workspaces);
-})
+$app->get('/workspaces', [SystemController::class, 'getWorkspaces'])
     ->add(new IsSuperAdmin())
     ->add(new RequireToken('admin'));
 
-
-$app->delete('/workspaces', function (Request $request, Response $response) {
-
-    $superAdminDAO = new SuperAdminDAO();
-    $bodyData = JSON::decode($request->getBody()->getContents());
-    $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
-
-    if (!is_array($workspaceList)) {
-        throw new HttpBadRequestException($request);
-    }
-
-    $superAdminDAO->deleteWorkspaces($workspaceList);
-
-    return $response;
-})
+$app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
     ->add(new IsSuperAdmin())
     ->add(new RequireToken('admin'));
 
-
-$app->get('/users', function(Request $request, Response $response) {
-
-    $superAdminDAO = new SuperAdminDAO();
-
-    return $response->withJson($superAdminDAO->getUsers());
-})
+$app->get('/users', [SystemController::class, 'getUsers'])
     ->add(new IsSuperAdmin())
     ->add(new RequireToken('admin'));
 
-
-$app->delete('/users', function(Request $request, Response $response) {
-
-    $superAdminDAO = new SuperAdminDAO();
-    $bodyData = JSON::decode($request->getBody()->getContents());
-    $userList = isset($bodyData->u) ? $bodyData->u : [];
-
-    $superAdminDAO->deleteUsers($userList);
-
-    return $response;
-})
+$app->delete('/users', [SystemController::class, 'deleteUsers'])
     ->add(new IsSuperAdmin())
     ->add(new RequireToken('admin'));
 
+$app->get('/list/routes', [SystemController::class, 'getListRoutes']);
 
-$app->get('/list/routes', function(Request $request, Response $response) use ($app) {
+$app->get('/version', [SystemController::class, 'getVersion']);
 
-    $routes = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
-        foreach ($route->getMethods() as $method) {
-            $target[] = "[$method] " . $route->getPattern();
-        }
-        return $target;
-    }, []);
+$app->get('/system/config', [SystemController::class, 'getSystemConfig']);
 
-    return $response->withJson($routes);
-});
+$app->get('/system/time', [SystemController::class, 'getSystemTime']);
 
+$app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroadcastingService']);
 
-$app->get('/version', function(Request $request, Response $response) use ($app) {
-
-    return $response->withJson(['version' => Version::get()]);
-});
-
-
-$app->get('/system/config', function(Request $request, Response $response) use ($app) {
-
-    $customTextsFilePath = ROOT_DIR . '/config/customTexts.json';
-
-    if (file_exists($customTextsFilePath)) {
-        $customTexts = JSON::decode(file_get_contents($customTextsFilePath));
-    } else {
-        $customTexts = [];
-    }
-
-    return $response->withJson(
-        [
-            'version' => Version::get(),
-            'customTexts' => $customTexts,
-            'broadcastingService' => BroadcastService::getStatus(),
-        ]
-    );
-});
-
-// TODO dredd tests / spec
-$app->get('/system/time', function(Request $request, Response $response) use ($app) {
-
-    return $response->withJson(
-        [
-            'timezone' => date_default_timezone_get(),
-            'timestamp' => microtime(true) * 1000
-        ]
-    );
-});
-
-$app->get('/flush-broadcasting-service', function(Request $request, Response $response) use ($app) {
-
-    BroadcastService::send('system/clean');
-    return $response->withStatus(200);
-});
-
-$app->get('/sys-checks', function(Request $request, Response $response) use ($app) {
-
-    $availableSysChecks = [];
-
-    foreach (SysChecksFolder::getAll() as $sysChecksFolder) { /* @var SysChecksFolder $sysChecksFolder */
-
-        $availableSysChecks = array_merge(
-            $availableSysChecks,
-            array_map(
-                function(XMLFileSysCheck $file) use ($sysChecksFolder) { return [
-                    'workspaceId' => $sysChecksFolder->getWorkspaceId(),
-                    'name' => $file->getId(),
-                    'label' => $file->getLabel(),
-                    'description' => $file->getDescription()
-                ]; },
-                $sysChecksFolder->findAvailableSysChecks()
-            )
-        );
-    }
-
-    if (!count($availableSysChecks)) {
-
-        return $response->withStatus(204, "No SysChecks found.");
-    }
-
-    return $response->withJson($availableSysChecks);
-});
-
+$app->get('/sys-checks', [SystemController::class, 'getSysChecks']);

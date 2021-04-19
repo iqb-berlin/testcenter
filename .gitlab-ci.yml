@@ -1,0 +1,89 @@
+include:
+  - template: Code-Quality.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml
+
+image: docker:20.10.5
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+
+services:
+  - docker:20.10.5-dind
+
+
+stages:
+  - build
+  - test
+  - check
+  - deploy
+
+
+build:
+  stage: build
+  script:
+    - apk add make docker-compose
+    - make init-dev-config
+    - make build
+    - docker tag docker_testcenter-backend iqbberlin/testcenter-backend:latest
+    - docker save docker_testcenter-backend > backend_image.tar
+  artifacts:
+    paths:
+      - backend_image.tar
+    expire_in: 1 day
+
+test-unit:
+  stage: test
+  script:
+    - apk add make docker-compose
+    - make init-dev-config
+    - docker load -i backend_image.tar
+    - make run-detached
+    - make test-unit
+
+test-e2e:
+  stage: test
+  script:
+    - apk add make docker-compose
+    - make init-dev-config
+    - docker load -i backend_image.tar
+    - make run-detached
+    - sleep 20
+    - make test-e2e
+
+code_quality:
+  stage: check
+sast:
+  stage: check
+.secret-analyzer:
+  stage: check
+dependency_scanning:
+  stage: check
+license_scanning:
+  stage: check
+
+deploy-docker-image:
+  stage: deploy
+  script:
+    - docker build --target prod -t iqbberlin/testcenter-backend:latest -f docker/Dockerfile .
+    - docker save iqbberlin/testcenter-backend:latest > backend_latest.tar
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - docker push iqbberlin/testcenter-backend:latest
+  artifacts:
+    paths:
+      - backend_latest.tar
+    expire_in: 1 day
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
+deploy-tagged-docker-image:
+  stage: deploy
+  script:
+    - docker load -i backend_latest.tar
+    - docker tag iqbberlin/testcenter-backend:latest iqbberlin/testcenter-backend:$CI_COMMIT_TAG
+    - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+    - docker push iqbberlin/testcenter-backend:$CI_COMMIT_TAG
+  rules:
+    - if: "$CI_COMMIT_TAG != null && $CI_COMMIT_BRANCH == 'master'"

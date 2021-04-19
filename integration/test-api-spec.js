@@ -171,7 +171,7 @@ gulp.task('update_docs', done => {
   cliPrint.headline('write compiled spec to docs folder');
 
   const compiledFileName = 'tmp/compiled.specs.yml';
-  const targetFileName = '../docs/specs.yml';
+  const targetFileName = '../docs/api/specs.yml';
   const yamlString = fs.readFileSync(compiledFileName, "utf8");
   const yamlTree = YAML.parse(yamlString);
   const localizeReference = (key, val) => {
