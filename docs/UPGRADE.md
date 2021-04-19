@@ -1,5 +1,18 @@
 # Changelog & Upgrade Information
 
+## [next-major]
+This update contains various changes around the improved Group-Monitor.
+### Endpoints
+* A new endpoint `[GET] /system/time` was added to retrieve the server's time and time zone.
+* A new endpoint where added: `/monitor/group/{group_name}/tests/unlock`
+* A new endpoint was added: `[POST] /test/{test_id}/connection-lost`. It can be triggered by a closing browser as well 
+  as from the broadcasting-service to notify a lost connection to the testController. Note: This endpoint does not
+  need any credentials.
+
+### Database
+* You have to apply database structure changes,
+  see `scripts/sql-schema/patches.mysql.sql`
+
 ## 9.0.0
 The main content of this update is a complete refactoring of the (XML-)File-classes,
 Workspace validation and XML-File-Handling. The main goal was to keep validity and
