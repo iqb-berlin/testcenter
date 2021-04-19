@@ -6,14 +6,15 @@ use Slim\Route;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+global $app;
 
-$app->get('/', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+$app->get('/', function(Request $request, Response $response) use ($app) {
 
     return $response->withJson(['version' => Version::get()]);
 });
 
 
-$app->get('/workspaces', function (/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
+$app->get('/workspaces', function (Request $request, Response $response) {
 
     $superAdminDAO = new SuperAdminDAO();
     $workspaces = $superAdminDAO->getWorkspaces();
@@ -41,7 +42,7 @@ $app->delete('/workspaces', function (Request $request, Response $response) {
     ->add(new RequireToken('admin'));
 
 
-$app->get('/users', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) {
+$app->get('/users', function(Request $request, Response $response) {
 
     $superAdminDAO = new SuperAdminDAO();
 
@@ -65,7 +66,7 @@ $app->delete('/users', function(Request $request, Response $response) {
     ->add(new RequireToken('admin'));
 
 
-$app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+$app->get('/list/routes', function(Request $request, Response $response) use ($app) {
 
     $routes = array_reduce($app->getContainer()->get('router')->getRoutes(), function($target, Route $route) {
         foreach ($route->getMethods() as $method) {
@@ -78,13 +79,13 @@ $app->get('/list/routes', function(/** @noinspection PhpUnusedParameterInspectio
 });
 
 
-$app->get('/version', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+$app->get('/version', function(Request $request, Response $response) use ($app) {
 
     return $response->withJson(['version' => Version::get()]);
 });
 
 
-$app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+$app->get('/system/config', function(Request $request, Response $response) use ($app) {
 
     $customTextsFilePath = ROOT_DIR . '/config/customTexts.json';
 
@@ -99,18 +100,28 @@ $app->get('/system/config', function(/** @noinspection PhpUnusedParameterInspect
             'version' => Version::get(),
             'customTexts' => $customTexts,
             'broadcastingService' => BroadcastService::getStatus(),
-            'serverTimestamp' => microtime(true) * 1000
         ]
     );
 });
 
-$app->get('/flush-broadcasting-service', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+// TODO dredd tests / spec
+$app->get('/system/time', function(Request $request, Response $response) use ($app) {
+
+    return $response->withJson(
+        [
+            'timezone' => date_default_timezone_get(),
+            'timestamp' => microtime(true) * 1000
+        ]
+    );
+});
+
+$app->get('/flush-broadcasting-service', function(Request $request, Response $response) use ($app) {
 
     BroadcastService::send('system/clean');
     return $response->withStatus(200);
 });
 
-$app->get('/sys-checks', function(/** @noinspection PhpUnusedParameterInspection */ Request $request, Response $response) use ($app) {
+$app->get('/sys-checks', function(Request $request, Response $response) use ($app) {
 
     $availableSysChecks = [];
 

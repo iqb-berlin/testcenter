@@ -495,12 +495,10 @@ paths:
                                     version: {type: string}
                                     customTexts: {type: object}
                                     broadcastingService: {type: object, properties: {versionExpected: {type: string}, status: {type: string}, version: {type: string}}}
-                                    serverTimestamp: {type: string}
                                 required:
                                     - version
                                     - customTexts
                                     - broadcastingService
-                                    - serverTimestamp
                             example:
                                 version: 9.1.2
                                 customTexts: {}
@@ -508,7 +506,6 @@ paths:
                                     versionExpected: 1.0.0
                                     status: online
                                     version: 1.0.0
-                                serverTimestamp: 1607262304686.265
                 '500':
                     description: 'Server Error'
     /version:
@@ -667,6 +664,20 @@ paths:
                                     description: 'An example SysCheck definition with long description'
                 '204':
                     description: 'No SysChecks found.'
+                '500':
+                    description: 'Server Error'
+    /system/time:
+        get:
+            summary: 'get the server time'
+            description: 'return the server''s current timestamp and timezone'
+            responses:
+                '200':
+                    description: 'list of SysChecks'
+                    content:
+                        application/json:
+                            example:
+                                timezone: Europe/Berlin
+                                timestamp: 1618816319707.522
                 '500':
                     description: 'Server Error'
     '/test/{test_id}':
