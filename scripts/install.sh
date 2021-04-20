@@ -68,7 +68,7 @@ fi
 
 ### Unpack application ###
 read  -p 'Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
-mkdir $TARGET_DIR
+mkdir -p $TARGET_DIR
 tar -xf *.tar -C $TARGET_DIR
 cd $TARGET_DIR
 
