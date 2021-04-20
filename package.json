@@ -20,6 +20,12 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "eslintConfig": {
+    "extends": "@iqb/eslint-config",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
+  },
   "dependencies": {
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^7.0.0",
@@ -32,7 +38,6 @@
     "ws": "^7.3.0"
   },
   "devDependencies": {
-    "@iqb/eslint-config": "0.0.9",
     "@nestjs/cli": "^7.0.0",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",
@@ -40,6 +45,11 @@
     "@types/jest": "25.1.4",
     "@types/node": "^13.9.1",
     "@types/supertest": "^2.0.8",
+    "@typescript-eslint/eslint-plugin": "^2.23.0",
+    "@typescript-eslint/parser": "^2.23.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
     "jest": "^25.1.0",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2",
@@ -62,11 +72,5 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "eslintConfig": {
-    "extends": "@iqb/eslint-config",
-    "parserOptions": {
-      "project": "./tsconfig.json"
-    }
   }
 }
