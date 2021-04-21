@@ -22,7 +22,7 @@ test-e2e:
   stage: test
   script:
     - apk add make docker-compose
-    - make init-config
+    - make init-dev-config
     - docker build -f e2etest/Dockerfile --tag e2etest .
     - make run-prod-detached
     - docker run --network "testcenter-setup_default" e2etest

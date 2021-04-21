@@ -26,7 +26,7 @@ run-prod-tls-detached:
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
 
-init-config:
+init-dev-config:
 	cp .env-default .env
 	make -C testcenter-frontend init-dev-config
 
