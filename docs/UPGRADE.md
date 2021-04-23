@@ -1,6 +1,11 @@
 # Changelog & Upgrade Information
 
-## [next-minor]
+## 9.2.0
+### XSD
+* Additional elements and attributes needed by teststudio-lite where added. They have no affect for the testcenter at
+the moment.
+
+## 9.1.0
 ### Endpoints
 * You can now insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with
 an alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261.
