@@ -38,7 +38,7 @@
     "ws": "^7.3.0"
   },
   "devDependencies": {
-    "@iqb/eslint-config": "0.0.7",
+    "@iqb/eslint-config": "0.0.9",
     "@nestjs/cli": "^7.0.0",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",
