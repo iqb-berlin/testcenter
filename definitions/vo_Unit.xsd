@@ -10,6 +10,7 @@
               <xs:element name="Id" type="xs:ID" />
               <xs:element name="Label" type="xs:string" />
               <xs:element name="Description" type="xs:string" minOccurs="0" />
+              <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -21,6 +22,8 @@
                 <xs:simpleContent>
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
+                    <xs:attribute name="editor" type="xs:string"/>
+                    <xs:attribute name="type" type="xs:string"/>
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>
@@ -30,6 +33,8 @@
                 <xs:simpleContent>
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
+                    <xs:attribute name="editor" type="xs:string"/>
+                    <xs:attribute name="type" type="xs:string"/>
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>
