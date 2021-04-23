@@ -29,7 +29,7 @@ import subprocess
 
 VERSION_FILE = 'composer.json'
 VERSION_REGEX = '(?<=version": ")(.*)(?=")'
-ADDITIONAL_FILES_TO_COMMIT = ['docs/specs.yml', 'sampledata/*.xml']
+ADDITIONAL_FILES_TO_COMMIT = ['docs/api/specs.yml', 'sampledata/*.xml']
 
 
 def _check_prerequisites():
