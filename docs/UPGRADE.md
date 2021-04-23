@@ -8,10 +8,18 @@ This update contains various changes around the improved Group-Monitor.
 * A new endpoint was added: `[POST] /test/{test_id}/connection-lost`. It can be triggered by a closing browser as well 
   as from the broadcasting-service to notify a lost connection to the testController. Note: This endpoint does not
   need any credentials.
-
 ### Database
 * You have to apply database structure changes,
   see `scripts/sql-schema/patches.mysql.sql`
+
+## 9.2.0
+### XSD
+* Additional elements and attributes needed by teststudio-lite where added. They have no affect for the testcenter at
+  the moment.
+
+## 9.1.0
+* You can now insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with
+  an alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261.
 
 ## 9.0.0
 The main content of this update is a complete refactoring of the (XML-)File-classes,
