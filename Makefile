@@ -28,13 +28,14 @@ build:
 
 init-dev-config:
 	cp .env-default .env
-	make -C testcenter-frontend init-dev-config
+	cp e2etest/environment.dev.ts testcenter-frontend/src/environments/environment.ts
 
 update-submodules:
 	git submodule update --remote --merge
 
-test-e2e: run-prod-detached
+test-e2e: run-detached
 	docker build -f e2etest/Dockerfile --tag e2etest .
+	sleep 8
 	docker run --network "testcenter-setup_default" e2etest
 	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml down
 

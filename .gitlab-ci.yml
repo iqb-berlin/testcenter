@@ -23,9 +23,7 @@ test-e2e:
   script:
     - apk add make docker-compose
     - make init-dev-config
-    - docker build -f e2etest/Dockerfile --tag e2etest .
-    - make run-prod-detached
-    - docker run --network "testcenter-setup_default" e2etest
+    - make test-e2e
 
 code_quality:
   stage: check

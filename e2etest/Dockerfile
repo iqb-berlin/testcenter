@@ -26,4 +26,4 @@ RUN npx webdriver-manager clean
 RUN npx webdriver-manager update --versions.chrome=`google-chrome --product-version`
 
 CMD [ "sh", "-c", \
-     "./node_modules/protractor/bin/protractor --baseUrl http://testcenter-frontend protractor.conf.js"]
+     "./node_modules/protractor/bin/protractor --baseUrl http://testcenter-frontend:4200 protractor.conf.js"]
