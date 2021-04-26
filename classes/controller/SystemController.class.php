@@ -95,7 +95,8 @@ class SystemController extends Controller {
             [
                 'version' => Version::get(),
                 'customTexts' => $customTexts,
-                'broadcastingService' => BroadcastService::getStatus()
+                'broadcastingService' => BroadcastService::getStatus(),
+                'baseUrl' => Server::getUrl()
             ]
         );
     }

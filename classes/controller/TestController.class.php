@@ -327,7 +327,7 @@ class TestController extends Controller {
 
         $testee = [
             'testId' => $testId,
-            'disconnectNotificationUri' => "{$request->getUri()->getBaseUrl()}/test/{$testId}/connection-lost"
+            'disconnectNotificationUri' => Server::getUrl() . "/test/{$testId}/connection-lost"
         ];
         $bsUrl = BroadcastService::registerChannel('testee', $testee);
 
