@@ -117,7 +117,11 @@ class XMLFileUnit extends XMLFile {
         }
 
         $definitionRef = (string) $this->xml->xpath('/Unit/DefinitionRef')[0];
-        $unitContentFile = $workspaceValidator->getResource($definitionRef, false);
+        $unitContentFile = $workspaceValidator->getResource($definitionRef, true);
+
+        if (!$unitContentFile) {
+            throw new HttpError("Resource not found: `$definitionRef`");
+        }
 
         return $unitContentFile->getContent();
     }
