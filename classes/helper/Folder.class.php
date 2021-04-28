@@ -49,6 +49,7 @@ class Folder {
     }
 
     // TODO unit-test
+    // TODO avoid following symlinks
     static function deleteContentsRecursive(string $path): void {
 
         foreach(new DirectoryIterator($path) as $entry) {
