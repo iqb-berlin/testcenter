@@ -11,13 +11,10 @@ class ErrorHandler {
 
     static function logException(Throwable $throwable, bool $logTrace = false): string {
 
-        $ip = explode(".", $_SERVER['REMOTE_ADDR']);
-        $ipAnon = "user-" . md5($ip[0] . $ip[1] . $ip[2] . $_SERVER['HTTP_USER_AGENT']);
-
         $errorUniqueId = uniqid('error-', true);
         $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
 
-        $logHeadline = [$ipAnon, $errorUniqueId];
+        $logHeadline = [ErrorHandler::getAnonIp(), $errorUniqueId];
 
         if (method_exists($throwable, 'getTitle') and $throwable->getTitle()) {
             $logHeadline[] = "({$throwable->getTitle()})";
@@ -40,6 +37,17 @@ class ErrorHandler {
         error_log(implode(' ', $logHeadline));
 
         return $errorUniqueId;
+    }
+
+
+    private static function getAnonIp(): string {
+
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            $ip = explode(".", $_SERVER['REMOTE_ADDR']);
+            return "user-" . md5($ip[0] . ($ip[1] ?? '') . ($ip[2] ?? '') . $_SERVER['HTTP_USER_AGENT']);
+        }
+
+        return 'pid-' . getmypid();
     }
 
 
