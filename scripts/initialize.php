@@ -53,10 +53,6 @@ define('DATA_DIR', ROOT_DIR . '/vo_data');
 
 require_once(ROOT_DIR . '/autoload.php');
 
-//DB::connect();
-//$initDAO = new InitDAO();
-//$initDAO->clearDb();
-
 try  {
 
     $args = new InstallationArguments(getopt("", [
