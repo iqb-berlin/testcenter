@@ -5,25 +5,16 @@ declare(strict_types=1);
 
 class InitDAO extends SessionDAO {
 
-
-    static function createWithRetries(int $retries = 5): InitDAO {
-
-        while ($retries--) {
-
-            try {
-
-                return new InitDAO();
-
-            } catch (Throwable $t) {
-
-                echo "\nDatabase connection failed... retry! ($retries attempts left)";
-                usleep(20 * 1000000); // give database container time to come up
-            }
-        }
-
-        throw new Exception("Database connection failed.");
-    }
-
+    const legacyTableNames = [
+        'admintokens',
+        'persons',
+        'logins',
+        'bookletlogs',
+        'bookletreviews',
+        'booklets',
+        'unitlogs',
+        'unitreviews'
+    ];
 
     public function createSampleLoginsReviewsLogs(string $loginCode): void {
 
@@ -153,11 +144,9 @@ class InitDAO extends SessionDAO {
             $this->_('SET FOREIGN_KEY_CHECKS = 0');
         }
 
-        $status = $this->getDbStatus();
+       foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
 
-        foreach ($this::tables as $table) {
-
-            if (!in_array($table, $status['list']['missing'])) {
+            if ($this->getTableStatus($table) !== 'missing') {
                 $droppedTables[] = $table;
                 $this->_("drop table $table");
             }
@@ -182,15 +171,7 @@ class InitDAO extends SessionDAO {
 
         foreach ($this::tables as $table) {
 
-            try {
-
-                $entries = $this->_("SELECT * FROM $table limit 10", [], true);
-                $tableStatus[count($entries) ? 'used' : 'empty'][] = $table;
-
-            } catch (Exception $exception) {
-
-                $tableStatus['missing'][] = $table;
-            }
+            $tableStatus[$this->getTableStatus($table)][] = $table;
         }
 
         return [
@@ -207,6 +188,21 @@ class InitDAO extends SessionDAO {
     }
 
 
+    protected function getTableStatus(string $table): string {
+
+        try {
+
+            $entries = $this->_("SELECT * FROM $table limit 10", [], true);
+            return count($entries) ? 'used' : 'empty';
+
+        } catch (Exception $exception) {
+
+            return 'missing';
+        }
+    }
+
+
+
     public function createSampleCommands(int $commanderId): void {
 
         $adminDAO = new AdminDAO();
@@ -221,6 +217,7 @@ class InitDAO extends SessionDAO {
         $admins = $this->_("select count(*) as count from users where is_superadmin = 1");
         return (int) $admins['count'] > 0;
     }
+
 
     public function createWorkspaceIfMissing(Workspace $workspace): array {
 
@@ -243,5 +240,23 @@ class InitDAO extends SessionDAO {
 
             return $workspaceFromDb;
         }
+    }
+
+
+    public function installPatches(string $patchesDir): array {
+
+        $installedPatches = [];
+
+        foreach (Folder::glob($patchesDir, '*.sql') as $file) {
+
+            if (Version::compare(basename($file)) < 0) {
+
+                $installedPatches[] = basename($file);
+                echo "\n => " . basename($file);
+                $this->runFile($patchesDir);
+            }
+        }
+
+        return $installedPatches;
     }
 }

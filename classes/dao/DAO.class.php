@@ -18,7 +18,8 @@ class DAO {
         'units',
         'users',
         'workspace_users',
-        'workspaces'
+        'workspaces',
+        'meta'
     ];
 
     protected $pdoDBhandle = false;
@@ -93,6 +94,19 @@ class DAO {
         return $this->pdoDBhandle->getAttribute(PDO::ATTR_DRIVER_NAME);
     }
 
+
+    public function getDBSchemaVersion(): string {
+
+        try {
+
+            $result = $this->_("SELECT `value` FROM meta where metaKey = 'dbSchemaVersion'");
+            return $result['value'] ?? '0.0.0-no-entry';
+
+        } catch (Exception $exception) {
+
+            return '0.0.0-no-table';
+        }
+    }
 
     // TODO unit-test
     public function getDBContentDump(): string {

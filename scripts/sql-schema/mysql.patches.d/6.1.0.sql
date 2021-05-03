@@ -1,7 +1,3 @@
-
-
--- 6.1.0
-
 drop table test_commands;
 
 create table test_commands

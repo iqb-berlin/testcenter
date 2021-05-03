@@ -1,12 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 4.8.3
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Erstellungszeit: 28. Sep 2018 um 15:13
--- Server-Version: 5.7.23-0ubuntu0.16.04.1
--- PHP-Version: 7.0.31-1+ubuntu16.04.1+deb.sury.org+1
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 # SET AUTOCOMMIT = 0;
 START TRANSACTION;

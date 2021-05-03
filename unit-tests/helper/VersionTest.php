@@ -56,5 +56,37 @@ class VersionTest extends TestCase {
         $this->assertFalse(Version::isCompatible('4.0', '5.1'));
         $this->assertFalse(Version::isCompatible('4', '5'));
         $this->assertFalse(Version::isCompatible('4', '5'));
+        $this->assertTrue(Version::isCompatible('5.1.0', '5.1.0-alpha'));
+        $this->assertTrue(Version::isCompatible('5.1.0-beta', '5.1.0-alpha'));
+        $this->assertTrue(Version::isCompatible('5.1.0-beta', '5.1.0'));
+    }
+
+
+    function test_compare() {
+
+        $this->assertEquals(1, Version::compare('6.0.0', '5.0.0'));
+        $this->assertEquals(1, Version::compare('6.0.0', '5.9.0'));
+        $this->assertEquals(1, Version::compare('6.0.0', '5.9.99'));
+        $this->assertEquals(1, Version::compare('6.0.0', '5'));
+        $this->assertEquals(1, Version::compare('6.0.0', '5.9'));
+        $this->assertEquals(0, Version::compare('6.0.0', '6.0.0'));
+        $this->assertEquals(0, Version::compare('6.0', '6.0.0'));
+        $this->assertEquals(0, Version::compare('6', '6.0.0'));
+        $this->assertEquals(0, Version::compare('6.0.0', '6.0'));
+        $this->assertEquals(0, Version::compare('6.0.0', '6'));
+        $this->assertEquals(0, Version::compare('6.0', '6.0'));
+        $this->assertEquals(0, Version::compare('6', '6'));
+        $this->assertEquals(-1, Version::compare('6.0.0', '6.0.1'));
+        $this->assertEquals(-1, Version::compare('6.0.0', '6.1.0'));
+        $this->assertEquals(-1, Version::compare('6.0.0', '7.0.0'));
+        $this->assertEquals(-1, Version::compare('5.9.9', '6.0.0'));
+        $this->assertEquals(-1, Version::compare('5.9', '6.0.0'));
+        $this->assertEquals(-1, Version::compare('4', '6.0.0'));
+        $this->assertEquals(-1, Version::compare('3', '5'));
+        $this->assertEquals(-1, Version::compare('5.4', '5.5'));
+        $this->assertEquals(-1, Version::compare('5.4.9999', '5.5'));
+        $this->assertEquals(-1, Version::compare('7.0.0-alpha', '7.0.0-beta'));
+        $this->assertEquals(1, Version::compare('7.0.0-beta', '7.0.0-alpha'));
+        $this->assertEquals(0, Version::compare('7.0.0-alpha', '7.0.0-alpha'));
     }
 }

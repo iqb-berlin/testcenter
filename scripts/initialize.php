@@ -126,33 +126,42 @@ try  {
     }
 
 
-    echo "\n# Database structure";
+    echo "\n# Database Structure";
     $initDAO = new InitDAO();
-    $dbStatus = $initDAO->getDbStatus();
-    if ($dbStatus['missing'] or $dbStatus['used']) {
 
-        echo "\n {$dbStatus['message']}";
+    if ($config->type !== "mysql") {
 
-        if (!$args->overwrite_existing_installation and $dbStatus['used']) {
-
-            echo "\n All Tables present, {$dbStatus['used']} contain data. Assuming working DB and leave it alone.";
-
-        } else {
-
-            echo "\n Database empty, missing or incomplete. Recreating.";
-            $tablesDropped = $initDAO->clearDb();
-            echo "\n Tables dropped: " . implode(", ", $tablesDropped);
-            echo "\n Install Database structure";
-            $typeName = ($config->type == "mysql") ? 'mysql' : 'postgresql';
-            $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/$typeName.sql");
-            echo "\n Install Patches";
-            $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/patches.$typeName.sql");
-            $newDbStatus = $initDAO->getDbStatus();
-            if ($newDbStatus['missing'] or $newDbStatus['used']) {
-                throw new Exception("Database installation failed: {$newDbStatus['message']}");
-            }
-        }
+        throw new Exception("Database Type {$config->type} Supported. This script only supports MySQL.");
     }
+
+    if ($args->overwrite_existing_installation) {
+
+        echo "\n Clear Database!";
+        $tablesDropped = $initDAO->clearDb();
+        echo "\n Tables dropped: " . implode(', ', $tablesDropped) . ')';
+        echo "\n Install Database structure";
+        $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/mysql.sql");
+    }
+
+    $dbSchemaVersion = $initDAO->getDBSchemaVersion();
+    $systemVersion = Version::get();
+    $isCurrentVersion = Version::compare($dbSchemaVersion);
+    echo "\n Database Schema Version is Version $dbSchemaVersion, System is Version $systemVersion";
+    if ($isCurrentVersion >= 0) {
+
+       echo ": O.K.";
+    } else {
+
+        echo "\n Install Patches";
+        $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d");
+    }
+
+    $newDbStatus = $initDAO->getDbStatus();
+    if ($newDbStatus['missing']) {
+
+        throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
+    }
+    echo "\n DB passed final check";
 
 
     echo "\n# Workspaces";
@@ -169,7 +178,7 @@ try  {
             $initializer->cleanWorkspace($workspace->getId());
             echo "\n Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.";
 
-            rmdir($workspace->getWorkspacePath()); // STAND: unterverzeichnisse mitlöschen
+            Folder::deleteContentsRecursive($workspace->getWorkspacePath());
         }
     }
 
