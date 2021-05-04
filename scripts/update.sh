@@ -55,7 +55,7 @@ Broadcasting Service: $OLD_BROADCASTING_SERVICE_VERSION -> $NEW_BROADCASTING_SER
 fi
 
 read -p "Do you want to update to the latest release? [Y/n]:" -e UPDATE
-if [[ $DOWNLOAD != "n" ]]
+if [[ ! $DOWNLOAD =~ ^[yY]$]]
   then
     sed -i "s/image: iqbberlin\/testcenter-backend:.*/image: iqbberlin\/testcenter-backend:$NEW_BACKEND_VERSION/" docker-compose.prod.yml
     sed -i "s/image: iqbberlin\/testcenter-frontend:.*/image: iqbberlin\/testcenter-frontend:$NEW_FRONTEND_VERSION/" docker-compose.prod.yml
@@ -63,7 +63,7 @@ if [[ $DOWNLOAD != "n" ]]
 fi
 
 read -p "Update applied. Do you want to restart the server? This may take a few minutes. [Y/n]:" -e RESTART
-if [[ $RESTART != "n" ]]
+if [[ ! $RESTART =~ ^[nN]$]]
   then
     make down
     make pull

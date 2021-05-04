@@ -24,9 +24,9 @@ fi
 CHECK_INSTALLED=`make -v`;
 if [[ $CHECK_INSTALLED = "make: command not found" ]]; then
   echo "Make not found! It is recommended to control the application."
-  read  -p 'Continue anyway? (y/N): ' -e CONTINUE
+  read  -p 'Continue anyway? (y/N): ' -r -n 1 -e CONTINUE
 
-  if [[ $CONTINUE != "y" ]]; then
+  if [[ $CONTINUE =~ ^[yY]$ ]]; then
     exit 1
   fi
 else
@@ -43,10 +43,11 @@ if ls testcenter-*.tar 1> /dev/null 2>&1
         echo "Multiple packages found. Remove all but the one you want!"
         exit 1
     fi
-    read -p "Installation package found. Do you want to check for and download the latest release anyway? [Y/n]:" -e DOWNLOAD
+    DOWNLOAD='n'
+    read -p "Installation package found. Do you want to check for and download the latest release anyway? [y/N]:" -r -n 1 -e DOWNLOAD
   else
     PACKAGE_FOUND=false
-    read -p "No installation package found. Do you want to download the latest release? [Y/n]:" -e DOWNLOAD
+    read -p "No installation package found. Do you want to download the latest release? [Y/n]:" -r -n 1 -e DOWNLOAD
 fi
 
 if [ "$PACKAGE_FOUND" = 'false' ] && [ "$DOWNLOAD" = 'n' ]
@@ -55,7 +56,7 @@ if [ "$PACKAGE_FOUND" = 'false' ] && [ "$DOWNLOAD" = 'n' ]
     exit 1
 fi
 
-if [[ $DOWNLOAD != "n" ]]
+if [[ $DOWNLOAD =~ ^[yY]$ ]]
   then
     echo 'Downloading latest package...'
     rm -f testcenter-*.tar;
@@ -93,8 +94,8 @@ sed -i "s/iqb_tba_db_user/$MYSQL_USER/" .env
 read  -p 'Database user password: ' -e -i $MYSQL_PASSWORD MYSQL_PASSWORD
 sed -i "s/iqb_tba_db_password/$MYSQL_PASSWORD/" .env
 
-read  -p 'Use TLS? (y/N): ' -e TLS
-if [ $TLS != 'n' ]
+read  -p 'Use TLS? (y/N): ' -r -n 1 -e TLS
+if [[ $TLS =~ ^[yY]$ ]]
 then
   echo "The certificates need to be placed in config/certs and their name configured in config/cert_config.yml."
   sed -i 's/http:/https:/' .env
@@ -102,7 +103,7 @@ then
 fi
 
 ### Populate Makefile ###
-if [ $TLS != 'n' ]
+if [[ $TLS =~ ^[yY]$ ]]
 then
   rm docker-compose.prod.nontls.yml
   sed -i 's/<run-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up/' Makefile-template
