@@ -10,5 +10,3 @@ create unique index meta_metaKey_uindex
 alter table meta
 	add constraint meta_pk
 		primary key (metaKey);
-
--- INSERT INTO meta (metaKey, value) VALUES ('dbSchemaVersion', '10.0.0');

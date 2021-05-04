@@ -197,6 +197,7 @@ class InitDAO extends SessionDAO {
 
         } catch (Exception $exception) {
 
+            echo "\n ~~ " . $exception->getMessage();
             return 'missing';
         }
     }
@@ -243,20 +244,72 @@ class InitDAO extends SessionDAO {
     }
 
 
-    public function installPatches(string $patchesDir): array {
+    public function installPatches(string $patchesDir, bool $allowFailing): array {
 
-        $installedPatches = [];
+        $report = [
+            'patches' => [],
+            'errors' => []
+        ];
 
-        foreach (Folder::glob($patchesDir, '*.sql') as $file) {
+        $patches = array_map(
+            function($file) { return basename($file, '.sql');},
+            Folder::glob($patchesDir, '*.sql')
+        );
+        usort($patches, [Version::class, 'compare']);
 
-            if (Version::compare(basename($file)) < 0) {
+        foreach ($patches as $patch) {
 
-                $installedPatches[] = basename($file);
-                echo "\n => " . basename($file);
-                $this->runFile($patchesDir);
+            $isFutureVersion = Version::compare($patch) > 0;
+            $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
+
+            echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n');
+
+            if ($isFutureVersion or $shouldBeInstalled) {
+                continue;
+            }
+
+            try {
+
+                $this->runFile("$patchesDir/$patch.sql"); // STAND: geht schief, meldet aber nix. warum?!
+                $this->setDBSchemaVersion($patch);
+                $report['patches'][] = $patch;
+
+            } catch (PDOException $exception) {
+
+                $report['errors'][$patch] = $exception->getMessage();
+
+                if (!$allowFailing) {
+
+                    return $report;
+                }
             }
         }
 
-        return $installedPatches;
+        return $report;
+    }
+
+
+    public function setDBSchemaVersion(string $newVersion) {
+
+        $currentDBSchemaVersion = $this->getDBSchemaVersion();
+
+        if ($currentDBSchemaVersion == '0.0.0-no-table') {
+
+            return;
+        }
+
+        if ($currentDBSchemaVersion == '0.0.0-no-entry') {
+
+            $this->_(
+                "INSERT INTO meta (metaKey, value) VALUES ('dbSchemaVersion', :new_version)",
+                [':new_version' => $newVersion]
+            );
+        } else {
+
+            $this->_(
+                "update meta set value = :new_version where metaKey = 'dbSchemaVersion'",
+                [':new_version' => $newVersion]
+            );
+        }
     }
 }

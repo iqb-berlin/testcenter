@@ -13,7 +13,7 @@ class InstallationArguments extends DataCollection {
 
     public function __construct($initData) {
 
-        if ($initData['user_password'] and (strlen($initData['user_password']) < 7)) {
+        if (isset($initData['user_password']) and (strlen($initData['user_password']) < 7)) {
 
             throw new Exception("Password must have at least 7 characters!");
         }

@@ -65,8 +65,10 @@ try  {
         'overwrite_existing_installation::',
     ]));
 
+    $systemVersion = Version::get();
+    echo "\n# IQB TESTCENTER BACKEND $systemVersion";
 
-    echo "\n Sys-Config";
+    echo "\n# System-Config";
     if (!file_exists(ROOT_DIR . '/config/system.json')) {
 
         echo "\n System-Config not file found (`/config/system.json`). Will be created.";
@@ -91,6 +93,10 @@ try  {
         }
 
         echo "\n System-Config file written.";
+
+    } else {
+
+        echo "\n Config file present.";
     }
 
 
@@ -122,7 +128,7 @@ try  {
 
         DB::connectWithRetries(null, 5);
         $config = DB::getConfig();
-        echo "\nConfig file present.";
+        echo "\n Config file present.";
     }
 
 
@@ -144,16 +150,25 @@ try  {
     }
 
     $dbSchemaVersion = $initDAO->getDBSchemaVersion();
-    $systemVersion = Version::get();
-    $isCurrentVersion = Version::compare($dbSchemaVersion);
-    echo "\n Database Schema Version is Version $dbSchemaVersion, System is Version $systemVersion";
+    $isCurrentVersion = Version::compare($dbSchemaVersion); // 1 : System is older than DB!, -1 : DB is outdated
+    echo "\n Database schema version is $dbSchemaVersion, system version is $systemVersion";
     if ($isCurrentVersion >= 0) {
 
        echo ": O.K.";
+
     } else {
 
-        echo "\n Install Patches";
-        $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d");
+        echo "\n Install patches if necessary";
+        $allowFailing = ($dbSchemaVersion === '0.0.0-no-table'); // TODO how about 0.0.0-no-value?
+        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d", $allowFailing);
+        foreach ($patchInstallReport['patches'] as $patch) {
+
+          echo "\n * $patch: " . ($patchInstallReport['errors'][$patch] ?? 'installed successfully.');
+        }
+        if (count($patchInstallReport['errors']) and !$allowFailing) {
+
+          throw new Exception('Installing database patches failed.' . print_r($patchInstallReport['errors'], true));
+        }
     }
 
     $newDbStatus = $initDAO->getDbStatus();
@@ -161,7 +176,9 @@ try  {
 
         throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
     }
-    echo "\n DB passed final check";
+    $initDAO->setDBSchemaVersion($systemVersion);
+    echo "\n DB passed integrity check.";
+
 
 
     echo "\n# Workspaces";

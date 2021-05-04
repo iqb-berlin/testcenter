@@ -89,4 +89,36 @@ class VersionTest extends TestCase {
         $this->assertEquals(1, Version::compare('7.0.0-beta', '7.0.0-alpha'));
         $this->assertEquals(0, Version::compare('7.0.0-alpha', '7.0.0-alpha'));
     }
+
+    function test_compare_with_sort() {
+
+        $versions = [
+            '10.9.8-patch7',
+            '2.2.1',
+            '10.9.8-patch8',
+            '2.1',
+            '100.9.8-patch7',
+            '2.2',
+            '2.20.10',
+            '2.20.1',
+            '1.9.8-patch7',
+            '2',
+            '9.9.8'
+        ];
+        $sorted = [
+            '1.9.8-patch7',
+            '2',
+            '2.1',
+            '2.2',
+            '2.2.1',
+            '2.20.1',
+            '2.20.10',
+            '9.9.8',
+            '10.9.8-patch7',
+            '10.9.8-patch8',
+            '100.9.8-patch7'
+        ] ;
+        usort($versions, [Version::class, 'compare']);
+        $this->assertEquals($sorted, $versions);
+    }
 }
