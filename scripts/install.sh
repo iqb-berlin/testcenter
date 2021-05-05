@@ -77,6 +77,23 @@ cd $TARGET_DIR
 read  -p 'Server Address (hostname or IP): ' -e -i $(hostname) HOSTNAME
 sed -i "s/localhost/$HOSTNAME/" .env
 
+echo '
+MySQL Database Settings'
+echo ' You can press Enter on the password prompts and default values are used.
+ This strongly disadvised. Always use proper passwords!'
+MYSQL_ROOT_PASSWORD=secret_root_pw
+MYSQL_DATABASE=iqb_tba_testcenter
+MYSQL_USER=iqb_tba_db_user
+MYSQL_PASSWORD=iqb_tba_db_password
+read  -p 'Database root password: ' -e -i $MYSQL_ROOT_PASSWORD MYSQL_ROOT_PASSWORD
+sed -i "s/secret_root_pw/$MYSQL_ROOT_PASSWORD/" .env
+read  -p 'Database name: ' -e -i $MYSQL_DATABASE MYSQL_DATABASE
+sed -i "s/iqb_tba_testcenter/$MYSQL_DATABASE/" .env
+read  -p 'Database user: ' -e -i $MYSQL_USER MYSQL_USER
+sed -i "s/iqb_tba_db_user/$MYSQL_USER/" .env
+read  -p 'Database user password: ' -e -i $MYSQL_PASSWORD MYSQL_PASSWORD
+sed -i "s/iqb_tba_db_password/$MYSQL_PASSWORD/" .env
+
 read  -p 'Use TLS? (y/N): ' -r -n 1 -e TLS
 if [[ $TLS =~ ^[yY]$ ]]
 then
