@@ -84,7 +84,7 @@ echo ' You can press Enter on the password prompts and default values are used.
 MYSQL_ROOT_PASSWORD=secret_root_pw
 MYSQL_DATABASE=iqb_tba_testcenter
 MYSQL_USER=iqb_tba_db_user
-MYSQL_PASSWORD=iqb_tba_db_password
+MYSQL_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 read  -p 'Database root password: ' -e -i $MYSQL_ROOT_PASSWORD MYSQL_ROOT_PASSWORD
 sed -i "s/secret_root_pw/$MYSQL_ROOT_PASSWORD/" .env
 read  -p 'Database name: ' -e -i $MYSQL_DATABASE MYSQL_DATABASE
