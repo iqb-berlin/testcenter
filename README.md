@@ -6,7 +6,7 @@
 Following the instructions below, you will install the web-application "IQB-Testcenter" on your server. You will get handy commands to start and stop the services.
 
 ## Application structure
-The source code and therefore the application is separated in four modules:
+The source code and therefore the application is separated in three submodules:
 * Frontend: Angular based components to be loaded into the browser as single page application. You find the source code repository [here](https://github.com/iqb-berlin/testcenter-frontend).
 * Backend php+database: Php based components to handle most of the requests from frontend; connects to the database; source code ist published [here](https://github.com/iqb-berlin/testcenter-backend), the API is documented [here](https://iqb-berlin.github.io/testcenter-backend/api/)
 * Backend node.js: Additional server component to implement one special feature "test operator's monitor" 
@@ -61,7 +61,9 @@ Right after installation, please log in! At start, you have one user prepared: `
 # Installation for development
 The other way of installation gives you more options to access data, logs, to change settings more in detail, to find bugs and even to change code to meet your needs. Our applications are great, but not perfect at all!
 
-We will not explain every step in detail. You should be familiar with git and bash and file handling in unix, editing a text file etc.
+Technically, you check out all source code and build the application modules as developers do. The whole Angular development framework will be installed with all tools. The build process will include all unit end e2e tests we prepared.  
+
+We will not explain every step in detail. You should be familiar with git and bash and file handling in Unix, editing a text file etc.
 
 ## 1. Clone this setup repository
 After the clone is done, you need to init the submodules feature of git:
