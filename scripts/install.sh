@@ -102,12 +102,11 @@ fi
 ### Populate Makefile ###
 if [[ $TLS =~ ^[yY]$ ]]
 then
-  rm docker-compose.prod.nontls.yml
-  sed -i 's/<run-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up/' Makefile-template
-  sed -i 's/<run-detached-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d/' Makefile-template
-  sed -i 's/<stop-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml stop/' Makefile-template
-  sed -i 's/<down-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml down/' Makefile-template
-  sed -i 's/<pull-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml pull/' Makefile-template
+  sed -i 's/<run-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml up/' Makefile-template
+  sed -i 's/<run-detached-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml up -d/' Makefile-template
+  sed -i 's/<stop-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml stop/' Makefile-template
+  sed -i 's/<down-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml down/' Makefile-template
+  sed -i 's/<pull-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml pull/' Makefile-template
 else
   rm docker-compose.prod.tls.yml
   sed -i 's/<run-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up/' Makefile-template

@@ -23,6 +23,9 @@ services:
   traefik:
     image: traefik:v2.2
     container_name: testcenter-traefik
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
     ports:
       - "80:80"
     volumes:
@@ -53,6 +56,8 @@ services:
     logging:
       options:
         <<: *env-logging-conf
+    volumes:
+      - testcenter_backend_vo_data:/var/www/html/vo_data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
@@ -81,3 +86,4 @@ services:
 
 volumes:
   dbdata:
+  testcenter_backend_vo_data:
