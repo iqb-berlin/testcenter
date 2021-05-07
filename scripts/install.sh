@@ -5,33 +5,30 @@ set -e
 # Author: Richard Henck (richard.henck@iqb.hu-berlin.de)
 
 ### Check installed tools ###
-CHECK_INSTALLED=`docker -v`;
-if [[ $CHECK_INSTALLED = "docker: command not found" ]]; then
+{
+  docker -v > /dev/null 2>&1
+} || {
   echo "Docker not found, please install before running!"
   exit 1
-else
-  echo "Docker found"
-fi
+}
 
-CHECK_INSTALLED=`docker-compose -v`;
-if [[ $CHECK_INSTALLED = "docker-compose: command not found" ]]; then
+{
+  docker-compose -v > /dev/null 2>&1
+} || {
   echo "Docker-compose not found, please install before running!"
   exit 1
-else
-  echo "Docker-Compose found"
-fi
-
-CHECK_INSTALLED=`make -v`;
-if [[ $CHECK_INSTALLED = "make: command not found" ]]; then
-  echo "Make not found! It is recommended to control the application."
+}
+echo "Docker and docker-compose found..."
+{
+  make -v > /dev/null 2>&1
+} || {
+  echo "Make not found! It is recommended to manage the application."
   read  -p 'Continue anyway? (y/N): ' -r -n 1 -e CONTINUE
 
-  if [[ $CONTINUE =~ ^[yY]$ ]]; then
+  if [[ ! $CONTINUE =~ ^[yY]$ ]]; then
     exit 1
   fi
-else
-  echo "Make found"
-fi
+}
 
 ### Download package ###
 DOWNLOAD='y'
@@ -50,7 +47,7 @@ if ls testcenter-*.tar 1> /dev/null 2>&1
     read -p "No installation package found. Do you want to download the latest release? [Y/n]:" -r -n 1 -e DOWNLOAD
 fi
 
-if [ "$PACKAGE_FOUND" = 'false' ] && [ "$DOWNLOAD" = 'n' ]
+if [ "$PACKAGE_FOUND" = 'false' ] && [[ ! $DOWNLOAD =~ ^[yY]$ ]]
   then
     echo "Can not continue without install package."
     exit 1
