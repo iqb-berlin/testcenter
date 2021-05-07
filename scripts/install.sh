@@ -74,7 +74,7 @@ tar -xf *.tar -C $TARGET_DIR
 cd $TARGET_DIR
 
 ### Set up config ###
-read  -p 'Server Address (hostname or IP): ' -e -i $(hostname) HOSTNAME
+read  -p 'Server Address (hostname - without subdomains! - or IP): ' -e -i $(hostname) HOSTNAME
 sed -i "s/localhost/$HOSTNAME/" .env
 
 echo '
