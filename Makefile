@@ -33,11 +33,15 @@ init-dev-config:
 update-submodules:
 	git submodule update --remote --merge
 
-test-e2e: run-detached
+# Running setup must be stopped because a special env file needs to used
+test-e2e:
+	cp testcenter-frontend/src/environments/environment.ts testcenter-frontend/src/environments/environment.ts.bu
+	make run-detached
 	docker build -f e2etest/Dockerfile --tag e2etest .
 	sleep 8
 	docker run --network "testcenter-setup_default" e2etest
-	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml down
+	make down
+	cp testcenter-frontend/src/environments/environment.ts.bu testcenter-frontend/src/environments/environment.ts
 
 new-version:
 	scripts/new_version.py
