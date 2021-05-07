@@ -10,4 +10,4 @@ down:
 	<down-command>
 
 pull:
-  <pull-command>
+	<pull-command>

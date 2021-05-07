@@ -67,20 +67,20 @@ if [[ $DOWNLOAD =~ ^[yY]$ ]]
     | wget -qi -;
 fi
 
+echo 'Ready to install. Please input some parameters for customization:'
+read  -p '1. Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
 ### Unpack application ###
-read  -p 'Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
 mkdir -p $TARGET_DIR
 tar -xf *.tar -C $TARGET_DIR
 cd $TARGET_DIR
 
 ### Set up config ###
-read  -p 'Server Address (hostname - without subdomains! - or IP): ' -e -i $(hostname) HOSTNAME
+read  -p '2. Server Address (hostname (without subdomains) or IP): ' -e -i $(hostname) HOSTNAME
 sed -i "s/localhost/$HOSTNAME/" .env
 
-echo '
-MySQL Database Settings'
-echo ' You can press Enter on the password prompts and default values are used.
- This strongly disadvised. Always use proper passwords!'
+echo '3. MySQL Database Settings'
+echo ' Please specify carefully the parameters for database access. Accepting the defaults will put your installation at risk.
+ Use the defaults only for tryout installations, never in production use cases!'
 MYSQL_ROOT_PASSWORD=secret_root_pw
 MYSQL_DATABASE=iqb_tba_testcenter
 MYSQL_USER=iqb_tba_db_user
