@@ -37,7 +37,6 @@ BS_VERSION_FILE_PATH = 'testcenter-broadcasting-service/package.json'
 BS_VERSION_REGEX = BACKEND_VERSION_REGEX
 
 COMPOSE_FILE_PATHS = [
-    'docker-compose.prod.nontls.yml',
     'docker-compose.prod.tls.yml',
     'docker-compose.dev.tls.yml']
 
