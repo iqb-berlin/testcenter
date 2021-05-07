@@ -24,9 +24,9 @@ fi
 CHECK_INSTALLED=`make -v`;
 if [[ $CHECK_INSTALLED = "make: command not found" ]]; then
   echo "Make not found! It is recommended to control the application."
-  read  -p 'Continue anyway? (y/N): ' -e CONTINUE
+  read  -p 'Continue anyway? (y/N): ' -r -n 1 -e CONTINUE
 
-  if [[ $CONTINUE != "y" ]]; then
+  if [[ $CONTINUE =~ ^[yY]$ ]]; then
     exit 1
   fi
 else
@@ -43,10 +43,11 @@ if ls testcenter-*.tar 1> /dev/null 2>&1
         echo "Multiple packages found. Remove all but the one you want!"
         exit 1
     fi
-    read -p "Installation package found. Do you want to check for and download the latest release anyway? [Y/n]:" -e DOWNLOAD
+    DOWNLOAD='n'
+    read -p "Installation package found. Do you want to check for and download the latest release anyway? [y/N]:" -r -n 1 -e DOWNLOAD
   else
     PACKAGE_FOUND=false
-    read -p "No installation package found. Do you want to download the latest release? [Y/n]:" -e DOWNLOAD
+    read -p "No installation package found. Do you want to download the latest release? [Y/n]:" -r -n 1 -e DOWNLOAD
 fi
 
 if [ "$PACKAGE_FOUND" = 'false' ] && [ "$DOWNLOAD" = 'n' ]
@@ -55,7 +56,7 @@ if [ "$PACKAGE_FOUND" = 'false' ] && [ "$DOWNLOAD" = 'n' ]
     exit 1
 fi
 
-if [[ $DOWNLOAD != "n" ]]
+if [[ $DOWNLOAD =~ ^[yY]$ ]]
   then
     echo 'Downloading latest package...'
     rm -f testcenter-*.tar;
@@ -66,24 +67,24 @@ if [[ $DOWNLOAD != "n" ]]
     | wget -qi -;
 fi
 
+echo 'Ready to install. Please input some parameters for customization:'
+read  -p '1. Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
 ### Unpack application ###
-read  -p 'Install directory: ' -e -i "`pwd`/testcenter" TARGET_DIR
 mkdir -p $TARGET_DIR
 tar -xf *.tar -C $TARGET_DIR
 cd $TARGET_DIR
 
 ### Set up config ###
-read  -p 'Server Address (hostname or IP): ' -e -i $(hostname) HOSTNAME
+read  -p '2. Server Address (hostname (without subdomains) or IP): ' -e -i $(hostname) HOSTNAME
 sed -i "s/localhost/$HOSTNAME/" .env
 
-echo '
-MySQL Database Settings'
-echo ' You can press Enter on the password prompts and default values are used.
- This strongly disadvised. Always use proper passwords!'
+echo '3. MySQL Database Settings'
+echo ' Please specify carefully the parameters for database access. Accepting the defaults will put your installation at risk.
+ Use the defaults only for tryout installations, never in production use cases!'
 MYSQL_ROOT_PASSWORD=secret_root_pw
 MYSQL_DATABASE=iqb_tba_testcenter
 MYSQL_USER=iqb_tba_db_user
-MYSQL_PASSWORD=iqb_tba_db_password
+MYSQL_PASSWORD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 read  -p 'Database root password: ' -e -i $MYSQL_ROOT_PASSWORD MYSQL_ROOT_PASSWORD
 sed -i "s/secret_root_pw/$MYSQL_ROOT_PASSWORD/" .env
 read  -p 'Database name: ' -e -i $MYSQL_DATABASE MYSQL_DATABASE
@@ -93,8 +94,8 @@ sed -i "s/iqb_tba_db_user/$MYSQL_USER/" .env
 read  -p 'Database user password: ' -e -i $MYSQL_PASSWORD MYSQL_PASSWORD
 sed -i "s/iqb_tba_db_password/$MYSQL_PASSWORD/" .env
 
-read  -p 'Use TLS? (y/N): ' -e TLS
-if [ $TLS != 'n' ]
+read  -p 'Use TLS? (y/N): ' -r -n 1 -e TLS
+if [[ $TLS =~ ^[yY]$ ]]
 then
   echo "The certificates need to be placed in config/certs and their name configured in config/cert_config.yml."
   sed -i 's/http:/https:/' .env
@@ -102,7 +103,7 @@ then
 fi
 
 ### Populate Makefile ###
-if [ $TLS != 'n' ]
+if [[ $TLS =~ ^[yY]$ ]]
 then
   rm docker-compose.prod.nontls.yml
   sed -i 's/<run-command>/docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up/' Makefile-template
