@@ -95,7 +95,6 @@ read  -p 'Use TLS? (y/N): ' -r -n 1 -e TLS
 if [[ $TLS =~ ^[yY]$ ]]
 then
   echo "The certificates need to be placed in config/certs and their name configured in config/cert_config.yml."
-  sed -i 's/http:/https:/' .env
   sed -i 's/ws:/wss:/' .env
 fi
 
