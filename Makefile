@@ -36,6 +36,7 @@ update-submodules:
 # Running setup must be stopped because a special env file needs to used
 test-e2e:
 	cp testcenter-frontend/src/environments/environment.ts testcenter-frontend/src/environments/environment.ts.bu
+	cp e2etest/environment.ts testcenter-frontend/src/environments/environment.ts
 	make run-detached
 	docker build -f e2etest/Dockerfile --tag e2etest .
 	sleep 8
