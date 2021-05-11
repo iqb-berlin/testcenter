@@ -126,7 +126,7 @@ def create_release_package(backend_version, frontend_version, bs_version):
     subprocess.run('rm -rf dist/*', shell=True, check=True)
     subprocess.run('cp -r config dist/config', shell=True, check=True)
     subprocess.run('cp docker-compose.yml dist/docker-compose.yml', shell=True, check=True)
-    subprocess.run('cp docker-compose.prod.nontls.yml dist/docker-compose.prod.nontls.yml',
+    subprocess.run('cp docker-compose.prod.yml dist/docker-compose.prod.yml',
                    shell=True, check=True)
     subprocess.run('cp docker-compose.prod.tls.yml dist/docker-compose.prod.tls.yml', shell=True, check=True)
     subprocess.run('cp .env-default dist/.env', shell=True, check=True)
