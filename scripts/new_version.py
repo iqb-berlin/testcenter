@@ -124,7 +124,6 @@ def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
 def create_release_package(backend_version, frontend_version, bs_version):
     """Create dist tar file from compose files, config and makefile template."""
     subprocess.run('rm -rf dist/*', shell=True, check=True)
-    subprocess.run('cp scripts/Makefile-template dist/Makefile-template', shell=True, check=True)
     subprocess.run('cp -r config dist/config', shell=True, check=True)
     subprocess.run('cp docker-compose.yml dist/docker-compose.yml', shell=True, check=True)
     subprocess.run('cp docker-compose.prod.nontls.yml dist/docker-compose.prod.nontls.yml',
@@ -139,7 +138,6 @@ def create_release_package(backend_version, frontend_version, bs_version):
             tar.add('dist/' + file, file)
 
     subprocess.run('rm dist/*.yml', shell=True, check=True)
-    subprocess.run('rm dist/Makefile-template', shell=True, check=True)
     subprocess.run('rm -rf dist/config', shell=True, check=True)
     subprocess.run('rm dist/.env', shell=True, check=True)
 
