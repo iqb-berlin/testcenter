@@ -1,0 +1,7 @@
+APP_NAME='testcenter'
+REPO_URL='https://api.github.com/repos/iqb-berlin/testcenter-setup'
+declare -A env_vars
+env_vars[MYSQL_ROOT_PASSWORD]=secret_root_pw
+env_vars[MYSQL_DATABASE]=iqb_tba_testcenter
+env_vars[MYSQL_USER]=iqb_tba_db_user
+env_vars[MYSQL_PASSWORD]=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)

@@ -137,7 +137,6 @@ def create_release_package(backend_version, frontend_version, bs_version):
     with tarfile.open(filename, "w") as tar:
         for file in os.listdir('dist'):
             tar.add('dist/' + file, file)
-    subprocess.run('cp scripts/install.sh dist/install.sh', shell=True, check=True)
 
     subprocess.run('rm dist/*.yml', shell=True, check=True)
     subprocess.run('rm dist/Makefile-template', shell=True, check=True)

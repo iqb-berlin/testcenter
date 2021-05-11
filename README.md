@@ -9,7 +9,7 @@ Following the instructions below, you will install the web-application "IQB-Test
 The source code and therefore the application is separated in three submodules:
 * Frontend: Angular based components to be loaded into the browser as single page application. You find the source code repository [here](https://github.com/iqb-berlin/testcenter-frontend).
 * Backend php+database: Php based components to handle most of the requests from frontend; connects to the database; source code ist published [here](https://github.com/iqb-berlin/testcenter-backend), the API is documented [here](https://iqb-berlin.github.io/testcenter-backend/api/)
-* Backend node.js: Additional server component to implement one special feature "test operator's monitor" 
+* Backend node.js: Additional server component to implement one special feature "test operator's monitor"
 
 In order to install the whole application, one must install all components. Sure, this could be done the traditional way:
 * clone the code repositories
@@ -17,13 +17,13 @@ In order to install the whole application, one must install all components. Sure
 * transpile/build
 * setup database
 * setup web server, set routes etc.
-  
+
 To ease this process and to avoid mess after updates/upgrades, every module consist of one folder "docker". There you find scripts for docker based installation. The repository of this document you're reading now binds all docker install procedures together. This way, you install everything you need in one step.
 
 # Preconditions
 Before you follow the instructions below, you need to install [docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods),  [docker-compose](https://docs.docker.com/compose/install/) and `make`. We do not explain these applications, this is beyond the scope of this document.
 
-Although all steps below could be done in another operating system environment, we go for a unix/linux. 
+Although all steps below could be done in another operating system environment, we go for a unix/linux.
 
 # Installation for production only
 "Production" here means that you just want to install and use the application, not more. You do not like to get a look behind the curtain or to run sophisticated performance analyses. This type of installation has fewer requirements in regard of software and space.
@@ -31,9 +31,13 @@ Although all steps below could be done in another operating system environment, 
 Technically, you download pre-built images from Docker Hub.
 
 ## 1. Download install script
-The main installation script requires bash to run. Go to a directory of your choice and get it:
+The installation script requires bash to run. Go to a directory of your choice and get it:
 ```
- wget https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/dist/install.sh
+ wget https://raw.githubusercontent.com/iqb-berlin/iqb-scripts/master/install.sh
+```
+Also download the project specific configuration for the install script:
+```
+ wget https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/config/install_config
 ```
 ## 2. Run installation
 ```
@@ -55,7 +59,7 @@ If you like to stop the server later, run
 ```
 make stop
 ```
-## 4. Login and change super user password 
+## 4. Login and change super user password
 Right after installation, please log in! At start, you have one user prepared: `super` with password `user123`. Because everyone can read this here and in the scripts, you should get up your shields by changing at least the password (go to "System-Admin").
 
 # Installation for development
