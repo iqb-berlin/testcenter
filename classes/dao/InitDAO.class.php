@@ -174,16 +174,21 @@ class InitDAO extends SessionDAO {
             $tableStatus[$this->getTableStatus($table)][] = $table;
         }
 
+        $used = count($tableStatus['used']);
+        $missing = count($tableStatus['missing']);
+        $tables = $missing
+            ? ($missing == count($this::tables) ? 'empty' : 'incomplete')
+            : 'complete';
+
         return [
-            'message' =>
-                  "Missing Tables: "
-                . (count($tableStatus['missing']) ? implode(', ', $tableStatus['missing']) : 'none')
-                . ". Used Tables: "
-                . (count($tableStatus['used']) ? implode(', ', $tableStatus['used']) : 'none')
+            'message' => $tables
+                . ". \n Missing Tables: "
+                . ($missing ? implode(', ', $tableStatus['missing']) : 'none')
+                . ". \n Used Tables: "
+                . ($used ? implode(', ', $tableStatus['used']) : 'none')
                 . '.',
-            'used' => count($tableStatus['used']),
-            'missing' => count($tableStatus['missing']),
-            'list' => $tableStatus
+            'used' => !!$used,
+            'tables' => $tables
         ];
     }
 
@@ -197,11 +202,9 @@ class InitDAO extends SessionDAO {
 
         } catch (Exception $exception) {
 
-            echo "\n ~~ " . $exception->getMessage();
             return 'missing';
         }
     }
-
 
 
     public function createSampleCommands(int $commanderId): void {
@@ -311,5 +314,28 @@ class InitDAO extends SessionDAO {
                 [':new_version' => $newVersion]
             );
         }
+    }
+
+
+    public function getDBContentDump(bool $includeLegacyTables = false): array {
+
+        $tables = $includeLegacyTables ? array_merge($this::legacyTableNames, $this::tables) : $this::tables;
+
+        $report = [];
+
+        foreach ($tables as $table) {
+
+            try {
+
+                $entries = $this->_("SELECT * FROM $table", [], true);
+                $report[$table] = CSV::build($entries);
+
+            } catch (Exception $exception) {
+
+                $report[$table] = 'not found';
+            }
+        }
+
+        return $report;
     }
 }

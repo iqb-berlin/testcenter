@@ -137,7 +137,10 @@ class TestEnvironment {
         $fullState = "# State of DATA_DIR\n\n";
         $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), true);
         $fullState .= "\n\n# State of DB\n";
-        $fullState .= $initDAO->getDBContentDump();
+        foreach ($initDAO->getDBContentDump() as $table => $content) {
+
+            $fullState .= "## $table\n$content\n";
+        }
         file_put_contents(ROOT_DIR . '/integration/tmp/lastVEState.md', $fullState);
     }
 

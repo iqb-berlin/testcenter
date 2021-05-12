@@ -1,0 +1,52 @@
+version: '3.7'
+
+x-env-mysql: &env-mysql
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+x-env-initdata: &env-initdata
+  SUPERUSER_NAME: ${SUPERUSER_NAME}
+  SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
+  WORKSPACE_NAME: ${WORKSPACE_NAME}
+  TEST_LOGIN_NAME: ${TEST_LOGIN_NAME}
+  TEST_LOGIN_PASSWORD: ${TEST_LOGIN_PASSWORD}
+
+services:
+
+  testcenter-db-backend-init-test:
+    image: mysql:5.7
+    container_name: testcenter-db-init-test
+    environment:
+      <<: *env-mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ./scripts/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - "9091:3306"
+      - "22:22"
+
+  testcenter-backend-init-test:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    entrypoint: ["bash", "/var/www/html/scripts/initialize-test.sh"]
+    container_name: testcenter-backend-init-test
+    environment:
+      <<: *env-mysql
+      <<: *env-initdata
+      MYSQL_HOST: testcenter-db-init-test
+      MYSQL_PORT: 3306
+    volumes:
+      - ../classes:/var/www/html/classes
+      - ../routes:/var/www/html/routes
+      - ../sampledata:/var/www/html/sampledata
+      - ../definitions:/var/www/html/definitions
+      - ../docs/specs.yml:/var/www/html/docs/specs.yml
+      - ../composer.json:/var/www/html/composer.json.original
+      - ../scripts:/var/www/html/scripts
+      - vendor:/var/www/html/vendor
+    depends_on:
+      - testcenter-db-backend-init-test
+volumes:
+  vendor:

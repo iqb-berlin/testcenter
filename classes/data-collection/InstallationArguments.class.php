@@ -10,6 +10,7 @@ class InstallationArguments extends DataCollection {
     public $test_person_codes = "xxx yyy";
 
     public $overwrite_existing_installation = false;
+    public $skip_db_integrity_check = false;
 
     public function __construct($initData) {
 

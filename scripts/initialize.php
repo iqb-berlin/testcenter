@@ -51,6 +51,9 @@ if (php_sapi_name() !== 'cli') {
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 define('DATA_DIR', ROOT_DIR . '/vo_data');
 
+$E = "\n\e[0;31m";
+$N = "\e[0m\n";
+
 require_once(ROOT_DIR . '/autoload.php');
 
 try  {
@@ -63,10 +66,11 @@ try  {
         'test_login_password::',
         'test_person_codes::',
         'overwrite_existing_installation::',
+        'skip_db_integrity_check::'
     ]));
 
     $systemVersion = Version::get();
-    echo "\n# IQB TESTCENTER BACKEND $systemVersion";
+    echo "$E# IQB TESTCENTER BACKEND $systemVersion{$N}";
 
     echo "\n# System-Config";
     if (!file_exists(ROOT_DIR . '/config/system.json')) {
@@ -137,15 +141,22 @@ try  {
 
     if ($config->type !== "mysql") {
 
-        throw new Exception("Database Type {$config->type} Supported. This script only supports MySQL.");
+        throw new Exception("Database Type {$config->type} not supported. This script only supports MySQL.");
     }
+
+    $dbStatus = $initDAO->getDbStatus();
+    echo "\n Database status: {$dbStatus['message']}";
 
     if ($args->overwrite_existing_installation) {
 
-        echo "\n Clear Database!";
+        echo "\n Clear database";
         $tablesDropped = $initDAO->clearDb();
-        echo "\n Tables dropped: " . implode(', ', $tablesDropped) . ')';
-        echo "\n Install Database structure";
+        echo "\n Tables dropped: " . implode(', ', $tablesDropped);
+    }
+
+    if ($args->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
+
+        echo "\n Install basic database structure";
         $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/mysql.sql");
     }
 
@@ -172,13 +183,12 @@ try  {
     }
 
     $newDbStatus = $initDAO->getDbStatus();
-    if ($newDbStatus['missing']) {
+    if (!($newDbStatus['tables'] == 'complete') and !$args->skip_db_integrity_check) {
 
         throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
     }
     $initDAO->setDBSchemaVersion($systemVersion);
     echo "\n DB passed integrity check.";
-
 
 
     echo "\n# Workspaces";
@@ -212,7 +222,7 @@ try  {
         }
     }
 
-    if (!count($workspaceIds)) {
+    if (!count($workspaceIds) and $args->workspace) {
 
         $sampleWorkspaceId = $initDAO->createWorkspace($args->workspace);
 

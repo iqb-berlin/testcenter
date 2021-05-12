@@ -108,21 +108,6 @@ class DAO {
         }
     }
 
-    // TODO unit-test
-    public function getDBContentDump(): string {
-
-        $report = "";
-
-        foreach ($this::tables as $table) {
-
-            $report .= "\n## $table\n";
-            $entries = $this->_("SELECT * FROM $table", [], true);
-            $report .= CSV::build($entries);
-        }
-
-        return $report;
-    }
-
 
     public function getWorkspaceName($workspaceId): string {
 
