@@ -130,7 +130,8 @@ def create_release_package(backend_version, frontend_version, bs_version):
                    shell=True, check=True)
     subprocess.run('cp docker-compose.prod.tls.yml dist/docker-compose.prod.tls.yml', shell=True, check=True)
     subprocess.run('cp .env-default dist/.env', shell=True, check=True)
-    subprocess.run('cp scripts/update.sh dist/update.sh', shell=True, check=True)
+    subprocess.run('wget -P dist https://raw.githubusercontent.com/iqb-berlin/iqb-scripts/master/update.sh',
+                   shell=True, check=True)
 
     filename = f"dist/{DIST_PACKAGE_NAME}-{frontend_version}@{backend_version}+{bs_version}.tar"
     with tarfile.open(filename, "w") as tar:
