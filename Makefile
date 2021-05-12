@@ -28,11 +28,6 @@ build:
 
 init-dev-config:
 	cp .env-default .env
-	echo 'HOSTNAME=localhost' >> .env
-	echo 'MYSQL_ROOT_PASSWORD=secret_root_pw' >> .env
-	echo 'MYSQL_DATABASE=iqb_tba_testcenter' >> .env
-	echo 'MYSQL_USER=iqb_tba_db_user' >> .env
-	echo 'MYSQL_PASSWORD=iqb_tba_db_password' >> .env
 	cp testcenter-frontend/src/environments/environment.dev.ts testcenter-frontend/src/environments/environment.ts
 
 update-submodules:
