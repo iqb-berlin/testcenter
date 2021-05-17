@@ -49,12 +49,13 @@ class Folder {
     }
 
     // TODO unit-test
-    // TODO avoid following symlinks
     static function deleteContentsRecursive(string $path): void {
 
         foreach(new DirectoryIterator($path) as $entry) {
 
             if ($entry->isDot()) continue; // skip . and ..
+
+            if ($entry->isLink()) continue;
 
             if ($entry->isFile()) {
 
