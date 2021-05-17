@@ -4,7 +4,7 @@ class InstallationArguments extends DataCollection {
 
     public $user_name = 'super';
     public $user_password = 'user123';
-    public $workspace = 'workspace_name';
+    public $workspace = '';
     public $test_login_name = "test";
     public $test_login_password = "user123";
     public $test_person_codes = "xxx yyy";

@@ -28,7 +28,7 @@ class WorkspaceInitializer {
      * @param $dirPath - a full path
      * @return string - the path, again
      */
-    private function createSubdirectories(string $dirPath) {
+    private function createSubdirectories(string $dirPath): string {
 
         $pathParts = parse_url($dirPath);
         return array_reduce(explode('/', $pathParts['path']), function($agg, $item) {
@@ -41,7 +41,6 @@ class WorkspaceInitializer {
             }
             return $agg;
         }, isset($pathParts['scheme']) ? "{$pathParts['scheme']}://{$pathParts['host']}" : '');
-
     }
 
 
@@ -93,5 +92,6 @@ class WorkspaceInitializer {
     public function cleanWorkspace(int $workspaceId): void {
 
         Folder::deleteContentsRecursive(DATA_DIR . "/ws_$workspaceId/");
+        rmdir(DATA_DIR . "/ws_$workspaceId/");
     }
 }

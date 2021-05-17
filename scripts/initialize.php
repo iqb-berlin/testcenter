@@ -62,11 +62,11 @@ try  {
         'user_name::',
         'user_password::',
         'workspace::',
-        'test_login_name::',
-        'test_login_password::',
-        'test_person_codes::',
-        'overwrite_existing_installation::',
-        'skip_db_integrity_check::'
+        'test_login_name::', // TODO get rid (?)
+        'test_login_password::', // TODO get rid (?)
+        'test_person_codes::', // TODO get rid (?)
+        'overwrite_existing_installation:',
+        'skip_db_integrity_check:'
     ]));
 
     $systemVersion = Version::get();
@@ -110,7 +110,7 @@ try  {
         echo "\n Database-Config not file found (`/config/DBConnectionData.json`), will be created.";
 
         $config = new DBConfig(getopt("", [
-            'type::',
+            'type::', // TODO get rid of
             'host::',
             'port::',
             'dbname::',
@@ -234,6 +234,9 @@ try  {
         $workspaceIds[] = $sampleWorkspaceId;
     }
 
+    if (!file_exists(DATA_DIR)) {
+      mkdir(DATA_DIR);
+    }
 
     echo "\n# Sys-Admin";
     if (!$initDAO->adminExists()) {

@@ -23,7 +23,7 @@ test-e2e-no-spec-update:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run dredd_test_no_specs
 
 test-init:
-	docker-compose -f docker/docker-compose-init-test.yml --env-file docker/.env up --force-recreate --abort-on-container-exit --renew-anon-volumes
+	TEST_NAME=db-versions docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
 
 update-docs:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs
