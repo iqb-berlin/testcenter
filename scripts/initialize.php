@@ -8,14 +8,14 @@
  * - can create a workspace with sample data..
  * - installs / updates the DB if necessary.
  *
- * Use these arguments to set up the initial admin:
+ * If there is no admin, one will be created. You can set up credentials for him:
  * --user_name=(super user name)
  * --user_password=(super user password)
  *
- * If you want to create a workspace with sample content:
+ * If there is no workspace one (containing sample content) will be created if set up a name
  * --workspace=(workspace name)
  *
- * You can remove the exsiting Installation completely: (Caution! Your data will be gone!)
+ * You can remove the existing installation completely: (Caution! Your data will be gone!)
  * --overwrite_existing_installation=true
  *
  *  If the DB-Connection-Data-File (/config/DBConnectionData.json) shall be written, provide:
@@ -57,7 +57,7 @@ try  {
     $args = new InstallationArguments(getopt("", [
         'user_name::',
         'user_password::',
-        'workspace::',
+        'workspace:',
         'overwrite_existing_installation:',
         'skip_db_integrity_check:'
     ]));

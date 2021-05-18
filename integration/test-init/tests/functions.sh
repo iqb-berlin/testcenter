@@ -69,3 +69,11 @@ function expect_init_script_failed() {
   fi;
   echo "Init-Script failed as expected"
 }
+
+# param 1: expectation folder name
+function create_sample_folder() {
+  mkdir -p "vo_data"
+  mkdir "vo_data/$1"
+  mkdir "vo_data/$1/SysCheck"
+  cp sampledata/SysCheck.xml "vo_data/$1/SysCheck/"
+}

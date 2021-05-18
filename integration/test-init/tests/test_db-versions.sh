@@ -44,11 +44,10 @@ php scripts/initialize.php \
   --overwrite_existing_installation=true
 expect_init_script_failed # because admin can not be established on old db structure
 expect_db_structure_dump_equals blank_legacy_version_5
-expect_data_dir_equals sample_content_missing
+expect_data_dir_equals empty_data_dir
 expect_table_to_have_rows workspaces 0
 
 # TODO to test:
-# workspace migration
 # untouch current data
 # config file present
 # broken config
