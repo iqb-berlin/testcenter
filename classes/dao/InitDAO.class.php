@@ -16,6 +16,7 @@ class InitDAO extends SessionDAO {
         'unitreviews'
     ];
 
+
     public function createSampleLoginsReviewsLogs(string $loginCode): void {
 
         $timestamp = TimeStamp::now();
@@ -182,9 +183,9 @@ class InitDAO extends SessionDAO {
 
         return [
             'message' => $tables
-                . ". \n Missing Tables: "
+                . ". \nMissing Tables: "
                 . ($missing ? implode(', ', $tableStatus['missing']) : 'none')
-                . ". \n Used Tables: "
+                . ". \nUsed Tables: "
                 . ($used ? implode(', ', $tableStatus['used']) : 'none')
                 . '.',
             'used' => !!$used,
@@ -264,8 +265,7 @@ class InitDAO extends SessionDAO {
 
             $isFutureVersion = Version::compare($patch) > 0;
             $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
-
-            echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n');
+            // echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n');
 
             if ($isFutureVersion or $shouldBeInstalled) {
                 continue;
@@ -273,7 +273,7 @@ class InitDAO extends SessionDAO {
 
             try {
 
-                $this->runFile("$patchesDir/$patch.sql"); // STAND: geht schief, meldet aber nix. warum?!
+                $this->runFile("$patchesDir/$patch.sql");
                 $this->setDBSchemaVersion($patch);
                 $report['patches'][] = $patch;
 

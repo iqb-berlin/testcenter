@@ -2,15 +2,12 @@
 
 class InstallationArguments extends DataCollection {
 
-    public $user_name = 'super';
-    public $user_password = 'user123';
-    public $workspace = '';
-    public $test_login_name = "test";
-    public $test_login_password = "user123";
-    public $test_person_codes = "xxx yyy";
+    public string $user_name = 'super';
+    public string $user_password = 'user123';
+    public string $workspace = '';
 
-    public $overwrite_existing_installation = false;
-    public $skip_db_integrity_check = false;
+    public bool $overwrite_existing_installation = false;
+    public bool $skip_db_integrity_check = false;
 
     public function __construct($initData) {
 
@@ -19,28 +16,9 @@ class InstallationArguments extends DataCollection {
             throw new Exception("Password must have at least 7 characters!");
         }
 
-        if (!isset($initData['test_person_codes']) or !$initData['test_person_codes']) {
-
-            $initData['test_person_codes'] = implode(" ", $this->createLoginCodes());
-        }
+        $initData['overwrite_existing_installation'] = isset($initData['overwrite_existing_installation']);
+        $initData['skip_db_integrity_check'] = isset($initData['skip_db_integrity_check']);
 
         parent::__construct($initData);
     }
-
-
-    private function createLoginCodes() {
-
-        return array_map([$this, 'generateLogin'], range(0, 9));
-    }
-
-
-    private function generateLogin() {
-
-        $login = "";
-        while (strlen($login) < 3) {
-            $login .= substr("abcdefghijklmnopqrstuvwxyz", rand(0, 25), 1);
-        }
-        return $login;
-    }
-
 }

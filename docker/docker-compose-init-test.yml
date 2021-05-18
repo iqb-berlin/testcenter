@@ -9,7 +9,7 @@ services:
 
   testcenter-db-backend-init-test:
     image: mysql:5.7
-    container_name: testcenter-db-init-test
+    container_name: testcenter-db-backend-init-test
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
@@ -27,7 +27,7 @@ services:
     container_name: testcenter-backend-init-test
     environment:
       <<: *env-mysql
-      MYSQL_HOST: testcenter-db-init-test
+      MYSQL_HOST: testcenter-db-backend-init-test
       MYSQL_PORT: 3306
     volumes:
       - ../classes:/var/www/html/classes
@@ -35,7 +35,7 @@ services:
       - ../sampledata:/var/www/html/sampledata
       - ../definitions:/var/www/html/definitions
       - ../docs/specs.yml:/var/www/html/docs/specs.yml
-      - ../composer.json:/var/www/html/composer.json.original
+      - ../composer.json:/var/www/html/composer.original.json
       - ../integration/test-init:/var/www/html/integration/test-init
       - ../scripts:/var/www/html/scripts
       - init_test_vendor:/var/www/html/vendor

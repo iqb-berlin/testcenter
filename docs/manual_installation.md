@@ -105,6 +105,7 @@ mysql -u username -p database_name < scripts/sql-schema/patches.mysql.sql
 ```
 make test-unit
 make test-e2e
+make test-init
 ```
 
 ### Run tests on your (host) machine

@@ -1,14 +1,15 @@
 #!/bin/bash
 
-source integration/test-inits/tests/functions.sh
+source integration/test-init/tests/functions.sh
 
 echo "## Test 2: Blank installation of current Version";
 
+take_current_version
+
 php scripts/initialize.php \
 --user_name=super \
---user_password=user132 \
+--user_password=user123 \
 --workspace=a_beautiful_workspace \
---type="mysql" \
 --host=$MYSQL_HOST \
 --port=$MYSQL_PORT \
 --dbname=$MYSQL_DATABASE \

@@ -67,15 +67,15 @@ class XMLFilesTesttakersTest extends TestCase {
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
         $expected = new PotentialLoginArray(
             new PotentialLogin(
-                'unit_test_login',
+                'test',
                 'run-hot-return',
                 'sample_group',
                 [
-                    "abc" => [
+                    "xxx" => [
                         "BOOKLET.SAMPLE",
                         "BOOKLET.SAMPLE-2"
                     ],
-                    "def" => [
+                    "yyy" => [
                         "BOOKLET.SAMPLE",
                         "BOOKLET.SAMPLE-2"
                     ]
@@ -87,7 +87,7 @@ class XMLFilesTesttakersTest extends TestCase {
                 (object) ['somestr' => 'string']
             )
         );
-        $result = $xmlFile->getPersonsInSameGroup('unit_test_login-group-monitor', 13);
+        $result = $xmlFile->getPersonsInSameGroup('test-group-monitor', 13);
         $this->assertEquals($expected, $result);
     }
 
@@ -96,17 +96,17 @@ class XMLFilesTesttakersTest extends TestCase {
 
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
-        $result = $xmlFile->getLogin('unit_test_login', 'unit_test_password', 1);
+        $result = $xmlFile->getLogin('test', 'user123', 1);
         $expected = new PotentialLogin(
-            'unit_test_login',
+            'test',
             'run-hot-return',
             'sample_group',
             [
-                "abc" => [
+                "xxx" => [
                     "BOOKLET.SAMPLE",
                     "BOOKLET.SAMPLE-2"
                 ],
-                "def" => [
+                "yyy" => [
                     "BOOKLET.SAMPLE",
                     "BOOKLET.SAMPLE-2"
                 ]
@@ -119,9 +119,9 @@ class XMLFilesTesttakersTest extends TestCase {
         );
         $this->assertEquals($expected, $result, "login with password");
 
-        $result = $xmlFile->getLogin('unit_test_login-no-pw', '', 1);
+        $result = $xmlFile->getLogin('test-no-pw', '', 1);
         $expected = new PotentialLogin(
-            'unit_test_login-no-pw',
+            'test-no-pw',
             'run-hot-restart',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -134,9 +134,9 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertEquals($expected, $result, "login without password (attribute omitted)");
 
 
-        $result = $xmlFile->getLogin('unit_test_login-no-pw-trial', '', 1);
+        $result = $xmlFile->getLogin('test-no-pw-trial', '', 1);
         $expected = new PotentialLogin(
-            'unit_test_login-no-pw-trial',
+            'test-no-pw-trial',
             'run-trial',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -149,10 +149,10 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertEquals($expected, $result, "login without password (attribute empty)");
 
 
-        $result = $xmlFile->getLogin('unit_test_login', 'wrong password', 1);
+        $result = $xmlFile->getLogin('test', 'wrong password', 1);
         $this->assertNull($result, "login with wrong password");
 
-        $result = $xmlFile->getLogin('unit_test_login', '', 1);
+        $result = $xmlFile->getLogin('test', '', 1);
         $this->assertNull($result, "login with no password");
 
 
@@ -160,9 +160,9 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertNull($result, "login with wrong username");
 
 
-        $result = $xmlFile->getLogin('unit_test_login-no-pw', 'some password', 1);
+        $result = $xmlFile->getLogin('test-no-pw', 'some password', 1);
         $expected = new PotentialLogin(
-            'unit_test_login-no-pw',
+            'test-no-pw',
             'run-hot-restart',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -175,9 +175,9 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertEquals($expected, $result, "login with password if none is required (attribute omitted)");
 
 
-        $result = $xmlFile->getLogin('unit_test_login-no-pw-trial', 'some password', 1);
+        $result = $xmlFile->getLogin('test-no-pw-trial', 'some password', 1);
         $expected = new PotentialLogin(
-            'unit_test_login-no-pw-trial',
+            'test-no-pw-trial',
             'run-trial',
             'passwordless_group',
             ['' => ['BOOKLET.SAMPLE']],
@@ -311,10 +311,10 @@ END;
 
         $expected = [
             new PotentialLogin(
-                'unit_test_login',
+                'test',
                 'run-hot-return',
                 'sample_group',
-                ['abc' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2'], 'def' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']],
+                ['xxx' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2'], 'yyy' => ['BOOKLET.SAMPLE', 'BOOKLET.SAMPLE-2']],
                 -1,
                 0,
                 1583053200,
@@ -322,7 +322,7 @@ END;
                 (object) ["somestr" => "string"]
             ),
             new PotentialLogin(
-                'unit_test_login-group-monitor',
+                'test-group-monitor',
                 'monitor-group',
                 'sample_group',
                 ['' => []],
@@ -333,7 +333,7 @@ END;
                 (object) ["somestr" => "string"],
             ),
             new PotentialLogin(
-                'unit_test_login-review',
+                'test-review',
                 'run-review',
                 'review_group',
                 ['' => ["BOOKLET.SAMPLE"]],
@@ -344,7 +344,7 @@ END;
                 (object) ["somestr" => "string"]
             ),
             new PotentialLogin(
-                'unit_test_login-trial',
+                'test-trial',
                 'run-trial',
                 'trial_group',
                 ['' => ["BOOKLET.SAMPLE"]],
@@ -355,7 +355,7 @@ END;
                 (object) ["somestr" => "string"]
             ),
             new PotentialLogin(
-                'unit_test_login-demo',
+                'test-demo',
                 'run-demo',
                 'trial_group',
                 ['' => ["BOOKLET.SAMPLE"]],
@@ -366,7 +366,7 @@ END;
                 (object) ["somestr" => "string"]
             ),
             new PotentialLogin(
-                'unit_test_login-no-pw',
+                'test-no-pw',
                 'run-hot-restart',
                 'passwordless_group',
                 ['' => ["BOOKLET.SAMPLE"]],
@@ -377,7 +377,7 @@ END;
                 (object) ["somestr" => "string"]
             ),
             new PotentialLogin(
-                'unit_test_login-no-pw-trial',
+                'test-no-pw-trial',
                 'run-trial',
                 'passwordless_group',
                 ['' => ["BOOKLET.SAMPLE"]],
@@ -388,7 +388,7 @@ END;
                 (object) ["somestr" => "string"]
             ),
             new PotentialLogin(
-                'unit_test_login-expired',
+                'test-expired',
                 'run-hot-restart',
                 'expired_group',
                 ['' => ["BOOKLET.SAMPLE"]],
@@ -410,7 +410,7 @@ END;
                 (object) ["somestr" => "string"]
             ),
             new PotentialLogin(
-                'unit_test_login-future',
+                'test-future',
                 'run-hot-restart',
                 'future_group',
                 ['' => ["BOOKLET.SAMPLE"]],

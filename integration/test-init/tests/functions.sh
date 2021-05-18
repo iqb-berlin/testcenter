@@ -6,6 +6,10 @@ function fake_version() {
   sed -i -r "s|\"version\":[[:space:]]*\"([a-z0-9\.\-]*)\"|\"version\": \"$1\"|" composer.json
 }
 
+function take_current_version() {
+  cp composer.json.original composer.json
+}
+
 
 # param 1: expectation file name
 function expect_db_structure_dump_equals() {

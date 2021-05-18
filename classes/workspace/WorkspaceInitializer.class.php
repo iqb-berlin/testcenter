@@ -44,36 +44,25 @@ class WorkspaceInitializer {
     }
 
 
-    private function importSampleFile(int $workspaceId, string $source, string $target, InstallationArguments $vars) {
+    private function importSampleFile(int $workspaceId, string $source, string $target) {
 
         $importFileName = ROOT_DIR . '/' . $source;
-        $fileContent = file_get_contents($importFileName);
 
-        if (!$fileContent) {
+        if (!file_exists($importFileName)) {
             throw new Exception("File not found: `$importFileName`");
-        }
-
-        foreach ($vars as $key => $value) {
-            $fileContent = str_replace('__' . strtoupper($key) . '__', $value, $fileContent);
         }
 
         $dir = pathinfo($target, PATHINFO_DIRNAME);;
         $fileName = basename($target);
         $fileName = $this->createSubdirectories(DATA_DIR . "/ws_$workspaceId/$dir") . $fileName;
 
-        if (@file_put_contents($fileName, $fileContent) === false) {
+        if (!@copy($importFileName, $fileName)) {
             throw new Exception("Could not write file: $fileName");
         }
     }
 
 
-    /**
-     * @param $workspaceId - _number_ of workspace where to import
-     * @param $parameters - assoc array of parameters. they can replace placeholders like __TEST_LOGIN__ in the sample
-     * data files if given
-     * @throws Exception
-     */
-    public function importSampleData(int $workspaceId, InstallationArguments $parameters): void {
+    public function importSampleData(int $workspaceId): void {
 
         foreach ($this::sampleDataPaths as $source => $target) {
 
@@ -84,7 +73,7 @@ class WorkspaceInitializer {
 
         foreach ($this::sampleDataPaths as $source => $target) {
 
-            $this->importSampleFile($workspaceId, $source, $target, $parameters);
+            $this->importSampleFile($workspaceId, $source, $target);
         }
     }
 

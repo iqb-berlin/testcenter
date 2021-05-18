@@ -1,43 +1,41 @@
 #!/usr/bin/php
 <?php
 /**
- * CLi script to initialize app
+ * A CLI script to initialize the application
+ *  It does a lot of stuff, it
+ * - creates config files if missing.
+ * - creates an admin user, if missing.
+ * - can create a workspace with sample data..
+ * - installs / updates the DB if necessary.
  *
- * creates a super user (if no user exists already)
- * creates also a workspace (if non exists)
- *
- * usage:
+ * Use these arguments to set up the initial admin:
  * --user_name=(super user name)
  * --user_password=(super user password)
+ *
+ * If you want to create a workspace with sample content:
  * --workspace=(workspace name)
- * --test_login_name=(login for the sample test booklet)
- * --test_login_password=(login for the sample test booklet)
  *
- * you may add, otherwise they will be random person codes
- * --test_person_codes=one,two,three
- *
- * if you add
+ * You can remove the exsiting Installation completely: (Caution! Your data will be gone!)
  * --overwrite_existing_installation=true
  *
- * existing database tables and files will be overwritten!
- *
- * /config/DBConnectionData.json hat to be present OR you can provide connection data yourself
- * --type=(`mysql` or `pgsql`)
+ *  If the DB-Connection-Data-File (/config/DBConnectionData.json) shall be written, provide:
  * --host=(mostly `localhost`)
- * --post=(usually 3306 for mysql and 5432 for postgresl)
+ * --post=(usually 3306)
  * --dbname=(database name)
- * --user=(mysql-/postgresql-username)
- * --password=(mysql-/postgresql-password)
+ * --user=(mysql-username)
+ * --password=(mysql-password)
+ * --salt=(an arbitrary string, optional)
  *
- * /config/system.json as well. you can write the file yourself or ass parameters
+ * If the the System-Config-File (/config/system.json) shall be written, provide
  * --broadcastServiceUriPush=(address of broadcast service to push for the backend)
  * --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
  * Add them with empty strings if you don't want to use the broadcast service at all.
  *
  *
- * Note: run this script as a user who can create files which can be read by the webserver or change file rights after wards
- * for example: sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
-
+ * Note: run this script as a user who can create files which can be read by the webserver or
+ * change file rights afterwardsfor example:
+ * sudo --user=www-data php scripts/initialize.php --user_name=a --user_password=x123456
+ *
  */
 
 
@@ -51,8 +49,6 @@ if (php_sapi_name() !== 'cli') {
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 define('DATA_DIR', ROOT_DIR . '/vo_data');
 
-$E = "\n\e[0;31m";
-$N = "\e[0m\n";
 
 require_once(ROOT_DIR . '/autoload.php');
 
@@ -62,20 +58,17 @@ try  {
         'user_name::',
         'user_password::',
         'workspace::',
-        'test_login_name::', // TODO get rid (?)
-        'test_login_password::', // TODO get rid (?)
-        'test_person_codes::', // TODO get rid (?)
         'overwrite_existing_installation:',
         'skip_db_integrity_check:'
     ]));
 
     $systemVersion = Version::get();
-    echo "$E# IQB TESTCENTER BACKEND $systemVersion{$N}";
+    CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
-    echo "\n# System-Config";
+    CLI::h2("System-Config");
     if (!file_exists(ROOT_DIR . '/config/system.json')) {
 
-        echo "\n System-Config not file found (`/config/system.json`). Will be created.";
+        CLI::p("System-Config not file found (`/config/system.json`). Will be created.");
 
         $params = getopt("", [
             'broadcast_service_uri_push::',
@@ -89,54 +82,54 @@ try  {
 
         BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
 
-        echo "\n Provided arguments OK.";
+        CLI::success("Provided arguments OK.");
 
         if (!file_put_contents(ROOT_DIR . '/config/system.json', json_encode($sysConf))) {
 
             throw new Exception("Could not write file `/config/system.json`. Check file permissions on `/config/`.");
         }
 
-        echo "\n System-Config file written.";
+        CLI::p("System-Config file written.");
 
     } else {
 
-        echo "\n Config file present.";
+        CLI::p("Config file present.");
     }
 
 
-    echo "\n# Database config";
+    CLI::h2("Database config");
     if (!file_exists(ROOT_DIR . '/config/DBConnectionData.json')) {
 
-        echo "\n Database-Config not file found (`/config/DBConnectionData.json`), will be created.";
+        CLI::p("Database-Config not file found (`/config/DBConnectionData.json`), will be created.");
 
         $config = new DBConfig(getopt("", [
-            'type::', // TODO get rid of
             'host::',
             'port::',
             'dbname::',
             'user::',
             'password::',
+            'salt::'
         ]));
-        DB::connectWithRetries($config, 5);
+        CLI::connectDBWithRetries($config, 5);
 
-        echo "\n Provided arguments OK.";
+        CLI::success("Provided arguments OK.");
 
         if (!file_put_contents(ROOT_DIR . '/config/DBConnectionData.json', json_encode(DB::getConfig()))) {
 
             throw new Exception("Could not write file. Check file permissions on `/config/`.");
         }
 
-        echo "\n Database-Config file written.";
+        CLI::p("Database-Config file written.");
 
     } else {
 
-        DB::connectWithRetries(null, 5);
+        CLI::connectDBWithRetries(null, 5);
         $config = DB::getConfig();
-        echo "\n Config file present.";
+        CLI::p("Config file present (and OK).");
     }
 
 
-    echo "\n# Database Structure";
+    CLI::h2("Database Structure");
     $initDAO = new InitDAO();
 
     if ($config->type !== "mysql") {
@@ -145,36 +138,43 @@ try  {
     }
 
     $dbStatus = $initDAO->getDbStatus();
-    echo "\n Database status: {$dbStatus['message']}";
+    CLI::p("Database status: {$dbStatus['message']}");
 
     if ($args->overwrite_existing_installation) {
 
-        echo "\n Clear database";
+        CLI::warning("Clear database");
         $tablesDropped = $initDAO->clearDb();
-        echo "\n Tables dropped: " . implode(', ', $tablesDropped);
+        CLI::p("Tables dropped: " . implode(', ', $tablesDropped));
     }
 
     if ($args->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
 
-        echo "\n Install basic database structure";
+        CLI::p("Install basic database structure");
         $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/mysql.sql");
     }
 
     $dbSchemaVersion = $initDAO->getDBSchemaVersion();
     $isCurrentVersion = Version::compare($dbSchemaVersion); // 1 : System is older than DB!, -1 : DB is outdated
-    echo "\n Database schema version is $dbSchemaVersion, system version is $systemVersion";
+    CLI::p("Database schema version is $dbSchemaVersion, system version is $systemVersion");
     if ($isCurrentVersion >= 0) {
 
        echo ": O.K.";
 
     } else {
 
-        echo "\n Install patches if necessary";
+        CLI::p("Install patches if necessary");
         $allowFailing = ($dbSchemaVersion === '0.0.0-no-table'); // TODO how about 0.0.0-no-value?
         $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d", $allowFailing);
         foreach ($patchInstallReport['patches'] as $patch) {
 
-          echo "\n * $patch: " . ($patchInstallReport['errors'][$patch] ?? 'installed successfully.');
+          if ($patchInstallReport['errors'][$patch]) {
+
+              CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
+
+          } else {
+
+              CLI::success("* $patch: installed successfully.");
+          }
         }
         if (count($patchInstallReport['errors']) and !$allowFailing) {
 
@@ -188,10 +188,10 @@ try  {
         throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
     }
     $initDAO->setDBSchemaVersion($systemVersion);
-    echo "\n DB passed integrity check.";
+    CLI::success("DB passed integrity check.");
 
 
-    echo "\n# Workspaces";
+    CLI::h2("Workspaces");
 
     $initializer = new WorkspaceInitializer();
 
@@ -203,7 +203,7 @@ try  {
             }, 0);
 
             $initializer->cleanWorkspace($workspace->getId());
-            echo "\n Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.";
+            CLI::warning("Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.");
 
             Folder::deleteContentsRecursive($workspace->getWorkspacePath());
         }
@@ -216,9 +216,9 @@ try  {
         $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
         $workspaceIds[] = $workspaceData['id'];
         if (isset($workspaceData['restored'])) {
-            echo "\n Workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.";
+            CLI::warning("Workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
         } else {
-            echo "\n Workspace `{$workspaceData['name']}` found.";
+            CLI::p("Workspace `{$workspaceData['name']}` found.");
         }
     }
 
@@ -226,10 +226,10 @@ try  {
 
         $sampleWorkspaceId = $initDAO->createWorkspace($args->workspace);
 
-        echo "\n Sample Workspace `{$args->workspace}` as `ws_{$sampleWorkspaceId}` created";
+        CLI::success("Sample Workspace `{$args->workspace}` as `ws_{$sampleWorkspaceId}` created");
 
-        $initializer->importSampleData($sampleWorkspaceId, $args);
-        echo "\n Sample content files created.";
+        $initializer->importSampleData($sampleWorkspaceId);
+        CLI::success("Sample content files created.");
 
         $workspaceIds[] = $sampleWorkspaceId;
     }
@@ -238,39 +238,32 @@ try  {
       mkdir(DATA_DIR);
     }
 
-    echo "\n# Sys-Admin";
+    CLI::h2("Sys-Admin");
     if (!$initDAO->adminExists()) {
 
-        echo "\n No Sys-Admin found.";
+        CLI::warning("No Sys-Admin found.");
 
         $adminId = $initDAO->createAdmin($args->user_name, $args->user_password);
-        echo "\n Sys-Admin created: `$args->user_name`.";
+        CLI::success("Sys-Admin created: `$args->user_name`.");
 
         foreach ($workspaceIds as $workspaceId) {
 
             $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
-            echo "\n Workspace `ws_$workspaceId` added to `$args->user_name`.";
+            CLI::p("Workspace `ws_$workspaceId` added to `$args->user_name`.");
         }
 
     } else {
 
-        echo "\n At least one Sys-Admin found; nothing to do.";
+        CLI::p("At least one Sys-Admin found; nothing to do.");
     }
 
 
-    echo "\n\n# Ready. Parameters:";
-    foreach ($args as $key => $value) {
-        echo "\n $key: $value";
-    }
+    CLI::h3("Ready.");
 
 } catch (Exception $e) {
 
-    fwrite(STDERR,"\n" . $e->getMessage() . "\n");
-    if (isset($config)) {
-        echo "\n DB-Config:\n" . print_r($config, true);
-    }
-
-    echo "\n\n";
+    CLI::error($e->getMessage());
+    echo "\n";
     ErrorHandler::logException($e, true);
     exit(1);
 }

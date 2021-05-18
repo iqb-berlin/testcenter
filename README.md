@@ -35,11 +35,14 @@ Alternatively you can download the container [here](https://hub.docker.com/repos
 make run
 make stop
 ```
-###### The 2 types of tests can be run separately.
+###### Running the tests
 ```
 make test-unit
 make test-e2e
+make test-init
 ```
+
+
 
 ### Manual installation on Webserver
 
