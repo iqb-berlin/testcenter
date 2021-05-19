@@ -2,7 +2,7 @@
 
 source integration/test-init/tests/functions.sh
 
-echo "## Test 2: Blank installation of current Version";
+echo_h1 "Test 2: Blank installation of current Version";
 
 take_current_version
 

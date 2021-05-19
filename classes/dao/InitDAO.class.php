@@ -273,9 +273,9 @@ class InitDAO extends SessionDAO {
 
             try {
 
+                $report['patches'][] = $patch;
                 $this->runFile("$patchesDir/$patch.sql");
                 $this->setDBSchemaVersion($patch);
-                $report['patches'][] = $patch;
 
             } catch (PDOException $exception) {
 

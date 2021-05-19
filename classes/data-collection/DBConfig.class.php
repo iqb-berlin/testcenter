@@ -5,7 +5,7 @@ class DBConfig extends DataCollection {
 
     public ?string $type = "mysql";
     public ?string $host = "localhost";
-    public ?string $port = null;
+    public ?string $port = "3306";
     public ?string $dbname = null;
     public ?string $user = null;
     public ?string $password = null;
@@ -14,11 +14,6 @@ class DBConfig extends DataCollection {
     public bool $insecurePasswords = false; // relevant for unit- and e2e-tests
 
     public function __construct($initData) {
-
-        if (!isset($initData['port'])) {
-
-            $this->port = (isset($initData['type']) and ($initData['type'] == 'mysql')) ? "3306" : null;
-        }
 
         if ((isset($initData['type']) and ($initData['type'] == 'temp'))) {
 

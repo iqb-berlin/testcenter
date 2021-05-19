@@ -12,8 +12,10 @@
  * --user_name=(super user name)
  * --user_password=(super user password)
  *
- * If there is no workspace one (containing sample content) will be created if set up a name
+ * If there is no workspace one (containing sample content) will be created
  * --workspace=(workspace name)
+ *
+ * Admin- and workspace-creation can be skipped by providing an empty string as for workspace respectively user_name
  *
  * You can remove the existing installation completely: (Caution! Your data will be gone!)
  * --overwrite_existing_installation=true
@@ -178,7 +180,7 @@ try  {
         }
         if (count($patchInstallReport['errors']) and !$allowFailing) {
 
-          throw new Exception('Installing database patches failed.' . print_r($patchInstallReport['errors'], true));
+          throw new Exception('Installing database patches failed.');
         }
     }
 
@@ -239,7 +241,8 @@ try  {
     }
 
     CLI::h2("Sys-Admin");
-    if (!$initDAO->adminExists()) {
+    echo "\n !!!!! " . $args->user_name;
+    if (!$initDAO->adminExists() and $args->user_name) {
 
         CLI::warning("No Sys-Admin found.");
 

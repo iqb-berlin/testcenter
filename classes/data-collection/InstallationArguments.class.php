@@ -4,7 +4,7 @@ class InstallationArguments extends DataCollection {
 
     public string $user_name = 'super';
     public string $user_password = 'user123';
-    public string $workspace = '';
+    public string $workspace = 'sample_workspace';
 
     public bool $overwrite_existing_installation = false;
     public bool $skip_db_integrity_check = false;

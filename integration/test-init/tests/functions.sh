@@ -1,8 +1,21 @@
 #!/bin/bash
 
+
+function echo_h1() {
+  printf "\033[0;36;40m$1\033[0m\n"
+}
+
+function echo_success() {
+  printf "\033[0;30;42m$1\033[0m\n"
+}
+
+function echo_fail() {
+  printf "\033[0;30;41m$1\033[0m\n"
+}
+
 # param 1: version to fake
 function fake_version() {
-  cp composer.json.original composer.json
+  cp composer.original.json composer.json
   sed -i -r "s|\"version\":[[:space:]]*\"([a-z0-9\.\-]*)\"|\"version\": \"$1\"|" composer.json
 }
 
@@ -18,11 +31,11 @@ function expect_db_structure_dump_equals() {
   differences=$(diff <(echo "$result") "$expectation_file")
   if [ "$differences" != "" ]
   then
-    echo "Expectation '$1' failed: "
+    echo_fail "Expectation '$1' failed: "
     echo "$result";
     exit 1
   else
-    echo "Expectation '$1' met"
+    echo_success "Expectation '$1' met"
   fi
 }
 
@@ -32,10 +45,10 @@ function expect_table_to_have_rows() {
   result=$(php integration/test-init/db-dump/count.php --table="$1")
   if [ "$2" != "$result" ]
   then
-    echo "Expected $1 to have $2 rows, but has $result."
+    echo_fail "Expected $1 to have $2 rows, but has $result."
     exit 1
   else
-    echo "Expectation met: $1 has $result rows."
+    echo_success "Expectation met: $1 has $result rows."
   fi
 }
 
@@ -46,17 +59,17 @@ function expect_data_dir_equals() {
   differences=$(diff <(echo "$result") "$expectation_file")
   if [ "$differences" != "" ]
   then
-    echo "Expectation '$1' failed: $differences"
+    echo_fail "Expectation '$1' failed: $differences"
     exit 1
   else
-    echo "Expectation '$1' met"
+    echo_success "Expectation '$1' met"
   fi
 }
 
 function expect_init_script_ok() {
   errorCode=$?
   if [ "$errorCode" == 1 ] ;then
-    echo "Init-Script failed!"
+    echo_fail "Init-Script failed!"
     exit 1
   fi;
 }
@@ -64,10 +77,10 @@ function expect_init_script_ok() {
 function expect_init_script_failed() {
   errorCode=$?
   if [ "$errorCode" != 1 ] ;then
-    echo "Init-Script did not failed as expected"
+    echo_fail "Init-Script did not failed as expected"
     exit 1
   fi;
-  echo "Init-Script failed as expected"
+  echo_success "Init-Script failed as expected"
 }
 
 # param 1: expectation folder name
@@ -76,4 +89,11 @@ function create_sample_folder() {
   mkdir "vo_data/$1"
   mkdir "vo_data/$1/SysCheck"
   cp sampledata/SysCheck.xml "vo_data/$1/SysCheck/"
+}
+
+
+# param 1: patch-version
+# param 2: patch-content
+function fake_patch() {
+  echo "$2" > "scripts/sql-schema/mysql.patches.d/$1.sql"
 }
