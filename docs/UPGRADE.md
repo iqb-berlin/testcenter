@@ -1,8 +1,15 @@
 # Changelog & Upgrade Information
 
+## 10.0.0
+This update does not contain new functionality. It's about the init/install script, which can do database-migration from 
+older to newer versions by itself now. The version 10 indicates the beginning of an era with versioned database-schemas.
+There is no manual patching necessary anymore after an update. So changes in the DB does not force a new major-version 
+anymore.
+
+
 ## 9.2.0
 ### XSD
-* Additional elements and attributes needed by teststudio-lite where added. They have no affect for the testcenter at
+* Additional elements and attributes needed by teststudio-lite where added. They have no effect for the testcenter at
 the moment.
 
 ## 9.1.0

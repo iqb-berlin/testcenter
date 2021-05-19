@@ -36,9 +36,15 @@ make run
 make stop
 ```
 ###### Running the tests
+While the backend is running, do
 ```
 make test-unit
 make test-e2e
+```
+
+There are also special test for the init-script (aka the installer). 
+The run their own containers and therefore don't need `make run` before. 
+```
 make test-init
 ```
 
