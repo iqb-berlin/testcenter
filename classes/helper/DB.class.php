@@ -6,42 +6,31 @@ declare(strict_types=1);
 
 class DB {
 
-    /* @var PDO */
-    private static $pdo;
-
-    /* @var DBconfig */
-    private static $config;
+    private static PDO $pdo;
+    private static DBConfig $config;
 
     static function connect(?DBConfig $config = null): void {
 
-        if (!$config) {
-            $config = DBConfig::fromFile(ROOT_DIR . '/config/DBConnectionData.json');
-        }
+        self::$config = $config ?? DBConfig::fromFile(ROOT_DIR . '/config/DBConnectionData.json');
 
-        self::$config = $config;
+        if (self::$config->type === 'mysql') {
 
-        if ($config->type === 'mysql') {
+            self::$pdo = new PDO("mysql:host=" . self::$config->host . ";port=" . self::$config->port . ";dbname=" . self::$config->dbname, self::$config->user, self::$config->password);
 
-            self::$pdo = new PDO("mysql:host=" . $config->host . ";port=" . $config->port . ";dbname=" . $config->dbname, $config->user, $config->password);
-
-        } elseif ($config->type === 'pgsql') {
-
-            self::$pdo = new PDO("pgsql:host=" . $config->host . ";port=" . $config->port . ";dbname=" . $config->dbname . ";user=" . $config->user . ";password=" . $config->password);
-
-        } elseif ($config->type === 'temp') {
+        } elseif (self::$config->type === 'temp') {
 
             self::$pdo = new PDO('sqlite::memory:');
 
         } else {
 
-            throw new Exception("DB type `{$config->type}` not supported");
+            throw new Exception("DB type `" . self::$config->type . "` not supported");
         }
     }
 
 
     static function getConnection(): PDO {
 
-        if (!self::$pdo) {
+        if (!isset(self::$pdo)) {
 
             throw new Exception("DB connection not set up yet");
         }
@@ -52,7 +41,7 @@ class DB {
 
     static function getConfig(): DBConfig {
 
-        if (!self::$config) {
+        if (!isset(self::$config)) {
 
             throw new Exception("DB connection not set up yet");
         }
