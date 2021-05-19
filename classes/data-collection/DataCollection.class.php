@@ -21,11 +21,11 @@ abstract class DataCollection implements JsonSerializable {
             throw new Exception("JSON file not found: `$path`");
         }
 
-        $connectionData = JSON::decode(file_get_contents($path), true);
+        $initData = JSON::decode(file_get_contents($path), true);
 
         $class = get_called_class();
 
-        return new $class($connectionData);
+        return new $class($initData);
     }
 
 
@@ -35,7 +35,9 @@ abstract class DataCollection implements JsonSerializable {
 
         foreach ($initData as $key => $value) {
             if (property_exists($this, $key)) {
-                $this->$key = $value ?? $this->$key;
+
+                $isEmptyString = (($value === "") and is_string($this->$key));
+                $this->$key = ($isEmptyString or $value) ? $value : $this->$key;
             } else {
                 throw new Exception("$class creation error:`$key` is unknown in `" . get_class($this) . "`.");
             }
@@ -50,7 +52,7 @@ abstract class DataCollection implements JsonSerializable {
     }
 
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): array{
 
         $jsonData = [];
 
