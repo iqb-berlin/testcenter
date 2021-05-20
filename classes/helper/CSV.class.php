@@ -13,7 +13,7 @@ class CSV {
 
 
     /**
-     * builds string containing data CSV from a collections of heterogenous arrays
+     * builds string containing data CSV from a collections of heterogeneous arrays
      *
      * example:
      * $data = [
@@ -41,7 +41,7 @@ class CSV {
      * @return string
      */
     static function build(array $data, array $columnNames = [],
-                          string $delimiter = ',', string $enclosure = '"', string $lineDelimiter = '\n') {
+                          string $delimiter = ',', string $enclosure = '"', string $lineDelimiter = '\n'): string {
 
         $columns = (is_array($columnNames) and count($columnNames))
             ? $columnNames
@@ -60,7 +60,7 @@ class CSV {
 
             foreach ($columns as $column) {
 
-                $row[] = isset($set[$column]) ? $set[$column] : '';
+                $row[] = $set[$column] ?? '';
             }
 
             $csvRows[] = CSV::stringifyRow($row, $delimiter, $enclosure);
@@ -70,7 +70,7 @@ class CSV {
     }
 
 
-    private static function stringifyRow($row, $delimiter, $enclosure) {
+    private static function stringifyRow($row, $delimiter, $enclosure): string {
 
         return implode(
             $delimiter,
