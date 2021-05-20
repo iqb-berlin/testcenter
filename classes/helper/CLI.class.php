@@ -50,6 +50,56 @@ class CLI {
         throw new Exception("Database connection failed.");
     }
 
+    // PHP's getopt is bogus: it can not handle empty strings as params properly
+    static function getOpt(): array {
+
+        $result = [];
+        $params = $GLOBALS['argv'];
+        $skipNext = true;
+
+        foreach ($params as $i => $param) {
+
+            if ($skipNext) {
+                $skipNext = false;
+                continue;
+            }
+
+            if ($param[0] == '-') {
+
+                $paramName = substr($param, 1);
+                $value = null;
+
+                if ($paramName[0] == '-') { // long-opt (--<param>)
+                    $paramName = substr($paramName, 1);
+                    if (strpos($param, '=') !== false) { // value specified inline (--<param>=<value>)
+                        list($paramName, $value) = explode('=', substr($param, 2), 2);
+                    }
+                }
+
+                if (!$paramName) {
+                    $result[] = '--';
+                    continue;
+                }
+
+                if (is_numeric($paramName)) {
+                    $paramName = '_' . $paramName;
+                }
+
+                if (is_null($value)) {
+                    $nextParam = $params[$i + 1] ?? true;
+                    $nextIsValue = (is_string($nextParam) and (($nextParam === "") or ($nextParam[0] !== "-")));
+                    $value = $nextIsValue ? $nextParam : true;
+                    $skipNext = $nextIsValue;
+                }
+
+                $result[$paramName] = $value;
+
+            } else {
+                $result[] = $param;
+            }
+        }
+        return $result;
+    }
 
     static function printData(DataCollection $dataCollection): void {
 

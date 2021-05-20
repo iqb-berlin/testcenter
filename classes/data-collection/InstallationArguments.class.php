@@ -9,7 +9,7 @@ class InstallationArguments extends DataCollection {
     public bool $overwrite_existing_installation = false;
     public bool $skip_db_integrity_check = false;
 
-    public function __construct($initData) {
+    public function __construct($initData, bool $allowAdditionalInitData = false) {
 
         if (isset($initData['user_password']) and (strlen($initData['user_password']) < 7)) {
 
@@ -19,6 +19,6 @@ class InstallationArguments extends DataCollection {
         $initData['overwrite_existing_installation'] = isset($initData['overwrite_existing_installation']);
         $initData['skip_db_integrity_check'] = isset($initData['skip_db_integrity_check']);
 
-        parent::__construct($initData);
+        parent::__construct($initData, $allowAdditionalInitData);
     }
 }

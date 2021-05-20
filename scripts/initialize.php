@@ -51,18 +51,11 @@ if (php_sapi_name() !== 'cli') {
 define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
 define('DATA_DIR', ROOT_DIR . '/vo_data');
 
-
 require_once(ROOT_DIR . '/autoload.php');
 
 try  {
-
-    $args = new InstallationArguments(getopt("", [
-        'user_name::',
-        'user_password::',
-        'workspace:',
-        'overwrite_existing_installation:',
-        'skip_db_integrity_check:'
-    ]));
+    $args = CLI::getOpt();
+    $installationArguments = new InstallationArguments($args, true);
 
     $systemVersion = Version::get();
     CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
@@ -72,15 +65,7 @@ try  {
 
         CLI::p("System-Config not file found (`/config/system.json`). Will be created.");
 
-        $params = getopt("", [
-            'broadcast_service_uri_push::',
-            'broadcast_service_uri_subscribe::'
-        ]);
-
-        $sysConf = new SystemConfig([
-            'broadcastServiceUriPush' => $params['broadcast_service_uri_push'] ?? '',
-            'broadcastServiceUriSubscribe' => $params['broadcast_service_uri_subscribe'] ?? ''
-        ]);
+        $sysConf = new SystemConfig($args, true);
 
         BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
 
@@ -98,20 +83,12 @@ try  {
         CLI::p("Config file present.");
     }
 
-
     CLI::h2("Database config");
     if (!file_exists(ROOT_DIR . '/config/DBConnectionData.json')) {
 
         CLI::p("Database-Config not file found (`/config/DBConnectionData.json`), will be created.");
 
-        $config = new DBConfig(getopt("", [
-            'host::',
-            'port::',
-            'dbname::',
-            'user::',
-            'password::',
-            'salt::'
-        ]));
+        $config = new DBConfig($args, true);
         CLI::connectDBWithRetries($config, 5);
 
         CLI::success("Provided arguments OK.");
@@ -142,14 +119,14 @@ try  {
     $dbStatus = $initDAO->getDbStatus();
     CLI::p("Database status: {$dbStatus['message']}");
 
-    if ($args->overwrite_existing_installation) {
+    if ($installationArguments->overwrite_existing_installation) {
 
         CLI::warning("Clear database");
         $tablesDropped = $initDAO->clearDb();
         CLI::p("Tables dropped: " . implode(', ', $tablesDropped));
     }
 
-    if ($args->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
+    if ($installationArguments->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
 
         CLI::p("Install basic database structure");
         $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/mysql.sql");
@@ -185,7 +162,7 @@ try  {
     }
 
     $newDbStatus = $initDAO->getDbStatus();
-    if (!($newDbStatus['tables'] == 'complete') and !$args->skip_db_integrity_check) {
+    if (!($newDbStatus['tables'] == 'complete') and !$installationArguments->skip_db_integrity_check) {
 
         throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
     }
@@ -197,7 +174,7 @@ try  {
 
     $initializer = new WorkspaceInitializer();
 
-    if ($args->overwrite_existing_installation) {
+    if ($installationArguments->overwrite_existing_installation) {
 
         foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
             $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function ($carry, $item) {
@@ -224,11 +201,11 @@ try  {
         }
     }
 
-    if (!count($workspaceIds) and $args->workspace) {
+    if (!count($workspaceIds) and $installationArguments->workspace) {
 
-        $sampleWorkspaceId = $initDAO->createWorkspace($args->workspace);
+        $sampleWorkspaceId = $initDAO->createWorkspace($installationArguments->workspace);
 
-        CLI::success("Sample Workspace `{$args->workspace}` as `ws_{$sampleWorkspaceId}` created");
+        CLI::success("Sample Workspace `{$installationArguments->workspace}` as `ws_{$sampleWorkspaceId}` created");
 
         $initializer->importSampleData($sampleWorkspaceId);
         CLI::success("Sample content files created.");
@@ -241,18 +218,18 @@ try  {
     }
 
     CLI::h2("Sys-Admin");
-    echo "\n !!!!! " . $args->user_name;
-    if (!$initDAO->adminExists() and $args->user_name) {
+
+    if (!$initDAO->adminExists() and $installationArguments->user_name) {
 
         CLI::warning("No Sys-Admin found.");
 
-        $adminId = $initDAO->createAdmin($args->user_name, $args->user_password);
-        CLI::success("Sys-Admin created: `$args->user_name`.");
+        $adminId = $initDAO->createAdmin($installationArguments->user_name, $installationArguments->user_password);
+        CLI::success("Sys-Admin created: `$installationArguments->user_name`.");
 
         foreach ($workspaceIds as $workspaceId) {
 
             $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
-            CLI::p("Workspace `ws_$workspaceId` added to `$args->user_name`.");
+            CLI::p("Workspace `ws_$workspaceId` added to `$installationArguments->user_name`.");
         }
 
     } else {

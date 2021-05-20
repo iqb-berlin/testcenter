@@ -24,9 +24,9 @@ test-e2e-no-spec-update:
 
 test-init:
 	TEST_NAME=db-versions docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
-#	TEST_NAME=vanilla-installation docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
-#	TEST_NAME=no-db-but-files docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
-#	TEST_NAME=install-db-patches docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
+	TEST_NAME=vanilla-installation docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
+	TEST_NAME=no-db-but-files docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
+	TEST_NAME=install-db-patches docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
 
 update-docs:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs

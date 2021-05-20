@@ -13,7 +13,7 @@ class DBConfig extends DataCollection {
     public bool $staticTokens = false; // relevant for unit- and e2e-tests
     public bool $insecurePasswords = false; // relevant for unit- and e2e-tests
 
-    public function __construct($initData) {
+    public function __construct($initData, $allowAdditionalInitData = false) {
 
         if ((isset($initData['type']) and ($initData['type'] == 'temp'))) {
 
@@ -24,6 +24,6 @@ class DBConfig extends DataCollection {
             $this->host = "";
         }
 
-        parent::__construct($initData);
+        parent::__construct($initData, $allowAdditionalInitData);
     }
 }

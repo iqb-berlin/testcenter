@@ -29,7 +29,7 @@ abstract class DataCollection implements JsonSerializable {
     }
 
 
-    function __construct($initData) {
+    function __construct($initData, bool $allowAdditionalInitData = false) {
 
         $class = get_called_class();
 
@@ -38,7 +38,7 @@ abstract class DataCollection implements JsonSerializable {
 
                 $isEmptyString = (($value === "") and is_string($this->$key));
                 $this->$key = ($isEmptyString or $value) ? $value : $this->$key;
-            } else {
+            } else if (!$allowAdditionalInitData) {
                 throw new Exception("$class creation error:`$key` is unknown in `" . get_class($this) . "`.");
             }
         }
