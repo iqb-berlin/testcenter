@@ -148,7 +148,7 @@ class CLI {
     static function warning(string $text): void {
 
 
-        CLI::printColored($text, "Red");
+        CLI::printColored($text, "Brown");
     }
 
 
