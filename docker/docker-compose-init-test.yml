@@ -22,7 +22,7 @@ services:
   testcenter-backend-init-test:
     build:
       context: ../
-      dockerfile: ../docker/Dockerfile
+      dockerfile: docker/Dockerfile
     entrypoint: ["bash", "-c", "(cd /var/www/html && bash integration/test-init/tests/test_$TEST_NAME.sh)"]
     container_name: testcenter-backend-init-test
     environment:
