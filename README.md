@@ -49,7 +49,7 @@ Now, your system will get checked to ensure that you have `docker`, `docker-comp
 * MySql connection parameters (database name, root password etc.)
 
 ## 3. Run server
-After you've got "--- INSTALLATION SUCCESSFUL ---", you type
+After you've got "--- INSTALLATION SUCCESSFUL ---", you change into the installation directory and type
 ```
 make run
 ```
