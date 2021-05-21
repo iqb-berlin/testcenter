@@ -254,7 +254,7 @@ class SuperAdminDAO extends DAO {
     }
 
 
-    public function deleteWorkspaces($wsIds) {
+    public function deleteWorkspaces(array $wsIds): void {
 
         foreach ($wsIds as $wsId) {
             $this->_(
