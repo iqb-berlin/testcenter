@@ -1,14 +1,16 @@
 #!/bin/bash
 
-
+# param 1: headline text
 function echo_h1() {
   printf "\033[0;36;40m$1\033[0m\n"
 }
 
+# param 1: success text
 function echo_success() {
   printf "\033[0;30;42m$1\033[0m\n"
 }
 
+# param 1: fail text
 function echo_fail() {
   printf "\033[0;30;41m$1\033[0m\n"
 }
@@ -96,4 +98,9 @@ function create_sample_folder() {
 # param 2: patch-content
 function fake_patch() {
   echo "$2" > "scripts/sql-schema/mysql.patches.d/$1.sql"
+}
+
+# param 1: workspace-id
+function delete_workspace() {
+  php integration/test-init/db-dump/delete-workspace.php --ws_id="$1"
 }

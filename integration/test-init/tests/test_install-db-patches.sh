@@ -56,15 +56,3 @@ php scripts/initialize.php \
 
 expect_init_script_ok
 expect_table_to_have_rows meta 3 # namely "version", "but me," and "and me"
-
-
-
-
-
-
-
-
-# TODO to test:
-# untouch current data
-# config file present
-# broken config

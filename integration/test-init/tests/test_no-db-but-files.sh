@@ -24,7 +24,27 @@ expect_init_script_ok
 expect_data_dir_equals restored_workspaces
 expect_table_to_have_rows workspaces 2
 
-echo_h1 "Test 3.2: Don't create workspace or admin if empty names are given";
+
+echo_h1 "Test 3.2: Don't restore deleted workspace";
+# eg after restart of container
+
+delete_workspace 2
+
+php scripts/initialize.php \
+--user_name=super \
+--user_password=user123 \
+--workspace=new_workspace \
+--host=$MYSQL_HOST \
+--port=$MYSQL_PORT \
+--dbname=$MYSQL_DATABASE \
+--user=$MYSQL_USER \
+--password=$MYSQL_PASSWORD \
+
+expect_init_script_ok
+expect_table_to_have_rows workspaces 1
+
+
+echo_h1 "Test 3.3: Don't create workspace or admin if empty names are given";
 
 php scripts/initialize.php \
 --user_name "" \
