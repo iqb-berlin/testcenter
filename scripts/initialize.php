@@ -142,7 +142,7 @@ try  {
     } else {
 
         CLI::p("Install patches if necessary");
-        $allowFailing = ($dbSchemaVersion === '0.0.0-no-table'); // TODO how about 0.0.0-no-value?
+        $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
         $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d", $allowFailing);
         foreach ($patchInstallReport['patches'] as $patch) {
 
