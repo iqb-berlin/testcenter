@@ -1,5 +1,13 @@
 .
   |-ws_1
+  |  |-Testtakers
+  |  |  |-SAMPLE_TESTTAKERS.XML
+  |  |-Booklet
+  |  |  |-SAMPLE_BOOKLET2.XML
+  |  |  |-SAMPLE_BOOKLET.XML
+  |  |-Resource
+  |  |  |-SAMPLE_UNITCONTENTS.HTM
+  |  |  |-verona-simple-player-1.html
   |  |-Unit
   |  |  |-SAMPLE_UNIT2.XML
   |  |  |-SAMPLE_UNIT.XML
@@ -7,11 +15,3 @@
   |  |  |-reports
   |  |  |  |-SAMPLE_SYSCHECK-REPORT.JSON
   |  |  |-SAMPLE_SYSCHECK.XML
-  |  |-Resource
-  |  |  |-SAMPLE_UNITCONTENTS.HTM
-  |  |  |-verona-simple-player-1.html
-  |  |-Booklet
-  |  |  |-SAMPLE_BOOKLET2.XML
-  |  |  |-SAMPLE_BOOKLET.XML
-  |  |-Testtakers
-  |  |  |-SAMPLE_TESTTAKERS.XML
