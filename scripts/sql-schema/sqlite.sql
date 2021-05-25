@@ -4,7 +4,7 @@ BEGIN TRANSACTION;
 CREATE TABLE `admin_sessions` (
   `token` varchar(50) NOT NULL
 ,  `user_id` integer  NOT NULL
-,  `valid_until` timestamp NOT NULL DEFAULT current_timestamp 
+,  `valid_until` timestamp NOT NULL DEFAULT current_timestamp
 ,  PRIMARY KEY (`token`)
 ,  CONSTRAINT `fk_users_admintokens` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
@@ -129,6 +129,16 @@ CREATE INDEX "idx_workspace_users_index_fk_workspace_users_workspace" ON "worksp
 CREATE INDEX "idx_tests_index_fk_booklet_person" ON tests (`person_id`);
 
 create unique index "person_sessions_id_uindex" on person_sessions (`id`);
+
+
+create table `meta`
+(
+    metaKey varchar(30) not null
+,   value varchar(100) null
+,   primary key (metaKey)
+);
+
+
 
 
 END TRANSACTION;

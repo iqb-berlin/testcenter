@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/9.2.2/definitions/vo_Testtakers.xsd">
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/10.0.0/definitions/vo_Testtakers.xsd">
 
   <Metadata>
     <Description>This file contains some logins for testing and works a a sample for developers.</Description>
@@ -11,47 +11,47 @@
 
   <Group id="sample_group" validFor="45" validFrom="1/3/2020 10:00" label="Primary Sample Group">
 
-    <Login mode="run-hot-return" name="__TEST_LOGIN_NAME__" pw="__TEST_LOGIN_PASSWORD__">
-      <Booklet codes="__TEST_PERSON_CODES__">BOOKLET.SAMPLE</Booklet>
+    <Login mode="run-hot-return" name="test" pw="user123">
+      <Booklet codes="xxx yyy">BOOKLET.SAMPLE</Booklet>
       <Booklet>BOOKLET.SAMPLE-2</Booklet>
     </Login>
 
-    <Login mode="monitor-group" name="__TEST_LOGIN_NAME__-group-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
+    <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
   </Group>
 
   <Group id="review_group" label="A Group of Reviewers">
-    <Login mode="run-review" name="__TEST_LOGIN_NAME__-review" pw="__TEST_LOGIN_PASSWORD__">
+    <Login mode="run-review" name="test-review" pw="user123">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
   <Group id="trial_group" label="A Group for Trials and Demos">
-    <Login mode="run-trial" name="__TEST_LOGIN_NAME__-trial" pw="__TEST_LOGIN_PASSWORD__">
+    <Login mode="run-trial" name="test-trial" pw="user123">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
-    <Login mode="run-demo" name="__TEST_LOGIN_NAME__-demo" pw="__TEST_LOGIN_PASSWORD__">
+    <Login mode="run-demo" name="test-demo" pw="user123">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
   <Group id="passwordless_group" label="A group of persons without password">
-    <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-no-pw">
+    <Login mode="run-hot-restart" name="test-no-pw">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
-    <Login mode="run-trial" name="__TEST_LOGIN_NAME__-no-pw-trial">
+    <Login mode="run-trial" name="test-no-pw-trial">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>
 
   <Group id="expired_group" validTo="1/3/2020 19:30" label="An already expired group">
-    <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-expired">
+    <Login mode="run-hot-restart" name="test-expired">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
-    <Login mode="monitor-group" name="expired-group-monitor" pw="__TEST_LOGIN_PASSWORD__"/>
+    <Login mode="monitor-group" name="expired-group-monitor" pw="user123"/>
   </Group>
 
   <Group id="future_group" validFrom="26/3/2030 9:00" label="An not yet active group">
-    <Login mode="run-hot-restart" name="__TEST_LOGIN_NAME__-future">
+    <Login mode="run-hot-restart" name="test-future">
       <Booklet>BOOKLET.SAMPLE</Booklet>
     </Login>
   </Group>

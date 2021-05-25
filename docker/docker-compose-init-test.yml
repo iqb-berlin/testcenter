@@ -1,0 +1,45 @@
+version: '3.7'
+
+x-env-mysql: &env-mysql
+  MYSQL_DATABASE: testcenter_db
+  MYSQL_USER: testcenter_user
+  MYSQL_PASSWORD: testcenter_pw
+
+services:
+
+  testcenter-db-backend-init-test:
+    image: mysql:5.7
+    container_name: testcenter-db-backend-init-test
+    environment:
+      <<: *env-mysql
+      MYSQL_ROOT_PASSWORD: testcenter_root_pw
+    volumes:
+      - ./scripts/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - "9091:3306"
+      - "22:22"
+
+  testcenter-backend-init-test:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    entrypoint: ["bash", "-c", "(cd /var/www/html && bash integration/test-init/tests/test_$TEST_NAME.sh)"]
+    container_name: testcenter-backend-init-test
+    environment:
+      <<: *env-mysql
+      MYSQL_HOST: testcenter-db-backend-init-test
+      MYSQL_PORT: 3306
+    volumes:
+      - ../classes:/var/www/html/classes
+      - ../routes:/var/www/html/routes
+      - ../sampledata:/var/www/html/sampledata
+      - ../definitions:/var/www/html/definitions
+      - ../docs/specs.yml:/var/www/html/docs/specs.yml
+      - ../composer.json:/var/www/html/composer.original.json
+      - ../integration/test-init:/var/www/html/integration/test-init
+      - ../scripts/initialize.php:/var/www/html/scripts/initialize.php
+      - init_test_vendor:/var/www/html/vendor
+    depends_on:
+      - testcenter-db-backend-init-test
+volumes:
+  init_test_vendor:

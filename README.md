@@ -35,11 +35,20 @@ Alternatively you can download the container [here](https://hub.docker.com/repos
 make run
 make stop
 ```
-###### The 2 types of tests can be run separately.
+###### Running the tests
+While the backend is running, do
 ```
 make test-unit
 make test-e2e
 ```
+
+There are also special test for the init-script (aka the installer). 
+The run their own containers and therefore don't need `make run` before. 
+```
+make test-init
+```
+
+
 
 ### Manual installation on Webserver
 

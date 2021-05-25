@@ -9,14 +9,12 @@ x-env-initdata: &env-initdata
   SUPERUSER_NAME: ${SUPERUSER_NAME}
   SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
   WORKSPACE_NAME: ${WORKSPACE_NAME}
-  TEST_LOGIN_NAME: ${TEST_LOGIN_NAME}
-  TEST_LOGIN_PASSWORD: ${TEST_LOGIN_PASSWORD}
 
 services:
 
   testcenter-db-backend:
     image: mysql:5.7
-    container_name: testcenter-db
+    container_name: testcenter-db-backend
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -30,11 +28,11 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    container_name: testcenter-backend
+    container_name: testcenter-backend-standalone
     environment:
       <<: *env-mysql
       <<: *env-initdata
-      MYSQL_HOST: testcenter-db
+      MYSQL_HOST: testcenter-db-backend
       MYSQL_PORT: 3306
     depends_on:
       - testcenter-db-backend

@@ -18,7 +18,8 @@ class DAO {
         'units',
         'users',
         'workspace_users',
-        'workspaces'
+        'workspaces',
+        'meta'
     ];
 
     protected $pdoDBhandle = false;
@@ -94,19 +95,17 @@ class DAO {
     }
 
 
-    // TODO unit-test
-    public function getDBContentDump(): string {
+    public function getDBSchemaVersion(): string {
 
-        $report = "";
+        try {
 
-        foreach ($this::tables as $table) {
+            $result = $this->_("SELECT `value` FROM meta where metaKey = 'dbSchemaVersion'");
+            return $result['value'] ?? '0.0.0-no-entry';
 
-            $report .= "\n## $table\n";
-            $entries = $this->_("SELECT * FROM $table", [], true);
-            $report .= CSV::build($entries);
+        } catch (Exception $exception) {
+
+            return '0.0.0-no-table';
         }
-
-        return $report;
     }
 
 

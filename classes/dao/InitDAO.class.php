@@ -5,24 +5,16 @@ declare(strict_types=1);
 
 class InitDAO extends SessionDAO {
 
-
-    static function createWithRetries(int $retries = 5): InitDAO {
-
-        while ($retries--) {
-
-            try {
-
-                return new InitDAO();
-
-            } catch (Throwable $t) {
-
-                echo "\nDatabase connection failed... retry! ($retries attempts left)";
-                usleep(20 * 1000000); // give database container time to come up
-            }
-        }
-
-        throw new Exception("Database connection failed.");
-    }
+    const legacyTableNames = [
+        'admintokens',
+        'persons',
+        'logins',
+        'bookletlogs',
+        'bookletreviews',
+        'booklets',
+        'unitlogs',
+        'unitreviews'
+    ];
 
 
     public function createSampleLoginsReviewsLogs(string $loginCode): void {
@@ -153,11 +145,9 @@ class InitDAO extends SessionDAO {
             $this->_('SET FOREIGN_KEY_CHECKS = 0');
         }
 
-        $status = $this->getDbStatus();
+       foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
 
-        foreach ($this::tables as $table) {
-
-            if (!in_array($table, $status['list']['missing'])) {
+            if ($this->getTableStatus($table) !== 'missing') {
                 $droppedTables[] = $table;
                 $this->_("drop table $table");
             }
@@ -182,28 +172,39 @@ class InitDAO extends SessionDAO {
 
         foreach ($this::tables as $table) {
 
-            try {
-
-                $entries = $this->_("SELECT * FROM $table limit 10", [], true);
-                $tableStatus[count($entries) ? 'used' : 'empty'][] = $table;
-
-            } catch (Exception $exception) {
-
-                $tableStatus['missing'][] = $table;
-            }
+            $tableStatus[$this->getTableStatus($table)][] = $table;
         }
 
+        $used = count($tableStatus['used']);
+        $missing = count($tableStatus['missing']);
+        $tables = $missing
+            ? ($missing == count($this::tables) ? 'empty' : 'incomplete')
+            : 'complete';
+
         return [
-            'message' =>
-                  "Missing Tables: "
-                . (count($tableStatus['missing']) ? implode(', ', $tableStatus['missing']) : 'none')
-                . ". Used Tables: "
-                . (count($tableStatus['used']) ? implode(', ', $tableStatus['used']) : 'none')
+            'message' => $tables
+                . ". \nMissing Tables: "
+                . ($missing ? implode(', ', $tableStatus['missing']) : 'none')
+                . ". \nUsed Tables: "
+                . ($used ? implode(', ', $tableStatus['used']) : 'none')
                 . '.',
-            'used' => count($tableStatus['used']),
-            'missing' => count($tableStatus['missing']),
-            'list' => $tableStatus
+            'used' => !!$used,
+            'tables' => $tables
         ];
+    }
+
+
+    protected function getTableStatus(string $table): string {
+
+        try {
+
+            $entries = $this->_("SELECT * FROM $table limit 10", [], true);
+            return count($entries) ? 'used' : 'empty';
+
+        } catch (Exception $exception) {
+
+            return 'missing';
+        }
     }
 
 
@@ -221,6 +222,7 @@ class InitDAO extends SessionDAO {
         $admins = $this->_("select count(*) as count from users where is_superadmin = 1");
         return (int) $admins['count'] > 0;
     }
+
 
     public function createWorkspaceIfMissing(Workspace $workspace): array {
 
@@ -243,5 +245,97 @@ class InitDAO extends SessionDAO {
 
             return $workspaceFromDb;
         }
+    }
+
+
+    public function installPatches(string $patchesDir, bool $allowFailing): array {
+
+        $report = [
+            'patches' => [],
+            'errors' => []
+        ];
+
+        $patches = array_map(
+            function($file) { return basename($file, '.sql');},
+            Folder::glob($patchesDir, '*.sql')
+        );
+        usort($patches, [Version::class, 'compare']);
+
+        foreach ($patches as $patch) {
+
+            $isFutureVersion = Version::compare($patch) > 0;
+            $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
+            // echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n');
+
+            if ($isFutureVersion or $shouldBeInstalled) {
+                continue;
+            }
+
+            try {
+
+                $report['patches'][] = $patch;
+                $this->runFile("$patchesDir/$patch.sql");
+                $this->setDBSchemaVersion($patch);
+
+            } catch (PDOException $exception) {
+
+                $report['errors'][$patch] = $exception->getMessage();
+
+                if (!$allowFailing) {
+
+                    return $report;
+                }
+            }
+        }
+
+        return $report;
+    }
+
+
+    public function setDBSchemaVersion(string $newVersion) {
+
+        $currentDBSchemaVersion = $this->getDBSchemaVersion();
+
+        if ($currentDBSchemaVersion == '0.0.0-no-table') {
+
+            return;
+        }
+
+        if ($currentDBSchemaVersion == '0.0.0-no-entry') {
+
+            $this->_(
+                "INSERT INTO meta (metaKey, value) VALUES ('dbSchemaVersion', :new_version)",
+                [':new_version' => $newVersion]
+            );
+        } else {
+
+            $this->_(
+                "update meta set value = :new_version where metaKey = 'dbSchemaVersion'",
+                [':new_version' => $newVersion]
+            );
+        }
+    }
+
+
+    public function getDBContentDump(bool $includeLegacyTables = false): array {
+
+        $tables = $includeLegacyTables ? array_merge($this::legacyTableNames, $this::tables) : $this::tables;
+
+        $report = [];
+
+        foreach ($tables as $table) {
+
+            try {
+
+                $entries = $this->_("SELECT * FROM $table", [], true);
+                $report[$table] = CSV::build($entries);
+
+            } catch (Exception $exception) {
+
+                $report[$table] = 'not found';
+            }
+        }
+
+        return $report;
     }
 }

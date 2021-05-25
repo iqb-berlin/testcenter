@@ -19,19 +19,72 @@ class Version {
             $object = Version::get();
         }
 
-        $objectVersionParts = explode('.', $object);
-        $subjectVersionParts = explode('.', $subject);
+        $object = Version::split($object);
+        $subject = Version::split($subject);
 
-        $objectMayor = (int) $objectVersionParts[0];
-        $subjectMayor = (int) $subjectVersionParts[0];
-        $objectMinor = isset($objectVersionParts[1]) ? (int) $objectVersionParts[1] : 0;
-        $subjectMinor = isset($subjectVersionParts[1]) ? (int) $subjectVersionParts[1] : 0;
-
-        if ($objectMayor != $subjectMayor) {
+        if ($object['major'] != $subject['major']) {
 
             return false;
         }
 
-        return ($objectMinor >= $subjectMinor);
+        return ($object['minor'] >= $subject['minor']);
+    }
+
+
+    private static function split(string $object): array {
+
+        $objectVersionParts = preg_split("/[.-]/", $object);
+
+        return [
+            'major' => (int) $objectVersionParts[0],
+            'minor' => isset($objectVersionParts[1]) ? (int) $objectVersionParts[1] : 0,
+            'patch' => isset($objectVersionParts[2]) ? (int) $objectVersionParts[2] : 0,
+            'label' => $objectVersionParts[3] ?? ""
+        ];
+    }
+
+
+    static function compare(string $subject, ?string $object = null): int {
+
+        if (!$object) {
+            $object = Version::get();
+        }
+
+        $object = Version::split($object);
+        $subject = Version::split($subject);
+
+        if ($subject['major'] > $object['major']) {
+            return 1;
+        }
+
+        if ($subject['major'] < $object['major']) {
+            return -1;
+        }
+
+        if ($subject['minor'] > $object['minor']) {
+            return 1;
+        }
+
+        if ($subject['minor'] < $object['minor']) {
+            return -1;
+        }
+
+        if ($subject['patch'] > $object['patch']) {
+            return 1;
+        }
+
+        if ($subject['patch'] < $object['patch']) {
+            return -1;
+        }
+
+        if (strcasecmp($subject['label'], $object['label']) > 0) {
+            return 1;
+        }
+
+        if (strcasecmp($subject['label'], $object['label']) < 0) {
+            return -1;
+        }
+
+        return 0;
     }
 }

@@ -3,22 +3,17 @@
 
 class DBConfig extends DataCollection {
 
-    public $type = null;
-    public $host = "localhost";
-    public $port = null;
-    public $dbname = null;
-    public $user = null;
-    public $password = null;
-    public $salt = "t"; // for passwords
-    public $staticTokens = false; // relevant for unit- and e2e-tests
-    public $insecurePasswords = false; // relevant for unit- and e2e-tests
+    public ?string $type = "mysql";
+    public ?string $host = "localhost";
+    public ?string $port = "3306";
+    public ?string $dbname = null;
+    public ?string $user = null;
+    public ?string $password = null;
+    public ?string $salt = "t"; // for passwords
+    public bool $staticTokens = false; // relevant for unit- and e2e-tests
+    public bool $insecurePasswords = false; // relevant for unit- and e2e-tests
 
-    public function __construct($initData) {
-
-        if (!isset($initData['port'])) {
-
-            $this->port = (isset($initData['type']) and ($initData['type'] == 'mysql')) ? "3306" : "5432";
-        }
+    public function __construct($initData, $allowAdditionalInitData = false) {
 
         if ((isset($initData['type']) and ($initData['type'] == 'temp'))) {
 
@@ -29,6 +24,6 @@ class DBConfig extends DataCollection {
             $this->host = "";
         }
 
-        parent::__construct($initData);
+        parent::__construct($initData, $allowAdditionalInitData);
     }
 }

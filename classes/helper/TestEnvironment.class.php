@@ -103,24 +103,15 @@ class TestEnvironment {
 
     private static function setUpTestData() {
 
-        $initArgs = new InstallationArguments([
-            'user_name' => 'super',
-            'user_password' => 'user123',
-            'workspace' => 'sample_workspace',
-            'test_login_name' => 'test',
-            'test_login_password' => 'user123',
-            'test_person_codes' => 'xxx yyy'
-        ]);
-
         $initDAO = new InitDAO();
 
-        $workspaceId = $initDAO->createWorkspace($initArgs->workspace);
-        $adminId = $initDAO->createAdmin($initArgs->user_name, $initArgs->user_password);
+        $workspaceId = $initDAO->createWorkspace('sample_workspace');
+        $adminId = $initDAO->createAdmin('super', 'user123');
         $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
 
         $initializer = new WorkspaceInitializer();
         $initializer->cleanWorkspace($workspaceId);
-        $initializer->importSampleData($workspaceId, $initArgs);
+        $initializer->importSampleData($workspaceId);
 
         $initDAO->createSampleLoginsReviewsLogs('xxx');
         $initDAO->createSampleExpiredSessions('xxx');
@@ -137,7 +128,10 @@ class TestEnvironment {
         $fullState = "# State of DATA_DIR\n\n";
         $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), true);
         $fullState .= "\n\n# State of DB\n";
-        $fullState .= $initDAO->getDBContentDump();
+        foreach ($initDAO->getDBContentDump() as $table => $content) {
+
+            $fullState .= "## $table\n$content\n";
+        }
         file_put_contents(ROOT_DIR . '/integration/tmp/lastVEState.md', $fullState);
     }
 
