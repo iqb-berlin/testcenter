@@ -309,4 +309,11 @@ class Workspace {
         $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
         return count(Folder::glob($this->getOrCreateSubFolderPath($type), $pattern));
     }
+
+
+    public function delete(): void {
+
+        Folder::deleteContentsRecursive($this->_workspacePath);
+        rmdir($this->_workspacePath);
+    }
 }

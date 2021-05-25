@@ -133,4 +133,14 @@ CREATE INDEX "idx_tests_index_fk_booklet_person" ON tests (`person_id`);
 create unique index "person_sessions_id_uindex" on person_sessions (`id`);
 
 
+create table `meta`
+(
+    metaKey varchar(30) not null
+,   value varchar(100) null
+,   primary key (metaKey)
+);
+
+
+
+
 END TRANSACTION;

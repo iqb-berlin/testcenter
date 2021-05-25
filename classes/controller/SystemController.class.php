@@ -36,6 +36,12 @@ class SystemController extends Controller {
 
         self::superAdminDAO()->deleteWorkspaces($workspaceList);
 
+        foreach ($workspaceList as $workspaceId) {
+
+            $workspace = new Workspace((int) $workspaceId);
+            $workspace->delete();
+        }
+
         return $response;
     }
 
