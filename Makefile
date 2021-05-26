@@ -1,5 +1,8 @@
-build-image:
-	docker build -t iqbberlin/testcenter-broadcasting-service -f docker/Dockerfile .
+tag-major:
+	scripts/new_version.py major
 
-push-image:
-	docker push iqbberlin/testcenter-broadcasting-service:latest
+tag-minor:
+	scripts/new_version.py minor
+
+tag-patch:
+	scripts/new_version.py patch
