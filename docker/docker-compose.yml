@@ -9,7 +9,9 @@ services:
     container_name: testcenter-broadcasting-service-dev
     volumes:
       - ../:/app
-      - /app/node_modules
+      - testcenter_broadcasting_service_dev_node_modules:/app/node_modules
     ports:
       - '3000:3000'
 
+volumes:
+  testcenter_broadcasting_service_dev_node_modules:
