@@ -2,8 +2,11 @@
 # local directories which need to be cloned from the repository.
 version: '3.7'
 
-services:
+x-env-php: &env-php
+  PHP_VERSION: 7.4.19
 
+
+services:
   traefik:
     command:
       - "--providers.docker=true"
@@ -13,10 +16,18 @@ services:
     build:
       context: testcenter-backend
       dockerfile: docker/Dockerfile
+      args:
+        <<: *env-php
     volumes:
-      - ./testcenter-backend:/var/www/html/
+      - ./testcenter-backend/classes:/var/www/html/classes
+      - ./testcenter-backend/definitions:/var/www/html/definitions
+      - ./testcenter-backend/docs/specs.yml:/var/www/html/docs/specs.yml
+      - ./testcenter-backend/routes:/var/www/html/routes
+      - ./testcenter-backend/sampledata:/var/www/html/sampledata
       - ./testcenter-backend/vo_data:/var/www/html/vo_data
-      - testcenter_backend_vendor:/var/www/html/vendor
+      - ./testcenter-backend/vendor:/var/www/html/vendor
+      - ./testcenter-backend/composer.json:/var/www/html/composer.json
+      - ./testcenter-backend/composer.lock:/var/www/html/composer.lock
 
   testcenter-frontend:
     build:
@@ -31,8 +42,7 @@ services:
     build:
       context: testcenter-broadcasting-service
       dockerfile: docker/Dockerfile
-    container_name: testcenter-broadcasting-service
+
 
 volumes:
   testcenter_frontend_node_modules:
-  testcenter_backend_vendor:
