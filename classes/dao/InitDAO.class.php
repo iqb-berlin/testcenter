@@ -235,7 +235,7 @@ class InitDAO extends SessionDAO {
 
         if ($workspaceFromDb == null) {
 
-            $name = "restored workspace (former id: {$workspace->getId()})";
+            $name = "ws {$workspace->getId()} [restored " . TimeStamp::toSQLFormat(TimeStamp::now()) . "]";
             $id = $this->createWorkspace($name);
             return [
                 "name" => $name,
