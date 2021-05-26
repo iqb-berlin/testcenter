@@ -46,7 +46,7 @@ class BookletsFolderTest extends TestCase {
         $this->assertEquals('sample_group', $result[0]['groupname']);
         $this->assertEquals(2, $result[0]['loginsPrepared']); // test login, group- monitor
         $this->assertEquals(3, $result[0]['personsPrepared']); // two codes for login, 1 monitor account
-        $this->assertEquals(4, $result[0]['bookletsPrepared']); // two codes on two booklets
+        $this->assertEquals(6, $result[0]['bookletsPrepared']); // two codes on three booklets
         $this->assertEquals(2, $result[0]['bookletsStarted']);
         $this->assertEquals(1, $result[0]['bookletsLocked']);
         $this->assertEquals('future_group', $result[5]['groupname']);
@@ -61,7 +61,7 @@ class BookletsFolderTest extends TestCase {
 
     function test_getBookletLabel() {
 
-        $result = $this->bookletsFolder->getBookletLabel('BOOKLET.SAMPLE');
+        $result = $this->bookletsFolder->getBookletLabel('BOOKLET.SAMPLE-1');
         $expectation = 'Sample booklet';
         $this->assertEquals($expectation, $result);
 

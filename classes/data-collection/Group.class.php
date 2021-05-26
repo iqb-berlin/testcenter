@@ -7,14 +7,10 @@ class Group extends DataCollectionTypeSafe {
     protected $label = '';
     protected $name = '';
 
-    protected $_members;
-
-    function __construct(string $name, string $label, PotentialLogin ...$members) {
+    function __construct(string $name, string $label) {
 
         $this->label = $label;
         $this->name = $name;
-
-        $this->_members = new PotentialLoginArray(...$members);
     }
 
 
@@ -27,11 +23,5 @@ class Group extends DataCollectionTypeSafe {
     public function getName(): string {
 
         return $this->name;
-    }
-
-
-    public function getMembers(): PotentialLoginArray {
-
-        return $this->_members;
     }
 }

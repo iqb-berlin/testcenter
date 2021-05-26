@@ -9,6 +9,7 @@ class WorkspaceInitializer {
     const sampleDataPaths = [
       "sampledata/Booklet.xml" => "Booklet/SAMPLE_BOOKLET.XML",
       "sampledata/Booklet2.xml" => "Booklet/SAMPLE_BOOKLET2.XML",
+      "sampledata/Booklet3.xml" => "Booklet/SAMPLE_BOOKLET3.XML",
       "sampledata/Testtakers.xml" => "Testtakers/SAMPLE_TESTTAKERS.XML",
       "sampledata/SysCheck.xml" => "SysCheck/SAMPLE_SYSCHECK.XML",
       "sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",

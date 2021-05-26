@@ -12,19 +12,20 @@ paths:
       description: |-
         Retrieves a certain test: It's contents, state and the mode of current login-session.
         `laststate` is an array of key-value-pairs stored for this test.
-        Currently known test-modes are:
-          * `run-hot-return` - hot run of testLet, can save answers etc.,
-          session gets stored and can be revoked
-          * `run-hot-restart` - hot run of testLet, can save answers etc.,
-          every session starts all tests again and have unique Tokens
-          * `run-review` - run a review round of testLet, reviewes can be saved, but no answers
-          At the moment we distinguish between hot, trial and review in the GUI and there are no real
-          checks for the mode in this backend, except for the difference between `run-hot-return` and
-          `run-hot-restart`.
-          * `run-trial` - run a trial round
-          * `monitor-study` - TBA
-          * `monitor-group` - the monitor account to supervise a group of testees
-          * `run-demo`
+        The test-mode basically a string to be interpretated by the frontend. For more details
+        about that see: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md
+
+          * `run-hot-return` and `run-hot-restart` - the real testing situation
+          * `run-review` - for reviewers of of units and booklets
+          * `run-trial` - for trying out the booklet
+          * `run-demo` - for showcase only
+
+        From the backend's point of view those modes are all the same. Some have special meanings for the backend
+        nevertheless:
+
+          * `monitor-group` is the monitor account to supervise a group of testees
+          * For `run-hot-restart` and `demo` every session is unique so the test will be restarted in everytime a new session is started (eg after logout) and it will not possible to return to the previous session. Provided data from previous sessions will be stored anyway.
+          * `run-hot-return` and `run-hot-restart` - only those type of tests wil be broadcasted via broadcasting service, so they can be views in the group-monitor.
       parameters:
         - in: header
           name: AuthToken
@@ -573,7 +574,7 @@ paths:
               required:
                 - bookletName
             example:
-              bookletName: 'BOOKLET.SAMPLE'
+              bookletName: 'BOOKLET.SAMPLE-1'
       responses:
         "201":
           description:  OK, started
@@ -691,5 +692,27 @@ paths:
           description: Forbidden
         "423":
           description: Test is locked!
+        "500":
+          description: Server Error
+
+  /test/{test_id}/connection-lost:
+    post:
+      summary: Notify Closing Test
+      description: |-
+        A closing browser or such can use this window to notify, that a running test was closed. Because it has to
+        be called under special circumstances, it does not need any authetication.
+      parameters:
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK, test was marked as disconnected
+        "404":
+          description: Test not found
         "500":
           description: Server Error

@@ -32,12 +32,23 @@ class TestController extends Controller {
 
         self::testDAO()->setTestRunning((int) $test['id']);
 
-        BroadcastService::sessionChange(SessionChangeMessage::testState(
-            $authToken,
-            (int) $test['id'],
+        // TODO check for Mode::hasCapability('monitorable'))
+        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), (int) $test['id']);
+        if ($test['_newlyCreated']) {
+            // can happen when mode is run-hot-return for example
+            $personLogin = self::sessionDAO()->getPersonLogin($authToken->getToken());
+            $message->setLogin(
+                $personLogin->getLogin()->getName(),
+                $authToken->getMode(),
+                $personLogin->getLogin()->getGroupLabel(),
+                $personLogin->getPerson()->getCode()
+            );
+        }
+        $message->setTestState(
             isset($test['lastState']) && $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
             $body['bookletName']
-        ));
+        );
+        BroadcastService::sessionChange($message);
 
         $response->getBody()->write($test['id']);
         return $response->withStatus(201);
@@ -296,7 +307,7 @@ class TestController extends Controller {
 
         $testId = (int) $request->getAttribute('test_id');
 
-        self::testDAO()->lockBooklet($testId);
+        self::testDAO()->lockTest($testId);
 
         BroadcastService::sessionChange(
             SessionChangeMessage::testState($authToken, $testId, ['status' => 'locked'])
@@ -314,14 +325,35 @@ class TestController extends Controller {
 
         $commands = self::testDAO()->getCommands($testId, $lastCommandId);
 
-        $bsUrl = BroadcastService::registerChannel('testee', ['testId' => $testId]);
+        $testee = [
+            'testId' => $testId,
+            'disconnectNotificationUri' => Server::getUrl() . "/test/{$testId}/connection-lost"
+        ];
+        $bsUrl = BroadcastService::registerChannel('testee', $testee);
 
         if ($bsUrl !== null) {
 
             $response = $response->withHeader('SubscribeURI', $bsUrl);
         }
 
+        $testSession = self::testDAO()->getTestSession($testId);
+        if (isset($testSession['laststate']['CONNECTION']) && ($testSession['laststate']['CONNECTION'] == 'LOST')) {
+
+            self::updateTestState($testId, $testSession, 'CONNECTION', 'POLLING');
+        }
+
         return $response->withJson($commands);
+    }
+
+
+    private static function updateTestState(int $testId, array $testSession, string $field, string $value) {
+
+        $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
+        self::testDAO()->addTestLog($testId, '"' . $field . '"', 0, $value);
+
+        $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name'], $testId);
+        $sessionChangeMessage->setTestState($newState);
+        BroadcastService::sessionChange($sessionChangeMessage);
     }
 
 
@@ -334,6 +366,23 @@ class TestController extends Controller {
         $changed = self::testDAO()->setCommandExecuted($testId, $commandId);
 
         return $response->withStatus(200, $changed ? 'OK' : 'OK, was already marked as executed');
+    }
+
+
+    public static function postConnectionLost(Request $request, Response $response): Response {
+
+        $testId = (int) $request->getAttribute('test_id');
+
+        $testSession = self::testDAO()->getTestSession($testId);
+
+        if (isset($testSession['laststate']['CONNECTION']) && ($testSession['laststate']['CONNECTION'] == 'LOST')) {
+
+            return $response->withStatus(200, "connection already set as lost");
+        }
+
+        self::updateTestState($testId, $testSession, 'CONNECTION', 'LOST');
+
+        return $response->withStatus(200);
     }
 
 

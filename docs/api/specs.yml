@@ -18,7 +18,7 @@ paths:
                     in: path
                     name: booklet_name
                     description: 'id of a executed test'
-                    example: BOOKLET.SAMPLE
+                    example: BOOKLET.SAMPLE-1
                     required: true
                     schema:
                         type: string
@@ -50,7 +50,7 @@ paths:
                     in: path
                     name: booklet_name
                     description: 'id of a executed test'
-                    example: BOOKLET.SAMPLE
+                    example: BOOKLET.SAMPLE-1
                     required: true
                     schema:
                         type: string
@@ -131,10 +131,21 @@ paths:
                                     mode: run-hot-return
                                     testId: 1
                                     testState: {CURRENT_UNIT_ID: '1'}
-                                    bookletName: BOOKLET.SAMPLE
+                                    bookletName: BOOKLET.SAMPLE-1
                                     unitName: UNIT.SAMPLE
                                     unitState: {PRESENTATIONCOMPLETE: yes}
                                     timestamp: 1596455898
+                                -
+                                    personId: 1
+                                    groupName: sample_group
+                                    personLabel: sample_user/xxx
+                                    groupLabel: 'Sample group'
+                                    mode: run-hot-return
+                                    testId: '2,'
+                                    testState: {status: locked}
+                                    bookletName: BOOKLET.SAMPLE-2
+                                    unitState: []
+                                    timestamp: 1606736826
                                 -
                                     personId: 3
                                     groupName: sample_group
@@ -198,6 +209,82 @@ paths:
                     description: 'Session Expired'
                 '500':
                     description: 'Server Error'
+    '/monitor/group/{group_name}/tests/unlock':
+        post:
+            summary: 'unlock a bunch of tests'
+            description: 'Unlocks a bunch of running tests'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for group-monitor'
+                    example: 'g:user000000000.0000000000'
+                -
+                    in: path
+                    name: group_name
+                    description: 'name (id) of a group'
+                    example: sample_group
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            items:
+                                type: number
+                        example:
+                            - 2
+            responses:
+                '200':
+                    description: 'tests unlocked'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
+    '/monitor/group/{group_name}/tests/lock':
+        post:
+            summary: 'Lock a bunch of tests'
+            description: 'Locks a bunch of running tests'
+            parameters:
+                -
+                    in: header
+                    name: AuthToken
+                    description: 'auth-token for group-monitor'
+                    example: 'g:user000000000.0000000000'
+                -
+                    in: path
+                    name: group_name
+                    description: 'name (id) of a group'
+                    example: sample_group
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            items:
+                                type: number
+                        example:
+                            - 2
+            responses:
+                '200':
+                    description: 'tests unlocked'
+                '401':
+                    description: 'Not authenticated'
+                '403':
+                    description: Forbidden
+                '410':
+                    description: 'Session Expired'
+                '500':
+                    description: 'Server Error'
     /session:
         get:
             summary: 'get a session'
@@ -225,7 +312,7 @@ paths:
                                 $ref: '#/components/schemas/session'
                             examples:
                                 personToken:
-                                    value: {token: 'static:person:sample_group_sample_user_xxx', displayName: sample_group/sample_user/xxx, access: {test: [BOOKLET.SAMPLE]}, customTexts: {}, flags: []}
+                                    value: {token: 'static:person:sample_group_sample_user_xxx', displayName: sample_group/sample_user/xxx, access: {test: [BOOKLET.SAMPLE-1]}, customTexts: {}, flags: []}
                                 loginToken:
                                     value: {token: 'static:login:test', displayName: sample_group/sample_user, access: {}, customTexts: {}, flags: [codeRequired]}
                                 adminToken:
@@ -325,7 +412,7 @@ paths:
                                 token: static_person_xxx
                                 displayName: sample_group/sample_user/xxx
                                 access:
-                                    test: ['- BOOKLET.SAMPLE']
+                                    test: ['- BOOKLET.SAMPLE-1']
                                 customTexts: {}
                                 flags: []
                 '400':
@@ -396,7 +483,7 @@ paths:
     /system/config:
         get:
             summary: 'get system config'
-            description: 'returns publicly available parts of system config - version number - customTexts for UI'
+            description: 'returns publicly available parts of system config - version number - customTexts for UI - information about a broadcastingService - serverTimestamp (in milliseconds)'
             responses:
                 '200':
                     description: OK
@@ -407,12 +494,18 @@ paths:
                                 properties:
                                     version: {type: string}
                                     customTexts: {type: object}
+                                    broadcastingService: {type: object, properties: {versionExpected: {type: string}, status: {type: string}, version: {type: string}}}
                                 required:
                                     - version
                                     - customTexts
+                                    - broadcastingService
                             example:
                                 version: 10.0.0
                                 customTexts: {}
+                                broadcastingService:
+                                    versionExpected: 1.0.0
+                                    status: online
+                                    version: 1.0.0
                 '500':
                     description: 'Server Error'
     /version:
@@ -573,10 +666,24 @@ paths:
                     description: 'No SysChecks found.'
                 '500':
                     description: 'Server Error'
+    /system/time:
+        get:
+            summary: 'get the server time'
+            description: 'return the server''s current timestamp and timezone'
+            responses:
+                '200':
+                    description: 'list of SysChecks'
+                    content:
+                        application/json:
+                            example:
+                                timezone: Europe/Berlin
+                                timestamp: 1618816319707.522
+                '500':
+                    description: 'Server Error'
     '/test/{test_id}':
         get:
             summary: 'get a test'
-            description: "Retrieves a certain test: It's contents, state and the mode of current login-session.\n`laststate` is an array of key-value-pairs stored for this test.\nCurrently known test-modes are:  * `run-hot-return` - hot run of testLet, can save answers etc.,\n  session gets stored and can be revoked\n  * `run-hot-restart` - hot run of testLet, can save answers etc.,\n  every session starts all tests again and have unique Tokens\n  * `run-review` - run a review round of testLet, reviewes can be saved, but no answers\n  At the moment we distinguish between hot, trial and review in the GUI and there are no real\n  checks for the mode in this backend, except for the difference between `run-hot-return` and\n  `run-hot-restart`.\n  * `run-trial` - run a trial round\n  * `monitor-study` - TBA\n  * `monitor-group` - the monitor account to supervise a group of testees\n  * `run-demo`"
+            description: "Retrieves a certain test: It's contents, state and the mode of current login-session.\n`laststate` is an array of key-value-pairs stored for this test.\nThe test-mode basically a string to be interpretated by the frontend. For more details\nabout that see: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md\n  * `run-hot-return` and `run-hot-restart` - the real testing situation\n  * `run-review` - for reviewers of of units and booklets\n  * `run-trial` - for trying out the booklet\n  * `run-demo` - for showcase only\n\nFrom the backend's point of view those modes are all the same. Some have special meanings for the backend\nnevertheless:\n  * `monitor-group` is the monitor account to supervise a group of testees\n  * For `run-hot-restart` and `demo` every session is unique so the test will be restarted in everytime a new session is started (eg after logout) and it will not possible to return to the previous session. Provided data from previous sessions will be stored anyway.\n  * `run-hot-return` and `run-hot-restart` - only those type of tests wil be broadcasted via broadcasting service, so they can be views in the group-monitor."
             parameters:
                 -
                     in: header
@@ -1121,7 +1228,7 @@ paths:
                             required:
                                 - bookletName
                         example:
-                            bookletName: BOOKLET.SAMPLE
+                            bookletName: BOOKLET.SAMPLE-1
             responses:
                 '201':
                     description: 'OK, started'
@@ -1226,6 +1333,26 @@ paths:
                     description: 'Test is locked!'
                 '500':
                     description: 'Server Error'
+    '/test/{test_id}/connection-lost':
+        post:
+            summary: 'Notify Closing Test'
+            description: "A closing browser or such can use this window to notify, that a running test was closed. Because it has to\nbe called under special circumstances, it does not need any authetication."
+            parameters:
+                -
+                    in: path
+                    name: test_id
+                    description: 'test-id - id of a test execution.'
+                    example: 1
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'OK, test was marked as disconnected'
+                '404':
+                    description: 'Test not found'
+                '500':
+                    description: 'Server Error'
     '/user/{user_id}/workspaces':
         get:
             summary: 'get a list of workspaces'
@@ -1290,7 +1417,7 @@ paths:
                                 ws:
                                     type: array
                                     description: 'array of pairs role-id'
-                                    items: {type: object, properties: {id: {type: integer, description: workspace-id}, role: {type: string, description: 'role: ''RW'', ''MO'' or ''RO'''}}}
+                                    items: {type: object, properties: {id: {type: integer, description: workspace-id}, role: {type: string, description: 'role: ''RW'', ''RO'''}}}
                             required:
                                 - ws
                         example:
@@ -1513,14 +1640,14 @@ paths:
                             example:
                                 -
                                     unitname: UNIT.SAMPLE
-                                    bookletname: BOOKLET.SAMPLE
+                                    bookletname: BOOKLET.SAMPLE-1
                                     groupname: sample_group
                                     loginname: test
                                     code: sxx
                                     timestamp: '1568026665043'
                                     logentry: 'sample unit log'
                                 -
-                                    bookletname: BOOKLET.SAMPLE
+                                    bookletname: BOOKLET.SAMPLE-1
                                     groupname: sample_group
                                     loginname: test
                                     code: sxx
@@ -1578,7 +1705,7 @@ paths:
                                     type: object
                                     properties: {unitname: {type: string}, responses: {type: string, description: 'may contain encoded JSON'}, responsetype: {type: string}, laststate: {type: string, description: 'may contain encoded JSON'}, bookletname: {type: string}, restorepoint_ts: {type: string}, responses_ts: {type: string, description: 'contains a unix timestamp'}, restorepoint: {type: string}, groupname: {type: string}, loginname: {type: string}, code: {type: string, description: 'login code'}}
                                 example:
-                                    - {unitname: UNIT.SAMPLE, responses: '{"name":"Sam Sample","age":34}', responsetype: "", laststate: '{"PRESENTATIONCOMPLETE":"yes"}', bookletname: BOOKLET.SAMPLE, restorepoint_ts: '0', responses_ts: '1567778660869', restorepoint: null, groupname: sample_group, loginname: test, code: jsx}
+                                    - {unitname: UNIT.SAMPLE, responses: '{"name":"Sam Sample","age":34}', responsetype: "", laststate: '{"PRESENTATIONCOMPLETE":"yes"}', bookletname: BOOKLET.SAMPLE-1, restorepoint_ts: '0', responses_ts: '1567778660869', restorepoint: null, groupname: sample_group, loginname: test, code: jsx}
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1719,7 +1846,7 @@ paths:
                             example:
                                 -
                                     unitname: UNIT.SAMPLE
-                                    bookletname: BOOKLET.SAMPLE
+                                    bookletname: BOOKLET.SAMPLE-1
                                     groupname: sample_group
                                     loginname: test
                                     code: euf
@@ -1728,7 +1855,7 @@ paths:
                                     priority: '1'
                                     categories: ""
                                 -
-                                    bookletname: BOOKLET.SAMPLE
+                                    bookletname: BOOKLET.SAMPLE-1
                                     groupname: sample_group
                                     loginname: test
                                     code: euf
@@ -1836,18 +1963,19 @@ paths:
                                 $ref: '#/components/schemas/file_list'
                             example:
                                 Resource:
-                                    - {name: SAMPLE_UNITCONTENTS.HTM, size: 13392, modificationTime: 1610547959, type: Resource, id: SAMPLE_UNITCONTENTS.HTM, report: [], info: []}
-                                    - {name: verona-simple-player-1.html, size: 29960, modificationTime: 1610547959, type: Resource, id: VERONA-SIMPLE-PLAYER-1.HTML, report: {info: 'Verona-Version supported: 2.1.0'}, info: {label: 'Simple Verona Player 1 - 1.0.1', verona-version: 2.1.0, version: 1.0.1}}
+                                    - {name: SAMPLE_UNITCONTENTS.HTM, size: 13392, modificationTime: 1615970109, type: Resource, id: SAMPLE_UNITCONTENTS.HTM, report: [], info: []}
+                                    - {name: verona-simple-player-1.html, size: 29960, modificationTime: 1615970109, type: Resource, id: VERONA-SIMPLE-PLAYER-1.HTML, report: {info: ['Verona-Version supported: 2.1.0']}, info: {label: 'Simple Verona Player 1 - 1.0.1', verona-version: 2.1.0, version: 1.0.1}}
                                 Unit:
-                                    - {name: SAMPLE_UNIT.XML, size: 497, modificationTime: 1610547959, type: Unit, id: UNIT.SAMPLE, report: [], info: {description: 'This is a sample unit showing the possibilities of the sample player.', label: 'A sample unit', totalSize: 13889}}
-                                    - {name: SAMPLE_UNIT2.XML, size: 1737, modificationTime: 1610547959, type: Unit, id: UNIT.SAMPLE-2, report: [], info: {description: 'This is an Unit', label: 'A sample unit', totalSize: 1737}}
+                                    - {name: SAMPLE_UNIT.XML, size: 497, modificationTime: 1615970109, type: Unit, id: UNIT.SAMPLE, report: [], info: {description: 'This is a sample unit showing the possibilities of the sample player.', label: 'A sample unit', totalSize: 13889}}
+                                    - {name: SAMPLE_UNIT2.XML, size: 1737, modificationTime: 1615970109, type: Unit, id: UNIT.SAMPLE-2, report: [], info: {description: 'This is an Unit', label: 'A sample unit', totalSize: 1737}}
                                 Booklet:
-                                    - {name: SAMPLE_BOOKLET.XML, size: 1213, modificationTime: 1610547959, type: Booklet, id: BOOKLET.SAMPLE, report: [], info: {description: 'This a sample booklet for testing/development/showcase purposes.', label: 'Sample booklet', totalSize: 46799}}
-                                    - {name: SAMPLE_BOOKLET2.XML, size: 564, modificationTime: 1610547959, type: Booklet, id: BOOKLET.SAMPLE-2, report: [], info: {label: 'Reduced Booklet', totalSize: 46150}}
+                                    - {name: SAMPLE_BOOKLET.XML, size: 1404, modificationTime: 1615970109, type: Booklet, id: BOOKLET.SAMPLE-1, report: [], info: {description: 'This a sample booklet for testing/development/showcase purposes.', label: 'Sample booklet', totalSize: 60879}}
+                                    - {name: SAMPLE_BOOKLET2.XML, size: 564, modificationTime: 1615970109, type: Booklet, id: BOOKLET.SAMPLE-2, report: [], info: {label: 'Reduced Booklet', totalSize: 46150}}
+                                    - {name: SAMPLE_BOOKLET3.XML, size: 1284, modificationTime: 1615970109, type: Booklet, id: BOOKLET.SAMPLE-3, report: [], info: {description: "\n      This booklet has the same species as sample Booklet 1. The term booklet species indicates that both booklets can\n      be controlled by the group-monitor as if they where the same.\n      The species is currently defined as having the same number of testlets on the first level (called blocks). This\n      definition may change later.", label: 'Similar Booklet to Sample 1', totalSize: 60759}}
                                 Testtakers:
-                                    - {name: SAMPLE_TESTTAKERS.XML, size: 2106, modificationTime: 1610547959, type: Testtakers, id: SAMPLE_TESTTAKERS.XML, report: [], info: {description: 'This file contains some logins for testing and works a a sample for developers.', testtakers: 10}}
+                                    - {name: SAMPLE_TESTTAKERS.XML, size: 2180, modificationTime: 1615970109, type: Testtakers, id: SAMPLE_TESTTAKERS.XML, report: [], info: {description: 'This file contains some logins for testing and works a a sample for developers.', testtakers: 10}}
                                 SysCheck:
-                                    - {name: SAMPLE_SYSCHECK.XML, size: 1239, modificationTime: 1610547959, type: SysCheck, id: SYSCHECK.SAMPLE, report: [], info: {description: 'An example SysCheck definition with long description', label: 'An example SysCheck definition'}}
+                                    - {name: SAMPLE_SYSCHECK.XML, size: 1239, modificationTime: 1615970109, type: SysCheck, id: SYSCHECK.SAMPLE, report: [], info: {description: 'An example SysCheck definition with long description', label: 'An example SysCheck definition'}}
                 '401':
                     description: 'Not authenticated'
                 '403':

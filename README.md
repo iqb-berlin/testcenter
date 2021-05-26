@@ -48,8 +48,6 @@ The run their own containers and therefore don't need `make run` before.
 make test-init
 ```
 
-
-
 ### Manual installation on Webserver
 
 See [Manual Installation](https://iqb-berlin.github.io/testcenter-backend/manual_installation.html)

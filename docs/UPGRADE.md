@@ -1,15 +1,25 @@
 # Changelog & Upgrade Information
 
-## 10.0.0
-This update does not contain new functionality. It's about the init/install script, which can do database-migration from 
-older to newer versions by itself now. The version 10 indicates the beginning of an era with versioned database-schemas.
-There is no manual patching necessary anymore after an update. So changes in the DB does not force a new major-version 
-anymore.
+## 11.0.0
+This update contains various changes around the improved Group-Monitor.
+### Endpoints
+* A new endpoint `[GET] /system/time` was added to retrieve the server's time and time zone.
+* A new endpoint where added: `/monitor/group/{group_name}/tests/unlock`
+* A new endpoint was added: `[POST] /test/{test_id}/connection-lost`. It can be triggered by a closing browser as well
+  as from the broadcasting-service to notify a lost connection to the testController. Note: This endpoint does not
+  need any credentials.
+### Database
+* See `scripts/sql-schema/patches.mysql.d/11.0.0`
 
+## 10.0.0
+This update does not contain new functionality. It's about the init/install script, which can do database-migration from
+older to newer versions by itself now. The version 10 indicates the beginning of an era with versioned database-schemas.
+There is no manual patching necessary anymore after an update. So changes in the DB does not force a new major-version
+anymore.
 
 ## 9.2.0
 ### XSD
-* Additional elements and attributes needed by teststudio-lite where added. They have no effect for the testcenter at
+* Additional elements and attributes needed by teststudio-lite where added. They have no affect for the testcenter at
 the moment.
 
 ## 9.1.0

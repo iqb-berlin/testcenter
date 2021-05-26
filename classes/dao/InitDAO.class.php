@@ -28,7 +28,7 @@ class InitDAO extends SessionDAO {
             'sample_user',
             'run-hot-return',
             'sample_group',
-            [$loginCode => ['BOOKLET.SAMPLE']],
+            [$loginCode => ['BOOKLET.SAMPLE-1']],
             1,
             TimeStamp::fromXMLFormat('1/1/2030 12:00'),
             0,
@@ -38,7 +38,7 @@ class InitDAO extends SessionDAO {
         $login = $sessionDAO->getOrCreateLogin($testSession);
         $login->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00');
         $person = $sessionDAO->getOrCreatePerson($login, $loginCode);
-        $test = $testDAO->getOrCreateTest($person->getId(), 'BOOKLET.SAMPLE', "sample_booklet_label");
+        $test = $testDAO->getOrCreateTest($person->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
         $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
@@ -46,6 +46,8 @@ class InitDAO extends SessionDAO {
         $testDAO->addResponse((int) $test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
         $testDAO->updateUnitState((int) $test['id'], "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
         $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
+        $test2 = $testDAO->getOrCreateTest($person->getId(), 'BOOKLET.SAMPLE-2', "a locked test");
+        $testDAO->lockTest((int) $test2['id']);
     }
 
     /**
@@ -61,7 +63,7 @@ class InitDAO extends SessionDAO {
             'expired_user',
             'run-hot-return',
             'expired_group',
-             [$loginCode => ['BOOKLET.SAMPLE']],
+             [$loginCode => ['BOOKLET.SAMPLE-1']],
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );

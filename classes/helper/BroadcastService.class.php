@@ -37,7 +37,11 @@ class BroadcastService {
 
     static function getStatus(): array {
 
-        $status = [];
+        $status = [
+            "versionExpected" => "none",
+            "version" => "none",
+            "status" => "not installed"
+        ];
 
         if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
 
@@ -76,9 +80,9 @@ class BroadcastService {
 
         $bsToken = md5((string) rand(0, 99999999));
         $data['token'] = $bsToken;
-        $reponse = BroadcastService::send("$channelName/register", json_encode($data));
+        $response = BroadcastService::send("$channelName/register", json_encode($data));
         $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getBsUriSubscribe()) . '/' . $bsToken;
-        return ($reponse !== null) ? $url : null;
+        return ($response !== null) ? $url : null;
     }
 
 

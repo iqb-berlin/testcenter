@@ -77,7 +77,7 @@ paths:
                         description: workspace-id
                       role:
                         type: string # because dredd does not support enum
-                        description: "role: 'RW', 'MO' or 'RO'"
+                        description: "role: 'RW', 'RO'"
               required:
                 - ws
             example:

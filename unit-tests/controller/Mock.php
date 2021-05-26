@@ -101,9 +101,9 @@ class SessionChangeMessage {
         return new SessionChangeMessage($name, $arguments);
     }
 
-    public function setTestState(int $testId, array $testState, string $bookletName = null): void {
+    public function setTestState(array $testState, string $bookletName = null): void {
 
-        $this->constructorArguments[] = "test: $testId: $bookletName";
+        $this->constructorArguments[] = "test: $bookletName";
     }
 
     function __toString() {
@@ -145,7 +145,7 @@ class TestDAO {
 
 class TesttakersFolder {
 
-    function getMembersOfLogin(string $name, string $password): array {
+    function getPersonsInSameGroup(string $name): array {
 
         return [
             new PotentialLogin("{$name}_1", "hot"),

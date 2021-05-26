@@ -1,7 +1,6 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 require_once "classes/workspace/Workspace.class.php";
 require_once "classes/workspace/TesttakersFolder.class.php";
@@ -10,8 +9,8 @@ require_once "unit-tests/VfsForTest.class.php";
 
 class TesttakersFolderTest extends TestCase {
 
-    private vfsStreamDirectory $vfs;
-    private TesttakersFolder $folder;
+    private $vfs;
+    private $folder;
 
     public static function setUpBeforeClass(): void {
 
@@ -34,11 +33,13 @@ class TesttakersFolderTest extends TestCase {
             'sample_group',
             [
                 "xxx" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ],
                 "yyy" => [
-                    "BOOKLET.SAMPLE",
+                    "BOOKLET.SAMPLE-1",
+                    "BOOKLET.SAMPLE-3",
                     "BOOKLET.SAMPLE-2"
                 ]
             ],
@@ -61,12 +62,14 @@ class TesttakersFolderTest extends TestCase {
             'sample_group',
             [
                 "xxx" => [
-                    "BOOKLET.SAMPLE",
-                    "BOOKLET.SAMPLE-2"
+                    "BOOKLET.SAMPLE-1",
+                    'BOOKLET.SAMPLE-3',
+                    'BOOKLET.SAMPLE-2'
                 ],
                 "yyy" => [
-                    "BOOKLET.SAMPLE",
-                    "BOOKLET.SAMPLE-2"
+                    "BOOKLET.SAMPLE-1",
+                    'BOOKLET.SAMPLE-3',
+                    'BOOKLET.SAMPLE-2',
                 ]
             ],
             1,
@@ -82,7 +85,7 @@ class TesttakersFolderTest extends TestCase {
             'test-no-pw',
             'run-hot-restart',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -97,7 +100,7 @@ class TesttakersFolderTest extends TestCase {
             'test-no-pw-trial',
             'run-trial',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -127,7 +130,7 @@ class TesttakersFolderTest extends TestCase {
         $this->assertNull($result, "login with wrong password");
 
 
-        $result = $this->folder->findLoginData('wrong username', '__TEST_LOGIN_PASSWORD__');
+        $result = $this->folder->findLoginData('wrong username', 'user123');
         $this->assertNull($result, "login with wrong username");
 
 
@@ -136,7 +139,7 @@ class TesttakersFolderTest extends TestCase {
             'test-no-pw',
             'run-hot-restart',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,
@@ -151,7 +154,7 @@ class TesttakersFolderTest extends TestCase {
             'test-no-pw-trial',
             'run-trial',
             'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE']],
+            ['' => ['BOOKLET.SAMPLE-1']],
             1,
             0,
             0,

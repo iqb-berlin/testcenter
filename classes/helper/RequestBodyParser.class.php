@@ -33,7 +33,7 @@ class RequestBodyParser {
      * @return array - an array
      *      keys are (root-)elements from body to receive,
      *      values are default values or 0 if element is required
-     * @throws HttpBadRequestException
+     * @throws HttpError
      */
     static function getElements(Request $request, array $elements2defaults = []): array {
 
@@ -65,7 +65,7 @@ class RequestBodyParser {
         $requestBody = JSON::decode($request->getBody()->getContents());
 
         if (!is_array($requestBody)) {
-            throw new HttpBadRequestException($request,"body has to array");
+            throw new HttpBadRequestException($request,"body has to be an array");
         }
 
         $result = [];

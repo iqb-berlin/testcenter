@@ -27,6 +27,8 @@ $app->get('/version', [SystemController::class, 'getVersion']);
 
 $app->get('/system/config', [SystemController::class, 'getSystemConfig']);
 
+$app->get('/system/time', [SystemController::class, 'getSystemTime']);
+
 $app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroadcastingService']);
 
 $app->get('/sys-checks', [SystemController::class, 'getSysChecks']);

@@ -36,6 +36,7 @@ class TestDAO extends DAO {
 
         if ($test !== null) {
 
+            $test['_newlyCreated'] = false;
             return $test;
         }
 
@@ -55,7 +56,8 @@ class TestDAO extends DAO {
             'person_id' => $personId,
             'locked' => '0',
             'running' => '0',
-            'lastState' => ''
+            'lastState' => '',
+            '_newlyCreated' => true
         ];
     }
 
@@ -116,14 +118,52 @@ class TestDAO extends DAO {
 
     public function getTestState(int $testId): array {
 
-        $booklet = $this->_(
+        $test = $this->_(
             'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
             [
                 ':testId' => $testId
             ]
         );
 
-        return ($booklet) ? JSON::decode($booklet['laststate'], true) : [];
+        return ($test) ? JSON::decode($test['laststate'], true) : [];
+    }
+
+
+    public function getTestSession(int $testId): array {
+
+        $testSession = $this->_(
+            'SELECT
+                    login_sessions.id as login_id,
+                    login_sessions.mode,
+                    login_sessions.workspace_id,
+                    login_sessions.group_name as group_name,
+                    login_sessions.token as login_token,
+                    person_sessions.code,
+                    person_sessions.token as person_token,
+                    tests.person_id, 
+                    tests.laststate as testState,
+                    tests.id,
+                    tests.locked,
+                    tests.running,
+                    tests.label
+                FROM 
+                    tests 
+                    LEFT JOIN person_sessions on person_sessions.id = tests.person_id
+                    LEFT JOIN login_sessions on person_sessions.login_id = login_sessions.id
+                WHERE 
+                    tests.id=:testId',
+            [
+                ':testId' => $testId
+            ]
+        );
+
+        if ($testSession == null) {
+            throw new HttpError("Test not found", 404);
+        }
+
+        $testSession['laststate'] = $this->getTestFullState($testSession);
+
+        return $testSession;
     }
 
 
@@ -137,16 +177,21 @@ class TestDAO extends DAO {
             ]
         );
 
+        if ($testData == null) {
+            throw new HttpError("Test not found", 404);
+        }
+
         $oldState = $testData['laststate'] ? JSON::decode($testData['laststate'], true) : [];
         $newState = array_merge($oldState, $statePatch);
 
-         $this->_(
-             'UPDATE tests SET laststate = :laststate WHERE id = :id',
+        $this->_(
+         'UPDATE tests SET laststate = :laststate, timestamp_server = :timestamp WHERE id = :id',
              [
                  ':laststate' => json_encode($newState),
-                 ':id' => $testId
+                 ':id' => $testId,
+                 ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
              ]
-         );
+        );
 
          return $newState;
     }
@@ -196,12 +241,26 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function lockBooklet(int $testId): void {
+    public function lockTest(int $testId): void {
 
-        $this->_('UPDATE tests SET locked = :locked WHERE id = :id',
+        $this->_('UPDATE tests SET locked = :locked , timestamp_server = :timestamp WHERE id = :id',
             [
                 ':locked' => '1',
-                ':id' => $testId
+                ':id' => $testId,
+                ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
+            ]
+        );
+    }
+
+
+    // TODO unit test
+    public function changeTestLockStatus(int $testId, bool $unlock = true): void {
+
+        $this->_('UPDATE tests SET locked = :locked , timestamp_server = :timestamp WHERE id = :id',
+            [
+                ':locked' => $unlock ? '0' : '1',
+                ':id' => $testId,
+                ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
             ]
         );
     }
@@ -322,10 +381,11 @@ class TestDAO extends DAO {
     // TODO unit test
     public function setTestRunning(int $testId) {
 
-        $this->_('UPDATE tests SET running = :running WHERE id = :id',
+        $this->_('UPDATE tests SET running = :running , timestamp_server = :timestamp WHERE id = :id',
             [
                 ':running' => '1',
-                ':id' => $testId
+                ':id' => $testId,
+                ':timestamp' => TimeStamp::toSQLFormat(TimeStamp::now())
             ]
         );
     }

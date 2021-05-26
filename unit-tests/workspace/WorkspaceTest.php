@@ -83,6 +83,7 @@ class WorkspaceTest extends TestCase {
             'SAMPLE_UNIT2.XML',
             'SAMPLE_BOOKLET.XML',
             'SAMPLE_BOOKLET2.XML',
+            'SAMPLE_BOOKLET3.XML',
             'trash.xml',
             'SAMPLE_TESTTAKERS.XML',
             'trash.xml',
@@ -120,7 +121,7 @@ class WorkspaceTest extends TestCase {
         $expectation = [
             "Testtakers" => 2,
             "SysCheck" => 1,
-            "Booklet" => 3,
+            "Booklet" => 4,
             "Unit" => 2,
             "Resource" => 2
         ];

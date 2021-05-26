@@ -6,6 +6,5 @@
     "login_bookletSelectPromptMany": "Bitte klick auf eine der Schaltflächen links, um einen Test zu starten!",
     "login_codeInputPrompt": "Bitte Personen-Code eingeben",
     "login_codeInputTitle": "Personen-Code",
-    "app_title": "IQB-Testcenter",
-    "system_announcement": "Achtung! Am `11.5.2021` wird von `9:00` bis `11:00` eine Wartung durchgeführt. Es kann sein, dass das System dann vorrüberghend nicht erreichbar ist."
+    "app_title": "IQB-Testcenter"
 }

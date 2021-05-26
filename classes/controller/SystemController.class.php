@@ -1,5 +1,6 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
+/** @noinspection PhpUnusedParameterInspection */
 declare(strict_types=1);
 // TODO unit tests !
 
@@ -100,7 +101,19 @@ class SystemController extends Controller {
             [
                 'version' => Version::get(),
                 'customTexts' => $customTexts,
-                'broadcastingService' => BroadcastService::getStatus()
+                'broadcastingService' => BroadcastService::getStatus(),
+                'baseUrl' => Server::getUrl()
+            ]
+        );
+    }
+
+
+    public static function getSystemTime(Request $request, Response $response): Response {
+
+        return $response->withJson(
+            [
+                'timezone' => date_default_timezone_get(),
+                'timestamp' => microtime(true) * 1000
             ]
         );
     }

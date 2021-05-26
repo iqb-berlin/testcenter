@@ -3,7 +3,7 @@
   "description": "The backend for the IQB-Testcenter application(s).",
   "version": "10.0.0",
   "extra": {
-    "broadcastingServiceVersionExpected": "2.0.2"
+    "broadcastingServiceVersionExpected": "4.0.0"
   },
   "homepage": "https://iqb-testcenter.de",
   "type": "project",

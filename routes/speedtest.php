@@ -2,8 +2,6 @@
 declare(strict_types=1);
 
 use Slim\App;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 global $app;
 

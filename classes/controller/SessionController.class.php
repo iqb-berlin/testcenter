@@ -58,7 +58,12 @@ class SessionController extends Controller {
             $session = self::getOrCreatePersonSession($login, '');
 
             if ($login->getMode() == 'monitor-group') {
+
                 self::registerGroup($login);
+
+                $booklets = self::getBookletsOfMonitor($login);
+
+                $session->addAccessObjects('test', ...$booklets);
             }
 
         } else {
@@ -89,9 +94,33 @@ class SessionController extends Controller {
     private static function getOrCreatePersonSession(Login $login, string $code): Session {
 
         $person = self::sessionDAO()->getOrCreatePerson($login, $code);
-        $session = Session::createFromLogin($login, $person);
-        BroadcastService::sessionChange(SessionChangeMessage::login($login, $person));
-        return $session;
+        return Session::createFromLogin($login, $person);
+    }
+
+
+    // TODO write unit test
+    // TODO make private
+    public static function getBookletsOfMonitor(Login $login): array {
+
+        $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
+        $members = $testtakersFolder->getPersonsInSameGroup($login->getName());
+        $booklets = [];
+
+        foreach ($members as $member) { /* @var $member PotentialLogin */
+
+            $codes2booklets = $member->getBooklets();
+            $codes2booklets = !$codes2booklets ? [] : $codes2booklets;
+
+            foreach ($codes2booklets as $code => $bookletList) {
+
+                foreach ($bookletList as $booklet) {
+
+                    $booklets[] = $booklet;
+                }
+            }
+        }
+
+        return array_unique($booklets);
     }
 
 
@@ -123,8 +152,8 @@ class SessionController extends Controller {
                             $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
                         }
                         $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
-                        $sessionMessage = SessionChangeMessage::login($memberLogin, $memberPerson);
-                        $sessionMessage->setTestState((int) $test['id'], [], $booklet);
+                        $sessionMessage = SessionChangeMessage::newSession($memberLogin, $memberPerson, (int) $test['id']);
+                        $sessionMessage->setTestState([], $booklet);
                         BroadcastService::sessionChange($sessionMessage);
                     }
                 }
@@ -148,7 +177,11 @@ class SessionController extends Controller {
             $loginWithPerson = self::sessionDAO()->getPersonLogin($authToken->getToken());
             $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
 
-            BroadcastService::sessionChange(SessionChangeMessage::login($loginWithPerson->getLogin(), $loginWithPerson->getPerson()));
+            if ($authToken->getMode() == 'monitor-group') {
+
+                $booklets = self::getBookletsOfMonitor($loginWithPerson->getLogin(), "");
+                $session->addAccessObjects('test', ...$booklets);
+            }
 
             return $response->withJson($session);
         }

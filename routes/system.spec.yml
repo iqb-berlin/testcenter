@@ -24,7 +24,9 @@ paths:
       summary: get system config
       description: "returns publicly available parts of system config
         - version number
-        - customTexts for UI"
+        - customTexts for UI
+        - information about a broadcastingService
+        - serverTimestamp (in milliseconds)"
       responses:
         "200":
           description: OK
@@ -37,12 +39,26 @@ paths:
                     type: string
                   customTexts:
                     type: object
+                  broadcastingService:
+                    type: object
+                    properties:
+                      versionExpected:
+                        type: string
+                      status:
+                        type: string
+                      version:
+                        type: string
                 required:
                   - version
                   - customTexts
+                  - broadcastingService
               example:
                 version: "%%%VERSION%%%"
                 customTexts: {}
+                broadcastingService:
+                  versionExpected: 1.0.0
+                  status: online
+                  version: 1.0.0
         "500":
           description: Server Error
 
@@ -222,5 +238,20 @@ paths:
                   description: "An example SysCheck definition with long description"
         "204": # TODO check return code on empty folder
           description: No SysChecks found.
+        "500":
+          description: Server Error
+
+  /system/time:
+    get:
+      summary: get the server time
+      description: return the server's current timestamp and timezone
+      responses:
+        "200":
+          description: list of SysChecks
+          content:
+            application/json:
+              example:
+                timezone: "Europe/Berlin"
+                timestamp: 1618816319707.522
         "500":
           description: Server Error
