@@ -59,3 +59,8 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## Debugging
+
+To activate very verbose console logging change  `logger: ['warn', 'error']`
+to `logger: console` in `src/main.ts`.
