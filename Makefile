@@ -42,3 +42,11 @@ tag-minor:
 
 tag-patch:
 	scripts/new_version.py patch
+
+composer-install:
+	docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest . &&\
+	 docker run -v ${PWD}/composer.json:/composer.json -v ${PWD}/composer.lock:/composer.lock -v ${PWD}/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
+
+composer-update:
+	docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest . &&\
+	 docker run -v ${PWD}/auth.json:/auth.json  -v ${PWD}/composer.json:/composer.json -v ${PWD}/composer.lock:/composer.lock -v ${PWD}/vendor:/vendor testcenter-backend-composer composer update --no-interaction --no-ansi

@@ -1,5 +1,8 @@
 version: '3.7'
 
+x-env-php: &env-php
+  PHP_VERSION: 7.4.19
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -10,8 +13,8 @@ x-env-initdata: &env-initdata
   SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
   WORKSPACE_NAME: ${WORKSPACE_NAME}
 
-services:
 
+services:
   testcenter-db-backend:
     image: mysql:5.7
     container_name: testcenter-db-backend
@@ -25,10 +28,12 @@ services:
       - "9091:3306"
 
   testcenter-backend:
+    container_name: testcenter-backend-standalone
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    container_name: testcenter-backend-standalone
+      args:
+        <<: *env-php
     environment:
       <<: *env-mysql
       <<: *env-initdata
@@ -37,18 +42,18 @@ services:
     depends_on:
       - testcenter-db-backend
     volumes:
-      - ../vo_data:/var/www/html/vo_data
       - ../classes:/var/www/html/classes
-      - ../routes:/var/www/html/routes
-      - ../sampledata:/var/www/html/sampledata
       - ../definitions:/var/www/html/definitions
       - ../docs/specs.yml:/var/www/html/docs/specs.yml
+      - ../routes:/var/www/html/routes
+      - ../sampledata:/var/www/html/sampledata
+      - ../vo_data:/var/www/html/vo_data
+      - ../vendor:/var/www/html/vendor
       - ../composer.json:/var/www/html/composer.json
-      - vendor:/var/www/html/vendor
+      - ../composer.lock:/var/www/html/composer.lock
     ports:
       - "9092:80"
 
 
 volumes:
   db_data:
-  vendor:

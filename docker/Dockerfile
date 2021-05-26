@@ -1,17 +1,39 @@
-FROM php:7.4.9-apache-buster AS base
+ARG PHP_VERSION=7.4.19
+
+FROM php:${PHP_VERSION} AS backend-composer
+
+RUN apt-get update && apt-get install -y \
+  zlib1g-dev \
+  libzip-dev \
+  unzip \
+  git
+
+# install php extensions
+RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
+
+# set up php
+COPY docker/scripts/local.php.ini /usr/local/etc/php/conf.d/local.ini
+
+COPY composer.json .
+COPY composer.lock .
+
+# install composer dependencies
+# https://hub.docker.com/_/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN composer install
+
+VOLUME /vendor
+
+#========================
+FROM php:${PHP_VERSION}-apache-buster AS base
 
 LABEL maintainer="IQB Berlin"
 LABEL version="1.0"
 LABEL description="The PHP backend of the test center. This container ist for DEVELOPMENT only, not for deployment since security guidelines are somehow weak."
 LABEL license="MIT"
 
-# dependencies, needed for composer
 RUN apt-get update && apt-get install -y \
-  wget \
-  zlib1g-dev \
-  libzip-dev \
-  unzip \
-  git
+  libzip-dev
 
 # install php extensions
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
@@ -34,33 +56,28 @@ COPY classes /var/www/html/classes
 COPY definitions /var/www/html/definitions
 COPY docs /var/www/html/docs
 COPY routes /var/www/html/routes
-COPY sampledata /var/www/html/sampledata
 COPY scripts /var/www/html/scripts
-COPY unit-tests /var/www/html/unit-tests
+COPY --from=backend-composer /vendor /var/www/html/vendor/
 COPY .htaccess /var/www/html/
 COPY autoload.php /var/www/html/
-COPY composer.json /var/www/html/
-COPY composer.lock /var/www/html/
 COPY index.php /var/www/html/
 
 RUN mkdir /var/www/html/config
 
 RUN chown -R www-data:www-data /var/www/html
 
-# install composer dependencies
-RUN sh scripts/install_composer.sh
-RUN php composer.phar install
+EXPOSE 80
+
+
+#========================
+FROM base as prod
 
 COPY docker/entrypoint.sh /root/entrypoint.sh
 
-EXPOSE 80
-
-#=================
-FROM base as prod
-
 ENTRYPOINT ["/root/entrypoint.sh"]
 
-#==================
+
+#========================
 # This image is for running E2E tests only. When building a production
 # image this step should not be used. (use: target prod)
 FROM prod as tester
@@ -70,6 +87,8 @@ RUN apt-get update && apt-get install -y npm
 WORKDIR /var/www/html
 
 COPY integration /var/www/html/integration
+COPY sampledata /var/www/html/sampledata
+COPY unit-tests /var/www/html/unit-tests
 
 RUN npm install npm@latest -g
 RUN npm install -C integration
