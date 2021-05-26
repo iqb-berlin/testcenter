@@ -82,13 +82,6 @@ def _stop_software():
     subprocess.run('make stop', shell=True, check=True)
 
 
-def _run_tests():
-    time.sleep(10)
-    subprocess.run('make test-unit', shell=True, check=True)
-    time.sleep(10)
-    subprocess.run('make test-e2e', shell=True, check=True)
-
-
 def _git_tag():
     print(f"Creating git tag for version {new_version}")
     subprocess.run(f"git add {VERSION_FILE}", shell=True, check=True)
