@@ -109,6 +109,21 @@ class DAO {
     }
 
 
+    public function getMeta(array $categories): array {
+
+        $categoriesString = implode(',', array_map([$this->pdoDBhandle, "quote"], $categories));
+        $result = $this->_("SELECT * FROM meta where category in ($categoriesString)", [], true);
+        $returner = [];
+        foreach ($categories as $category) {
+            $returner[$category] = [];
+        }
+        foreach ($result as $row) {
+            $returner[$row['category']][$row['metaKey']] = $row['value'];
+        }
+        return $returner;
+    }
+
+
     public function getWorkspaceName($workspaceId): string {
 
         $workspace = $this->_(

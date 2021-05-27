@@ -322,4 +322,30 @@ class SuperAdminDAOTest extends TestCase {
         $this->assertEquals($expectation, $result);
     }
 
+
+    public function test_getMeta() {
+
+//        $result = $this->dbc->getMeta(['cat1']);
+//        $expectation = [
+//            'cat1' => [
+//                'keyA' => 'valueA',
+//                'keyB' => 'valueB'
+//            ]
+//        ];
+//        $this->assertEquals($expectation, $result);
+
+
+        $result = $this->dbc->getMeta(['cat1', 'cat2']);
+        $expectation = [
+            'cat1' => [
+                'keyA' => 'valueA',
+                'keyB' => 'valueB'
+            ],
+            'cat2' => [
+                'keyA' => 'valueA',
+                'keyB' => 'valueB'
+            ]
+        ];
+        $this->assertEquals($expectation, $result);
+    }
 }
