@@ -45,4 +45,53 @@ class DAOTest extends TestCase {
         $result = $this->dbc->getDBSchemaVersion();
         $this->assertEquals('0.0.0-no-table', $result, 'No meta table present');
     }
+
+
+    public function test_getMeta() {
+
+        $result = $this->dbc->getMeta(['cat1']);
+        $expectation = [
+            'cat1' => [
+                'keyA' => 'valueA',
+                'keyB' => 'valueB'
+            ]
+        ];
+        $this->assertEquals($expectation, $result);
+
+
+        $result = $this->dbc->getMeta(['cat1', 'cat2']);
+        $expectation = [
+            'cat1' => [
+                'keyA' => 'valueA',
+                'keyB' => 'valueB'
+            ],
+            'cat2' => [
+                'keyA' => 'valueA',
+                'keyB' => 'valueB'
+            ]
+        ];
+        $this->assertEquals($expectation, $result);
+    }
+
+    public function test_setMeta() {
+
+        $this->dbc->setMeta('new', 'aKey', 'aValue');
+        $result = $this->dbc->getMeta(['new']);
+        $expectation = [
+            'new' => [
+                'aKey' => 'aValue',
+            ]
+        ];
+        $this->assertEquals($expectation, $result);
+
+
+        $this->dbc->setMeta('new', 'aKey', 'newValue');
+        $result = $this->dbc->getMeta(['new']);
+        $expectation = [
+            'new' => [
+                'aKey' => 'newValue',
+            ]
+        ];
+        $this->assertEquals($expectation, $result);
+    }
 }

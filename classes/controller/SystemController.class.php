@@ -89,18 +89,13 @@ class SystemController extends Controller {
 
     public static function getSystemConfig(Request $request, Response $response): Response {
 
-        $customTextsFilePath = ROOT_DIR . '/config/customTexts.json';
-
-        if (file_exists($customTextsFilePath)) {
-            $customTexts = JSON::decode(file_get_contents($customTextsFilePath));
-        } else {
-            $customTexts = [];
-        }
+        $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
 
         return $response->withJson(
             [
                 'version' => Version::get(),
-                'customTexts' => $customTexts,
+                'customTexts' => $meta['customTexts'],
+                'appConfig' => $meta['appConfig'],
                 'broadcastingService' => BroadcastService::getStatus(),
                 'baseUrl' => Server::getUrl()
             ]

@@ -124,6 +124,34 @@ class DAO {
     }
 
 
+    public function setMeta(string $category, string $key, string $value):void {
+
+        $currentValue = $this->_("SELECT `value` FROM meta where metaKey = :key", [':key' => $key]);
+
+        if (!$currentValue) {
+
+            $this->_(
+                "INSERT INTO meta (category, metaKey, value) VALUES (:category, :key, :value)",
+                [
+                    ':key' => $key,
+                    ':category' => $category,
+                    ':value' => $value
+                ]
+            );
+        } else {
+
+            $this->_(
+                "update meta set(value, category) = (:value, :category) where metaKey = :key",
+                [
+                    ':key' => $key,
+                    ':category' => $category,
+                    ':value' => $value
+                ]
+            );
+        }
+    }
+
+
     public function getWorkspaceName($workspaceId): string {
 
         $workspace = $this->_(
