@@ -10,8 +10,8 @@ php /var/www/html/scripts/initialize.php \
 --dbname=$MYSQL_DATABASE \
 --user=$MYSQL_USER \
 --password=$MYSQL_PASSWORD \
---broadcast_service_uri_push=$BROADCAST_SERVICE_URI_PUSH \
---broadcast_service_uri_subscribe=$BROADCAST_SERVICE_URI_SUBSCRIBE
+--broadcastServiceUriPush=$BROADCAST_SERVICE_URI_PUSH \
+--broadcastServiceUriSubscribe=$BROADCAST_SERVICE_URI_SUBSCRIBE
 
 # file-rights
 chown -R www-data:www-data /var/www/html/vo_data
