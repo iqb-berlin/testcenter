@@ -73,6 +73,7 @@ class DAOTest extends TestCase {
         $this->assertEquals($expectation, $result);
     }
 
+
     public function test_setMeta() {
 
         $this->dbc->setMeta('new', 'aKey', 'aValue');
@@ -83,7 +84,6 @@ class DAOTest extends TestCase {
             ]
         ];
         $this->assertEquals($expectation, $result);
-
 
         $this->dbc->setMeta('new', 'aKey', 'newValue');
         $result = $this->dbc->getMeta(['new']);

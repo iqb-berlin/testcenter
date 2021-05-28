@@ -94,8 +94,8 @@ class SystemController extends Controller {
         return $response->withJson(
             [
                 'version' => Version::get(),
-                'customTexts' => $meta['customTexts'],
-                'appConfig' => $meta['appConfig'],
+                'customTexts' => (object) $meta['customTexts'],
+                'appConfig' => (object) $meta['appConfig'],
                 'broadcastingService' => BroadcastService::getStatus(),
                 'baseUrl' => Server::getUrl()
             ]

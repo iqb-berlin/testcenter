@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 10.0.0
+    version: 11.0.1
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -494,14 +494,17 @@ paths:
                                 properties:
                                     version: {type: string}
                                     customTexts: {type: object}
+                                    appConfig: {type: object}
                                     broadcastingService: {type: object, properties: {versionExpected: {type: string}, status: {type: string}, version: {type: string}}}
                                 required:
                                     - version
                                     - customTexts
                                     - broadcastingService
+                                    - appConfig
                             example:
-                                version: 10.0.0
+                                version: 11.0.1
                                 customTexts: {}
+                                appConfig: {}
                                 broadcastingService:
                                     versionExpected: 1.0.0
                                     status: online
@@ -517,7 +520,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 10.0.0
+                                version: 11.0.1
     /workspaces:
         get:
             summary: 'get a list of workspaces'

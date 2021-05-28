@@ -39,6 +39,8 @@ paths:
                     type: string
                   customTexts:
                     type: object
+                  appConfig:
+                    type: object
                   broadcastingService:
                     type: object
                     properties:
@@ -48,13 +50,18 @@ paths:
                         type: string
                       version:
                         type: string
+                  baseUrl:
+                      type: string
+                      description: base url of the API
                 required:
                   - version
                   - customTexts
                   - broadcastingService
+                  - appConfig
               example:
                 version: "%%%VERSION%%%"
                 customTexts: {}
+                appConfig: {}
                 broadcastingService:
                   versionExpected: 1.0.0
                   status: online
