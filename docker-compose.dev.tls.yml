@@ -38,7 +38,7 @@ services:
       - "traefik.http.routers.testcenter-frontend.tls=true"
 
   testcenter-broadcasting-service:
-    image: iqbberlin/testcenter-broadcasting-service:2.0.3
+    image: iqbberlin/testcenter-broadcasting-service:4.0.0
     labels:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
 
