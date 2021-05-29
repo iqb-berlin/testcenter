@@ -37,7 +37,7 @@ BS_VERSION_FILE_PATH = 'testcenter-broadcasting-service/package.json'
 BS_VERSION_REGEX = BACKEND_VERSION_REGEX
 
 COMPOSE_FILE_PATHS = [
-    'docker-compose.prod.tls.yml',
+    'docker-compose.prod.yml',
     'docker-compose.dev.tls.yml']
 
 backend_version = ''
@@ -148,8 +148,8 @@ def _undo_version_update_in_compose_files():
         subprocess.run(f"git checkout {file}", shell=True, check=True)
 
 
-check_prerequisites()
-update_submodules()
+# check_prerequisites()
+# update_submodules()
 backend_version = get_version_from_file(BACKEND_VERSION_FILE_PATH, BACKEND_VERSION_REGEX)
 frontend_version = get_version_from_file(FRONTEND_VERSION_FILE_PATH, FRONTEND_VERSION_REGEX)
 bs_version = get_version_from_file(BS_VERSION_FILE_PATH, BS_VERSION_REGEX)
