@@ -124,7 +124,7 @@ class DAO {
     }
 
 
-    public function setMeta(string $category, string $key, string $value):void {
+    public function setMeta(string $category, string $key, ?string $value):void {
 
         $currentValue = $this->_("SELECT `value` FROM meta where metaKey = :key", [':key' => $key]);
 
@@ -141,7 +141,7 @@ class DAO {
         } else {
 
             $this->_(
-                "update meta set(value, category) = (:value, :category) where metaKey = :key",
+                "update meta set value=:value, category=:category where metaKey = :key",
                 [
                     ':key' => $key,
                     ':category' => $category,

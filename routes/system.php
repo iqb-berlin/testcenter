@@ -27,6 +27,10 @@ $app->get('/version', [SystemController::class, 'getVersion']);
 
 $app->get('/system/config', [SystemController::class, 'getSystemConfig']);
 
+$app->patch('/system/config/app', [SystemController::class, 'patchAppConfig'])
+    ->add(new IsSuperAdmin())
+    ->add(new RequireToken('admin'));
+
 $app->get('/system/time', [SystemController::class, 'getSystemTime']);
 
 $app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroadcastingService']);
