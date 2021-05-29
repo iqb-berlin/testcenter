@@ -340,4 +340,10 @@ class InitDAO extends SessionDAO {
 
         return $report;
     }
+
+
+    public function createSampleMetaData(): void {
+
+        $this->setMeta('appConfig', 'aKey', 'newValue');
+    }
 }

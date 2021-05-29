@@ -1,5 +1,14 @@
 # Changelog & Upgrade Information
 
+## 11.1.0
+This update provides the API for the customzation-module.   
+
+### Endpoints
+* contains the new endpoint `[PATCH] /system/config/app`, which updates the key-value-store for the frontend analogous to customTexts.
+* `[GET] /system/config` provides the key-value store 'app-config' as well.
+### Database
+* See `scripts/sql-schema/patches.mysql.d/11.1.0`
+
 ## 11.0.0
 This update contains various changes around the improved Group-Monitor.
 ### Endpoints

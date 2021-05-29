@@ -137,7 +137,8 @@ create table `meta`
 (
     metaKey varchar(30) not null
 ,   value varchar(100) null
-,   primary key (metaKey)
+,   category varchar(30) null
+,   primary key (category, metaKey)
 );
 
 

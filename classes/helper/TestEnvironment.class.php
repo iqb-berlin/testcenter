@@ -113,6 +113,7 @@ class TestEnvironment {
 
         $initDAO->createSampleLoginsReviewsLogs('xxx');
         $initDAO->createSampleExpiredSessions('xxx');
+        $initDAO->createSampleMetaData();
         $persons = $initDAO->createSampleMonitorSessions();
         $groupMonitor = $persons['test-group-monitor']; /* @var $groupMonitor Person */
         $initDAO->createSampleCommands($groupMonitor->getId());

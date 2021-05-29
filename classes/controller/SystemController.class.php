@@ -28,7 +28,7 @@ class SystemController extends Controller {
     public static function deleteWorkspaces(Request $request, Response $response): Response {
 
         $bodyData = JSON::decode($request->getBody()->getContents());
-        $workspaceList = isset($bodyData->ws) ? $bodyData->ws : [];
+        $workspaceList = $bodyData->ws ?? [];
 
         if (!is_array($workspaceList)) {
             throw new HttpBadRequestException($request);
@@ -89,22 +89,36 @@ class SystemController extends Controller {
 
     public static function getSystemConfig(Request $request, Response $response): Response {
 
-        $customTextsFilePath = ROOT_DIR . '/config/customTexts.json';
-
-        if (file_exists($customTextsFilePath)) {
-            $customTexts = JSON::decode(file_get_contents($customTextsFilePath));
-        } else {
-            $customTexts = [];
-        }
+        $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
 
         return $response->withJson(
             [
                 'version' => Version::get(),
-                'customTexts' => $customTexts,
+                'customTexts' => (object) $meta['customTexts'],
+                'appConfig' => (object) $meta['appConfig'],
                 'broadcastingService' => BroadcastService::getStatus(),
                 'baseUrl' => Server::getUrl()
             ]
         );
+    }
+
+
+    public static function patchAppConfig(Request $request, Response $response): Response {
+
+        $requestBody = JSON::decode($request->getBody()->getContents());
+
+        if (!is_object($requestBody)) {
+
+            return $response;
+        }
+
+        foreach ($requestBody as $key => $value) {
+
+            $valueAsString = (is_string($value) or is_null($value)) ? $value : json_encode($value);
+            self::adminDAO()->setMeta('appConfig', $key, $valueAsString);
+        }
+
+        return $response;
     }
 
 

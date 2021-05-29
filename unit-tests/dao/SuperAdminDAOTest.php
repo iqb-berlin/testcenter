@@ -321,5 +321,4 @@ class SuperAdminDAOTest extends TestCase {
         ];
         $this->assertEquals($expectation, $result);
     }
-
 }

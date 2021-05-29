@@ -109,6 +109,49 @@ class DAO {
     }
 
 
+    public function getMeta(array $categories): array {
+
+        $categoriesString = implode(',', array_map([$this->pdoDBhandle, "quote"], $categories));
+        $result = $this->_("SELECT * FROM meta where category in ($categoriesString)", [], true);
+        $returner = [];
+        foreach ($categories as $category) {
+            $returner[$category] = [];
+        }
+        foreach ($result as $row) {
+            $returner[$row['category']][$row['metaKey']] = $row['value'];
+        }
+        return $returner;
+    }
+
+
+    public function setMeta(string $category, string $key, ?string $value):void {
+
+        $currentValue = $this->_("SELECT `value` FROM meta where metaKey = :key", [':key' => $key]);
+
+        if (!$currentValue) {
+
+            $this->_(
+                "INSERT INTO meta (category, metaKey, value) VALUES (:category, :key, :value)",
+                [
+                    ':key' => $key,
+                    ':category' => $category,
+                    ':value' => $value
+                ]
+            );
+        } else {
+
+            $this->_(
+                "update meta set value=:value, category=:category where metaKey = :key",
+                [
+                    ':key' => $key,
+                    ':category' => $category,
+                    ':value' => $value
+                ]
+            );
+        }
+    }
+
+
     public function getWorkspaceName($workspaceId): string {
 
         $workspace = $this->_(

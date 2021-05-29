@@ -27,3 +27,8 @@ insert into test_commands(id, test_id, keyword, parameter, commander_id, timesta
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp) values (1, 2, 'COMMAND_X', '', 3, 1597902000);
 
 
+insert into meta(category, metaKey, value) values ('cat1', 'keyA', 'valueA');
+insert into meta(category, metaKey, value) values ('cat1', 'keyB', 'valueB');
+insert into meta(category, metaKey, value) values ('cat2', 'keyA', 'valueA');
+insert into meta(category, metaKey, value) values ('cat2', 'keyB', 'valueB');
+insert into meta(category, metaKey, value) values (null, 'key-no-cat', 'value-no-cat');
