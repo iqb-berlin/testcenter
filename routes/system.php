@@ -31,6 +31,10 @@ $app->patch('/system/config/app', [SystemController::class, 'patchAppConfig'])
     ->add(new IsSuperAdmin())
     ->add(new RequireToken('admin'));
 
+$app->patch('/system/config/custom-texts', [SystemController::class, 'patchCustomTexts'])
+    ->add(new IsSuperAdmin())
+    ->add(new RequireToken('admin'));
+
 $app->get('/system/time', [SystemController::class, 'getSystemTime']);
 
 $app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroadcastingService']);

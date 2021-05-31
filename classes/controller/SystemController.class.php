@@ -105,6 +105,18 @@ class SystemController extends Controller {
 
     public static function patchAppConfig(Request $request, Response $response): Response {
 
+        return SystemController::updateMeta('appConfig', $request, $response);
+    }
+
+
+    public static function patchCustomTexts(Request $request, Response $response): Response {
+
+        return SystemController::updateMeta('customTexts', $request, $response);
+    }
+
+
+    private static function updateMeta(string $category, Request $request, Response $response): Response {
+
         $requestBody = JSON::decode($request->getBody()->getContents());
 
         if (!is_object($requestBody)) {
@@ -115,7 +127,7 @@ class SystemController extends Controller {
         foreach ($requestBody as $key => $value) {
 
             $valueAsString = (is_string($value) or is_null($value)) ? $value : json_encode($value);
-            self::adminDAO()->setMeta('appConfig', $key, $valueAsString);
+            self::adminDAO()->setMeta($category, $key, $valueAsString);
         }
 
         return $response;
