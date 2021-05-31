@@ -1,7 +1,13 @@
 # Changelog & Upgrade Information
 
+## 11.2.0
+Adds the missing second endpoint for the customization-module.
+### Endpoints
+* contains the new endpoint `[PATCH] /system/config/custom-texts`, which updates the key-value-store for the frontend analogous to customTexts.
+
+
 ## 11.1.0
-This update provides the API for the customzation-module.   
+This update provides the API for the customziation-module.   
 
 ### Endpoints
 * contains the new endpoint `[PATCH] /system/config/app`, which updates the key-value-store for the frontend analogous to customTexts.
