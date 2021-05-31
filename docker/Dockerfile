@@ -31,7 +31,6 @@ COPY docker/scripts/local.php.ini /usr/local/etc/php/conf.d/local.ini
 # copy source code
 COPY .github /var/www/html/.github
 COPY classes /var/www/html/classes
-COPY config/customTexts.json /var/www/html/config/
 COPY definitions /var/www/html/definitions
 COPY docs /var/www/html/docs
 COPY routes /var/www/html/routes
