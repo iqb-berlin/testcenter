@@ -169,12 +169,10 @@ class SessionDAO extends DAO {
 
         TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['valid_until']));
 
-        $loginToken = $this->renewSessionToken((int) $oldLogin['id'], 'login', $loginData->getName());
-
         return new Login(
             (int) $oldLogin['id'],
             $oldLogin['name'],
-            $loginToken,
+            $oldLogin['token'],
             $oldLogin['mode'],
             $oldLogin['groupName'],
             "",
@@ -399,7 +397,7 @@ class SessionDAO extends DAO {
         }
 
         TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
-        $personToken = $this->renewSessionToken((int) $person['id'], 'person', "{$login->getGroupName()}_{$login->getName()}_$code");
+        $personToken = $this->renewPersonToken((int) $person['id'], "{$login->getGroupName()}_{$login->getName()}_$code");
         return new Person(
             (int) $person['id'],
             $personToken,
@@ -445,13 +443,11 @@ class SessionDAO extends DAO {
         );
     }
 
-    private function renewSessionToken(int $id, string $type, string $name): string {
+    private function renewPersonToken(int $id, string $name): string {
 
-        $table = ($type == 'person') ? "person_sessions" : "login_sessions";
-        $newToken = $this->randomToken($type, $name);
-
+        $newToken = $this->randomToken('person', $name);
         $this->_(
-            "UPDATE $table SET token = :token WHERE id = :id",
+            "UPDATE person_sessions SET token = :token WHERE id = :id",
             [
                 ':token' => $newToken,
                 ':id'=> $id
