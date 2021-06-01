@@ -43,6 +43,8 @@ COPY composer.json /var/www/html/
 COPY composer.lock /var/www/html/
 COPY index.php /var/www/html/
 
+RUN mkdir /var/www/html/config
+
 RUN chown -R www-data:www-data /var/www/html
 
 # install composer dependencies
