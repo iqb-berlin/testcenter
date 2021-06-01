@@ -227,20 +227,13 @@ class Workspace {
             throw new Exception("Could not create directory for extracted files: `$extractionPath`");
         }
 
-        $zip = new ZipArchive;
-        if ($zip->open($filePath) !== TRUE) {
-            throw new Exception('Could not extract Zip-File');
-        }
-        $zip->extractTo($extractionPath . '/');
-        $zip->close();
+        $this->unzip($filePath, $extractionPath);
 
         $zipFolderDir = opendir($extractionPath);
-        if ($zipFolderDir !== false) {
-            while (($entry = readdir($zipFolderDir)) !== false) {
-                if (is_file($extractionPath . '/' .  $entry)) {
-                    $file = $this->sortAndValidateUnsortedFile("$extractionFolder/$entry");
-                    $extractedFiles["$fileName/$entry"] = $file->getValidationReportSorted();
-                }
+        while (($entry = readdir($zipFolderDir)) !== false) {
+            if (is_file($extractionPath . '/' .  $entry)) {
+                $file = $this->sortAndValidateUnsortedFile("$extractionFolder/$entry");
+                $extractedFiles["$fileName/$entry"] = $file->getValidationReportSorted();
             }
         }
 
@@ -251,7 +244,18 @@ class Workspace {
     }
 
 
-    protected function emptyAndDeleteFolder($folder) {
+    protected function unzip(string $filePath, string $extractionPath): void {
+
+        $zip = new ZipArchive;
+        if ($zip->open($filePath) !== true) {
+            throw new Exception('Could not extract Zip-File');
+        }
+        $zip->extractTo($extractionPath . '/');
+        $zip->close();
+    }
+
+
+    protected function emptyAndDeleteFolder(string $folder): void {
         if (file_exists($folder)) {
             $folderDir = opendir($folder);
             if ($folderDir !== false) {
