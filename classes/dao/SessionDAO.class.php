@@ -56,7 +56,7 @@ class SessionDAO extends DAO {
 
         if (!in_array($tokenInfo["type"], $requiredTypes)) {
 
-            throw new HttpError("Token `{$tokenString}` of "
+            throw new HttpError("Token `$tokenString` of "
                 . "type `{$tokenInfo["type"]}` has wrong type - `"
                 . implode("` or `", $requiredTypes) . "` required.", 403);
         }
@@ -115,12 +115,6 @@ class SessionDAO extends DAO {
         }
 
         // TODO validity check here?
-
-//        $booklets =
-//        if (!isset($booklets[$loginData['code']])) {
-//            throw new HttpError("No Booklet found", 404);
-//        }
-//        $personsBooklets = $booklets[$loginData['code']] ?? [];
 
         return new LoginWithPerson(
             new Login(
