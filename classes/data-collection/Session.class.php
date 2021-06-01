@@ -18,7 +18,7 @@ class Session extends DataCollectionTypeSafe {
 
 
     // TODO add unit-test
-    static function createFromLogin(Login $login, Person $person) {
+    static function createFromLogin(Login $login, Person $person): Session {
 
         $session = new Session(
             $person->getToken(),

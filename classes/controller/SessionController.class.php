@@ -179,7 +179,7 @@ class SessionController extends Controller {
 
             if ($authToken->getMode() == 'monitor-group') {
 
-                $booklets = self::getBookletsOfMonitor($loginWithPerson->getLogin(), "");
+                $booklets = self::getBookletsOfMonitor($loginWithPerson->getLogin());
                 $session->addAccessObjects('test', ...$booklets);
             }
 

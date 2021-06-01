@@ -58,7 +58,7 @@ class SessionDAO extends DAO {
 
             throw new HttpError("Token `{$tokenString}` of "
                 . "type `{$tokenInfo["type"]}` has wrong type - `"
-                . implode($requiredTypes, "` or `") . "` required.", 403);
+                . implode("` or `", $requiredTypes) . "` required.", 403);
         }
 
         TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($tokenInfo['validTo']));
@@ -175,10 +175,12 @@ class SessionDAO extends DAO {
 
         TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['valid_until']));
 
+        $loginToken = $this->renewSessionToken((int) $oldLogin['id'], 'login', $loginData->getName());
+
         return new Login(
             (int) $oldLogin['id'],
             $oldLogin['name'],
-            $oldLogin['token'],
+            $loginToken,
             $oldLogin['mode'],
             $oldLogin['groupName'],
             "",
@@ -379,7 +381,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    public function getOrCreatePerson(Login $loginSession, string $code): Person {
+    public function getOrCreatePerson(Login $login, string $code): Person {
 
         $person = $this->_(
             'SELECT 
@@ -392,24 +394,25 @@ class SessionDAO extends DAO {
                     left join person_sessions on (person_sessions.login_id = login_sessions.id)
                 WHERE person_sessions.login_id=:id and person_sessions.code=:code',
             [
-                ':id' => $loginSession->getId(),
+                ':id' => $login->getId(),
                 ':code' => $code
             ]
         );
 
-        if ($person !== null) {
+        if ($person === null) {
 
-            TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
-            return new Person(
-                (int) $person['id'],
-                $person['token'],
-                $person['code'],
-                TimeStamp::fromSQLFormat($person['valid_until']),
-                $person['group_name']
-            );
+            return $this->createPerson($login, $code);
         }
 
-        return $this->createPerson($loginSession, $code);
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
+        $personToken = $this->renewSessionToken((int) $person['id'], 'person', "{$login->getGroupName()}_{$login->getName()}_$code");
+        return new Person(
+            (int) $person['id'],
+            $personToken,
+            $person['code'],
+            TimeStamp::fromSQLFormat($person['valid_until']),
+            $person['group_name']
+        );
     }
 
 
@@ -446,5 +449,21 @@ class SessionDAO extends DAO {
             TimeStamp::fromSQLFormat($validUntil),
             $login->getGroupName()
         );
+    }
+
+    private function renewSessionToken(int $id, string $type, string $name): string {
+
+        $table = ($type == 'person') ? "person_sessions" : "login_sessions";
+        $newToken = $this->randomToken($type, $name);
+
+        $this->_(
+            "UPDATE $table SET token = :token WHERE id = :id",
+            [
+                ':token' => $newToken,
+                ':id'=> $id
+            ]
+        );
+
+        return $newToken;
     }
 }
