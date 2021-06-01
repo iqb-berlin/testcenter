@@ -12,8 +12,6 @@ use Slim\Exception\HttpException;
 
 class SessionController extends Controller {
 
-    const restartModes = ['run-hot-restart', 'run-demo'];
-
     public static function putSessionAdmin(Request $request, Response $response): Response {
 
         $body = RequestBodyParser::getElements($request, [
@@ -50,7 +48,7 @@ class SessionController extends Controller {
             throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `{$shortPw}`");
         }
 
-        $forceCreate = in_array($potentialLogin->getMode(), self::restartModes);
+        $forceCreate = in_array($potentialLogin->getMode(), Mode::getByCapability('alwaysNewSession'));
         $login = self::sessionDAO()->getOrCreateLogin($potentialLogin, $forceCreate);
 
         if (!$login->isCodeRequired()) {
@@ -111,7 +109,7 @@ class SessionController extends Controller {
             $codes2booklets = $member->getBooklets();
             $codes2booklets = !$codes2booklets ? [] : $codes2booklets;
 
-            foreach ($codes2booklets as $code => $bookletList) {
+            foreach ($codes2booklets as $bookletList) {
 
                 foreach ($bookletList as $booklet) {
 
@@ -135,7 +133,7 @@ class SessionController extends Controller {
 
             foreach ($members as $member) { /* @var $member PotentialLogin */
 
-                if (in_array($member->getMode(), self::restartModes)) {
+                if (in_array($member->getMode(), Mode::getByCapability('alwaysNewSession'))) {
                     continue;
                 }
 
