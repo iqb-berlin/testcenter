@@ -12,8 +12,8 @@
   "author": "Philipp Franck",
   "license": "MIT",
   "dependencies": {
-    "browser-sync": "^2.26.14",
     "dredd": "^12.2.1",
+    "fs-extra": "^10.0.0",
     "gulp": "^4.0.2",
     "multi-part": "^3.0.0",
     "stream-to-string": "^1.2.0",
