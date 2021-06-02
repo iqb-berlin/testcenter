@@ -72,21 +72,21 @@ class Workspace {
     }
 
 
-    public function getId() {
+    public function getId(): int {
 
         return $this->_workspaceId;
     }
 
 
-    public function getWorkspacePath() {
+    public function getWorkspaceId(): int { // TODO remove duplicate function
+
+        return $this->_workspaceId;
+    }
+
+
+    public function getWorkspacePath(): string {
 
         return $this->_workspacePath;
-    }
-
-
-    public function getWorkspaceId() {
-
-        return $this->_workspaceId;
     }
 
 
@@ -139,52 +139,71 @@ class Workspace {
     }
 
 
-    /**
-     * takes a file from the workspace-dir toplevel and puts it to the correct subdir
-     *
-     * @param $fileName
-     * @return array - keys: imported files; value true or error message
-     * @throws Exception
-     */
+    // takes a file from the workspace-dir toplevel and puts it to the correct subdir if valid
     public function importUnsortedFile(string $fileName): array {
 
         if (strtoupper(substr($fileName, -4)) == '.ZIP') {
-            return $this->importUnsortedZipArchive($fileName);
+
+            $fileNames = $this->unpackUnsortedZipArchive($fileName);
+
+        } else {
+
+            $fileNames = [$fileName];
         }
 
-        $uploadedFile = $this->sortAndValidateUnsortedFile($fileName);
-
-        if (file_exists($uploadedFile->getPath())) {
-            unlink($uploadedFile->getPath());
-        }
-
-        return [
-            $fileName => $uploadedFile->getValidationReportSorted()
-        ];
+        return $this->importUnsortedFiles($fileNames);
     }
 
 
-    protected function sortAndValidateUnsortedFile(string $fileName): File {
+    protected function importUnsortedFiles(array $localFilePaths): array {
 
-        $file = File::get($this->_workspacePath . '/' . $fileName, null, true);
+        $files = $this->validateUnsortedFiles($localFilePaths);
 
-        $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId())); // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
+        foreach ($files as $localFilePath => $file) {
 
-        if (!$file->isValid()) {
-            return $file;
+            if ($file->isValid()) {
+
+                $this->sortUnsortedFile($localFilePath, $file);
+            }
+
+            $files[$localFilePath] = $file->getValidationReportSorted();
         }
+
+        return $files;
+    }
+
+
+    protected function validateUnsortedFiles(array $localFilePath): array {
+
+        $files = [];
+
+        foreach ($localFilePath as $fileName) {
+
+            $file = File::get($this->_workspacePath . '/' . $fileName, null, true);
+
+            $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId())); // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
+
+            $files[$fileName] = $file;
+        }
+
+        return $files;
+    }
+
+
+    protected function sortUnsortedFile(string $localFilePath, File $file): void {
 
         $targetFolder = $this->_workspacePath . '/' . $file->getType();
 
-        // move file from testcenter-tmp-folder to targetfolder
         if (!file_exists($targetFolder)) {
             if (!mkdir($targetFolder)) {
+
                 $file->report('error', "Could not create folder: `$targetFolder`.");
-                return $file;
+                unlink($file->getPath());
+                return;
             }
         }
 
-        $targetFilePath = $targetFolder . '/' . basename($fileName);
+        $targetFilePath = $targetFolder . '/' . basename($localFilePath);
 
         if (file_exists($targetFilePath)) {
             $oldFile = File::get($targetFilePath);
@@ -195,29 +214,32 @@ class Workspace {
                     Overwriting was rejected since new file's ID (`{$file->getId()}`) 
                     differs from old one (`{$oldFile->getId()}`)."
                 );
-                return $file;
+                unlink($file->getPath());
+                return;
             }
 
             if (!unlink($targetFilePath)) {
-                $file->report('error', "Could not delete file: `$targetFolder/$fileName`");
-                return $file;
+
+                $file->report('error', "Could not delete file: `$targetFolder/$localFilePath`");
+                unlink($file->getPath());
+                return;
             }
 
             $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
         }
 
-        if (!rename($this->_workspacePath . '/' . $fileName, $targetFilePath)) {
-            $file->report('error', "Could not move file to `$targetFolder/$fileName`");
-            return $file;
+        if (!rename($this->_workspacePath . '/' . $localFilePath, $targetFilePath)) {
+
+            $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
+            unlink($file->getPath());
+            return;
         }
 
-        return $file;
+        $file->setFilePath($targetFilePath);
     }
 
 
-    protected function importUnsortedZipArchive(string $fileName): array {
-
-        $extractedFiles = [];
+    protected function unpackUnsortedZipArchive(string $fileName): array {
 
         $extractionFolder = "{$fileName}_Extract";
         $filePath = "{$this->_workspacePath}/$fileName";
@@ -227,51 +249,17 @@ class Workspace {
             throw new Exception("Could not create directory for extracted files: `$extractionPath`");
         }
 
-        $this->unzip($filePath, $extractionPath);
+        ZIP::extract($filePath, $extractionPath);
 
-        $zipFolderDir = opendir($extractionPath);
-        while (($entry = readdir($zipFolderDir)) !== false) {
-            if (is_file($extractionPath . '/' .  $entry)) {
-                $file = $this->sortAndValidateUnsortedFile("$extractionFolder/$entry");
-                $extractedFiles["$fileName/$entry"] = $file->getValidationReportSorted();
-            }
-        }
+        // TODO handle subfolders!
+        $fileList = array_map(
+            function(string $fileName) use ($extractionFolder) { return "$extractionFolder/$fileName"; },
+            Folder::getContentsRecursive($extractionPath)
+        );
 
-        $this->emptyAndDeleteFolder($extractionPath);
-        unlink($filePath);
+        return  $fileList;
 
-        return $extractedFiles;
-    }
-
-
-    protected function unzip(string $filePath, string $extractionPath): void {
-
-        $zip = new ZipArchive;
-        if ($zip->open($filePath) !== true) {
-            throw new Exception('Could not extract Zip-File');
-        }
-        $zip->extractTo($extractionPath . '/');
-        $zip->close();
-    }
-
-
-    protected function emptyAndDeleteFolder(string $folder): void {
-        if (file_exists($folder)) {
-            $folderDir = opendir($folder);
-            if ($folderDir !== false) {
-                while (($entry = readdir($folderDir)) !== false) {
-                    if (($entry !== '.') && ($entry !== '..')) {
-                        $fullname = $folder . '/' .  $entry;
-                        if (is_dir($fullname)) {
-                            $this->emptyAndDeleteFolder($fullname);
-                        } else {
-                            unlink($fullname);
-                        }
-                    }
-                }
-                rmdir($folder);
-            }
-        }
+        // Folder::deleteContentsRecursive($extractionPath); TODO Where?
     }
 
 

@@ -6,6 +6,7 @@ use org\bovigo\vfs\vfsStream;
 
 require_once "unit-tests/VfsForTest.class.php";
 require_once "unit-tests/mock-classes/ExternalFileMock.php";
+require_once "unit-tests/mock-classes/ZIPMock.php";
 
 require_once "classes/helper/FileSize.class.php";
 require_once "classes/helper/Folder.class.php";
@@ -30,14 +31,25 @@ class WorkspaceTest extends TestCase {
     private $vfs;
     private $workspace;
 
-    private $validFile = '<Unit ><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
-    private $invalidFile = '<Unit><Metadata><Id>id</Id></Metadata></Unit>';
-    private $validFile2 = '<Unit><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">2nd valid file</Definition></Unit>';
+    const validFile = '<Unit ><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
+    const invalidFile = '<Unit><Metadata><Id>id</Id></Metadata></Unit>';
+    const validFile2 = '<Unit><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">2nd valid file</Definition></Unit>';
+
+    const validUnit =
+        '<Unit ><Metadata><Id>x_valid_unit</Id><Label>l</Label></Metadata><Definition player="p">valid extracted unit</Definition></Unit>';
+    const invalidUnit =
+        '<Unit><Metadata><Id>x_invalid_unit</Id></Metadata></Unit>';
+    const validBooklet =
+        '<Booklet><Metadata><Id>x_valid_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_valid_unit" /></Units></Booklet>';
+    const invalidBooklet =
+        '<Booklet><Metadata><Id>x_invalid_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_invalid_unit" /></Units></Booklet>';
+
 
     public static function setUpBeforeClass(): void {
 
         VfsForTest::setUpBeforeClass();
     }
+
 
     function setUp(): void {
 
@@ -131,20 +143,20 @@ class WorkspaceTest extends TestCase {
     }
 
 
-    function test_importUnsortedResource() {
+    function test_importUnsortedFile() {
 
-        file_put_contents(DATA_DIR . '/ws_1/valid.xml', $this->validFile);
+        file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
         file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
         $result = $this->workspace->importUnsortedFile('valid.xml');
         $this->assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
 
-        file_put_contents(DATA_DIR . '/ws_1/invalid.xml', $this->invalidFile);
+        file_put_contents(DATA_DIR . '/ws_1/invalid.xml', self::invalidFile);
         $result = $this->workspace->importUnsortedFile('invalid.xml');
         $this->assertGreaterThan(0, count($result["invalid.xml"]['error']), 'invalid file has error report');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
 
-        file_put_contents(DATA_DIR . '/ws_1/valid3.xml', $this->validFile2);
+        file_put_contents(DATA_DIR . '/ws_1/valid3.xml', self::validFile2);
         $result = $this->workspace->importUnsortedFile('valid3.xml');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid3.xml'), 'reject on duplicate id if file names are not the same');
         $this->assertStringContainsString(
@@ -154,7 +166,7 @@ class WorkspaceTest extends TestCase {
         );
         $this->assertGreaterThan(0, count($result["valid3.xml"]['error']), 'return warning on duplicate id if file names are not the same');
 
-        file_put_contents(DATA_DIR . '/ws_1/valid.xml', $this->validFile2);
+        file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile2);
         $result = $this->workspace->importUnsortedFile('valid.xml');
         $this->assertStringContainsString(
             '2nd valid file',
@@ -167,6 +179,31 @@ class WorkspaceTest extends TestCase {
         // ext/zip does not support userland stream wrappers - so no vfs-support
         // see https://github.com/bovigo/vfsStream/wiki/Known-Issues
         // TODO find a solution to test ZIP-import
+    }
+
+
+    function test_importUnsortedZipFile() {
+
+        ZIP::$mockArchive = [
+            'valid_booklet.xml' => self::validBooklet,
+            'P.html' => 'this would be a player',
+            'valid_unit.xml' => self::validUnit,
+
+
+        ];
+
+        $result = $this->workspace->importUnsortedFile("archive.zip");
+
+//        echo "\n --------- \n";
+//        print_r(Folder::getContentsRecursive(DATA_DIR));
+//        echo "\n --------- \n";
+//        print_r($result);
+//        echo "\n --------- \n";
+
+//        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import valid booklet');
     }
 
 

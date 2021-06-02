@@ -51,11 +51,21 @@ class File extends DataCollectionTypeSafe {
 
     public function __construct(string $path, string $type = null) {
 
-        $this->path = $path;
         $this->type = $type;
+        $this->setFilePath($path);
+        $this->id = FileName::normalize($this->getName(), false);
+    }
+
+
+    public function setFilePath(string $path): void {
+
+        $this->path = $path;
 
         if (!file_exists($path)) {
 
+            $this->size = 0;
+            $this->name = '';
+            $this->modificationTime = 0;
             $this->report('error', "file does not exist `" . dirname($path) . '/'. basename($path) . "`");
 
         } else {
@@ -63,7 +73,6 @@ class File extends DataCollectionTypeSafe {
             $this->size = filesize($path);
             $this->name = basename($path);
             $this->modificationTime = filemtime($path);
-            $this->id = FileName::normalize($this->getName(), false);
         }
     }
 
