@@ -22,7 +22,7 @@ function fake_version() {
 }
 
 function take_current_version() {
-  cp composer.json.original composer.json
+  cp composer.original.json composer.json
 }
 
 
@@ -34,7 +34,7 @@ function expect_db_structure_dump_equals() {
   if [ "$differences" != "" ]
   then
     echo_fail "Expectation '$1' failed: "
-    echo "$result";
+    echo "$differences";
     exit 1
   else
     echo_success "Expectation '$1' met"
@@ -56,11 +56,12 @@ function expect_table_to_have_rows() {
 
 # param 1: expectation file name
 function expect_data_dir_equals() {
-  result=$(cd vo_data && find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/")
+  result=$(cd vo_data && find . | sort | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/")
   expectation_file="integration/test-init/expectations/$1"
   differences=$(diff <(echo "$result") "$expectation_file")
   if [ "$differences" != "" ]
   then
+    echo "$result"
     echo_fail "Expectation '$1' failed: $differences"
     exit 1
   else

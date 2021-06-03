@@ -1,18 +1,18 @@
 .
   |-ws_1
-  |  |-Testtakers
-  |  |  |-SAMPLE_TESTTAKERS.XML
   |  |-Booklet
+  |  |  |-SAMPLE_BOOKLET.XML
   |  |  |-SAMPLE_BOOKLET2.XML
   |  |  |-SAMPLE_BOOKLET3.XML
-  |  |  |-SAMPLE_BOOKLET.XML
   |  |-Resource
   |  |  |-SAMPLE_UNITCONTENTS.HTM
   |  |  |-verona-simple-player-1.html
-  |  |-Unit
-  |  |  |-SAMPLE_UNIT2.XML
-  |  |  |-SAMPLE_UNIT.XML
   |  |-SysCheck
+  |  |  |-SAMPLE_SYSCHECK.XML
   |  |  |-reports
   |  |  |  |-SAMPLE_SYSCHECK-REPORT.JSON
-  |  |  |-SAMPLE_SYSCHECK.XML
+  |  |-Testtakers
+  |  |  |-SAMPLE_TESTTAKERS.XML
+  |  |-Unit
+  |  |  |-SAMPLE_UNIT.XML
+  |  |  |-SAMPLE_UNIT2.XML
