@@ -177,11 +177,17 @@ class Workspace {
 
         $files = [];
 
+        $validator = new WorkspaceValidator($this->getWorkspaceId());
+
         foreach ($localFilePath as $fileName) {
 
             $file = File::get($this->_workspacePath . '/' . $fileName, null, true);
 
-            $file->crossValidate(new WorkspaceValidator($this->getWorkspaceId())); // TODO merge (or separate completely) Workspace and Validator maybe and get rid of this workaround
+            $validator->addFile($file->getType(), $file);
+
+            if ($file->isValid()) {
+                $file->crossValidate($validator);
+            }
 
             $files[$fileName] = $file;
         }

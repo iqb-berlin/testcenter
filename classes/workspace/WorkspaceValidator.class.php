@@ -18,6 +18,7 @@ class WorkspaceValidator extends Workspace {
 
 
     public function validate(): array {
+
         $this->crossValidate();
         $this->findUnusedItems();
 
@@ -112,6 +113,20 @@ class WorkspaceValidator extends Workspace {
         return null;
     }
 
+
+    public function addFile(string $type, File $file): void {
+
+        if (isset($this->allFiles[$type][$file->getId()])) {
+
+            $this->allFiles[$this->getPseudoTypeForDuplicate($type, $file->getId())][$file->getId()] = $file;
+
+        } else {
+
+            $this->allFiles[$type][$file->getId()] = $file;
+        }
+    }
+
+
     private function readFiles() {
 
         $this->allFiles = [];
@@ -126,15 +141,7 @@ class WorkspaceValidator extends Workspace {
             foreach ($files as $filePath) {
 
                 $file = File::get($filePath, $type, true);
-
-                if (isset($this->allFiles[$type][$file->getId()])) {
-
-                    $this->allFiles[$this->getPseudoTypeForDuplicate($type, $file->getId())][$file->getId()] = $file;
-
-                } else {
-
-                    $this->allFiles[$type][$file->getId()] = $file;
-                }
+                $this->addFile($type, $file);
             }
         }
     }
