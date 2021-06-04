@@ -74,4 +74,23 @@ class FolderTest extends TestCase {
         $this->assertEquals($expected, $result);
     }
 
+
+    function test_deleteContentsRecursive() {
+
+        Folder::deleteContentsRecursive($this->vfs->url() . '/vo_data/ws_1/SysCheck');
+        $result = Folder::getContentsFlat($this->vfs->url() . '/vo_data');
+        $expected = [
+            "ws_1/Booklet/SAMPLE_BOOKLET.XML",
+            "ws_1/Booklet/SAMPLE_BOOKLET2.XML",
+            "ws_1/Booklet/SAMPLE_BOOKLET3.XML",
+            "ws_1/Booklet/trash.xml",
+            "ws_1/Testtakers/SAMPLE_TESTTAKERS.XML",
+            "ws_1/Testtakers/trash.xml",
+            "ws_1/Unit/SAMPLE_UNIT.XML",
+            "ws_1/Unit/SAMPLE_UNIT2.XML",
+            "ws_1/Resource/SAMPLE_UNITCONTENTS.HTM",
+            "ws_1/Resource/verona-simple-player-1.html"
+        ];
+        $this->assertEquals($expected, $result);
+    }
 }
