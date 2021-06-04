@@ -50,9 +50,6 @@
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
     "phpunit/phpunit":  "^8",
-    "iqb-berlin/verona-player-simple": "1.0.1",
-    "ext-propro":  "*",
-    "ext-raphf":  "*",
-    "ext-http":  "*"
+    "iqb-berlin/verona-player-simple": "1.0.1"
   }
 }
