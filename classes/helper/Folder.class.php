@@ -1,12 +1,12 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
-// TODO unit test
 
 
 class Folder {
 
     // stream save (PHP's function glob is not)
+    // TODO unit-test
     static function glob(string $dir, string $filePattern = null): array {
 
         $files = scandir($dir);
@@ -48,6 +48,30 @@ class Folder {
         return $list;
     }
 
+
+    static function getContentsFlat(string $path, $localPath = ''): array {
+
+        $list = [];
+
+        if ($handle = opendir($path)) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
+                    $localPathEntry = $localPath ? "$localPath/$entry" : $entry;
+                    if (is_file("$path/$entry")) {
+                        $list[] = $localPathEntry;
+                    }
+                    if (is_dir("$path/$entry")) {
+                        $list = array_merge($list, Folder::getContentsFlat("$path/$entry", $localPathEntry));
+                    }
+                }
+            }
+            closedir($handle);
+        }
+
+        return $list;
+    }
+
+
     // TODO unit-test
     static function deleteContentsRecursive(string $path): void {
 
@@ -76,6 +100,7 @@ class Folder {
     }
 
 
+    // TODO unit-test
     /**
      * creates missing subdirectories for a missing path,
      * for example: let /var/www/html/vo_data exist
@@ -104,5 +129,4 @@ class Folder {
         }, isset($pathParts['scheme']) ? "{$pathParts['scheme']}://{$pathParts['host']}" : '');
 
     }
-
 }

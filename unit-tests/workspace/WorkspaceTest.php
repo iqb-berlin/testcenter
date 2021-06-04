@@ -274,7 +274,6 @@ class WorkspaceTest extends TestCase {
 
     function test_importUnsortedFile_zip_rejectOnDuplicateId() {
 
-
         ZIP::$mockArchive = [
             'file_with_used_id.xml' => '<Unit ><Metadata><Id>UNIT.SAMPLE</Id><Label>l</Label></Metadata><Definition player="p">d</Definition></Unit>',
         ];
@@ -288,6 +287,50 @@ class WorkspaceTest extends TestCase {
         $this->assertFalse(
             file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
             'reject file from ZIP on duplicate ID'
+        );
+    }
+
+
+    function test_importUnsortedFile_zip_handleSubFolders() {
+
+        ZIP::$mockArchive = [
+            'valid_testtakers.xml' => self::validTesttakers,
+            'valid_booklet.xml' => self::validBooklet,
+            'RESOURCE' => [
+                'P.html' => 'this would be a player'
+            ],
+            'whatever' => [
+                'somestuff' => [
+                    'invalid_unit.xml' => 'INVALID',
+                    'valid_unit.xml' => self::validUnit
+                ]
+            ]
+        ];
+
+        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $errors = $this->getErrorsFromValidationResult($result);
+        $this->assertCount(1, $errors);
+
+        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(
+            file_exists($this->workspace->getWorkspacePath() . '/Unit/invalid_unit.xml'),
+            'don\'t import invalid Unit from ZIP'
+        );
+        $this->assertTrue(
+            file_exists($this->workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+            'import invalid Unit from ZIP'
+        );
+        $this->assertTrue(
+            file_exists($this->workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+            'import Booklet dependant of invalid unit from ZIP'
+        );
+        $this->assertTrue(
+            file_exists($this->workspace->getWorkspacePath() . '/Resource/P.html'),
+            'import resource from ZIP'
+        );
+        $this->assertTrue(
+            file_exists($this->workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+            'import Testtakers dependant of invalid unit from ZIP'
         );
     }
 

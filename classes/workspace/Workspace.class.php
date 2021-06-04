@@ -254,10 +254,8 @@ class Workspace {
         ZIP::extract($filePath, $extractionPath);
 
         // TODO handle subfolders!
-        $fileList = array_map(
-            function(string $fileName) use ($extractionFolder) { return "$extractionFolder/$fileName"; },
-            Folder::getContentsRecursive($extractionPath)
-        );
+
+        $fileList = Folder::getContentsFlat($extractionPath, $extractionFolder);
 
         return  $fileList;
 

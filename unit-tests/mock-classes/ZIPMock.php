@@ -11,9 +11,23 @@ class ZIP {
 
     static function extract(string $filePath, string $extractionPath): void {
 
-        foreach (self::$mockArchive as $name => $content) {
+        self::extractFile(self::$mockArchive, $extractionPath);
+    }
 
-            file_put_contents("$extractionPath/$name", $content);
+    static private function extractFile($mockArchiveFolder, $extractionPath) {
+
+        foreach ($mockArchiveFolder as $name => $content) {
+
+            if (is_array($content)) {
+
+                mkdir("$extractionPath/$name");
+                self::extractFile($content, "$extractionPath/$name");
+
+            } else {
+
+                file_put_contents("$extractionPath/$name", $content);
+
+            }
         }
     }
 }
