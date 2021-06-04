@@ -12,6 +12,10 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
 
+  testcenter-db:
+    ports:
+      - "9091:3306"
+
   testcenter-backend:
     build:
       context: testcenter-backend
