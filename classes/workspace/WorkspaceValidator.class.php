@@ -114,16 +114,17 @@ class WorkspaceValidator extends Workspace {
     }
 
 
-    public function addFile(string $type, File $file): void {
+    public function addFile(string $type, File $file): string {
 
         if (isset($this->allFiles[$type][$file->getId()])) {
 
-            $this->allFiles[$this->getPseudoTypeForDuplicate($type, $file->getId())][$file->getId()] = $file;
+            $type = $this->getPseudoTypeForDuplicate($type, $file->getId());
 
-        } else {
-
-            $this->allFiles[$type][$file->getId()] = $file;
         }
+
+        $this->allFiles[$type][$file->getId()] = $file;
+
+        return "$type/{$file->getId()}";
     }
 
 
@@ -173,11 +174,9 @@ class WorkspaceValidator extends Workspace {
 
     private function crossValidate(): void {
 
-        foreach ($this->allFiles as $type => $fileList) {
+        foreach ($this->allFiles as $fileList) { // correct order is ensured by the order of readFiles
 
-            foreach ($fileList as $file) {
-
-                /* @var File $file */
+            foreach ($fileList as /* @var */ $file) {
 
                 if ($file->isValid()) {
 

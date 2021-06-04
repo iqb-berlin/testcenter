@@ -56,7 +56,9 @@ class XMLFileTesttakers extends XMLFile {
 
                     $booklet->addUsedBy($this);
 
-                } else {
+                }
+
+                if (!$booklet or !$booklet->isValid()) {
 
                     $this->report('error', "Booklet `$bookletId` not found for login `{$testtaker->getName()}`");
                 }

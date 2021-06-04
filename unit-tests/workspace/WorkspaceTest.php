@@ -36,13 +36,18 @@ class WorkspaceTest extends TestCase {
     const validFile2 = '<Unit><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">2nd valid file</Definition></Unit>';
 
     const validUnit =
-        '<Unit ><Metadata><Id>x_valid_unit</Id><Label>l</Label></Metadata><Definition player="p">valid extracted unit</Definition></Unit>';
-    const invalidUnit =
-        '<Unit><Metadata><Id>x_invalid_unit</Id></Metadata></Unit>';
+        '<Unit ><Metadata><Id>x_unit</Id><Label>l</Label></Metadata><Definition player="p">valid extracted unit</Definition></Unit>';
     const validBooklet =
-        '<Booklet><Metadata><Id>x_valid_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_valid_unit" /></Units></Booklet>';
-    const invalidBooklet =
-        '<Booklet><Metadata><Id>x_invalid_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_invalid_unit" /></Units></Booklet>';
+        '<Booklet><Metadata><Id>x_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>';
+    const validTesttakers =
+        '<Testtakers>
+            <Metadata><Description>d</Description></Metadata>
+            <Group id="new_group" label="">
+                <Login name="new_user" mode="run-review">
+                    <Booklet>x_booklet</Booklet>
+                </Login>
+            </Group>
+        </Testtakers>';
 
 
     public static function setUpBeforeClass(): void {
@@ -174,36 +179,126 @@ class WorkspaceTest extends TestCase {
             'allow overwriting if filename and id is the same'
         );
         $this->assertGreaterThan(0, count($result["valid.xml"]['warning']), 'return warning if filename and id is the same');
-
-        // Zip-Archive import can not be tested, because
-        // ext/zip does not support userland stream wrappers - so no vfs-support
-        // see https://github.com/bovigo/vfsStream/wiki/Known-Issues
-        // TODO find a solution to test ZIP-import
     }
 
 
-    function test_importUnsortedZipFile() {
+    function test_importUnsortedFile_zipWithValidFilesWithDependencies() {
 
         ZIP::$mockArchive = [
+            'valid_testtakers.xml' => self::validTesttakers,
             'valid_booklet.xml' => self::validBooklet,
             'P.html' => 'this would be a player',
-            'valid_unit.xml' => self::validUnit,
-
-
+            'valid_unit.xml' => self::validUnit
         ];
 
         $result = $this->workspace->importUnsortedFile("archive.zip");
+        $errors = $this->getErrorsFromValidationResult($result);
 
-//        echo "\n --------- \n";
-//        print_r(Folder::getContentsRecursive(DATA_DIR));
-//        echo "\n --------- \n";
-//        print_r($result);
-//        echo "\n --------- \n";
+        $this->assertCount(0, $errors);
 
-//        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
-        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
-        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
-        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import valid booklet');
+        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit from ZIP');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet from ZIP');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource from ZIP');
+        $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers from ZIP');
+    }
+
+
+    function test_importUnsortedFile_zip_rejectInvalidUnitAndDependantFiles() {
+
+        ZIP::$mockArchive = [
+            'valid_testtakers.xml' => self::validTesttakers,
+            'valid_booklet.xml' => self::validBooklet,
+            'P.html' => 'this would be a player',
+            'invalid_unit.xml' => 'INVALID'
+        ];
+
+        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $errors = $this->getErrorsFromValidationResult($result);
+
+        $this->assertCount(3, $errors);
+
+        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(
+            file_exists($this->workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+            'don\'t import invalid Unit from ZIP'
+        );
+        $this->assertFalse(
+            file_exists($this->workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+            'don\'t import Booklet dependant of invalid unit from ZIP'
+        );
+        $this->assertTrue(
+            file_exists($this->workspace->getWorkspacePath() . '/Resource/P.html'),
+            'import resource from ZIP'
+        );
+        $this->assertFalse(
+            file_exists($this->workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+            'don\'t import Testtakers dependant of invalid unit from ZIP'
+        );
+    }
+
+
+    function test_importUnsortedFile_zip_rejectInvalidBookletAndDependantFiles() {
+
+        ZIP::$mockArchive = [
+            'valid_testtakers.xml' => self::validTesttakers,
+            'invalid_booklet.xml' => 'INVALID',
+            'P.html' => 'this would be a player',
+            'valid_unit.xml' => self::validUnit
+        ];
+
+        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $errors = $this->getErrorsFromValidationResult($result);
+
+        $this->assertCount(2, $errors);
+
+        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertTrue(
+            file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
+            'import valid Unit from ZIP'
+        );
+        $this->assertFalse(
+            file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'),
+            'don\'t import Booklet dependant of invalid unit from ZIP'
+        );
+        $this->assertTrue(
+            file_exists(DATA_DIR . '/ws_1/Resource/P.html'),
+            'import resource from ZIP'
+        );
+        $this->assertFalse(
+            file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'),
+            'don\'t import Testtakers dependant of invalid unit from ZIP'
+        );
+    }
+
+
+    function test_importUnsortedFile_zip_rejectOnDuplicateId() {
+
+
+        ZIP::$mockArchive = [
+            'file_with_used_id.xml' => '<Unit ><Metadata><Id>UNIT.SAMPLE</Id><Label>l</Label></Metadata><Definition player="p">d</Definition></Unit>',
+        ];
+
+        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $errors = $this->getErrorsFromValidationResult($result);
+
+        $this->assertCount(1, $errors);
+
+        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(
+            file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
+            'reject file from ZIP on duplicate ID'
+        );
+    }
+
+
+    function getErrorsFromValidationResult($result): array {
+        return array_filter(
+            array_map(function($sortedReport) {
+                return $sortedReport['error'] ?? null;
+            }, $result),
+            'is_array'
+        );
     }
 
 

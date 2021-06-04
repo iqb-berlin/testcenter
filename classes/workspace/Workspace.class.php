@@ -173,24 +173,20 @@ class Workspace {
     }
 
 
-    protected function validateUnsortedFiles(array $localFilePath): array {
+    protected function validateUnsortedFiles(array $localFilePaths): array {
 
         $files = [];
 
         $validator = new WorkspaceValidator($this->getWorkspaceId());
 
-        foreach ($localFilePath as $fileName) {
+        foreach ($localFilePaths as $localFilePath) {
 
-            $file = File::get($this->_workspacePath . '/' . $fileName, null, true);
-
+            $file = File::get($this->_workspacePath . '/' . $localFilePath, null, true);
             $validator->addFile($file->getType(), $file);
-
-            if ($file->isValid()) {
-                $file->crossValidate($validator);
-            }
-
-            $files[$fileName] = $file;
+            $files[$localFilePath] = $file;
         }
+
+        $validator->validate();
 
         return $files;
     }
