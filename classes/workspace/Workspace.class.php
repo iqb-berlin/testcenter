@@ -157,7 +157,7 @@ class Workspace {
 
     protected function importUnsortedFiles(array $localFilePaths): array {
 
-        $files = $this->validateUnsortedFiles($localFilePaths);
+        $files = $this->crossValidateUnsortedFiles($localFilePaths);
 
         foreach ($files as $localFilePath => $file) {
 
@@ -173,7 +173,7 @@ class Workspace {
     }
 
 
-    protected function validateUnsortedFiles(array $localFilePaths): array {
+    protected function crossValidateUnsortedFiles(array $localFilePaths): array {
 
         $files = [];
 
