@@ -20,7 +20,7 @@
       "type": "package",
       "package": {
         "name": "iqb-berlin/verona-player-simple",
-        "version": "11.5.0",
+        "version": "1.0.1",
         "source": {
           "url": "https://github.com/iqb-berlin/verona-player-simple.git",
           "type": "git",
