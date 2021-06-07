@@ -58,7 +58,7 @@ class Workspace {
 
         $subFolderPath = $this->_workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
-            throw new Exception("Invalid type {$type}!");
+            throw new Exception("Invalid type $type!");
         }
         if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
             throw new Exception("Workspace dir `{$subFolderPath}` seems not to be a proper directory!");
@@ -151,7 +151,10 @@ class Workspace {
             $fileNames = [$fileName];
         }
 
-        return $this->importUnsortedFiles($fileNames);
+        $files = $this->importUnsortedFiles($fileNames);
+        $this->deleteUnsortedFiles();
+
+        return $files;
     }
 
 
@@ -200,7 +203,6 @@ class Workspace {
             if (!mkdir($targetFolder)) {
 
                 $file->report('error', "Could not create folder: `$targetFolder`.");
-                unlink($file->getPath());
                 return;
             }
         }
@@ -216,14 +218,12 @@ class Workspace {
                     Overwriting was rejected since new file's ID (`{$file->getId()}`) 
                     differs from old one (`{$oldFile->getId()}`)."
                 );
-                unlink($file->getPath());
                 return;
             }
 
             if (!unlink($targetFilePath)) {
 
                 $file->report('error', "Could not delete file: `$targetFolder/$localFilePath`");
-                unlink($file->getPath());
                 return;
             }
 
@@ -233,7 +233,6 @@ class Workspace {
         if (!rename($this->_workspacePath . '/' . $localFilePath, $targetFilePath)) {
 
             $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
-            unlink($file->getPath());
             return;
         }
 
@@ -244,8 +243,8 @@ class Workspace {
     protected function unpackUnsortedZipArchive(string $fileName): array {
 
         $extractionFolder = "{$fileName}_Extract";
-        $filePath = "{$this->_workspacePath}/$fileName";
-        $extractionPath = "{$this->_workspacePath}/$extractionFolder";
+        $filePath = "$this->_workspacePath/$fileName";
+        $extractionPath = "$this->_workspacePath/$extractionFolder";
 
         if (!mkdir($extractionPath)) {
             throw new Exception("Could not create directory for extracted files: `$extractionPath`");
@@ -253,13 +252,27 @@ class Workspace {
 
         ZIP::extract($filePath, $extractionPath);
 
-        // TODO handle subfolders!
+        return Folder::getContentsFlat($extractionPath, $extractionFolder);
+    }
 
-        $fileList = Folder::getContentsFlat($extractionPath, $extractionFolder);
 
-        return  $fileList;
+    protected function deleteUnsortedFiles(): void {
 
-        // Folder::deleteContentsRecursive($extractionPath); TODO Where?
+        foreach (Folder::glob($this->getWorkspacePath(), "*") as $fullFilePath) {
+
+            if (!in_array(basename($fullFilePath), $this::subFolders)) {
+
+                if (is_dir($fullFilePath)) {
+
+                    Folder::deleteContentsRecursive($fullFilePath);
+                    rmdir($fullFilePath);
+
+                } else if (is_file($fullFilePath)) {
+
+                    unlink($fullFilePath);
+                }
+            }
+        }
     }
 
 

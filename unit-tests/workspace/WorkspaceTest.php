@@ -129,7 +129,7 @@ class WorkspaceTest extends TestCase {
         );
 
         $this->assertEquals($expectation, $result);
-        $this->assertEquals($resources, array('.', '..', 'SAMPLE_UNITCONTENTS.HTM'));
+        $this->assertEquals(array('.', '..', 'SAMPLE_UNITCONTENTS.HTM'), $resources);
     }
 
 
@@ -155,11 +155,13 @@ class WorkspaceTest extends TestCase {
         $result = $this->workspace->importUnsortedFile('valid.xml');
         $this->assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/invalid.xml', self::invalidFile);
         $result = $this->workspace->importUnsortedFile('invalid.xml');
         $this->assertGreaterThan(0, count($result["invalid.xml"]['error']), 'invalid file has error report');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/invalid.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/valid3.xml', self::validFile2);
         $result = $this->workspace->importUnsortedFile('valid3.xml');
@@ -170,6 +172,7 @@ class WorkspaceTest extends TestCase {
             "don't overwrite on duplicate id if file names are not the same"
         );
         $this->assertGreaterThan(0, count($result["valid3.xml"]['error']), 'return warning on duplicate id if file names are not the same');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid3.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile2);
         $result = $this->workspace->importUnsortedFile('valid.xml');
@@ -179,6 +182,7 @@ class WorkspaceTest extends TestCase {
             'allow overwriting if filename and id is the same'
         );
         $this->assertGreaterThan(0, count($result["valid.xml"]['warning']), 'return warning if filename and id is the same');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
     }
 
 
@@ -196,7 +200,9 @@ class WorkspaceTest extends TestCase {
 
         $this->assertCount(0, $errors);
 
-        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip'), 'clean after importing');
+
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit from ZIP');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet from ZIP');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource from ZIP');
@@ -218,7 +224,8 @@ class WorkspaceTest extends TestCase {
 
         $this->assertCount(3, $errors);
 
-        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip'), 'clean after importing');
         $this->assertFalse(
             file_exists($this->workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
             'don\'t import invalid Unit from ZIP'
@@ -283,7 +290,7 @@ class WorkspaceTest extends TestCase {
 
         $this->assertCount(1, $errors);
 
-        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
         $this->assertFalse(
             file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'),
             'reject file from ZIP on duplicate ID'
@@ -311,7 +318,7 @@ class WorkspaceTest extends TestCase {
         $errors = $this->getErrorsFromValidationResult($result);
         $this->assertCount(1, $errors);
 
-        //        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
+        $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
         $this->assertFalse(
             file_exists($this->workspace->getWorkspacePath() . '/Unit/invalid_unit.xml'),
             'don\'t import invalid Unit from ZIP'
