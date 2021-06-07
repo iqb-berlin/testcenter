@@ -19,31 +19,6 @@ class WorkspaceInitializer {
       "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
     ];
 
-    /**
-     * creates missing subdirectories for a missing path,
-     * for example: let /var/www/html/vo_data exist
-     * and $filePath be /var/www/html/vo_data/ws_5/Testtakers
-     * this functions creates ws_5 and ws_5/Testtakers in /var/www/html/vo_data
-     * Note: dont' use paths containing filenames!
-     *
-     * @param $dirPath - a full path
-     * @return string - the path, again
-     */
-    private function createSubdirectories(string $dirPath): string {
-
-        $pathParts = parse_url($dirPath);
-        return array_reduce(explode('/', $pathParts['path']), function($agg, $item) {
-            $agg .= "$item/";
-            if (file_exists($agg) and !is_dir($agg)) {
-                throw new Exception("$agg is not a directory, but should be!");
-            }
-            if (!file_exists($agg)) {
-                mkdir($agg);
-            }
-            return $agg;
-        }, isset($pathParts['scheme']) ? "{$pathParts['scheme']}://{$pathParts['host']}" : '');
-    }
-
 
     private function importSampleFile(int $workspaceId, string $source, string $target) {
 
@@ -55,7 +30,7 @@ class WorkspaceInitializer {
 
         $dir = pathinfo($target, PATHINFO_DIRNAME);;
         $fileName = basename($target);
-        $fileName = $this->createSubdirectories(DATA_DIR . "/ws_$workspaceId/$dir") . $fileName;
+        $fileName = Folder::createPath(DATA_DIR . "/ws_$workspaceId/$dir") . $fileName;
 
         if (!@copy($importFileName, $fileName)) {
             throw new Exception("Could not write file: $fileName");
