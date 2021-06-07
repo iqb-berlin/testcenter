@@ -86,8 +86,8 @@ class XMLFileTesttakers extends XMLFile {
                     'login',
                     array_intersect($loginList, $otherLoginList),
                     basename($otherFilePath),
-                    $validator->getWorkspaceId(),
-                    $otherTesttakersFolder->getWorkspaceId()
+                    $validator->getId(),
+                    $otherTesttakersFolder->getId()
                 );
             }
 
@@ -101,8 +101,8 @@ class XMLFileTesttakers extends XMLFile {
                     'group',
                     array_intersect($groupList, array_keys($otherGroupList)),
                     basename($otherFilePath),
-                    $validator->getWorkspaceId(),
-                    $otherTesttakersFolder->getWorkspaceId()
+                    $validator->getId(),
+                    $otherTesttakersFolder->getId()
                 );
             }
         }

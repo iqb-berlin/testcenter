@@ -33,7 +33,7 @@ class TesttakersFolder extends Workspace {
 
             if ($xFile->isValid()) {
 
-                $potentialLogin = $xFile->getLogin($name, $password, $this->_workspaceId);
+                $potentialLogin = $xFile->getLogin($name, $password, $this->workspaceId);
 
                 if ($potentialLogin) {
 
@@ -69,7 +69,7 @@ class TesttakersFolder extends Workspace {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
 
-            $members = $xFile->getPersonsInSameGroup($loginName, $this->_workspaceId);
+            $members = $xFile->getPersonsInSameGroup($loginName, $this->workspaceId);
 
             if ($members) {
                 return $members;

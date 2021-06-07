@@ -5,9 +5,8 @@ declare(strict_types=1);
 
 class Workspace {
 
-    protected $_workspaceId = 0;
-    protected $_workspacePath = '';
-    protected $_dataPath = '';
+    protected int $workspaceId = 0;
+    protected string $workspacePath = '';
 
     // dont' change order, it's the order of possible dependencies
     const subFolders = ['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'];
@@ -31,23 +30,20 @@ class Workspace {
 
     function __construct(int $workspaceId) {
 
-        $this->_workspaceId = $workspaceId;
-
-        $this->_dataPath = DATA_DIR;
-
-        $this->_workspacePath = $this->getOrCreateWorkspacePath();
+        $this->workspaceId = $workspaceId;
+        $this->workspacePath = $this->getOrCreateWorkspacePath();
     }
 
 
     protected function getOrCreateWorkspacePath(): string {
 
-        $workspacePath = $this->_dataPath . '/ws_' .  $this->_workspaceId;
+        $workspacePath = DATA_DIR . '/ws_' .  $this->workspaceId;
         if (file_exists($workspacePath) and !is_dir($workspacePath)) {
-            throw new Exception("Workspace dir {$this->_workspaceId} seems not to be a proper directory!");
+            throw new Exception("Workspace dir $this->workspaceId seems not to be a proper directory!");
         }
         if (!file_exists($workspacePath)) {
             if (!mkdir($workspacePath)) {
-                throw new Exception("Could not create workspace dir {$this->_workspaceId}");
+                throw new Exception("Could not create workspace dir $this->workspaceId");
             }
         }
         return $workspacePath;
@@ -56,12 +52,12 @@ class Workspace {
 
     protected function getOrCreateSubFolderPath(string $type): string {
 
-        $subFolderPath = $this->_workspacePath . '/' . $type;
+        $subFolderPath = $this->workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
             throw new Exception("Invalid type $type!");
         }
         if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
-            throw new Exception("Workspace dir `{$subFolderPath}` seems not to be a proper directory!");
+            throw new Exception("Workspace dir `$subFolderPath` seems not to be a proper directory!");
         }
         if (!file_exists($subFolderPath)) {
             if (!mkdir($subFolderPath)) {
@@ -74,19 +70,13 @@ class Workspace {
 
     public function getId(): int {
 
-        return $this->_workspaceId;
-    }
-
-
-    public function getWorkspaceId(): int { // TODO remove duplicate function
-
-        return $this->_workspaceId;
+        return $this->workspaceId;
     }
 
 
     public function getWorkspacePath(): string {
 
-        return $this->_workspacePath;
+        return $this->workspacePath;
     }
 
 
@@ -120,7 +110,7 @@ class Workspace {
             'not_allowed' => []
         ];
         foreach($filesToDelete as $fileToDelete) {
-            $fileToDeletePath = $this->_workspacePath . '/' . $fileToDelete;
+            $fileToDeletePath = $this->workspacePath . '/' . $fileToDelete;
             if (!file_exists($fileToDeletePath)) {
                 $report['did_not_exist'][] = $fileToDelete;
             } else if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
@@ -151,14 +141,14 @@ class Workspace {
             $fileNames = [$fileName];
         }
 
-        $files = $this->importUnsortedFiles($fileNames);
+        $files = $this->sortValidUnsortedFiles($fileNames);
         $this->deleteUnsortedFiles();
 
         return $files;
     }
 
 
-    protected function importUnsortedFiles(array $localFilePaths): array {
+    protected function sortValidUnsortedFiles(array $localFilePaths): array {
 
         $files = $this->crossValidateUnsortedFiles($localFilePaths);
 
@@ -180,11 +170,11 @@ class Workspace {
 
         $files = [];
 
-        $validator = new WorkspaceValidator($this->getWorkspaceId());
+        $validator = new WorkspaceValidator($this->getId());
 
         foreach ($localFilePaths as $localFilePath) {
 
-            $file = File::get($this->_workspacePath . '/' . $localFilePath, null, true);
+            $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
             $validator->addFile($file->getType(), $file);
             $files[$localFilePath] = $file;
         }
@@ -197,7 +187,7 @@ class Workspace {
 
     protected function sortUnsortedFile(string $localFilePath, File $file): void {
 
-        $targetFolder = $this->_workspacePath . '/' . $file->getType();
+        $targetFolder = $this->workspacePath . '/' . $file->getType();
 
         if (!file_exists($targetFolder)) {
             if (!mkdir($targetFolder)) {
@@ -230,7 +220,7 @@ class Workspace {
             $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
         }
 
-        if (!rename($this->_workspacePath . '/' . $localFilePath, $targetFilePath)) {
+        if (!rename($this->workspacePath . '/' . $localFilePath, $targetFilePath)) {
 
             $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
             return;
@@ -243,8 +233,8 @@ class Workspace {
     protected function unpackUnsortedZipArchive(string $fileName): array {
 
         $extractionFolder = "{$fileName}_Extract";
-        $filePath = "$this->_workspacePath/$fileName";
-        $extractionPath = "$this->_workspacePath/$extractionFolder";
+        $filePath = "$this->workspacePath/$fileName";
+        $extractionPath = "$this->workspacePath/$extractionFolder";
 
         if (!mkdir($extractionPath)) {
             throw new Exception("Could not create directory for extracted files: `$extractionPath`");
@@ -292,7 +282,7 @@ class Workspace {
             }
         }
 
-        throw new HttpError("No $type with name `$findId` found on Workspace`{$this->_workspaceId}`!", 404);
+        throw new HttpError("No $type with name `$findId` found on Workspace`$this->workspaceId`!", 404);
     }
 
 
@@ -318,7 +308,7 @@ class Workspace {
 
     public function delete(): void {
 
-        Folder::deleteContentsRecursive($this->_workspacePath);
-        rmdir($this->_workspacePath);
+        Folder::deleteContentsRecursive($this->workspacePath);
+        rmdir($this->workspacePath);
     }
 }

@@ -155,7 +155,7 @@ class SystemController extends Controller {
                 $availableSysChecks,
                 array_map(
                     function(XMLFileSysCheck $file) use ($sysChecksFolder) { return [
-                        'workspaceId' => $sysChecksFolder->getWorkspaceId(),
+                        'workspaceId' => $sysChecksFolder->getId(),
                         'name' => $file->getId(),
                         'label' => $file->getLabel(),
                         'description' => $file->getDescription()

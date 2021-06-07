@@ -6,7 +6,7 @@ class BookletsFolder extends Workspace {
 
     public function getBookletLabel(string $bookletId): string {
 
-        $lookupFolder = $this->_workspacePath . '/Booklet';
+        $lookupFolder = $this->workspacePath . '/Booklet';
         if (!file_exists($lookupFolder)) {
             throw new HttpError("Folder does not exist: `$lookupFolder`", 404);
         }
@@ -43,7 +43,7 @@ class BookletsFolder extends Workspace {
 
     public function getLogins(): PotentialLoginArray {
 
-        $testTakerDirPath = $this->_workspacePath . '/Testtakers';
+        $testTakerDirPath = $this->workspacePath . '/Testtakers';
         if (!file_exists($testTakerDirPath)) {
             throw new Exception("Folder not found: $testTakerDirPath");
         }

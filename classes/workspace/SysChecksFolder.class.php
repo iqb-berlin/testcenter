@@ -78,7 +78,7 @@ class SysChecksFolder extends Workspace {
 
     private function getSysCheckReportsPath(): string {
 
-        $sysCheckPath = $this->_workspacePath . '/SysCheck';
+        $sysCheckPath = $this->workspacePath . '/SysCheck';
         if (!file_exists($sysCheckPath)) {
             mkdir($sysCheckPath);
         }
