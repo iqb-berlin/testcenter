@@ -50,7 +50,7 @@ class Workspace {
     }
 
 
-    protected function getOrCreateSubFolderPath(string $type): string {
+    public function getOrCreateSubFolderPath(string $type): string {
 
         $subFolderPath = $this->workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {

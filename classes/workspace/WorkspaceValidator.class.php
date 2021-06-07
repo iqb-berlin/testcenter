@@ -3,15 +3,16 @@
 declare(strict_types=1);
 
 
-class WorkspaceValidator extends Workspace {
+class WorkspaceValidator {
 
     protected array $allFiles = [];
     protected array $versionMap = [];
+    protected int $workspaceId = -1;
 
 
     function __construct(int $workspaceId) {
 
-        parent::__construct($workspaceId);
+        $this->workspaceId = $workspaceId;
         $this->readFiles();
         $this->createVersionMap();
     }
@@ -23,6 +24,12 @@ class WorkspaceValidator extends Workspace {
         $this->findUnusedItems();
 
         return $this->fullReport();
+    }
+
+
+    public function getId(): int {
+
+        return $this->workspaceId;
     }
 
 
@@ -131,11 +138,12 @@ class WorkspaceValidator extends Workspace {
     private function readFiles() {
 
         $this->allFiles = [];
+        $workspace = new Workspace($this->workspaceId);
 
-        foreach ($this::subFolders as $type) {
+        foreach (Workspace::subFolders as $type) {
 
             $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-            $files = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
+            $files = Folder::glob($workspace->getOrCreateSubFolderPath($type), $pattern);
 
             $this->allFiles[$type] = [];
 
