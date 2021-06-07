@@ -111,7 +111,7 @@ class WorkspaceValidatorTest extends TestCase{
         foreach ($result as $key => $list) {
 
             if (!isset($expected[$key])) {
-                $this->fail("File-Report `$key` not expected");
+                $this->fail("File-Report `$key` not expected:" . print_r($list, true));
             }
 
             $expect = $expected[$key];
@@ -124,7 +124,7 @@ class WorkspaceValidatorTest extends TestCase{
                 return strcmp($a->message, $b->message);
             });
 
-            $this->assertEquals($expect, $list, "File-Report of `$key`:");
+            $this->assertEquals($expect, $list, "File-Report of `$key`:" . print_r($list, true));
         }
 
         foreach ($expected as $key => $list) {
@@ -134,6 +134,7 @@ class WorkspaceValidatorTest extends TestCase{
             }
         }
     }
+
 
     function test_getResource() {
 
@@ -145,5 +146,24 @@ class WorkspaceValidatorTest extends TestCase{
         $this->assertNull($result);
 
         // more scenarios are implicitly tested with test_getPlayerIfExists in XMLFilesUnitTest
+    }
+
+
+    function test_getUsedBy() {
+
+        $this->validator->validate();
+        $resourceFile = $this->validator->getResource('verona-simple-player-1.html', true);
+
+        $expectation = [
+            'Unit/SAMPLE_UNIT.XML',
+            'Booklet/SAMPLE_BOOKLET.XML',
+            'Testtakers/SAMPLE_TESTTAKERS.XML',
+            'Booklet/SAMPLE_BOOKLET2.XML',
+            'Booklet/SAMPLE_BOOKLET3.XML',
+            'Unit/SAMPLE_UNIT2.XML',
+            'SysCheck/SAMPLE_SYSCHECK.XML'
+        ];
+        $result = array_keys($resourceFile->getUsedBy());
+        $this->assertEquals($expectation, $result);
     }
 }

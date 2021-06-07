@@ -4,6 +4,7 @@ declare(strict_types=1);
 class File extends DataCollectionTypeSafe {
 
     private const type = 'file';
+    public const canHaveDependencies = true;
     protected ?string $type;
     protected string $path = '';
     protected string $name = '';
@@ -14,6 +15,7 @@ class File extends DataCollectionTypeSafe {
     protected array $validationReport = [];
     protected string $label = '';
     protected string $description = '';
+    private ?array $usedBy = [];
 
     static function get(string $path, string $type = null, bool $validate = false): File {
 
@@ -198,5 +200,39 @@ class File extends DataCollectionTypeSafe {
             $meta['label'] = $this->getLabel();
         }
         return $meta;
+    }
+
+
+    public function addUsedBy(File $file): void {
+
+        if (!$this::canHaveDependencies) {
+            return;
+        }
+
+        if (!in_array($file, $this->usedBy)) {
+
+            $this->usedBy["{$file->getType()}/{$file->getName()}"] = $file;
+        }
+    }
+
+
+    public function isUsed(): bool {
+
+        return count($this->usedBy) > 0;
+    }
+
+
+    public function getUsedBy(): array {
+
+        if (!$this::canHaveDependencies) {
+            return [];
+        }
+
+        $depending = [];
+        foreach ($this->usedBy as $localPath => /*+ @var File */ $file) {
+            $depending[$localPath] = $file;
+            $depending = array_merge($depending, $file->getUsedBy());
+        }
+        return $depending;
     }
 }

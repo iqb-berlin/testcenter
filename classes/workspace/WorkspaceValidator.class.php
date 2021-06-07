@@ -35,7 +35,17 @@ class WorkspaceValidator {
 
     public function getFiles(): array {
 
-        return call_user_func_array('array_merge', array_map('array_values', $this->allFiles));
+        $files = [];
+
+        foreach ($this->allFiles as $fileSet) {
+
+            foreach ($fileSet as /** @var File */ $file) {
+
+                $files[$file->getPath()] = $file;
+            }
+        }
+
+        return $files;
     }
 
 
@@ -221,7 +231,9 @@ class WorkspaceValidator {
         foreach (array_keys($this->allFiles) as $type) {
 
             foreach($this->allFiles[$type] as $file) { /* @var $file File */
-                if (method_exists($file, 'isUsed') && !$file->isUsed()) {
+
+                if ($file::canHaveDependencies and !$file->isUsed()) {
+
                     $file->report('warning', "{$file->getType()} is never used");
                 }
             }

@@ -19,6 +19,22 @@ class FolderTest extends TestCase {
     }
 
 
+    function test_glob() {
+
+        $realGlobResult = glob(__DIR__ . '/*');
+        $globResult = Folder::glob(__DIR__, '*');
+        $this->assertEquals($realGlobResult, $globResult);
+
+        $realGlobResult = glob(__DIR__ . '/*.php');
+        $globResult = Folder::glob(__DIR__, '*.php');
+        $this->assertEquals($realGlobResult, $globResult);
+
+        $realGlobResult = glob(__DIR__ . '/*.*');
+        $globResult = Folder::glob(__DIR__, '*.*');
+        $this->assertEquals($realGlobResult, $globResult);
+    }
+
+
     function test_getContentsRecursive() {
 
         $result = Folder::getContentsRecursive($this->vfs->url() . '/vo_data');

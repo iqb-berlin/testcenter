@@ -107,20 +107,64 @@ class Workspace {
         $report = [
             'deleted' => [],
             'did_not_exist' => [],
-            'not_allowed' => []
+            'not_allowed' => [],
+            'was_used' => []
         ];
+
+        $validator = new WorkspaceValidator($this->workspaceId);
+        $validator->validate();
+        $allFiles = $validator->getFiles();
+
         foreach($filesToDelete as $fileToDelete) {
+
             $fileToDeletePath = $this->workspacePath . '/' . $fileToDelete;
+
             if (!file_exists($fileToDeletePath)) {
+
                 $report['did_not_exist'][] = $fileToDelete;
-            } else if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
+                continue;
+            }
+
+            // file does not exist in validator means it must be something not validatable like sysCheck-Reports
+            $validatedFile = $allFiles[$fileToDeletePath] ?? null;
+
+            if (!$this->isUnusedFileAndCanBeDeleted($validatedFile, $filesToDelete)) {
+
+                $report['was_used'][] = $fileToDelete;
+                continue;
+            }
+
+            if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
+
                 $report['deleted'][] = $fileToDelete;
+
             } else {
+
                 $report['not_allowed'][] = $fileToDelete;
             }
         }
+
         return $report;
     }
+
+
+    private function isUnusedFileAndCanBeDeleted(?File $file, array $allFilesToDelete): bool {
+
+        if ($file === null) {
+
+            return true;
+        }
+
+        if (!$file->isUsed()) {
+
+            return true;
+        }
+
+        $usingFiles = array_keys($file->getUsedBy());
+
+        return count(array_intersect($usingFiles, $allFilesToDelete)) === count($usingFiles);
+    }
+
 
 
     protected function isPathLegal(string $path): bool {

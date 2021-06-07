@@ -9,7 +9,6 @@ class XMLFileUnit extends XMLFile {
 
     protected int $totalSize = 0;
     protected string $playerId = '';
-    protected array $usedBy = [];
 
     public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
 
@@ -89,18 +88,6 @@ class XMLFileUnit extends XMLFile {
         }
 
         return '';
-    }
-
-
-    public function addUsedBy(File $file): void {
-
-        $this->usedBy[] = ($file);
-    }
-
-
-    public function isUsed(): bool {
-
-        return count($this->usedBy) > 0;
     }
 
 

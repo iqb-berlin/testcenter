@@ -6,8 +6,11 @@ declare(strict_types=1);
 class Folder {
 
     // stream save (PHP's function glob is not)
-    // TODO unit-test
     static function glob(string $dir, string $filePattern = null): array {
+
+        if (!file_exists($dir) or !is_dir($dir)) {
+            return [];
+        }
 
         $files = scandir($dir);
         $found = [];
@@ -19,7 +22,7 @@ class Folder {
             }
 
             if (!$filePattern or fnmatch($filePattern, $filename)) {
-                $found[] = "{$dir}/{$filename}";
+                $found[] = "$dir/$filename";
             }
         }
 

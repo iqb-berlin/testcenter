@@ -113,24 +113,75 @@ class WorkspaceTest extends TestCase {
 
     function test_deleteFiles() {
 
-        $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck')->chmod(0000);
+        /** @var $voDataDir \org\bovigo\vfs\vfsStreamContent */
+        $voDataDir = $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck');
+        $voDataDir->chmod(0444);
+        file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
 
-        $result = $this->workspace->deleteFiles(array(
+        $result = $this->workspace->deleteFiles([
             'Resource/verona-simple-player-1.html',
+            'Resource/somePlayer.HTML',
             'SysCheck/SAMPLE_SYSCHECK.XML',
-            'i_dont/even.exist'
-        ));
-
-        $resources = scandir('vfs://root/vo_data/ws_1/Resource');
-        $expectation = array(
-            'deleted' => array('Resource/verona-simple-player-1.html'),
-            'did_not_exist' => array('i_dont/even.exist'),
-            'not_allowed' => array('SysCheck/SAMPLE_SYSCHECK.XML')
-        );
-
+            'i_dont/even.exist',
+            "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
+        ]);
+        $expectation = [
+            'deleted' => [
+                'Resource/somePlayer.HTML',
+                "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
+            ],
+            'did_not_exist' => ['i_dont/even.exist'],
+            'not_allowed' => ['SysCheck/SAMPLE_SYSCHECK.XML'],
+            'was_used' => ['Resource/verona-simple-player-1.html']
+        ];
         $this->assertEquals($expectation, $result);
-        $this->assertEquals(array('.', '..', 'SAMPLE_UNITCONTENTS.HTM'), $resources);
+
+        $resourcesLeft = scandir('vfs://root/vo_data/ws_1/Resource');
+        $resourcesLeftExpected = [
+            '.',
+            '..',
+            'SAMPLE_UNITCONTENTS.HTM',
+            'verona-simple-player-1.html'
+        ];
+        $this->assertEquals($resourcesLeftExpected, $resourcesLeft);
     }
+
+
+    function test_deleteFiles_rejectIfDependencies() {
+
+        $result = $this->workspace->deleteFiles([
+            'Resource/verona-simple-player-1.html',
+        ]);
+        $expectation = [
+            'deleted' => [],
+            'did_not_exist' => [],
+            'not_allowed' => [],
+            'was_used' => ['Resource/verona-simple-player-1.html']
+        ];
+        $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
+
+
+        $result = $this->workspace->deleteFiles([
+            'Resource/SAMPLE_UNITCONTENTS.HTM',
+            'Resource/verona-simple-player-1.html',
+            'Testtakers/SAMPLE_TESTTAKERS.XML',
+            'SysCheck/SAMPLE_SYSCHECK.XML'
+        ]);
+        $expectation = [
+            'deleted' => [
+                'Testtakers/SAMPLE_TESTTAKERS.XML',
+                'SysCheck/SAMPLE_SYSCHECK.XML'
+            ],
+            'did_not_exist' => [],
+            'not_allowed' => [],
+            'was_used' => [
+                'Resource/SAMPLE_UNITCONTENTS.HTM',
+                'Resource/verona-simple-player-1.html',
+            ]
+        ];
+        $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
+    }
+
 
 
     function test_countFilesOfAllSubFolders() {
