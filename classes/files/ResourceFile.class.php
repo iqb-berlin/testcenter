@@ -6,7 +6,6 @@ class ResourceFile extends File {
 
     const type = 'Resource';
     protected string $content = '';
-    protected array $usedBy = [];
     protected array $meta = [];
 
     public function __construct(string $path, bool $validate = true) {
@@ -134,14 +133,6 @@ class ResourceFile extends File {
     }
 
 
-//    private function createTypeFromMeta() {
-//
-//        if ($this->isPlayer()) {
-//            $this->type = 'Player';
-//        }
-//    }
-
-
     public function getSpecialInfo(): array {
 
         $info = parent::getSpecialInfo();
@@ -152,18 +143,6 @@ class ResourceFile extends File {
             $info['version'] = $this->meta['version'];
         }
         return $info;
-    }
-
-
-    public function addUsedBy(File $file): void {
-
-        $this->usedBy[] = $file;
-    }
-
-
-    public function isUsed(): bool {
-
-        return count($this->usedBy) > 0;
     }
 
 

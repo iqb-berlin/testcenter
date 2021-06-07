@@ -35,7 +35,17 @@ class WorkspaceValidator {
 
     public function getFiles(): array {
 
-        return call_user_func_array('array_merge', array_map('array_values', $this->allFiles));
+        $files = [];
+
+        foreach ($this->allFiles as $fileSet) {
+
+            foreach ($fileSet as /** @var File */ $file) {
+
+                $files[$file->getPath()] = $file;
+            }
+        }
+
+        return $files;
     }
 
 

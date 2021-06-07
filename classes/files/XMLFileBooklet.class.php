@@ -8,21 +8,6 @@ class XMLFileBooklet extends XMLFile {
     const type = 'Booklet';
 
     protected int $totalSize = 0;
-    protected array $usedBy = [];
-
-    public function addUsedBy(File $file): void {
-
-        if (!in_array($file, $this->usedBy)) {
-
-            $this->usedBy[] = $file;
-        }
-    }
-
-
-    public function isUsed(): bool {
-
-        return count($this->usedBy) > 0;
-    }
 
 
     public function crossValidate(WorkspaceValidator $validator): void {

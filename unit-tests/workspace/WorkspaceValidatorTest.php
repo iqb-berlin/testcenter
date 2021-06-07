@@ -135,6 +135,7 @@ class WorkspaceValidatorTest extends TestCase{
         }
     }
 
+
     function test_getResource() {
 
         $result = $this->validator->getResource('verona-simple-player-1.html', true);
@@ -145,5 +146,24 @@ class WorkspaceValidatorTest extends TestCase{
         $this->assertNull($result);
 
         // more scenarios are implicitly tested with test_getPlayerIfExists in XMLFilesUnitTest
+    }
+
+
+    function test_getUsedBy() {
+
+        $this->validator->validate();
+        $resourceFile = $this->validator->getResource('verona-simple-player-1.html', true);
+
+        $expectation = [
+            'Unit/SAMPLE_UNIT.XML',
+            'Booklet/SAMPLE_BOOKLET.XML',
+            'Testtakers/SAMPLE_TESTTAKERS.XML',
+            'Booklet/SAMPLE_BOOKLET2.XML',
+            'Booklet/SAMPLE_BOOKLET3.XML',
+            'Unit/SAMPLE_UNIT2.XML',
+            'SysCheck/SAMPLE_SYSCHECK.XML'
+        ];
+
+        $this->assertEquals($expectation, array_keys($resourceFile->getUsedBy()));
     }
 }

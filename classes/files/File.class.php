@@ -14,6 +14,7 @@ class File extends DataCollectionTypeSafe {
     protected array $validationReport = [];
     protected string $label = '';
     protected string $description = '';
+    protected array $usedBy = [];
 
     static function get(string $path, string $type = null, bool $validate = false): File {
 
@@ -198,5 +199,31 @@ class File extends DataCollectionTypeSafe {
             $meta['label'] = $this->getLabel();
         }
         return $meta;
+    }
+
+
+    public function addUsedBy(File $file): void {
+
+        if (!in_array($file, $this->usedBy)) {
+
+            $this->usedBy["{$file->getType()}/{$file->getName()}"] = $file;
+        }
+    }
+
+
+    public function isUsed(): bool {
+
+        return count($this->usedBy) > 0;
+    }
+
+
+    public function getUsedBy(): array {
+
+        $depending = [];
+        foreach ($this->usedBy as $localPath => /*+ @var File */ $file) {
+            $depending[$localPath] = $file;
+            $depending = array_merge($depending, $file->getUsedBy());
+        }
+        return $depending;
     }
 }

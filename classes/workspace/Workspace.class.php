@@ -107,20 +107,58 @@ class Workspace {
         $report = [
             'deleted' => [],
             'did_not_exist' => [],
-            'not_allowed' => []
+            'not_allowed' => [],
+            'was_used' => []
         ];
+
+        $validator = new WorkspaceValidator($this->workspaceId);
+        $validator->validate();
+        $allFiles = $validator->getFiles();
+
         foreach($filesToDelete as $fileToDelete) {
+
             $fileToDeletePath = $this->workspacePath . '/' . $fileToDelete;
+
             if (!file_exists($fileToDeletePath)) {
+
                 $report['did_not_exist'][] = $fileToDelete;
-            } else if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
+                continue;
+            }
+
+            if (!$this->isUnusedFileAndCanBeDeleted($allFiles[$fileToDeletePath], $filesToDelete)) {
+
+                $report['was_used'][] = $fileToDelete;
+                continue;
+            }
+
+            if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
+
                 $report['deleted'][] = $fileToDelete;
+
             } else {
+
                 $report['not_allowed'][] = $fileToDelete;
             }
         }
+
         return $report;
     }
+
+
+    private function isUnusedFileAndCanBeDeleted(File $file, array $allFilesToDelete): bool {
+
+        if (!$file->isUsed()) {
+
+            return true;
+        }
+
+        $usingFiles = array_keys($file->getUsedBy());
+
+//        echo "\n +++++ {$file->getPath()} ## " . count(array_intersect($usingFiles, $allFilesToDelete)) . " ## " . count($usingFiles);
+
+        return count(array_intersect($usingFiles, $allFilesToDelete)) === count($usingFiles);
+    }
+
 
 
     protected function isPathLegal(string $path): bool {
