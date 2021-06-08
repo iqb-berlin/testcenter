@@ -1,5 +1,8 @@
 # Changelog & Upgrade Information
 
+## 11.5.0
+Fixes some issues in the file-management.
+
 ## 11.2.0
 Adds the missing second endpoint for the customization-module.
 ### Endpoints
