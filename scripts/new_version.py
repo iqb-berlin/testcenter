@@ -57,7 +57,7 @@ def _parse_version() -> str:
 
 
 def _update_version_in_file(new_version):
-    new_file_content = pattern.sub(new_version, file_content)
+    new_file_content = pattern.sub(new_version, file_content, 1)
     with open(VERSION_FILE, 'w') as f:
         f.write(new_file_content)
 

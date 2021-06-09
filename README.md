@@ -35,18 +35,6 @@ Alternatively you can download the container [here](https://hub.docker.com/repos
 make run
 make stop
 ```
-###### Running the tests
-While the backend is running, do
-```
-make test-unit
-make test-e2e
-```
-
-There are also special test for the init-script (aka the installer). 
-The run their own containers and therefore don't need `make run` before. 
-```
-make test-init
-```
 
 ### Manual installation on Webserver
 
@@ -57,6 +45,38 @@ See [Manual Installation](https://iqb-berlin.github.io/testcenter-backend/manual
 Find Changelog [here](https://iqb-berlin.github.io/testcenter-backend/UPGRADE.html)
 
 ## Development
+
+### Using Composer for dependency management
+For local development you can install and update dependencies via Composer (https://getcomposer.org/, 
+https://hub.docker.com/_/composer/).
+
+To read the composer.json file from the project base directory, resolve the dependencies, and install them into vendor 
+directory (https://getcomposer.org/doc/03-cli.md#install-i), use the following command:
+```
+make composer-install
+```
+
+To get the latest versions of the dependencies and to update the composer.lock file 
+(https://getcomposer.org/doc/03-cli.md#update-u), you should use*:
+```
+make composer-update
+```
+**For this to work you have to provide your github-oauth token in an 'auth.json' file at project base directory 
+(https://getcomposer.org/doc/articles/authentication-for-private-packages.md#github-oauth)*
+
+### Running the tests
+While the backend is running, do
+```
+make test-unit
+make test-e2e
+```
+
+There are also special test for the init-script (aka the installer).
+The run their own containers and therefore don't need `make run` before.
+```
+make test-init
+```
+
 ### Coding Standards
 
 Following mostly [PSR-12](https://www.php-fig.org/psr/psr-12/)

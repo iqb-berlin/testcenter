@@ -3,6 +3,7 @@
 # composer
 vendor
 composer.phar
+auth.json
 
 # data folder
 vo_data
