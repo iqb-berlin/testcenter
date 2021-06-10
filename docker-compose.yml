@@ -1,5 +1,5 @@
 # Base compose file defining services and their settings
-# For concrete images check the evironment specific override files.
+# For concrete images check the environment specific override files.
 version: '3.7'
 
 x-env-mysql: &env-mysql
@@ -21,8 +21,8 @@ x-env-logging-conf: &env-logging-conf
 services:
 
   traefik:
-    image: traefik:v2.2
     container_name: testcenter-traefik
+    image: traefik:v2.2
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -32,8 +32,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   testcenter-db:
-    image: mysql:5.7
     container_name: testcenter-db
+    image: mysql:5.7
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

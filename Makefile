@@ -7,24 +7,26 @@ stop:
 down:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
 
-run-dev-tls:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.tls.yml up
-run-dev-tls-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.tls.yml up -d
-
 run-prod:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
 run-prod-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml up -d
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 run-prod-tls:
 	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up
 run-prod-tls-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d
 
-
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
+
+composer-install:
+	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest . &&\
+	 docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
+
+composer-update:
+	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest . &&\
+	 docker run -v ${PWD}/testcenter-backend/auth.json:/auth.json  -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer update --no-interaction --no-ansi
 
 init-dev-config:
 	cp .env-default .env
