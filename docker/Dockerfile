@@ -62,6 +62,7 @@ COPY .htaccess /var/www/html/
 COPY autoload.php /var/www/html/
 COPY index.php /var/www/html/
 COPY composer.json /var/www/html/
+COPY sampledata /var/www/html/sampledata
 
 RUN mkdir /var/www/html/config
 
