@@ -21,14 +21,14 @@ build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
 
 composer-install:
-	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest . &&\
-	 docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
+	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+	docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
 
 composer-update:
-	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest . &&\
-	 docker run -v ${PWD}/testcenter-backend/auth.json:/auth.json  -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer update --no-interaction --no-ansi
+	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+	docker run -v ${PWD}/testcenter-backend/auth.json:/auth.json  -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer update --no-interaction --no-ansi
 
-init-dev-config:
+init-dev-config: composer-install
 	cp .env-default .env
 	cp testcenter-frontend/src/environments/environment.dev.ts testcenter-frontend/src/environments/environment.ts
 
