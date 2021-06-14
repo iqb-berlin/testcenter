@@ -61,6 +61,7 @@ COPY --from=backend-composer /vendor /var/www/html/vendor/
 COPY .htaccess /var/www/html/
 COPY autoload.php /var/www/html/
 COPY index.php /var/www/html/
+COPY composer.json .
 
 RUN mkdir /var/www/html/config
 
