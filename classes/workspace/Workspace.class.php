@@ -178,23 +178,25 @@ class Workspace {
 
         if (strtoupper(substr($fileName, -4)) == '.ZIP') {
 
-            $fileNames = $this->unpackUnsortedZipArchive($fileName);
+            $relativeFilePaths = $this->unpackUnsortedZipArchive($fileName);
+            $toDelete = [$fileName, $this->getExtractionDirName($fileName)];
 
         } else {
 
-            $fileNames = [$fileName];
+            $relativeFilePaths = [$fileName];
+            $toDelete = $relativeFilePaths;
         }
 
-        $files = $this->sortValidUnsortedFiles($fileNames);
-        $this->deleteUnsortedFiles();
+        $files = $this->sortValidUnsortedFiles($relativeFilePaths);
+        $this->deleteUnsorted($toDelete);
 
         return $files;
     }
 
 
-    protected function sortValidUnsortedFiles(array $localFilePaths): array {
+    protected function sortValidUnsortedFiles(array $relativeFilePaths): array {
 
-        $files = $this->crossValidateUnsortedFiles($localFilePaths);
+        $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
 
         foreach ($files as $localFilePath => $file) {
 
@@ -276,8 +278,8 @@ class Workspace {
 
     protected function unpackUnsortedZipArchive(string $fileName): array {
 
-        $extractionFolder = "{$fileName}_Extract";
         $filePath = "$this->workspacePath/$fileName";
+        $extractionFolder = $this->getExtractionDirName($fileName);
         $extractionPath = "$this->workspacePath/$extractionFolder";
 
         if (!mkdir($extractionPath)) {
@@ -290,21 +292,23 @@ class Workspace {
     }
 
 
-    protected function deleteUnsortedFiles(): void {
+    protected function getExtractionDirName(string $fileName): string {
 
-        foreach (Folder::glob($this->getWorkspacePath(), "*") as $fullFilePath) {
+        return "{$fileName}_Extract";
+    }
 
-            if (!in_array(basename($fullFilePath), $this::subFolders)) {
 
-                if (is_dir($fullFilePath)) {
+    protected function deleteUnsorted(array $relativePaths): void {
 
-                    Folder::deleteContentsRecursive($fullFilePath);
-                    rmdir($fullFilePath);
+        foreach ($relativePaths as $relativePath) {
 
-                } else if (is_file($fullFilePath)) {
-
-                    unlink($fullFilePath);
-                }
+            $filePath = "$this->workspacePath/$relativePath";
+            if (is_dir($filePath)) {
+                Folder::deleteContentsRecursive($filePath);
+                rmdir($filePath);
+            }
+            if (is_file($filePath)) {
+                unlink($filePath);
             }
         }
     }

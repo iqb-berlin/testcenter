@@ -11,6 +11,7 @@ class ZIP {
 
     static function extract(string $filePath, string $extractionPath): void {
 
+        file_put_contents($filePath, 'xx');
         self::extractFile(self::$mockArchive, $extractionPath);
     }
 
