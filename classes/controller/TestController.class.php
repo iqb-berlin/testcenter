@@ -196,24 +196,6 @@ class TestController extends Controller {
     }
 
 
-    public static function patchUnitRestorepoint(Request $request, Response $response): Response {
-
-        $testId = (int) $request->getAttribute('test_id');
-        $unitName = $request->getAttribute('unit_name');
-
-        $body = RequestBodyParser::getElements($request, [
-            'timeStamp' => null,
-            'restorePoint' => null
-        ]);
-
-        // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
-
-        self::testDAO()->updateRestorePoint($testId, $unitName, $body['restorePoint'], $body['timeStamp']);
-
-        return $response->withStatus(200);
-    }
-
-
     public static function patchState(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */

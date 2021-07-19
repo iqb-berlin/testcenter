@@ -312,23 +312,6 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function updateRestorePoint(int $testId, string $unitName, string $restorePoint, int $timestamp): void {
-
-        $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
-        $this->_(
-            'UPDATE units SET restorepoint=:rp, restorepoint_ts=:rp_ts
-             WHERE id = :unitId and restorepoint_ts < :ts',
-            [
-                ':ts' => $timestamp,
-                ':rp' => $restorePoint,
-                ':rp_ts' => $timestamp,
-                ':unitId' => $unitDbId
-            ]
-        );
-    }
-
-
-    // TODO unit test
     public function addResponse(int $testId, string $unitName, string $responses, string $type, float $timestamp) : void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);

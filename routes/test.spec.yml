@@ -88,9 +88,10 @@ paths:
           content:
             application/json:
               example:
-                laststate: {PRESENTATIONCOMPLETE: "yes"}
-                restorepoint: whatever this player needs
-                xml: "(contents of a unit.xml)"
+                state: {PRESENTATIONCOMPLETE: "yes"}
+                data: whatever this player needs
+                playerId: my-player-id
+                definiton: unit-defintion # TODO alternatively defintionRef is allowed
         "401":
           description: Not authenticated
         "403":
@@ -282,57 +283,6 @@ paths:
       responses:
         "201":
           description: OK, created
-        "401":
-          description: Not authenticated
-        "403":
-          description: Forbidden
-        "500":
-          description: Server Error
-
-  /test/{test_id}/unit/{unit_name}/restorepoint:
-    patch:
-      summary: save a restorepoint
-      description: saves a restorepoint - a data blob indicating the sate of unit player.
-        what is in this blob is business of the player.
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for test-user
-          example: "p:0000000000000.00000000000"
-        - in: path
-          name: test_id
-          description: test-id - id of a test execution.
-          example: 1
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: unit_name
-          description: unit-name (or alias) as defined in booklet
-          example: 1
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                restorePoint:
-                  description: restore point data
-                  type: string
-                timeStamp:
-                  description: timestamp of the snapshot
-                  type: integer
-              required:
-                - response
-                - timeStamp
-            example:
-              restorePoint: "{\"string_example\":\"something\",\"color_example\":\"#ffa200\",\"number_example\":\"36\"}"
-              timeStamp: 1582550888563
-      responses:
-        "200":
-          description: OK, updated
         "401":
           description: Not authenticated
         "403":

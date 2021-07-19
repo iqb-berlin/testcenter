@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 use Slim\App;
 
+global $app;
+
 $app->group('/test', function(App $app) {
 
     $app->put('', [TestController::class, 'put']);
@@ -20,9 +22,6 @@ $app->group('/test', function(App $app) {
         ->add(new IsTestWritable());
 
     $app->put('/{test_id}/unit/{unit_name}/response', [TestController::class, 'putUnitResponse'])
-        ->add(new IsTestWritable());
-
-    $app->patch('/{test_id}/unit/{unit_name}/restorepoint', [TestController::class, 'patchUnitRestorepoint'])
         ->add(new IsTestWritable());
 
     $app->patch('/{test_id}/state', [TestController::class, 'patchState'])

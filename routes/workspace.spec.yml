@@ -182,13 +182,9 @@ paths:
                       description: may contain encoded JSON
                     bookletname:
                       type: string
-                    restorepoint_ts:
-                      type: string
                     responses_ts:
                       type: string
                       description: contains a unix timestamp
-                    restorepoint:
-                      type: string
                     groupname:
                       type: string
                     loginname:
@@ -202,9 +198,7 @@ paths:
                     responsetype: ''
                     laststate: '{"PRESENTATIONCOMPLETE":"yes"}'
                     bookletname: BOOKLET.SAMPLE-1
-                    restorepoint_ts: '0'
                     responses_ts: '1567778660869'
-                    restorepoint:
                     groupname: sample_group
                     loginname: test
                     code: jsx
