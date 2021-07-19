@@ -114,10 +114,17 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    private function getDefinitionRef(): string {
+    public function getDefinitionRef(): string {
 
         $definitionRefNodes = $this->xml->xpath('/Unit/DefinitionRef');
         return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
+    }
+
+
+    public function getDefinition(): string {
+
+        $definitionNodes = $this->xml->xpath('/Unit/Definition');
+        return count($definitionNodes) ? (string) $definitionNodes[0] : '';
     }
 
 

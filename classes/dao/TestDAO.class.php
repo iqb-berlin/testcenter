@@ -297,17 +297,17 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
-    public function getRestorePoint(int $testId, string $unitName): string {
+    public function getDataParts(int $testId, string $unitName): string {
 
         $unitData = $this->_(
-            'SELECT units.restorepoint FROM units
+            'SELECT units.responses FROM units
             WHERE units.name = :unitname and units.booklet_id = :testId',
             [
                 ':unitname' => $unitName,
                 ':testId' => $testId
             ]
         );
-        return (!$unitData or !$unitData['restorepoint']) ? '' : $unitData['restorepoint'];
+        return (!$unitData or !$unitData['responses']) ? '' : $unitData['responses'];
     }
 
 

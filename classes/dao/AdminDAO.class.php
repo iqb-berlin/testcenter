@@ -362,9 +362,15 @@ class AdminDAO extends DAO {
 
 		$groupsString = implode("','", $groups);
 		return $this->_(
-			"SELECT units.name as unitname, units.responses, units.responsetype, units.laststate, tests.name as bookletname,
-					units.restorepoint_ts, units.responses_ts,
-					units.restorepoint, login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code
+			"SELECT units.name as unitname, 
+                    units.responses, 
+                    units.responsetype, 
+                    units.laststate, 
+                    tests.name as bookletname, 
+                    units.responses_ts, 
+                    login_sessions.group_name as groupname, 
+                    login_sessions.name as loginname, 
+                    person_sessions.code
 			FROM units
 			INNER JOIN tests ON tests.id = units.booklet_id
 			INNER JOIN person_sessions ON person_sessions.id = tests.person_id 

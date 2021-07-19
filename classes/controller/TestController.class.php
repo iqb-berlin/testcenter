@@ -83,17 +83,31 @@ class TestController extends Controller {
         $testId = (int) $request->getAttribute('test_id');
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
+        /* @var $unitFile XMLFileUnit */
         $unitFile = $workspaceController->findFileById('Unit', $unitName);
 
         if (!$unitAlias) {
             $unitAlias = $unitName;
         }
 
+        // TODO check if unit is (still) valid
+
         $unit = [
-            'laststate' => self::testDAO()->getUnitState($testId, $unitAlias),
-            'restorepoint' => self::testDAO()->getRestorePoint($testId, $unitAlias),
-            'xml' => $unitFile->xml->asXML()
+            'state' => self::testDAO()->getUnitState($testId, $unitAlias),
+            'data' => self::testDAO()->getDataParts($testId, $unitAlias),
+            'playerId' => $unitFile->getPlayerId(),
         ];
+
+        $definitionRef = $unitFile->getDefinitionRef();
+        if ($definitionRef) {
+            $unit['definitionRef'] = $definitionRef;
+        }
+        $definition = $unitFile->getDefinition();
+        if ($definition) {
+            $unit['definition'] = $definition;
+        }
+
+
 
         return $response->withJson($unit);
     }
