@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 11.5.3
+    version: 11.5.5
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -503,7 +503,7 @@ paths:
                                     - broadcastingService
                                     - appConfig
                             example:
-                                version: 11.5.3
+                                version: 11.5.5
                                 customTexts: {}
                                 appConfig: {}
                                 broadcastingService:
@@ -581,7 +581,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 11.5.3
+                                version: 11.5.5
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -801,7 +801,11 @@ paths:
                     in: path
                     name: unit_name
                     description: 'unit-name (not alias!) as defined in booklet'
-                    example: UNIT.SAMPLE
+                    examples:
+                        externalUnitContents:
+                            value: UNIT.SAMPLE
+                        directUnitContents:
+                            value: UNIT.SAMPLE-2
                     required: true
                     schema:
                         type: string
@@ -810,11 +814,11 @@ paths:
                     description: 'List of Workspaces'
                     content:
                         application/json:
-                            example:
-                                laststate:
-                                    PRESENTATIONCOMPLETE: yes
-                                restorepoint: 'whatever this player needs'
-                                xml: '(contents of a unit.xml)'
+                            examples:
+                                externalUnitContents:
+                                    value: {state: {PRESENTATIONCOMPLETE: yes}, data: '{"name":"Sam Sample","age":34}', playerId: VERONA-SIMPLE-PLAYER-1.0.0.HTML, definitionRef: SAMPLE_UNITCONTENTS.HTM}
+                                directUnitContents:
+                                    value: {state: [], data: "", playerId: VERONA-SIMPLE-PLAYER-1.0.0.HTML, definition: '(content of Sample Unit 2)'}
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1011,58 +1015,6 @@ paths:
             responses:
                 '201':
                     description: 'OK, created'
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '500':
-                    description: 'Server Error'
-    '/test/{test_id}/unit/{unit_name}/restorepoint':
-        patch:
-            summary: 'save a restorepoint'
-            description: 'saves a restorepoint - a data blob indicating the sate of unit player. what is in this blob is business of the player.'
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for test-user'
-                    example: 'p:0000000000000.00000000000'
-                -
-                    in: path
-                    name: test_id
-                    description: 'test-id - id of a test execution.'
-                    example: 1
-                    required: true
-                    schema:
-                        type: string
-                -
-                    in: path
-                    name: unit_name
-                    description: 'unit-name (or alias) as defined in booklet'
-                    example: 1
-                    required: true
-                    schema:
-                        type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            properties:
-                                restorePoint:
-                                    description: 'restore point data'
-                                    type: string
-                                timeStamp:
-                                    description: 'timestamp of the snapshot'
-                                    type: integer
-                            required:
-                                - response
-                                - timeStamp
-                        example:
-                            restorePoint: '{"string_example":"something","color_example":"#ffa200","number_example":"36"}'
-                            timeStamp: 1582550888563
-            responses:
-                '200':
-                    description: 'OK, updated'
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1767,9 +1719,9 @@ paths:
                                 type: array
                                 items:
                                     type: object
-                                    properties: {unitname: {type: string}, responses: {type: string, description: 'may contain encoded JSON'}, responsetype: {type: string}, laststate: {type: string, description: 'may contain encoded JSON'}, bookletname: {type: string}, restorepoint_ts: {type: string}, responses_ts: {type: string, description: 'contains a unix timestamp'}, restorepoint: {type: string}, groupname: {type: string}, loginname: {type: string}, code: {type: string, description: 'login code'}}
+                                    properties: {unitname: {type: string}, responses: {type: string, description: 'may contain encoded JSON'}, responsetype: {type: string}, laststate: {type: string, description: 'may contain encoded JSON'}, bookletname: {type: string}, responses_ts: {type: string, description: 'contains a unix timestamp'}, groupname: {type: string}, loginname: {type: string}, code: {type: string, description: 'login code'}}
                                 example:
-                                    - {unitname: UNIT.SAMPLE, responses: '{"name":"Sam Sample","age":34}', responsetype: "", laststate: '{"PRESENTATIONCOMPLETE":"yes"}', bookletname: BOOKLET.SAMPLE-1, restorepoint_ts: '0', responses_ts: '1567778660869', restorepoint: null, groupname: sample_group, loginname: test, code: jsx}
+                                    - {unitname: UNIT.SAMPLE, responses: '{"name":"Sam Sample","age":34}', responsetype: "", laststate: '{"PRESENTATIONCOMPLETE":"yes"}', bookletname: BOOKLET.SAMPLE-1, responses_ts: '1567778660869', groupname: sample_group, loginname: test, code: jsx}
                 '401':
                     description: 'Not authenticated'
                 '403':

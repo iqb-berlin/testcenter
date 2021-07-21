@@ -78,7 +78,11 @@ paths:
         - in: path
           name: unit_name
           description: unit-name (not alias!) as defined in booklet
-          example: 'UNIT.SAMPLE'
+          examples:
+            externalUnitContents:
+              value: 'UNIT.SAMPLE'
+            directUnitContents:
+              value: 'UNIT.SAMPLE-2'
           required: true
           schema:
             type: string
@@ -87,11 +91,19 @@ paths:
           description: List of Workspaces
           content:
             application/json:
-              example:
-                state: {PRESENTATIONCOMPLETE: "yes"}
-                data: whatever this player needs
-                playerId: my-player-id
-                definiton: unit-defintion # TODO alternatively defintionRef is allowed
+              examples:
+                externalUnitContents:
+                  value:
+                    state: { PRESENTATIONCOMPLETE: "yes" }
+                    data: "{\"name\":\"Sam Sample\",\"age\":34}"
+                    playerId: "VERONA-SIMPLE-PLAYER-1.0.0.HTML"
+                    definitionRef: "SAMPLE_UNITCONTENTS.HTM"
+                directUnitContents:
+                  value:
+                    state: []
+                    data: ""
+                    playerId: "VERONA-SIMPLE-PLAYER-1.0.0.HTML"
+                    definition: "(content of Sample Unit 2)"
         "401":
           description: Not authenticated
         "403":
