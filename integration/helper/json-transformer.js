@@ -1,117 +1,124 @@
 module.exports = function(json, rules, verbose = false) {
 
-    const isType = (type, val) =>
-        (val === null)
-            ? (type === 'null')
-            : !!(val.constructor && val.constructor.name.toLowerCase() === type.toLowerCase());
+  const isType = (type, val) =>
+    (val === null)
+      ? (type === 'null')
+      : !!(val.constructor && val.constructor.name.toLowerCase() === type.toLowerCase());
 
-    const toObject = (thing) => {
+  const toObject = (thing) => {
+    if (isType('object', thing)) return Object.assign({}, thing);
+    if (isType('array', thing)) return thing.values;
+    return {value: thing};
+  };
 
-        if (isType('object', thing)) return Object.assign({}, thing);
-        if (isType('array', thing)) return thing.values;
-        return {value: thing};
+  const toArray = thing => {
+    if (isType('array', thing)) return thing;
+    if (isType('object', thing)) return Object.values(thing);
+    return [thing];
+  };
+
+  const applyRules = (key, value, trace) => {
+    const traceString = trace.join(' > ');
+
+    let newKeyValue = {
+      key: key,
+      val: value
     };
 
-    const toArray = (thing) => {
+    Object.keys(rules).forEach(rulePattern => {
+      const matches = traceString.match(new RegExp(rulePattern));
+      if (matches && matches.length) {
+        newKeyValue = ruleAsFunction(rules[rulePattern])(key, value, matches, trace);
+        if (verbose) console.log('JSON Transformer: ' + trace.join(' > ') + " => "
+          + (newKeyValue ? newKeyValue.key : '(remove)'));
+      }
+    });
 
-        if (isType('array', thing)) return thing;
-        if (isType('object', thing)) return Object.values(thing);
-        return [thing];
-    };
+    return newKeyValue;
+  };
 
-    const applyRules = (key, value, trace) => {
+  const ruleAsFunction = rule => {
+    if (typeof rule === "function") {
+      return rule;
+    }
+    if (rule == null) {
+      return () => null;
+    }
+    if (typeof rule === "object" && 'key' in rule && 'val' in rule) {
+      return () => rule;
+    }
+    return key => ({ key, val: rule });
+  }
 
-        const traceString = trace.join(' > ');
+  const warnOnUndefined = (object, place) => {
+    if (typeof object === "undefined") {
+      console.warn("[undefined] at " + place);
+    }
+  };
 
-        let newKeyValue = {
-            key: key,
-            val: value
-        };
+  const transformTree = (tree, trace = []) => {
+    if (isType('array', tree)) {
 
-        Object.keys(rules).forEach(rulePattern => {
-            const matches = traceString.match(new RegExp(rulePattern));
-            if (matches && matches.length) {
-                newKeyValue = rules[rulePattern](key, value, matches, trace);
-                if (verbose) console.log('JSON Transformer: ' + trace.join(' > ') + " => "
-                    + (newKeyValue ? newKeyValue.key : '(remove)'));
-            }
-        });
+      let transformedTree = [];
 
-        return newKeyValue;
-    };
+      Object.keys(tree).forEach(key => {
 
-    const warnOnUndefined = (object, place) => {
+        const replace = applyRules(key, tree[key], [...trace, key]);
 
-        if (typeof object === "undefined") {
-            console.warn("[undefined] at " + place);
-        }
-    };
+        if (replace !== null) {
 
-    const transformTree = (tree, trace = []) => {
+          if (replace.key === null) {
 
-        if (isType('array', tree)) {
+            warnOnUndefined(replace.val, trace.join(' > ') + ' >> ' + key);
 
-            let transformedTree = [];
-
-            Object.keys(tree).forEach(key => {
-
-                const replace = applyRules(key, tree[key], [...trace, key]);
-
-                if (replace !== null) {
-
-                    if (replace.key === null) {
-
-                        warnOnUndefined(replace.val, trace.join(' > ') + ' >> ' + key);
-
-                        toArray(replace.val).forEach(item => {
-                            transformedTree.push(transformTree(item, [...trace, key]));
-                        });
-
-                    } else {
-                        transformedTree.push(transformTree(replace.val, [...trace, key]));
-                    }
-
-                }
-
+            toArray(replace.val).forEach(item => {
+              transformedTree.push(transformTree(item, [...trace, key]));
             });
 
-            return transformedTree;
+          } else {
+            transformedTree.push(transformTree(replace.val, [...trace, key]));
+          }
+
         }
 
-        if (isType('object', tree)) {
+      });
 
-            let transformedTree = {};
+      return transformedTree;
+    }
 
-            Object.keys(tree).forEach(key => {
+    if (isType('object', tree)) {
 
-                const replace = applyRules(key, tree[key], [...trace, key]);
+      let transformedTree = {};
 
-                if (replace !== null) {
+      Object.keys(tree).forEach(key => {
 
-                    if (replace.key === null) {
+        const replace = applyRules(key, tree[key], [...trace, key]);
 
-                        warnOnUndefined(replace.val, trace.join(' > ') +  ' >> ' + key);
+        if (replace !== null) {
 
-                        const valueAsObject = toObject(replace.val);
+          if (replace.key === null) {
 
-                        Object.keys(valueAsObject).forEach(key => {
-                            transformedTree = {...transformedTree, [key]: transformTree(valueAsObject[key], [...trace, key])}
-                        })
+            warnOnUndefined(replace.val, trace.join(' > ') +  ' >> ' + key);
 
-                    } else {
-                        transformedTree = {...transformedTree, [replace.key]: transformTree(replace.val, [...trace, key])}
-                    }
+            const valueAsObject = toObject(replace.val);
 
-                }
-            });
+            Object.keys(valueAsObject).forEach(key => {
+              transformedTree = {...transformedTree, [key]: transformTree(valueAsObject[key], [...trace, key])}
+            })
 
-            return transformedTree;
+          } else {
+            transformedTree = {...transformedTree, [replace.key]: transformTree(replace.val, [...trace, key])}
+          }
+
         }
+      });
 
-        return tree;
-    };
+      return transformedTree;
+    }
 
-    return transformTree(json);
+    return tree;
+  };
 
+  return transformTree(json);
 };
 
