@@ -1980,7 +1980,7 @@ paths:
                             example:
                                 Resource:
                                     - {name: SAMPLE_UNITCONTENTS.HTM, size: 13392, modificationTime: 1615970109, type: Resource, id: SAMPLE_UNITCONTENTS.HTM, report: [], info: []}
-                                    - {name: verona-simple-player-2.html, size: 29960, modificationTime: 1615970109, type: Resource, id: VERONA-SIMPLE-PLAYER-2.HTML, report: {info: ['Verona-Version supported: 2.1.0']}, info: {label: 'Simple Verona Player 1 - 1.0.1', verona-version: 2.1.0, version: 1.0.1}}
+                                    - {name: verona-simple-player-2.html, size: 29960, modificationTime: 1615970109, type: Resource, id: VERONA-SIMPLE-PLAYER-2.HTML, report: {info: ['Verona-Version: 3.0.0']}, info: {label: 'Simple Verona Player 1 - 1.0.1', verona-version: 2.1.0, version: 1.0.1}}
                                 Unit:
                                     - {name: SAMPLE_UNIT.XML, size: 497, modificationTime: 1615970109, type: Unit, id: UNIT.SAMPLE, report: [], info: {description: 'This is a sample unit showing the possibilities of the sample player.', label: 'A sample unit', totalSize: 13889}}
                                     - {name: SAMPLE_UNIT2.XML, size: 1737, modificationTime: 1615970109, type: Unit, id: UNIT.SAMPLE-2, report: [], info: {description: 'This is an Unit', label: 'A sample unit', totalSize: 1737}}

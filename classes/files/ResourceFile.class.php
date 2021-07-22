@@ -128,7 +128,7 @@ class ResourceFile extends File {
     private function analyzeMeta(): void {
 
         if (isset($this->meta['verona-version'])) {
-            $this->report('info', "Verona-Version supported: {$this->meta['verona-version']}");
+            $this->report('info', "Verona-Version: {$this->meta['verona-version']}");
         }
     }
 

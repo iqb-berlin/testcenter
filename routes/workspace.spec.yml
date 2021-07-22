@@ -517,7 +517,7 @@ paths:
                     id: VERONA-SIMPLE-PLAYER-2.HTML
                     report:
                       info:
-                        - 'Verona-Version supported: 3.0.0'
+                        - 'Verona-Version: 3.0.0'
                     info:
                       label: Simple Verona Player 1 - 1.0.1
                       verona-version: 2.1.0
