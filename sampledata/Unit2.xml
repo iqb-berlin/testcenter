@@ -6,7 +6,7 @@
     <Description>This is an Unit</Description>
   </Metadata>
 
-  <Definition player="verona-simple-player-1.0.0">
+  <Definition player="verona-simple-player-2">
     <![CDATA[
       <div class="container">
           <h1>Sample Unit</h1>

@@ -95,7 +95,7 @@ class WorkspaceTest extends TestCase {
 
         $expectation = [
             'SAMPLE_UNITCONTENTS.HTM',
-            'verona-simple-player-1.html',
+            'verona-simple-player-2.html',
             'SAMPLE_UNIT.XML',
             'SAMPLE_UNIT2.XML',
             'SAMPLE_BOOKLET.XML',
@@ -119,7 +119,7 @@ class WorkspaceTest extends TestCase {
         file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
 
         $result = $this->workspace->deleteFiles([
-            'Resource/verona-simple-player-1.html',
+            'Resource/verona-simple-player-2.html',
             'Resource/somePlayer.HTML',
             'SysCheck/SAMPLE_SYSCHECK.XML',
             'i_dont/even.exist',
@@ -132,7 +132,7 @@ class WorkspaceTest extends TestCase {
             ],
             'did_not_exist' => ['i_dont/even.exist'],
             'not_allowed' => ['SysCheck/SAMPLE_SYSCHECK.XML'],
-            'was_used' => ['Resource/verona-simple-player-1.html']
+            'was_used' => ['Resource/verona-simple-player-2.html']
         ];
         $this->assertEquals($expectation, $result);
 
@@ -141,7 +141,7 @@ class WorkspaceTest extends TestCase {
             '.',
             '..',
             'SAMPLE_UNITCONTENTS.HTM',
-            'verona-simple-player-1.html'
+            'verona-simple-player-2.html'
         ];
         $this->assertEquals($resourcesLeftExpected, $resourcesLeft);
     }
@@ -150,20 +150,20 @@ class WorkspaceTest extends TestCase {
     function test_deleteFiles_rejectIfDependencies() {
 
         $result = $this->workspace->deleteFiles([
-            'Resource/verona-simple-player-1.html',
+            'Resource/verona-simple-player-2.html',
         ]);
         $expectation = [
             'deleted' => [],
             'did_not_exist' => [],
             'not_allowed' => [],
-            'was_used' => ['Resource/verona-simple-player-1.html']
+            'was_used' => ['Resource/verona-simple-player-2.html']
         ];
         $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
 
 
         $result = $this->workspace->deleteFiles([
             'Resource/SAMPLE_UNITCONTENTS.HTM',
-            'Resource/verona-simple-player-1.html',
+            'Resource/verona-simple-player-2.html',
             'Testtakers/SAMPLE_TESTTAKERS.XML',
             'SysCheck/SAMPLE_SYSCHECK.XML'
         ]);
@@ -176,7 +176,7 @@ class WorkspaceTest extends TestCase {
             'not_allowed' => [],
             'was_used' => [
                 'Resource/SAMPLE_UNITCONTENTS.HTM',
-                'Resource/verona-simple-player-1.html',
+                'Resource/verona-simple-player-2.html',
             ]
         ];
         $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
@@ -424,15 +424,15 @@ class WorkspaceTest extends TestCase {
             $this->fail("expected exception");
         } catch (Exception $exception) {}
 
-        $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-1.HTML', true);
+        $result = $this->workspace->findFileById('Resource', 'verona-simple-player-2.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-1.html', $result->getPath());
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.html', $result->getPath());
 
-        $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-1.0.99.HTML', true);
+        $result = $this->workspace->findFileById('Resource', 'verona-simple-player-2.0.99.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-1.html', $result->getPath());
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.html', $result->getPath());
 
-        copy('vfs://root/vo_data/ws_1/Resource/verona-simple-player-1.html',
+        copy('vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.html',
             'vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.0.99.html');
 
         $result = $this->workspace->findFileById('Resource', 'VERONA-SIMPLE-PLAYER-2.HTML', true);
@@ -448,7 +448,7 @@ class WorkspaceTest extends TestCase {
     function test_findFileById_wrongVersion() {
 
         $this->expectException('HttpError');
-        $this->workspace->findFileById('Resource','VERONA-SIMPLE-PLAYER-2.HTML', false);
+        $this->workspace->findFileById('Resource','VERONA-SIMPLE-PLAYER-200.HTML', false);
     }
 
 

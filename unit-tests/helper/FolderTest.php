@@ -62,7 +62,7 @@ class FolderTest extends TestCase {
                 ],
                 "Resource" => [
                     "SAMPLE_UNITCONTENTS.HTM",
-                    "verona-simple-player-1.html"
+                    "verona-simple-player-2.html"
                 ]
             ]
         ];
@@ -85,7 +85,7 @@ class FolderTest extends TestCase {
             "ws_1/Unit/SAMPLE_UNIT.XML",
             "ws_1/Unit/SAMPLE_UNIT2.XML",
             "ws_1/Resource/SAMPLE_UNITCONTENTS.HTM",
-            "ws_1/Resource/verona-simple-player-1.html"
+            "ws_1/Resource/verona-simple-player-2.html"
         ];
         $this->assertEquals($expected, $result);
     }
@@ -105,7 +105,7 @@ class FolderTest extends TestCase {
             "ws_1/Unit/SAMPLE_UNIT.XML",
             "ws_1/Unit/SAMPLE_UNIT2.XML",
             "ws_1/Resource/SAMPLE_UNITCONTENTS.HTM",
-            "ws_1/Resource/verona-simple-player-1.html"
+            "ws_1/Resource/verona-simple-player-2.html"
         ];
         $this->assertEquals($expected, $result);
     }

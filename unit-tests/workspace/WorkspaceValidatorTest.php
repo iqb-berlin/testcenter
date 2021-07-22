@@ -103,8 +103,8 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error', "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"),
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
-            'Resource/verona-simple-player-1.html' => [
-                new ValidationReportEntry('info', 'Verona-Version supported: 2.1.0')
+            'Resource/verona-simple-player-2.html' => [
+                new ValidationReportEntry('info', 'Verona-Version supported: 3.0.0')
             ]
         ];
 
@@ -138,8 +138,8 @@ class WorkspaceValidatorTest extends TestCase{
 
     function test_getResource() {
 
-        $result = $this->validator->getResource('verona-simple-player-1.html', true);
-        $expectation = "verona-simple-player-1.html";
+        $result = $this->validator->getResource('verona-simple-player-2.html', true);
+        $expectation = "verona-simple-player-2.html";
         $this->assertEquals($expectation, $result->getName());
 
         $result = $this->validator->getResource('missing_player.html', true);
@@ -152,7 +152,7 @@ class WorkspaceValidatorTest extends TestCase{
     function test_getUsedBy() {
 
         $this->validator->validate();
-        $resourceFile = $this->validator->getResource('verona-simple-player-1.html', true);
+        $resourceFile = $this->validator->getResource('verona-simple-player-2.html', true);
 
         $expectation = [
             'Unit/SAMPLE_UNIT.XML',

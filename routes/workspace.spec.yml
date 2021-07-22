@@ -510,14 +510,14 @@ paths:
                     id: SAMPLE_UNITCONTENTS.HTM
                     report: []
                     info: []
-                  - name: verona-simple-player-1.html
+                  - name: verona-simple-player-2.html
                     size: 29960
                     modificationTime: 1615970109
                     type: Resource
-                    id: VERONA-SIMPLE-PLAYER-1.HTML
+                    id: VERONA-SIMPLE-PLAYER-2.HTML
                     report:
                       info:
-                        - 'Verona-Version supported: 2.1.0'
+                        - 'Verona-Version supported: 3.0.0'
                     info:
                       label: Simple Verona Player 1 - 1.0.1
                       verona-version: 2.1.0

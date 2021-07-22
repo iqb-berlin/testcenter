@@ -130,7 +130,7 @@ paths:
         - in: path
           name: resource_name
           description: resource_name (filename without XML-extension)
-          example: verona-simple-player-1.html
+          example: verona-simple-player-2.html
           required: true
           schema:
             type: string
