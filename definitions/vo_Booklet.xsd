@@ -32,6 +32,7 @@
     <xs:sequence>
       <xs:element name="CodeToEnter" type="CodeToEnterRestrictionType" minOccurs="0" />
       <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
+      <xs:element name="DenyNavigation" type="DenyNavigationRestrictionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
 
@@ -47,9 +48,26 @@
     </xs:simpleContent>
   </xs:complexType>
 
+  <xs:simpleType name="OnOff">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ON"/>
+      <xs:enumeration value="OFF"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="DenyNavigationRestrictionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="OnOff" name="force_presentation_complete" />
+        <xs:attribute type="OnOff" name="force_response_complete" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
   <xs:complexType name="FirstRestrictionsType">
     <xs:all>
       <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
+      <xs:element name="DenyNavigation" type="DenyNavigationRestrictionType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
