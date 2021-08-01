@@ -56,7 +56,7 @@
   </xs:simpleType>
 
   <xs:complexType name="DenyNavigationRestrictionType">
-    <xs:simpleContent>
+    <xs:simpleContent><!-- TODO should be camleCase.. -->
       <xs:extension base="xs:string">
         <xs:attribute type="OnOff" name="force_presentation_complete" />
         <xs:attribute type="OnOff" name="force_response_complete" />
