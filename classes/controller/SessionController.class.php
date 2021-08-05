@@ -142,7 +142,7 @@ class SessionController extends Controller {
                 foreach ($member->getBooklets() as $code => $booklets) {
 
                     // TODO validity?
-                    $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, $code);
+                    $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($memberLogin, $code, false);
 
                     foreach ($booklets as $booklet) {
 
