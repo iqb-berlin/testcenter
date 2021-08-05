@@ -374,7 +374,6 @@ class SessionDAO extends DAO {
 
     // TODO unit-test
     public function getOrCreatePerson(Login $login, string $code, bool $renewToken = true): Person {
-error_log("getOrCreatePerson {$login->getId()} / $code");
         $person = $this->_(
             'SELECT 
                     person_sessions.id,
@@ -393,7 +392,6 @@ error_log("getOrCreatePerson {$login->getId()} / $code");
 
         if ($person === null) {
 
-            error_log("HALLO FREUNDE");
             return $this->createPerson($login, $code);
         }
 
