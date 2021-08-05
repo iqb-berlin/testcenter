@@ -146,7 +146,7 @@ try  {
         $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d", $allowFailing);
         foreach ($patchInstallReport['patches'] as $patch) {
 
-          if ($patchInstallReport['errors'][$patch]) {
+          if (isset($patchInstallReport['errors'][$patch])) {
 
               CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
 
