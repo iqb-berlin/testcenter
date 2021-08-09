@@ -7,8 +7,6 @@ require_once "classes/helper/Folder.class.php";
 
 class SysCheckReportFileTest extends TestCase {
 
-    private vfsStreamDirectory $vfs;
-
     public static function setUpBeforeClass(): void {
 
         VfsForTest::setUpBeforeClass();
@@ -16,7 +14,7 @@ class SysCheckReportFileTest extends TestCase {
 
     function setUp(): void {
 
-        $this->vfs = VfsForTest::setUp();
+        VfsForTest::setUp();
     }
 
 
@@ -30,6 +28,6 @@ class SysCheckReportFileTest extends TestCase {
         $this->assertEquals('date', $report['fileData'][0]['id']);
         $this->assertEquals(1627545600, $report['fileData'][0]['value']);
         $this->assertEquals('datestr', $report['fileData'][1]['id']);
-        $this->assertEquals('2021-07-29 08:00:00', $report['fileData'][1]['value']);
+        $this->assertEquals('2021-07-29 10:00:00', $report['fileData'][1]['value']);
     }
 }
