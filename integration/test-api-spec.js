@@ -79,63 +79,73 @@ gulp.task('prepare_spec_for_dredd', done => {
   const compiledFileName = 'tmp/compiled.specs.yml';
   cliPrint.headline(`Creating Dredd-compatible API-spec version from ${compiledFileName}`);
 
-  const yamlString = fs.readFileSync(compiledFileName, "utf8");
-  const yamlTree = YAML.parse(yamlString);
+  /**
+   * Before testing the standard OpenApi3-file have to be manipulated:
+   * * dredd does not support multiple examples, so we generate multiple spec files for dredd.
+   *   The first contains everything and the first example each if multiple are given,
+   *   the subsequent ones only the paths with left out examples
+   * * Dredd supports only in-file-references
+   * * For more quirks of Dredd see:
+   *   @see https://github.com/apiaryio/api-elements.js/blob/master/packages/fury-adapter-oas3-parser/STATUS.md
+   * * there is no proper way of hecking xml/octet-strem responses, // TODO maybe get this done?
+   * * [500] Server errors get not tested (how could that be)
+   * * [202] get not tested // TODO why? is this necessary
+   */
 
   const resolveReference = (key, val) => {
     const referenceString = val.substring(val.lastIndexOf('/') + 1);
     return {
       key: null,
-      val: yamlTree.components.schemas[referenceString]
+      val: specsJson.components.schemas[referenceString]
     }
   };
 
-  const splitExamples = (key, val) => {
-
+  const takeOnlyOneExample = (key, val, matches) => {
     iterations = Math.max(iterations, Object.keys(val).length);
     const currentExample = val[Object.keys(val)[iteration - 1]];
-    return (typeof currentExample === "undefined") ? null : {
+    if (typeof currentExample === "undefined") {
+      return null;
+    }
+    splitPaths.push(matches[1]);
+    return {
       key: "example",
       val: currentExample.value
     }
   };
 
-  let iterations = 1;
-  let iteration = 0;
-  let deletePaths;
-
-  // @see https://github.com/apiaryio/api-elements.js/blob/master/packages/fury-adapter-oas3-parser/STATUS.md
-  const rules = {
-    "^(paths > .*? > .*?) .*? > example$": (key, val, matches, trace) => {
-      if ((iteration > 1) && (trace.indexOf('schema') === -1)) {
-        deletePaths[matches[1]] = () => null;
-        return null;
-      }
-      return {key, val};
-
-    },
-    "examples$": splitExamples,
-    "^info > title$": () => {return {
-      key: "title",
-      val: `specs`
-    }},
-    "parameters > \\d+ > schema$": () => null, // @see https://github.com/apiaryio/api-elements.js/issues/226
-    "text/xml > example$": () => null, // TODO work with this in dreddHooks?
-    "application/octet-stream > example$": () => null, // TODO work with this in dreddHooks?
-    "^paths > .*? > .*? > responses > (500|202)$": () => null,
+  const makeDreddCompatible = {
+    "^(paths > [^> ]+ > [^> ]+) > .*? > examples$": takeOnlyOneExample,
+    "^info > title$": 'specs',
+    "parameters > \\d+ > schema$": null,
+    "text/xml > example$": null,
+    "application/octet-stream > example$": null,
+    "^paths > .*? > .*? > responses > (500|202)$": null,
     "schema > \\$ref$": resolveReference,
     "items > \\$ref$": resolveReference
   };
 
+  const deleteAllPathsButSplit = {
+    "^(paths > [^> ]+ > [^> ]+)$": (key, val, matches) => {
+      if (splitPaths.indexOf(matches[1]) > -1) {
+        return { key, val };
+      }
+      return null;
+    }
+  }
 
+  const specsJson = YAML.parse(fs.readFileSync(compiledFileName, "utf8"));
+
+  let iterations = 1;
+  let iteration = 0;
+  let splitPaths = [];
   while (iteration++ < iterations) {
-
-    deletePaths = {};
+    splitPaths = [];
     const targetFileName = `tmp/transformed.specs.${iteration}.yml`;
-    const transformed = jsonTransform(yamlTree, rules, false);
-    const transformed2 = jsonTransform(transformed, deletePaths, false);
-    const transformedAsString = YAML.stringify(transformed2, 10);
-    fs.writeFileSync(targetFileName, transformedAsString, "utf8");
+    let transformedSpecsJson = jsonTransform(specsJson, makeDreddCompatible);
+    if (iteration > 1) {
+      transformedSpecsJson = jsonTransform(transformedSpecsJson, deleteAllPathsButSplit);
+    }
+    fs.writeFileSync(targetFileName, YAML.stringify(transformedSpecsJson, 10), "utf8");
     console.log(`${iteration}/${iterations}: ${targetFileName} written.`);
   }
 
@@ -172,8 +182,8 @@ gulp.task('update_docs', done => {
 
   const compiledFileName = 'tmp/compiled.specs.yml';
   const targetFileName = '../docs/api/specs.yml';
-  const yamlString = fs.readFileSync(compiledFileName, "utf8");
-  const yamlTree = YAML.parse(yamlString);
+  const yamlTree = YAML.parse(fs.readFileSync(compiledFileName, "utf8"));
+
   const localizeReference = (key, val) => {
     const referenceString = val.substring(val.lastIndexOf('#'));
     return {
@@ -182,16 +192,18 @@ gulp.task('update_docs', done => {
     }
   };
 
-  const rules = {
+  const replaceVersion = (key, val) => ({
+    key: "version",
+    val: (val === "%%%VERSION%%%") ? composerFile['version'] : val
+  });
+
+  const makeRedocCompatible = {
     "schema > \\$ref$": localizeReference,
     "items > \\$ref$": localizeReference,
-    "> version$": (key, val) => {return {
-      key: "version",
-      val: (val === "%%%VERSION%%%") ? composerFile['version'] : val
-    }}
+    "> version$": replaceVersion
   };
 
-  const transformed = jsonTransform(yamlTree, rules, false);
+  const transformed = jsonTransform(yamlTree, makeRedocCompatible, false);
   const transformedAsString = YAML.stringify(transformed, 10);
   fs.writeFileSync(targetFileName, transformedAsString, "utf8");
 
@@ -263,7 +275,6 @@ exports.run_dredd_test_no_specs = gulp.series(
   'run_dredd',
   'delete_special_config_file',
 );
-
 
 exports.update_specs = gulp.series(
   'start',

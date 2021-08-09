@@ -373,7 +373,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    public function getOrCreatePerson(Login $login, string $code): Person {
+    public function getOrCreatePerson(Login $login, string $code, bool $renewToken = true): Person {
 
         $person = $this->_(
             'SELECT 
@@ -397,7 +397,12 @@ class SessionDAO extends DAO {
         }
 
         TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
-        $personToken = $this->renewPersonToken((int) $person['id'], "{$login->getGroupName()}_{$login->getName()}_$code");
+
+        $personToken = $person['token'];
+        if ($renewToken) {
+            $personToken = $this->renewPersonToken((int) $person['id'], "{$login->getGroupName()}_{$login->getName()}_$code");
+        }
+
         return new Person(
             (int) $person['id'],
             $personToken,
