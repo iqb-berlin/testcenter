@@ -89,7 +89,7 @@ class TestDAO extends DAO {
             VALUES(:b, :t, :p, :c, :e)',
             [
                 ':b' => $testId,
-                ':t' => date('Y-m-d H:i:s', time()),
+                ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
                 ':p' => $priority,
                 ':c' => $categories,
                 ':e' => $entry
@@ -107,7 +107,7 @@ class TestDAO extends DAO {
             VALUES(:u, :t, :p, :c, :e)',
             [
                 ':u' => $unitDbId,
-                ':t' => date('Y-m-d H:i:s', time()),
+                ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
                 ':p' => $priority,
                 ':c' => $categories,
                 ':e' => $entry

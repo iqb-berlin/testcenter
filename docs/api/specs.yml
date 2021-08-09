@@ -1706,16 +1706,16 @@ paths:
                                     unitname: UNIT.SAMPLE
                                     bookletname: BOOKLET.SAMPLE-1
                                     groupname: sample_group
-                                    loginname: test
-                                    code: sxx
-                                    timestamp: '1568026665043'
+                                    loginname: sample_user
+                                    code: xxx
+                                    timestamp: '1627545600'
                                     logentry: 'sample unit log'
                                 -
                                     bookletname: BOOKLET.SAMPLE-1
                                     groupname: sample_group
-                                    loginname: test
-                                    code: sxx
-                                    timestamp: '1568026665043'
+                                    loginname: sample_user
+                                    code: xxx
+                                    timestamp: '1627545600'
                                     logentry: 'sample log entry'
                                     unitname: ""
                 '401':

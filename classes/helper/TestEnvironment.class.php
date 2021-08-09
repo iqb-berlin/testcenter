@@ -8,7 +8,7 @@ use org\bovigo\vfs\vfsStreamWrapper;
 
 class TestEnvironment {
 
-    const staticFileModificationDate = 1627545600;
+    const staticDate = 1627545600;
 
     static function setUpEnvironmentForRealDataE2ETests() {
 
@@ -23,6 +23,7 @@ class TestEnvironment {
             $dbConfig->staticTokens = true;
             DB::connect($dbConfig);
 
+            TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
 
@@ -50,6 +51,7 @@ class TestEnvironment {
                 'insecurePasswords' => true
             ]));
 
+            TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
 
@@ -131,9 +133,9 @@ class TestEnvironment {
         if (!$dir) {
             $dir = vfsStreamWrapper::getRoot()->getChild('vo_data');
         }
-        $dir->lastModified(TestEnvironment::staticFileModificationDate);
+        $dir->lastModified(TestEnvironment::staticDate);
         foreach ($dir->getChildren() as $child) {
-            $child->lastModified(TestEnvironment::staticFileModificationDate);
+            $child->lastModified(TestEnvironment::staticDate);
             if (is_dir($child->url())) {
                 TestEnvironment::overwriteModificationDates($child);
             }

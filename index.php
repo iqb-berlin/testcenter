@@ -8,7 +8,7 @@ use Slim\Container;
 
 try {
 
-    date_default_timezone_set('Europe/Berlin');
+    date_default_timezone_set('Europe/Berlin'); // just to be safe. TimeStamp-class should be used everywhere anyway
 
     define('ROOT_DIR', dirname(__FILE__));
 
@@ -31,6 +31,7 @@ try {
         /* @var $config SystemConfig */
         $config = SystemConfig::fromFile(ROOT_DIR . '/config/system.json');
         define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
+        TimeStamp::setup();
         BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
         XMLSchema::setup($config->allowExternalXMLSchema);
 

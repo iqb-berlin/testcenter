@@ -7,11 +7,37 @@ require_once "classes/exception/HttpError.class.php";
 
 class TimeStampTest extends TestCase {
 
+    function setUp(): void {
+
+        TimeStamp::setup();
+    }
+
+
+    function tearDown(): void {
+
+        TimeStamp::setup();
+    }
+
+
+    function test_now() {
+
+        $realNow = (new DateTime())->getTimestamp();
+        $result = TimeStamp::now();
+        $this->assertEquals($realNow, $result);
+
+        $fakeNow = 123456789;
+        TimeStamp::setup(null, "@$fakeNow");
+        $result = TimeStamp::now();
+        $this->assertEquals($fakeNow, $result);
+    }
+
+
     function test_checkExpiration() {
 
         $today = (new DateTime())->getTimestamp();
         $past = (new DateTime('1.1.2000 12:00'))->getTimestamp();
         $future = (new DateTime('1.1.2030 12:00'))->getTimestamp();
+        $evenBefore = (new DateTime('31.12.1999 23:59'))->getTimestamp();
 
         TimeStamp::checkExpiration($past, $future);
 
@@ -44,6 +70,15 @@ class TimeStampTest extends TestCase {
         } catch (HttpError $exception) {
             $this->assertEquals($exception->getCode(), 410);
         }
+
+        TimeStamp::setup(null, "@$evenBefore");
+        try {
+            TimeStamp::checkExpiration($past, $future);
+            $this->fail("Exception expected - faked now is before past");
+        } catch (HttpError $exception) {
+            $this->assertEquals($exception->getCode(), 401);
+        }
+
     }
 
 
@@ -61,7 +96,7 @@ class TimeStampTest extends TestCase {
         $this->assertEquals($today + 600, $actual, 'expiration is in ten minutes');
 
         $actual = TimeStamp::expirationFromNow($future, $aroundTwentyYears);
-        $this->assertEquals($future, $actual, 'expiration is in 10 years');
+        $this->assertEquals($future, $actual, 'expiration is in 20 years');
 
         $actual = TimeStamp::expirationFromNow(0,10);
         $this->assertEquals($today + 600, $actual, 'expiration is in 10 minutes');
@@ -71,6 +106,18 @@ class TimeStampTest extends TestCase {
 
         $actual = TimeStamp::expirationFromNow($past,0);
         $this->assertEquals($past, $actual, 'expired timestamp');
+
+        TimeStamp::setup(null, "@$past");
+        $actual = TimeStamp::expirationFromNow($today, $aroundTwentyYears);
+        $this->assertEquals(1577448000, $actual, 'was expired around 20 years after $past');
+    }
+
+
+    function test_fromSQLFormat() {
+
+        $this->assertEquals(1627545600, TimeStamp::fromSQLFormat('2021-07-29 10:00:00'));
+        $this->assertEquals(0, TimeStamp::fromSQLFormat(false));
+        $this->assertEquals(1627545600, TimeStamp::fromSQLFormat(1627545600));
     }
 
 }
