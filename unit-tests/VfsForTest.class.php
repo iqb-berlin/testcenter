@@ -6,6 +6,7 @@ require_once "classes/data-collection/InstallationArguments.class.php";
 require_once "classes/workspace/WorkspaceInitializer.class.php";
 require_once "classes/workspace/Workspace.class.php";
 require_once "classes/helper/Folder.class.php";
+require_once "classes/helper/TestEnvironment.class.php";
 
 
 use org\bovigo\vfs\vfsStream;
@@ -42,10 +43,12 @@ class VfsForTest {
         vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../definitions'), $definitionsDir);
         copy(realpath(__DIR__ . '/../composer.json'), $vfs->url() . '/composer.json');
 
-        vfsStream::newDirectory('vo_data', 0777)->at($vfs);
+        $voDataDir = vfsStream::newDirectory('vo_data', 0777)->at($vfs);
 
         $initializer = new WorkspaceInitializer();
         $initializer->importSampleData(1);
+
+        TestEnvironment::overwriteModificationDates();
 
         self::insertTrashFiles();
         if ($includeBogusMaterial) {
@@ -55,6 +58,9 @@ class VfsForTest {
 
         return $vfs;
     }
+
+
+
 
 
     private static function insertTrashFiles() {

@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 
-// TODO unit Test
-
 class SysCheckReportFile {
 
     const reportSections = [
@@ -108,6 +106,7 @@ class SysCheckReportFile {
     }
 
 
+    // TODO unit Test
     function getDigest(): array {
 
         return [
@@ -119,6 +118,7 @@ class SysCheckReportFile {
     }
 
 
+    // TODO unit Test
     // TODO use ids instead of labels (but ids has to be set in FE)
     private function getValueIfExists(string $section, string $field, string $default = '') {
 
@@ -135,6 +135,7 @@ class SysCheckReportFile {
     }
 
 
+    // TODO unit Test
     static function getStatistics(array $reportSet): array {
 
         $digests = array_map(function(SysCheckReportFile $report) {return $report->getDigest();}, $reportSet);
