@@ -1,11 +1,14 @@
 <?php
 declare(strict_types=1);
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamContent;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 // TODO unit-tests galore
 
 class TestEnvironment {
 
+    const staticFileModificationDate = 1627545600;
 
     static function setUpEnvironmentForRealDataE2ETests() {
 
@@ -39,7 +42,7 @@ class TestEnvironment {
 
         try {
 
-            TestEnvironment::setUpVirtualFilesystem();
+            $voData = TestEnvironment::setUpVirtualFilesystem();
 
             DB::connect(new DBConfig([
                 'type' => 'temp',
@@ -52,7 +55,10 @@ class TestEnvironment {
 
             $initDAO = new InitDAO();
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');
+
             TestEnvironment::setUpTestData();
+            TestEnvironment::overwriteModificationDates($voData);
+            TestEnvironment::debugVirtualEnvironment();
 
             TestEnvironment::makeRandomStatic();
 
@@ -89,13 +95,14 @@ class TestEnvironment {
     }
 
 
-    private static function setUpVirtualFilesystem() {
+    private static function setUpVirtualFilesystem(): vfsStreamDirectory {
 
         $vfs = vfsStream::setup('root', 0777);
-        vfsStream::newDirectory('vo_data', 0777)->at($vfs);
+        $voData = vfsStream::newDirectory('vo_data', 0777)->at($vfs);
         vfsStream::newDirectory('vo_data/ws_1', 0777)->at($vfs);
 
         define('DATA_DIR', vfsStream::url('root/vo_data'));
+        return $voData;
     }
 
 
@@ -117,21 +124,43 @@ class TestEnvironment {
         $persons = $initDAO->createSampleMonitorSessions();
         $groupMonitor = $persons['test-group-monitor']; /* @var $groupMonitor Person */
         $initDAO->createSampleCommands($groupMonitor->getId());
-        TestEnvironment::debugVirtualEnvironment();
+    }
+
+
+    public static function overwriteModificationDates(vfsStreamContent $dir) {
+
+        file_put_contents(DATA_DIR . '/TEST', "##");
+        mkdir(DATA_DIR . '/TESTDIR');
+        rename(DATA_DIR . '/ws_1', DATA_DIR . '/ws_X');
+        clearstatcache();
+        error_log("+++ {$dir->url()} +++ " . DATA_DIR);
+        $dir->lastModified(TestEnvironment::staticFileModificationDate);
+        foreach ($dir->getChildren() as $child) {
+            $child->lastModified(TestEnvironment::staticFileModificationDate);
+            error_log("### {$child->url()} +++");
+            if (is_dir($child->url())) {
+                TestEnvironment::overwriteModificationDates($child);
+            }
+        }
     }
 
 
     public static function debugVirtualEnvironment() {
 
-        $initDAO = new InitDAO();
-        $fullState = "# State of DATA_DIR\n\n";
+        $fullState = "# DATA_DIR\n\n";
         $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), true);
-        $fullState .= "\n\n# State of DB\n";
+
+        $fullState .= "\n\n# Database\n";
+        $initDAO = new InitDAO();
         foreach ($initDAO->getDBContentDump() as $table => $content) {
 
             $fullState .= "## $table\n$content\n";
         }
-        file_put_contents(ROOT_DIR . '/integration/tmp/lastVEState.md', $fullState);
+        if (!file_exists(ROOT_DIR . '/integration/tmp/')) {
+
+            mkdir(ROOT_DIR . '/integration/tmp/');
+        }
+        file_put_contents(ROOT_DIR . '/integration/tmp/virtual_environment_dump.md', $fullState);
     }
 
 
