@@ -30,7 +30,7 @@ composer-update:
 
 init-dev-config: composer-install
 	cp .env-default .env
-	cp testcenter-frontend/src/environments/environment.dev.ts testcenter-frontend/src/environments/environment.ts
+	cp environment.setup.ts testcenter-frontend/src/environments/environment.ts
 
 update-submodules:
 	git submodule update --remote --merge
