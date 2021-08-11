@@ -42,7 +42,8 @@
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
     "ext-curl": "*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "ext-mbstring": "*"
   },
   "suggest": {
     "ext-apache": "*"
