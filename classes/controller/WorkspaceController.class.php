@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
@@ -14,9 +15,9 @@ use Slim\Http\Stream;
 
 class WorkspaceController extends Controller {
 
-    public static function  get(Request $request, Response $response): Response {
+    public static function get(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -29,7 +30,7 @@ class WorkspaceController extends Controller {
     }
 
 
-    public static function put (Request $request, Response $response): Response {
+    public static function put(Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
         if (!isset($requestBody->name)) {
@@ -45,7 +46,7 @@ class WorkspaceController extends Controller {
     public static function patch(Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
 
         if (!isset($requestBody->name) or (!$requestBody->name)) {
             throw new HttpBadRequestException($request, "New name (name) is missing");
@@ -60,7 +61,7 @@ class WorkspaceController extends Controller {
     public static function patchUsers(Request $request, Response $response): Response {
 
         $requestBody = JSON::decode($request->getBody()->getContents());
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
 
         if (!isset($requestBody->u) or (!count($requestBody->u))) {
             throw new HttpBadRequestException($request, "User-list (u) is missing");
@@ -74,7 +75,7 @@ class WorkspaceController extends Controller {
 
     public static function getUsers(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
 
         return $response->withJson(self::superAdminDAO()->getUsersByWorkspace($workspaceId));
     }
@@ -83,7 +84,7 @@ class WorkspaceController extends Controller {
     public static function getReviews(Request $request, Response $response): Response {
 
         $groups = explode(",", $request->getParam('groups'));
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
 
         if (!$groups) {
             throw new HttpBadRequestException($request, "Parameter groups is missing");
@@ -99,13 +100,14 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
         $results = self::adminDAO()->getAssembledResults($workspaceId);
+
         return $response->withJson($results);
     }
 
 
     public static function getResponses(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
         $results = self::adminDAO()->getResponses($workspaceId, $groups);
@@ -116,7 +118,7 @@ class WorkspaceController extends Controller {
 
     public static function deleteResponses(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $groups = RequestBodyParser::getRequiredElement($request, 'groups');
 
         foreach ($groups as $group) {
@@ -131,7 +133,7 @@ class WorkspaceController extends Controller {
 
     public static function getLogs(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $groups = explode(",", $request->getParam('groups'));
 
         $results = self::adminDAO()->getLogs($workspaceId, $groups);
@@ -152,7 +154,7 @@ class WorkspaceController extends Controller {
         }
 
         $response->withHeader('Content-Description', 'File Transfer');
-        $response->withHeader('Content-Type', ($fileType == 'Resource') ? 'application/octet-stream' : 'text/xml' );
+        $response->withHeader('Content-Type', ($fileType == 'Resource') ? 'application/octet-stream' : 'text/xml');
         $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
         $response->withHeader('Expires', '0');
         $response->withHeader('Cache-Control', 'must-revalidate');
@@ -169,11 +171,13 @@ class WorkspaceController extends Controller {
 
     public static function postFile(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
         $containsErrors = array_reduce($importedFiles, function($carry, $item) {
+
             return $carry or ($item['error'] and count($item['error']));
         }, false);
+
         return $response->withJson($importedFiles)->withStatus($containsErrors ? 207 : 201);
     }
 
@@ -199,13 +203,14 @@ class WorkspaceController extends Controller {
                 'info' => $file->getSpecialInfo()
             ];
         }
+
         return $response->withJson($fileDigestList);
     }
 
 
     public static function deleteFiles(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
 
         $workspaceController = new Workspace($workspaceId);
@@ -222,7 +227,7 @@ class WorkspaceController extends Controller {
         $lineEnding = $request->getParam('lineEnding', '\n');
         $enclosure = $request->getParam('enclosure', '"');
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
 
         $sysChecks = new SysChecksFolder($workspaceId);
         $reports = $sysChecks->collectSysCheckReports($checkIds);
@@ -232,12 +237,21 @@ class WorkspaceController extends Controller {
 
         if (($request->getHeaderLine('Accept') == 'text/csv') or $acceptWorkaround) {
 
-            $flatReports = array_map(function (SysCheckReportFile $report) {return $report->getFlat();}, $reports);
+            $flatReports = array_map(
+                function (SysCheckReportFile $report) {
+
+                    return $report->getFlat();},
+                $reports
+            );
             $response->getBody()->write(CSV::build($flatReports, [], $delimiter, $enclosure, $lineEnding));
+
             return $response->withHeader('Content-type', 'text/csv');
         }
 
-        $reportsArrays = array_map(function (SysCheckReportFile $report) {return $report->get();}, $reports);
+        $reportsArrays = array_map(function(SysCheckReportFile $report) {
+
+            return $report->get();
+        }, $reports);
 
         return $response->withJson($reportsArrays);
     }
@@ -245,7 +259,7 @@ class WorkspaceController extends Controller {
 
     public static function getSysCheckReportsOverview(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
 
         $sysChecksFolder = new SysChecksFolder($workspaceId);
         $reports = $sysChecksFolder->getSysCheckReportList();
@@ -256,8 +270,8 @@ class WorkspaceController extends Controller {
 
     public static function deleteSysCheckReports(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
-        $checkIds = RequestBodyParser::getElementWithDefault($request,'checkIds', []);
+        $workspaceId = (int)$request->getAttribute('ws_id');
+        $checkIds = RequestBodyParser::getElementWithDefault($request, 'checkIds', []);
 
         $sysChecksFolder = new SysChecksFolder($workspaceId);
         $fileDeletionReport = $sysChecksFolder->deleteSysCheckReports($checkIds);
@@ -268,7 +282,7 @@ class WorkspaceController extends Controller {
 
     public static function getSysCheck(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
 
         $workspaceController = new Workspace($workspaceId);
@@ -281,7 +295,7 @@ class WorkspaceController extends Controller {
             'canSave' => $xmlFile->hasSaveKey(),
             'hasUnit' => $xmlFile->hasUnit(),
             'questions' => $xmlFile->getQuestions(),
-            'customTexts' => (object) $xmlFile->getCustomTexts(),
+            'customTexts' => (object)$xmlFile->getCustomTexts(),
             'skipNetwork' => $xmlFile->getSkipNetwork(),
             'downloadSpeed' => $xmlFile->getSpeedtestDownloadParams(),
             'uploadSpeed' => $xmlFile->getSpeedtestUploadParams(),
@@ -291,7 +305,7 @@ class WorkspaceController extends Controller {
 
     public static function getSysCheckUnitAndPLayer(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
 
         $workspaceValidator = new WorkspaceValidator($workspaceId);
@@ -320,7 +334,7 @@ class WorkspaceController extends Controller {
         $unit->crossValidate($workspaceValidator);
         if (!$unit->isValid()) {
 
-            throw new HttpInternalServerErrorException($request,  'Unit is invalid');
+            throw new HttpInternalServerErrorException($request, 'Unit is invalid');
         }
 
         $player = $unit->getPlayerIfExists($workspaceValidator);
@@ -338,7 +352,7 @@ class WorkspaceController extends Controller {
 
     public static function putSysCheckReport(Request $request, Response $response): Response {
 
-        $workspaceId = (int) $request->getAttribute('ws_id');
+        $workspaceId = (int)$request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
         $report = new SysCheckReport(JSON::decode($request->getBody()->getContents()));
 
@@ -349,7 +363,7 @@ class WorkspaceController extends Controller {
 
         if (strlen($report->keyPhrase) <= 0) {
 
-            throw new HttpBadRequestException($request,"No key `$report->keyPhrase`");
+            throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
         }
 
         if (strtoupper($report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
@@ -364,4 +378,5 @@ class WorkspaceController extends Controller {
 
         return $response->withStatus(201);
     }
+
 }

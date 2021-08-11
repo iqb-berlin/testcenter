@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+
 // TODO unit Test
 
 
@@ -53,7 +54,7 @@ class CSV {
 
         $csvRows[] = CSV::stringifyRow($columns, $delimiter, $enclosure);
 
-        foreach($data as $set) {
+        foreach ($data as $set) {
 
             $row = [];
 
@@ -75,6 +76,7 @@ class CSV {
             $delimiter,
             array_map(
                 function($cell) use ($enclosure, $delimiter) {
+
                     return $enclosure . preg_replace('#(\\' . $enclosure . ')#', '`', $cell) . $enclosure;
                 },
                 $row
@@ -90,6 +92,7 @@ class CSV {
     static function collectColumnNamesFromHeterogeneousObjects(array $data): array {
 
         return array_values(array_unique(array_reduce($data, function($agg, $array) {
+
             return array_merge($agg, array_keys($array));
         }, [])));
     }
