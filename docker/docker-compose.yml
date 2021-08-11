@@ -44,7 +44,7 @@ services:
     volumes:
       - ../classes:/var/www/html/classes
       - ../definitions:/var/www/html/definitions
-      - ../docs/specs.yml:/var/www/html/docs/specs.yml
+      - ../docs/api/specs.yml:/var/www/html/docs/api/specs.yml
       - ../routes:/var/www/html/routes
       - ../sampledata:/var/www/html/sampledata
       - ../vo_data:/var/www/html/vo_data
