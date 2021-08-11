@@ -44,7 +44,7 @@ test-e2e:
 	sleep 8
 	docker run --network "testcenter-setup_default" e2etest
 	make down
-	cp testcenter-frontend/src/environments/environment.ts.bu testcenter-frontend/src/environments/environment.ts
+	mv testcenter-frontend/src/environments/environment.ts.bu testcenter-frontend/src/environments/environment.ts
 
 new-version:
 	scripts/new_version.py
