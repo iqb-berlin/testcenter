@@ -43,6 +43,7 @@ services:
       - testcenter-db-backend
     volumes:
       - ../classes:/var/www/html/classes
+      - ../unit-tests:/var/www/html/unit-tests
       - ../definitions:/var/www/html/definitions
       - ../docs/api/specs.yml:/var/www/html/docs/api/specs.yml
       - ../routes:/var/www/html/routes
