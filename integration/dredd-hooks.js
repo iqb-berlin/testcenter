@@ -138,6 +138,13 @@ dreddHooks.beforeEach(function(transaction, done) {
       return done();
   }
 
+  // Set Accept header
+  let contentType = String(transaction.expected.headers['Content-Type']);
+  let contentTypeArray = contentType.split(';', 1);
+  if (contentTypeArray.length > 0) {
+      transaction.request.headers['Accept'] = contentTypeArray[0];
+  }
+
   done();
 });
 
