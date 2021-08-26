@@ -17,6 +17,9 @@ vo_data
 integration/node_modules
 integration/tmp
 
+# unit tests
+.phpunit.result.cache
+
 # config
 config/DBConnectionData.json
 config/DBConnectionData.*.json
