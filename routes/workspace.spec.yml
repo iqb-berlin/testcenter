@@ -925,7 +925,7 @@ paths:
         "200":
           description: compiled data of all reports from selected sys-checks
           content:
-            text/csv:
+            text/csv;charset=utf-8:
               schema:
                 type: string
               example: |-

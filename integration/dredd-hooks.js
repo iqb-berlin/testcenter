@@ -59,11 +59,8 @@ const changeUri = (transaction, changeMap) => {
   });
 };
 
-
 dreddHooks.beforeEachValidation(function(transaction) {
-  // don't compare headers
-  transaction.real.headers = {};
-  transaction.expected.headers = {};
+    // nothing do to yet
 });
 
 
@@ -184,7 +181,7 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
 });
 
 
-dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
+dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain;charset=utf-8', function(transaction, done) {
     transaction.expected.body = fs.readFileSync('../vendor/iqb-berlin/verona-player-simple/verona-simple-player-1.html').toString();
     done();
 
