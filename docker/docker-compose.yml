@@ -1,7 +1,7 @@
 version: '3.7'
 
 x-env-php: &env-php
-  PHP_VERSION: 7.4.19
+  PHP_VERSION: 7.4.22
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}

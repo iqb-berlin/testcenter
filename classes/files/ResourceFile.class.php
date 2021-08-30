@@ -5,15 +5,11 @@ declare(strict_types=1);
 class ResourceFile extends File {
 
     const type = 'Resource';
-    protected string $content = '';
     protected array $meta = [];
 
     public function __construct(string $path, bool $validate = true) {
 
         parent::__construct($path);
-        if ($this->isValid()) { // does it even exist?
-            $this->content = file_get_contents($path);
-        }
         if ($validate) {
             $this->validate();
         }
@@ -42,12 +38,12 @@ class ResourceFile extends File {
     // TODO make player and resource two different types
     private function validatePlayer() {
 
-        if (!$this->content) {
+        if (!$this->isValid()) {
             return;
         }
 
         $document = new DOMDocument();
-        $document->loadHTML($this->content, LIBXML_NOERROR);
+        $document->loadHTML($this->getContent(), LIBXML_NOERROR);
 
         $this->readPlayerMetaData($document);
         $this->createLabelFromMeta();
@@ -148,6 +144,9 @@ class ResourceFile extends File {
 
     public function getContent(): string {
 
-        return $this->content;
+        if ($this->isValid()) { // does it even exist?
+            return file_get_contents($this->path);
+        }
+        return "";
     }
 }
