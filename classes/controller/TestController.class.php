@@ -122,10 +122,6 @@ class TestController extends Controller {
         $resourceName = $request->getAttribute('resource_name');
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
-//        if (strtoupper(substr($resourceName, -5)) == '.HTML') {
-//            $resourceName = substr($resourceName, 0, strlen($resourceName) - 5);
-//        }
-
         $workspaceController = new Workspace($authToken->getWorkspaceId());
         $resourceFile = $workspaceController->findFileById('Resource', $resourceName, $skipSubVersions);
 
