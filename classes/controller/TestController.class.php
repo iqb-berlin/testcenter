@@ -6,6 +6,7 @@ declare(strict_types=1);
 use Slim\Exception\HttpException;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\Stream;
 
 
 class TestController extends Controller {
@@ -128,9 +129,9 @@ class TestController extends Controller {
         $workspaceController = new Workspace($authToken->getWorkspaceId());
         $resourceFile = $workspaceController->findFileById('Resource', $resourceName, $skipSubVersions);
 
-        $response->getBody()->write($resourceFile->getContent());
-
-        return $response->withHeader('Content-type', 'text/plain');
+        return $response
+            ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
+            ->withHeader('Content-type', 'text/plain');
     }
 
 
