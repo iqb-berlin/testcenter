@@ -86,6 +86,9 @@ FROM prod as tester
 
 RUN apt-get update && apt-get install -y npm
 
+# install Xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
 WORKDIR /var/www/html
 
 COPY integration /var/www/html/integration

@@ -51,8 +51,11 @@ services:
       - ../vendor:/var/www/html/vendor
       - ../composer.json:/var/www/html/composer.json
       - ../composer.lock:/var/www/html/composer.lock
+
     ports:
       - "9092:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 
 volumes:
