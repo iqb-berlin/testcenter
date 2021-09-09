@@ -46,6 +46,7 @@ try {
         return new ErrorHandler();
     };
     $container['settings']['displayErrorDetails'] = true;
+    $container['settings']['addContentLengthHeader'] = true;
     $app = new App($container);
 
     include_once 'routes/session.php';

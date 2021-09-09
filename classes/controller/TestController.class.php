@@ -127,7 +127,8 @@ class TestController extends Controller {
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
-            ->withHeader('Content-type', 'text/plain');
+            ->withHeader('Content-type', 'text/plain')
+            ->withHeader('Content-length', $resourceFile->getSize());
     }
 
 
