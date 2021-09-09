@@ -362,15 +362,20 @@ class AdminDAO extends DAO {
 
 		$groupsString = implode("','", $groups);
 		return $this->_(
-			"SELECT units.name as unitname, 
-                    units.responses, 
-                    units.responsetype, 
-                    units.laststate, 
-                    tests.name as bookletname, 
-                    units.responses_ts, 
-                    login_sessions.group_name as groupname, 
-                    login_sessions.name as loginname, 
-                    person_sessions.code
+
+			"SELECT
+                units.name as unitname,
+                units.responses,
+                units.responsetype,
+                units.laststate,
+                tests.name as bookletname,
+                units.responses_ts,
+                login_sessions.group_name as groupname,
+                login_sessions.name as loginname,
+                case
+                    when person_sessions.code != '' then person_sessions.code
+                    else person_sessions.id
+                end as code
 			FROM units
 			INNER JOIN tests ON tests.id = units.booklet_id
 			INNER JOIN person_sessions ON person_sessions.id = tests.person_id 
@@ -394,8 +399,11 @@ class AdminDAO extends DAO {
                 tests.name as bookletname,
 				login_sessions.group_name as groupname, 
                 login_sessions.name as loginname, 
-                person_sessions.code,
-				unit_logs.timestamp, 
+                case
+                    when person_sessions.code != '' then person_sessions.code
+                    else person_sessions.id
+                end as code,
+                unit_logs.timestamp, 
                 unit_logs.logentry
 			FROM unit_logs
 			INNER JOIN units ON units.id = unit_logs.unit_id
