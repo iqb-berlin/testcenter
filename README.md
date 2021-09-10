@@ -62,6 +62,15 @@ make stop
 ## 4. Login and change super user password
 Right after installation, please log in! At start, you have one user prepared: `super` with password `user123`. Because everyone can read this here and in the scripts, you should get up your shields by changing at least the password (go to "System-Admin").
 
+## 5. Update
+Downlaod and run update Script (on the same dir as install script)
+```
+wget https://github.com/iqb-berlin/iqb-scripts/blob/master/update.sh
+bash update.sh
+```
+
+
+
 # Installation for development
 The other way of installation gives you more options to access data, logs, to change settings more in detail, to find bugs and even to change code to meet your needs. Our applications are great, but not perfect at all!
 
