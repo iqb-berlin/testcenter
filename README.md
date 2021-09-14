@@ -63,13 +63,11 @@ make stop
 Right after installation, please log in! At start, you have one user prepared: `super` with password `user123`. Because everyone can read this here and in the scripts, you should get up your shields by changing at least the password (go to "System-Admin").
 
 ## 5. Update
-Downlaod and run update Script (on the same dir as install script)
-```
-wget https://github.com/iqb-berlin/iqb-scripts/blob/master/update.sh
-bash update.sh
-```
+Run the script _update.sh_ in the root directory. This will compare your local component versions with the latest release and update and restart the software stack.
 
+Alternatively you may also manually edit the file `docker-compose.prod.yml`. Find the lines starting with **image** and edit the version tag at the end.
 
+Check the [IQB Docker Hub Page](https://hub.docker.com/u/iqbberlin) for latest images.
 
 # Installation for development
 The other way of installation gives you more options to access data, logs, to change settings more in detail, to find bugs and even to change code to meet your needs. Our applications are great, but not perfect at all!
@@ -115,15 +113,6 @@ git submodule update --recursive
 ## SSL
 
 For a setup using SSL certificates (HTTPS connection), the certificates need to be placed under _config/certs_ and their name be put in _config/cert_config.yml_.
-
-## Updating
-
-To update the components you need to manually edit the files
-`docker-compose.prod.nontls.yml`
-or `docker-compose.prod.tls.yml` depending on your usage of SSL certificates.
-Find the lines starting with **image** and edit the version tag at the end.
-
-Check out the [IQB Docker Hub Page](https://hub.docker.com/u/iqbberlin) for latest images.
 
 ## Start/stop
 
