@@ -127,7 +127,7 @@ class TestController extends Controller {
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
-            ->withHeader('Content-type', 'application/pdf') // TODO find out why it only works with pdf
+            ->withHeader('Content-type', 'application/octet-stream') // TODO find out why it only works with pdf or octet-stream
             ->withHeader('Content-length', $resourceFile->getSize());
     }
 
