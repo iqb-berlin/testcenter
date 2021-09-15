@@ -91,9 +91,12 @@ RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 WORKDIR /var/www/html
 
-COPY integration /var/www/html/integration
-COPY sampledata /var/www/html/sampledata
-COPY unit-tests /var/www/html/unit-tests
+# configure Xdebug
+COPY phpunit.xml .
+
+COPY integration integration
+COPY sampledata sampledata
+COPY unit-tests unit-tests
 
 RUN npm install npm@latest -g
 RUN npm install -C integration
