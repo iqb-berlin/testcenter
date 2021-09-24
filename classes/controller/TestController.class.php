@@ -23,8 +23,6 @@ class TestController extends Controller {
         $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
         $bookletLabel = $bookletsFolder->getBookletLabel($body['bookletName']);
 
-        // TODO lock old test if this person already ran one
-
         $test = self::testDAO()->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
 
         if ($test['locked'] == '1') {
@@ -304,7 +302,13 @@ class TestController extends Controller {
 
         $testId = (int) $request->getAttribute('test_id');
 
+        $lockEvent = RequestBodyParser::getElements($request, [
+            'timeStamp' => null,
+            'message' => '',
+        ]);
+
         self::testDAO()->lockTest($testId);
+        self::testDAO()->addTestLog($testId, $lockEvent['message'], $lockEvent['timeStamp']);
 
         BroadcastService::sessionChange(
             SessionChangeMessage::testState($authToken, $testId, ['status' => 'locked'])

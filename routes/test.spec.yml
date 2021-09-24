@@ -46,7 +46,6 @@ paths:
               example:
                 mode: "run-hot-return"
                 laststate: {"CURRENT_UNIT_ID": "1"}
-                locked: false
                 xml: "(contents of a booklet.xml)"
         "401":
           description: Not authenticated
@@ -505,6 +504,23 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  description: message to log
+                  type: string
+                timeStamp:
+                  description: timestamp of locking event
+                  type: integer
+              required:
+                - timeStamp
+                - message
+            example:
+              timeStamp: 123456789
+              message: "test was locked"
       responses:
         "200":
           description:  OK, locked
