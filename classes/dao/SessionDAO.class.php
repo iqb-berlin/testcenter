@@ -320,7 +320,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit test
-    public function canWriteTestData(string $personToken, string $testId): bool {
+    public function ownsTest(string $personToken, string $testId): bool {
 
         $test = $this->_(
             'SELECT tests.locked FROM tests
@@ -334,7 +334,7 @@ class SessionDAO extends DAO {
 
         // TODO check for mode?!
 
-        return $test and ($test['locked'] != '1');
+        return !!$test;
     }
 
 

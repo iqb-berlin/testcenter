@@ -23,8 +23,6 @@ class TestController extends Controller {
         $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
         $bookletLabel = $bookletsFolder->getBookletLabel($body['bookletName']);
 
-        // TODO lock old test if this person already ran one
-
         $test = self::testDAO()->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
 
         if ($test['locked'] == '1') {
@@ -66,10 +64,13 @@ class TestController extends Controller {
         $workspaceController = new Workspace($authToken->getWorkspaceId());
         $bookletFile = $workspaceController->findFileById('Booklet', $bookletName);
 
+        if (self::testDAO()->isTestLocked($testId)) {
+            throw new HttpException($request,"Test #$testId `{$bookletFile->getLabel()}` is locked.", 423);
+        }
+
         return $response->withJson([ // TODO include running, use only one query
             'mode' => $authToken->getMode(),
             'laststate' => self::testDAO()->getTestState($testId),
-            'locked' => self::testDAO()->isTestLocked($testId),
             'xml' => $bookletFile->xml->asXML()
         ]);
     }
@@ -301,7 +302,13 @@ class TestController extends Controller {
 
         $testId = (int) $request->getAttribute('test_id');
 
+        $lockEvent = RequestBodyParser::getElements($request, [
+            'timeStamp' => null,
+            'message' => '',
+        ]);
+
         self::testDAO()->lockTest($testId);
+        self::testDAO()->addTestLog($testId, $lockEvent['message'], $lockEvent['timeStamp']);
 
         BroadcastService::sessionChange(
             SessionChangeMessage::testState($authToken, $testId, ['status' => 'locked'])

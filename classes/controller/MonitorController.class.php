@@ -119,6 +119,9 @@ class MonitorController extends Controller {
 
     public static function postLock(Request $request, Response $response): Response {
 
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
         $groupName = $request->getAttribute('group_name');
         $testIds = RequestBodyParser::getElementWithDefault($request, 'testIds', []);
 
@@ -127,6 +130,7 @@ class MonitorController extends Controller {
             self::testDAO()->changeTestLockStatus((int) $testId, false);
 
             $testSession = self::testDAO()->getTestSession($testId);
+            self::testDAO()->addTestLog($testId, 'locked by monitor', 0, (string) $authToken->getId());
             $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName, $testId);
             $sessionChangeMessage->setTestState($testSession['laststate']);
             BroadcastService::sessionChange($sessionChangeMessage);

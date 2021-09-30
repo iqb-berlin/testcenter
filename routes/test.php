@@ -9,7 +9,8 @@ $app->group('/test', function(App $app) {
 
     $app->put('', [TestController::class, 'put']);
 
-    $app->get('/{test_id}', [TestController::class, 'get']);
+    $app->get('/{test_id}', [TestController::class, 'get'])
+        ->add(new IsTestWritable());
 
     $app->get('/{test_id}/unit/{unit_name}[/alias/{alias}]', [TestController::class, 'getUnit']);
 

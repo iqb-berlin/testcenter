@@ -24,7 +24,7 @@ class IsTestWritable {
 
         $sessionDAO = new SessionDAO();
 
-        if (!$sessionDAO->canWriteTestData($authToken->getToken(), $params['test_id'])) {
+        if (!$sessionDAO->ownsTest($authToken->getToken(), $params['test_id'])) {
             throw new HttpForbiddenException($request,"Access to test {$params['test_id']} is not provided.");
         }
 
