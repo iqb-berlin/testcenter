@@ -48,18 +48,19 @@
     </xs:simpleContent>
   </xs:complexType>
 
-  <xs:simpleType name="OnOff">
+  <xs:simpleType name="DenyNavigationRestrictionValue">
     <xs:restriction base="xs:string">
       <xs:enumeration value="ON"/>
       <xs:enumeration value="OFF"/>
+      <xs:enumeration value="FORWARD_ONLY"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:complexType name="DenyNavigationRestrictionType">
     <xs:simpleContent><!-- TODO should be camleCase.. -->
       <xs:extension base="xs:string">
-        <xs:attribute type="OnOff" name="force_presentation_complete" />
-        <xs:attribute type="OnOff" name="force_response_complete" />
+        <xs:attribute type="DenyNavigationRestrictionValue" name="force_presentation_complete" />
+        <xs:attribute type="DenyNavigationRestrictionValue" name="force_response_complete" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
