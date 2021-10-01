@@ -51,6 +51,7 @@
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
     "phpunit/phpunit":  "^9",
+    "mockery/mockery": "dev-master",
     "iqb-berlin/verona-player-simple": "1.0.1"
   }
 }
