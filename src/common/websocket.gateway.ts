@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 import { Server, Client } from 'ws';
 import { IncomingMessage } from 'http';
 import { Logger } from '@nestjs/common';
+import { BroadcastingEvent } from "./interfaces";
 
 function getLastUrlPart(url: string) {
   const arr = url.split('/').filter(e => e);
@@ -51,7 +52,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
   }
 
-  public broadcastToRegistered(tokens: string[], event: string, message: any): void {
+  public broadcastToRegistered(tokens: string[], event: BroadcastingEvent, message: any): void {
     const payload = JSON.stringify({ event, data: message });
 
     tokens.forEach((token: string) => {
