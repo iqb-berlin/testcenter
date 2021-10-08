@@ -14,7 +14,7 @@ build:
 	cd docker && docker-compose build
 
 test-unit:
-	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend vendor/bin/phpunit unit-tests/.
+	docker run --entrypoint vendor/phpunit/phpunit/phpunit docker_testcenter-backend --bootstrap /var/www/html/unit-tests/bootstrap.php --configuration /var/www/html/phpunit.xml unit-tests/.
 
 test-e2e:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run dredd_test
