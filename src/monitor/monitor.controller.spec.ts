@@ -48,7 +48,7 @@ describe('MonitorController Post Register', () => {
     });
 
     it('should not throw any errors', () => {
-        const logger = jest.spyOn(monitorController['logger'],'log');
+        const spyLogger = jest.spyOn(monitorController['logger'],'log');
         const mockMonitor : Monitor = {
             token: "token string",
             groups: ['group string 1', 'group string 2']
@@ -58,7 +58,7 @@ describe('MonitorController Post Register', () => {
         } as Request;
 
         expect(monitorController.monitorRegister(mockRequest)).toBeUndefined();
-        expect(logger).toHaveBeenCalled();
+        expect(spyLogger).toHaveBeenCalled();
         expect(mockTestSessionservice.addMonitor).toHaveBeenCalled();
     });
     
@@ -92,7 +92,7 @@ describe('monitorController Post Unregister', () => {
     });
 
     it('should not throw any errors', () => {
-        const logger = jest.spyOn(monitorController['logger'],'log');
+        const spyLogger = jest.spyOn(monitorController['logger'],'log');
         const mockRequest = {
             body : {
                 token: 'token string'
@@ -100,7 +100,7 @@ describe('monitorController Post Unregister', () => {
         } as Request;
         
         expect(monitorController.monitorUnregister(mockRequest)).toBeUndefined();
-        expect(logger).toHaveBeenCalled();
+        expect(spyLogger).toHaveBeenCalled();
         expect(mockTestSessionservice.removeMonitor).toHaveBeenCalled();
     })
 });

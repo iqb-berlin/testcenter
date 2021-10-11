@@ -87,7 +87,7 @@ describe('CommandControler', () => {
     })
 
     it('Should not throw any errors', () => {
-        const logger = jest.spyOn(commandController['logger'],'log');
+        const spyLogger = jest.spyOn(commandController['logger'],'log');
         const mockValidRequest = {
             body : {
                 command: {
@@ -101,7 +101,7 @@ describe('CommandControler', () => {
         } as Request;
 
         expect(commandController.postCommand(mockValidRequest)).toBeUndefined();
-        expect(logger).toHaveBeenCalled();
+        expect(spyLogger).toHaveBeenCalled();
         expect(mockTesteeService.broadcastCommandToTestees).toHaveBeenCalledWith(mockValidRequest.body.command,mockValidRequest.body.testIds);
     });
 });
