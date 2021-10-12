@@ -44,7 +44,7 @@ export class TestSessionService {
     }
   } = {};
 
-  public applySessionChange(sessionChange: SessionChange): void {
+  applySessionChange(sessionChange: SessionChange): void {
     this.addSessionChange(sessionChange);
     this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
   }
@@ -80,21 +80,19 @@ export class TestSessionService {
     }
   }
 
-  public addMonitor(monitor: Monitor): void {
+  addMonitor(monitor: Monitor): void {
     monitor.groups.forEach((group: string) => {
       if (typeof this.monitors[group] === 'undefined') {
         this.monitors[group] = {};
       }
-
       if (typeof this.testSessions[group] === 'undefined') {
         this.testSessions[group] = {};
       }
-
       this.monitors[group][monitor.token] = monitor;
     });
   }
 
-  public removeMonitor(monitorToken: string): void {
+  removeMonitor(monitorToken: string): void {
     this.logger.log(`remove monitor: ${monitorToken}`);
 
     Object.keys(this.monitors).forEach((group: string) => {
@@ -110,7 +108,7 @@ export class TestSessionService {
     this.websocketGateway.disconnectClient(monitorToken);
   }
 
-  public getMonitors(): Monitor[] {
+  getMonitors(): Monitor[] {
     return Object.values(this.monitors)
       .reduce(
         (allMonitors: Monitor[], groupMonitors: { [g: string]: Monitor }): Monitor[] => allMonitors.concat(Object.values(groupMonitors)),
@@ -119,7 +117,7 @@ export class TestSessionService {
       .filter((v: Monitor, i: number, a: Monitor[]) => a.indexOf(v) === i);
   }
 
-  public getTestSessions(): SessionChange[] {
+  getTestSessions(): SessionChange[] {
     return Object.values(this.testSessions)
       .reduce(
         (allTestSessions: SessionChange[], groupTestSessions: { [g: string]: SessionChange }): SessionChange[] => allTestSessions.concat(Object.values(groupTestSessions)),
@@ -127,11 +125,11 @@ export class TestSessionService {
       );
   }
 
-  public getClientTokens(): string[] {
+  getClientTokens(): string[] {
     return this.websocketGateway.getClientTokens();
   }
 
-  public clean(): void {
+  clean(): void {
     this.monitors = {};
     this.testSessions = {};
   }
