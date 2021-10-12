@@ -4,6 +4,7 @@ import { WebsocketGateway } from '../common/websocket.gateway';
 import { Command } from '../command/command.interface';
 import { TesteeService } from './testee.service';
 import { HttpService } from '@nestjs/common';
+import {Subject} from "rxjs";
 
 let testeeService : TesteeService;
 
@@ -54,11 +55,9 @@ describe('testeeService add and remove', () => {
 
 describe('testeeService', () => {
     const mockHTTPService = {
+        postReturn: new Subject<void>(),
         post: jest.fn(() => {
-            const ret = {
-                subscribe : () => {}
-            }
-            return ret;
+            return this.postReturn;
         })
     };
 
@@ -126,6 +125,8 @@ describe('testeeService', () => {
     it('should call http post (notifyDisconnection)', () => {
         testeeService.notifyDisconnection(mockTestee.token);
         expect(mockHTTPService.post).toHaveBeenCalledWith(testeeService['testees']['testeeToken'].disconnectNotificationUri);
+
+        this.postReturn.error();
     })
 
     it('should map testee with corresponding testIds to their respective tokens', () => {
