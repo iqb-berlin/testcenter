@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException } from '@nestjs/common';
 import { Request } from 'express';
@@ -29,7 +30,7 @@ describe('TesteeController Post', () => {
   it('should throw not testee data', () => {
     const mockRequest = {
       body: {
-        testId: 3
+        name: 'name'
       }
     } as Request;
 
@@ -37,7 +38,29 @@ describe('TesteeController Post', () => {
     expect(() => testeeController.testeeRegister(mockRequest)).toThrow('not testee data');
   });
 
-  it('should not throw any errors (register)', () => {
+  it('should throw not testee data (no testId property)', () => {
+    const mockRequest = {
+      body: {
+        token: 'tokenString'
+      }
+    } as Request;
+
+    expect(() => testeeController.testeeRegister(mockRequest)).toThrow(HttpException);
+    expect(() => testeeController.testeeRegister(mockRequest)).toThrow('not testee data');
+  });
+
+  it('should throw not testee data (no token property)', () => {
+    const mockRequest = {
+      body: {
+        testId: 35
+      }
+    } as Request;
+
+    expect(() => testeeController.testeeRegister(mockRequest)).toThrow(HttpException);
+    expect(() => testeeController.testeeRegister(mockRequest)).toThrow('not testee data');
+  });
+
+  it('should not throw any errors (happy path - register)', () => {
     const mockRequest = {
       body: {
         token: 'token string',
@@ -53,7 +76,8 @@ describe('TesteeController Post', () => {
   it('should throw no token in body', () => {
     const mockRequest = {
       body: {
-        name: 'not a token'
+        testId: 5,
+        disconnectNotificationUri: 'testURI'
       }
     } as Request;
 
@@ -61,7 +85,8 @@ describe('TesteeController Post', () => {
     expect(() => testeeController.testeeUnregister(mockRequest)).toThrow('no token in body');
   });
 
-  it('should not throw any errors (unregister)', () => {
+  it('should not throw any errors (happy path - unregister)', () => {
+    const spyLogger = jest.spyOn(testeeController['logger'], 'log');
     const mockRequest = {
       body: {
         token: 'token string',
@@ -71,6 +96,7 @@ describe('TesteeController Post', () => {
     } as Request;
 
     expect(testeeController.testeeUnregister(mockRequest)).toBeUndefined();
+    expect(spyLogger).toHaveBeenCalled();
     expect(mockTesteeService.removeTestee).toHaveBeenCalled();
   });
 });
@@ -112,7 +138,7 @@ describe('testeeController Get', () => {
   it('should return a list of testees', () => {
     const mockRequest = {} as Request;
 
-    expect(testeeController.testees(mockRequest)).toEqual(testeeList);
+    expect(testeeController.testees(mockRequest)).toStrictEqual(testeeList);
     expect(mockTesteeService.getTestees).toHaveBeenCalled();
   });
 });

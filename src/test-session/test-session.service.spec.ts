@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestSessionService } from './test-session.service';
 import { SessionChange } from './session-change.interface';
@@ -36,12 +37,12 @@ describe('TestSessionService: add and remove monitors', () => {
 
   it('should add monitors', () => {
     testSessionService.addMonitor(mockMonitor1);
-    expect(testSessionService['monitors']['Gruppe1']['monitorToken1']).toEqual(mockMonitor1);
-    expect(testSessionService['monitors']['TestakerGroup1']['monitorToken1']).toEqual(mockMonitor1);
-    expect(testSessionService['monitors']['Gruppe2']['monitorToken1']).toEqual(mockMonitor1);
-    expect(testSessionService['testSessions']['Gruppe1']).toEqual({});
-    expect(testSessionService['testSessions']['TestakerGroup1']).toEqual({});
-    expect(testSessionService['testSessions']['Gruppe2']).toEqual({});
+    expect(testSessionService['monitors']['Gruppe1']['monitorToken1']).toStrictEqual(mockMonitor1);
+    expect(testSessionService['monitors']['TestakerGroup1']['monitorToken1']).toStrictEqual(mockMonitor1);
+    expect(testSessionService['monitors']['Gruppe2']['monitorToken1']).toStrictEqual(mockMonitor1);
+    expect(testSessionService['testSessions']['Gruppe1']).toStrictEqual({});
+    expect(testSessionService['testSessions']['TestakerGroup1']).toStrictEqual({});
+    expect(testSessionService['testSessions']['Gruppe2']).toStrictEqual({});
   });
 
   it('should remove monitor (resulting in empty monitor list)', () => {
@@ -52,13 +53,12 @@ describe('TestSessionService: add and remove monitors', () => {
     testSessionService.removeMonitor(mockMonitor1.token);
 
     expect(spyLogger).toHaveBeenCalled();
-    expect(testSessionService['monitors']['Gruppe1']).toEqual({});
-    expect(testSessionService['monitors']['TestakerGroup1']).toEqual({});
-    expect(testSessionService['monitors']['Gruppe2']).toEqual({});
+    expect(testSessionService['monitors']['Gruppe1']).toStrictEqual({});
+    expect(testSessionService['monitors']['TestakerGroup1']).toStrictEqual({});
+    expect(testSessionService['monitors']['Gruppe2']).toStrictEqual({});
     expect(testSessionService['testSessions']['Gruppe1']).toBeUndefined();
     expect(testSessionService['testSessions']['TestakerGroup1']).toBeUndefined();
     expect(testSessionService['testSessions']['Gruppe2']).toBeUndefined();
-
     expect(spyDisconnectClient).toHaveBeenCalled();
   });
 
@@ -74,12 +74,12 @@ describe('TestSessionService: add and remove monitors', () => {
     expect(testSessionService['monitors']['Gruppe1']['monitorToken1']).toBeUndefined();
     expect(testSessionService['monitors']['TestakerGroup1']['monitorToken1']).toBeUndefined();
     expect(testSessionService['monitors']['Gruppe2']['monitorToken1']).toBeUndefined();
-    expect(testSessionService['monitors']['Gruppe1']['monitorToken2']).toEqual(mockMonitor2);
-    expect(testSessionService['monitors']['TestakerGroup1']['monitorToken2']).toEqual(mockMonitor2);
-    expect(testSessionService['monitors']['Gruppe2']['monitorToken2']).toEqual(mockMonitor2);
-    expect(testSessionService['testSessions']['Gruppe1']).toEqual({});
-    expect(testSessionService['testSessions']['TestakerGroup1']).toEqual({});
-    expect(testSessionService['testSessions']['Gruppe2']).toEqual({});
+    expect(testSessionService['monitors']['Gruppe1']['monitorToken2']).toStrictEqual(mockMonitor2);
+    expect(testSessionService['monitors']['TestakerGroup1']['monitorToken2']).toStrictEqual(mockMonitor2);
+    expect(testSessionService['monitors']['Gruppe2']['monitorToken2']).toStrictEqual(mockMonitor2);
+    expect(testSessionService['testSessions']['Gruppe1']).toStrictEqual({});
+    expect(testSessionService['testSessions']['TestakerGroup1']).toStrictEqual({});
+    expect(testSessionService['testSessions']['Gruppe2']).toStrictEqual({});
     expect(spyDisconnectClient).toHaveBeenCalled();
   });
 
@@ -95,13 +95,13 @@ describe('TestSessionService: add and remove monitors', () => {
     expect(testSessionService['monitors']['Gruppe1']['monitorToken1']).toBeUndefined();
     expect(testSessionService['monitors']['TestakerGroup1']['monitorToken1']).toBeUndefined();
     expect(testSessionService['monitors']['Gruppe2']['monitorToken1']).toBeUndefined();
-    expect(testSessionService['monitors']['Gruppe3']['monitorToken3']).toEqual(mockMonitor3);
-    expect(testSessionService['monitors']['Gruppe5']['monitorToken3']).toEqual(mockMonitor3);
+    expect(testSessionService['monitors']['Gruppe3']['monitorToken3']).toStrictEqual(mockMonitor3);
+    expect(testSessionService['monitors']['Gruppe5']['monitorToken3']).toStrictEqual(mockMonitor3);
     expect(testSessionService['testSessions']['Gruppe1']).toBeUndefined();
     expect(testSessionService['testSessions']['TestakerGroup1']).toBeUndefined();
     expect(testSessionService['testSessions']['Gruppe2']).toBeUndefined();
-    expect(testSessionService['testSessions']['Gruppe3']).toEqual({});
-    expect(testSessionService['testSessions']['Gruppe5']).toEqual({});
+    expect(testSessionService['testSessions']['Gruppe3']).toStrictEqual({});
+    expect(testSessionService['testSessions']['Gruppe5']).toStrictEqual({});
     expect(spyDisconnectClient).toHaveBeenCalled();
   });
 
@@ -128,13 +128,13 @@ describe('testSessionService: get and clear all monitors', () => {
   });
 
   it('should return all monitors', () => {
-    expect(testSessionService.getMonitors()).toEqual(monitorList);
+    expect(testSessionService.getMonitors()).toStrictEqual(monitorList);
   });
 
   it('should clear all monitors and testSessions', () => {
     testSessionService.clean();
-    expect(testSessionService['monitors']).toEqual({});
-    expect(testSessionService['testSessions']).toEqual({});
+    expect(testSessionService['monitors']).toStrictEqual({});
+    expect(testSessionService['testSessions']).toStrictEqual({});
   });
 });
 
@@ -251,25 +251,25 @@ describe('testSessionService sessionChanges', () => {
   it('should return early (applySessioChange)', () => {
     testSessionService.applySessionChange(mockSessionChangeNoMonitor);
     expect(testSessionService['testSessions']['Testakergroup1']).toBeUndefined();
-    expect(testSessionService['testSessions']['Gruppe2']).toEqual({});
-    expect(testSessionService['testSessions']['Gruppe3']).toEqual({});
-    expect(testSessionService['testSessions']['Gruppe5']).toEqual({});
+    expect(testSessionService['testSessions']['Gruppe2']).toStrictEqual({});
+    expect(testSessionService['testSessions']['Gruppe3']).toStrictEqual({});
+    expect(testSessionService['testSessions']['Gruppe5']).toStrictEqual({});
     expect(testSessionService['testSessions']['Gruppe6']).toBeUndefined();
   });
 
   it('should create session entry', () => {
     testSessionService.applySessionChange(mockSessionChange1);
-    expect(testSessionService['testSessions']['TestakerGroup1']['357|381']).toEqual(mockSessionChange1);
-    expect(testSessionService['testSessions']['Gruppe2']).toEqual({});
-    expect(testSessionService['testSessions']['Gruppe3']).toEqual({});
-    expect(testSessionService['testSessions']['Gruppe5']).toEqual({});
+    expect(testSessionService['testSessions']['TestakerGroup1']['357|381']).toStrictEqual(mockSessionChange1);
+    expect(testSessionService['testSessions']['Gruppe2']).toStrictEqual({});
+    expect(testSessionService['testSessions']['Gruppe3']).toStrictEqual({});
+    expect(testSessionService['testSessions']['Gruppe5']).toStrictEqual({});
   });
 
   it('should update a session entry', () => {
     testSessionService.applySessionChange(mockSessionChange1);
     testSessionService.applySessionChange(mockSessionChange1Updated);
 
-    expect(testSessionService['testSessions']['TestakerGroup1']['357|381']).toEqual(mockSessionChange1Updated);
+    expect(testSessionService['testSessions']['TestakerGroup1']['357|381']).toStrictEqual(mockSessionChange1Updated);
     expect(testSessionService['testSessions']['Group1']).toBeUndefined();
     expect(testSessionService['testSessions']['Group2']).toBeUndefined();
     expect(testSessionService['testSessions']['Group3']).toBeUndefined();
@@ -284,6 +284,6 @@ describe('testSessionService sessionChanges', () => {
     testSessionService.applySessionChange(mockSessionChange2);
     testSessionService.applySessionChange(mockSessionChange3);
     testSessionService.applySessionChange(mockSessionChange5);
-    expect(testSessionService.getTestSessions()).toEqual(expectedTestSessions);
+    expect(testSessionService.getTestSessions()).toStrictEqual(expectedTestSessions);
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { HttpException } from '@nestjs/common';
@@ -27,10 +28,12 @@ describe('CommandControler', () => {
     expect(commandController).toBeDefined();
   });
 
-  it('should throw invalid command data (missing command)', () => {
+  it('should throw invalid command data (no command property)', () => {
     const mockNoCommand = {
       body: {
-        testIds: [1, 2, 3]
+        testIds: [1, 2, 3],
+        arguments: 'some arguments',
+        timestamp: new Date()
       }
     } as Request;
 
@@ -51,7 +54,7 @@ describe('CommandControler', () => {
     expect(() => commandController.postCommand(mockMalformedRequest)).toThrow('invalid command data');
   });
 
-  it('should throw no testIds given (missing testIds)', () => {
+  it('should throw no testIds given (no testIds property)', () => {
     const mockNoTestIDs = {
       body: {
         command: {
@@ -84,7 +87,7 @@ describe('CommandControler', () => {
     expect(() => commandController.postCommand(mockNoArrayTestID)).toThrow('no testIds given');
   });
 
-  it('Should not throw any errors', () => {
+  it('Should not throw any errors (happy path)', () => {
     const spyLogger = jest.spyOn(commandController['logger'], 'log');
     const mockValidRequest = {
       body: {

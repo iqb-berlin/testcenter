@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { HttpException } from '@nestjs/common';
@@ -25,7 +26,7 @@ describe('MonitorController Post Register', () => {
     expect(monitorController).toBeDefined();
   });
 
-  it('should throw not monitor data', () => {
+  it('should throw not monitor data (not monitor request data)', () => {
     const mockNotMonitorRequest = {
       body: {
         name: 'Testname'
@@ -36,7 +37,7 @@ describe('MonitorController Post Register', () => {
     expect(() => monitorController.monitorRegister(mockNotMonitorRequest)).toThrow('not monitor data');
   });
 
-  it('should throw not monitor data', () => {
+  it('should throw not monitor data (no token in request)', () => {
     const mockNoTokenRequest = {
       body: {
         groups: ['group string 1', 'group string 2']
@@ -47,10 +48,21 @@ describe('MonitorController Post Register', () => {
     expect(() => monitorController.monitorRegister(mockNoTokenRequest)).toThrow('not monitor data');
   });
 
-  it('should not throw any errors', () => {
+  it('should throw not monitor data (no groups in request)', () => {
+    const mockNoTokenRequest = {
+      body: {
+        token: 'tokenString'
+      }
+    } as Request;
+
+    expect(() => monitorController.monitorRegister(mockNoTokenRequest)).toThrow(HttpException);
+    expect(() => monitorController.monitorRegister(mockNoTokenRequest)).toThrow('not monitor data');
+  });
+
+  it('should not throw any errors (happy path)', () => {
     const spyLogger = jest.spyOn(monitorController['logger'], 'log');
     const mockMonitor : Monitor = {
-      token: 'token string',
+      token: 'tokenString',
       groups: ['group string 1', 'group string 2']
     };
     const mockRequest = {
@@ -90,7 +102,7 @@ describe('monitorController Post Unregister', () => {
     expect(() => monitorController.monitorUnregister(mockRequest)).toThrow('no token in body');
   });
 
-  it('should not throw any errors', () => {
+  it('should not throw any errors (happy path)', () => {
     const spyLogger = jest.spyOn(monitorController['logger'], 'log');
     const mockRequest = {
       body: {
@@ -136,14 +148,14 @@ describe('monitorController Get', () => {
   it('should return a monitor list', () => {
     const mockRequest = {} as Request;
 
-    expect(monitorController.monitors(mockRequest)).toEqual(mockMonitorList);
+    expect(monitorController.monitors(mockRequest)).toStrictEqual(mockMonitorList);
     expect(mockTestSessionservice.getMonitors).toHaveBeenCalled();
   });
 
   it('should return a client token list', () => {
     const mockRequest = {} as Request;
 
-    expect(monitorController.clients(mockRequest)).toEqual(mockTokenList);
+    expect(monitorController.clients(mockRequest)).toStrictEqual(mockTokenList);
     expect(mockTestSessionservice.getClientTokens).toHaveBeenCalled();
   });
 });

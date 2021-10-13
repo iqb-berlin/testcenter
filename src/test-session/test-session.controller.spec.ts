@@ -25,7 +25,7 @@ describe('TestSessionController Post', () => {
     expect(testSessionController).toBeDefined();
   });
 
-  it('should throw not session data', () => {
+  it('should throw not session data (no groupName property)', () => {
     const mockRequest = {
       body: {
         personId: 5,
@@ -37,7 +37,31 @@ describe('TestSessionController Post', () => {
     expect(() => testSessionController.pushSessionChange(mockRequest)).toThrow('not session data');
   });
 
-  it('should not throw any errors', () => {
+  it('should throw not session data (no timestamp property)', () => {
+    const mockRequest = {
+      body: {
+        personId: 5,
+        groupName: 'groupString'
+      }
+    } as Request;
+
+    expect(() => testSessionController.pushSessionChange(mockRequest)).toThrow(HttpException);
+    expect(() => testSessionController.pushSessionChange(mockRequest)).toThrow('not session data');
+  });
+
+  it('should throw not session data (no personId property)', () => {
+    const mockRequest = {
+      body: {
+        groupName: 'groupString',
+        timestamp: 12.30
+      }
+    } as Request;
+
+    expect(() => testSessionController.pushSessionChange(mockRequest)).toThrow(HttpException);
+    expect(() => testSessionController.pushSessionChange(mockRequest)).toThrow('not session data');
+  });
+
+  it('should not throw any errors (happy path)', () => {
     const mockSessionChange : SessionChange = {
       personId: 3,
       groupName: 'group string',
@@ -103,6 +127,6 @@ describe('testSessionController Get', () => {
   });
 
   it('should return a list of sessionChanges', () => {
-    expect(testSessionController.getTestSessions()).toEqual(sessionChangesList);
+    expect(testSessionController.getTestSessions()).toStrictEqual(sessionChangesList);
   });
 });
