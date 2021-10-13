@@ -151,11 +151,14 @@ describe('testSessionService sessionChanges', () => {
       CURRENT_UNIT_ID: 'Endunit',
       TESTLETS_CLEARED_CODE: '["Examples"]',
       FOCUS: 'HAS',
-      status: 'locked'
+      status: 'locked',
+      old: 'old'
     },
     bookletName: 'BOOKLET1',
     unitName: 'Endunit',
-    unitState: { PLAYER: 'RUNNING', RESPONSE_PROGRESS: 'none', PRESENTATION_PROGRESS: 'complete' },
+    unitState: {
+      PLAYER: 'RUNNING', RESPONSE_PROGRESS: 'none', PRESENTATION_PROGRESS: 'complete', STATE: 'old state'
+    },
     timestamp: 1630051624
   };
   const mockSessionChange1Updated : SessionChange = {
@@ -170,11 +173,14 @@ describe('testSessionService sessionChanges', () => {
       CURRENT_UNIT_ID: 'Endunit',
       TESTLETS_CLEARED_CODE: '["Examples"]',
       FOCUS: 'HAS',
-      status: 'locked'
+      status: 'locked',
+      new: 'new'
     },
     bookletName: 'BOOKLET1',
-    unitName: 'Testunit',
-    unitState: { PLAYER: 'RUNNING', RESPONSE_PROGRESS: 'none', PRESENTATION_PROGRESS: 'complete' },
+    unitName: 'Endunit',
+    unitState: {
+      PLAYER: 'RUNNING', RESPONSE_PROGRESS: 'none', PRESENTATION_PROGRESS: 'complete', STATE: 'new state'
+    },
     timestamp: 1630051874
   };
   const mockSessionChangeNoMonitor : SessionChange = {
@@ -222,21 +228,6 @@ describe('testSessionService sessionChanges', () => {
     unitState: { PLAYER: 'RUNNING', PRESENTATION_PROGRESS: 'complete', RESPONSE_PROGRESS: 'some' },
     timestamp: 1630051624
   };
-  const mockSessionChange5 : SessionChange = {
-    personId: 16,
-    groupName: 'Gruppe5',
-    testId: 17,
-    personLabel: 'V509',
-    groupLabel: 'Gruppe5',
-    mode: 'run-hot-return',
-    testState: {
-      CONTROLLER: 'TERMINATED', CURRENT_UNIT_ID: 'FB_unit3', FOCUS: 'HAS', status: 'locked'
-    },
-    bookletName: 'BOOKLET_VERSION5',
-    unitName: 'FB_unit3',
-    unitState: { PLAYER: 'RUNNING', PRESENTATION_PROGRESS: 'complete', RESPONSE_PROGRESS: 'some' },
-    timestamp: 1630051624
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -265,11 +256,72 @@ describe('testSessionService sessionChanges', () => {
     expect(testSessionService['testSessions']['Gruppe5']).toStrictEqual({});
   });
 
-  it('should update a session entry', () => {
+  it('should update a session entry (same unit name)', () => {
+    const expectedSession : SessionChange = {
+      personId: 357,
+      groupName: 'TestakerGroup1',
+      testId: 381,
+      personLabel: 'user2',
+      groupLabel: 'TestakerGroup1',
+      mode: 'run-hot-return',
+      testState: {
+        CONTROLLER: 'TERMINATED',
+        CURRENT_UNIT_ID: 'Endunit',
+        TESTLETS_CLEARED_CODE: '["Examples"]',
+        FOCUS: 'HAS',
+        status: 'locked',
+        old: 'old',
+        new: 'new'
+      },
+      bookletName: 'BOOKLET1',
+      unitName: 'Endunit',
+      unitState: {
+        PLAYER: 'RUNNING', RESPONSE_PROGRESS: 'none', PRESENTATION_PROGRESS: 'complete', STATE: 'new state'
+      },
+      timestamp: 1630051874
+    };
+
     testSessionService.applySessionChange(mockSessionChange1);
     testSessionService.applySessionChange(mockSessionChange1Updated);
+    expect(testSessionService['testSessions']['TestakerGroup1']['357|381']).toStrictEqual(expectedSession);
+    expect(testSessionService['testSessions']['Group1']).toBeUndefined();
+    expect(testSessionService['testSessions']['Group2']).toBeUndefined();
+    expect(testSessionService['testSessions']['Group3']).toBeUndefined();
+    expect(testSessionService['testSessions']['Group5']).toBeUndefined();
+  });
 
-    expect(testSessionService['testSessions']['TestakerGroup1']['357|381']).toStrictEqual(mockSessionChange1Updated);
+  it('should update a session entry (different unit name)', () => {
+    mockSessionChange1Updated.unitName = 'Testunit';
+    mockSessionChange1Updated.unitState = {
+      PLAYER: 'RUNNING', PRESENTATION_PROGRESS: 'complete'
+    };
+    const expectedSession : SessionChange = {
+      personId: 357,
+      groupName: 'TestakerGroup1',
+      testId: 381,
+      personLabel: 'user2',
+      groupLabel: 'TestakerGroup1',
+      mode: 'run-hot-return',
+      testState: {
+        CONTROLLER: 'TERMINATED',
+        CURRENT_UNIT_ID: 'Endunit',
+        TESTLETS_CLEARED_CODE: '["Examples"]',
+        FOCUS: 'HAS',
+        status: 'locked',
+        old: 'old',
+        new: 'new'
+      },
+      bookletName: 'BOOKLET1',
+      unitName: 'Testunit',
+      unitState: {
+        PLAYER: 'RUNNING', PRESENTATION_PROGRESS: 'complete'
+      },
+      timestamp: 1630051874
+    };
+
+    testSessionService.applySessionChange(mockSessionChange1);
+    testSessionService.applySessionChange(mockSessionChange1Updated);
+    expect(testSessionService['testSessions']['TestakerGroup1']['357|381']).toStrictEqual(expectedSession);
     expect(testSessionService['testSessions']['Group1']).toBeUndefined();
     expect(testSessionService['testSessions']['Group2']).toBeUndefined();
     expect(testSessionService['testSessions']['Group3']).toBeUndefined();
@@ -278,12 +330,11 @@ describe('testSessionService sessionChanges', () => {
 
   it('should return an array of sessionChanges', () => {
     const expectedTestSessions : SessionChange[] =
-    [mockSessionChange1, mockSessionChange2, mockSessionChange3, mockSessionChange5];
+    [mockSessionChange1, mockSessionChange2, mockSessionChange3];
 
     testSessionService.applySessionChange(mockSessionChange1);
     testSessionService.applySessionChange(mockSessionChange2);
     testSessionService.applySessionChange(mockSessionChange3);
-    testSessionService.applySessionChange(mockSessionChange5);
     expect(testSessionService.getTestSessions()).toStrictEqual(expectedTestSessions);
   });
 });
