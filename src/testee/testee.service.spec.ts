@@ -35,7 +35,7 @@ describe('testeeService add and remove', () => {
 
   it('should add a testee', () => {
     testeeService.addTestee(mockTestee);
-    expect(testeeService['testees']['testeeToken']).toEqual(mockTestee);
+    expect(testeeService['testees']['testeeToken']).toStrictEqual(mockTestee);
   });
 
   it('should remove a testee', () => {
@@ -46,7 +46,7 @@ describe('testeeService add and remove', () => {
     testeeService.removeTestee(mockTestee.token);
 
     expect(testeeService['testees']['testeeToken']).toBeUndefined();
-    expect(testeeService['testees']).toEqual({});
+    expect(testeeService['testees']).toStrictEqual({});
     expect(spyDisconnectClient).toHaveBeenCalled();
     expect(spyLogger).toHaveBeenCalled();
   });
@@ -84,12 +84,12 @@ describe('testeeService', () => {
   });
 
   it('should return an array of testees', () => {
-    expect(testeeService.getTestees()).toEqual(expectedTestees);
+    expect(testeeService.getTestees()).toStrictEqual(expectedTestees);
   });
 
   it('should delete all testees', () => {
     testeeService.clean();
-    expect(testeeService['testees']).toEqual({});
+    expect(testeeService['testees']).toStrictEqual({});
   });
 
   it('should broadcast commands to testees', () => {
@@ -144,17 +144,17 @@ describe('testeeService', () => {
         expect(Object.values((testeeService['testees']))
           .filter(testee => testee.testId === testId)
           .map(testee => testee.token))
-          .toEqual(['testeeToken']);
+          .toStrictEqual(['testeeToken']);
       } else if (testId === 6) {
         expect(Object.values((testeeService['testees']))
           .filter(testee => testee.testId === testId)
           .map(testee => testee.token))
-          .toEqual(['testeeToken2']);
+          .toStrictEqual(['testeeToken2']);
       } else {
         expect(Object.values((testeeService['testees']))
           .filter(testee => testee.testId === testId)
           .map(testee => testee.token))
-          .toEqual([]);
+          .toStrictEqual([]);
       }
     }));
   });
