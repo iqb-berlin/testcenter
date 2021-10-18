@@ -51,7 +51,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
   }
 
-  public broadcastToRegistered(tokens: string[], event: string, message: any): void {
+  broadcastToRegistered(tokens: string[], event: string, message: any): void {
     const payload = JSON.stringify({ event, data: message });
 
     tokens.forEach((token: string) => {
@@ -62,7 +62,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     });
   }
 
-  public disconnectClient(monitorToken: string): void {
+  disconnectClient(monitorToken: string): void {
     if (typeof this.clients[monitorToken] !== 'undefined') {
       this.logger.log(`disconnect client: ${monitorToken}`);
       this.clients[monitorToken].close();
@@ -70,17 +70,17 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
   }
 
-  public disconnectAll(): void {
+  disconnectAll(): void {
     Object.keys(this.clients).forEach((token: string) => {
       this.disconnectClient(token);
     });
   }
 
-  public getDisconnectionObservable(): Observable<string> {
+  getDisconnectionObservable(): Observable<string> {
     return this.clientLost$.asObservable();
   }
 
-  public getClientTokens(): string[] {
+  getClientTokens(): string[] {
     return Object.keys(this.clients);
   }
 
