@@ -17,7 +17,24 @@ services:
 stages:
   - check
   - deploy
+  - build
+  - test
 
+build: 
+  stage: build
+  script:
+    - npm install
+  artifacts: 
+    paths: 
+      - node_modules/
+
+unit-tests:
+  stage: test
+  script: npm run test
+
+  artifacts:
+    paths:
+      - ./
 
 code_quality:
   stage: check
