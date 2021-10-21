@@ -32,10 +32,6 @@ unit-tests:
   stage: test
   script: npm test
 
-  artifacts:
-    paths:
-      - ./
-
 code_quality:
   stage: check
 sast:
