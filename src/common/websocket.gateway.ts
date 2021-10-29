@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 import { Server, Client } from 'ws';
 import { IncomingMessage } from 'http';
 import { Logger } from '@nestjs/common';
-import { BroadcastingEvent } from "./interfaces";
+import { BroadcastingEvent } from './interfaces';
 
 function getLastUrlPart(url: string) {
   const arr = url.split('/').filter(e => e);
@@ -52,7 +52,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
   }
 
-  public broadcastToRegistered(tokens: string[], event: BroadcastingEvent, message: any): void {
+  broadcastToRegistered(tokens: string[], event: BroadcastingEvent, message: any): void {
     const payload = JSON.stringify({ event, data: message });
 
     tokens.forEach((token: string) => {
@@ -63,7 +63,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     });
   }
 
-  public disconnectClient(monitorToken: string): void {
+  disconnectClient(monitorToken: string): void {
     if (typeof this.clients[monitorToken] !== 'undefined') {
       this.logger.log(`disconnect client: ${monitorToken}`);
       this.clients[monitorToken].close();
@@ -71,17 +71,17 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     }
   }
 
-  public disconnectAll(): void {
+  disconnectAll(): void {
     Object.keys(this.clients).forEach((token: string) => {
       this.disconnectClient(token);
     });
   }
 
-  public getDisconnectionObservable(): Observable<string> {
+  getDisconnectionObservable(): Observable<string> {
     return this.clientLost$.asObservable();
   }
 
-  public getClientTokens(): string[] {
+  getClientTokens(): string[] {
     return Object.keys(this.clients);
   }
 

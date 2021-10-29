@@ -19,11 +19,11 @@ export class TesteeService {
 
   private testees: { [token: string]: Testee } = {};
 
-  public addTestee(testee: Testee): void {
+  addTestee(testee: Testee): void {
     this.testees[testee.token] = testee;
   }
 
-  public removeTestee(testeeToken: string): void {
+  removeTestee(testeeToken: string): void {
     this.logger.log(`remove testee: ${testeeToken}`);
 
     if (typeof this.testees[testeeToken] !== 'undefined') {
@@ -33,7 +33,7 @@ export class TesteeService {
     this.websocketGateway.disconnectClient(testeeToken);
   }
 
-  public getTestees(): Testee[] {
+  getTestees(): Testee[] {
     return Object.values(this.testees);
   }
 
@@ -54,7 +54,7 @@ export class TesteeService {
     }
   }
 
-  broadcastCommandToTestees(command: Command, testIds: number[]) {
+  broadcastCommandToTestees(command: Command, testIds: number[]) : void {
     testIds.forEach((testId => {
       this.websocketGateway.broadcastToRegistered(
         Object.values(this.testees)
@@ -66,7 +66,7 @@ export class TesteeService {
     }));
   }
 
-  public clean(): void {
+  clean(): void {
     this.testees = {};
   }
 }

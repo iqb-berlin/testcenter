@@ -1,6 +1,7 @@
 export interface SessionChange {
   personId: number;
   groupName: string;
+  personLabel: string;
   mode?: string;
   groupLabel?: string;
   testId: number;

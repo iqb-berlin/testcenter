@@ -4,12 +4,6 @@ import { Monitor } from '../monitor/monitor.interface';
 import { WebsocketGateway } from '../common/websocket.gateway';
 
 const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionChange): SessionChange => {
-  if ((sessionChange.testId) && (sessionChange.testId !== testSession.testId)) {
-    testSession.testState = {};
-    testSession.unitState = {};
-    testSession.bookletName = '';
-  }
-
   if ((sessionChange.unitName) && (sessionChange.unitName !== testSession.unitName)) {
     testSession.unitState = {};
   }
@@ -44,14 +38,14 @@ export class TestSessionService {
     }
   } = {};
 
-  public applySessionChange(sessionChange: SessionChange): void {
+  applySessionChange(sessionChange: SessionChange): void {
     this.addSessionChange(sessionChange);
     this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
   }
 
   private addSessionChange(sessionChange: SessionChange): void {
     const group: string = sessionChange.groupName;
-    const sessionId = `${sessionChange.personId}|${sessionChange.testId}`;
+    const testId = sessionChange.testId;
 
     // testSession is first of group
     if (typeof this.testSessions[group] === 'undefined') {
@@ -59,13 +53,13 @@ export class TestSessionService {
       return;
     }
 
-    if (typeof this.testSessions[group][sessionId] !== 'undefined') {
+    if (typeof this.testSessions[group][testId] !== 'undefined') {
       // testSession is already known and needs to be updated
-      const testSession = this.testSessions[group][sessionId];
-      this.testSessions[group][sessionId] = mergeSessionChanges(testSession, sessionChange);
+      const testSession = this.testSessions[group][testId];
+      this.testSessions[group][testId] = mergeSessionChanges(testSession, sessionChange);
     } else {
       // formally unknown testSession
-      this.testSessions[group][sessionId] = sessionChange;
+      this.testSessions[group][testId] = sessionChange;
     }
   }
 
@@ -80,21 +74,19 @@ export class TestSessionService {
     }
   }
 
-  public addMonitor(monitor: Monitor): void {
+  addMonitor(monitor: Monitor): void {
     monitor.groups.forEach((group: string) => {
       if (typeof this.monitors[group] === 'undefined') {
         this.monitors[group] = {};
       }
-
       if (typeof this.testSessions[group] === 'undefined') {
         this.testSessions[group] = {};
       }
-
       this.monitors[group][monitor.token] = monitor;
     });
   }
 
-  public removeMonitor(monitorToken: string): void {
+  removeMonitor(monitorToken: string): void {
     this.logger.log(`remove monitor: ${monitorToken}`);
 
     Object.keys(this.monitors).forEach((group: string) => {
@@ -110,28 +102,28 @@ export class TestSessionService {
     this.websocketGateway.disconnectClient(monitorToken);
   }
 
-  public getMonitors(): Monitor[] {
+  getMonitors(): Monitor[] {
     return Object.values(this.monitors)
       .reduce(
-        (allMonitors: Monitor[], groupMonitors: { [g: string]: Monitor }): Monitor[] => allMonitors.concat(Object.values(groupMonitors)),
-        []
+        (allMonitors: Monitor[], groupMonitors: { [g: string]: Monitor }): Monitor[] => allMonitors
+          .concat(Object.values(groupMonitors)), []
       )
       .filter((v: Monitor, i: number, a: Monitor[]) => a.indexOf(v) === i);
   }
 
-  public getTestSessions(): SessionChange[] {
+  getTestSessions(): SessionChange[] {
     return Object.values(this.testSessions)
       .reduce(
-        (allTestSessions: SessionChange[], groupTestSessions: { [g: string]: SessionChange }): SessionChange[] => allTestSessions.concat(Object.values(groupTestSessions)),
-        []
+        // eslint-disable-next-line max-len
+        (allTestSessions: SessionChange[], groupTestSessions: { [g: string]: SessionChange }): SessionChange[] => allTestSessions.concat(Object.values(groupTestSessions)), []
       );
   }
 
-  public getClientTokens(): string[] {
+  getClientTokens(): string[] {
     return this.websocketGateway.getClientTokens();
   }
 
-  public clean(): void {
+  clean(): void {
     this.monitors = {};
     this.testSessions = {};
   }

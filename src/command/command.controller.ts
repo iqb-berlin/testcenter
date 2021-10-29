@@ -2,7 +2,6 @@ import {
   Controller, HttpException, Logger, Post, Req
 } from '@nestjs/common';
 import { Request } from 'express';
-import { isArray } from 'util';
 import { isCommand } from './command.interface';
 import { TesteeService } from '../testee/testee.service';
 
@@ -20,7 +19,7 @@ export class CommandController {
       throw new HttpException('invalid command data', 400);
     }
 
-    if ((typeof request.body.testIds === 'undefined') || !isArray(request.body.testIds)) {
+    if ((typeof request.body.testIds === 'undefined') || !Array.isArray(request.body.testIds)) {
       throw new HttpException('no testIds given', 400);
     }
 
