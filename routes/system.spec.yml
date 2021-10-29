@@ -280,7 +280,7 @@ paths:
 
   /sys-checks:
     get:
-      summary: get a list of SysChecks
+      summary: get a list of system checks
       description: get a list of available SysChecks (from all workspaces)
 
       responses:

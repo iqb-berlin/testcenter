@@ -1,5 +1,23 @@
 # Changelog & Upgrade Information
 
+## 11.6.0
+This update refactors the CSV-output for various data: logs, reviews, test-results and sys-check-reports. 
+The CSVs can now all be generated in the backend and revrieved via analogous endpoints. The data is also available 
+as JSON. All CSVs contain BOMs now. 
+
+### Endpoints
+* The four new endpoints for retrieving reports: 
+  * `[GET] /workspace/{ws_id}/report/log`
+  * `[GET] /workspace/{ws_id}/report/review`
+  * `[GET] /workspace/{ws_id}/report/response`
+  * `[GET] /workspace/{ws_id}/report/sys-check`
+* The old ones are now deprecated and will be removed soon:
+  * `[GET] /workspace/{ws_id}/logs`
+  * `[GET] /workspace/{ws_id}/reviews`
+  * `[GET] /workspace/{ws_id}/responses`
+  * `[GET] /workspace/{ws_id}/sys-check/reports`
+
+
 ## 11.5.0
 Fixes some issues in the file-management.
 

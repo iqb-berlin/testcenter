@@ -59,11 +59,8 @@ const changeUri = (transaction, changeMap) => {
   });
 };
 
-
 dreddHooks.beforeEachValidation(function(transaction) {
-  // don't compare headers
-  transaction.real.headers = {};
-  transaction.expected.headers = {};
+    // nothing do to yet
 });
 
 
@@ -141,17 +138,15 @@ dreddHooks.beforeEach(function(transaction, done) {
       return done();
   }
 
-  done();
-});
-
-dreddHooks.afterEach(function(transaction, done) {
-  // die after first failure
-  if (transaction.results.valid === false) {
-    skipTheRest = true;
+  // Set Accept header
+  let contentType = String(transaction.expected.headers['Content-Type']);
+  let contentTypeArray = contentType.split(';', 1);
+  if (contentTypeArray.length > 0) {
+      transaction.request.headers['Accept'] = contentTypeArray[0];
   }
+
   done();
 });
-
 
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > application/json', async (transaction, done) => {
   const form = new Multipart();
@@ -172,7 +167,6 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 207 > applica
   done();
 });
 
-
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (transaction, done) => {
   const form = new Multipart();
   const tooBigContent = Readable.from(['x'.repeat(1024)]);
@@ -183,16 +177,42 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
   done();
 });
 
-
-dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain', function(transaction, done) {
+dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > text/plain;charset=utf-8', function(transaction, done) {
     transaction.expected.body = fs.readFileSync('../vendor/iqb-berlin/verona-player-simple/verona-simple-player-1.html').toString();
     done();
 
 });
 
-
 dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', (transaction, done) => {
   transaction.real.body = '';
   transaction.expected.body = '';
   done();
+});
+
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=UTF-8', function (transaction, done) {
+    transaction.expected.body = "\uFEFF" + transaction.expected.body;
+    done();
+});
+
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item resonses > 200 > text/csv;charset=UTF-8', function (transaction, done) {
+    transaction.expected.body = "\uFEFF" + transaction.expected.body;
+    done();
+});
+
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=UTF-8', function (transaction, done) {
+    transaction.expected.body = "\uFEFF" + transaction.expected.body;
+    done();
+});
+
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', function (transaction, done) {
+    transaction.expected.body = "\uFEFF" + transaction.expected.body;
+    done();
+});
+
+dreddHooks.afterEach(function(transaction, done) {
+    // die after first failure
+    if (transaction.results.valid === false) {
+        skipTheRest = true;
+    }
+    done();
 });
