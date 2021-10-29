@@ -32,8 +32,6 @@ unit-tests:
   stage: test
   script: npm test
 
-code_quality:
-  stage: check
 sast:
   stage: check
 .secret-analyzer:
