@@ -236,15 +236,18 @@ class AdminDAO extends DAO {
 	public function getResultsCount(int $workspaceId): array { // TODO add unit test  // TODO use dataclass an camelCase-objects
 
 		return $this->_(
-			'SELECT login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
-				tests.name as bookletname, COUNT(distinct units.id) AS num_units,
-				MAX(units.responses_ts) as lastchange
-			FROM tests
-				INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-				INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-				INNER JOIN units ON units.booklet_id = tests.id
-			WHERE login_sessions.workspace_id =:workspaceId
-			GROUP BY tests.name, login_sessions.group_name, login_sessions.name, person_sessions.code',
+			'SELECT login_sessions.group_name as groupname,
+                       login_sessions.name       as loginname,
+                       person_sessions.code,
+                       tests.name                as bookletname,
+                       COUNT(distinct units.id)  AS num_units,
+                       MAX(tests.timestamp_server)   as lastchange
+                FROM tests
+                         INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+                         INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
+                         INNER JOIN units ON units.booklet_id = tests.id
+                WHERE login_sessions.workspace_id = :workspaceId
+                GROUP BY tests.name, login_sessions.group_name, login_sessions.name, person_sessions.code',
 			[
 				':workspaceId' => $workspaceId
 			],
