@@ -43,16 +43,21 @@ services:
       - testcenter-db-backend
     volumes:
       - ../classes:/var/www/html/classes
+      - ../unit-tests:/var/www/html/unit-tests
       - ../definitions:/var/www/html/definitions
-      - ../docs/specs.yml:/var/www/html/docs/specs.yml
+      - ../docs/api/specs.yml:/var/www/html/docs/api/specs.yml
       - ../routes:/var/www/html/routes
       - ../sampledata:/var/www/html/sampledata
       - ../vo_data:/var/www/html/vo_data
       - ../vendor:/var/www/html/vendor
       - ../composer.json:/var/www/html/composer.json
       - ../composer.lock:/var/www/html/composer.lock
+      - ./scripts/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
     ports:
       - "9092:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 
 volumes:

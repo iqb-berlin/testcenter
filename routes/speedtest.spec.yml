@@ -22,7 +22,7 @@ paths:
         "200":
           description: a object containg information about booklet
           content:
-            text/plain:
+            text/plain;charset=utf-8:
               schema:
                 type: string
               example: "lrOI/JLFOAPBOHt="

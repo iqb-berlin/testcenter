@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 use Slim\App;
 
+global $app;
+
 $app->group('/workspace', function(App $app) {
 
     $app->get('/{ws_id}', [WorkspaceController::class, 'get'])
@@ -34,6 +36,9 @@ $app->group('/workspace', function(App $app) {
 
     $app->delete('/{ws_id}/files', [WorkspaceController::class, 'deleteFiles'])
         ->add(new IsWorkspacePermitted('RW'));
+
+    $app->get('/{ws_id}/report/{type}', [WorkspaceController::class, 'getReport'])
+        ->add(new IsWorkspacePermitted('RO'));
 
     $app->get('/{ws_id}/sys-check/reports', [WorkspaceController::class, 'getSysCheckReports'])
         ->add(new IsWorkspacePermitted('RO'));

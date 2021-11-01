@@ -13,12 +13,35 @@ VALUES (2, 'test', 'run-hot-return', 1, '2000-01-02 10:00:00', 'expired_token', 
 INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
 VALUES (3, 'monitor', 'monitor-group', 1, '2030-01-02 10:00:00', 'monitor_token', '', 'sample_group');
 
+INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
+VALUES (4, 'sample_user', 'run-hot-return', 1, '2030-01-01 12:00:00', 'test_token', '{"xxx":["BOOKLET.SAMPLE-1"]}', 'sample_group');
+
+INSERT INTO person_sessions(id, code, login_id, valid_until, token, laststate)
+VALUES (0, 'xxx', 4, 0, 'person-token', '');
 
 INSERT INTO tests (id, name, person_id, laststate, locked, label)
 VALUES (1, 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first tests label');
 
+INSERT INTO tests (id, name, person_id, laststate, locked, label)
+VALUES (0, 'BOOKLET.SAMPLE-1', 0, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first tests label');
+
 INSERT INTO units (id, name, booklet_id, laststate, responses, responsetype, responses_ts, restorepoint, restorepoint_ts)
 VALUES (1, 'UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}', '"some responses"', '', 1597903000, '"restore point"', 1597903000);
+
+INSERT INTO units (id, name, booklet_id, laststate, responses, responsetype, responses_ts, restorepoint, restorepoint_ts)
+VALUES (2, 'UNIT.SAMPLE', 0, '{"PRESENTATIONCOMPLETE":"yes"}', '{"name":"Sam Sample","age":34}', '', 1597903000, null, 0);
+
+INSERT INTO unit_logs (unit_id, logentry, timestamp)
+VALUES (2, 'sample unit log', 1597903000);
+
+INSERT INTO test_logs (booklet_id, logentry, timestamp)
+VALUES (0, 'sample log entry', 1597903000);
+
+INSERT INTO test_reviews (booklet_id, reviewtime, priority, categories, entry)
+VALUES (0, '2030-01-01 12:00:00', 1, '', 'sample booklet review');
+
+INSERT INTO unit_reviews (unit_id, reviewtime, priority, categories, entry)
+VALUES (2, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review');
 
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp) values (1, 1, 'COMMAND_C', '[]', 3, 1597903000);
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp) values (2, 1, 'COMMAND_A', '["param1"]', 3, 1597900000);

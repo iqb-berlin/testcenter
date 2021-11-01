@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+
 // TODO unit Test
 
 
@@ -12,7 +13,7 @@ class CSV {
 
 
     /**
-     * builds string containing data CSV from a collections of heterogenous arrays
+     * builds string containing data CSV from a collections of heterogeneous arrays
      *
      * example:
      * $data = [
@@ -40,7 +41,7 @@ class CSV {
      * @return string
      */
     static function build(array $data, array $columnNames = [],
-                          string $delimiter = ',', string $enclosure = '"', string $lineDelimiter = '\n') {
+                          string $delimiter = ',', string $enclosure = '"', string $lineDelimiter = '\n'): string {
 
         $columns = (is_array($columnNames) and count($columnNames))
             ? $columnNames
@@ -53,13 +54,13 @@ class CSV {
 
         $csvRows[] = CSV::stringifyRow($columns, $delimiter, $enclosure);
 
-        foreach($data as $set) {
+        foreach ($data as $set) {
 
             $row = [];
 
             foreach ($columns as $column) {
 
-                $row[] = isset($set[$column]) ? $set[$column] : '';
+                $row[] = $set[$column] ?? '';
             }
 
             $csvRows[] = CSV::stringifyRow($row, $delimiter, $enclosure);
@@ -69,12 +70,13 @@ class CSV {
     }
 
 
-    private static function stringifyRow($row, $delimiter, $enclosure) {
+    private static function stringifyRow($row, $delimiter, $enclosure): string {
 
         return implode(
             $delimiter,
             array_map(
                 function($cell) use ($enclosure, $delimiter) {
+
                     return $enclosure . preg_replace('#(\\' . $enclosure . ')#', '`', $cell) . $enclosure;
                 },
                 $row
@@ -90,6 +92,7 @@ class CSV {
     static function collectColumnNamesFromHeterogeneousObjects(array $data): array {
 
         return array_values(array_unique(array_reduce($data, function($agg, $array) {
+
             return array_merge($agg, array_keys($array));
         }, [])));
     }

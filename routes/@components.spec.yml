@@ -332,3 +332,128 @@ components:
       required:
         - key
         - timeStamp
+
+    LogReport:
+      type: array
+      items:
+        type: object
+        properties:
+          groupname:
+            type: string
+          loginname:
+            type: string
+          code:
+            type: string
+            description: person code
+          bookletname:
+            type: string
+          unitname:
+            type: string
+          timestamp:
+            type: string
+          logentry:
+            type: string
+
+    ResponseReport:
+      type: array
+      items:
+        type: object
+        properties:
+          groupname:
+            type: string
+          loginname:
+            type: string
+          code:
+            type: string
+            description: person code
+          bookletname:
+            type: string
+          unitname:
+            type: string
+          responses:
+            type: string
+          restorePoint:
+            type: string
+          responseType:
+            type: string
+          response-ts:
+            type: string
+          restorePoint-ts:
+            type: string
+          laststate:
+            type: string
+
+    ReviewReport:
+      type: array
+      items:
+        type: object
+        properties:
+          groupname:
+            type: string
+          loginname:
+            type: string
+          code:
+            type: string
+            description: person code
+          bookletname:
+            type: string
+          unitname:
+            type: string
+          priority:
+            type: string
+          reviewtime:
+            type: string
+            format: date-time
+          entry:
+            type: string
+
+    CommonSysCheckReportSection:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          type:
+            type: string
+          label:
+            type: string
+          value:
+            type: string
+          warning:
+            type: boolean
+
+    SysCheckReport:
+      type: array
+      description: an array of system check reports
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            format: date-time
+          checkId:
+            type: string
+          checkLabel:
+            type: string
+          title:
+            type: string
+          environment:
+            $ref: '#/components/schemas/CommonSysCheckReportSection'
+          network:
+            $ref: '#/components/schemas/CommonSysCheckReportSection'
+          questionnaire:
+            $ref: '#/components/schemas/CommonSysCheckReportSection'
+          unit:
+            $ref: '#/components/schemas/CommonSysCheckReportSection'
+          fileData:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                label:
+                  type: string
+                value:
+                  type: string

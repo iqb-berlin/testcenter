@@ -1,7 +1,7 @@
 {
   "name": "iqb/testcenter-api",
   "description": "The backend for the IQB-Testcenter application(s).",
-  "version": "11.5.10",
+  "version": "11.6.0",
   "extra": {
     "broadcastingServiceVersionExpected": "4.0.0"
   },
@@ -42,14 +42,16 @@
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
     "ext-curl": "*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "ext-mbstring": "*"
   },
   "suggest": {
     "ext-apache": "*"
   },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
-    "phpunit/phpunit":  "^8",
+    "phpunit/phpunit":  "^9",
+    "mockery/mockery": "dev-master",
     "iqb-berlin/verona-player-simple": "2.1.0"
   }
 }

@@ -102,7 +102,7 @@ class SessionDAOTest extends TestCase {
             'validTo' => $result->getValidTo()
         ];
 
-        $this->assertEquals($resultAsArray, $expect);
+        $this->assertEquals($expect, $resultAsArray);
 
         try {
 

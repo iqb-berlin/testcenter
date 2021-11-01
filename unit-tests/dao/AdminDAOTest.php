@@ -1,22 +1,26 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/exception/HttpError.class.php";
+
 require_once "classes/data-collection/DataCollection.class.php";
-require_once "classes/helper/DB.class.php";
-require_once "classes/data-collection/DBConfig.class.php";
-require_once "classes/helper/TimeStamp.class.php";
-require_once "classes/helper/Password.class.php";
-require_once "classes/dao/DAO.class.php";
-require_once "classes/dao/AdminDAO.class.php";
+require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
 
 
-class AdminDAOTest extends TestCase {
+final class AdminDAOTest extends TestCase {
 
-    private $dbc;
-    /* @type DAO
-     * @throws Exception
-     */
+    private AdminDAO $dbc;
+
+    static function setUpBeforeClass(): void {
+
+        require_once "classes/exception/HttpError.class.php";
+        require_once "classes/data-collection/DBConfig.class.php";
+        require_once "classes/data-collection/Command.class.php";
+        require_once "classes/dao/DAO.class.php";
+        require_once "classes/dao/AdminDAO.class.php";
+        require_once "classes/helper/DB.class.php";
+        require_once "classes/helper/TimeStamp.class.php";
+        require_once "classes/helper/Password.class.php";
+    }
 
     function setUp(): void {
 
@@ -47,9 +51,9 @@ class AdminDAOTest extends TestCase {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->getAdmin($token);
-        $this->assertEquals($result['userId'], '1');
-        $this->assertEquals($result['name'], 'super');
-        $this->assertEquals($result['isSuperadmin'], '1');
+        $this->assertEquals('1', $result['userId']);
+        $this->assertEquals('super', $result['name']);
+        $this->assertEquals('1', $result['isSuperadmin']);
     }
 
 
@@ -59,16 +63,16 @@ class AdminDAOTest extends TestCase {
         $result = $this->dbc->getWorkspaces($token);
         $expect = array(
             array(
-                'id'    =>  1,
-                'name'  =>  'example_workspace',
-                'role'  => 'RW'
+                'id' => 1,
+                'name' => 'example_workspace',
+                'role' => 'RW'
             )
         );
         $this->assertEquals($result, $expect);
 
         $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
         $result = $this->dbc->getWorkspaces($token);
-        $this->assertEquals($result, array());
+        $this->assertEquals(array(), $result);
     }
 
 
@@ -76,11 +80,11 @@ class AdminDAOTest extends TestCase {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
-        $this->assertEquals($result, true);
+        $this->assertEquals(true, $result);
 
         $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
         $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
-        $this->assertEquals($result, false);
+        $this->assertEquals(false, $result);
     }
 
 
@@ -88,11 +92,113 @@ class AdminDAOTest extends TestCase {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->getWorkspaceRole($token, 1);
-        $this->assertEquals($result, "RW");
+        $this->assertEquals("RW", $result);
 
         $token = $this->dbc->createAdminToken('i_exist_but_am_not_allowed_anything', 'user123');
         $result = $this->dbc->getWorkspaceRole($token, 1);
-        $this->assertEquals($result, "");
+        $this->assertEquals("", $result);
+    }
+
+
+    function testGetResponseReportData(): void {
+
+        // Arrange
+        $workspaceId = 1;
+        $groups = ['sample_group'];
+
+        // Act
+        $actualResponseReportData = $this->dbc->getResponseReportData($workspaceId, $groups);
+
+        // Assert
+        $expectedResponseReportData = [
+            [
+                'groupname' => 'sample_group',
+                'loginname' => 'sample_user',
+                'code' => 'xxx',
+                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'unitname' => 'UNIT.SAMPLE',
+                'responses' => '{"name":"Sam Sample","age":34}',
+                'restorePoint' => null,
+                'responseType' => '',
+                'response-ts' => "1597903000",
+                'restorePoint-ts' => '0',
+                'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}'
+            ]
+        ];
+
+        parent::assertSame($expectedResponseReportData, $actualResponseReportData);
+    }
+
+
+    function testGetLogReportData(): void {
+
+        // Arrange
+        $workspaceId = 1;
+        $groups = ['sample_group'];
+
+        // Act
+        $actualLogReportData = $this->dbc->getLogReportData($workspaceId, $groups);
+
+        // Assert
+        $expectedLogReportData = [
+            [
+                'groupname' => 'sample_group',
+                'loginname' => 'sample_user',
+                'code' => 'xxx',
+                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'unitname' => 'UNIT.SAMPLE',
+                'timestamp' => "1597903000",
+                'logentry' => 'sample unit log'
+            ], [
+                'groupname' => 'sample_group',
+                'loginname' => 'sample_user',
+                'code' => 'xxx',
+                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'unitname' => '',
+                'timestamp' => "1597903000",
+                'logentry' => 'sample log entry'
+            ]
+        ];
+
+        parent::assertSame($expectedLogReportData, $actualLogReportData);
+    }
+
+
+    function testGetReviewReportData(): void {
+
+        // Arrange
+        $workspaceId = 1;
+        $groups = ['sample_group'];
+
+        // Act
+        $actualReviewReportData = $this->dbc->getReviewReportData($workspaceId, $groups);
+
+        // Assert
+        $expectedReviewReportData = [
+            [
+                'groupname' => 'sample_group',
+                'loginname' => 'sample_user',
+                'code' => 'xxx',
+                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'unitname' => 'UNIT.SAMPLE',
+                'priority' => '1',
+                'categories' => '',
+                'reviewtime' => '2030-01-01 12:00:00',
+                'entry' => 'this is a sample unit review'
+            ], [
+                'groupname' => 'sample_group',
+                'loginname' => 'sample_user',
+                'code' => 'xxx',
+                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'unitname' => '',
+                'priority' => '1',
+                'categories' => '',
+                'reviewtime' => '2030-01-01 12:00:00',
+                'entry' => 'sample booklet review'
+            ]
+        ];
+
+        parent::assertSame($expectedReviewReportData, $actualReviewReportData);
     }
 
 
@@ -125,4 +231,5 @@ class AdminDAOTest extends TestCase {
         $result = $this->dbc->getTest(1);
         $this->assertEquals($expectation, $result);
     }
+
 }

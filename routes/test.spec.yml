@@ -137,7 +137,7 @@ paths:
         "200":
           description: List of Workspaces
           content:
-            text/plain:
+            application/octet-stream:
               example: "(HTML code containing player)"
         "401":
           description: Not authenticated
@@ -557,7 +557,7 @@ paths:
         "201":
           description:  OK, started
           content:
-            text/plain:
+            text/html; charset=UTF-8:
               example: "1"
         "401":
           description: Not authenticated - auth token header is missing or not containing a login token
