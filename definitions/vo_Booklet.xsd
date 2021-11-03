@@ -52,7 +52,7 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="ON"/>
       <xs:enumeration value="OFF"/>
-      <xs:enumeration value="FORWARD_ONLY"/>
+      <xs:enumeration value="ALWAYS"/>
     </xs:restriction>
   </xs:simpleType>
 
