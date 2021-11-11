@@ -138,7 +138,7 @@ describe('websocketGateway handle connection and disconnection (single client)',
     const spyLogger = jest.spyOn(websocketGateway['logger'], 'log');
     const spySend = jest.spyOn(websocketGateway['clients']['testEnde'], 'send');
     const spySend2 = jest.spyOn(websocketGateway['clients']['testEnde2'], 'send');
-    const event = 'event string';
+    const event = 'test-sessions';
     const message = {};
     const tokens = websocketGateway.getClientTokens();
     websocketGateway.broadcastToRegistered(tokens, event, message);
