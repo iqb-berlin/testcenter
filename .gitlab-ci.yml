@@ -5,32 +5,19 @@ include:
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: Security/License-Scanning.gitlab-ci.yml
 
-image: node:latest
+image: docker:20.10.5
 
 variables:
   DOCKER_TLS_CERTDIR: ""
 
-#  services:
-#  - docker:20.10.5-dind
+services:
+  - docker:20.10.5-dind
 
 
 stages:
   - check
-  - deploy
-  - build
   - test
-
-build: 
-  stage: build
-  script:
-    - npm install
-  artifacts: 
-    paths: 
-      - node_modules/
-
-unit-tests:
-  stage: test
-  script: npm test
+  - deploy
 
 sast:
   stage: check
@@ -40,6 +27,16 @@ dependency_scanning:
   stage: check
 license_scanning:
   stage: check
+
+build and test:
+  image: node:latest
+  stage: test
+  script:
+    - npm install
+    - npm test
+  artifacts: 
+    paths: 
+      - node_modules/
 
 deploy-tagged-docker-image:
   stage: deploy
