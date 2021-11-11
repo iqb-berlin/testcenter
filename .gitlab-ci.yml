@@ -32,6 +32,7 @@ build and test:
   image: node:latest
   stage: test
   script:
+    - npm install npm@7.5.6 -g
     - npm install
     - npm test
   artifacts: 
