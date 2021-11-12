@@ -81,6 +81,9 @@ def _run_software():
 def _stop_software():
     subprocess.run('make stop', shell=True, check=True)
 
+def _run_tests():
+    time.sleep(10)
+    subprocess.run('make test-unit', shell=True, check=True)
 
 def _git_tag():
     print(f"Creating git tag for version {new_version}")
@@ -112,6 +115,7 @@ new_version = _increment_version(old_version)
 _update_version_in_file(new_version)
 try:
     _run_software()
+    _run_tests()
 except subprocess.SubprocessError:
     _stop_software()
     _undo_version_update_in_files()

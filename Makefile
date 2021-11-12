@@ -13,6 +13,9 @@ down:
 build:
 	docker-compose -f docker/docker-compose.yml build
 
+test-unit:
+	docker-compose -f docker/docker-compose.yml exec -T testcenter-broadcasting-service-dev npm test
+
 tag-major:
 	scripts/new_version.py major
 
