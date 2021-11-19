@@ -1,0 +1,1 @@
+alter table meta modify metaKey varchar(100) not null;
