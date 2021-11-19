@@ -135,7 +135,7 @@ create unique index "person_sessions_id_uindex" on person_sessions (`id`);
 
 create table `meta`
 (
-    metaKey varchar(30) not null
+    metaKey varchar(100) not null
 ,   value varchar(100) null
 ,   category varchar(30) null
 ,   primary key (category, metaKey)
