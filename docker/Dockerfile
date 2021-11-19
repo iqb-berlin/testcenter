@@ -25,7 +25,7 @@ RUN composer install
 VOLUME /vendor
 
 #========================
-FROM php:${PHP_VERSION}-apache-buster AS base
+FROM php:${PHP_VERSION}-apache-bullseye AS base
 
 LABEL maintainer="IQB Berlin"
 LABEL version="1.0"
