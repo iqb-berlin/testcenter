@@ -6,5 +6,5 @@
     <Description>This is a sample unit showing the possibilities of the sample player.</Description>
   </Metadata>
 
-  <DefinitionRef player="verona-simple-player-2">SAMPLE_UNITCONTENTS.HTM</DefinitionRef>
+  <DefinitionRef player="verona-player-simple-4">SAMPLE_UNITCONTENTS.HTM</DefinitionRef>
 </Unit>

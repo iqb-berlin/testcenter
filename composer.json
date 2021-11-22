@@ -20,11 +20,11 @@
       "type": "package",
       "package": {
         "name": "iqb-berlin/verona-player-simple",
-        "version": "2.1.0",
+        "version": "4.0.0",
         "source": {
           "url": "https://github.com/iqb-berlin/verona-player-simple.git",
           "type": "git",
-          "reference": "2.1.0"
+          "reference": "4.0.0"
         }
       }
     }
@@ -52,6 +52,6 @@
     "mikey179/vfsstream": "^1.6",
     "phpunit/phpunit":  "^9",
     "mockery/mockery": "dev-master",
-    "iqb-berlin/verona-player-simple": "2.1.0"
+    "iqb-berlin/verona-player-simple": "4.0.0"
   }
 }

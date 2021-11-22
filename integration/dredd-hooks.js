@@ -178,7 +178,7 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
 });
 
 dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > application/octet-stream', function(transaction, done) {
-    transaction.expected.body = fs.readFileSync('../vendor/iqb-berlin/verona-player-simple/verona-simple-player-2.html').toString();
+    transaction.expected.body = fs.readFileSync('../vendor/iqb-berlin/verona-player-simple/verona-player-simple-4.0.0.html').toString();
     done();
 });
 
