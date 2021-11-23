@@ -120,6 +120,12 @@ class TestController extends Controller {
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
+        if (!$authToken) {
+            $tokenString = $request->getAttribute('auth_token');
+            $authToken = self::sessionDAO()->getToken($tokenString, ['person']);
+        }
+
+
         $resourceName = $request->getAttribute('resource_name');
         $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 

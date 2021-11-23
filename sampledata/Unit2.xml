@@ -9,51 +9,23 @@
   <Definition player="verona-player-simple-4">
     <![CDATA[
       <div class="container">
-          <h1>Sample Unit</h1>
-          <svg class="loader" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340">
-              <circle cx="170" cy="170" r="160"/>
-          </svg>
+        <h1>Sample Unit calling external File</h1>
+        <p id="sample-unit-message">This unit can fetch some data dynamically. It will fetch the other unit.</p>
       </div>
-      <style>
-          h1 {
-              position: absolute;
-              margin: 0;
+      <script>
+        document.addEventListener('vopStartCommand', event => {
+          if (!playerConfig.directDownloadUrl) {
+            document.querySelector("#sample-unit-message").innerHTML = "Fetching external content is not supported by host";
+            return;
           }
-          .container {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-          }
+          fetch(`${playerConfig.directDownloadUrl}/SAMPLE_UNITCONTENTS.HTM`)
+            .then(
+              async res => {
+                document.querySelector("#unit").innerHTML += await res.text();
+              });
+        });
+      </script>
 
-          .loader {
-              max-width: 15rem;
-              width: 100%;
-              height: auto;
-              stroke-linecap: round;
-          }
-
-          circle {
-              fill: none;
-              stroke: #003333;
-              stroke-width: 10;
-              animation-name: preloader;
-              animation-duration: 3s;
-              animation-iteration-count: infinite;
-              animation-timing-function: linear;
-              transform-origin: 170px 170px;
-              /*will-change: transform;*/
-              stroke-dasharray: 750px;
-          }
-          @keyframes preloader {
-              50% {
-                  stroke: #b2ff59;
-              }
-              100% {
-                  transform: rotate(360deg);
-              }
-          }
-      </style>
     ]]>
   </Definition>
 </Unit>

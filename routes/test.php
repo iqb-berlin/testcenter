@@ -52,3 +52,4 @@ $app->group('/test', function(App $app) { // TODO Spec
     $app->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
 });
 
+$app->get('/{auth_token}/resource/{resource_name}', [TestController::class, 'getResource']);
