@@ -190,16 +190,16 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function getSpecialInfo(): array {
+    public function getSpecialInfo(): FileSpecialInfo {
 
-        $meta = [];
+        $info = new FileSpecialInfo([]);
         if ($this->getDescription()) {
-            $meta['description'] = $this->getDescription();
+            $info->description = $this->getDescription();
         }
         if ($this->getLabel()) {
-            $meta['label'] = $this->getLabel();
+            $info->label = $this->getLabel();
         }
-        return $meta;
+        return $info;
     }
 
 

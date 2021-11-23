@@ -104,7 +104,7 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
             'Resource/verona-player-simple-4.0.0.html' => [
-                new ValidationReportEntry('info', 'Verona-Version: 3.0.0')
+                new ValidationReportEntry('info', 'Verona-Version: 4.0')
             ]
         ];
 

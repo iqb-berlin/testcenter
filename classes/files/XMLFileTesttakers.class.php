@@ -341,10 +341,10 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getSpecialInfo(): array {
+    public function getSpecialInfo(): FileSpecialInfo {
 
         $meta = parent::getSpecialInfo();
-        $meta['testtakers'] = $this->getTesttakerCount();
+        $meta->testtakers = $this->getTesttakerCount();
         return $meta;
     }
 }

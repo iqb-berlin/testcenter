@@ -16,6 +16,8 @@ require_once "classes/helper/XMLSchema.class.php";
 require_once "classes/exception/HttpError.class.php";
 require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
 require_once "classes/data-collection/ValidationReportEntry.class.php";
+require_once "classes/data-collection/PlayerMeta.class.php";
+require_once "classes/data-collection/FileSpecialInfo.class.php";
 require_once "classes/files/File.class.php";
 require_once "classes/files/ResourceFile.class.php";
 require_once "classes/files/XMLFile.class.php";
@@ -428,7 +430,7 @@ class WorkspaceTest extends TestCase {
         $this->assertEquals('ResourceFile', get_class($result));
         $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
 
-        $result = $this->workspace->findFileById('Resource', 'verona-simple-player-2.0.99.HTML', true);
+        $result = $this->workspace->findFileById('Resource', 'verona-simple-player-4.0.99.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
         $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
 
@@ -437,18 +439,18 @@ class WorkspaceTest extends TestCase {
 
         $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.0.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.0.99.html', $result->getPath());
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-4.0.99.html', $result->getPath());
 
-        $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-2.0.99.HTML', true);
+        $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.99.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-2.0.99.html', $result->getPath());
+        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-simple-player-4.0.99.html', $result->getPath());
     }
 
 
     function test_findFileById_wrongVersion() {
 
         $this->expectException('HttpError');
-        $this->workspace->findFileById('Resource','VERONA-PLAYER-SIMPLE-200.HTML', false);
+        $this->workspace->findFileById('Resource','VERONA-PLAYER-SIMPLE-400.HTML', false);
     }
 
 

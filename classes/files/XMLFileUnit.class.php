@@ -128,10 +128,10 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    public function getSpecialInfo(): array {
+    public function getSpecialInfo(): FileSpecialInfo {
 
         $meta = parent::getSpecialInfo();
-        $meta['totalSize'] = $this->getTotalSize();
+        $meta->totalSize = $this->getTotalSize();
         return $meta;
     }
 }

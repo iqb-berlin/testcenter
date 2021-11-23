@@ -5,10 +5,11 @@ declare(strict_types=1);
 class ResourceFile extends File {
 
     const type = 'Resource';
-    protected array $meta = [];
+    protected PlayerMeta $meta;
 
     public function __construct(string $path, bool $validate = true) {
 
+        $this->meta = new PlayerMeta([]);
         parent::__construct($path);
         if ($validate) {
             $this->validate();
@@ -45,39 +46,50 @@ class ResourceFile extends File {
         $document = new DOMDocument();
         $document->loadHTML($this->getContent(), LIBXML_NOERROR);
 
-        $this->readPlayerMetaData($document);
-        $this->createLabelFromMeta();
+        $metaV4Problem = $this->readPlayerMetadataV4($document);
+
+        if ($metaV4Problem) {
+            if (!$this->readPlayerMetadataV3($document)) {
+                $this->report('warning', $metaV4Problem);
+            }
+        }
+
+        $this->applyMeta();
         $this->analyzeMeta();
     }
 
 
-    private function readPlayerMetaData(DOMDocument $document) {
+    /**
+     * This was a temporary way of defining meta-data of a player until in Verona4 a definitive way was defined. Since
+     * we produced a bunch of player-versions including this kind of metadata we should support it as long as we support
+     * Verona3.
+     */
+    private function readPlayerMetadataV3(DOMDocument $document): bool {
 
-        $this->meta['title'] = $this->getPlayerTitle($document);
+        $this->meta->label = $this->getPlayerTitleV3($document);
 
-        $meta = $this->getPlayerMetaElement($document);
-        if (!$meta) {
-            $this->report('warning', 'No meta-information for this player found.');
-            return;
+        $meta = $this->getPlayerMetaElementV3($document);
+        if (!$meta or !$meta->getAttribute('content')) {
+            return false;
         }
-        if (!$meta->getAttribute('content')) {
-            $this->report('warning', 'Missing `content` attribute in meta-information!');
-            return;
-        }
 
-        $this->meta['player-id'] = $meta->getAttribute('content');
-        $this->meta['version'] = $meta->getAttribute('data-version');
-        $this->meta['verona-version'] = $meta->getAttribute('data-api-version');
+        $this->meta->playerId = implode('-',
+            array_diff(
+                explode('-', $meta->getAttribute('content')),
+                ['verona', 'player']
+            )
+        );
 
-        foreach ($this->meta as $key => $value) {
-            if (!$value) {
-                unset($this->meta[$key]);
-            }
-        }
+        $this->meta->version = $meta->getAttribute('data-version');
+        $this->meta->veronaVersion = $meta->getAttribute('data-api-version');
+        $this->meta->description = $meta->getAttribute('data-description');
+
+        $this->report('warning', 'Metadata in meta-tag is deprecated!');
+        return true;
     }
 
 
-    private function getPlayerMetaElement(DOMDocument $document): ?DOMElement {
+    private function getPlayerMetaElementV3(DOMDocument $document): ?DOMElement {
 
         $metaElements = $document->getElementsByTagName('meta');
         foreach ($metaElements as $metaElement) { /* @var $metaElement DOMElement */
@@ -89,7 +101,7 @@ class ResourceFile extends File {
     }
 
 
-    private function getPlayerTitle(DOMDocument $document): string {
+    private function getPlayerTitleV3(DOMDocument $document): string {
 
         $titleElements = $document->getElementsByTagName('title');
         if (!count($titleElements)) {
@@ -100,43 +112,97 @@ class ResourceFile extends File {
     }
 
 
-    private function createLabelFromMeta(): void {
+    private function readPlayerMetadataV4(DOMDocument $document): ?string {
 
-        if (isset($this->meta['title'])) {
+        $metaElem = $this->getPlayerMetaElementV4($document);
+        if (!$metaElem) {
+            return "No Metadata Element";
+        }
+        try {
+            $meta = JSON::decode($metaElem->textContent, true);
+        } catch (Exception $e) {
+            return "Could not read metadata: {$e->getMessage()}";
+        }
+        if (!isset($meta['$schema'])) {
+            return "Could not read metadata: \$schema missing";
+        }
+        if ($meta['$schema'] !== "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json") {
+            return "Wrong metadata-schema: {$meta['$schema']}";
+        }
+        $this->meta->label = $this->getPreferredTranslation($meta['name']);
+        $this->meta->description = $this->getPreferredTranslation($meta['description']);
+        $this->meta->playerId = $meta['id'];
+        $this->meta->veronaVersion = $meta['specVersion'];
+        return null;
+    }
 
-            $this->label = $this->meta['title'];
 
-        } else if (isset($this->meta['player-id'])) {
+    private function getPreferredTranslation(array $multiLangItem): string {
 
-            $this->label = $this->meta['player-id'];
+        if (isset($multiLangItem['de'])) {
+            return $multiLangItem['de']['value'];
+        }
+        if (isset($multiLangItem['en'])) {
+            return $multiLangItem['en']['value'];
+        }
+        $first = array_keys($multiLangItem)[0];
+        return $multiLangItem[$first]['value'];
+    }
+
+
+    private function getPlayerMetaElementV4(DOMDocument $document): ?DOMElement {
+
+        $metaElements = $document->getElementsByTagName('script');
+        foreach ($metaElements as $metaElement) { /* @var $metaElement DOMElement */
+            if ($metaElement->getAttribute('type') == 'application/ld+json') {
+                return $metaElement;
+            }
+        }
+        return null;
+    }
+
+
+    private function applyMeta(): void {
+
+        if ($this->meta->label) {
+
+            $this->label = $this->meta->label;
+
+        } else if ($this->meta->playerId) {
+
+            $this->label = "verona-player-{$this->meta->playerId}";
+            $this->label .= $this->meta->version ? '-' . $this->meta->version : '';
+            $this->meta->label = $this->label;
         }
 
-        if (isset($this->meta['version'])) {
+        if ($this->meta->description) {
 
-            if (strpos($this->label, $this->meta['version']) === false) {
-
-                $this->label .= ' - ' . $this->meta['version'];
-            }
+            $this->description = $this->meta->description;
         }
     }
 
 
     private function analyzeMeta(): void {
 
-        if (isset($this->meta['verona-version'])) {
-            $this->report('info', "Verona-Version: {$this->meta['verona-version']}");
+        if ($this->meta->veronaVersion) {
+            $this->report('info', "Verona-Version: {$this->meta->veronaVersion}");
+        }
+
+        if ($this->meta->playerId and $this->meta->version) {
+            $genericName = "verona-player-{$this->meta->playerId}-{$this->meta->version}.html";
+            $fileName = basename($this->getPath());
+            if ($genericName !== $fileName) {
+                $this->report('warning', "Non-Standard-Filename: `$genericName` expected.");
+            }
         }
     }
 
 
-    public function getSpecialInfo(): array {
+    public function getSpecialInfo(): FileSpecialInfo {
 
         $info = parent::getSpecialInfo();
-        if (isset($this->meta['verona-version'])) {
-            $info['verona-version'] = $this->meta['verona-version'];
-        }
-        if (isset($this->meta['version'])) {
-            $info['version'] = $this->meta['version'];
+        foreach ($this->meta as $key => $value) {
+            $info->$key = $value;
         }
         return $info;
     }

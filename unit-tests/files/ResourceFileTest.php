@@ -26,16 +26,6 @@ class ResourceFileTest extends TestCase {
         $this->vfs = VfsForTest::setUp();
     }
 
-//    function test_getContent() {
-//
-//        $file = new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-simple-player-1.html');
-//        $fileContents = file_get_contents(DATA_DIR . '/ws_1/Resource/verona-simple-player-1.html');
-//        $this->assertEquals($fileContents, $file->getContent());
-//
-//        $file = new ResourceFile('schmu');
-//        $this->assertEquals('', $file->getContent());
-//    }
-
 
     function test_readPlayerMeta() {
 
@@ -45,11 +35,11 @@ class ResourceFileTest extends TestCase {
             'data-api-version' => '1.5.0',
         ]);
 
-        $expectation = [
+        $expectation =  new FileSpecialInfo([
             'label' => "A Very Good Player - 1.0.0",
             'verona-version' => '1.5.0',
             'version' => '1.0.0',
-        ];
+        ]);
 
         $this->assertEquals($expectation, $playerWithGoodData->getSpecialInfo());
         $this->assertArrayNotHasKey('error', $playerWithGoodData->getValidationReportSorted());
@@ -58,9 +48,9 @@ class ResourceFileTest extends TestCase {
 
         $playerWithNoData = $this->createPlayerStub("Player Without Meta-Information");
 
-        $expectation = [
+        $expectation = new FileSpecialInfo([
             'label' => "Player Without Meta-Information"
-        ];
+        ]);
         $this->assertEquals($expectation, $playerWithNoData->getSpecialInfo());
         $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReportSorted());
         $this->assertArrayHasKey('warning', $playerWithNoData->getValidationReportSorted());
