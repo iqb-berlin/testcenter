@@ -43,7 +43,7 @@ class InitDAO extends SessionDAO {
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
         $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
         $testDAO->addTestLog((int) $test['id'], "sample log entry", $timestamp);
-        $testDAO->addResponse((int) $test['id'], 'UNIT.SAMPLE', "{\"name\":\"Sam Sample\",\"age\":34}", "", $timestamp);
+        $testDAO->updateDataParts((int) $test['id'], 'UNIT.SAMPLE', ["all" => "{\"name\":\"Sam Sample\",\"age\":34}"], "", $timestamp);
         $testDAO->updateUnitState((int) $test['id'], "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
         $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
         $test2 = $testDAO->getOrCreateTest($person->getId(), 'BOOKLET.SAMPLE-2', "a locked test");

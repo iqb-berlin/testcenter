@@ -189,13 +189,19 @@ class TestController extends Controller {
 
         $unitResponse = RequestBodyParser::getElements($request, [
             'timeStamp' => null,
-            'response' => null,
+            'dataParts' => [],
             'responseType' => 'unknown'
         ]);
 
         // TODO check if unit exists in this booklet https://github.com/iqb-berlin/testcenter-iqb-php/issues/106
 
-        self::testDAO()->addResponse($testId, $unitName, $unitResponse['response'], $unitResponse['responseType'], $unitResponse['timeStamp']);
+        self::testDAO()->updateDataParts(
+            $testId,
+            $unitName,
+            (array) $unitResponse['dataParts'],
+            $unitResponse['responseType'],
+            $unitResponse['timeStamp']
+        );
 
         return $response->withStatus(201);
     }

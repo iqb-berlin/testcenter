@@ -19,7 +19,8 @@ class DAO {
         'users',
         'workspace_users',
         'workspaces',
-        'meta'
+        'meta',
+        'unit_data'
     ];
 
     protected $pdoDBhandle = false;

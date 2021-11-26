@@ -25,11 +25,11 @@ VALUES (1, 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first tes
 INSERT INTO tests (id, name, person_id, laststate, locked, label)
 VALUES (0, 'BOOKLET.SAMPLE-1', 0, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first tests label');
 
-INSERT INTO units (id, name, booklet_id, laststate, responses, responsetype, responses_ts, restorepoint, restorepoint_ts)
-VALUES (1, 'UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}', '"some responses"', '', 1597903000, '"restore point"', 1597903000);
+INSERT INTO units (id, name, booklet_id, laststate)
+VALUES (1, 'UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}');
 
-INSERT INTO units (id, name, booklet_id, laststate, responses, responsetype, responses_ts, restorepoint, restorepoint_ts)
-VALUES (2, 'UNIT.SAMPLE', 0, '{"PRESENTATIONCOMPLETE":"yes"}', '{"name":"Sam Sample","age":34}', '', 1597903000, null, 0);
+INSERT INTO units (id, name, booklet_id, laststate)
+VALUES (2, 'UNIT.SAMPLE', 0, '{"PRESENTATIONCOMPLETE":"yes"}');
 
 INSERT INTO unit_logs (unit_id, logentry, timestamp)
 VALUES (2, 'sample unit log', 1597903000);
@@ -55,3 +55,7 @@ insert into meta(category, metaKey, value) values ('cat1', 'keyB', 'valueB');
 insert into meta(category, metaKey, value) values ('cat2', 'keyA', 'valueA');
 insert into meta(category, metaKey, value) values ('cat2', 'keyB', 'valueB');
 insert into meta(category, metaKey, value) values (null, 'key-no-cat', 'value-no-cat');
+
+insert into unit_data (unit_id, part_id, content, ts, response_type) values (1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');
+insert into unit_data (unit_id, part_id, content, ts, response_type) values (2, 'all', '{"name":"Elias Example","age":35}', 1597903000, 'the-response-type');
+insert into unit_data (unit_id, part_id, content, ts, response_type) values (2, 'other', '{"other":"stuff"}', 1597903000, 'the-response-type');

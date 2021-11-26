@@ -15,7 +15,12 @@ class DB {
 
         if (self::$config->type === 'mysql') {
 
-            self::$pdo = new PDO("mysql:host=" . self::$config->host . ";port=" . self::$config->port . ";dbname=" . self::$config->dbname, self::$config->user, self::$config->password);
+            self::$pdo = new PDO(
+                "mysql:host=" . self::$config->host . ";port=" . self::$config->port . ";dbname=" . self::$config->dbname,
+                self::$config->user,
+                self::$config->password,
+                [PDO::MYSQL_ATTR_INIT_COMMAND => "SET SESSION sql_mode = concat(@@SESSION.sql_mode,',PIPES_AS_CONCAT')"] // sqlite compatibility
+            );
 
         } elseif (self::$config->type === 'temp') {
 

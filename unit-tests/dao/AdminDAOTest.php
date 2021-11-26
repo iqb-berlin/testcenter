@@ -117,16 +117,33 @@ final class AdminDAOTest extends TestCase {
                 'code' => 'xxx',
                 'bookletname' => 'BOOKLET.SAMPLE-1',
                 'unitname' => 'UNIT.SAMPLE',
-                'responses' => '{"name":"Sam Sample","age":34}',
-                'restorePoint' => null,
-                'responseType' => '',
+                'responses' => '{"all": "{\"name\":\"Elias Example\",\"age\":35}"},{"other": "{\"other\":\"stuff\"}"}',
+                'responseType' => 'the-response-type',
                 'response-ts' => "1597903000",
-                'restorePoint-ts' => '0',
                 'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}'
             ]
         ];
 
         parent::assertSame($expectedResponseReportData, $actualResponseReportData);
+    }
+
+
+    function test_getResponses(): void {
+
+        $actual = $this->dbc->getResponses(1, ['sample_group']);
+        $expected = [
+            [
+                'unitname' => 'UNIT.SAMPLE',
+                'responses' => '{"all": "{\"name\":\"Elias Example\",\"age\":35}"},{"other": "{\"other\":\"stuff\"}"}',
+                'responseType' => 'the-response-type',
+                'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
+                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'response-ts' => '1597903000',
+                'groupname' => 'sample_group',
+                'loginname' => 'sample_user',
+                'code' => 'xxx'
+        ]];
+        $this->assertEquals($expected, $actual);
     }
 
 

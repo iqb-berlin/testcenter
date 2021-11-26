@@ -75,11 +75,7 @@ CREATE TABLE `units` (
 ,  `name` varchar(50) NOT NULL
 ,  `booklet_id` integer  NOT NULL
 ,  `laststate` text DEFAULT NULL
-,  `responses` text DEFAULT NULL
 ,  `responsetype` varchar(50) DEFAULT NULL
-,  `responses_ts` integer NOT NULL DEFAULT 0
-,  `restorepoint` text DEFAULT NULL
-,  `restorepoint_ts` integer NOT NULL DEFAULT 0
 ,  CONSTRAINT `fk_unit_booklet` FOREIGN KEY (`booklet_id`) REFERENCES tests (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE TABLE `users` (
@@ -141,7 +137,14 @@ create table `meta`
 ,   primary key (category, metaKey)
 );
 
-
-
+create table unit_data (
+   unit_id bigint(20),
+   part_id varchar(50) not null,
+   content text not null,
+   ts bigint(20) NOT NULL DEFAULT '0',
+   response_type varchar(50),
+   constraint `unit_data_units_id_fk` FOREIGN KEY (`unit_id`) REFERENCES units (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+   primary key (unit_id, part_id)
+);
 
 END TRANSACTION;

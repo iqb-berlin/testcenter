@@ -267,6 +267,7 @@ class TestDAO extends DAO {
 
 
     // TODO unit test
+    // todo reduce nr of queries by using replace...into syntax
     private function getOrCreateUnitId(int $testId, string $unitName): string {
 
         $unit = $this->_(
@@ -296,35 +297,49 @@ class TestDAO extends DAO {
     }
 
 
-    // TODO unit test
-    public function getDataParts(int $testId, string $unitName): string {
+    public function getDataParts(int $testId, string $unitName): array {
 
-        $unitData = $this->_(
-            'SELECT units.responses FROM units
-            WHERE units.name = :unitname and units.booklet_id = :testId',
+        $result = $this->_(
+            'SELECT
+                    unit_data.part_id,
+                    unit_data.content
+                FROM
+                    unit_data
+                    left join units on units.id = unit_data.unit_id
+                WHERE
+                    units.name = :unitname
+                    and units.booklet_id = :testId
+                ',
             [
                 ':unitname' => $unitName,
                 ':testId' => $testId
-            ]
+            ], true
         );
-        return (!$unitData or !$unitData['responses']) ? '' : $unitData['responses'];
+
+        $unitData = [];
+        foreach ($result as $row) {
+            $unitData[$row['part_id']] = $row['content'];
+        }
+
+        return $unitData;
     }
 
 
-    // TODO unit test
-    public function addResponse(int $testId, string $unitName, string $responses, string $type, float $timestamp) : void {
+    public function updateDataParts(int $testId, string $unitName, array $dataParts, string $type, int $timestamp) : void {
 
         $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
-        $this->_('UPDATE units SET responses=:r, responses_ts=:r_ts, responsetype=:rt
-                WHERE id = :unitId and responses_ts < :ts',
-            [
-                ':ts' => $timestamp,
-                ':r' => $responses,
-                ':r_ts' => $timestamp,
-                ':rt' => $type,
-                ':unitId' => $unitDbId
-            ]
-        );
+        foreach ($dataParts as $partId => $content) {
+            $this->_('replace into unit_data(unit_id, part_id, content, ts, response_type)
+                          values (:unit_id, :part_id, :content, :ts, :response_type)',
+                [
+                    ':part_id' => $partId,
+                    ':content' => $content,
+                    ':ts' => $timestamp,
+                    ':response_type' => $type,
+                    ':unit_id' => $unitDbId
+                ]
+            );
+        }
     }
 
 

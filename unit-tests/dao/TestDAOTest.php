@@ -177,4 +177,36 @@ class TestDAOTest extends TestCase {
         $result = $this->dbc->getCommands(1, 3);
         $this->assertEquals($expected, $result);
     }
+
+
+    function test_getDataParts() {
+
+        $expected = [
+            "all" => '{"name":"Elias Example","age":35}',
+            "other" => '{"other":"stuff"}'
+        ];
+        $result = $this->dbc->getDataParts(0, 'UNIT.SAMPLE');
+        $this->assertEquals($expected, $result);
+    }
+
+
+    function test_updateDataParts() {
+        $this->dbc->updateDataParts(
+            0,
+            'UNIT.SAMPLE',
+            [
+                "other" =>  '{"other": "overwritten"}',
+                "added" => '{"stuff": "added"}'
+            ],
+            'the-response-type',
+            123456789123
+        );
+        $expected = [
+            "all" => '{"name":"Elias Example","age":35}',
+            "other" =>  '{"other": "overwritten"}',
+            "added" => '{"stuff": "added"}'
+        ];
+        $result = $this->dbc->getDataParts(0, 'UNIT.SAMPLE');
+        $this->assertEquals($expected, $result);
+    }
 }
