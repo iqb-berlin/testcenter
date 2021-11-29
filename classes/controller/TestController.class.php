@@ -94,9 +94,12 @@ class TestController extends Controller {
 
         // TODO check if unit is (still) valid
 
+        $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
+
         $unit = [
-            'state' => self::testDAO()->getUnitState($testId, $unitAlias),
-            'data' => self::testDAO()->getDataParts($testId, $unitAlias),
+            'state' => (object) self::testDAO()->getUnitState($testId, $unitAlias),
+            'dataParts' => (object) $unitData['dataParts'],
+            'unitStateDataType' => $unitData['dataType'],
             'playerId' => $unitFile->getPlayerId(),
         ];
 

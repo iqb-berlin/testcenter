@@ -302,7 +302,8 @@ class TestDAO extends DAO {
         $result = $this->_(
             'SELECT
                     unit_data.part_id,
-                    unit_data.content
+                    unit_data.content,
+                    unit_data.response_type
                 FROM
                     unit_data
                     left join units on units.id = unit_data.unit_id
@@ -321,7 +322,10 @@ class TestDAO extends DAO {
             $unitData[$row['part_id']] = $row['content'];
         }
 
-        return $unitData;
+        return [
+            "dataParts" => $unitData,
+            "dataType" => $row['response_type']
+        ];
     }
 
 

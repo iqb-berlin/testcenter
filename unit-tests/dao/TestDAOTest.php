@@ -182,8 +182,11 @@ class TestDAOTest extends TestCase {
     function test_getDataParts() {
 
         $expected = [
-            "all" => '{"name":"Elias Example","age":35}',
-            "other" => '{"other":"stuff"}'
+            "dataParts" => [
+                "all" => '{"name":"Elias Example","age":35}',
+                "other" => '{"other":"stuff"}'
+            ],
+            "dataType" => 'the-response-type'
         ];
         $result = $this->dbc->getDataParts(0, 'UNIT.SAMPLE');
         $this->assertEquals($expected, $result);
@@ -202,9 +205,12 @@ class TestDAOTest extends TestCase {
             123456789123
         );
         $expected = [
-            "all" => '{"name":"Elias Example","age":35}',
-            "other" =>  '{"other": "overwritten"}',
-            "added" => '{"stuff": "added"}'
+            "dataParts" => [
+                "all" => '{"name":"Elias Example","age":35}',
+                "other" =>  '{"other": "overwritten"}',
+                "added" => '{"stuff": "added"}'
+            ],
+            "dataType" => 'the-response-type'
         ];
         $result = $this->dbc->getDataParts(0, 'UNIT.SAMPLE');
         $this->assertEquals($expected, $result);
