@@ -31,4 +31,55 @@ class FileNameTest extends TestCase {
         $result = FileName::normalize("complete-version-1.2.3.html", false);
         $this->assertEquals("COMPLETE-VERSION-1.2.3.HTML", $result);
     }
+
+    function test_hasRecommendedFormat() {
+
+        $result = FileName::hasRecommendedFormat("a-player-1.html", 'a-player', '1', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.html", 'a-player', '1.2', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.html", 'a-player', '1.2.3', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.html", 'a-player', '1.2.3-xx', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.html", 'a-player', '1', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.html", 'a-player', '1.2', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.html", 'a-player', '1.2.3', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.html", 'a-player', '1.2.3-xx', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.3.html", 'a-player', '1', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.3.html", 'a-player', '1.2', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.3.html", 'a-player', '1.2.3', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player-1.2.3.html", 'a-player', '1.2.3-xx', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("APlayerV1.html", 'a-player', '1', 'html');
+        $this->assertFalse($result);
+
+        $result = FileName::hasRecommendedFormat("A-PLAYER-1.2.3.html", 'a-player', '1.2.3', 'html');
+        $this->assertTrue($result);
+
+        $result = FileName::hasRecommendedFormat("a-player@1.2.3.html", 'a-player', '1.2.3', 'html');
+        $this->assertFalse($result);
+
+        $result = FileName::hasRecommendedFormat("garbage", 'a-player', '1.2.3-xx', 'html');
+        $this->assertFalse($result);
+    }
 }

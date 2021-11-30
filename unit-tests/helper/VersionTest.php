@@ -121,4 +121,80 @@ class VersionTest extends TestCase {
         usort($versions, [Version::class, 'compare']);
         $this->assertEquals($sorted, $versions);
     }
+
+
+    function test_guessFromFileName() {
+
+        $result = Version::guessFromFileName("NO-Version.HtmL");
+        $this->assertEquals([
+            'full' => "",
+            'major' => 0,
+            'minor' => 0,
+            'patch' => 0,
+            'label' => ""
+        ], $result);
+
+        $result = Version::guessFromFileName("whatever-1.2.3-patch.HtmL");
+        $this->assertEquals([
+            'full' => "1.2.3-patch",
+            'major' => 1,
+            'minor' => 2,
+            'patch' => 3,
+            'label' => "patch"
+        ], $result);
+
+        $result = Version::guessFromFileName("whatever-1.2-patch.HtmL");
+        $this->assertEquals([
+            'full' => "1.2-patch",
+            'major' => 1,
+            'minor' => 2,
+            'patch' => 0,
+            'label' => "patch"
+        ], $result);
+
+        $result = Version::guessFromFileName("whatever-1-patch.HtmL");
+        $this->assertEquals([
+            'full' => "1-patch",
+            'major' => 1,
+            'minor' => 0,
+            'patch' => 0,
+            'label' => "patch"
+        ], $result);
+
+        $result = Version::guessFromFileName("whatever-1.HtmL");
+        $this->assertEquals([
+            'full' => "1",
+            'major' => 1,
+            'minor' => 0,
+            'patch' => 0,
+            'label' => ""
+        ], $result);
+
+        $result = Version::guessFromFileName("ILIKEUPPACERforSOMEREAsonV12.HTML");
+        $this->assertEquals([
+            'full' => "12",
+            'major' => 12,
+            'minor' => 0,
+            'patch' => 0,
+            'label' => ""
+        ], $result);
+
+        $result = Version::guessFromFileName("no-u-use@1.2.HTML");
+        $this->assertEquals([
+            'full' => "1.2",
+            'major' => 1,
+            'minor' => 2,
+            'patch' => 0,
+            'label' => ""
+        ], $result);
+
+        $result = Version::guessFromFileName("But-Not-1-times-this.HTML");
+        $this->assertEquals([
+            'full' => "",
+            'major' => 0,
+            'minor' => 0,
+            'patch' => 0,
+            'label' => ""
+        ], $result);
+    }
 }

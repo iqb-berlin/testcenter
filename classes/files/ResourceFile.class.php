@@ -63,6 +63,8 @@ class ResourceFile extends File {
      * This was a temporary way of defining meta-data of a player until in Verona4 a definitive way was defined. Since
      * we produced a bunch of player-versions including this kind of metadata we should support it as long as we support
      * Verona3.
+     *
+     * @deprecated
      */
     private function readPlayerMetadataV3(DOMDocument $document): bool {
 
@@ -73,10 +75,11 @@ class ResourceFile extends File {
             return false;
         }
 
-        $this->meta->playerId = implode('-',
+        // habits where differently
+        $this->meta->playerId = 'verona-player-' . implode('-',
             array_diff(
                 explode('-', $meta->getAttribute('content')),
-                ['verona', 'player']
+                ['verona', 'player', 'iqb']
             )
         );
 
@@ -139,11 +142,11 @@ class ResourceFile extends File {
 
     private function getPreferredTranslation(array $multiLangItem): string {
 
-        if (isset($multiLangItem['de'])) {
-            return $multiLangItem['de']['value'];
+        foreach ($multiLangItem as $entry) {
+            if ($entry['lang'] == 'de') return $entry['value'];
         }
-        if (isset($multiLangItem['en'])) {
-            return $multiLangItem['en']['value'];
+        foreach ($multiLangItem as $entry) {
+            if ($entry['lang'] == 'en') return $entry['value'];
         }
         $first = array_keys($multiLangItem)[0];
         return $multiLangItem[$first]['value'];
@@ -170,7 +173,7 @@ class ResourceFile extends File {
 
         } else if ($this->meta->playerId) {
 
-            $this->label = "verona-player-{$this->meta->playerId}";
+            $this->label = $this->meta->playerId;
             $this->label .= $this->meta->version ? '-' . $this->meta->version : '';
             $this->meta->label = $this->label;
         }
@@ -189,10 +192,15 @@ class ResourceFile extends File {
         }
 
         if ($this->meta->playerId and $this->meta->version) {
-            $genericName = "verona-player-{$this->meta->playerId}-{$this->meta->version}.html";
-            $fileName = basename($this->getPath());
-            if ($genericName !== $fileName) {
-                $this->report('warning', "Non-Standard-Filename: `$genericName` expected.");
+            if (
+                !FileName::hasRecommendedFormat(
+                    basename($this->getPath()),
+                    $this->meta->playerId,
+                    $this->meta->version,
+                    "html"
+                )
+            ) {
+                $this->report('warning', "Non-Standard-Filename: `{$this->meta->playerId}-{$this->meta->version}.html` expected.");
             }
         }
     }

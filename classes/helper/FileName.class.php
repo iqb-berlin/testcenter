@@ -15,7 +15,6 @@ class FileName {
             return $normalizedFilename;
         }
 
-        // TODO use Version::isCompatable instead
         $firstDotPos = strpos($normalizedFilename, '.');
         if ($firstDotPos) {
             $lastDotPos = strrpos($normalizedFilename, '.');
@@ -27,4 +26,9 @@ class FileName {
         return $normalizedFilename;
     }
 
+
+    static function hasRecommendedFormat(string $fileName, string $id, string $version, string $extension): bool {
+
+        return FileName::normalize("$id-$version.$extension", true) == FileName::normalize($fileName, true);
+    }
 }
