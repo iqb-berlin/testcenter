@@ -135,10 +135,10 @@ final class AdminDAOTest extends TestCase {
             [
                 'unitname' => 'UNIT.SAMPLE',
                 'responses' => '{"all": "{\"name\":\"Elias Example\",\"age\":35}"},{"other": "{\"other\":\"stuff\"}"}',
-                'responseType' => 'the-response-type',
+                'responsetype' => 'the-response-type',
                 'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
                 'bookletname' => 'BOOKLET.SAMPLE-1',
-                'response-ts' => '1597903000',
+                'responses_ts' => '1597903000',
                 'groupname' => 'sample_group',
                 'loginname' => 'sample_user',
                 'code' => 'xxx'

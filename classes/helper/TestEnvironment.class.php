@@ -85,13 +85,11 @@ class TestEnvironment {
 
         $initDAO->clearDb();
 
-        $typeName = ($initDAO->getDBType() == "mysql") ? 'mysql' : 'postgresql';
-
-        $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/$typeName.sql");
-        $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/patches.$typeName.sql");
+        $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/mysql.sql");
+        $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d", true);
 
         $dbStatus = $initDAO->getDbStatus();
-        if ($dbStatus['missing'] or $dbStatus['used']) {
+        if ($dbStatus['missing']) {
             throw new Exception("Database reset failed: {$dbStatus['message']}");
         }
     }

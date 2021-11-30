@@ -94,14 +94,16 @@ paths:
                 externalUnitContents:
                   value:
                     state: { PRESENTATIONCOMPLETE: "yes" }
-                    data: "{\"name\":\"Sam Sample\",\"age\":34}"
-                    playerId: "VERONA-SIMPLE-PLAYER-1.0.0.HTML"
+                    dataParts: { all: "{\"name\":\"Sam Sample\",\"age\":34}" }
+                    playerId: "VERONA-PLAYER-SIMPLE-4.HTML"
+                    unitStateDataType: "example-data-format"
                     definitionRef: "SAMPLE_UNITCONTENTS.HTM"
                 directUnitContents:
                   value:
-                    state: []
-                    data: ""
-                    playerId: "VERONA-SIMPLE-PLAYER-1.0.0.HTML"
+                    state: {}
+                    dataParts: {}
+                    unitStateDataType: null
+                    playerId: "VERONA-PLAYER-SIMPLE-4.HTML"
                     definition: "(content of Sample Unit 2)"
         "401":
           description: Not authenticated

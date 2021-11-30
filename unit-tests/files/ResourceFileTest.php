@@ -85,12 +85,11 @@ class ResourceFileTest extends TestCase {
             ]
         );
 
-        $expectation =  new FileSpecialInfo([
-            'playerId' => 'verona-player-very-good',
-            'label' => "A Very Good Player",
-            'veronaVersion' => '1.5.0',
-            'version' => '1.0.0',
-        ]);
+        $expectation =  new FileSpecialInfo();
+        $expectation->playerId = 'verona-player-very-good';
+        $expectation->label = "A Very Good Player";
+        $expectation->veronaVersion = '1.5.0';
+        $expectation->version = '1.0.0';
 
         $this->assertEquals($expectation, $playerWithGoodData->getSpecialInfo());
         $this->assertArrayNotHasKey('error', $playerWithGoodData->getValidationReportSorted());
@@ -99,9 +98,8 @@ class ResourceFileTest extends TestCase {
 
         $playerWithNoData = $this->createPlayerStubV3('nometa.html', "Player Without Meta-Information");
 
-        $expectation = new FileSpecialInfo([
-            'label' => "Player Without Meta-Information"
-        ]);
+        $expectation = new FileSpecialInfo();
+        $expectation->label = "Player Without Meta-Information";
         $this->assertEquals($expectation, $playerWithNoData->getSpecialInfo());
         $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReportSorted());
         $this->assertArrayHasKey('warning', $playerWithNoData->getValidationReportSorted());
@@ -109,12 +107,11 @@ class ResourceFileTest extends TestCase {
         global $fullVerona4MetaData;
         $playerWithVerona4Meta = $this->createPlayerStubV4('verona-player-awesome-4.0.0.html', $fullVerona4MetaData);
 
-        $expectation = new FileSpecialInfo([
-            'label' => "Some Awesome Player",
-            'description' => 'Beschreibung auf Deutsch',
-            'veronaVersion' => '4.0',
-            'playerId' => 'verona-player-awesome'
-        ]);
+        $expectation = new FileSpecialInfo();
+        $expectation->label = "Some Awesome Player";
+        $expectation->description = 'Beschreibung auf Deutsch';
+        $expectation->veronaVersion = '4.0';
+        $expectation->playerId = 'verona-player-awesome';
 
         $this->assertEquals($expectation, $playerWithVerona4Meta->getSpecialInfo());
         $this->assertArrayNotHasKey('error', $playerWithVerona4Meta->getValidationReportSorted());
@@ -123,10 +120,9 @@ class ResourceFileTest extends TestCase {
 
         $playerWithNoData = $this->createPlayerStubV3('nometa-1.2.3.html', "Player Without Meta-Information");
 
-        $expectation = new FileSpecialInfo([
-            'label' => "Player Without Meta-Information",
-            'version' => '1.2.3'
-        ]);
+        $expectation = new FileSpecialInfo();
+        $expectation->label = "Player Without Meta-Information";
+        $expectation->version = '1.2.3';
         $this->assertEquals($expectation, $playerWithNoData->getSpecialInfo());
         $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReportSorted());
         $this->assertArrayHasKey('warning', $playerWithNoData->getValidationReportSorted());

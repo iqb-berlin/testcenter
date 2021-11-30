@@ -68,5 +68,5 @@ try {
     $id = uniqid('fatal-', true);
     header('Error-ID:' . $id);
     error_log("$id (500) at {$e->getFile()}:{$e->getLine()}");
-    echo "Fatal error!";
+    echo "Fatal error!" . "$id (500) at {$e->getFile()}:{$e->getLine()}";
 }

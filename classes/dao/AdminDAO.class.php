@@ -366,7 +366,6 @@ class AdminDAO extends DAO {
      * @deprecated
      */
     public function getResponses($workspaceId, $groups): array {
-        // TODO add unit test
         // TODO use dataclass an camelCase-objects
 
 		$groupsString = implode("','", $groups);
@@ -374,12 +373,12 @@ class AdminDAO extends DAO {
         <<<EOT
             select
                 units.name as unitname,
-                group_concat('{"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\\"') || '"}') as responses,
+                group_concat('{"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\"') || '"}') as responses,
                 -- thanks to PIPES_AS_CONCAT works like in sqlite as concat 
-                unit_data.response_type as responseType,
+                unit_data.response_type as responsetype,
                 units.laststate,
                 tests.name as bookletname,
-                max(unit_data.ts) as 'response-ts',
+                max(unit_data.ts) as 'responses_ts',
                 login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 case
@@ -395,6 +394,8 @@ class AdminDAO extends DAO {
             where
                 login_sessions.workspace_id =:workspaceId
                 and login_sessions.group_name IN ('$groupsString')
+            group by
+                units.id
         EOT,
 			[
 				':workspaceId' => $workspaceId,
@@ -417,16 +418,16 @@ class AdminDAO extends DAO {
                 person_sessions.code,
                 tests.name as bookletname,
                 units.name as unitname,
-                group_concat('{"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\\"') || '"}') as responses,
+                group_concat('{"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\"') || '"}') as responses,
                 -- thanks to PIPES_AS_CONCAT works like in sqlite as concat  
                 unit_data.response_type as responseType,
                 max(unit_data.ts) as 'response-ts',
                 units.laststate
             from
                 login_sessions
-                left join person_sessions on login_sessions.id = person_sessions.login_id
-                left join tests on person_sessions.id = tests.person_id
-                left join units on tests.id = units.booklet_id
+                inner join person_sessions on login_sessions.id = person_sessions.login_id
+                inner join tests on person_sessions.id = tests.person_id
+                inner join units on tests.id = units.booklet_id
                 left join unit_data on unit_data.unit_id = units.id
             where
                 login_sessions.workspace_id = ?

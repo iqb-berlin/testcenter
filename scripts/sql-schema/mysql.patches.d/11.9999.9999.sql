@@ -1,3 +1,5 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO,PIPES_AS_CONCAT";
+
 create table unit_data (
   unit_id bigint(20) unsigned,
   part_id varchar(50) not null,

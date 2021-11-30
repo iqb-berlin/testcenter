@@ -815,9 +815,9 @@ paths:
                         application/json:
                             examples:
                                 externalUnitContents:
-                                    value: {state: {PRESENTATIONCOMPLETE: yes}, data: '{"name":"Sam Sample","age":34}', playerId: VERONA-SIMPLE-PLAYER-1.0.0.HTML, definitionRef: SAMPLE_UNITCONTENTS.HTM}
+                                    value: {state: {PRESENTATIONCOMPLETE: yes}, dataParts: {all: '{"name":"Sam Sample","age":34}'}, playerId: VERONA-PLAYER-SIMPLE-4.HTML, unitStateDataType: example-data-format, definitionRef: SAMPLE_UNITCONTENTS.HTM}
                                 directUnitContents:
-                                    value: {state: [], data: "", playerId: VERONA-SIMPLE-PLAYER-1.0.0.HTML, definition: '(content of Sample Unit 2)'}
+                                    value: {state: {}, dataParts: {}, unitStateDataType: null, playerId: VERONA-PLAYER-SIMPLE-4.HTML, definition: '(content of Sample Unit 2)'}
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -846,7 +846,7 @@ paths:
                     in: path
                     name: resource_name
                     description: 'resource_name (filename without XML-extension)'
-                    example: verona-simple-player-2.html
+                    example: verona-player-simple-4.0.0.html
                     required: true
                     schema:
                         type: string
@@ -1739,8 +1739,17 @@ paths:
                                 items:
                                     type: object
                                     properties: {unitname: {type: string}, responses: {type: string, description: 'may contain encoded JSON'}, responsetype: {type: string}, laststate: {type: string, description: 'may contain encoded JSON'}, bookletname: {type: string}, responses_ts: {type: string, description: 'contains a unix timestamp'}, groupname: {type: string}, loginname: {type: string}, code: {type: string, description: 'login code'}}
-                                example:
-                                    - {unitname: UNIT.SAMPLE, responses: '{"name":"Sam Sample","age":34}', responsetype: "", laststate: '{"PRESENTATIONCOMPLETE":"yes"}', bookletname: BOOKLET.SAMPLE-1, responses_ts: '1567778660869', groupname: sample_group, loginname: test, code: jsx}
+                            example:
+                                -
+                                    unitname: UNIT.SAMPLE
+                                    responses: '{"name":"Sam Sample","age":34}'
+                                    responsetype: ""
+                                    laststate: '{"PRESENTATIONCOMPLETE":"yes"}'
+                                    bookletname: BOOKLET.SAMPLE-1
+                                    responses_ts: '1567778660869'
+                                    groupname: sample_group
+                                    loginname: test
+                                    code: jsx
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -2000,7 +2009,7 @@ paths:
                             example:
                                 Resource:
                                     - {name: SAMPLE_UNITCONTENTS.HTM, size: 13392, modificationTime: 1615970109, type: Resource, id: SAMPLE_UNITCONTENTS.HTM, report: [], info: []}
-                                    - {name: verona-simple-player-2.html, size: 29960, modificationTime: 1615970109, type: Resource, id: VERONA-SIMPLE-PLAYER-2.HTML, report: {info: ['Verona-Version: 3.0.0']}, info: {label: 'Simple Verona Player 1 - 1.0.1', verona-version: 2.1.0, version: 1.0.1}}
+                                    - {name: verona-player-simple-4.0.0.html, size: 29960, modificationTime: 1615970109, type: Resource, id: VERONA-PLAYER-SIMPLE-4.0.0.HTML, report: {info: ['Verona-Version: 3.0.0']}, info: {veronaVersion: '4.0', playerId: verona-player-simple, description: 'This is a simple, dependency-less, vanilla-js-written, but full-featured unit player, mainly as showcase for developers and for software-testing. It does implement the Verona 4.0.0-Standard and can be used for units containing simple any content in HTML-format. Unit Description ist the <code>form-content as HTML. Just give some names to the form element, and the player does the rest. Use some special Ids for some special buttons.', label: 'Simple HTML Player'}}
                                 Unit:
                                     - {name: SAMPLE_UNIT.XML, size: 497, modificationTime: 1615970109, type: Unit, id: UNIT.SAMPLE, report: [], info: {description: 'This is a sample unit showing the possibilities of the sample player.', label: 'A sample unit', totalSize: 13889}}
                                     - {name: SAMPLE_UNIT2.XML, size: 1737, modificationTime: 1615970109, type: Unit, id: UNIT.SAMPLE-2, report: [], info: {description: 'This is an Unit', label: 'A sample unit', totalSize: 1737}}
@@ -2370,7 +2379,7 @@ paths:
                         text/csv;charset=UTF-8:
                             schema:
                                 type: string
-                            example: "groupname;loginname;code;bookletname;unitname;responses;restorePoint;responseType;response-ts;restorePoint-ts;laststate\n\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";{\"name\":\"Sam Sample\",\"age\":34};;;1627545600;0;\"{\"PRESENTATIONCOMPLETE\":\"yes\"}\""
+                            example: "groupname;loginname;code;bookletname;unitname;responses;responseType;response-ts;laststate\n\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";{\"all\": \"{\"\"name\"\":\"\"Sam Sample\"\",\"\"age\"\":34}\"};\"example-data-format\";1627545600;\"{\"PRESENTATIONCOMPLETE\":\"yes\"}\""
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ResponseReport'
@@ -2382,10 +2391,8 @@ paths:
                                     bookletname: BOOKLET.SAMPLE-1
                                     unitname: UNIT.SAMPLE
                                     responses: '{"name":"Sam Sample","age":34}'
-                                    restorePoint: null
-                                    responseType: ""
+                                    responseType: example-data-format
                                     response-ts: '1627545600'
-                                    restorePoint-ts: '0'
                                     laststate: '{"PRESENTATIONCOMPLETE":"yes"}'
                 '401':
                     description: 'Not authenticated'
