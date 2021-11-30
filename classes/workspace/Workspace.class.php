@@ -314,20 +314,40 @@ class Workspace {
     }
 
 
-    public function findFileById(string $type, string $findId, bool $skipSubVersions = false): File {
+    public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
         $dirToSearch = $this->getOrCreateSubFolderPath($type);
-        $findId = FileName::normalize($findId, $skipSubVersions);
+        $bestMatch = null;
+        $version = Version::guessFromFileName($findId)['full'];
 
-        foreach (Folder::glob($dirToSearch, "*.*") as $fullFilePath) {
+        foreach (Folder::glob($dirToSearch, "*.*", true) as $fullFilePath) {
 
             $file = File::get($fullFilePath, $type);
 
-            $compareId = $skipSubVersions ? FileName::normalize($file->getId(), $skipSubVersions) : $file->getId();
+            $compareId = FileName::normalize($file->getId(), false);
 
-            if ($file->isValid() && ($compareId == $findId)) {
+            if ($file->isValid() && ($compareId == FileName::normalize($findId, false))) {
                 return $file;
             }
+
+            if ($allowSimilarVersion and !$bestMatch) {
+
+                $compareIdMajor = FileName::normalize($file->getId(), true);
+
+                if ($file->isValid() && ($compareIdMajor == FileName::normalize($findId, true))) {
+
+                    $compareVersion = Version::guessFromFileName($file->getId())['full'];
+
+                    if (Version::isCompatible($version, $compareVersion)) {
+
+                        $bestMatch = $file;
+                    }
+                }
+            }
+        }
+
+        if ($bestMatch) {
+            return $bestMatch;
         }
 
         throw new HttpError("No $type with name `$findId` found on Workspace`$this->workspaceId`!", 404);

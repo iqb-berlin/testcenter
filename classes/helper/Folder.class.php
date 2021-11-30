@@ -6,13 +6,13 @@ declare(strict_types=1);
 class Folder {
 
     // stream save (PHP's function glob is not)
-    static function glob(string $dir, string $filePattern = null): array {
+    static function glob(string $dir, string $filePattern = null, $reverse = false): array {
 
         if (!file_exists($dir) or !is_dir($dir)) {
             return [];
         }
 
-        $files = scandir($dir);
+        $files = scandir($dir, $reverse ? 1 : 0);
         $found = [];
 
         foreach ($files as $filename) {
