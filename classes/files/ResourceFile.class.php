@@ -78,12 +78,17 @@ class ResourceFile extends File {
             return false;
         }
 
-        // habits where differently
-        $this->meta->playerId = 'verona-player-' . implode('-',
-            array_diff(
-                explode('-', $meta->getAttribute('content')),
-                ['verona', 'player', 'iqb']
-            )
+        // habits where differently back then
+        $contentAttr = $meta->getAttribute('content');
+        $includedVersion = Version::guessFromFileName($contentAttr . '.xxx');
+        $this->meta->playerId =
+            'verona-player-' .
+            implode(
+                '-',
+                array_diff(
+                    preg_split("/[-_@\W]/", $contentAttr),
+                    ['verona', 'player', 'iqb', $includedVersion['full']]
+                )
         );
 
         $this->meta->version = $meta->getAttribute('data-version');
