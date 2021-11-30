@@ -52,6 +52,9 @@ class ResourceFile extends File {
             if (!$this->readPlayerMetadataV3($document)) {
                 $this->report('warning', $metaV4Problem);
             }
+            if (!$this->meta->version) {
+                $this->meta->version = Version::guessFromFileName(basename($this->getPath()))['full'];
+            }
         }
 
         $this->applyMeta();

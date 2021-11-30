@@ -119,6 +119,17 @@ class ResourceFileTest extends TestCase {
         $this->assertEquals($expectation, $playerWithVerona4Meta->getSpecialInfo());
         $this->assertArrayNotHasKey('error', $playerWithVerona4Meta->getValidationReportSorted());
         $this->assertArrayNotHasKey('warning', $playerWithVerona4Meta->getValidationReportSorted());
+
+
+        $playerWithNoData = $this->createPlayerStubV3('nometa-1.2.3.html', "Player Without Meta-Information");
+
+        $expectation = new FileSpecialInfo([
+            'label' => "Player Without Meta-Information",
+            'version' => '1.2.3'
+        ]);
+        $this->assertEquals($expectation, $playerWithNoData->getSpecialInfo());
+        $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReportSorted());
+        $this->assertArrayHasKey('warning', $playerWithNoData->getValidationReportSorted());
     }
 
 
