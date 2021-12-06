@@ -1,4 +1,4 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO,PIPES_AS_CONCAT";
+SET GLOBAL SQL_MODE = "NO_AUTO_VALUE_ON_ZERO,PIPES_AS_CONCAT";
 
 create table unit_data (
   unit_id bigint(20) unsigned,
