@@ -255,14 +255,14 @@ class Report {
                     sprintf(self::CSV_CELL_FORMAT, $resp['code']),
                     sprintf(self::CSV_CELL_FORMAT, $resp['bookletname']),
                     sprintf(self::CSV_CELL_FORMAT, $resp['unitname']),
-                    preg_replace("/\\\\\"/", '""', $resp['responses']),     // TODO: adjust replacement & use cell enclosure ?
+                    sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', $resp['responses'])),
                     empty($resp['responseType'])
                         ? ""                                                            // TODO: Don't allow empty cell values ?
                         : sprintf(self::CSV_CELL_FORMAT, $resp['responseType']),
                     $resp['response-ts'],                                              // TODO: use cell enclosure ?
                     empty($resp['laststate'])
                         ? ""
-                        : sprintf(self::CSV_CELL_FORMAT, $resp['laststate'])    // TODO: adjust cell format ?
+                        : sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', $resp['laststate']))
                 ]
             );
 
