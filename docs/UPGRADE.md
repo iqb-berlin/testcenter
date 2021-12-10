@@ -1,8 +1,33 @@
 # Changelog & Upgrade Information
 
+## 12.0.0
+This update makes the Teststudio Verona3- and 4 compatible.
+
+### Endpoints
+* the responses-output from `/workspace/{ws_id}/responses` and `/workspace/{ws_id}/report/response` 
+  now contains the chunk names. eg: `{"all":"{\"key\": \"value\"}"` instead of `{\"key\": \"value\"}`
+* new Endpoint `/{auth_token}/resource/{resource_name}` is an alternative way for fetching resources. It can be used as
+  `directDownloadUrl`-parameter (see [here](https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand))
+  in Verona4-players. 
+
+### XSD
+* in the `Booklet.xml`-format a new restriction is allowed: `<DenyNavigationOnIncomplete>`. It forbids the leaving of  
+  units of a testlet under certain circumstances: if the unit was not presented oder responded completely. The attributes 
+  `presentation` and `response` may have the values `OFF`, `ON` and `ALWAYS`. Always tells the testcenter, to check
+  the completeness and response-progress everytime the unit shall be left regardless of teh direction. `ON` only checks
+  if the testee want to proceed forwards.
+* The `Booklet.xsd` now validates correctly that `<unit>`-id must only be unique if no alias is set and otherwise the
+  alias must be unique.  
+
+### Database
+* The unit-data now gets stored in an additional table `test_data`, not in `tests` anymore to allow chunkwise updates. 
+  There will be a data-migration, but depending on the specific format of the player it can be possible, that 
+  previously edited units will not be restored correctly. 
+* See `scripts/sql-schema/patches.mysql.d/12.0.0`.
+
 ## 11.6.0
 This update refactors the CSV-output for various data: logs, reviews, test-results and sys-check-reports. 
-The CSVs can now all be generated in the backend and revrieved via analogous endpoints. The data is also available 
+The CSVs can now all be generated in the backend and retrieved via analogous endpoints. The data is also available 
 as JSON. All CSVs contain BOMs now. 
 
 ### Endpoints
