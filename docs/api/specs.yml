@@ -845,14 +845,14 @@ paths:
                 -
                     in: path
                     name: resource_name
-                    description: 'resource_name (filename without XML-extension)'
+                    description: 'resource_name (filename without extension in case of plaayer, else filename)'
                     example: verona-player-simple-4.0.0.html
                     required: true
                     schema:
                         type: string
             responses:
                 '200':
-                    description: 'List of Workspaces'
+                    description: 'The Resource'
                     content:
                         application/octet-stream:
                             example: '(HTML code containing player)'
@@ -1385,6 +1385,39 @@ paths:
                     description: 'Test not found'
                 '500':
                     description: 'Server Error'
+    '/{auth_token}/resource/{resource_name}':
+        get:
+            summary: 'get resource for directDownloadUrl'
+            description: 'Verona4 contains the possibility of units to lazy-loading additional resources. This directDownloadUrl parameter can use this endpoint wich contains the auth-token in the url, not in the header.'
+            parameters:
+                -
+                    in: path
+                    name: auth_token
+                    description: 'the (person-)auth-token which would usually be found in the header'
+                    example: 'static:person:sample_group_sample_user_xxx'
+                    required: true
+                    schema:
+                        type: string
+                -
+                    in: path
+                    name: resource_name
+                    description: 'name/id of the resource'
+                    example: SAMPLE_UNITCONTENTS.HTM
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                '200':
+                    description: 'The resource'
+                    content:
+                        application/octet-stream:
+                            example: '(the resource''s content)'
+                '403':
+                    description: Forbidden
+                '404':
+                    description: 'The resource was not found'
+                '500':
+                    description: 'Server Error'
     '/user/{user_id}/workspaces':
         get:
             summary: 'get a list of workspaces'
@@ -1619,7 +1652,6 @@ paths:
             responses:
                 '200':
                     description: 'File contents'
-                    header: null
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -2345,7 +2377,7 @@ paths:
                     description: 'Server Error'
     '/workspace/{ws_id}/report/response':
         get:
-            summary: 'get report of item resonses'
+            summary: 'get report of item responses'
             description: 'returns a Item Responses report in JSON or CSV format based on aggregated report data'
             parameters:
                 -
@@ -2379,7 +2411,7 @@ paths:
                         text/csv;charset=UTF-8:
                             schema:
                                 type: string
-                            example: "groupname;loginname;code;bookletname;unitname;responses;responseType;response-ts;laststate\n\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";{\"all\": \"{\"\"name\"\":\"\"Sam Sample\"\",\"\"age\"\":34}\"};\"example-data-format\";1627545600;\"{\"PRESENTATIONCOMPLETE\":\"yes\"}\""
+                            example: "groupname;loginname;code;bookletname;unitname;responses;responseType;response-ts;laststate\n\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"{\"\"all\"\": \"\"{\\\"\"name\\\"\":\\\"\"Sam Sample\\\"\",\\\"\"age\\\"\":34}\"\"}\";\"example-data-format\";1627545600;\"{\"\"PRESENTATIONCOMPLETE\"\":\"\"yes\"\"}\""
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ResponseReport'

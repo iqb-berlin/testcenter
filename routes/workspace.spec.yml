@@ -42,7 +42,6 @@ paths:
       responses:
         "200":
           description: File contents
-          header:
         "404":
           description: workspace or file not found
         "401":
@@ -924,7 +923,7 @@ paths:
 
   /workspace/{ws_id}/report/response:
     get:
-      summary: get report of item resonses
+      summary: get report of item responses
       description: returns a Item Responses report in JSON or CSV format based on aggregated report data
       parameters:
         - in: header
@@ -955,7 +954,7 @@ paths:
                 type: string
               example: |-
                 groupname;loginname;code;bookletname;unitname;responses;responseType;response-ts;laststate
-                "sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";{"all": "{""name"":""Sam Sample"",""age"":34}"};"example-data-format";1627545600;"{"PRESENTATIONCOMPLETE":"yes"}"
+                "sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"{""all"": ""{\""name\"":\""Sam Sample\"",\""age\"":34}""}";"example-data-format";1627545600;"{""PRESENTATIONCOMPLETE"":""yes""}"
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseReport'

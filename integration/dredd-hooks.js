@@ -109,6 +109,9 @@ dreddHooks.beforeEach(function(transaction, done) {
         workspaceMonitorToken: 'static:person:sample_group_sample_user_xxx',
         groupMonitorToken: 'static:person:sample_group_sample_user_xxx'
       });
+      changeUri(transaction, {
+         '/static%3Aperson%3Asample_group_sample_user_xxx/': '/__invalid_token__/'
+      });
       break;
     case '404':
       changeAuthToken(transaction, {
@@ -121,7 +124,8 @@ dreddHooks.beforeEach(function(transaction, done) {
       changeUri(transaction, {
         '/workspace/1': '/workspace/13',
         '/group/sample_group': '/group/invalid_group',
-        '/test/1/connection-lost': '/test/13/connection-lost'
+        '/test/1/connection-lost': '/test/13/connection-lost',
+        '/SAMPLE_UNITCONTENTS.HTM': '/not-existing-unit'
       });
       break;
     case '410':
@@ -193,7 +197,7 @@ dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report 
     done();
 });
 
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item resonses > 200 > text/csv;charset=UTF-8', function (transaction, done) {
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=UTF-8', function (transaction, done) {
     transaction.expected.body = "\uFEFF" + transaction.expected.body;
     done();
 });

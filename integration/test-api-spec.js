@@ -87,7 +87,6 @@ gulp.task('prepare_spec_for_dredd', done => {
    * * Dredd supports only in-file-references
    * * For more quirks of Dredd see:
    *   @see https://github.com/apiaryio/api-elements.js/blob/master/packages/fury-adapter-oas3-parser/STATUS.md
-   * * there is no proper way of hecking xml/octet-strem responses, // TODO maybe get this done?
    * * [500] Server errors get not tested (how could that be)
    * * [202] get not tested // TODO why? is this necessary
    */
@@ -121,7 +120,9 @@ gulp.task('prepare_spec_for_dredd', done => {
     "application/octet-stream > example$": null,
     "^paths > .*? > .*? > responses > (500|202)$": null,
     "schema > \\$ref$": resolveReference,
-    "items > \\$ref$": resolveReference
+    "items > \\$ref$": resolveReference,
+    "deprecated": null,
+    "properties > .*? > format": null
   };
 
   const deleteAllPathsButSplit = {
