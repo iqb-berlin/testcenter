@@ -117,7 +117,7 @@ final class AdminDAOTest extends TestCase {
                 'code' => 'xxx',
                 'bookletname' => 'BOOKLET.SAMPLE-1',
                 'unitname' => 'UNIT.SAMPLE',
-                'responses' => '{"all": "{\"name\":\"Elias Example\",\"age\":35}"},{"other": "{\"other\":\"stuff\"}"}',
+                'responses' => '{"all": "{\"name\":\"Elias Example\",\"age\":35}","other": "{\"other\":\"stuff\"}"}',
                 'responseType' => 'the-response-type',
                 'response-ts' => "1597903000",
                 'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}'
@@ -134,7 +134,7 @@ final class AdminDAOTest extends TestCase {
         $expected = [
             [
                 'unitname' => 'UNIT.SAMPLE',
-                'responses' => '{"all": "{\"name\":\"Elias Example\",\"age\":35}"},{"other": "{\"other\":\"stuff\"}"}',
+                'responses' => '{"all": "{\"name\":\"Elias Example\",\"age\":35}","other": "{\"other\":\"stuff\"}"}',
                 'responsetype' => 'the-response-type',
                 'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
                 'bookletname' => 'BOOKLET.SAMPLE-1',

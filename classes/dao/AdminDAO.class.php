@@ -373,7 +373,7 @@ class AdminDAO extends DAO {
         <<<EOT
             select
                 units.name as unitname,
-                group_concat('{"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\"') || '"}') as responses,
+                '{' || group_concat('"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\\"') || '"') || '}' as responses,
                 -- thanks to PIPES_AS_CONCAT works like in sqlite as concat 
                 unit_data.response_type as responsetype,
                 units.laststate,
@@ -418,7 +418,7 @@ class AdminDAO extends DAO {
                 person_sessions.code,
                 tests.name as bookletname,
                 units.name as unitname,
-                group_concat('{"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\"') || '"}') as responses,
+                '{' || group_concat('"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', '\\"') || '"') || '}' as responses,
                 -- thanks to PIPES_AS_CONCAT works like in sqlite as concat  
                 unit_data.response_type as responseType,
                 max(unit_data.ts) as 'response-ts',

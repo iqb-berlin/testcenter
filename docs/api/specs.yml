@@ -1388,7 +1388,7 @@ paths:
     '/{auth_token}/resource/{resource_name}':
         get:
             summary: 'get resource for directDownloadUrl'
-            description: 'Verona4 contains the possibility of units to lazy-loading additional resources. This directDownloadUrl parameter can use this endpoint wich contains the auth-token in the url, not in the header.'
+            description: 'Verona4 contains the possibility of units to lazy-loading additional resources. This `directDownloadUrl`-parameter can use this endpoint wich contains the auth-token in the url, not in the header.'
             parameters:
                 -
                     in: path
