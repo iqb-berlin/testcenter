@@ -1954,7 +1954,7 @@ paths:
     '/workspace/{ws_id}/file':
         post:
             summary: 'upload file'
-            description: "Uploads a Resource, Unit, Booklet, SysCheck or Testtakers file. The File gets imported to the workspace if it\nis valid, and passes the cross-validation checks. So a file which depends of a non-existing player will get\nrejected as well as an invalid xml file.\n\nWhen a file with the same filename and type exists in the workspace, it gets overwritten! Except if the the\ninternal id (the <ID>-Tag as used in Unit-files for example) of the old and the new file differs. In this case\nit's assumed, that the file-name-duplication is inintentional an the new import gets rejected.\n\nThe endpoint accepts all kinds of files. Zip-achrives get extracted an treated the same as multi-file-upload."
+            description: "Uploads a Resource, Unit, Booklet, SysCheck or Testtakers file. The File gets imported to the workspace if it\nis valid, and passes the cross-validation checks. So a file which depends of a non-existing player will get\nrejected as well as an invalid xml file.\n\nWhen a file with the same filename and type exists in the workspace, it gets overwritten! Except if the the\ninternal id (the <ID>-Tag as used in Unit-files for example) of the old and the new file differs. In this case\nit's assumed, that the file-name-duplication is inintentional an the new import gets rejected.\n\nThe endpoint accepts all kinds of files. Zip-archives get extracted an treated the same as multi-file-upload."
             parameters:
                 -
                     in: header
@@ -1979,9 +1979,6 @@ paths:
                                     type: string
                                     description: 'upload file'
                                     example: '(content of Unit.xml)'
-                                anything:
-                                    type: string
-                                    example: goes
                             required:
                                 - fileforvo
             responses:

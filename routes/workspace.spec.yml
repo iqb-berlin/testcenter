@@ -418,7 +418,7 @@ paths:
         internal id (the <ID>-Tag as used in Unit-files for example) of the old and the new file differs. In this case
         it's assumed, that the file-name-duplication is inintentional an the new import gets rejected.
 
-        The endpoint accepts all kinds of files. Zip-achrives get extracted an treated the same as multi-file-upload.
+        The endpoint accepts all kinds of files. Zip-archives get extracted an treated the same as multi-file-upload.
       parameters:
         - in: header
           name: AuthToken
@@ -442,9 +442,6 @@ paths:
                   description: upload file
                   example:
                     "(content of Unit.xml)"
-                anything:
-                  type: string
-                  example: goes
               required:
                 - fileforvo
       responses:

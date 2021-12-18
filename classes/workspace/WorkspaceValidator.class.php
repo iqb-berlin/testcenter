@@ -228,7 +228,7 @@ class WorkspaceValidator {
 
     private function findUnusedItems() {
 
-        foreach (array_keys($this->allFiles) as $type) {
+        foreach (Workspace::subFolders as $type) {
 
             foreach($this->allFiles[$type] as $file) { /* @var $file File */
 
