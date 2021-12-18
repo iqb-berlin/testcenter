@@ -756,4 +756,9 @@ class AdminDAO extends DAO {
             [':id' => $testId]
         );
     }
+
+    public function updateMetadata(int $workspaceId, string $getId, FileSpecialInfo $getSpecialInfo) {
+        // TODO implement
+    }
+
 }

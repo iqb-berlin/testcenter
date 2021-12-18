@@ -460,4 +460,9 @@ class SessionDAO extends DAO {
 
         return $newToken;
     }
+
+    public function updateLogins(int $workspaceId, array $testtakers) {
+        // TODO
+
+    }
 }

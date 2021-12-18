@@ -192,12 +192,26 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
-        $containsErrors = array_reduce($importedFiles, function($carry, $item) {
 
-            return $carry or ($item['error'] and count($item['error']));
-        }, false);
+        $reports = [];
+        $containsErrors = false;
+        foreach ($importedFiles as $localPath => /* @var File */ $file) {
 
-        return $response->withJson($importedFiles)->withStatus($containsErrors ? 207 : 201);
+            $reports[$localPath] = $file->getValidationReportSorted();
+            $containsErrors = ($containsErrors or count($reports[$localPath]['error']));
+
+            $reports[$localPath]["type"] = $file->getType();
+            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
+                self::sessionDAO()->updateLogins($workspaceId, $file->getAllTesttakers());
+                $reports[$localPath]['special'] = 'logins updated';
+            }
+            if ($file->isValid() and ($file->getType() == 'Resource')) {
+                self::AdminDAO()->updateMetadata($workspaceId, $file->getId(), $file->getSpecialInfo());
+                $reports[$localPath]['special'] = 'metadata cached';
+            }
+        }
+
+        return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);
     }
 
 

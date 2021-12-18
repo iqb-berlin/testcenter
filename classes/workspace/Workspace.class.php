@@ -197,6 +197,7 @@ class Workspace {
     protected function sortValidUnsortedFiles(array $relativeFilePaths): array {
 
         $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
+        $filesAfterSorting = [];
 
         foreach ($files as $localFilePath => $file) {
 
@@ -205,10 +206,10 @@ class Workspace {
                 $this->sortUnsortedFile($localFilePath, $file);
             }
 
-            $files[$localFilePath] = $file->getValidationReportSorted();
+            $filesAfterSorting[$localFilePath] = $file;
         }
 
-        return $files;
+        return $filesAfterSorting;
     }
 
 
