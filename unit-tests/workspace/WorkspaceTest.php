@@ -206,13 +206,13 @@ class WorkspaceTest extends TestCase {
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
         file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
         $result = $this->workspace->importUnsortedFile('valid.xml');
-        $this->assertArrayNotHasKey('error', $result["valid.xml"], 'valid file has no errors');
+        $this->assertArrayNotHasKey('error', $result["valid.xml"]->getValidationReportSorted(), 'valid file has no errors');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/invalid.xml', self::invalidFile);
         $result = $this->workspace->importUnsortedFile('invalid.xml');
-        $this->assertGreaterThan(0, count($result["invalid.xml"]['error']), 'invalid file has error report');
+        $this->assertGreaterThan(0, count($result["invalid.xml"]->getValidationReportSorted()['error']), 'invalid file has error report');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/invalid.xml'), 'cleanup after import');
 
@@ -224,7 +224,7 @@ class WorkspaceTest extends TestCase {
             file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
             "don't overwrite on duplicate id if file names are not the same"
         );
-        $this->assertGreaterThan(0, count($result["valid3.xml"]['error']), 'return warning on duplicate id if file names are not the same');
+        $this->assertGreaterThan(0, count($result["valid3.xml"]->getValidationReportSorted()['error']), 'return warning on duplicate id if file names are not the same');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid3.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile2);
@@ -234,7 +234,7 @@ class WorkspaceTest extends TestCase {
             file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
             'allow overwriting if filename and id is the same'
         );
-        $this->assertGreaterThan(0, count($result["valid.xml"]['warning']), 'return warning if filename and id is the same');
+        $this->assertGreaterThan(0, count($result["valid.xml"]->getValidationReportSorted()['warning']), 'return warning if filename and id is the same');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
     }
 
@@ -397,8 +397,8 @@ class WorkspaceTest extends TestCase {
 
     function getErrorsFromValidationResult($result): array {
         return array_filter(
-            array_map(function($sortedReport) {
-                return $sortedReport['error'] ?? null;
+            array_map(function($file) {
+                return $file->getValidationReportSorted()['error'] ?? null;
             }, $result),
             'is_array'
         );
