@@ -57,7 +57,7 @@ class BookletsFolder extends Workspace {
                 continue;
             }
 
-            array_push($testtakers, ...$testtakersFile->getAllTesttakers());
+            array_push($testtakers, ...$testtakersFile->getAllLogins());
         }
         return new PotentialLoginArray(...$testtakers);
     }

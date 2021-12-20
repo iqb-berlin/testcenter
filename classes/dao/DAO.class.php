@@ -11,6 +11,7 @@ class DAO {
         'test_logs',
         'test_reviews',
         'tests',
+        'logins',
         'login_sessions',
         'person_sessions',
         'unit_logs',

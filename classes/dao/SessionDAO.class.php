@@ -27,22 +27,24 @@ class SessionDAO extends DAO {
                         token,
                         login_sessions.id as "id",
                         \'login\' as "type",
-                        workspace_id as "workspaceId",
-                        login_sessions.mode,
-                        valid_until as "validTo",
-                        login_sessions.group_name as "group"
+                        logins.workspace_id as "workspaceId",
+                        logins.mode,
+                        login_sessions.valid_until as "validTo",
+                        logins.group_name as "group"
                     FROM login_sessions
+                        inner join logins on (logins.workspace_id = login_sessions.workspace_id and logins.name = login_sessions.name)
                     union
                     select
                         person_sessions.token,
                         person_sessions.id as "id",
                         \'person\' as "type",
-                        workspace_id as "workspaceId",
-                        login_sessions.mode,
+                        logins.workspace_id as "workspaceId",
+                        logins.mode,
                         person_sessions.valid_until as "validTo",
-                        login_sessions.group_name as "group"
-                    from login_sessions
-                        inner join person_sessions on (person_sessions.login_id = login_sessions.id)
+                        logins.group_name as "group"
+                    from person_sessions
+                        inner join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
+                        inner join logins on (logins.workspace_id = login_sessions.workspace_id and logins.name = login_sessions.name)
                 ) as allTokenTables
             where 
                 token = :token',
@@ -461,8 +463,34 @@ class SessionDAO extends DAO {
         return $newToken;
     }
 
-    public function updateLogins(int $workspaceId, array $testtakers) {
-        // TODO
+    public function updateLogins(int $workspaceId, string $fileName, PotentialLoginArray $logins): void {
+
+        $this->_(
+            'delete from logins where source_file = :file_name and workspace_id = :ws_id',
+            [
+                ':file_name' => $fileName,
+                ':ws_id' => $workspaceId
+            ]
+        );
+
+        foreach ($logins as /* @var $login PotentialLogin */ $login) {
+
+            $this->_('insert into logins 
+                (name, mode, workspace_id, valid_until, codes_to_booklets, group_name, custom_texts, password, source_file) 
+                values (:name, :mode, :workspace_id, :valid_until, :codes_to_booklets, :group_name, :custom_texts, :password, :source_file)',
+                [
+                    ':name' => $login->getName(),
+                    ':mode' => $login->getMode(),
+                    ':workspace_id' => $workspaceId,
+                    ':valid_until' => 0, //  TODO,
+                    ':codes_to_booklets' => json_encode($login->getBooklets()),
+                    ':group_name' => $login->getGroupName(),
+                    ':custom_texts' => json_encode($login->getCustomTexts()),
+                    ':password' => '', // TODO,
+                    ':source_file' => $fileName
+                ]
+            );
+        }
 
     }
 }

@@ -7,29 +7,29 @@ class XMLFileTesttakers extends XMLFile {
 
     const type = 'Testtakers';
     const canHaveDependencies = false;
-    protected array $testtakers = [];
+    protected PotentialLoginArray $logins;
 
     public function crossValidate(WorkspaceValidator $validator): void {
 
         parent::crossValidate($validator);
 
-        $this->testtakers = $this->getAllTesttakers();
+        $this->logins = $this->getAllLogins();
 
         $this->checkForDuplicateLogins();
 
-        foreach ($this->testtakers as $testtaker) {
+        foreach ($this->logins as $login) {
 
-            /* @var PotentialLogin $testtaker */
-            $this->checkIfBookletsArePresent($testtaker, $validator);
+            /* @var PotentialLogin $login */
+            $this->checkIfBookletsArePresent($login, $validator);
         }
 
         $this->checkIfIdsAreUsedInOtherFiles($validator);
     }
 
 
-    public function getTesttakerCount() {
+    public function getLoginCount(): int {
 
-        return count($this->testtakers);
+        return count($this->logins->asArray());
     }
 
 
@@ -120,10 +120,10 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getAllTesttakers(): array {
+    public function getAllLogins(): PotentialLoginArray {
 
         if (!$this->isValid()) {
-            return [];
+            return new PotentialLoginArray();
         }
 
         $testTakers = [];
@@ -136,7 +136,7 @@ class XMLFileTesttakers extends XMLFile {
             }
         }
 
-        return $testTakers;
+        return new PotentialLoginArray(...$testTakers);
     }
 
 
@@ -198,26 +198,26 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getLogin(string $name, string $password, int $workspaceId): ?PotentialLogin {
-
-        if (!$this->isValid()) {
-            return null;
-        }
-
-        foreach($this->xml->xpath('Group') as $groupElement) {
-
-            foreach($groupElement->xpath("Login[@name='$name']") as $loginElement) {
-                $pw = (string) $loginElement['pw'];
-                if (!$pw or ($password === $pw)) {
-                    return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
-                } else {
-                    return null;
-                }
-            }
-        }
-
-        return null;
-    }
+//    public function getLogin(string $name, string $password, int $workspaceId): ?PotentialLogin {
+//
+//        if (!$this->isValid()) {
+//            return null;
+//        }
+//
+//        foreach($this->xml->xpath('Group') as $groupElement) {
+//
+//            foreach($groupElement->xpath("Login[@name='$name']") as $loginElement) {
+//                $pw = (string) $loginElement['pw'];
+//                if (!$pw or ($password === $pw)) {
+//                    return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
+//                } else {
+//                    return null;
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
 
 
     public function getPersonsInSameGroup(string $name, int $workspaceId): ?PotentialLoginArray {
@@ -344,7 +344,7 @@ class XMLFileTesttakers extends XMLFile {
     public function getSpecialInfo(): FileSpecialInfo {
 
         $meta = parent::getSpecialInfo();
-        $meta->testtakers = $this->getTesttakerCount();
+        $meta->testtakers = $this->getLoginCount();
         return $meta;
     }
 }

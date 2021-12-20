@@ -24,145 +24,145 @@ class TesttakersFolderTest extends TestCase {
     }
 
 
-    function test_searchAllForLogin() {
-
-        $result = $this->folder::searchAllForLogin('test', 'user123');
-        $expected = new PotentialLogin(
-            'test',
-            'run-hot-return',
-            'sample_group',
-            [
-                "xxx" => [
-                    "BOOKLET.SAMPLE-1",
-                    "BOOKLET.SAMPLE-3",
-                    "BOOKLET.SAMPLE-2"
-                ],
-                "yyy" => [
-                    "BOOKLET.SAMPLE-1",
-                    "BOOKLET.SAMPLE-3",
-                    "BOOKLET.SAMPLE-2"
-                ]
-            ],
-            1,
-            0,
-            1583053200,
-            45,
-            (object)['somestr' => 'string']
-        );
-        $this->assertEquals($expected, $result, "login with password");
-    }
-
-
-    function test_findLoginData() {
-
-        $result = $this->folder->findLoginData('test', 'user123');
-        $expected = new PotentialLogin(
-            'test',
-            'run-hot-return',
-            'sample_group',
-            [
-                "xxx" => [
-                    "BOOKLET.SAMPLE-1",
-                    'BOOKLET.SAMPLE-3',
-                    'BOOKLET.SAMPLE-2'
-                ],
-                "yyy" => [
-                    "BOOKLET.SAMPLE-1",
-                    'BOOKLET.SAMPLE-3',
-                    'BOOKLET.SAMPLE-2',
-                ]
-            ],
-            1,
-            0,
-            1583053200,
-            45,
-            (object) ['somestr' => 'string']
-        );
-        $this->assertEquals($expected, $result, "login with password");
-
-        $result = $this->folder->findLoginData('test-no-pw', '');
-        $expected = new PotentialLogin(
-            'test-no-pw',
-            'run-hot-restart',
-            'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE-1']],
-            1,
-            0,
-            0,
-            0,
-            (object) ['somestr' => 'string']
-        );
-        $this->assertEquals($expected, $result, "login without password (attribute omitted)");
+//    function test_searchAllForLogin() {
+//
+//        $result = $this->folder::searchAllForLogin('test', 'user123');
+//        $expected = new PotentialLogin(
+//            'test',
+//            'run-hot-return',
+//            'sample_group',
+//            [
+//                "xxx" => [
+//                    "BOOKLET.SAMPLE-1",
+//                    "BOOKLET.SAMPLE-3",
+//                    "BOOKLET.SAMPLE-2"
+//                ],
+//                "yyy" => [
+//                    "BOOKLET.SAMPLE-1",
+//                    "BOOKLET.SAMPLE-3",
+//                    "BOOKLET.SAMPLE-2"
+//                ]
+//            ],
+//            1,
+//            0,
+//            1583053200,
+//            45,
+//            (object)['somestr' => 'string']
+//        );
+//        $this->assertEquals($expected, $result, "login with password");
+//    }
 
 
-        $result = $this->folder->findLoginData('test-no-pw-trial', '');
-        $expected = new PotentialLogin(
-            'test-no-pw-trial',
-            'run-trial',
-            'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE-1']],
-            1,
-            0,
-            0,
-            0,
-            (object) ['somestr' => 'string']
-        );
-        $this->assertEquals($expected, $result, "login without password (attribute empty)");
-
-
-        $result = $this->folder->findLoginData('test-group-monitor', 'user123');
-        $expected = new PotentialLogin(
-            'test-group-monitor',
-            'monitor-group',
-            'sample_group',
-            ['' => []],
-            1,
-            0,
-            1583053200,
-            45,
-            (object) ['somestr' => 'string']
-        );
-
-        $this->assertEquals($expected, $result, "login without booklets");
-
-
-        $result = $this->folder->findLoginData('test', 'wrong password');
-        $this->assertNull($result, "login with wrong password");
-
-
-        $result = $this->folder->findLoginData('wrong username', 'user123');
-        $this->assertNull($result, "login with wrong username");
-
-
-        $result = $this->folder->findLoginData('test-no-pw', 'some password');
-        $expected = new PotentialLogin(
-            'test-no-pw',
-            'run-hot-restart',
-            'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE-1']],
-            1,
-            0,
-            0,
-            0,
-            (object) ['somestr' => 'string']
-        );
-        $this->assertEquals($expected, $result, "login with password if none is required (attribute omitted)");
-
-
-        $result = $this->folder->findLoginData('test-no-pw-trial', 'some password');
-        $expected = new PotentialLogin(
-            'test-no-pw-trial',
-            'run-trial',
-            'passwordless_group',
-            ['' => ['BOOKLET.SAMPLE-1']],
-            1,
-            0,
-            0,
-            0,
-            (object) ['somestr' => 'string']
-        );
-        $this->assertEquals($expected, $result, "login with password if none is required (attribute empty)");
-    }
+//    function test_findLoginData() {
+//
+//        $result = $this->folder->findLoginData('test', 'user123');
+//        $expected = new PotentialLogin(
+//            'test',
+//            'run-hot-return',
+//            'sample_group',
+//            [
+//                "xxx" => [
+//                    "BOOKLET.SAMPLE-1",
+//                    'BOOKLET.SAMPLE-3',
+//                    'BOOKLET.SAMPLE-2'
+//                ],
+//                "yyy" => [
+//                    "BOOKLET.SAMPLE-1",
+//                    'BOOKLET.SAMPLE-3',
+//                    'BOOKLET.SAMPLE-2',
+//                ]
+//            ],
+//            1,
+//            0,
+//            1583053200,
+//            45,
+//            (object) ['somestr' => 'string']
+//        );
+//        $this->assertEquals($expected, $result, "login with password");
+//
+//        $result = $this->folder->findLoginData('test-no-pw', '');
+//        $expected = new PotentialLogin(
+//            'test-no-pw',
+//            'run-hot-restart',
+//            'passwordless_group',
+//            ['' => ['BOOKLET.SAMPLE-1']],
+//            1,
+//            0,
+//            0,
+//            0,
+//            (object) ['somestr' => 'string']
+//        );
+//        $this->assertEquals($expected, $result, "login without password (attribute omitted)");
+//
+//
+//        $result = $this->folder->findLoginData('test-no-pw-trial', '');
+//        $expected = new PotentialLogin(
+//            'test-no-pw-trial',
+//            'run-trial',
+//            'passwordless_group',
+//            ['' => ['BOOKLET.SAMPLE-1']],
+//            1,
+//            0,
+//            0,
+//            0,
+//            (object) ['somestr' => 'string']
+//        );
+//        $this->assertEquals($expected, $result, "login without password (attribute empty)");
+//
+//
+//        $result = $this->folder->findLoginData('test-group-monitor', 'user123');
+//        $expected = new PotentialLogin(
+//            'test-group-monitor',
+//            'monitor-group',
+//            'sample_group',
+//            ['' => []],
+//            1,
+//            0,
+//            1583053200,
+//            45,
+//            (object) ['somestr' => 'string']
+//        );
+//
+//        $this->assertEquals($expected, $result, "login without booklets");
+//
+//
+//        $result = $this->folder->findLoginData('test', 'wrong password');
+//        $this->assertNull($result, "login with wrong password");
+//
+//
+//        $result = $this->folder->findLoginData('wrong username', 'user123');
+//        $this->assertNull($result, "login with wrong username");
+//
+//
+//        $result = $this->folder->findLoginData('test-no-pw', 'some password');
+//        $expected = new PotentialLogin(
+//            'test-no-pw',
+//            'run-hot-restart',
+//            'passwordless_group',
+//            ['' => ['BOOKLET.SAMPLE-1']],
+//            1,
+//            0,
+//            0,
+//            0,
+//            (object) ['somestr' => 'string']
+//        );
+//        $this->assertEquals($expected, $result, "login with password if none is required (attribute omitted)");
+//
+//
+//        $result = $this->folder->findLoginData('test-no-pw-trial', 'some password');
+//        $expected = new PotentialLogin(
+//            'test-no-pw-trial',
+//            'run-trial',
+//            'passwordless_group',
+//            ['' => ['BOOKLET.SAMPLE-1']],
+//            1,
+//            0,
+//            0,
+//            0,
+//            (object) ['somestr' => 'string']
+//        );
+//        $this->assertEquals($expected, $result, "login with password if none is required (attribute empty)");
+//    }
 
 
     function test_findGroup() {

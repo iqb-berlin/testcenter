@@ -195,15 +195,17 @@ class WorkspaceController extends Controller {
 
         $reports = [];
         $containsErrors = false;
-        foreach ($importedFiles as $localPath => /* @var File */ $file) {
+        foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
             $reports[$localPath] = $file->getValidationReportSorted();
             $containsErrors = ($containsErrors or count($reports[$localPath]['error']));
 
             $reports[$localPath]["type"] = $file->getType();
             if ($file->isValid() and ($file->getType() == 'Testtakers')) {
-                self::sessionDAO()->updateLogins($workspaceId, $file->getAllTesttakers());
+                /* @var $file XMLFileTesttakers */
+                self::sessionDAO()->updateLogins($workspaceId, $localPath, $file->getAllLogins());
                 $reports[$localPath]['special'] = 'logins updated';
+                $reports[$localPath]['tt'] = $file->getAllLogins();
             }
             if ($file->isValid() and ($file->getType() == 'Resource')) {
                 self::AdminDAO()->updateMetadata($workspaceId, $file->getId(), $file->getSpecialInfo());
