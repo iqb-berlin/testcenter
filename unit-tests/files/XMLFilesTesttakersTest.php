@@ -65,10 +65,12 @@ class XMLFilesTesttakersTest extends TestCase {
     function test_getPersonsInSameGroup() {
 
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
-        $expected = new PotentialLoginArray(
-            new PotentialLogin(
+        $expected = new LoginArray(
+            new Login(
                 'test',
+                'user123',
                 'run-hot-return',
+                'sample_group',
                 'sample_group',
                 [
                     "xxx" => [
@@ -314,9 +316,11 @@ END;
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
         $expected = [
-            new PotentialLogin(
+            new Login(
                 'test',
+                'user123',
                 'run-hot-return',
+                'sample_group',
                 'sample_group',
                 [
                     'xxx' => [
@@ -336,9 +340,11 @@ END;
                 45,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'test-group-monitor',
                 'monitor-group',
+                'user123',
+                'sample_group',
                 'sample_group',
                 ['' => []],
                 -1,
@@ -347,9 +353,11 @@ END;
                 45,
                 (object) ["somestr" => "string"],
             ),
-            new PotentialLogin(
+            new Login(
                 'test-review',
+                'user123',
                 'run-review',
+                'review_group',
                 'review_group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
@@ -358,9 +366,11 @@ END;
                 0,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'test-trial',
+                'user123',
                 'run-trial',
+                'trial_group',
                 'trial_group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
@@ -369,10 +379,12 @@ END;
                 0,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'test-demo',
+                'user123',
                 'run-demo',
                 'trial_group',
+                'trial_group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -380,9 +392,11 @@ END;
                 0,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'test-no-pw',
+                'user123',
                 'run-hot-restart',
+                'passwordless_group',
                 'passwordless_group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
@@ -391,10 +405,12 @@ END;
                 0,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'test-no-pw-trial',
+                'user123',
                 'run-trial',
                 'passwordless_group',
+                'passwordless_group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -402,9 +418,11 @@ END;
                 0,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'test-expired',
+                'user123',
                 'run-hot-restart',
+                'expired_group',
                 'expired_group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
@@ -413,9 +431,11 @@ END;
                 0,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'expired-group-monitor',
+                'user123',
                 'monitor-group',
+                'expired_group',
                 'expired_group',
                 ['' => []],
                 -1,
@@ -424,9 +444,11 @@ END;
                 0,
                 (object) ["somestr" => "string"]
             ),
-            new PotentialLogin(
+            new Login(
                 'test-future',
+                'user123',
                 'run-hot-restart',
+                'future_group',
                 'future_group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,

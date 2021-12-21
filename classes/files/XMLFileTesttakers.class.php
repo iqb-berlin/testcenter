@@ -7,7 +7,7 @@ class XMLFileTesttakers extends XMLFile {
 
     const type = 'Testtakers';
     const canHaveDependencies = false;
-    protected PotentialLoginArray $logins;
+    protected LoginArray $logins;
 
     public function crossValidate(WorkspaceValidator $validator): void {
 
@@ -19,7 +19,7 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach ($this->logins as $login) {
 
-            /* @var PotentialLogin $login */
+            /* @var Login $login */
             $this->checkIfBookletsArePresent($login, $validator);
         }
 
@@ -44,7 +44,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function checkIfBookletsArePresent(PotentialLogin $testtaker, WorkspaceValidator $validator): void {
+    private function checkIfBookletsArePresent(Login $testtaker, WorkspaceValidator $validator): void {
 
         foreach ($testtaker->getBooklets() as $code => $booklets) {
 
@@ -120,10 +120,10 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    public function getAllLogins(): PotentialLoginArray {
+    public function getAllLogins(): LoginArray {
 
         if (!$this->isValid()) {
-            return new PotentialLoginArray();
+            return new LoginArray();
         }
 
         $testTakers = [];
@@ -136,7 +136,7 @@ class XMLFileTesttakers extends XMLFile {
             }
         }
 
-        return new PotentialLoginArray(...$testTakers);
+        return new LoginArray(...$testTakers);
     }
 
 
@@ -220,7 +220,7 @@ class XMLFileTesttakers extends XMLFile {
 //    }
 
 
-    public function getPersonsInSameGroup(string $name, int $workspaceId): ?PotentialLoginArray {
+    public function getPersonsInSameGroup(string $name, int $workspaceId): ?LoginArray {
 
         if (!$this->isValid()) {
             return null;
@@ -228,7 +228,7 @@ class XMLFileTesttakers extends XMLFile {
 
         foreach($this->xml->xpath("Group[Login[@name='$name']]") as $groupElement) {
 
-            $groupMembers = new PotentialLoginArray();
+            $groupMembers = new LoginArray();
 
             foreach ($groupElement->xpath('Login[@name][Booklet]') as $memberElement) {
 
@@ -243,12 +243,14 @@ class XMLFileTesttakers extends XMLFile {
 
 
     private function getPotentialLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId)
-            : PotentialLogin {
+            : Login {
 
-        return new PotentialLogin(
+        return new Login(
             (string) $loginElement['name'],
+            Password::encrypt((string) $loginElement['pw'], 't'), // TODO configurable pepper
             (string) $loginElement['mode'] ?? 'run-demo',
-            (string) $groupElement['id'], // TODO add groupLabel
+            (string) $groupElement['id'],
+            (string) $groupElement['label'] ?? (string) $groupElement['id'],
             self::collectBookletsPerCode($loginElement),
             $workspaceId,
             isset($groupElement['validTo']) ? TimeStamp::fromXMLFormat((string) $groupElement['validTo']) : 0,

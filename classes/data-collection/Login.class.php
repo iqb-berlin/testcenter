@@ -5,61 +5,58 @@
 
 class Login extends DataCollectionTypeSafe {
 
-    protected $id = 0;
     protected $name = "";
-    protected $token = "";
+    protected $password = "";
     protected $mode = "";
     protected $groupName = "";
     protected $groupLabel = "";
     protected $booklets = [];
     protected $workspaceId = 0;
 
+    protected $validFrom = 0;
     protected $validTo = 0;
+    protected $validForMinutes = 0;
 
     protected $customTexts;
 
 
     function __construct(
-        int $id,
         string $name,
-        string $token,
+        string $password,
         string $mode,
         string $groupName,
         string $groupLabel,
         array $booklets,
         int $workspaceId,
         int $validTo,
+        int $validFrom = 0,
+        int $validForMinutes = 0,
         $customTexts = null
     ) {
 
-        $this->id = $id;
         $this->name = $name;
-        $this->token  = $token;
+        $this->password = $password;
         $this->mode = $mode;
         $this->groupName = $groupName;
-        $this->groupLabel = $groupLabel ?? ucfirst(str_replace('_', " ", $groupName));
+        $this->groupLabel = $groupLabel;
         $this->booklets = $booklets;
         $this->workspaceId = $workspaceId;
+        $this->validFrom = $validFrom;
         $this->validTo = $validTo;
+        $this->validForMinutes = $validForMinutes;
         $this->customTexts = $customTexts ?? new stdClass();
     }
     
-    
-    public function getId(): int {
 
-        return $this->id;
-    }
-
-    
     public function getName(): string {
         
         return $this->name;
     }
 
 
-    public function getToken(): string {
-        
-        return $this->token;
+    public function getPassword(): string {
+
+        return $this->password;
     }
 
 
@@ -93,9 +90,21 @@ class Login extends DataCollectionTypeSafe {
     }
 
 
+    public function getValidFrom(): int {
+
+        return $this->validFrom;
+    }
+
+
     public function getValidTo(): int {
 
         return $this->validTo;
+    }
+
+
+    public function getValidForMinutes(): int {
+
+        return $this->validForMinutes;
     }
 
 
@@ -107,6 +116,6 @@ class Login extends DataCollectionTypeSafe {
 
     public function isCodeRequired(): bool {
 
-        return (count($this->booklets) and (array_keys($this->booklets) != ['']));
+        return (array_keys($this->booklets) != ['']);
     }
 }

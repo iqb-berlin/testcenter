@@ -134,9 +134,9 @@ class TestDAO extends DAO {
         $testSession = $this->_(
             'SELECT
                     login_sessions.id as login_id,
-                    login_sessions.mode,
+                    logins.mode,
                     login_sessions.workspace_id,
-                    login_sessions.group_name as group_name,
+                    logins.group_name as group_name,
                     login_sessions.token as login_token,
                     person_sessions.code,
                     person_sessions.token as person_token,
@@ -149,7 +149,8 @@ class TestDAO extends DAO {
                 FROM 
                     tests 
                     LEFT JOIN person_sessions on person_sessions.id = tests.person_id
-                    LEFT JOIN login_sessions on person_sessions.login_id = login_sessions.id
+                    LEFT JOIN login_sessions on person_sessions.login_sessions_id = login_sessions.id
+                    LEFT JOIN logins on logins.name = login_sessions.name
                 WHERE 
                     tests.id=:testId',
             [

@@ -32,7 +32,7 @@ class SessionDAO extends DAO {
                         login_sessions.valid_until as "validTo",
                         logins.group_name as "group"
                     FROM login_sessions
-                        inner join logins on (logins.workspace_id = login_sessions.workspace_id and logins.name = login_sessions.name)
+                        inner join logins on (logins.name = login_sessions.name)
                     union
                     select
                         person_sessions.token,
@@ -44,7 +44,7 @@ class SessionDAO extends DAO {
                         logins.group_name as "group"
                     from person_sessions
                         inner join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
-                        inner join logins on (logins.workspace_id = login_sessions.workspace_id and logins.name = login_sessions.name)
+                        inner join logins on (logins.name = login_sessions.name)
                 ) as allTokenTables
             where 
                 token = :token',
@@ -76,38 +76,28 @@ class SessionDAO extends DAO {
     }
 
 
-    public function getLoginSession(string $loginToken): Session {
-
-        $loginData = $this->getLogin($loginToken);
-
-        return new Session(
-            $loginData->getToken(),
-            "{$loginData->getGroupName()}/{$loginData->getName()}",
-            $loginData->isCodeRequired() ? ['codeRequired'] : [],
-            $loginData->getCustomTexts()
-        );
-    }
-
-
     // TODO add unit-test
-    public function getPersonLogin(string $personToken): LoginWithPerson {
+    public function getPersonLogin(string $personToken): PersonSession {
 
         $loginData = $this->_(
             'SELECT 
                login_sessions.id,
-               login_sessions.codes_to_booklets,
-               login_sessions.workspace_id as "workspaceId",
-               login_sessions.mode,
-               login_sessions.group_name   as "groupName",
-               login_sessions.token        as "loginToken",
+               logins.codes_to_booklets,
+               login_sessions.workspace_id,
+               logins.mode,
+               logins.password,
+               logins.group_name,
+               logins.group_name as group_label,
+               login_sessions.token,
                login_sessions.name,
-               login_sessions.custom_texts,
+               logins.custom_texts,
                login_sessions.valid_until,
                person_sessions.id as "personId",
                person_sessions.code,
                person_sessions.valid_until as "personValidTo"
             FROM person_sessions
-                 INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
+                 INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+                 INNER JOIN logins ON logins.name = login_sessions.name
             WHERE person_sessions.token = :token',
             [':token' => $personToken]
         );
@@ -118,152 +108,63 @@ class SessionDAO extends DAO {
 
         // TODO validity check here?
 
-        return new LoginWithPerson(
-            new Login(
+        return new PersonSession(
+            new LoginSession(
                 (int) $loginData['id'],
-                $loginData['name'],
                 $loginData['loginToken'],
-                $loginData['mode'],
-                $loginData['groupName'],
-                '',
-                JSON::decode($loginData['codes_to_booklets'], true),
-                (int) $loginData['workspaceId'],
                 TimeStamp::fromSQLFormat($loginData['valid_until']),
-                JSON::decode($loginData['custom_texts'])
+                new Login(
+                    $loginData['name'],
+                    $loginData['password'],
+                    $loginData['mode'],
+                    $loginData['group_name'],
+                    $loginData['group_label'],
+                    JSON::decode($loginData['codes_to_booklets'], true),
+                    (int) $loginData['workspaceId'],
+                    0, // TODO fix
+                    0, // TODO fix
+                    0, // TODO fix
+                    JSON::decode($loginData['custom_texts'])
+                )
             ),
             new Person(
                 (int) $loginData['personId'],
                 $personToken,
                 $loginData['code'] ?? '',
                 TimeStamp::fromSQLFormat($loginData['personValidTo']),
-                $loginData['groupName']
+                $loginData['group_name']
             )
         );
     }
 
 
-    // TODO add unit-test
-    // TODO get and store groupLabel as well
-    public function getOrCreateLogin(PotentialLogin $loginData, bool $forceCreate = false): Login {
-
-        $oldLogin = $this->_(
-            'SELECT
-                    login_sessions.id, 
-                    login_sessions.name,
-                    login_sessions.workspace_id as "workspaceId",             
-                    login_sessions.valid_until,
-                    login_sessions.token,
-                    login_sessions.mode,
-                    login_sessions.codes_to_booklets as "booklets",
-                    login_sessions.group_name as "groupName",
-                    login_sessions.custom_texts
-            FROM login_sessions
-			WHERE login_sessions.name = :name AND login_sessions.workspace_id = :ws', [
-                ':name' => $loginData->getName(),
-                ':ws' => $loginData->getWorkspaceId()
-            ]
-        );
-
-        if ($forceCreate or ($oldLogin == null)) {
-
-            return $this->createLogin($loginData);
-        }
-
-        TimeStamp::checkExpiration(0, (int) TimeStamp::fromSQLFormat($oldLogin['valid_until']));
-
-        return new Login(
-            (int) $oldLogin['id'],
-            $oldLogin['name'],
-            $oldLogin['token'],
-            $oldLogin['mode'],
-            $oldLogin['groupName'],
-            "",
-            JSON::decode($oldLogin['booklets'], true),
-            (int) $oldLogin['workspaceId'],
-            TimeStamp::fromSQLFormat($oldLogin['valid_until']),
-            JSON::decode($oldLogin['custom_texts'])
-        );
-    }
-
-
-    public function getLogin(string $loginToken): Login {
-
-        $login = $this->_(
-            'SELECT 
-                    login_sessions.id, 
-                    login_sessions.name,
-                    login_sessions.workspace_id as "workspaceId",             
-                    login_sessions.valid_until as "validTo",
-                    login_sessions.token,
-                    login_sessions.mode,
-                    login_sessions.codes_to_booklets as "booklets",
-                    login_sessions.group_name as "groupName",
-                    login_sessions.custom_texts as "customTexts"
-                FROM 
-                    login_sessions 
-                WHERE 
-                    login_sessions.token=:token',
-            [':token' => $loginToken]
-        );
-
-        if ($login == null ){
-            throw new HttpError("LoginToken invalid: `$loginToken`", 403);
-        }
-
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($login['validTo']));
-
-        return new Login(
-            (int) $login["id"],
-            $login["name"],
-            $login["token"],
-            $login["mode"],
-            $login["groupName"],
-            '',
-            JSON::decode($login['booklets'], true),
-            (int) $login["workspaceId"],
-            TimeStamp::fromSQLFormat($login['validTo']),
-            JSON::decode($login["customTexts"])
-        );
-    }
-
-
     // TODO unit-test
-    protected function createLogin(PotentialLogin $loginData, bool $allowExpired = false): Login {
+    protected function createLoginSession(Login $login, bool $allowExpired = false): LoginSession {
 
         if (!$allowExpired) {
-            TimeStamp::checkExpiration($loginData->getValidFrom(), $loginData->getValidTo());
+            TimeStamp::checkExpiration($login->getValidFrom(), $login->getValidTo());
         }
 
-        $validUntil = TimeStamp::expirationFromNow($loginData->getValidTo(), $loginData->getValidForMinutes());
+        $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
-        $loginToken = $this->randomToken('login', $loginData->getName());
+        $loginToken = $this->randomToken('login', $login->getName());
 
         $this->_(
-            'INSERT INTO login_sessions (token, codes_to_booklets, valid_until, name, mode, workspace_id, group_name, custom_texts) 
-                VALUES(:token, :codes_to_booklets, :valid_until, :name, :mode, :ws, :groupname, :custom_texts)',
+            'INSERT INTO login_sessions (token, name, valid_until, workspace_id)
+                VALUES(:token, :name, :valid_until, :ws)',
             [
                 ':token' => $loginToken,
-                ':codes_to_booklets' => json_encode($loginData->getBooklets()),
                 ':valid_until' => TimeStamp::toSQLFormat($validUntil),
-                ':name' => $loginData->getName(),
-                ':mode' => $loginData->getMode(),
-                ':ws' => $loginData->getWorkspaceId(),
-                ':groupname' => $loginData->getGroupName(),
-                ':custom_texts' => json_encode($loginData->getCustomTexts())
+                ':name' => $login->getName(),
+                ':ws' => $login->getWorkspaceId(),
             ]
         );
 
-        return new Login(
+        return new LoginSession(
             (int) $this->pdoDBhandle->lastInsertId(),
-            $loginData->getName(),
             $loginToken,
-            $loginData->getMode(),
-            $loginData->getGroupName(),
-            $loginData->getGroupLabel(),
-            $loginData->getBooklets(),
-            (int) $loginData->getWorkspaceId(),
             $validUntil,
-            $loginData->getCustomTexts()
+            $login
         );
     }
 
@@ -272,10 +173,15 @@ class SessionDAO extends DAO {
     public function personHasBooklet(string $personToken, string $bookletName): bool {
 
         $bookletDef = $this->_('
-            SELECT login_sessions.codes_to_booklets, login_sessions.id, person_sessions.code
-            FROM login_sessions
-                     left join person_sessions on (login_sessions.id = person_sessions.login_id)
-            WHERE person_sessions.token = :token',
+            select
+                logins.codes_to_booklets,
+                login_sessions.id,
+                person_sessions.code
+            from logins
+                left join login_sessions on logins.name = login_sessions.name
+                left join person_sessions on login_sessions.id = person_sessions.login_sessions_id
+            where
+                person_sessions.token = :token',
             [
                 ':token' => $personToken
             ]
@@ -291,13 +197,13 @@ class SessionDAO extends DAO {
     // TODO add unit-test
     public function getBookletStatus(string $personToken, string $bookletName): array {
 
-        $person = $this->getPerson($personToken);
+        $person = $this->getPersonLogin($personToken);
 
         $test = $this->_(
             'SELECT tests.laststate, tests.locked, tests.label, tests.id, tests.running FROM tests
             WHERE tests.person_id = :personid and tests.name = :bookletname',
             [
-                ':personid' => $person->getId(),
+                ':personid' => $person->getPerson()->getId(),
                 ':bookletname' => $bookletName
             ]
         );
@@ -340,68 +246,38 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit test
-    public function getPerson(string $personToken): Person {
-
-        $person = $this->_(
-            'SELECT 
-                person_sessions.id,
-                person_sessions.token,
-                person_sessions.code,
-                person_sessions.valid_until,
-                login_sessions.group_name
-            FROM login_sessions
-                left join person_sessions on (person_sessions.login_id = login_sessions.id)
-            WHERE person_sessions.token = :token',
-            [
-                ':token' => $personToken
-            ]
-        );
-
-        if ($person == null) {
-            throw new HttpError("Invalid Person token: `$personToken`", 403);
-        }
-
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
-
-        return new Person(
-            (int) $person['id'],
-            $person['token'],
-            $person['code'],
-            TimeStamp::fromSQLFormat($person['valid_until']),
-            $person['group_name']
-        );
-    }
-
-
     // TODO unit-test
-    public function getOrCreatePerson(Login $login, string $code, bool $renewToken = true): Person {
+    public function getOrCreatePerson(LoginSession $loginSession, string $code, bool $renewToken = true): Person {
         $person = $this->_(
             'SELECT 
                     person_sessions.id,
                     person_sessions.token,
                     person_sessions.code,
                     person_sessions.valid_until,
-                    login_sessions.group_name
-                FROM login_sessions
-                    left join person_sessions on (person_sessions.login_id = login_sessions.id)
-                WHERE person_sessions.login_id=:id and person_sessions.code=:code',
+                    logins.group_name
+                FROM logins
+                    left join login_sessions on (logins.name = login_sessions.name)
+                    left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
+                WHERE
+                      person_sessions.login_sessions_id=:id
+                  and person_sessions.code=:code',
             [
-                ':id' => $login->getId(),
+                ':id' => $loginSession->getId(),
                 ':code' => $code
             ]
         );
 
         if ($person === null) {
 
-            return $this->createPerson($login, $code);
+            return $this->createPerson($loginSession, $code);
         }
 
         TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($person['valid_until']));
 
         $personToken = $person['token'];
         if ($renewToken) {
-            $personToken = $this->renewPersonToken((int) $person['id'], "{$login->getGroupName()}_{$login->getName()}_$code");
+            $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_$code";
+            $personToken = $this->renewPersonToken((int) $person['id'], $tokenName);
         }
 
         return new Person(
@@ -415,7 +291,9 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    public function createPerson(Login $login, string $code, bool $allowExpired = false): Person {
+    public function createPerson(LoginSession $loginSession, string $code, bool $allowExpired = false): Person {
+
+        $login = $loginSession->getLogin();
 
         if (count($login->getBooklets()) and !array_key_exists($code, $login->getBooklets())) {
             throw new HttpError("`$code` is no valid code for `{$login->getName()}`", 400);
@@ -429,12 +307,12 @@ class SessionDAO extends DAO {
         $validUntil = TimeStamp::toSQLFormat($login->getValidTo());
 
         $this->_(
-            'INSERT INTO person_sessions (token, code, login_id, valid_until)
+            'INSERT INTO person_sessions (token, code, login_sessions_id, valid_until)
             VALUES(:token, :code, :login_id, :valid_until)',
             [
                 ':token' => $newPersonToken,
                 ':code' => $code,
-                ':login_id' => $login->getId(),
+                ':login_id' => $loginSession->getId(),
                 ':valid_until' => $validUntil
             ]
         );
@@ -463,7 +341,7 @@ class SessionDAO extends DAO {
         return $newToken;
     }
 
-    public function updateLogins(int $workspaceId, string $fileName, PotentialLoginArray $logins): void {
+    public function updateLogins(int $workspaceId, string $fileName, LoginArray $logins): void {
 
         $this->_(
             'delete from logins where source_file = :file_name and workspace_id = :ws_id',
@@ -473,24 +351,164 @@ class SessionDAO extends DAO {
             ]
         );
 
-        foreach ($logins as /* @var $login PotentialLogin */ $login) {
+        foreach ($logins as $login) {
 
-            $this->_('insert into logins 
-                (name, mode, workspace_id, valid_until, codes_to_booklets, group_name, custom_texts, password, source_file) 
-                values (:name, :mode, :workspace_id, :valid_until, :codes_to_booklets, :group_name, :custom_texts, :password, :source_file)',
-                [
-                    ':name' => $login->getName(),
-                    ':mode' => $login->getMode(),
-                    ':workspace_id' => $workspaceId,
-                    ':valid_until' => 0, //  TODO,
-                    ':codes_to_booklets' => json_encode($login->getBooklets()),
-                    ':group_name' => $login->getGroupName(),
-                    ':custom_texts' => json_encode($login->getCustomTexts()),
-                    ':password' => '', // TODO,
-                    ':source_file' => $fileName
-                ]
-            );
+            $this->createLogin($login, $workspaceId, $fileName);
         }
 
+    }
+
+
+    public function createLogin(Login $login, int $workspaceId, string $source): void {
+
+        $this->_('insert into logins 
+                 (
+                     name,
+                     mode,
+                     workspace_id,
+                     valid_until,
+                     codes_to_booklets,
+                     group_name,
+                     custom_texts,
+                     password,
+                     source_file
+                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                    $login->getName(),
+                    $login->getMode(),
+                    $workspaceId,
+                    0, //  TODO,
+                    json_encode($login->getBooklets()),
+                    $login->getGroupName(),
+                    json_encode($login->getCustomTexts()),
+                    $login->getPassword(),
+                    $source
+                ]
+            );
+    }
+
+
+    public function getOrCreateLoginSession(string $name, string $password): ?LoginSession {
+
+        $loginSession = $this->getLoginSession($name, $password);
+
+        if (!$loginSession){
+
+            return null;
+        }
+
+        // TimeStamp::checkExpiration(0, $loginSession->getValidTo()); TODO
+
+        if (!$loginSession->getToken() or Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+
+            $loginSession = $this->createLoginSession($loginSession->getLogin());
+        }
+
+        return $loginSession;
+    }
+
+    private function getLoginSession($name, $password): ?LoginSession {
+
+        // TODO assume: name is completely unique amongst logins
+        $loginSession = $this->_(
+            'SELECT 
+                    login_sessions.id, 
+                    logins.name,
+                    login_sessions.token,
+                    logins.mode,
+                    logins.group_name,
+                    logins.group_name as group_label,
+                    logins.codes_to_booklets,
+                    login_sessions.workspace_id,             
+                    login_sessions.valid_until,
+                    logins.custom_texts,
+                    logins.password
+                FROM 
+                    logins
+                    left join login_sessions on (logins.name = login_sessions.name)
+                WHERE 
+                    logins.name = :name',
+            [
+                ':name' => $name
+            ]
+        );
+
+        // we always check one password to not leak the existence of username to time-attacks
+        if (!$loginSession) {
+            $loginSession = ['password' => 'dummy'];
+        }
+
+        if (!Password::verify($password, $loginSession['password'], 't')) {
+            return null;
+        }
+
+        return new LoginSession(
+            (int) $loginSession['id'],
+            $loginSession['token'],
+            TimeStamp::fromSQLFormat($loginSession['valid_until']),
+            new Login(
+                $loginSession['name'],
+                $loginSession['password'], // TODO keep this here?
+                $loginSession['mode'],
+                $loginSession['group_name'],
+                $loginSession['group_label'], // TODO group label
+                JSON::decode($loginSession['codes_to_booklets'], true),
+                (int) $loginSession['workspace_id'],
+                0, // TODO fix me
+                0, // TODO fix me
+                0, // TODO fix me
+                JSON::decode($loginSession['custom_texts'])
+            )
+        );
+    }
+
+
+    public function getLoginSessionByToken(string $loginToken): LoginSession {
+
+        $loginSession = $this->_(
+            'SELECT 
+                    login_sessions.id, 
+                    logins.name,
+                    login_sessions.token,
+                    logins.mode,
+                    logins.group_name,
+                    logins.group_name as group_label,
+                    logins.codes_to_booklets,
+                    login_sessions.workspace_id,             
+                    login_sessions.valid_until,
+                    logins.custom_texts,
+                    logins.password
+                FROM 
+                    logins
+                    left join login_sessions on (logins.name = login_sessions.name)
+                WHERE 
+                    login_sessions.token=:token',
+            [':token' => $loginToken]
+        );
+
+        if ($loginSession == null){
+            throw new HttpError("LoginToken invalid: `$loginToken`", 403);
+        }
+
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($loginSession['validTo']));
+
+        return new LoginSession(
+            (int) $loginSession["id"],
+            $loginSession["token"],
+            0, // TODO fix me
+            new Login(
+                $loginSession['name'],
+                $loginSession['password'], // TODO keep this here?
+                $loginSession['mode'],
+                $loginSession['group_name'],
+                $loginSession['group_label'], // TODO group label
+                JSON::decode($loginSession['codes_to_booklets'], true),
+                (int) $loginSession['workspace_id'],
+                0, // TODO fix me
+                0, // TODO fix me
+                0, // TODO fix me
+                JSON::decode($loginSession['custom_texts'])
+            )
+        );
     }
 }

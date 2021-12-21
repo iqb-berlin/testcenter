@@ -18,11 +18,13 @@ class Session extends DataCollectionTypeSafe {
 
 
     // TODO add unit-test
-    static function createFromLogin(Login $login, Person $person): Session {
+    static function createFromPersonSession(PersonSession $loginWithPerson): Session {
+
+        $login = $loginWithPerson->getLoginSession()->getLogin();
 
         $session = new Session(
-            $person->getToken(),
-            "{$login->getGroupName()}/{$login->getName()}/{$person->getCode()}",
+            $loginWithPerson->getPerson()->getToken(),
+            "{$login->getGroupLabel()}/{$login->getName()}/{$loginWithPerson->getPerson()->getCode()}",
             [],
             $login->getCustomTexts() ?? new stdClass()
         );
@@ -30,16 +32,27 @@ class Session extends DataCollectionTypeSafe {
         switch ($login->getMode()) {
 
             case "monitor-group":
-                $session->addAccessObjects('testGroupMonitor', (string) $login->getGroupName());
+                $session->addAccessObjects('testGroupMonitor', $login->getGroupName());
                 break;
 
             default:
-                $personsBooklets = $login->getBooklets()[$person->getCode()] ?? [];
+                $personsBooklets = $login->getBooklets()[$loginWithPerson->getPerson()->getCode()] ?? [];
                 $session->addAccessObjects('test', ...$personsBooklets);
                 break;
         }
 
         return $session;
+    }
+
+
+    static function createFromLoginSession(LoginSession $loginSession): Session {
+
+        return new Session(
+            $loginSession->getToken(),
+            "{$loginSession->getLogin()->getGroupLabel()}/{$loginSession->getLogin()->getName()}",
+            $loginSession->getLogin()->isCodeRequired() ? ['codeRequired'] : [],
+            $loginSession->getLogin()->getCustomTexts()
+        );
     }
 
 

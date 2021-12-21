@@ -41,7 +41,7 @@ class BookletsFolder extends Workspace {
     }
 
 
-    public function getLogins(): PotentialLoginArray {
+    public function getLogins(): LoginArray {
 
         $testTakerDirPath = $this->workspacePath . '/Testtakers';
         if (!file_exists($testTakerDirPath)) {
@@ -59,7 +59,7 @@ class BookletsFolder extends Workspace {
 
             array_push($testtakers, ...$testtakersFile->getAllLogins());
         }
-        return new PotentialLoginArray(...$testtakers);
+        return new LoginArray(...$testtakers);
     }
 
 
@@ -100,7 +100,7 @@ class BookletsFolder extends Workspace {
 
         foreach ($logins as $login) {
 
-            /* @var PotentialLogin $login */
+            /* @var Login $login */
             $groupName = $login->getGroupName();
 
             if (!isset($allGroupStatistics[$groupName])) {

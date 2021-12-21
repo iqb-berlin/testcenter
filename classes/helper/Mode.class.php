@@ -49,17 +49,9 @@ class Mode {
     }
 
 
-    static function getCapabilities(string $role): array {
+    static function hasCapability(string $role, string $capability): bool {
 
-        $roles = Mode::withChildren($role);
-
-        $capabilities = [];
-        foreach ($roles as $role) {
-            $newCapabilities = isset(Mode::capabilities[$role]) ? Mode::capabilities[$role] : [];
-            $capabilities = array_merge($capabilities, $newCapabilities);
-        }
-
-        return $capabilities;
+        return in_array($capability, Mode::capabilities[$role] ?? []);
     }
 
 

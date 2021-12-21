@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 
-class PotentialLoginArray implements IteratorAggregate {
+class LoginArray implements IteratorAggregate {
 
     protected $array = [];
 
-    public function __construct(PotentialLogin... $potentialLogins) {
+    public function __construct(Login... $potentialLogins) {
 
         $this->array = $potentialLogins;
     }
 
 
-    public function add(PotentialLogin $potentialLogin) {
+    public function add(Login $potentialLogin) {
 
         $this->array[] = $potentialLogin;
     }

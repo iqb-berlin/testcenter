@@ -41,25 +41,24 @@ class SessionController extends Controller {
             "password" => ''
         ]);
 
-        $potentialLogin = TesttakersFolder::searchAllForLogin($body['name'], $body['password']);
+        $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
 
-        if ($potentialLogin == null) {
+        if (!$loginSession) {
             $shortPw = Password::shorten($body['password']);
-            throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `{$shortPw}`");
+            throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `{$shortPw}`.");
         }
 
-        $forceCreate = in_array($potentialLogin->getMode(), Mode::getByCapability('alwaysNewSession'));
-        $login = self::sessionDAO()->getOrCreateLogin($potentialLogin, $forceCreate);
+        if (!$loginSession->getLogin()->isCodeRequired()) {
 
-        if (!$login->isCodeRequired()) {
+            $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
+            $person = self::sessionDAO()->getOrCreatePerson($loginSession, '');
+            $session = Session::createFromPersonSession(new PersonSession($loginSession, $person));
 
-            $session = self::getOrCreatePersonSession($login, '');
+            if ($loginSession->getLogin()->getMode() == 'monitor-group') {
 
-            if ($login->getMode() == 'monitor-group') {
+                self::registerGroup($loginSession);
 
-                self::registerGroup($login);
-
-                $booklets = self::getBookletsOfMonitor($login);
+                $booklets = self::getBookletsOfMonitor($loginSession->getLogin());
 
                 $session->addAccessObjects('test', ...$booklets);
             }
@@ -67,10 +66,10 @@ class SessionController extends Controller {
         } else {
 
             $session = new Session(
-                $login->getToken(),
-                "{$login->getGroupName()}/{$login->getName()}",
+                $loginSession->getToken(),
+                "{$loginSession->getLogin()->getGroupName()}/{$loginSession->getLogin()->getName()}",
                 ['codeRequired'],
-                $login->getCustomTexts()
+                $loginSession->getLogin()->getCustomTexts()
             );
         }
 
@@ -83,16 +82,10 @@ class SessionController extends Controller {
         $body = RequestBodyParser::getElements($request, [
             'code' => ''
         ]);
-        $login = self::sessionDAO()->getLogin(self::authToken($request)->getToken());
-        $session = self::getOrCreatePersonSession($login, $body['code']);
+        $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
+        $person = self::sessionDAO()->getOrCreatePerson($loginSession, $body['code']);
+        $session = Session::createFromPersonSession(new PersonSession($loginSession, $person));
         return $response->withJson($session);
-    }
-
-
-    private static function getOrCreatePersonSession(Login $login, string $code): Session {
-
-        $person = self::sessionDAO()->getOrCreatePerson($login, $code);
-        return Session::createFromLogin($login, $person);
     }
 
 
@@ -104,7 +97,7 @@ class SessionController extends Controller {
         $members = $testtakersFolder->getPersonsInSameGroup($login->getName());
         $booklets = [];
 
-        foreach ($members as $member) { /* @var $member PotentialLogin */
+        foreach ($members as $member) { /* @var $member Login */
 
             $codes2booklets = $member->getBooklets();
             $codes2booklets = !$codes2booklets ? [] : $codes2booklets;
@@ -122,22 +115,22 @@ class SessionController extends Controller {
     }
 
 
-    public static function registerGroup(Login $login): void { // TODO make private
+    public static function registerGroup(LoginSession $login): void { // TODO make private
 
-        if ($login->getMode() == 'monitor-group') {
+        if ($login->getLogin()->getMode() == 'monitor-group') {
 
-            $testtakersFolder = new TesttakersFolder($login->getWorkspaceId());
-            $bookletsFolder = new BookletsFolder($login->getWorkspaceId());
-            $members = $testtakersFolder->getPersonsInSameGroup($login->getName());
+            $testtakersFolder = new TesttakersFolder($login->getLogin()->getWorkspaceId());
+            $bookletsFolder = new BookletsFolder($login->getLogin()->getWorkspaceId());
+            $members = $testtakersFolder->getPersonsInSameGroup($login->getLogin()->getName());
             $bookletLabels = [];
 
-            foreach ($members as $member) { /* @var $member PotentialLogin */
+            foreach ($members as $member) { /* @var $member Login */
 
                 if (in_array($member->getMode(), Mode::getByCapability('alwaysNewSession'))) {
                     continue;
                 }
 
-                $memberLogin = SessionController::sessionDAO()->getOrCreateLogin($member);
+                $memberLogin = SessionController::sessionDAO()->getOrCreateLoginSession($member->getName(), $member->getPassword());
 
                 foreach ($member->getBooklets() as $code => $booklets) {
 
@@ -150,7 +143,7 @@ class SessionController extends Controller {
                             $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
                         }
                         $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
-                        $sessionMessage = SessionChangeMessage::newSession($memberLogin, $memberPerson, (int) $test['id']);
+                        $sessionMessage = SessionChangeMessage::newSession($memberLogin->getLogin(), $memberPerson, (int) $test['id']);
                         $sessionMessage->setTestState([], $booklet);
                         BroadcastService::sessionChange($sessionMessage);
                     }
@@ -166,18 +159,20 @@ class SessionController extends Controller {
 
         if ($authToken->getType() == "login") {
 
-            $session = self::sessionDAO()->getLoginSession($authToken->getToken());
+            $loginSession = self::sessionDAO()->getLoginSessionByToken($authToken->getToken());
+            $session = Session::createFromLoginSession($loginSession);
+
             return $response->withJson($session);
         }
 
         if ($authToken->getType() == "person") {
 
             $loginWithPerson = self::sessionDAO()->getPersonLogin($authToken->getToken());
-            $session = Session::createFromLogin($loginWithPerson->getLogin(), $loginWithPerson->getPerson());
+            $session = Session::createFromPersonSession($loginWithPerson);
 
             if ($authToken->getMode() == 'monitor-group') {
 
-                $booklets = self::getBookletsOfMonitor($loginWithPerson->getLogin());
+                $booklets = self::getBookletsOfMonitor($loginWithPerson->getLoginSession()->getLogin());
                 $session->addAccessObjects('test', ...$booklets);
             }
 

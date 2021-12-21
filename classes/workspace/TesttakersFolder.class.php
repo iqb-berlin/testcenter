@@ -63,7 +63,7 @@ class TesttakersFolder extends Workspace {
     }
 
 
-    public function getPersonsInSameGroup(string $loginName): PotentialLoginArray { // TODO unit-test
+    public function getPersonsInSameGroup(string $loginName): LoginArray { // TODO unit-test
 
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
@@ -75,7 +75,7 @@ class TesttakersFolder extends Workspace {
                 return $members;
             }
         }
-        return new PotentialLoginArray();
+        return new LoginArray();
     }
 
 
