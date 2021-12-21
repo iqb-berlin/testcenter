@@ -50,7 +50,6 @@ class SessionController extends Controller {
 
         if (!$loginSession->getLogin()->isCodeRequired()) {
 
-            $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
             $person = self::sessionDAO()->getOrCreatePerson($loginSession, '');
             $session = Session::createFromPersonSession(new PersonSession($loginSession, $person));
 
