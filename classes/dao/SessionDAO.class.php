@@ -77,7 +77,7 @@ class SessionDAO extends DAO {
 
 
     // TODO add unit-test
-    public function getPersonLogin(string $personToken): PersonSession {
+    public function getPersonSession(string $personToken): PersonSession {
 
         $loginData = $this->_(
             'SELECT 
@@ -197,7 +197,7 @@ class SessionDAO extends DAO {
     // TODO add unit-test
     public function getBookletStatus(string $personToken, string $bookletName): array {
 
-        $person = $this->getPersonLogin($personToken);
+        $person = $this->getPersonSession($personToken);
 
         $test = $this->_(
             'SELECT tests.laststate, tests.locked, tests.label, tests.id, tests.running FROM tests
@@ -341,21 +341,34 @@ class SessionDAO extends DAO {
         return $newToken;
     }
 
-    public function updateLogins(int $workspaceId, string $fileName, LoginArray $logins): void {
+    public function updateLoginSource(int $workspaceId, string $source, LoginArray $logins): void {
+
+        $this->deleteLoginSource($workspaceId, $source);
+        $this->addLoginSource($workspaceId, $source, $logins);
+    }
+
+
+    public function deleteLoginSource(int $workspaceId, string $source): int {
 
         $this->_(
-            'delete from logins where source_file = :file_name and workspace_id = :ws_id',
+            'delete from logins where source = :source and workspace_id = :ws_id',
             [
-                ':file_name' => $fileName,
+                ':source' => $source,
                 ':ws_id' => $workspaceId
             ]
         );
+        return $this->lastAffectedRows;
+    }
+
+
+    public function addLoginSource(int $workspaceId, string $source, LoginArray $logins): int {
 
         foreach ($logins as $login) {
 
-            $this->createLogin($login, $workspaceId, $fileName);
+            CLI::p('-- ' . $login->getName());
+            $this->createLogin($login, $workspaceId, $source);
         }
-
+        return count($logins->asArray());
     }
 
 
@@ -371,7 +384,7 @@ class SessionDAO extends DAO {
                      group_label,
                      custom_texts,
                      password,
-                     source_file,
+                     source,
                      valid_from,
                      valid_to,
                      valid_for

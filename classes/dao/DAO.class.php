@@ -29,6 +29,8 @@ class DAO {
     protected $passwordSalt = 't';
     protected $insecurePasswords = false;
 
+    protected $lastAffectedRows = 0;
+
 
     public function __construct() {
 
@@ -54,6 +56,8 @@ class DAO {
 
         $sqlStatement = $this->pdoDBhandle->prepare($sql);
         $sqlStatement->execute($replacements);
+
+        $this->lastAffectedRows = $sqlStatement->rowCount();
 
         if (!$sqlStatement->columnCount()) {
             return null;

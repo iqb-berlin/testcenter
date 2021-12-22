@@ -166,7 +166,7 @@ class SessionController extends Controller {
 
         if ($authToken->getType() == "person") {
 
-            $loginWithPerson = self::sessionDAO()->getPersonLogin($authToken->getToken());
+            $loginWithPerson = self::sessionDAO()->getPersonSession($authToken->getToken());
             $session = Session::createFromPersonSession($loginWithPerson);
 
             if ($authToken->getMode() == 'monitor-group') {

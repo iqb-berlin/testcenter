@@ -203,7 +203,7 @@ class WorkspaceController extends Controller {
             $reports[$localPath]["type"] = $file->getType();
             if ($file->isValid() and ($file->getType() == 'Testtakers')) {
                 /* @var $file XMLFileTesttakers */
-                self::sessionDAO()->updateLogins($workspaceId, $localPath, $file->getAllLogins());
+                self::sessionDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
                 $reports[$localPath]['special'] = 'logins updated';
                 $reports[$localPath]['tt'] = $file->getAllLogins();
             }
@@ -468,12 +468,12 @@ class WorkspaceController extends Controller {
         /* @var XMLFileSysCheck $xmlFile */
         $xmlFile = $sysChecksFolder->findFileById('SysCheck', $sysCheckName);
 
-        if (strlen($report->keyPhrase) <= 0) {
+        if (strlen((string) $report->keyPhrase) <= 0) {
 
             throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
         }
 
-        if (strtoupper($report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
+        if (strtoupper((string) $report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
 
             throw new HttpError("Wrong key `$report->keyPhrase`", 400);
         }

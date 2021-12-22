@@ -31,10 +31,11 @@ try {
             CLI::h2("file: " . $xFile->getName());
             if ($xFile->isValid()) {
 
-                CLI::p(' * ' . $xFile->getName());
-                $initDAO->updateLogins($workspace->getId(), $xFile->getName(), $xFile->getAllLogins());
+                $deleted = $initDAO->deleteLoginSource($workspace->getId(), $xFile->getName());
+                $added = $initDAO->addLoginSource($workspace->getId(), $xFile->getName(), $xFile->getAllLogins());
+                CLI::p(" - {$xFile->getName()} (-$deleted/+$added)");
             } else {
-                CLI::warning('invalid');
+                CLI::warning('invalid: ' . implode(', ', $xFile->getValidationReportSorted()['error']));
             }
         }
     }

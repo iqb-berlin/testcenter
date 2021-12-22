@@ -3,7 +3,7 @@ alter table login_sessions drop column token;
 rename table login_sessions to logins;
 
 alter table logins add password varchar(100) null;
-alter table logins add source_file varchar(30) null;
+alter table logins add source varchar(30) null;
 
 -- TODO data migration
 -- TODO grouplabel, validFor ...
