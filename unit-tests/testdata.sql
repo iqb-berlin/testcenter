@@ -16,7 +16,7 @@ VALUES (3, 'monitor', 'monitor-group', 1, '2030-01-02 10:00:00', 'monitor_token'
 INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
 VALUES (4, 'sample_user', 'run-hot-return', 1, '2030-01-01 12:00:00', 'test_token', '{"xxx":["BOOKLET.SAMPLE-1"]}', 'sample_group');
 
-INSERT INTO person_sessions(id, code, login_id, valid_until, token, laststate)
+INSERT INTO person_sessions(id, code, login_id, valid_until, token, group_name)
 VALUES (0, 'xxx', 4, 0, 'person-token', '');
 
 INSERT INTO tests (id, name, person_id, laststate, locked, label)

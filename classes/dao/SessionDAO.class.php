@@ -87,14 +87,15 @@ class SessionDAO extends DAO {
                logins.mode,
                logins.password,
                logins.group_name,
-               logins.group_name as group_label,
+               logins.group_label,
                login_sessions.token,
                login_sessions.name,
                logins.custom_texts,
                login_sessions.valid_until,
-               person_sessions.id as "personId",
+               person_sessions.id as "person_id",
                person_sessions.code,
-               person_sessions.valid_until as "personValidTo"
+               person_sessions.valid_until as "person_valid_until",
+               person_sessions.group_name as person_group_name 
             FROM person_sessions
                  INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
                  INNER JOIN logins ON logins.name = login_sessions.name
@@ -128,11 +129,11 @@ class SessionDAO extends DAO {
                 )
             ),
             new Person(
-                (int) $loginData['personId'],
+                (int) $loginData['person_id'],
                 $personToken,
                 $loginData['code'] ?? '',
-                TimeStamp::fromSQLFormat($loginData['personValidTo']),
-                $loginData['group_name']
+                TimeStamp::fromSQLFormat($loginData['person_valid_until']),
+                $loginData['person_group_name']
             )
         );
     }
@@ -307,13 +308,14 @@ class SessionDAO extends DAO {
         $validUntil = TimeStamp::toSQLFormat($login->getValidTo());
 
         $this->_(
-            'INSERT INTO person_sessions (token, code, login_sessions_id, valid_until)
-            VALUES(:token, :code, :login_id, :valid_until)',
+            'INSERT INTO person_sessions (token, code, login_sessions_id, valid_until, group_name)
+            VALUES(:token, :code, :login_id, :valid_until, :group_name)',
             [
                 ':token' => $newPersonToken,
                 ':code' => $code,
                 ':login_id' => $loginSession->getId(),
-                ':valid_until' => $validUntil
+                ':valid_until' => $validUntil,
+                ':group_name' => $loginSession->getLogin()->getGroupName()
             ]
         );
 

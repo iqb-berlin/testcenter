@@ -32,10 +32,11 @@ alter table login_sessions add constraint login_sessions_pk primary key (id);
 alter table person_sessions add constraint fk_person_login foreign key (login_id) references login_sessions (id) on delete cascade;
 
 alter table person_sessions change login_id login_sessions_id bigint unsigned not null;
+alter table person_sessions change laststate group_name varchar(100) null;
 
 alter table logins drop column valid_until;
-
 alter table logins add valid_from timestamp null;
 alter table logins add valid_to timestamp null;
 alter table logins add valid_for int null;
 alter table logins add group_label text null;
+
