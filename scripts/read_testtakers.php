@@ -23,7 +23,7 @@ try {
         $initDAO->createWorkspaceIfMissing($workspace);
         $validator = new WorkspaceValidator($workspace->getId());
 
-        foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "Testtakers.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
             $xFile->crossValidate($validator);

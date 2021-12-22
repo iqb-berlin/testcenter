@@ -6,7 +6,9 @@ alter table logins add password varchar(100) null;
 alter table logins add source varchar(30) null;
 
 -- TODO data migration
--- TODO grouplabel, validFor ...
+-- TODO logins primiray ke only name
+-- TODO logins fk workspace
+
 
 alter table person_sessions drop foreign key fk_person_login;
 alter table logins drop primary key;

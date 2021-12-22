@@ -91,7 +91,7 @@ class XMLFilesTesttakersTest extends TestCase {
                 (object) ['somestr' => 'string']
             )
         );
-        $result = $xmlFile->getPersonsInSameGroup('test-group-monitor', 13);
+        $result = $xmlFile->getLoginsInSameGroup('test-group-monitor', 13);
         $this->assertEquals($expected, $result);
     }
 

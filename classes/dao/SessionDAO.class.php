@@ -112,7 +112,7 @@ class SessionDAO extends DAO {
         return new PersonSession(
             new LoginSession(
                 (int) $loginData['id'],
-                $loginData['loginToken'],
+                $loginData['token'],
                 TimeStamp::fromSQLFormat($loginData['valid_until']),
                 new Login(
                     $loginData['name'],
@@ -121,7 +121,7 @@ class SessionDAO extends DAO {
                     $loginData['group_name'],
                     $loginData['group_label'],
                     JSON::decode($loginData['codes_to_booklets'], true),
-                    (int) $loginData['workspaceId'],
+                    (int) $loginData['workspace_id'],
                     0, // TODO fix
                     0, // TODO fix
                     0, // TODO fix
@@ -140,7 +140,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    protected function createLoginSession(Login $login, bool $allowExpired = false): LoginSession {
+    public function createLoginSession(Login $login, bool $allowExpired = false): LoginSession {
 
         if (!$allowExpired) {
             TimeStamp::checkExpiration($login->getValidFrom(), $login->getValidTo());
@@ -433,15 +433,18 @@ class SessionDAO extends DAO {
         // TODO assume: name is completely unique amongst logins
         $loginSession = $this->_(
             'SELECT 
-                    login_sessions.id, 
+                    login_sessions.id,
+                    login_sessions.token,             
+                    login_sessions.valid_until,
                     logins.name,
-                    login_sessions.token,
                     logins.mode,
                     logins.group_name,
                     logins.group_label,
                     logins.codes_to_booklets,
-                    login_sessions.workspace_id,             
-                    login_sessions.valid_until,
+                    logins.workspace_id,
+                    logins.valid_to,
+                    logins.valid_from,
+                    logins.valid_for,
                     logins.custom_texts,
                     logins.password
                 FROM 
@@ -519,7 +522,7 @@ class SessionDAO extends DAO {
         return new LoginSession(
             (int) $loginSession["id"],
             $loginSession["token"],
-            0, // TODO fix me
+            TimeStamp::fromSQLFormat($loginSession['valid_until']),
             new Login(
                 $loginSession['name'],
                 $loginSession['password'], // TODO keep this here?
@@ -534,5 +537,62 @@ class SessionDAO extends DAO {
                 JSON::decode($loginSession['custom_texts'])
             )
         );
+    }
+
+    public function getLoginsByGroup(string $groupName, int $workspaceId): array {
+error_log("!WHY $groupName, int $workspaceId");
+        $logins = [];
+
+        $result = $this->_(
+            'SELECT 
+                    logins.name,
+                    logins.mode,
+                    logins.group_name,
+                    logins.group_label,
+                    logins.codes_to_booklets,
+                    logins.custom_texts,
+                    logins.password,
+                    logins.valid_for,
+                    logins.valid_to,
+                    logins.valid_from,
+                    logins.workspace_id,
+                    login_sessions.id, 
+                    login_sessions.token,
+                    login_sessions.valid_until
+                FROM 
+                    logins
+                    left join login_sessions on (logins.name = login_sessions.name)
+                WHERE 
+                    group_name = :group_name and logins.workspace_id = :workspace_id',
+            [
+                ':group_name' => $groupName,
+                ':workspace_id' => $workspaceId
+            ],
+            true
+        );
+
+        foreach ($result as $row) {
+            $logins[] =
+                new LoginSession(
+                    (int) $row["id"],
+                    $row["token"],
+                    TimeStamp::fromSQLFormat($row['valid_until']),
+                    new Login(
+                        $row['name'],
+                        $row['password'], // TODO keep this here?
+                        $row['mode'],
+                        $row['group_name'],
+                        $row['group_label'],
+                        JSON::decode($row['codes_to_booklets'], true),
+                        (int) $row['workspace_id'],
+                        TimeStamp::fromSQLFormat($row['valid_to']),
+                        TimeStamp::fromSQLFormat($row['valid_from']),
+                        (int) $row['valid_for'],
+                        JSON::decode($row['custom_texts'])
+                    )
+                );
+        }
+
+        return $logins;
     }
 }

@@ -63,13 +63,13 @@ class TesttakersFolder extends Workspace {
     }
 
 
-    public function getPersonsInSameGroup(string $loginName): LoginArray { // TODO unit-test
+    public function getLoginsInSameGroup(string $loginName): LoginArray { // TODO unit-test
 
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
 
-            $members = $xFile->getPersonsInSameGroup($loginName, $this->workspaceId);
+            $members = $xFile->getLoginsInSameGroup($loginName, $this->workspaceId);
 
             if ($members) {
                 return $members;

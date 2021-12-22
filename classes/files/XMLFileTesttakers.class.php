@@ -132,7 +132,9 @@ class XMLFileTesttakers extends XMLFile {
 
             foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
 
-                $testTakers[] = $this->getPotentialLogin($groupElement, $loginElement, -1);
+                $login = $this->getLogin($groupElement, $loginElement, -1);
+                CLI::p("--- login {$login->getName()}: " . json_encode($login->getBooklets()));
+                $testTakers[] = $login;
             }
         }
 
@@ -220,19 +222,19 @@ class XMLFileTesttakers extends XMLFile {
 //    }
 
 
-    public function getPersonsInSameGroup(string $name, int $workspaceId): ?LoginArray {
+    public function getLoginsInSameGroup(string $loginName, int $workspaceId): ?LoginArray {
 
         if (!$this->isValid()) {
             return null;
         }
 
-        foreach($this->xml->xpath("Group[Login[@name='$name']]") as $groupElement) {
+        foreach($this->xml->xpath("Group[Login[@name='$loginName']]") as $groupElement) {
 
             $groupMembers = new LoginArray();
 
             foreach ($groupElement->xpath('Login[@name][Booklet]') as $memberElement) {
 
-                $groupMembers->add($this->getPotentialLogin($groupElement, $memberElement, $workspaceId));
+                $groupMembers->add($this->getLogin($groupElement, $memberElement, $workspaceId));
             }
 
             return $groupMembers;
@@ -242,16 +244,22 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function getPotentialLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId)
+    private function getLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId)
             : Login {
 
+        $mode = (string) $loginElement['mode'];
+        $name = (string) $loginElement['name'];
+        $booklets = ($mode == 'monitor-group')
+            ? ['' => $this->collectBookletsOfGroup($workspaceId, $name)]
+            : self::collectBookletsPerCode($loginElement);
+
         return new Login(
-            (string) $loginElement['name'],
+            $name,
             Password::encrypt((string) $loginElement['pw'], 't'), // TODO configurable pepper
             (string) $loginElement['mode'] ?? 'run-demo',
             (string) $groupElement['id'],
             (string) $groupElement['label'] ?? (string) $groupElement['id'],
-            self::collectBookletsPerCode($loginElement),
+            $booklets,
             $workspaceId,
             isset($groupElement['validTo']) ? TimeStamp::fromXMLFormat((string) $groupElement['validTo']) : 0,
             TimeStamp::fromXMLFormat((string) $groupElement['validFrom']),
@@ -261,21 +269,27 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    protected static function getCodesFromBookletElement(SimpleXMLElement $bookletElement): array {
+    // TODO write unit test
+    // TODO make private
+    public function collectBookletsOfGroup(int $workspaceId, string $loginName): array {
 
-        if ($bookletElement->getName() !== 'Booklet') {
-            return [];
+        $members = $this->getLoginsInSameGroup($loginName, $workspaceId);
+        $booklets = [];
+
+        foreach ($members as $member) { /* @var $member Login */
+
+            $codes2booklets = $member->getBooklets() ?? [];
+
+            foreach ($codes2booklets as $bookletList) {
+
+                foreach ($bookletList as $booklet) {
+
+                    $booklets[] = $booklet;
+                }
+            }
         }
 
-        $codesString = isset($bookletElement['codes'])
-            ? trim((string) $bookletElement['codes'])
-            : '';
-
-        if (!$codesString) {
-            return [];
-        }
-
-        return array_unique(explode(' ', $codesString));
+        return array_unique($booklets);
     }
 
 
@@ -329,6 +343,24 @@ class XMLFileTesttakers extends XMLFile {
         }
 
         return $codeBooklets;
+    }
+
+
+    protected static function getCodesFromBookletElement(SimpleXMLElement $bookletElement): array {
+
+        if ($bookletElement->getName() !== 'Booklet') {
+            return [];
+        }
+
+        $codesString = isset($bookletElement['codes'])
+            ? trim((string) $bookletElement['codes'])
+            : '';
+
+        if (!$codesString) {
+            return [];
+        }
+
+        return array_unique(explode(' ', $codesString));
     }
 
 
