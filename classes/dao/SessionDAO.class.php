@@ -366,23 +366,29 @@ class SessionDAO extends DAO {
                      name,
                      mode,
                      workspace_id,
-                     valid_until,
                      codes_to_booklets,
                      group_name,
+                     group_label,
                      custom_texts,
                      password,
-                     source_file
-                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                     source_file,
+                     valid_from,
+                     valid_to,
+                     valid_for
+                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [
                     $login->getName(),
                     $login->getMode(),
                     $workspaceId,
-                    0, //  TODO,
                     json_encode($login->getBooklets()),
                     $login->getGroupName(),
+                    $login->getGroupLabel(),
                     json_encode($login->getCustomTexts()),
                     $login->getPassword(),
-                    $source
+                    $source,
+                    TimeStamp::toSQLFormat($login->getValidFrom()),
+                    TimeStamp::toSQLFormat($login->getValidTo()),
+                    $login->getValidForMinutes()
                 ]
             );
     }
@@ -417,7 +423,7 @@ class SessionDAO extends DAO {
                     login_sessions.token,
                     logins.mode,
                     logins.group_name,
-                    logins.group_name as group_label,
+                    logins.group_label,
                     logins.codes_to_booklets,
                     login_sessions.workspace_id,             
                     login_sessions.valid_until,
@@ -451,12 +457,12 @@ class SessionDAO extends DAO {
                 $loginSession['password'], // TODO keep this here?
                 $loginSession['mode'],
                 $loginSession['group_name'],
-                $loginSession['group_label'], // TODO group label
+                $loginSession['group_label'],
                 JSON::decode($loginSession['codes_to_booklets'], true),
                 (int) $loginSession['workspace_id'],
-                0, // TODO fix me
-                0, // TODO fix me
-                0, // TODO fix me
+                TimeStamp::fromSQLFormat($loginSession['valid_to']),
+                TimeStamp::fromSQLFormat($loginSession['valid_from']),
+                (int) $loginSession['valid_for'],
                 JSON::decode($loginSession['custom_texts'])
             )
         );
@@ -472,12 +478,15 @@ class SessionDAO extends DAO {
                     login_sessions.token,
                     logins.mode,
                     logins.group_name,
-                    logins.group_name as group_label,
+                    logins.group_label,
                     logins.codes_to_booklets,
                     login_sessions.workspace_id,             
                     login_sessions.valid_until,
                     logins.custom_texts,
-                    logins.password
+                    logins.password,
+                    logins.valid_for,
+                    logins.valid_to,
+                    logins.valid_from
                 FROM 
                     logins
                     left join login_sessions on (logins.name = login_sessions.name)
@@ -501,12 +510,12 @@ class SessionDAO extends DAO {
                 $loginSession['password'], // TODO keep this here?
                 $loginSession['mode'],
                 $loginSession['group_name'],
-                $loginSession['group_label'], // TODO group label
+                $loginSession['group_label'],
                 JSON::decode($loginSession['codes_to_booklets'], true),
                 (int) $loginSession['workspace_id'],
-                0, // TODO fix me
-                0, // TODO fix me
-                0, // TODO fix me
+                TimeStamp::fromSQLFormat($loginSession['valid_to']),
+                TimeStamp::fromSQLFormat($loginSession['valid_from']),
+                (int) $loginSession['valid_for'],
                 JSON::decode($loginSession['custom_texts'])
             )
         );
