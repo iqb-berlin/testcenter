@@ -246,7 +246,7 @@ class Report {
 
         $csv[] = implode(
             self::DELIMITER,
-            ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'responses']
+            ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'responses', 'laststate']
         );
 
         foreach ($responseData as $row) {
