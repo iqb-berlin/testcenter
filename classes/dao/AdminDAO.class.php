@@ -457,6 +457,10 @@ class AdminDAO extends DAO {
                     unit_id = :unit_id',
                 [ ':unit_id' => $unitId ],
         true);
+        foreach ($data as $index => $row) {
+            $data[$index]['ts'] = (int) $row['ts'];
+        }
+        return $data;
     }
 
 
