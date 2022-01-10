@@ -359,52 +359,6 @@ class AdminDAO extends DAO {
     }
 
 
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     * @deprecated
-     */
-    public function getResponses($workspaceId, $groups): array {
-        // TODO use dataclass an camelCase-objects
-
-		$groupsString = implode("','", $groups);
-		return $this->_(
-        <<<EOT
-            select
-                units.name as unitname,
-                '{' || group_concat('"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', char(0x5C) || '"') || '"') || '}' as responses,
-                -- thanks to PIPES_AS_CONCAT works like in sqlite as concat 
-                unit_data.response_type as responsetype,
-                units.laststate,
-                tests.name as bookletname,
-                max(unit_data.ts) as 'responses_ts',
-                login_sessions.group_name as groupname,
-                login_sessions.name as loginname,
-                case
-                    when person_sessions.code != ''
-                    then person_sessions.code
-                    else person_sessions.id
-                end as code
-            from units
-                inner join tests ON tests.id = units.booklet_id
-                inner join person_sessions ON person_sessions.id = tests.person_id 
-                inner join login_sessions ON login_sessions.id = person_sessions.login_id
-                left join unit_data on unit_data.unit_id = units.id
-            where
-                login_sessions.workspace_id =:workspaceId
-                and login_sessions.group_name IN ('$groupsString')
-            group by
-                units.id
-        EOT,
-			[
-				':workspaceId' => $workspaceId,
-			],
-			true
-		);
-	}
-
-
     public function getResponseReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
@@ -445,7 +399,7 @@ class AdminDAO extends DAO {
 
 
     public function getResponseDataParts(int $unitId): array {
-        return $this->_(
+        $data = $this->_(
             'select
                      part_id as id,
                      content,
@@ -462,65 +416,6 @@ class AdminDAO extends DAO {
         }
         return $data;
     }
-
-
-	// $return = []; groupname, loginname, code, bookletname, unitname, timestamp, logentry
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     * @deprecated
-     */
-    public function getLogs($workspaceId, $groups) { // TODO add unit test // TODO use dataclass and camelCase-objects
-
-		$groupsString = implode("','", $groups);
-
-		$unitData = $this->_(
-			"SELECT
-                units.name as unitname,
-                tests.name as bookletname,
-				login_sessions.group_name as groupname, 
-                login_sessions.name as loginname,
-                case
-                    when person_sessions.code != '' then person_sessions.code
-                    else person_sessions.id
-                end as code,
-                unit_logs.timestamp,
-                unit_logs.logentry
-			FROM unit_logs
-			INNER JOIN units ON units.id = unit_logs.unit_id
-			INNER JOIN tests ON tests.id = units.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-			WHERE login_sessions.workspace_id =:workspaceId AND login_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-
-		$bookletData = $this->_(
-			"SELECT tests.name as bookletname,
-					login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
-					test_logs.timestamp, test_logs.logentry
-			FROM test_logs
-			INNER JOIN tests ON tests.id = test_logs.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-			WHERE login_sessions.workspace_id =:workspaceId AND login_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-
-		foreach ($bookletData as $bd) {
-			$bd['unitname'] = '';
-			array_push($unitData, $bd);
-		}
-
-		return $unitData;
-	}
 
 
     /**
@@ -581,60 +476,6 @@ class AdminDAO extends DAO {
             true
         );
     }
-
-
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     * @deprecated
-     */
-    public function getReviews($workspaceId, $groups) { // TODO add unit test
-
-        // $return = []; groupname, loginname, code, bookletname, unitname, priority, categories, entry
-
-        $groupsString = implode("','", $groups);
-
-		$unitData = $this->_(
-			"SELECT units.name as unitname, tests.name as bookletname,
-					login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
-					unit_reviews.reviewtime, unit_reviews.entry,
-					unit_reviews.priority, unit_reviews.categories
-			FROM unit_reviews
-			INNER JOIN units ON units.id = unit_reviews.unit_id
-			INNER JOIN tests ON tests.id = units.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-			WHERE login_sessions.workspace_id =:workspaceId AND login_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-
-		$bookletData = $this->_(
-			"SELECT tests.name as bookletname,
-					login_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
-					test_reviews.reviewtime, test_reviews.entry,
-					test_reviews.priority, test_reviews.categories
-			FROM test_reviews
-			INNER JOIN tests ON tests.id = test_reviews.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
-			WHERE login_sessions.workspace_id =:workspaceId AND login_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-
-		foreach ($bookletData as $bd) {
-			$bd['unitname'] = '';
-			array_push($unitData, $bd);
-		}
-
-		return $unitData;
-	}
 
 
     /**
