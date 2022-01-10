@@ -425,7 +425,6 @@ class AdminDAO extends DAO {
                 inner join person_sessions on login_sessions.id = person_sessions.login_id
                 inner join tests on person_sessions.id = tests.person_id
                 inner join units on tests.id = units.booklet_id
-                left join unit_data on unit_data.unit_id = units.id
             where
                 login_sessions.workspace_id = ?
                 and login_sessions.group_name in ($groupsPlaceholders)
