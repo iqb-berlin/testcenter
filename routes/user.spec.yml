@@ -9,7 +9,8 @@ paths:
     get:
       summary: get a list of workspaces
       description: get a list of all workspaces belonging to a given user
-
+      tags:
+        - session management
       parameters:
         - in: header
           name: AuthToken
@@ -46,8 +47,9 @@ paths:
 
     patch:
       summary: change user roles
-      description: change user roles for a given user in several workspaces. *Provide user-name, not user-id!*
-
+      description: changes user roles for a given user in several workspaces. *Provide user-name, not user-id!*
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -99,8 +101,9 @@ paths:
   /user:
     put:
       summary: add a user
-      description: add a user
-
+      description: adds a user
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -132,7 +135,8 @@ paths:
     patch:
       summary: change user-password
       description: changes the password of a given user.
-
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -173,7 +177,8 @@ paths:
        * **requires a super-admin**
        * **requires the password of the performing user for security reasons**
        * `new_status` is `on` or `off`
-
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken

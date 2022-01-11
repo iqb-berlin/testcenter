@@ -8,7 +8,8 @@ paths:
   /list/routes:
     get:
       summary: Lists all available endpoints
-
+      tags:
+        - api info
       responses:
         "200":
           description: OK
@@ -27,6 +28,9 @@ paths:
         - customTexts for UI
         - information about a broadcastingService
         - serverTimestamp (in milliseconds)"
+      tags:
+        - api info
+        - super admin
       responses:
         "200":
           description: OK
@@ -73,7 +77,9 @@ paths:
     patch:
       summary: Update AppConfig
       description: The AppConfig is a key-values store containing instance-specific settings for the frontend analogous
-        to the CustomTexts, except that the values could be object as well - they would become stringyfied then.
+        to the CustomTexts, except that the values could be objects as well - they would become stringyfied then.
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -107,8 +113,10 @@ paths:
     patch:
       summary: Update CustomTexts
       description: The CustomTexts is a key-values store containing instance-specific settings for the frontend analogous
-        to the AppConfig. The Endpoint accepts anything as vaue, but CustomTexts should normally only contain
+        to the AppConfig. The Endpoint accepts anything as value, but CustomTexts should normally only contain
         string-values.
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -135,6 +143,8 @@ paths:
   /version:
     get:
       summary: get API version
+      tags:
+        - api info
       responses:
         "200":
           description: OK
@@ -147,6 +157,8 @@ paths:
     get:
       summary: get a list of workspaces
       description: get a list of all workspaces
+      tags:
+        - super admin
 
       parameters:
         - in: header
@@ -176,7 +188,8 @@ paths:
     delete:
       summary: delete some workspaces
       description: deletes a list of workspaces given by their ids
-
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -212,7 +225,8 @@ paths:
     get:
       summary: get a list of users
       description: returns info about all registered users.
-
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -243,8 +257,9 @@ paths:
     delete:
       summary: delete some users
       description: deletes a list of given user-ids. ids wich did not exist get skipped; in other words there is no
-        check if the user existed beforeheand.
-
+        check if the user exists beforeheand.
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -282,7 +297,8 @@ paths:
     get:
       summary: get a list of system checks
       description: get a list of available SysChecks (from all workspaces)
-
+      tags:
+        - run system check
       responses:
         "200":
           description: list of SysChecks
@@ -315,6 +331,8 @@ paths:
     get:
       summary: get the server time
       description: return the server's current timestamp and timezone
+      tags:
+        - run monitor
       responses:
         "200":
           description: list of SysChecks
