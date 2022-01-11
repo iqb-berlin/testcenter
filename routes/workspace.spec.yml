@@ -8,8 +8,9 @@ paths:
   /workspace/{ws_id}/file/{type}/{filename}:
     get:
       summary: get file
-      description: retrieves a file form a goven workspace by filename
-
+      description: retrieves a file form a given workspace by filename
+      tags:
+        - admin download
       parameters:
         - in: header
           name: AuthToken
@@ -53,11 +54,59 @@ paths:
         "500":
           description: Server Error
 
+  /workspace/{ws_id}/responses:
+    delete:
+      summary: delete data
+      description: deletes all results and monitor data of a group of groups
+      tags:
+        - admin workspace
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with role "RW" (read/write) for this workspace
+          example: "a:user000000000.rw00000000"
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                groups:
+                  type: array
+                  description: array of group names
+                  items:
+                    type: string
+            example:
+              groups:
+                - sample_group
+
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: workspace or file not found
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
   /workspace/{ws_id}/results:
     get:
       summary: get results
       description: retrieves a list of unit- and booklet results for a given workspace and groups
-
+      tags:
+        - admin workspace
       parameters:
         - in: header
           name: AuthToken
@@ -123,11 +172,13 @@ paths:
         is valid, and passes the cross-validation checks. So a file which depends of a non-existing player will get
         rejected as well as an invalid xml file.
 
-        When a file with the same filename and type exists in the workspace, it gets overwritten! Except if the the
+        When a file with the same filename and type exists in the workspace, it gets overwritten! Except if the
         internal id (the <ID>-Tag as used in Unit-files for example) of the old and the new file differs. In this case
-        it's assumed, that the file-name-duplication is inintentional an the new import gets rejected.
+        it's assumed, that the file-name-duplication is inintentional and the new import gets rejected.
 
-        The endpoint accepts all kinds of files. Zip-achrives get extracted an treated the same as multi-file-upload.
+        The endpoint accepts all kinds of files. Zip-archives get extracted an treated the same as multi-file-upload.
+      tags:
+        - admin upload
       parameters:
         - in: header
           name: AuthToken
@@ -192,7 +243,8 @@ paths:
     get:
       summary: get files of workspace
       description: get a list of all files in workspace
-
+      tags:
+        - admin workspace
       parameters:
         - in: header
           name: AuthToken
@@ -325,6 +377,8 @@ paths:
     delete:
       summary: delete files
       description: deletes files from a workspace
+      tags:
+        - admin workspace
       parameters:
         - in: header
           name: AuthToken
@@ -384,7 +438,8 @@ paths:
     put:
       summary: add a workspace
       description: adds a workspace with given name
-
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -418,6 +473,8 @@ paths:
     get:
       summary: get workspace
       description: returns basic information about a workspace
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -452,7 +509,8 @@ paths:
     patch:
       summary: rename a workspace
       description: renames a workspace with given id
-
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -494,8 +552,9 @@ paths:
   /workspace/{ws_id}/users:
     patch:
       summary: change user roles
-      description: change user roles in a given workspaces
-
+      description: changes user roles in given workspaces
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -547,7 +606,8 @@ paths:
     get:
       summary: get a list of users in a workspace
       description: returns info about all registered users in a workspace.
-
+      tags:
+        - super admin
       parameters:
         - in: header
           name: AuthToken
@@ -586,6 +646,8 @@ paths:
     get:
       summary: get report of logs
       description: returns a Log report in JSON or CSV format based on aggregated unit and booklet log data
+      tags:
+        - admin download
       parameters:
         - in: header
           name: AuthToken
@@ -634,6 +696,8 @@ paths:
     get:
       summary: get report of item responses
       description: returns a Item Responses report in JSON or CSV format based on aggregated report data
+      tags:
+        - admin download
       parameters:
         - in: header
           name: AuthToken
@@ -697,7 +761,9 @@ paths:
   /workspace/{ws_id}/report/review:
     get:
       summary: get report of item reviews
-      description: returns a Reviews report in JSON or CSV format based on aggregated unit and booklet review data
+      description: returns a Review report in JSON or CSV format based on aggregated unit and booklet review data
+      tags:
+        - admin download
       parameters:
         - in: header
           name: AuthToken
@@ -746,6 +812,8 @@ paths:
     get:
       summary: get report of system checks
       description: returns a System Check report in JSON or CSV format based on aggregated report data
+      tags:
+        - admin download
       parameters:
         - in: header
           name: AuthToken
@@ -790,11 +858,65 @@ paths:
         "500":
           description: Server Error
 
+
+  /workspace/{ws_id}/sys-check/reports:
+    delete:
+      summary: delete system check reports
+      description: deletes some System Check reports
+      tags:
+        - admin workspace
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with role "RW" (read/write) for this workspace
+          example: "a:user000000000.rw00000000"
+        - in: path
+          name: ws_id
+          description: workspace-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                checkIds:
+                  type: array
+                  description: array of sys-check-Ids
+                  items:
+                    type: string
+              required:
+                - checkIds
+            example:
+              checkIds:
+                - "SYSCHECK.SAMPLE"
+      responses:
+        "207":
+          description: OK, a list of deleted files
+          content:
+            application/json:
+              example:
+                deleted:
+                  - "SysCheck/SAMPLE_SYSCHECK.XML"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
+
   /workspace/{ws_id}/sys-check/reports/overview:
 
     get:
       summary: get a list of all system check reports
       description: returns a list of all sys-check-reports with most important features grouped by the sys-checks.
+      tags:
+        - admin workspace
       parameters:
         - in: header
           name: AuthToken
@@ -852,6 +974,8 @@ paths:
     get:
       summary: get system check configuration
       description: returns a specific SysCheck configuation **this endpoint does not need any authetication!**
+      tags:
+        - session management
       parameters:
         - in: path
           name: ws_id
@@ -883,6 +1007,8 @@ paths:
     get:
       summary: get system check Unit and Player
       description: "returns a container with the unit and it's player according to a SysCheck"
+      tags:
+        - run system check
       parameters:
         - in: path
           name: ws_id
@@ -911,6 +1037,8 @@ paths:
     put:
       summary: save system check
       description: save the results of a performed SysCheck
+      tags:
+        - run system check
       parameters:
       - in: path
         name: ws_id

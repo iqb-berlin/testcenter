@@ -10,6 +10,8 @@ paths:
     get:
       summary: get a booklet
       description: "Retrieves a Booklet-XML"
+      tags:
+        - run test
       parameters:
         - in: header
           name: AuthToken
@@ -41,8 +43,10 @@ paths:
   /booklet/{booklet_name}/data:
     get:
       summary: get status of a booklet
-      description: "Retrieves a booklet - in this context that does not mean the booklet-file's contents but status
+      description: "Retrieves a booklet - in this context that does not mean the booklet-file's content but status
         information about this booklet in regard of a given login: Is there a running test for this booklet etc."
+      tags:
+        - run test
       parameters:
         - in: header
           name: AuthToken

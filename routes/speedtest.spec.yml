@@ -9,7 +9,9 @@ paths:
   /speed-test/random-package/{size}:
     get:
       summary: download speedtest package
-      description: returns a random byte package - for speedtests
+      description: returns a random byte package - for speedtests in system-check
+      tags:
+        - run system check
       parameters:
         - in: path
           name: size
@@ -34,7 +36,9 @@ paths:
   /speed-test/random-package:
     post:
       summary: upload speedtest package
-      description: receives any package and returns information about size and time - for speedtests
+      description: receives any package and returns information about size and time - for speedtests in system-checks
+      tags:
+        - run system check
       requestBody:
         content:
           text/plain:
