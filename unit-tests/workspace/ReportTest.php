@@ -424,9 +424,9 @@ final class ReportTest extends TestCase {
         $this->adminDaoMock->method('getResponseReportData')->willReturn(self::RESPONSES);
 
         $expectedResponsesCSVReportData = self::BOM .
-            "groupname;loginname;code;bookletname;unitname;responses;responseType;response-ts;laststate\n" .
-            '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"{""name"":""Sam Sample"",""age"":34}";;1627545600;"{""PRESENTATIONCOMPLETE"":""yes""}"' . "\n" .
-            '"sämple_group";"sämple_user";"xxx";"BOOKLET.SAMPLE-2";"UNIT.SÄMPLE";"{""name"":""Säm Sämple"",""age"":42}";"immediate";1627545600;';
+            "groupname;loginname;code;bookletname;unitname;responses;laststate\n" .
+            '"sample_group";"sample_user";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"""{\""name\"":\""Sam Sample\"",\""age\"":34}""";"{""PRESENTATIONCOMPLETE"":""yes""}"' . "\n" .
+            '"sämple_group";"sämple_user";"xxx";"BOOKLET.SAMPLE-2";"UNIT.SÄMPLE";"""{\""name\"":\""S\u00e4m S\u00e4mple\"",\""age\"":42}""";""';
 
         // Act
         $report = new Report($this->workspaceId, $this->dataIds, $this->reportType, $this->reportFormat);
