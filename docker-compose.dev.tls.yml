@@ -33,7 +33,7 @@ services:
       - "traefik.http.routers.testcenter-backend.tls=true"
 
   testcenter-frontend:
-    image: iqbberlin/testcenter-frontend:12.0.0
+    image: iqbberlin/testcenter-frontend:12.0.1
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
 
