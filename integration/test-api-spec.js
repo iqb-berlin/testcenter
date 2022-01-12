@@ -122,7 +122,8 @@ gulp.task('prepare_spec_for_dredd', done => {
     "schema > \\$ref$": resolveReference,
     "items > \\$ref$": resolveReference,
     "deprecated": null,
-    "properties > .*? > format": null
+    "properties > .*? > format": null,
+    "^(paths > [^> ]+ > [^> ]+) > tags$": null,
   };
 
   const deleteAllPathsButSplit = {

@@ -81,49 +81,10 @@ class WorkspaceController extends Controller {
     }
 
 
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return Response
-     * @throws HttpBadRequestException
-     * @deprecated
-     */
-    public static function getReviews(Request $request, Response $response): Response {
-
-        $groups = explode(",", $request->getParam('groups'));
-        $workspaceId = (int)$request->getAttribute('ws_id');
-
-        if (!$groups) {
-            throw new HttpBadRequestException($request, "Parameter groups is missing");
-        }
-
-        $reviews = self::adminDAO()->getReviews($workspaceId, $groups);
-
-        return $response->withJson($reviews);
-    }
-
-
     public static function getResults(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
         $results = self::adminDAO()->getAssembledResults($workspaceId);
-
-        return $response->withJson($results);
-    }
-
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return Response
-     * @deprecated
-     */
-    public static function getResponses(Request $request, Response $response): Response {
-
-        $workspaceId = (int)$request->getAttribute('ws_id');
-        $groups = explode(",", $request->getParam('groups'));
-
-        $results = self::adminDAO()->getResponses($workspaceId, $groups);
 
         return $response->withJson($results);
     }
@@ -141,23 +102,6 @@ class WorkspaceController extends Controller {
         BroadcastService::send('system/clean');
 
         return $response;
-    }
-
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return Response
-     * @deprecated
-     */
-    public static function getLogs(Request $request, Response $response): Response {
-
-        $workspaceId = (int)$request->getAttribute('ws_id');
-        $groups = explode(",", $request->getParam('groups'));
-
-        $results = self::adminDAO()->getLogs($workspaceId, $groups);
-
-        return $response->withJson($results);
     }
 
 
@@ -317,50 +261,6 @@ class WorkspaceController extends Controller {
         }
 
         return $response;
-    }
-
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return Response
-     * @deprecated
-     */
-    public static function getSysCheckReports(Request $request, Response $response): Response {
-
-        $checkIds = explode(',', $request->getParam('checkIds', ''));
-        $delimiter = $request->getParam('delimiter', ';');
-        $lineEnding = $request->getParam('lineEnding', '\n');
-        $enclosure = $request->getParam('enclosure', '"');
-
-        $workspaceId = (int)$request->getAttribute('ws_id');
-
-        $sysChecks = new SysChecksFolder($workspaceId);
-        $reports = $sysChecks->collectSysCheckReports($checkIds);
-
-        # TODO remove $acceptWorkaround if https://github.com/apiaryio/api-elements.js/issues/413 is resolved
-        $acceptWorkaround = $request->getParam('format', 'json') == 'csv';
-
-        if (($request->getHeaderLine('Accept') == 'text/csv') or $acceptWorkaround) {
-
-            $flatReports = array_map(
-                function(SysCheckReportFile $report) {
-
-                    return $report->getFlat();
-                },
-                $reports
-            );
-            $response->getBody()->write(CSV::build($flatReports, [], $delimiter, $enclosure, $lineEnding));
-
-            return $response->withHeader('Content-type', 'text/csv');
-        }
-
-        $reportsArrays = array_map(function(SysCheckReportFile $report) {
-
-            return $report->get();
-        }, $reports);
-
-        return $response->withJson($reportsArrays);
     }
 
 

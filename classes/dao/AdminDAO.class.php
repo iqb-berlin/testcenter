@@ -244,11 +244,11 @@ class AdminDAO extends DAO {
                        COUNT(distinct units.id)  AS num_units,
                        MAX(tests.timestamp_server)   as lastchange
                 FROM tests
-                         INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+                         left JOIN person_sessions ON person_sessions.id = tests.person_id
                          INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
                          INNER JOIN units ON units.booklet_id = tests.id
                 WHERE login_sessions.workspace_id = :workspaceId
-                GROUP BY tests.name, person_sessions.group_name, login_sessions.name, person_sessions.code',
+                GROUP BY tests.name, person_sessions.id',
 			[
 				':workspaceId' => $workspaceId
 			],
@@ -413,36 +413,36 @@ class AdminDAO extends DAO {
         $bindParams = array_merge([$workspaceId], $groups);
 
         // TODO: use data class
-        return $this->_(<<<EOT
+        $data = $this->_(<<<EOT
             select
                 person_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
                 units.name as unitname,
-                '{' || group_concat('"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', char(0x5C) || '"') || '"') || '}' as responses,
-                -- thanks to PIPES_AS_CONCAT works like in sqlite as concat  
-                unit_data.response_type as responseType,
-                max(unit_data.ts) as 'response-ts',
-                units.laststate
+                units.laststate,
+                units.id as unit_id
             from
                 login_sessions
                 inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
                 inner join tests on person_sessions.id = tests.person_id
                 inner join units on tests.id = units.booklet_id
-                left join unit_data on unit_data.unit_id = units.id
             where
                 login_sessions.workspace_id = ?
                 and person_sessions.group_name in ($groupsPlaceholders)
                 and tests.id is not null
-            group by
-                units.id
+
             EOT,
             $bindParams,
             true
         );
 
+        foreach ($data as $index => $row) {
+            $data[$index]['responses'] = $this->getResponseDataParts((int) $row['unit_id']);
+            unset($data[$index]['unit_id']);
+        }
 
+        return $data;
 
     }
 
@@ -496,14 +496,33 @@ class AdminDAO extends DAO {
 			],
 			true
 		);
+        foreach ($data as $index => $row) {
+            $data[$index]['responses'] = $this->getResponseDataParts((int) $row['unit_id']);
+            unset($data[$index]['unit_id']);
+        }
 
-		foreach ($bookletData as $bd) {
-			$bd['unitname'] = '';
-			array_push($unitData, $bd);
-		}
+        return $data;
+    }
 
-		return $unitData;
-	}
+
+    public function getResponseDataParts(int $unitId): array {
+        $data = $this->_(
+            'select
+                     part_id as id,
+                     content,
+                     ts,
+                     response_type as responseType
+                 from
+                    unit_data
+                 where
+                    unit_id = :unit_id',
+                [ ':unit_id' => $unitId ],
+        true);
+        foreach ($data as $index => $row) {
+            $data[$index]['ts'] = (int) $row['ts'];
+        }
+        return $data;
+    }
 
 
     /**

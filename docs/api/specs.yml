@@ -2,12 +2,14 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 11.9999.10000
+    version: 12.0.0
 paths:
     '/booklet/{booklet_name}':
         get:
             summary: 'get a booklet'
             description: 'Retrieves a Booklet-XML'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -39,7 +41,9 @@ paths:
     '/booklet/{booklet_name}/data':
         get:
             summary: 'get status of a booklet'
-            description: 'Retrieves a booklet - in this context that does not mean the booklet-file''s contents but status information about this booklet in regard of a given login: Is there a running test for this booklet etc.'
+            description: 'Retrieves a booklet - in this context that does not mean the booklet-file''s content but status information about this booklet in regard of a given login: Is there a running test for this booklet etc.'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -74,7 +78,9 @@ paths:
     '/monitor/group/{group_name}':
         get:
             summary: 'get a group'
-            description: 'Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the requesting user, who has to have in mode `monitor-group`.'
+            description: 'Retrieves Information about a (testtakers-)group. It has to be in the same workspace as the requesting user, who has to have in mode `monitor-group`.'
+            tags:
+                - 'run monitor'
             parameters:
                 -
                     in: header
@@ -110,7 +116,9 @@ paths:
     /monitor/test-sessions:
         get:
             summary: 'get TestSessions of a group'
-            description: 'Retrieves all running test sessions from group of a group-monitor. Returns also an URL to a websocket to subscribe this information if available. Sessions for Persons of this group which are not created right now get created.'
+            description: 'Retrieves all running test sessions from group of a group-monitor. Returns also an URL to a websocket to subscribe to this information if available. Sessions for Persons of this group which are not created right now get created.'
+            tags:
+                - 'run monitor'
             parameters:
                 -
                     in: header
@@ -168,6 +176,8 @@ paths:
         put:
             summary: 'send command'
             description: 'Send a monitor command to a set of running tests'
+            tags:
+                - 'run monitor'
             parameters:
                 -
                     in: header
@@ -213,6 +223,8 @@ paths:
         post:
             summary: 'unlock a bunch of tests'
             description: 'Unlocks a bunch of running tests'
+            tags:
+                - 'run monitor'
             parameters:
                 -
                     in: header
@@ -251,6 +263,8 @@ paths:
         post:
             summary: 'Lock a bunch of tests'
             description: 'Locks a bunch of running tests'
+            tags:
+                - 'run monitor'
             parameters:
                 -
                     in: header
@@ -289,6 +303,8 @@ paths:
         get:
             summary: 'get a session'
             description: 'returns session data according to an authToken.'
+            tags:
+                - 'session management'
             parameters:
                 -
                     in: header
@@ -327,6 +343,8 @@ paths:
         put:
             summary: 'Start Admin Session'
             description: 'Starts a Session as Admin by Username and password'
+            tags:
+                - 'session management'
             requestBody:
                 content:
                     application/json:
@@ -354,7 +372,9 @@ paths:
     /session/login:
         put:
             summary: 'Start Login Session'
-            description: 'Starts a Session as Login by Username and password If the login requires a subsequent code insertion, you get a session with no access and the request for a password. Otherwise a set of accessable booklets will be retrieved.'
+            description: 'Starts a Session as Login to run a test by Username and password If the login requires a subsequent code insertion, you get a session with no access and the request for a password. Otherwise a set of accessible booklets will be retrieved.'
+            tags:
+                - 'session management'
             requestBody:
                 content:
                     application/json:
@@ -384,7 +404,9 @@ paths:
     /session/person:
         put:
             summary: 'Start Person Session'
-            description: 'Starts a Session for a Person, on the basis of LoginToken (!) which is Part II of the Two-Factor Authentication for code-demanding logins. Get a token for a person belonging to a login, as defined in a `Testtakers.xml`-file, together with some information about this person'
+            description: 'Starts a Session for a Person to run a test, on the basis of LoginToken (!) which is Part II of the Two-Factor Authentication for code-requiring logins. Get a token for a person belonging to a login, as defined in a `Testtakers.xml`-file, together with some information about this person'
+            tags:
+                - 'session management'
             parameters:
                 -
                     in: header
@@ -424,7 +446,9 @@ paths:
     '/speed-test/random-package/{size}':
         get:
             summary: 'download speedtest package'
-            description: 'returns a random byte package - for speedtests'
+            description: 'returns a random byte package - for speedtests in system-check'
+            tags:
+                - 'run system check'
             parameters:
                 -
                     in: path
@@ -449,7 +473,9 @@ paths:
     /speed-test/random-package:
         post:
             summary: 'upload speedtest package'
-            description: 'receives any package and returns information about size and time - for speedtests'
+            description: 'receives any package and returns information about size and time - for speedtests in system-checks'
+            tags:
+                - 'run system check'
             requestBody:
                 content:
                     text/plain:
@@ -471,6 +497,8 @@ paths:
     /list/routes:
         get:
             summary: 'Lists all available endpoints'
+            tags:
+                - 'api info'
             responses:
                 '200':
                     description: OK
@@ -484,6 +512,9 @@ paths:
         get:
             summary: 'get system config'
             description: 'returns publicly available parts of system config - version number - customTexts for UI - information about a broadcastingService - serverTimestamp (in milliseconds)'
+            tags:
+                - 'api info'
+                - 'super admin'
             responses:
                 '200':
                     description: OK
@@ -503,7 +534,7 @@ paths:
                                     - broadcastingService
                                     - appConfig
                             example:
-                                version: 11.9999.10000
+                                version: 12.0.0
                                 customTexts: {}
                                 appConfig: {}
                                 broadcastingService:
@@ -515,7 +546,9 @@ paths:
     /system/config/app:
         patch:
             summary: 'Update AppConfig'
-            description: 'The AppConfig is a key-values store containing instance-specific settings for the frontend analogous to the CustomTexts, except that the values could be object as well - they would become stringyfied then.'
+            description: 'The AppConfig is a key-values store containing instance-specific settings for the frontend analogous to the CustomTexts, except that the values could be objects as well - they would become stringyfied then.'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -548,7 +581,9 @@ paths:
     /system/config/custom-texts:
         patch:
             summary: 'Update CustomTexts'
-            description: 'The CustomTexts is a key-values store containing instance-specific settings for the frontend analogous to the AppConfig. The Endpoint accepts anything as vaue, but CustomTexts should normally only contain string-values.'
+            description: 'The CustomTexts is a key-values store containing instance-specific settings for the frontend analogous to the AppConfig. The Endpoint accepts anything as value, but CustomTexts should normally only contain string-values.'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -575,17 +610,21 @@ paths:
     /version:
         get:
             summary: 'get API version'
+            tags:
+                - 'api info'
             responses:
                 '200':
                     description: OK
                     content:
                         application/json:
                             example:
-                                version: 11.9999.10000
+                                version: 12.0.0
     /workspaces:
         get:
             summary: 'get a list of workspaces'
             description: 'get a list of all workspaces'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -614,6 +653,8 @@ paths:
         delete:
             summary: 'delete some workspaces'
             description: 'deletes a list of workspaces given by their ids'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -647,6 +688,8 @@ paths:
         get:
             summary: 'get a list of users'
             description: 'returns info about all registered users.'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -676,7 +719,9 @@ paths:
                     description: 'Server Error'
         delete:
             summary: 'delete some users'
-            description: 'deletes a list of given user-ids. ids wich did not exist get skipped; in other words there is no check if the user existed beforeheand.'
+            description: 'deletes a list of given user-ids. ids wich did not exist get skipped; in other words there is no check if the user exists beforeheand.'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -710,6 +755,8 @@ paths:
         get:
             summary: 'get a list of system checks'
             description: 'get a list of available SysChecks (from all workspaces)'
+            tags:
+                - 'run system check'
             responses:
                 '200':
                     description: 'list of SysChecks'
@@ -734,6 +781,8 @@ paths:
         get:
             summary: 'get the server time'
             description: 'return the server''s current timestamp and timezone'
+            tags:
+                - 'run monitor'
             responses:
                 '200':
                     description: 'list of SysChecks'
@@ -747,7 +796,9 @@ paths:
     '/test/{test_id}':
         get:
             summary: 'get a test'
-            description: "Retrieves a certain test: It's contents, state and the mode of current login-session.\n`laststate` is an array of key-value-pairs stored for this test.\nThe test-mode basically a string to be interpretated by the frontend. For more details\nabout that see: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md\n  * `run-hot-return` and `run-hot-restart` - the real testing situation\n  * `run-review` - for reviewers of of units and booklets\n  * `run-trial` - for trying out the booklet\n  * `run-demo` - for showcase only\n\nFrom the backend's point of view those modes are all the same. Some have special meanings for the backend\nnevertheless:\n  * `monitor-group` is the monitor account to supervise a group of testees\n  * For `run-hot-restart` and `demo` every session is unique so the test will be restarted in everytime a new session is started (eg after logout) and it will not possible to return to the previous session. Provided data from previous sessions will be stored anyway.\n  * `run-hot-return` and `run-hot-restart` - only those type of tests wil be broadcasted via broadcasting service, so they can be views in the group-monitor."
+            description: "Retrieves a certain test: It's content, state and the mode of current login-session.\n`laststate` is an array of key-value-pairs stored for this test.\nThe test-mode is basically a string to be interpretated by the frontend. For more details\nabout that see: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md\n  * `run-hot-return` and `run-hot-restart` - the real testing situation\n  * `run-review` - for reviewers of of units and booklets\n  * `run-trial` - for trying out the booklet\n  * `run-demo` - for showcase only\n\nFrom the backend's point of view these modes are all the same. Some have special meanings for the backend\nnevertheless:\n  * `monitor-group` is the monitor account to supervise a group of testees\n  * For `run-hot-restart` and `demo` every session is unique so the test will be restarted everytime a new session is started (eg after logout) and it will not possible to return to the previous session. Provided data from previous sessions will be stored anyway.\n  * `run-hot-return` and `run-hot-restart` - only these types of test wil be broadcasted via broadcasting service, so they can be views in the group-monitor."
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -781,7 +832,9 @@ paths:
     '/test/{test_id}/unit/{unit_name}':
         get:
             summary: 'get a unit of a test'
-            description: "Retrieves a certain unit from a certain executed test - the booklet-file XML, last state and lock status.\n\nYou can insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with\nan alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261."
+            description: "Retrieves a certain unit for a certain executed test - the booklet-file XML, last state and lock status.\n\nYou can insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with\nan alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261."
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -828,6 +881,8 @@ paths:
         get:
             summary: 'get resource by name'
             description: 'retrieves a resource-file by its name (filename without extension)'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -865,7 +920,9 @@ paths:
     '/test/{test_id}/unit/{unit_name}/review':
         put:
             summary: 'add review to unit'
-            description: 'add a review item to unit in a test'
+            description: 'adds a review item to unit in a test'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -921,7 +978,9 @@ paths:
     '/test/{test_id}/review':
         put:
             summary: 'add review to booklet'
-            description: 'add a review item to a certain booklet'
+            description: 'adds a review item to a certain booklet'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -968,7 +1027,9 @@ paths:
     '/test/{test_id}/unit/{unit_name}/response':
         put:
             summary: 'add response to a unit'
-            description: 'when running a test this endpoint is used to store given responses. format and content of responses are business of the corresponding player, the endpoints takes everything as raw, may it be JSON or XML or whatever.'
+            description: 'when running a test this endpoint is used to store given responses. Format and content of responses are business of the corresponding player, the endpoints take everything as raw, may it be JSON or XML or whatever.'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -1024,6 +1085,8 @@ paths:
         patch:
             summary: 'save a state for a unit'
             description: 'Updates the state (a key-value list) of a unit in a running test with a given key-value pair. Some known state-keys are: - ''PRESENTATIONCOMPLETE'' - ''RESPONSECOMPLETE'' - ''PAGE_NR'' - ''PAGE_COUNT'' - ''PAGE_NAME'' but all strings are allowed. For more about states see - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53 - https://verona-interfaces.github.io/player/#operation-subscribe-vopStateChangedNotification'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -1073,6 +1136,8 @@ paths:
         patch:
             summary: 'update state of a running test'
             description: 'Updates the state (a key-value list) of a running test with a given key-value pair. Some known state-keys are: - ''CURRENT_UNIT'' - ''CONTROLLER'' but all strings are allowed. For more about states see - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -1113,7 +1178,9 @@ paths:
     '/test/{test_id}/unit/{unit_name}/log':
         put:
             summary: 'save a log-entry for a unit'
-            description: 'Saves an array of log-entries for a unit in a running test. A log entry consists of a (JSON-encoded) content which is optional. Some currently used lognetry key words for units are- UNITENTER, UNITTRYLEAVE, PRESENTATIONCOMPLETE, RESPONSESCOMPLETE, PAGENAVIGATIONSTART, PAGENAVIGATIONCOMPLETE.'
+            description: 'Saves an array of log-entries for a unit in a running test. A log entry consists of a (JSON-encoded) content which is optional. Some currently used logentry key words for units are- UNITENTER, UNITTRYLEAVE, PRESENTATIONCOMPLETE, RESPONSESCOMPLETE, PAGENAVIGATIONSTART, PAGENAVIGATIONCOMPLETE.'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -1161,7 +1228,9 @@ paths:
     '/test/{test_id}/log':
         put:
             summary: 'save log-entries for a running test'
-            description: 'Saves an array of log-entries for a running test. A log entry consists of a (JSON-encoded) content which is optional. Some currently used lognetry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE, BOOKLETLOCKEDbyTESTEE.'
+            description: 'Saves an array of log-entries for a running test. A log entry consists of a (JSON-encoded) content which is optional. Some currently used logentry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE, BOOKLETLOCKEDbyTESTEE.'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -1198,7 +1267,9 @@ paths:
     '/test/{test_id}/lock':
         patch:
             summary: 'finish a test'
-            description: 'locks (finishes) a runnin test'
+            description: 'locks (finishes) a running test'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -1243,6 +1314,8 @@ paths:
         put:
             summary: 'start a test'
             description: 'Creates a new test for a given person and booklet-name'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: header
@@ -1279,6 +1352,9 @@ paths:
         patch:
             summary: 'set command as executed'
             description: "When the frontend executed a command, we send back this information to Backend via this command,\nto make sure it never gets executed again."
+            tags:
+                - 'run test'
+                - 'run monitor'
             parameters:
                 -
                     in: header
@@ -1315,7 +1391,9 @@ paths:
     '/test/{test_id}/commands':
         get:
             summary: 'get commands'
-            description: "Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket\nif available. The websocket adress is stored in header \"SubscribeURI\"."
+            description: "Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket\nif available. The websocket address is stored in header \"SubscribeURI\"."
+            tags:
+                - 'run monitor'
             parameters:
                 -
                     in: header
@@ -1368,7 +1446,10 @@ paths:
     '/test/{test_id}/connection-lost':
         post:
             summary: 'Notify Closing Test'
-            description: "A closing browser or such can use this window to notify, that a running test was closed. Because it has to\nbe called under special circumstances, it does not need any authetication."
+            description: "A closing browser or such can use this window to notify, that a running test was closed. Because it has to\nbe called under special circumstances, it does not need any authentication."
+            tags:
+                - 'run test'
+                - 'run monitor'
             parameters:
                 -
                     in: path
@@ -1388,7 +1469,9 @@ paths:
     '/{auth_token}/resource/{resource_name}':
         get:
             summary: 'get resource for directDownloadUrl'
-            description: 'Verona4 contains the possibility of units to lazy-loading additional resources. This `directDownloadUrl`-parameter can use this endpoint wich contains the auth-token in the url, not in the header.'
+            description: 'Since Verona v4 spec, additional resources can be loaded by the unit on demand. This `directDownloadUrl`-parameter can use this endpoint wich contains the auth-token in the url, not in the header.'
+            tags:
+                - 'run test'
             parameters:
                 -
                     in: path
@@ -1422,6 +1505,8 @@ paths:
         get:
             summary: 'get a list of workspaces'
             description: 'get a list of all workspaces belonging to a given user'
+            tags:
+                - 'session management'
             parameters:
                 -
                     in: header
@@ -1459,7 +1544,9 @@ paths:
                     description: 'Server Error'
         patch:
             summary: 'change user roles'
-            description: 'change user roles for a given user in several workspaces. *Provide user-name, not user-id!*'
+            description: 'changes user roles for a given user in several workspaces. *Provide user-name, not user-id!*'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -1504,7 +1591,9 @@ paths:
     /user:
         put:
             summary: 'add a user'
-            description: 'add a user'
+            description: 'adds a user'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -1534,6 +1623,8 @@ paths:
         patch:
             summary: 'change user-password'
             description: 'changes the password of a given user.'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -1570,6 +1661,8 @@ paths:
         patch:
             summary: 'change super-admin status'
             description: 'changes the super-admin status of a given user. * **requires a super-admin** * **requires the password of the performing user for security reasons** * `new_status` is `on` or `off`'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -1616,7 +1709,9 @@ paths:
     '/workspace/{ws_id}/file/{type}/{filename}':
         get:
             summary: 'get file'
-            description: 'retrieves a file form a goven workspace by filename'
+            description: 'retrieves a file form a given workspace by filename'
+            tags:
+                - 'admin download'
             parameters:
                 -
                     in: header
@@ -1662,139 +1757,12 @@ paths:
                     description: 'Session Expired'
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/logs':
-        get:
-            summary: 'get logs'
-            description: 'retrieves unit and booklet logs from this workspace'
-            deprecated: true
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example: 'a:user000000000.ro00000000'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-                -
-                    in: query
-                    name: groups
-                    schema:
-                        type: array
-                        description: 'a list'
-                        items:
-                            type: string
-                    example:
-                        - sample_group
-            responses:
-                '200':
-                    description: 'OK, list of logs'
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: object
-                                    properties: {unitname: {type: string}, bookletname: {type: string}, groupname: {type: string}, loginname: {type: string}, code: {type: string, description: 'person code'}, timestamp: {type: string}, logentry: {type: string}}
-                            example:
-                                -
-                                    unitname: UNIT.SAMPLE
-                                    bookletname: BOOKLET.SAMPLE-1
-                                    groupname: sample_group
-                                    loginname: sample_user
-                                    code: xxx
-                                    timestamp: '1627545600'
-                                    logentry: 'sample unit log'
-                                -
-                                    bookletname: BOOKLET.SAMPLE-1
-                                    groupname: sample_group
-                                    loginname: sample_user
-                                    code: xxx
-                                    timestamp: '1627545600'
-                                    logentry: 'sample log entry'
-                                    unitname: ""
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
     '/workspace/{ws_id}/responses':
-        get:
-            summary: 'get responses'
-            description: 'retrieves a list of responses by a given list of groups'
-            deprecated: true
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    schema:
-                        $ref: '#/components/schemas/auth'
-                    example: 'a:user000000000.ro00000000'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-                -
-                    in: query
-                    name: groups
-                    schema:
-                        type: array
-                        description: 'a list'
-                        items:
-                            type: string
-                    example:
-                        - sample_group
-            responses:
-                '200':
-                    description: 'OK, list of responses'
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: object
-                                    properties: {unitname: {type: string}, responses: {type: string, description: 'may contain encoded JSON'}, responsetype: {type: string}, laststate: {type: string, description: 'may contain encoded JSON'}, bookletname: {type: string}, responses_ts: {type: string, description: 'contains a unix timestamp'}, groupname: {type: string}, loginname: {type: string}, code: {type: string, description: 'login code'}}
-                            example:
-                                -
-                                    unitname: UNIT.SAMPLE
-                                    responses: '{"name":"Sam Sample","age":34}'
-                                    responsetype: ""
-                                    laststate: '{"PRESENTATIONCOMPLETE":"yes"}'
-                                    bookletname: BOOKLET.SAMPLE-1
-                                    responses_ts: '1567778660869'
-                                    groupname: sample_group
-                                    loginname: test
-                                    code: jsx
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
         delete:
             summary: 'delete data'
             description: 'deletes all results and monitor data of a group of groups'
+            tags:
+                - 'admin workspace'
             parameters:
                 -
                     in: header
@@ -1838,6 +1806,8 @@ paths:
         get:
             summary: 'get results'
             description: 'retrieves a list of unit- and booklet results for a given workspace and groups'
+            tags:
+                - 'admin workspace'
             parameters:
                 -
                     in: header
@@ -1881,80 +1851,12 @@ paths:
                     description: 'Session Expired'
                 '500':
                     description: 'Server Error'
-    '/workspace/{ws_id}/reviews':
-        get:
-            summary: 'get reviews'
-            description: 'retrieves a list of unit- and booklet-reviews for a given workspace and groups'
-            deprecated: true
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    example: 'a:user000000000.superadmin0'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-                -
-                    in: query
-                    name: groups
-                    schema:
-                        type: array
-                        description: 'a list'
-                        items:
-                            type: string
-                    example:
-                        - sample_group
-            responses:
-                '200':
-                    description: 'OK, list of reviews'
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: object
-                                    properties: {unitname: {type: string, description: 'stays empty if booklet review'}, bookletname: {type: string}, groupname: {type: string}, code: {type: string, description: 'login code'}, entry: {type: string}, priority: {type: string}, categories: {type: string}}
-                            example:
-                                -
-                                    unitname: UNIT.SAMPLE
-                                    bookletname: BOOKLET.SAMPLE-1
-                                    groupname: sample_group
-                                    loginname: test
-                                    code: euf
-                                    reviewtime: '2019-09-06 11:19:56'
-                                    entry: 'this is a sample unit review'
-                                    priority: '1'
-                                    categories: ""
-                                -
-                                    bookletname: BOOKLET.SAMPLE-1
-                                    groupname: sample_group
-                                    loginname: test
-                                    code: euf
-                                    reviewtime: '2019-09-06 11:19:56'
-                                    entry: 'sample booklet review'
-                                    priority: '1'
-                                    categories: ""
-                                    unitname: ""
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '404':
-                    description: 'Workspace not found'
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
     '/workspace/{ws_id}/file':
         post:
             summary: 'upload file'
-            description: "Uploads a Resource, Unit, Booklet, SysCheck or Testtakers file. The File gets imported to the workspace if it\nis valid, and passes the cross-validation checks. So a file which depends of a non-existing player will get\nrejected as well as an invalid xml file.\n\nWhen a file with the same filename and type exists in the workspace, it gets overwritten! Except if the the\ninternal id (the <ID>-Tag as used in Unit-files for example) of the old and the new file differs. In this case\nit's assumed, that the file-name-duplication is inintentional an the new import gets rejected.\n\nThe endpoint accepts all kinds of files. Zip-archives get extracted an treated the same as multi-file-upload."
+            description: "Uploads a Resource, Unit, Booklet, SysCheck or Testtakers file. The File gets imported to the workspace if it\nis valid, and passes the cross-validation checks. So a file which depends of a non-existing player will get\nrejected as well as an invalid xml file.\n\nWhen a file with the same filename and type exists in the workspace, it gets overwritten! Except if the\ninternal id (the <ID>-Tag as used in Unit-files for example) of the old and the new file differs. In this case\nit's assumed, that the file-name-duplication is inintentional and the new import gets rejected.\n\nThe endpoint accepts all kinds of files. Zip-archives get extracted an treated the same as multi-file-upload."
+            tags:
+                - 'admin upload'
             parameters:
                 -
                     in: header
@@ -1979,6 +1881,9 @@ paths:
                                     type: string
                                     description: 'upload file'
                                     example: '(content of Unit.xml)'
+                                anything:
+                                    type: string
+                                    example: goes
                             required:
                                 - fileforvo
             responses:
@@ -2014,6 +1919,8 @@ paths:
         get:
             summary: 'get files of workspace'
             description: 'get a list of all files in workspace'
+            tags:
+                - 'admin workspace'
             parameters:
                 -
                     in: header
@@ -2063,6 +1970,8 @@ paths:
         delete:
             summary: 'delete files'
             description: 'deletes files from a workspace'
+            tags:
+                - 'admin workspace'
             parameters:
                 -
                     in: header
@@ -2122,6 +2031,8 @@ paths:
         put:
             summary: 'add a workspace'
             description: 'adds a workspace with given name'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -2153,6 +2064,8 @@ paths:
         get:
             summary: 'get workspace'
             description: 'returns basic information about a workspace'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -2187,6 +2100,8 @@ paths:
         patch:
             summary: 'rename a workspace'
             description: 'renames a workspace with given id'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -2227,7 +2142,9 @@ paths:
     '/workspace/{ws_id}/users':
         patch:
             summary: 'change user roles'
-            description: 'change user roles in a given workspaces'
+            description: 'changes user roles in given workspaces'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -2272,6 +2189,8 @@ paths:
         get:
             summary: 'get a list of users in a workspace'
             description: 'returns info about all registered users in a workspace.'
+            tags:
+                - 'super admin'
             parameters:
                 -
                     in: header
@@ -2311,6 +2230,8 @@ paths:
         get:
             summary: 'get report of logs'
             description: 'returns a Log report in JSON or CSV format based on aggregated unit and booklet log data'
+            tags:
+                - 'admin download'
             parameters:
                 -
                     in: header
@@ -2376,6 +2297,8 @@ paths:
         get:
             summary: 'get report of item responses'
             description: 'returns a Item Responses report in JSON or CSV format based on aggregated report data'
+            tags:
+                - 'admin download'
             parameters:
                 -
                     in: header
@@ -2408,7 +2331,7 @@ paths:
                         text/csv;charset=UTF-8:
                             schema:
                                 type: string
-                            example: "groupname;loginname;code;bookletname;unitname;responses;responseType;response-ts;laststate\n\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"{\"\"all\"\": \"\"{\\\"\"name\\\"\":\\\"\"Sam Sample\\\"\",\\\"\"age\\\"\":34}\"\"}\";\"example-data-format\";1627545600;\"{\"\"PRESENTATIONCOMPLETE\"\":\"\"yes\"\"}\""
+                            example: "groupname;loginname;code;bookletname;unitname;responses;laststate\n\"sample_group\";\"sample_user\";\"xxx\";\"BOOKLET.SAMPLE-1\";\"UNIT.SAMPLE\";\"[{\"\"id\"\":\"\"all\"\",\"\"content\"\":\"\"{\\\"\"name\\\"\":\\\"\"Sam Sample\\\"\",\\\"\"age\\\"\":34}\"\",\"\"ts\"\":1627545600,\"\"responseType\"\":\"\"example-data-format\"\"}]\";\"{\"\"PRESENTATIONCOMPLETE\"\":\"\"yes\"\"}\""
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ResponseReport'
@@ -2419,9 +2342,7 @@ paths:
                                     code: xxx
                                     bookletname: BOOKLET.SAMPLE-1
                                     unitname: UNIT.SAMPLE
-                                    responses: '{"name":"Sam Sample","age":34}'
-                                    responseType: example-data-format
-                                    response-ts: '1627545600'
+                                    responses: [{id: all, content: '{"name":"Sam Sample","age":34}', ts: 1627545600, responseType: example-data-format}]
                                     laststate: '{"PRESENTATIONCOMPLETE":"yes"}'
                 '401':
                     description: 'Not authenticated'
@@ -2434,7 +2355,9 @@ paths:
     '/workspace/{ws_id}/report/review':
         get:
             summary: 'get report of item reviews'
-            description: 'returns a Reviews report in JSON or CSV format based on aggregated unit and booklet review data'
+            description: 'returns a Review report in JSON or CSV format based on aggregated unit and booklet review data'
+            tags:
+                - 'admin download'
             parameters:
                 -
                     in: header
@@ -2502,6 +2425,8 @@ paths:
         get:
             summary: 'get report of system checks'
             description: 'returns a System Check report in JSON or CSV format based on aggregated report data'
+            tags:
+                - 'admin download'
             parameters:
                 -
                     in: header
@@ -2557,77 +2482,11 @@ paths:
                 '500':
                     description: 'Server Error'
     '/workspace/{ws_id}/sys-check/reports':
-        get:
-            summary: 'get reports'
-            description: 'return a compilation of reports from given syschecks in JSON or CSV format.'
-            deprecated: true
-            parameters:
-                -
-                    in: header
-                    name: AuthToken
-                    description: 'auth-token for admin-user with role at least "RO" (read only) for this workspace'
-                    example: 'a:user000000000.superadmin0'
-                -
-                    in: path
-                    name: ws_id
-                    description: workspace-id
-                    example: 1
-                    required: true
-                    schema:
-                        type: integer
-                -
-                    in: query
-                    name: checkIds
-                    description: 'a comma separated list of sys-check-ids'
-                    example: SYSCHECK.SAMPLE
-                -
-                    in: query
-                    name: delimiter
-                    description: '(optional) for CSV output only - delimiter character for cells. Allowed Values: '','', '';'', ''|'', ''\t'', ''\s''. Defaults to '',''.'
-                    example: ','
-                -
-                    in: query
-                    name: lineEnding
-                    description: "(optional) for CSV output only - character for line endings. Allowed Values: '\\r\\n' (Windows), '\\r' (Mac), '\\n' (Unix) Defaults to '\n'."
-                    example: ""
-                -
-                    in: query
-                    name: enclosure
-                    description: '(optional) for CSV output only - quotation character for cell enclosure. Allowed Values: " and ''. Defaults to ".'
-                    example: '"'
-            responses:
-                '200':
-                    description: 'compiled data of all reports from selected sys-checks'
-                    content:
-                        text/csv;charset=utf-8:
-                            schema:
-                                type: string
-                            example: "\"Titel\",\"SysCheck-Id\",\"SysCheck\",\"DatumTS\",\"Datum\",\"FileName\",\"Betriebsystem\",\"Betriebsystem-Version\",\"Bildschirm-Auflösung\",\"Browser\",\"Browser-Cookies aktiviert\",\"Browser-Plugins:\",\"Browser-Sprache\",\"Browser-Version\",\"CPU-Architektur\",\"CPU-Kerne\",\"Fenster-Größe\",\"Downloadgeschwindigkeit\",\"Downloadgeschwindigkeit benötigt\",\"Downloadbewertung\",\"Uploadgeschwindigkeit\",\"Uploadgeschwindigkeit benötigt\",\"Uploadbewertung\",\"Gesamtbewertung\",\"RoundTrip in Ms\",\"Netzwerktyp nach Leistung\",\"Downlink MB/s\",\"Name\",\"Who am I?\",\"Why so serious?\",\"Check this out\",\"All we here is\",\"loading time\"\n\"SAMPLE SYS-CHECK REPORT\",\"SYSCHECK.SAMPLE\",\"An example SysCheck definition\",\"1627545600\",\"2021-07-29 10:00:00\",\"SAMPLE_SYSCHECK-REPORT.JSON\",\"Linux\",\"x86_64\",\"1680 x 1050\",\"Chrome\",\"1\",\"Chromium PDF Plugin, Chromium PDF Viewer\",\"en-US\",\"79\",\"amd64\",\"8\",\"1680 x 914\",\"75.72 Mbit/s\",\"8.19 kbit/s\",\"good\",\"2.84 Mbit/s\",\"8.19 kbit/s\",\"good\",\"good\",\"100\",\"4g\",\"1.45\",\"Sam Sample\",\"Harvy Dent\",\"Because.\",\"1\",\"Radio Gaga\",\"1594.295166015625\""
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/SysCheckReport'
-                            example:
-                                -
-                                    date: '2020-02-17 13:01:31'
-                                    checkId: SYSCHECK.SAMPLE
-                                    checkLabel: 'An example SysCheck definition'
-                                    title: 'SAMPLE SYS-CHECK REPORT'
-                                    environment: [{id: '0', type: environment, label: Betriebsystem, value: Linux, warning: false}, {id: '0', type: environment, label: Betriebsystem-Version, value: x86_64, warning: false}, {id: '0', type: environment, label: Bildschirm-Auflösung, value: '1680 x 1050', warning: false}, {id: '0', type: environment, label: Browser, value: Chrome, warning: false}, {id: '0', type: environment, label: 'Browser-Cookies aktiviert', value: true, warning: false}, {id: '0', type: environment, label: 'Browser-Plugins:', value: 'Chromium PDF Plugin, Chromium PDF Viewer', warning: false}, {id: '0', type: environment, label: Browser-Sprache, value: en-US, warning: false}, {id: '0', type: environment, label: Browser-Version, value: '79', warning: false}, {id: '0', type: environment, label: CPU-Architektur, value: amd64, warning: false}, {id: '0', type: environment, label: CPU-Kerne, value: 8, warning: false}, {id: '0', type: environment, label: Fenster-Größe, value: '1680 x 914', warning: false}]
-                                    network: [{id: '0', type: network, label: Downloadgeschwindigkeit, value: '75.72 Mbit/s', warning: false}, {id: '0', type: network, label: 'Downloadgeschwindigkeit benötigt', value: '8.19 kbit/s', warning: false}, {id: '0', type: network, label: Downloadbewertung, value: good, warning: false}, {id: '0', type: network, label: Uploadgeschwindigkeit, value: '2.84 Mbit/s', warning: false}, {id: '0', type: network, label: 'Uploadgeschwindigkeit benötigt', value: '8.19 kbit/s', warning: false}, {id: '0', type: network, label: Uploadbewertung, value: good, warning: false}, {id: '0', type: network, label: Gesamtbewertung, value: good, warning: false}, {id: '0', type: network, label: 'RoundTrip in Ms', warning: false, value: '100'}, {id: '0', type: network, label: 'Netzwerktyp nach Leistung', warning: false, value: 4g}, {id: '0', type: network, label: 'Downlink MB/s', warning: false, value: '1.45'}]
-                                    questionnaire: [{id: '2', type: string, label: Name, value: 'Sam Sample', warning: false}, {id: '3', type: select, label: 'Who am I?', value: 'Harvy Dent', warning: false}, {id: '4', type: text, label: 'Why so serious?', value: Because., warning: false}, {id: '5', type: check, label: 'Check this out', value: true, warning: false}, {id: '6', type: radio, label: 'All we here is', value: 'Radio Gaga', warning: false}]
-                                    unit: [{id: '0', type: unit/player, label: 'loading time', value: '1594.295166015625', warning: false}]
-                                    fileData: [{id: date, label: DatumTS, value: '1627545600'}, {id: datestr, label: Datum, value: '2021-07-29 10:00:00'}, {id: filename, label: FileName, value: SAMPLE_SYSCHECK-REPORT.JSON}]
-                '401':
-                    description: 'Not authenticated'
-                '403':
-                    description: Forbidden
-                '410':
-                    description: 'Session Expired'
-                '500':
-                    description: 'Server Error'
         delete:
             summary: 'delete system check reports'
-            description: 'delete some Sysem Check reports'
+            description: 'deletes some System Check reports'
+            tags:
+                - 'admin workspace'
             parameters:
                 -
                     in: header
@@ -2676,6 +2535,8 @@ paths:
         get:
             summary: 'get a list of all system check reports'
             description: 'returns a list of all sys-check-reports with most important features grouped by the sys-checks.'
+            tags:
+                - 'admin workspace'
             parameters:
                 -
                     in: header
@@ -2719,6 +2580,8 @@ paths:
         get:
             summary: 'get system check configuration'
             description: 'returns a specific SysCheck configuation **this endpoint does not need any authetication!**'
+            tags:
+                - 'session management'
             parameters:
                 -
                     in: path
@@ -2751,6 +2614,8 @@ paths:
         get:
             summary: 'get system check Unit and Player'
             description: 'returns a container with the unit and it''s player according to a SysCheck'
+            tags:
+                - 'run system check'
             parameters:
                 -
                     in: path
@@ -2779,6 +2644,8 @@ paths:
         put:
             summary: 'save system check'
             description: 'save the results of a performed SysCheck'
+            tags:
+                - 'run system check'
             parameters:
                 -
                     in: path

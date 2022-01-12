@@ -9,9 +9,10 @@ paths:
   /monitor/group/{group_name}:
     get:
       summary: get a group
-      description: "Retrieves Information about a (testtakers-)group. It has to be *in the same workspace as the
+      description: "Retrieves Information about a (testtakers-)group. It has to be in the same workspace as the
        requesting user, who has to have in mode `monitor-group`."
-
+      tags:
+        - run monitor
       parameters:
         - in: header
           name: AuthToken
@@ -49,9 +50,10 @@ paths:
     get:
       summary: get TestSessions of a group
       description: "Retrieves all running test sessions from group of a group-monitor.
-        Returns also an URL to a websocket to subscribe this information if available.
+        Returns also an URL to a websocket to subscribe to this information if available.
         Sessions for Persons of this group which are not created right now get created."
-
+      tags:
+        - run monitor
       parameters:
         - in: header
           name: AuthToken
@@ -112,7 +114,8 @@ paths:
     put:
       summary: send command
       description: "Send a monitor command to a set of running tests"
-
+      tags:
+        - run monitor
       parameters:
         - in: header
           name: AuthToken
@@ -158,6 +161,8 @@ paths:
     post:
       summary: unlock a bunch of tests
       description: "Unlocks a bunch of running tests"
+      tags:
+        - run monitor
       parameters:
         - in: header
           name: AuthToken
@@ -195,6 +200,8 @@ paths:
     post:
       summary: Lock a bunch of tests
       description: "Locks a bunch of running tests"
+      tags:
+        - run monitor
       parameters:
         - in: header
           name: AuthToken

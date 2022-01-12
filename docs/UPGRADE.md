@@ -9,6 +9,11 @@ This update makes the Teststudio Verona3- and 4 compatible.
 * new Endpoint `/{auth_token}/resource/{resource_name}` is an alternative way for fetching resources. It can be used as
   `directDownloadUrl`-parameter (see [here](https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand))
   in Verona4-players. 
+* Those deprecated endpoints are removed
+  * `[GET] /workspace/{ws_id}/logs`
+  * `[GET] /workspace/{ws_id}/reviews`
+  * `[GET] /workspace/{ws_id}/responses`
+  * `[GET] /workspace/{ws_id}/sys-check/reports`
 
 ### XSD
 * in the `Booklet.xml`-format a new restriction is allowed: `<DenyNavigationOnIncomplete>`. It forbids the leaving of  

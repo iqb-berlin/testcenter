@@ -244,25 +244,23 @@ class Report {
      */
     private function generateResponsesCSVReport(array $responseData): string {
 
-        $csv[] = implode(self::DELIMITER, CSV::collectColumnNamesFromHeterogeneousObjects($responseData)); // TODO: Adjust column headers?
+        $csv[] = implode(
+            self::DELIMITER,
+            ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'responses', 'laststate']
+        );
 
-        foreach ($responseData as $resp) {
+        foreach ($responseData as $row) {
+
             $csv[] = implode(
                 self::DELIMITER,
                 [
-                    sprintf(self::CSV_CELL_FORMAT, $resp['groupname']),
-                    sprintf(self::CSV_CELL_FORMAT, $resp['loginname']),
-                    sprintf(self::CSV_CELL_FORMAT, $resp['code']),
-                    sprintf(self::CSV_CELL_FORMAT, $resp['bookletname']),
-                    sprintf(self::CSV_CELL_FORMAT, $resp['unitname']),
-                    sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', $resp['responses'])),
-                    empty($resp['responseType'])
-                        ? ""                                                            // TODO: Don't allow empty cell values ?
-                        : sprintf(self::CSV_CELL_FORMAT, $resp['responseType']),
-                    $resp['response-ts'],                                              // TODO: use cell enclosure ?
-                    empty($resp['laststate'])
-                        ? ""
-                        : sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', $resp['laststate']))
+                    sprintf(self::CSV_CELL_FORMAT, $row['groupname']),
+                    sprintf(self::CSV_CELL_FORMAT, $row['loginname']),
+                    sprintf(self::CSV_CELL_FORMAT, $row['code']),
+                    sprintf(self::CSV_CELL_FORMAT, $row['bookletname']),
+                    sprintf(self::CSV_CELL_FORMAT, $row['unitname']),
+                    sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', json_encode($row['responses']))),
+                    sprintf(self::CSV_CELL_FORMAT, preg_replace('/"/', '""', $row['laststate'] ?? ''))
                 ]
             );
 
