@@ -6,8 +6,8 @@ require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
 require_once "classes/files/File.class.php";
 require_once "classes/files/XMLFile.class.php";
 require_once "classes/files/XMLFileTesttakers.class.php";
-require_once "classes/data-collection/PotentialLogin.class.php";
-require_once "classes/data-collection/PotentialLoginArray.class.php";
+require_once "classes/data-collection/Login.class.php";
+require_once "classes/data-collection/LoginArray.class.php";
 require_once "classes/data-collection/Group.class.php";
 
 $exampleXML1 = <<<END

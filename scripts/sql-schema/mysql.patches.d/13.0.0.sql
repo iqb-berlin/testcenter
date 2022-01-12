@@ -11,19 +11,20 @@ alter table logins add source varchar(30) null;
 
 
 alter table person_sessions drop foreign key fk_person_login;
-alter table logins drop primary key;
 alter table logins drop column id;
+-- RIESENproblem: restart-modes generieren nicht nur eine neue person, sondern einen neuen login!
+-- selbst wenn man dies änderte: wie daten-migration machen?
 alter table logins add constraint logins_pk primary key (name, workspace_id);
 
 create index index_fk_logins on login_sessions (name, workspace_id);
 
 create table login_sessions (
-    id          bigint unsigned auto_increment,
-    workspace_id      bigint unsigned not null,
-    name              varchar(50)     not null,
-    valid_until timestamp       null,
-    token       varchar(50)     not null,
-    constraint login_sessions_id_uindex unique (id)
+                                id          bigint unsigned auto_increment,
+                                workspace_id      bigint unsigned not null,
+                                name              varchar(50)     not null,
+                                valid_until timestamp       null,
+                                token       varchar(50)     not null,
+                                constraint login_sessions_id_uindex unique (id)
 ) collate = utf8_german2_ci;
 
 create index index_fk_login_session_login on login_sessions (id);
