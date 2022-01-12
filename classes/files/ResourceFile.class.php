@@ -148,7 +148,11 @@ class ResourceFile extends File {
     }
 
 
-    private function getPreferredTranslation(array $multiLangItem): string {
+    private function getPreferredTranslation(?array $multiLangItem): string {
+
+        if (!$multiLangItem or !count($multiLangItem)) {
+            return '';
+        }
 
         foreach ($multiLangItem as $entry) {
             if ($entry['lang'] == 'de') return $entry['value'];
