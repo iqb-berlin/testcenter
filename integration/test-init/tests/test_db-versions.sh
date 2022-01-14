@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source integration/test-init/tests/functions.sh
+source integration/test-init/functions/functions.sh
 
 echo_h1 "Test 1.1: fresh installation with legacy-version of DB should work -- $MYSQL_DATABASE";
 fake_version "5.0.0"

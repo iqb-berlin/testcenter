@@ -28,6 +28,9 @@ test-init:
 	TEST_NAME=no-db-but-files docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
 	TEST_NAME=install-db-patches docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
 
+test13:
+	TEST_NAME=patch_13_0_0 docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
+
 update-docs:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs
 

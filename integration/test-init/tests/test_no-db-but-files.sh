@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source integration/test-init/tests/functions.sh
+source integration/test-init/functions/functions.sh
 
 take_current_version
 

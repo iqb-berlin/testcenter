@@ -28,7 +28,7 @@ function take_current_version() {
 
 # param 1: expectation file name
 function expect_db_structure_dump_equals() {
-  result=$(php integration/test-init/db-dump/structure.php)
+  result=$(php integration/test-init/functions/structure.php)
   expectation_file="integration/test-init/expectations/$1.yml"
   differences=$(diff <(echo "$result") "$expectation_file")
   if [ "$differences" != "" ]
@@ -44,7 +44,7 @@ function expect_db_structure_dump_equals() {
 # param 1: table
 # param 2: count
 function expect_table_to_have_rows() {
-  result=$(php integration/test-init/db-dump/count.php --table="$1")
+  result=$(php integration/test-init/functions/count.php --table="$1")
   if [ "$2" != "$result" ]
   then
     echo_fail "Expected $1 to have $2 rows, but has $result."
@@ -103,5 +103,10 @@ function fake_patch() {
 
 # param 1: workspace-id
 function delete_workspace() {
-  php integration/test-init/db-dump/delete-workspace.php --ws_id="$1"
+  php integration/test-init/functions/delete-workspace.php --ws_id="$1"
+}
+
+# param 1: script name
+function run() {
+  php "integration/test-init/functions/$1.php"
 }
