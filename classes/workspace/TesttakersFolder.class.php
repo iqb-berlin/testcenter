@@ -6,44 +6,44 @@ declare(strict_types=1);
 class TesttakersFolder extends Workspace {
 
 
-    static function searchAllForLogin(string $name, string $password = ''): ?PotentialLogin {
+//    static function searchAllForLogin(string $name, string $password = ''): ?PotentialLogin {
+//
+//        $loginData = null;
+//
+//        foreach (TesttakersFolder::getAll() as $testtakersFolder) { /* @var TesttakersFolder $testtakersFolder */
+//
+//            $loginData = $testtakersFolder->findLoginData($name, $password);
+//
+//            if ($loginData != null) {
+//                break;
+//            }
+//        }
+//
+//        return $loginData;
+//    }
 
-        $loginData = null;
 
-        foreach (TesttakersFolder::getAll() as $testtakersFolder) { /* @var TesttakersFolder $testtakersFolder */
-
-            $loginData = $testtakersFolder->findLoginData($name, $password);
-
-            if ($loginData != null) {
-                break;
-            }
-        }
-
-        return $loginData;
-    }
-
-
-    public function findLoginData(string $name, string $password): ?PotentialLogin { // TODO unit-test
-
-        // STAND Validator hier!
-
-        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
-
-            $xFile = new XMLFileTesttakers($fullFilePath);
-
-            if ($xFile->isValid()) {
-
-                $potentialLogin = $xFile->getLogin($name, $password, $this->workspaceId);
-
-                if ($potentialLogin) {
-
-                    return $potentialLogin;
-                }
-            }
-        }
-
-        return null;
-    }
+//    public function findLoginData(string $name, string $password): ?PotentialLogin { // TODO unit-test
+//
+//        // STAND Validator hier!
+//
+//        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+//
+//            $xFile = new XMLFileTesttakers($fullFilePath);
+//
+//            if ($xFile->isValid()) {
+//
+//                $potentialLogin = $xFile->getLogin($name, $password, $this->workspaceId);
+//
+//                if ($potentialLogin) {
+//
+//                    return $potentialLogin;
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
 
 
     public function findGroup(string $groupName): ?Group {
@@ -63,19 +63,19 @@ class TesttakersFolder extends Workspace {
     }
 
 
-    public function getPersonsInSameGroup(string $loginName): PotentialLoginArray { // TODO unit-test
+    public function getLoginsInSameGroup(string $loginName): LoginArray { // TODO unit-test
 
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
 
-            $members = $xFile->getPersonsInSameGroup($loginName, $this->workspaceId);
+            $members = $xFile->getLoginsInSameGroup($loginName, $this->workspaceId);
 
             if ($members) {
                 return $members;
             }
         }
-        return new PotentialLoginArray();
+        return new LoginArray();
     }
 
 

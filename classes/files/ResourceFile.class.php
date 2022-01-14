@@ -39,7 +39,7 @@ class ResourceFile extends File {
     // TODO make player and resource two different types
     private function validatePlayer() {
 
-        if (!$this->isValid()) {
+        if (!$this->isValid() or !$this->getContent()) {
             return;
         }
 

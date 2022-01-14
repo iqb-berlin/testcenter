@@ -202,9 +202,6 @@ paths:
                   description: upload file
                   example:
                     "(content of Unit.xml)"
-                anything:
-                  type: string
-                  example: goes
               required:
                 - fileforvo
       responses:

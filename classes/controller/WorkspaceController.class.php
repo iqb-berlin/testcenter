@@ -136,12 +136,28 @@ class WorkspaceController extends Controller {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
         $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
-        $containsErrors = array_reduce($importedFiles, function($carry, $item) {
 
-            return $carry or ($item['error'] and count($item['error']));
-        }, false);
+        $reports = [];
+        $containsErrors = false;
+        foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
-        return $response->withJson($importedFiles)->withStatus($containsErrors ? 207 : 201);
+            $reports[$localPath] = $file->getValidationReportSorted();
+            $containsErrors = ($containsErrors or count($reports[$localPath]['error']));
+
+            $reports[$localPath]["type"] = $file->getType();
+            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
+                /* @var $file XMLFileTesttakers */
+                self::sessionDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
+                $reports[$localPath]['special'] = 'logins updated';
+                $reports[$localPath]['tt'] = $file->getAllLogins();
+            }
+            if ($file->isValid() and ($file->getType() == 'Resource')) {
+                self::AdminDAO()->updateMetadata($workspaceId, $file->getId(), $file->getSpecialInfo());
+                $reports[$localPath]['special'] = 'metadata cached';
+            }
+        }
+
+        return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);
     }
 
 
@@ -352,12 +368,12 @@ class WorkspaceController extends Controller {
         /* @var XMLFileSysCheck $xmlFile */
         $xmlFile = $sysChecksFolder->findFileById('SysCheck', $sysCheckName);
 
-        if (strlen($report->keyPhrase) <= 0) {
+        if (strlen((string) $report->keyPhrase) <= 0) {
 
             throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
         }
 
-        if (strtoupper($report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
+        if (strtoupper((string) $report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
 
             throw new HttpError("Wrong key `$report->keyPhrase`", 400);
         }

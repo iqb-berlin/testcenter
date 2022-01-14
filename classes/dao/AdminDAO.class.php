@@ -154,11 +154,12 @@ class AdminDAO extends DAO {
 	public function deleteResultData(int $workspaceId, string $groupName): void { // TODO write unit test
 
 		$this->_(
-			'DELETE FROM login_sessions
-			WHERE login_sessions.workspace_id=:workspace_id and login_sessions.group_name = :groupname',
+			'select * from login_sessions
+                left join person_sessions on login_sessions.id = person_sessions.login_sessions_id 
+                where group_name = :group_name',
 			[
 				':workspace_id' => $workspaceId,
-				':groupname' => $groupName
+				':group_name' => $groupName
 			]
 		);
 	}
@@ -203,7 +204,7 @@ class AdminDAO extends DAO {
         $data = $this->_(
             'SELECT workspaces.id FROM workspaces
 				INNER JOIN login_sessions ON workspaces.id = login_sessions.workspace_id
-				INNER JOIN person_sessions ON person_sessions.login_id = login_sessions.id
+				INNER JOIN person_sessions ON person_sessions.login_sessions_id = login_sessions.id
 				WHERE person_sessions.token =:token and workspaces.id = :wsId',
             [
                 ':token' => $token,
@@ -236,7 +237,7 @@ class AdminDAO extends DAO {
 	public function getResultsCount(int $workspaceId): array { // TODO add unit test  // TODO use dataclass an camelCase-objects
 
 		return $this->_(
-			'SELECT login_sessions.group_name as groupname,
+			'SELECT person_sessions.group_name as groupname,
                        login_sessions.name       as loginname,
                        person_sessions.code,
                        tests.name                as bookletname,
@@ -244,10 +245,9 @@ class AdminDAO extends DAO {
                        MAX(tests.timestamp_server)   as lastchange
                 FROM tests
                          left JOIN person_sessions ON person_sessions.id = tests.person_id
-                         INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
+                         INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
                          INNER JOIN units ON units.booklet_id = tests.id
-                WHERE
-                      login_sessions.workspace_id = :workspaceId
+                WHERE login_sessions.workspace_id = :workspaceId
                 GROUP BY tests.name, person_sessions.id',
 			[
 				':workspaceId' => $workspaceId
@@ -270,8 +270,8 @@ class AdminDAO extends DAO {
         $sql = 'SELECT
                  person_sessions.id as "personId",
                  login_sessions.name as "loginName",
-                 login_sessions.group_name as "groupName",
-                 login_sessions.mode,
+                 logins.group_name as "groupName",
+                 logins.mode,
                  person_sessions.code,
                  tests.id as "testId",
                  tests.name as "bookletName",
@@ -281,12 +281,13 @@ class AdminDAO extends DAO {
                  tests.timestamp_server as "testTimestampServer"
             FROM person_sessions
                  LEFT JOIN tests ON person_sessions.id = tests.person_id
-                 LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_id
+                 LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+                 LEFt JOIN logins on logins.name = login_sessions.name
             WHERE
                 login_sessions.workspace_id = :workspaceId
                 AND tests.id is not null'
-                . ($groupSelector ? " AND login_sessions.group_name IN ($groupSelector)" : '')
-                . " AND login_sessions.mode IN ($modeSelector)";
+                . ($groupSelector ? " AND person_sessions.group_name IN ($groupSelector)" : '')
+                . " AND logins.mode IN ($modeSelector)";
 
 		$testSessionsData = $this->_($sql, [':workspaceId' => $workspaceId],true);
 
@@ -360,6 +361,52 @@ class AdminDAO extends DAO {
     }
 
 
+    /**
+     * @param $workspaceId
+     * @param $groups
+     * @return array|null
+     * @deprecated
+     */
+    public function getResponses($workspaceId, $groups): array {
+        // TODO use dataclass an camelCase-objects
+
+		$groupsString = implode("','", $groups);
+		return $this->_(
+        <<<EOT
+            select
+                units.name as unitname,
+                '{' || group_concat('"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', char(0x5C) || '"') || '"') || '}' as responses,
+                -- thanks to PIPES_AS_CONCAT works like in sqlite as concat 
+                unit_data.response_type as responsetype,
+                units.laststate,
+                tests.name as bookletname,
+                max(unit_data.ts) as 'responses_ts',
+                person_sessions.group_name as groupname,
+                login_sessions.name as loginname,
+                case
+                    when person_sessions.code != ''
+                    then person_sessions.code
+                    else person_sessions.id
+                end as code
+            from units
+                inner join tests ON tests.id = units.booklet_id
+                inner join person_sessions ON person_sessions.id = tests.person_id 
+                inner join login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+                left join unit_data on unit_data.unit_id = units.id
+            where
+                login_sessions.workspace_id =:workspaceId
+                and person_sessions.group_name IN ('$groupsString')
+            group by
+                units.id
+        EOT,
+			[
+				':workspaceId' => $workspaceId,
+			],
+			true
+		);
+	}
+
+
     public function getResponseReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
@@ -368,7 +415,7 @@ class AdminDAO extends DAO {
         // TODO: use data class
         $data = $this->_(<<<EOT
             select
-                login_sessions.group_name as groupname,
+                person_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -377,12 +424,12 @@ class AdminDAO extends DAO {
                 units.id as unit_id
             from
                 login_sessions
-                inner join person_sessions on login_sessions.id = person_sessions.login_id
+                inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
                 inner join tests on person_sessions.id = tests.person_id
                 inner join units on tests.id = units.booklet_id
             where
                 login_sessions.workspace_id = ?
-                and login_sessions.group_name in ($groupsPlaceholders)
+                and person_sessions.group_name in ($groupsPlaceholders)
                 and tests.id is not null
 
             EOT,
@@ -390,6 +437,65 @@ class AdminDAO extends DAO {
             true
         );
 
+        foreach ($data as $index => $row) {
+            $data[$index]['responses'] = $this->getResponseDataParts((int) $row['unit_id']);
+            unset($data[$index]['unit_id']);
+        }
+
+        return $data;
+
+    }
+
+
+	// $return = []; groupname, loginname, code, bookletname, unitname, timestamp, logentry
+    /**
+     * @param $workspaceId
+     * @param $groups
+     * @return array|null
+     * @deprecated
+     */
+    public function getLogs($workspaceId, $groups) { // TODO add unit test // TODO use dataclass and camelCase-objects
+
+		$groupsString = implode("','", $groups);
+
+		$unitData = $this->_(
+			"SELECT
+                units.name as unitname,
+                tests.name as bookletname,
+				person_sessions.group_name as groupname, 
+                login_sessions.name as loginname,
+                case
+                    when person_sessions.code != '' then person_sessions.code
+                    else person_sessions.id
+                end as code,
+                unit_logs.timestamp,
+                unit_logs.logentry
+			FROM unit_logs
+			INNER JOIN units ON units.id = unit_logs.unit_id
+			INNER JOIN tests ON tests.id = units.booklet_id
+			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
+			[
+				':workspaceId' => $workspaceId
+			],
+			true
+		);
+
+		$bookletData = $this->_(
+			"SELECT tests.name as bookletname,
+					person_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
+					test_logs.timestamp, test_logs.logentry
+			FROM test_logs
+			INNER JOIN tests ON tests.id = test_logs.booklet_id
+			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
+			[
+				':workspaceId' => $workspaceId
+			],
+			true
+		);
         foreach ($data as $index => $row) {
             $data[$index]['responses'] = $this->getResponseDataParts((int) $row['unit_id']);
             unset($data[$index]['unit_id']);
@@ -432,7 +538,7 @@ class AdminDAO extends DAO {
         // TODO: use data class
         return $this->_("
             SELECT
-				login_sessions.group_name as groupname,
+				person_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -447,14 +553,14 @@ class AdminDAO extends DAO {
                 unit_logs
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    login_sessions.group_name IN ($groupsPlaceholders) AND
-			    login_sessions.id = person_sessions.login_id AND
+			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.id = person_sessions.login_sessions_id AND
                 person_sessions.id = tests.person_id AND
                 tests.id = units.booklet_id AND
                 units.id = unit_logs.unit_id
             UNION ALL
             SELECT
-				login_sessions.group_name as groupname,
+				person_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -468,8 +574,8 @@ class AdminDAO extends DAO {
                 test_logs
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    login_sessions.group_name IN ($groupsPlaceholders) AND
-			    login_sessions.id = person_sessions.login_id AND
+			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.id = person_sessions.login_sessions_id AND
 			    person_sessions.id = tests.person_id AND
 			    tests.id = test_logs.booklet_id
 			",
@@ -477,6 +583,60 @@ class AdminDAO extends DAO {
             true
         );
     }
+
+
+    /**
+     * @param $workspaceId
+     * @param $groups
+     * @return array|null
+     * @deprecated
+     */
+    public function getReviews($workspaceId, $groups) { // TODO add unit test
+
+        // $return = []; groupname, loginname, code, bookletname, unitname, priority, categories, entry
+
+        $groupsString = implode("','", $groups);
+
+		$unitData = $this->_(
+			"SELECT units.name as unitname, tests.name as bookletname,
+					person_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
+					unit_reviews.reviewtime, unit_reviews.entry,
+					unit_reviews.priority, unit_reviews.categories
+			FROM unit_reviews
+			INNER JOIN units ON units.id = unit_reviews.unit_id
+			INNER JOIN tests ON tests.id = units.booklet_id
+			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
+			[
+				':workspaceId' => $workspaceId
+			],
+			true
+		);
+
+		$bookletData = $this->_(
+			"SELECT tests.name as bookletname,
+					person_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
+					test_reviews.reviewtime, test_reviews.entry,
+					test_reviews.priority, test_reviews.categories
+			FROM test_reviews
+			INNER JOIN tests ON tests.id = test_reviews.booklet_id
+			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
+			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
+			[
+				':workspaceId' => $workspaceId
+			],
+			true
+		);
+
+		foreach ($bookletData as $bd) {
+			$bd['unitname'] = '';
+			array_push($unitData, $bd);
+		}
+
+		return $unitData;
+	}
 
 
     /**
@@ -492,7 +652,7 @@ class AdminDAO extends DAO {
         // TODO: use data class
         return $this->_("
             SELECT
-				login_sessions.group_name as groupname,
+				person_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -509,14 +669,14 @@ class AdminDAO extends DAO {
 			    unit_reviews
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    login_sessions.group_name IN ($groupsPlaceholders) AND
-			    login_sessions.id = person_sessions.login_id AND
+			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.id = person_sessions.login_sessions_id AND
 			    person_sessions.id = tests.person_id AND
 			    tests.id = units.booklet_id AND
 			    units.id = unit_reviews.unit_id
 			UNION ALL
             SELECT
-				login_sessions.group_name as groupname,
+				person_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -532,8 +692,8 @@ class AdminDAO extends DAO {
 			    test_reviews
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    login_sessions.group_name IN ($groupsPlaceholders) AND
-			    login_sessions.id = person_sessions.login_id AND
+			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.id = person_sessions.login_sessions_id AND
 			    person_sessions.id = tests.person_id AND
 			    tests.id = test_reviews.booklet_id
 			",
@@ -617,4 +777,9 @@ class AdminDAO extends DAO {
             [':id' => $testId]
         );
     }
+
+    public function updateMetadata(int $workspaceId, string $getId, FileSpecialInfo $getSpecialInfo) {
+        // TODO implement
+    }
+
 }

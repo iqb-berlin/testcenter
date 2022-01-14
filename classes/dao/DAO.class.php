@@ -11,6 +11,7 @@ class DAO {
         'test_logs',
         'test_reviews',
         'tests',
+        'logins',
         'login_sessions',
         'person_sessions',
         'unit_logs',
@@ -27,6 +28,8 @@ class DAO {
     protected $timeUserIsAllowedInMinutes = 30;
     protected $passwordSalt = 't';
     protected $insecurePasswords = false;
+
+    protected $lastAffectedRows = 0;
 
 
     public function __construct() {
@@ -53,6 +56,8 @@ class DAO {
 
         $sqlStatement = $this->pdoDBhandle->prepare($sql);
         $sqlStatement->execute($replacements);
+
+        $this->lastAffectedRows = $sqlStatement->rowCount();
 
         if (!$sqlStatement->columnCount()) {
             return null;
