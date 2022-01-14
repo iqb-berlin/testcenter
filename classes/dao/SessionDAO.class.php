@@ -343,6 +343,7 @@ class SessionDAO extends DAO {
         return $newToken;
     }
 
+
     public function updateLoginSource(int $workspaceId, string $source, LoginArray $logins): void {
 
         $this->deleteLoginSource($workspaceId, $source);
@@ -350,6 +351,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     public function deleteLoginSource(int $workspaceId, string $source): int {
 
         $this->_(
@@ -363,6 +365,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     public function addLoginSource(int $workspaceId, string $source, LoginArray $logins): int {
 
         foreach ($logins as $login) {
@@ -540,7 +543,7 @@ class SessionDAO extends DAO {
     }
 
     public function getLoginsByGroup(string $groupName, int $workspaceId): array {
-error_log("!WHY $groupName, int $workspaceId");
+
         $logins = [];
 
         $result = $this->_(
