@@ -1,45 +1,37 @@
-alter table login_sessions drop column token;
+-- 1. remove data from login-session which will be part of new logins table
+-- data can be deleted safely, because it is stored in teh XMLs and they have to be read in after patching the DB anyway
 
-rename table login_sessions to logins;
-
-alter table logins add password varchar(100) null;
-alter table logins add source varchar(30) null;
-
--- TODO data migration
--- TODO logins primiray ke only name
--- TODO logins fk workspace
+alter table login_sessions drop column mode;
+alter table login_sessions drop column codes_to_booklets;
+alter table login_sessions drop column group_name;
+alter table login_sessions drop column custom_texts;
 
 
-alter table person_sessions drop foreign key fk_person_login;
-alter table logins drop column id;
--- RIESENproblem: restart-modes generieren nicht nur eine neue person, sondern einen neuen login!
--- selbst wenn man dies änderte: wie daten-migration machen?
-alter table logins add constraint logins_pk primary key (name, workspace_id);
+-- 2. create table logins
 
-create index index_fk_logins on login_sessions (name, workspace_id);
+create table logins (
+    name varchar(50) not null,
+    password varchar(100) not null,
+    mode varchar(20) not null,
+    workspace_id bigint not null,
+    codes_to_booklets text null,
+    source varchar(30) null,
+    valid_from timestamp null,
+    valid_to timestamp null,
+    valid_for int null,
+    group_name varchar(100),
+    group_label text null,
+    custom_texts text null,
+    constraint logins_pk primary key (name)
+);
 
-create table login_sessions (
-                                id          bigint unsigned auto_increment,
-                                workspace_id      bigint unsigned not null,
-                                name              varchar(50)     not null,
-                                valid_until timestamp       null,
-                                token       varchar(50)     not null,
-                                constraint login_sessions_id_uindex unique (id)
-) collate = utf8_german2_ci;
-
+create index index_fk_logins on login_sessions (name);
 create index index_fk_login_session_login on login_sessions (id);
 
-alter table login_sessions add constraint login_sessions_pk primary key (id);
 
-
-alter table person_sessions add constraint fk_person_login foreign key (login_id) references login_sessions (id) on delete cascade;
+-- 3. change person_sessions table logins
 
 alter table person_sessions change login_id login_sessions_id bigint unsigned not null;
 alter table person_sessions change laststate group_name varchar(100) null;
 
-alter table logins drop column valid_until;
-alter table logins add valid_from timestamp null;
-alter table logins add valid_to timestamp null;
-alter table logins add valid_for int null;
-alter table logins add group_label text null;
 
