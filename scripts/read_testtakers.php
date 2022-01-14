@@ -23,18 +23,18 @@ try {
         $initDAO->createWorkspaceIfMissing($workspace);
         $validator = new WorkspaceValidator($workspace->getId());
 
-        foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "Testtakers.[xX][mM][lL]") as $fullFilePath) {
+        foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
             $xFile = new XMLFileTesttakers($fullFilePath);
             $xFile->crossValidate($validator);
 
-            CLI::h2("file: " . $xFile->getName());
             if ($xFile->isValid()) {
 
                 $deleted = $initDAO->deleteLoginSource($workspace->getId(), $xFile->getName());
                 $added = $initDAO->addLoginSource($workspace->getId(), $xFile->getName(), $xFile->getAllLogins());
-                CLI::p(" - {$xFile->getName()} (-$deleted/+$added)");
+                CLI::h2("file: {$xFile->getName()}  (-$deleted/+$added)");
             } else {
+                CLI::h2("file: {$xFile->getName()}");
                 CLI::warning('invalid: ' . implode(', ', $xFile->getValidationReportSorted()['error']));
             }
         }

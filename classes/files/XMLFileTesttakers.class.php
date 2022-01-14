@@ -133,7 +133,6 @@ class XMLFileTesttakers extends XMLFile {
             foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
 
                 $login = $this->getLogin($groupElement, $loginElement, -1);
-                CLI::p("--- login {$login->getName()}: " . json_encode($login->getBooklets()));
                 $testTakers[] = $login;
             }
         }
