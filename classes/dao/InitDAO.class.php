@@ -42,7 +42,7 @@ class InitDAO extends SessionDAO {
 
         $loginSession->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00'); // TODO fix this
 
-        $person = $sessionDAO->getOrCreatePerson($loginSession, $loginCode);
+        $person = $sessionDAO->getOrCreatePersonSession($loginSession, $loginCode);
         $test = $testDAO->getOrCreateTest($person->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
@@ -76,7 +76,7 @@ class InitDAO extends SessionDAO {
         );
 
         $login = $this->createLoginSession($testSession, true);
-        $this->createPerson($login, $loginCode, true);
+        $this->createPersonSession($login, $loginCode, true);
 
         $superAdminDAO->createUser("expired_user", "whatever", true);
         $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
@@ -98,7 +98,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $login = $this->createLoginSession($testSessionGroupMonitor);
-        $persons['test-group-monitor'] = $this->createPerson($login, '');
+        $persons['test-group-monitor'] = $this->createPersonSession($login, '');
 
         $testSession = new Login(
             'expired-group-monitor',
@@ -111,7 +111,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $login = $this->createLoginSession($testSession, true);
-        $persons['expired-group-monitor'] = $this->createPerson($login, '', true);
+        $persons['expired-group-monitor'] = $this->createPersonSession($login, '', true);
 
         return $persons;
     }

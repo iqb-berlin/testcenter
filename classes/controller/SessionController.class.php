@@ -50,7 +50,7 @@ class SessionController extends Controller {
 
         if (!$loginSession->getLogin()->isCodeRequired()) {
 
-            $person = self::sessionDAO()->getOrCreatePerson($loginSession, '');
+            $person = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
             $session = Session::createFromPersonSession(new PersonSession($loginSession, $person));
             error_log("!-2");
             if ($loginSession->getLogin()->getMode() == 'monitor-group') {
@@ -81,7 +81,7 @@ class SessionController extends Controller {
             'code' => ''
         ]);
         $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
-        $person = self::sessionDAO()->getOrCreatePerson($loginSession, $body['code']);
+        $person = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
         $session = Session::createFromPersonSession(new PersonSession($loginSession, $person));
         return $response->withJson($session);
     }
@@ -112,7 +112,7 @@ error_log("\n !1 " . count($members));
                     error_log("\n !4 $code => $booklets");
 
                     // TODO validity?
-                    $memberPerson = SessionController::sessionDAO()->getOrCreatePerson($member, $code, false);
+                    $memberPerson = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code, false);
 
                     foreach ($booklets as $booklet) {
 
@@ -144,7 +144,7 @@ error_log("\n !1 " . count($members));
 
         if ($authToken->getType() == "person") {
 
-            $loginWithPerson = self::sessionDAO()->getPersonSession($authToken->getToken());
+            $loginWithPerson = self::sessionDAO()->getPersonSessionFromToken($authToken->getToken());
             $session = Session::createFromPersonSession($loginWithPerson);
 
             if ($authToken->getMode() == 'monitor-group') {

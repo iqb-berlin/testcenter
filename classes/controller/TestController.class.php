@@ -35,7 +35,7 @@ class TestController extends Controller {
         $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), (int) $test['id']);
         if ($test['_newlyCreated']) {
             // can happen when mode is run-hot-return for example
-            $personLogin = self::sessionDAO()->getPersonSession($authToken->getToken());
+            $personLogin = self::sessionDAO()->getPersonSessionFromToken($authToken->getToken());
             $message->setLogin(
                 $personLogin->getLoginSession()->getLogin()->getName(),
                 $authToken->getMode(),

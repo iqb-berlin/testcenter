@@ -30,9 +30,13 @@ try {
 
             if ($xFile->isValid()) {
 
+                $logins = $xFile->getAllLogins();
                 $deleted = $initDAO->deleteLoginSource($workspace->getId(), $xFile->getName());
-                $added = $initDAO->addLoginSource($workspace->getId(), $xFile->getName(), $xFile->getAllLogins());
+                $added = $initDAO->addLoginSource($workspace->getId(), $xFile->getName(), $logins);
                 CLI::h2("file: {$xFile->getName()}  (-$deleted/+$added)");
+                foreach ($logins as $login) {
+                    CLI::p("--{$login->getName()}");
+                }
             } else {
                 CLI::h2("file: {$xFile->getName()}");
                 CLI::warning('invalid: ' . implode(', ', $xFile->getValidationReportSorted()['error']));

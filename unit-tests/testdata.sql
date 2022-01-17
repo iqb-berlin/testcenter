@@ -4,20 +4,51 @@ INSERT INTO `users` VALUES (2,'i_exist_but_am_not_allowed_anything','f75b1eaaf7c
 INSERT INTO `workspace_users` VALUES (1,1,'RW');
 INSERT INTO `workspaces` VALUES (1,'example_workspace');
 
-INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
-VALUES (1, 'test', 'run-hot-return', 1, '2030-01-02 10:00:00', 'nice_token', '{"xxx":["BOOKLET.SAMPLE-1"]}', 'sample_group');
+INSERT INTO logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
+VALUES ('test', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
-INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
-VALUES (2, 'test', 'run-hot-return', 1, '2000-01-02 10:00:00', 'expired_token', '{"xxx":["BOOKLET.SAMPLE-1"]}', 'sample_group');
+INSERT INTO logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
+VALUES ('test-expired', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2000-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
-INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
-VALUES (3, 'monitor', 'monitor-group', 1, '2030-01-02 10:00:00', 'monitor_token', '', 'sample_group');
+INSERT INTO logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
+VALUES ('monitor', 'pw_hash', 'monitor-group', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
-INSERT INTO login_sessions (id, name, mode, workspace_id, valid_until, token, codes_to_booklets, group_name)
-VALUES (4, 'sample_user', 'run-hot-return', 1, '2030-01-01 12:00:00', 'test_token', '{"xxx":["BOOKLET.SAMPLE-1"]}', 'sample_group');
+INSERT INTO logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
+VALUES ('sample_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
-INSERT INTO person_sessions(id, code, login_id, valid_until, token, group_name)
-VALUES (0, 'xxx', 4, 0, 'person-token', '');
+INSERT INTO logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
+VALUES ('future_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', '2030-01-02 10:00:00', '2040-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
+
+
+INSERT INTO login_sessions (name, workspace_id, token)
+VALUES ('test', 1, 'nice_token');
+
+INSERT INTO login_sessions (name, workspace_id, token)
+VALUES ('test-expired', 1, 'expired_token');
+
+INSERT INTO login_sessions (name, workspace_id, token)
+VALUES ('monitor', 1, 'monitor_token');
+
+INSERT INTO login_sessions (name, workspace_id, token)
+VALUES ('sample_user', 1, 'test_token');
+
+INSERT INTO login_sessions (name, workspace_id, token)
+VALUES ('future_user', 1, 'future_token');
+
+INSERT INTO login_sessions (name, workspace_id, token)
+VALUES ('session_of_deleted_login', 1, 'deleted_login_token');
+
+INSERT INTO person_sessions(code, login_sessions_id, valid_until, token)
+VALUES ('xxx', 4, '2030-01-02 10:00:00', 'person-token');
+
+INSERT INTO person_sessions(code, login_sessions_id, valid_until, token)
+VALUES ('xxx', 4, '2010-01-02 10:00:00', 'expired-person-token');
+
+INSERT INTO person_sessions(code, login_sessions_id, valid_until, token)
+VALUES ('', 2, '2000-01-02 10:00:00', 'person-of-expired-login-token');
+
+INSERT INTO person_sessions(code, login_sessions_id, valid_until, token)
+VALUES ('', 5, '2040-01-02 10:00:00', 'person-of-future-login-token');
 
 INSERT INTO tests (id, name, person_id, laststate, locked, label)
 VALUES (1, 'first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first tests label');

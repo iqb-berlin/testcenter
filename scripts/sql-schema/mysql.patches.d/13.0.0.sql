@@ -5,6 +5,7 @@ alter table login_sessions drop column mode;
 alter table login_sessions drop column codes_to_booklets;
 alter table login_sessions drop column group_name;
 alter table login_sessions drop column custom_texts;
+alter table login_sessions drop column valid_until;
 
 
 -- 2. create table logins
@@ -33,5 +34,5 @@ create index index_fk_login_session_login on login_sessions (id);
 
 alter table person_sessions change login_id login_sessions_id bigint unsigned not null;
 alter table person_sessions change laststate group_name varchar(100) null;
-
+alter table person_sessions drop column group_name;
 

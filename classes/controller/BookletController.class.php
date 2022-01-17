@@ -24,7 +24,7 @@ class BookletController extends Controller {
             throw new HttpForbiddenException($request, "Booklet with name `$bookletName` is not allowed for $personToken");
         }
 
-        $bookletStatus = self::sessionDAO()->getBookletStatus($personToken, $bookletName);
+        $bookletStatus = self::sessionDAO()->getTestStatus($personToken, $bookletName);
 
         $bookletsFolder = new BookletsFolder((int) $authToken->getWorkspaceId());
 
