@@ -84,7 +84,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
     public function addLoginSource(int $workspaceId, string $source, LoginArray $logins): int {
 
         foreach ($logins as $login) {
@@ -130,7 +129,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
     public function deleteLoginSource(int $workspaceId, string $source): int {
 
         $this->_(
@@ -144,6 +142,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     public function getLoginsByGroup(string $groupName, int $workspaceId): array {
 
         $logins = [];
@@ -245,6 +244,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     private function getLoginSession($name, $password): ?LoginSession {
 
         $loginSession = $this->_(
@@ -306,7 +306,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // unit test done
     public function getLoginSessionByToken(string $loginToken): LoginSession {
 
         $loginSession = $this->_(
@@ -361,7 +360,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
     public function getOrCreatePersonSession(LoginSession $loginSession, string $code, bool $renewToken = true): Person {
         $person = $this->_(
             'SELECT 
@@ -403,7 +401,6 @@ class SessionDAO extends DAO {
     }
 
 
-    /// unit test done
     public function createPersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): Person {
 
         $login = $loginSession->getLogin();
@@ -439,7 +436,6 @@ class SessionDAO extends DAO {
     }
 
 
-    /// unit-test done
     public function getPersonSessionFromToken(string $personToken): PersonSession {
 
         $personSession = $this->_(
