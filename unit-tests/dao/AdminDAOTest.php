@@ -6,11 +6,15 @@ require_once "classes/data-collection/DataCollection.class.php";
 require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class AdminDAOTest extends TestCase {
 
     private AdminDAO $dbc;
 
-    static function setUpBeforeClass(): void {
+    function setUp(): void {
 
         require_once "classes/exception/HttpError.class.php";
         require_once "classes/data-collection/DBConfig.class.php";
@@ -20,9 +24,6 @@ final class AdminDAOTest extends TestCase {
         require_once "classes/helper/DB.class.php";
         require_once "classes/helper/TimeStamp.class.php";
         require_once "classes/helper/Password.class.php";
-    }
-
-    function setUp(): void {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new AdminDAO();
@@ -115,7 +116,23 @@ final class AdminDAOTest extends TestCase {
                 'groupname' => 'sample_group',
                 'loginname' => 'sample_user',
                 'code' => 'xxx',
-                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'bookletname' => 'first sample test',
+                'unitname' => 'UNIT_1',
+                'laststate' => '{"SOME_STATE":"WHATEVER"}',
+                'responses' => [
+                    [
+                        'id' => "all",
+                        'content' => "{\"name\":\"Sam Sample\",\"age\":34}",
+                        'ts' => 1597903000,
+                        'responseType' => 'the-response-type'
+                    ]
+                ]
+            ],
+            [
+                'groupname' => 'sample_group',
+                'loginname' => 'sample_user',
+                'code' => 'xxx',
+                'bookletname' => 'first sample test',
                 'unitname' => 'UNIT.SAMPLE',
                 'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
                 'responses' => [
@@ -154,7 +171,7 @@ final class AdminDAOTest extends TestCase {
                 'groupname' => 'sample_group',
                 'loginname' => 'sample_user',
                 'code' => 'xxx',
-                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'bookletname' => 'first sample test',
                 'unitname' => 'UNIT.SAMPLE',
                 'timestamp' => "1597903000",
                 'logentry' => 'sample unit log'
@@ -162,7 +179,7 @@ final class AdminDAOTest extends TestCase {
                 'groupname' => 'sample_group',
                 'loginname' => 'sample_user',
                 'code' => 'xxx',
-                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'bookletname' => 'first sample test',
                 'unitname' => '',
                 'timestamp' => "1597903000",
                 'logentry' => 'sample log entry'
@@ -188,7 +205,7 @@ final class AdminDAOTest extends TestCase {
                 'groupname' => 'sample_group',
                 'loginname' => 'sample_user',
                 'code' => 'xxx',
-                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'bookletname' => 'first sample test',
                 'unitname' => 'UNIT.SAMPLE',
                 'priority' => '1',
                 'categories' => '',
@@ -198,7 +215,7 @@ final class AdminDAOTest extends TestCase {
                 'groupname' => 'sample_group',
                 'loginname' => 'sample_user',
                 'code' => 'xxx',
-                'bookletname' => 'BOOKLET.SAMPLE-1',
+                'bookletname' => 'first sample test',
                 'unitname' => '',
                 'priority' => '1',
                 'categories' => '',
@@ -235,10 +252,37 @@ final class AdminDAOTest extends TestCase {
             'locked' => '0',
             'id' => '1',
             'laststate' => '{"CURRENT_UNIT_ID":"UNIT_1"}',
-            'label' => 'first tests label'
+            'label' => 'first test label'
         ];
         $result = $this->dbc->getTest(1);
         $this->assertEquals($expectation, $result);
     }
 
+
+    function test_deleteResultData() {
+
+        $this->dbc->deleteResultData(1, 'not_existsing');
+        $this->assertGreaterThan(0, $this->countTableRows('login_sessions'));
+        $this->assertGreaterThan(0, $this->countTableRows('person_sessions'));
+        $this->assertGreaterThan(0, $this->countTableRows('tests'));
+        $this->assertGreaterThan(0, $this->countTableRows('test_logs'));
+        $this->assertGreaterThan(0, $this->countTableRows('units'));
+        $this->assertGreaterThan(0, $this->countTableRows('unit_data'));
+        $this->assertGreaterThan(0, $this->countTableRows('unit_logs'));
+
+        $this->dbc->deleteResultData(1, 'sample_group');
+        $this->assertEquals(0, $this->countTableRows('login_sessions'));
+        $this->assertEquals(0, $this->countTableRows('person_sessions'));
+        $this->assertEquals(0, $this->countTableRows('tests'));
+        $this->assertEquals(0, $this->countTableRows('test_logs'));
+        $this->assertEquals(0, $this->countTableRows('units'));
+        $this->assertEquals(0, $this->countTableRows('unit_data'));
+        $this->assertEquals(0, $this->countTableRows('unit_logs'));
+    }
+    
+    
+    private function countTableRows(string $tableName): int {
+
+        return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];
+    } 
 }

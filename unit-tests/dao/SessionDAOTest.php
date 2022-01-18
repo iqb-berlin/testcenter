@@ -3,7 +3,10 @@
 use PHPUnit\Framework\TestCase;
 
 
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class SessionDAOTest extends TestCase {
 
     private SessionDAO $dbc;

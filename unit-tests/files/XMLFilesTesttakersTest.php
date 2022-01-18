@@ -6,11 +6,27 @@ require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
 require_once "classes/files/File.class.php";
 require_once "classes/files/XMLFile.class.php";
 require_once "classes/files/XMLFileTesttakers.class.php";
-require_once "classes/data-collection/Login.class.php";
-require_once "classes/data-collection/LoginArray.class.php";
-require_once "classes/data-collection/Group.class.php";
 
-$exampleXML1 = <<<END
+
+class XMLFileTesttakersExposed extends XMLFileTesttakers {
+
+    public static function collectBookletsPerCode(SimpleXMLElement $element): array {
+        return parent::collectBookletsPerCode($element);
+    }
+
+    public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
+        return parent::getCodesFromBookletElement($element);
+    }
+};
+
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+class XMLFilesTesttakersTest extends TestCase {
+
+    private $exampleXML1 = <<<END
 <Testtakers>
   <Metadata>
     <Id>example</Id>
@@ -37,27 +53,27 @@ $exampleXML1 = <<<END
 </Testtakers>
 END;
 
-
-class XMLFileTesttakersExposed extends XMLFileTesttakers {
-
-    public static function collectBookletsPerCode(SimpleXMLElement $element): array {
-        return parent::collectBookletsPerCode($element);
-    }
-
-    public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
-        return parent::getCodesFromBookletElement($element);
-    }
-};
-
-
-class XMLFilesTesttakersTest extends TestCase {
-
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
         VfsForTest::setUp();
     }
 
+
+    public function setUp(): void {
+
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileTesttakers.class.php";
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/data-collection/Login.class.php";
+        require_once "classes/data-collection/LoginArray.class.php";
+        require_once "classes/data-collection/Group.class.php";
+        require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/TimeStamp.class.php";
+        require_once "unit-tests/mock-classes/PasswordMock.php";
+    }
 
     // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
@@ -71,7 +87,7 @@ class XMLFilesTesttakersTest extends TestCase {
                 'user123',
                 'run-hot-return',
                 'sample_group',
-                'sample_group',
+                'Primary Sample Group',
                 [
                     "xxx" => [
                         "BOOKLET.SAMPLE-1",
@@ -95,7 +111,7 @@ class XMLFilesTesttakersTest extends TestCase {
         $this->assertEquals($expected, $result);
     }
 
-
+// TODO Fix 13
 //    function test_getLogin() {
 //
 //        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
@@ -315,13 +331,13 @@ END;
 
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
-        $expected = [
+        $expected = new LoginArray(
             new Login(
                 'test',
                 'user123',
                 'run-hot-return',
                 'sample_group',
-                'sample_group',
+                'Primary Sample Group',
                 [
                     'xxx' => [
                         'BOOKLET.SAMPLE-1',
@@ -342,11 +358,17 @@ END;
             ),
             new Login(
                 'test-group-monitor',
-                'monitor-group',
                 'user123',
+                'monitor-group',
                 'sample_group',
-                'sample_group',
-                ['' => []],
+                'Primary Sample Group',
+                [
+                    '' => [
+                        'BOOKLET.SAMPLE-1',
+                        'BOOKLET.SAMPLE-3',
+                        'BOOKLET.SAMPLE-2'
+                    ]
+                ],
                 -1,
                 0,
                 1583053200,
@@ -358,7 +380,7 @@ END;
                 'user123',
                 'run-review',
                 'review_group',
-                'review_group',
+                'A Group of Reviewers',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -371,7 +393,7 @@ END;
                 'user123',
                 'run-trial',
                 'trial_group',
-                'trial_group',
+                'A Group for Trials and Demos',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -384,7 +406,7 @@ END;
                 'user123',
                 'run-demo',
                 'trial_group',
-                'trial_group',
+                'A Group for Trials and Demos',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -394,10 +416,10 @@ END;
             ),
             new Login(
                 'test-no-pw',
-                'user123',
+                '',
                 'run-hot-restart',
                 'passwordless_group',
-                'passwordless_group',
+                'A group of persons without password',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -407,10 +429,10 @@ END;
             ),
             new Login(
                 'test-no-pw-trial',
-                'user123',
+                '',
                 'run-trial',
                 'passwordless_group',
-                'passwordless_group',
+                'A group of persons without password',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -420,10 +442,10 @@ END;
             ),
             new Login(
                 'test-expired',
-                'user123',
+                '',
                 'run-hot-restart',
                 'expired_group',
-                'expired_group',
+                'An already expired group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 1583087400,
@@ -436,8 +458,8 @@ END;
                 'user123',
                 'monitor-group',
                 'expired_group',
-                'expired_group',
-                ['' => []],
+                'An already expired group',
+                ['' => ['BOOKLET.SAMPLE-1']],
                 -1,
                 1583087400,
                 0,
@@ -446,10 +468,10 @@ END;
             ),
             new Login(
                 'test-future',
-                'user123',
+                '',
                 'run-hot-restart',
                 'future_group',
-                'future_group',
+                'An not yet active group',
                 ['' => ["BOOKLET.SAMPLE-1"]],
                 -1,
                 0,
@@ -457,8 +479,7 @@ END;
                 0,
                 (object) ["somestr" => "string"],
             )
-
-        ];
+        );
 
         $result = $xmlFile->getAllLogins();
 
@@ -468,8 +489,7 @@ END;
 
     function test_getDoubleLoginNames() {
 
-        global $exampleXML1;
-        $xmlFile = new XMLFileTesttakers($exampleXML1, false, true);
+        $xmlFile = new XMLFileTesttakers($this->exampleXML1, false, true);
 
         $expected = ['duplicateInSameGroup', 'duplicateInDifferentGroup'];
 
@@ -481,8 +501,7 @@ END;
 
     function test_getAllLoginNames() {
 
-        global $exampleXML1;
-        $xmlFile = new XMLFileTesttakers($exampleXML1, false, true);
+        $xmlFile = new XMLFileTesttakers($this->exampleXML1, false, true);
 
         $expected = [
             'duplicateInSameGroup',
@@ -499,8 +518,7 @@ END;
 
     function test_getCustomTexts() {
 
-        global $exampleXML1;
-        $xmlFile = new XMLFileTesttakers($exampleXML1, false, true);
+        $xmlFile = new XMLFileTesttakers($this->exampleXML1, false, true);
 
         $expected = (object) [
             'first_key' => 'first_value',

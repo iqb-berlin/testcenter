@@ -166,7 +166,7 @@ class SessionDAO extends DAO {
                     logins
                     left join login_sessions on (logins.name = login_sessions.name)
                 WHERE 
-                    group_name = :group_name and logins.workspace_id = :workspace_id',
+                    logins.group_name = :group_name and logins.workspace_id = :workspace_id',
             [
                 ':group_name' => $groupName,
                 ':workspace_id' => $workspaceId
@@ -227,12 +227,13 @@ class SessionDAO extends DAO {
         $loginToken = $this->randomToken('login', $login->getName());
 
         $this->_(
-            'INSERT INTO login_sessions (token, name, workspace_id)
-                VALUES(:token, :name, :ws)',
+            'INSERT INTO login_sessions (token, name, workspace_id, group_name)
+                VALUES(:token, :name, :ws, :group_name)',
             [
                 ':token' => $loginToken,
                 ':name' => $login->getName(),
                 ':ws' => $login->getWorkspaceId(),
+                ':group_name' => $login->getGroupName()
             ]
         );
 
@@ -395,8 +396,7 @@ class SessionDAO extends DAO {
             (int) $person['id'],
             $personToken,
             $person['code'],
-            TimeStamp::fromSQLFormat($person['valid_until']),
-            $person['group_name']
+            TimeStamp::fromSQLFormat($person['valid_until'])
         );
     }
 

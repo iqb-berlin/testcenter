@@ -151,13 +151,10 @@ class AdminDAO extends DAO {
 	}
 
 
-    // TODO FIXME 13
 	public function deleteResultData(int $workspaceId, string $groupName): void { // TODO write unit test
 
 		$this->_(
-			'select * from login_sessions
-                left join person_sessions on login_sessions.id = person_sessions.login_sessions_id 
-                where group_name = :group_name',
+            "delete from login_sessions where group_name = :group_name and workspace_id = :workspace_id",
 			[
 				':workspace_id' => $workspaceId,
 				':group_name' => $groupName
@@ -233,21 +230,23 @@ class AdminDAO extends DAO {
 	}
 
     // FIXME 13
-	public function getResultsCount(int $workspaceId): array { // TODO add unit test  // TODO use dataclass an camelCase-objects
+	public function getResultsCount(int $workspaceId): array { // TODO add unit test  // TODO use dataclass
 
 		return $this->_(
-			'SELECT person_sessions.group_name as groupname,
-                       login_sessions.name       as loginname,
-                       person_sessions.code,
-                       tests.name                as bookletname,
-                       COUNT(distinct units.id)  AS num_units,
-                       MAX(tests.timestamp_server)   as lastchange
-                FROM tests
-                         left JOIN person_sessions ON person_sessions.id = tests.person_id
-                         INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-                         INNER JOIN units ON units.booklet_id = tests.id
-                WHERE login_sessions.workspace_id = :workspaceId
-                GROUP BY tests.name, person_sessions.id',
+			'select
+                    login_sessions.group_name as groupname,
+                    login_sessions.name       as loginname,
+                    person_sessions.code,
+                    tests.name                as bookletname,
+                    count(distinct units.id)  as num_units,
+                    MAX(tests.timestamp_server)   as lastchange
+                from tests
+                    left join person_sessions on person_sessions.id = tests.person_id
+                    inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
+                    inner join logins on logins.name = login_sessions.name
+                    inner join units on units.booklet_id = tests.id
+                where login_sessions.workspace_id = :workspaceId
+                group by tests.name, person_sessions.id',
 			[
 				':workspaceId' => $workspaceId
 			],
@@ -386,7 +385,7 @@ class AdminDAO extends DAO {
         // TODO: use data class
         $data = $this->_(<<<EOT
             select
-                person_sessions.group_name as groupname,
+                login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -400,7 +399,7 @@ class AdminDAO extends DAO {
                 inner join units on tests.id = units.booklet_id
             where
                 login_sessions.workspace_id = ?
-                and person_sessions.group_name in ($groupsPlaceholders)
+                and login_sessions.group_name in ($groupsPlaceholders)
                 and tests.id is not null
 
             EOT,
@@ -438,12 +437,6 @@ class AdminDAO extends DAO {
     }
 
 
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     */
-    // TODO FIXME 13
     public function getLogReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
@@ -452,7 +445,7 @@ class AdminDAO extends DAO {
         // TODO: use data class
         return $this->_("
             SELECT
-				person_sessions.group_name as groupname,
+				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -467,14 +460,14 @@ class AdminDAO extends DAO {
                 unit_logs
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.group_name IN ($groupsPlaceholders) AND
 			    login_sessions.id = person_sessions.login_sessions_id AND
                 person_sessions.id = tests.person_id AND
                 tests.id = units.booklet_id AND
                 units.id = unit_logs.unit_id
             UNION ALL
             SELECT
-				person_sessions.group_name as groupname,
+				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -488,7 +481,7 @@ class AdminDAO extends DAO {
                 test_logs
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.group_name IN ($groupsPlaceholders) AND
 			    login_sessions.id = person_sessions.login_sessions_id AND
 			    person_sessions.id = tests.person_id AND
 			    tests.id = test_logs.booklet_id
@@ -499,12 +492,6 @@ class AdminDAO extends DAO {
     }
 
 
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     */
-    // TODO FIXME 13
     public function getReviewReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
@@ -513,7 +500,7 @@ class AdminDAO extends DAO {
         // TODO: use data class
         return $this->_("
             SELECT
-				person_sessions.group_name as groupname,
+				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -530,14 +517,14 @@ class AdminDAO extends DAO {
 			    unit_reviews
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.group_name IN ($groupsPlaceholders) AND
 			    login_sessions.id = person_sessions.login_sessions_id AND
 			    person_sessions.id = tests.person_id AND
 			    tests.id = units.booklet_id AND
 			    units.id = unit_reviews.unit_id
 			UNION ALL
             SELECT
-				person_sessions.group_name as groupname,
+				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
                 person_sessions.code,
                 tests.name as bookletname,
@@ -553,7 +540,7 @@ class AdminDAO extends DAO {
 			    test_reviews
 			WHERE
 			    login_sessions.workspace_id = ? AND
-			    person_sessions.group_name IN ($groupsPlaceholders) AND
+			    login_sessions.group_name IN ($groupsPlaceholders) AND
 			    login_sessions.id = person_sessions.login_sessions_id AND
 			    person_sessions.id = tests.person_id AND
 			    tests.id = test_reviews.booklet_id

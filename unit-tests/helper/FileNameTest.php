@@ -1,9 +1,18 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/helper/FileName.class.php";
 
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class FileNameTest extends TestCase {
+
+    public function setUp(): void {
+
+        require_once "classes/helper/FileName.class.php";
+    }
 
     function test_normalize() {
 

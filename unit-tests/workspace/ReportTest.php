@@ -5,6 +5,10 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class ReportTest extends TestCase {
 
     private const BOM = "\xEF\xBB\xBF";
@@ -313,7 +317,7 @@ final class ReportTest extends TestCase {
     private AdminDAO $adminDaoMock;
     private SysChecksFolder $sysChecksFolderMock;
 
-    static function setUpBeforeClass(): void {
+    public function setUp(): void {
 
         require_once "classes/workspace/Report.php";
         require_once "classes/workspace/Workspace.class.php";
@@ -326,6 +330,11 @@ final class ReportTest extends TestCase {
         require_once "classes/helper/CSV.class.php";
         require_once "classes/helper/TimeStamp.class.php";
         require_once "classes/helper/JSON.class.php";
+
+        $this->workspaceId = 1;
+        $this->dataIds = ["sample_group", "sample_group"];
+        $this->adminDaoMock = $this->createMock(AdminDAO::class);
+        $this->sysChecksFolderMock = $this->createMock(SysChecksFolder::class);
     }
 
     function test__construct(): void {
@@ -724,13 +733,4 @@ final class ReportTest extends TestCase {
 
         $this->testGenerateSysChecksReportWithFailure(new ReportFormat(ReportFormat::JSON));
     }
-
-    function setUp(): void {
-
-        $this->workspaceId = 1;
-        $this->dataIds = ["sample_group", "sample_group"];
-        $this->adminDaoMock = $this->createMock(AdminDAO::class);
-        $this->sysChecksFolderMock = $this->createMock(SysChecksFolder::class);
-    }
-
 }

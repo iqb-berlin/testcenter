@@ -2,47 +2,36 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-require_once "classes/files/File.class.php";
-require_once "classes/files/XMLFile.class.php";
-require_once "classes/files/XMLFileUnit.class.php";
-require_once "classes/files/ResourceFile.class.php";
-require_once "classes/workspace/Workspace.class.php";
-require_once "classes/workspace/WorkspaceValidator.class.php";
 
-class WorkspaceValidatorMock extends WorkspaceValidator {
-    /** @noinspection PhpMissingParentConstructorInspection */
-    public function __construct(array $mockResources) {
-        $this->allFiles['Resource'] = [];
-        foreach ($mockResources as $mockResource) {
-            $this->allFiles['Resource'][$mockResource] = new ResourceFileMock($mockResource);
-        }
-        $this->createVersionMap();
-    }
-}
-
-class ResourceFileMock extends ResourceFile {
-    /** @noinspection PhpMissingParentConstructorInspection */
-    public function __construct(string $name) {
-        $this->id = $name;
-        $this->name = $name;
-    }
-
-
-    public function getContent(): string {
-
-        return 'content of: ' . $this->name;
-    }
-}
-
-
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class XMLFilesUnitTest extends TestCase {
+
+
+    public function setUp(): void {
+
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/data-collection/ValidationReportEntry.class.php";
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileUnit.class.php";
+        require_once "classes/files/ResourceFile.class.php";
+        require_once "classes/helper/FileName.class.php";
+        require_once "classes/workspace/Workspace.class.php";
+        require_once "classes/workspace/WorkspaceValidator.class.php";
+        require_once "unit-tests/mock-classes/ResourceFileMock.php";
+        require_once "unit-tests/mock-classes/WorkspaceValidatorMock.php";
+
+        VfsForTest::setUp();
+    }
+
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
-        VfsForTest::setUp();
     }
 
 

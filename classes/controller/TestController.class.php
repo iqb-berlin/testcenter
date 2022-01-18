@@ -87,6 +87,7 @@ class TestController extends Controller {
 
         // TODO check if unit is (still) valid
 
+        // TODO each part could have a different type
         $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
 
         $unit = [

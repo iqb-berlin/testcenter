@@ -1,25 +1,31 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-require_once "classes/helper/Version.class.php";
-require_once "classes/helper/XMLSchema.class.php";
-require_once "unit-tests/VfsForTest.class.php";
-require_once "unit-tests/mock-classes/ExternalFileMock.php";
-//require_once "classes/helper/ExternalFile.class.php";
 
+use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class XMLSchemaTest extends TestCase {
 
-    private $vfs;
+    private vfsStreamDirectory $vfs;
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
     function setUp(): void {
+
+        require_once "classes/helper/Version.class.php";
+        require_once "classes/helper/XMLSchema.class.php";
+        require_once "classes/helper/JSON.class.php";
+        require_once "unit-tests/VfsForTest.class.php";
+        require_once "unit-tests/mock-classes/ExternalFileMock.php";
 
         $this->vfs = VfsForTest::setUp();
         $this->testUrls['local_full'] = DATA_DIR . '/definitions/vo_SysCheck.xsd';

@@ -16,7 +16,7 @@ class VfsForTest {
 
     static function setUpBeforeClass(): void {
 
-        ini_set('max_execution_time', 3);
+        ini_set('max_execution_time', 30);
 
         if (!defined('ROOT_DIR')) {
 
@@ -58,9 +58,6 @@ class VfsForTest {
 
         return $vfs;
     }
-
-
-
 
 
     private static function insertTrashFiles() {

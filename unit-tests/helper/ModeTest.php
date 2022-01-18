@@ -1,11 +1,17 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/helper/Mode.class.php";
 
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class ModeTest extends TestCase {
 
+    function setUp(): void {
+
+        require_once 'classes/helper/Mode.class.php';
+    }
 
     public function test_getWorkspaceName() {
 

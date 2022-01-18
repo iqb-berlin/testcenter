@@ -7,15 +7,15 @@ class LoginArray implements IteratorAggregate {
 
     protected $array = [];
 
-    public function __construct(Login... $potentialLogins) {
+    public function __construct(Login... $logins) {
 
-        $this->array = $potentialLogins;
+        $this->array = $logins;
     }
 
 
-    public function add(Login $potentialLogin) {
+    public function add(Login $login) {
 
-        $this->array[] = $potentialLogin;
+        $this->array[] = $login;
     }
 
 

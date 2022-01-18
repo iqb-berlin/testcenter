@@ -7,7 +7,7 @@ class Password {
 
     static function encrypt(string $password, string $pepper, bool $insecure = false): string {
 
-        // for faster e2e-tests
+        // for faster e2e-testsQ
         if ($insecure === true) {
 
             return sha1($pepper . $password);

@@ -1,10 +1,19 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/helper/Password.class.php";
-require_once "classes/exception/HttpError.class.php";
 
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class PasswordTest extends TestCase {
+
+    public function setUp(): void {
+
+        require_once "classes/helper/Password.class.php";
+        require_once "classes/exception/HttpError.class.php";
+    }
 
     function test_encrypt_normal() {
 
@@ -48,7 +57,6 @@ class PasswordTest extends TestCase {
 
     function test_validate() {
 
-        /** @noinspection PhpVoidFunctionResultUsedInspection */
         $this->assertNull(Password::validate(str_repeat('x', 30)));
     }
 

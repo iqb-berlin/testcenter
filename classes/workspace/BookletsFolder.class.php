@@ -62,34 +62,34 @@ class BookletsFolder extends Workspace {
         return new LoginArray(...$testtakers);
     }
 
-
-    function getTestStatusOverview(array $testStatusFromDB): array {
-
-        $testStatus = $this->getTestStatus();
-
-        foreach ($testStatus as $groupName => $status) {
-
-            if (isset($testStatusFromDB[$groupName])) {
-                $testStatus[$groupName] = array_merge($testStatus[$groupName], $testStatusFromDB[$groupName]);
-            } else {
-                $testStatus[$groupName]['bookletsStarted'] = 0;
-                $testStatus[$groupName]['bookletsLocked'] = 0;
-                $testStatus[$groupName]['laststart'] = strtotime("1/1/2000");
-                $testStatus[$groupName]['laststartStr'] = '';
-            }
-        }
-
-        foreach ($testStatusFromDB as $groupName => $status) {
-
-            if (!isset($testStatus[$groupName])) {
-                $testStatus[$groupName] = $status;
-                $testStatus[$groupName]['groupname'] = $groupName;
-                $testStatus[$groupName]['orphaned'] = true; // group is in Db, but file is vanished
-            }
-        }
-
-        return array_values($testStatus);
-    }
+// TODO fix 13
+//    function getTestStatusOverview(array $testStatusFromDB): array {
+//
+//        $testStatus = $this->getTestStatus();
+//
+//        foreach ($testStatus as $groupName => $status) {
+//
+//            if (isset($testStatusFromDB[$groupName])) {
+//                $testStatus[$groupName] = array_merge($testStatus[$groupName], $testStatusFromDB[$groupName]);
+//            } else {
+//                $testStatus[$groupName]['bookletsStarted'] = 0;
+//                $testStatus[$groupName]['bookletsLocked'] = 0;
+//                $testStatus[$groupName]['laststart'] = strtotime("1/1/2000");
+//                $testStatus[$groupName]['laststartStr'] = '';
+//            }
+//        }
+//
+//        foreach ($testStatusFromDB as $groupName => $status) {
+//
+//            if (!isset($testStatus[$groupName])) {
+//                $testStatus[$groupName] = $status;
+//                $testStatus[$groupName]['groupname'] = $groupName;
+//                $testStatus[$groupName]['orphaned'] = true; // group is in Db, but file is vanished
+//            }
+//        }
+//
+//        return array_values($testStatus);
+//    }
 
     private function getTestStatus(): array {
 

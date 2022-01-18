@@ -3,7 +3,6 @@
 
 alter table login_sessions drop column mode;
 alter table login_sessions drop column codes_to_booklets;
-alter table login_sessions drop column group_name;
 alter table login_sessions drop column custom_texts;
 alter table login_sessions drop column valid_until;
 

@@ -1,9 +1,18 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/helper/Server.class.php";
 
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class ServerTest extends TestCase {
+
+    public function setUp(): void {
+
+        require_once "classes/helper/Server.class.php";
+    }
 
     function test_getUrl() {
 

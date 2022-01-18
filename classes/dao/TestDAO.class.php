@@ -325,7 +325,7 @@ class TestDAO extends DAO {
 
         return [
             "dataParts" => $unitData,
-            "dataType" => $row['response_type']
+            "dataType" => $row['response_type'] ?? ''
         ];
     }
 

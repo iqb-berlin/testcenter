@@ -3,71 +3,81 @@
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
-require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-require_once "classes/data-collection/ValidationReportEntry.class.php";
-require_once "classes/files/File.class.php";
-require_once "classes/files/XMLFile.class.php";
-require_once "classes/files/XMLFileBooklet.class.php";
-require_once "classes/files/ResourceFile.class.php";
-require_once "classes/helper/FileName.class.php";
-require_once "unit-tests/VfsForTest.class.php";
-
-$fullVerona4MetaData =  '{
-  "$schema": "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json",
-  "type": "player",
-  "id": "verona-player-awesome",
-  "name": [
-    {
-      "value": "Un Joueur trés Magnifique",
-      "lang": "fr"
-    },
-    {
-      "value": "Some Awesome Player",
-      "lang": "en"
-    }
-  ],
-  "version": "4.0.0",
-  "specVersion": "4.0",
-  "description": [
-    {
-      "value": "Description in English",
-      "lang": "en"
-    },
-    {
-      "value": "Beschreibung auf Deutsch",
-      "lang": "de"
-    }
-  ],
-  "maintainer": {
-    "name": [
-      {
-        "value": "IQB",
-        "lang": "en"
-      }
-    ],
-    "email": "iqb-tbadev@hu-berlin.de",
-    "url": "https://www.iqb.hu-berlin.de"
-  },
-  "code": {
-    "repositoryUrl": "https://github.com/iqb-berlin/testcenter-backend",
-    "repositoryType": "git",
-    "licenseType": "MIT",
-    "licenseUrl": "https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/LICENSE"
-  },
-  "notSupportedFeatures": ["log-policy"]
-}';
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class ResourceFileTest extends TestCase {
 
     private vfsStreamDirectory $vfs;
 
+    private $fullVerona4MetaData =
+    '{
+      "$schema": "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json",
+      "type": "player",
+      "id": "verona-player-awesome",
+      "name": [
+        {
+          "value": "Un Joueur trés Magnifique",
+          "lang": "fr"
+        },
+        {
+          "value": "Some Awesome Player",
+          "lang": "en"
+        }
+      ],
+      "version": "4.0.0",
+      "specVersion": "4.0",
+      "description": [
+        {
+          "value": "Description in English",
+          "lang": "en"
+        },
+        {
+          "value": "Beschreibung auf Deutsch",
+          "lang": "de"
+        }
+      ],
+      "maintainer": {
+        "name": [
+          {
+            "value": "IQB",
+            "lang": "en"
+          }
+        ],
+        "email": "iqb-tbadev@hu-berlin.de",
+        "url": "https://www.iqb.hu-berlin.de"
+      },
+      "code": {
+        "repositoryUrl": "https://github.com/iqb-berlin/testcenter-backend",
+        "repositoryType": "git",
+        "licenseType": "MIT",
+        "licenseUrl": "https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/LICENSE"
+      },
+      "notSupportedFeatures": ["log-policy"]
+    }';
+
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
     function setUp(): void {
+
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/data-collection/ValidationReportEntry.class.php";
+        require_once "classes/data-collection/PlayerMeta.class.php";
+        require_once "classes/data-collection/FileSpecialInfo.class.php";
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileBooklet.class.php";
+        require_once "classes/files/ResourceFile.class.php";
+        require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/Version.class.php";
+        require_once "classes/helper/JSON.class.php";
 
         $this->vfs = VfsForTest::setUp();
     }
@@ -104,8 +114,7 @@ class ResourceFileTest extends TestCase {
         $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReportSorted());
         $this->assertArrayHasKey('warning', $playerWithNoData->getValidationReportSorted());
 
-        global $fullVerona4MetaData;
-        $playerWithVerona4Meta = $this->createPlayerStubV4('verona-player-awesome-4.0.0.html', $fullVerona4MetaData);
+        $playerWithVerona4Meta = $this->createPlayerStubV4('verona-player-awesome-4.0.0.html', $this->fullVerona4MetaData);
 
         $expectation = new FileSpecialInfo();
         $expectation->label = "Some Awesome Player";

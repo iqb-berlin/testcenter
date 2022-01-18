@@ -1,23 +1,34 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
+use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-require_once "classes/workspace/Workspace.class.php";
-require_once "classes/workspace/SysChecksFolder.class.php";
-require_once "unit-tests/VfsForTest.class.php";
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class SysChecksFolderTest extends TestCase {
 
-    private $vfs;
-    private $folder;
+    private vfsStreamDirectory $vfs;
+    private SysChecksFolder $folder;
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
     function setUp(): void {
+
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/workspace/Workspace.class.php";
+        require_once "classes/workspace/SysChecksFolder.class.php";
+        require_once "classes/helper/FileName.class.php";
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileSysCheck.class.php";
 
         $this->vfs = VfsForTest::setUp();
         $this->folder = new SysChecksFolder(1);

@@ -3,6 +3,10 @@
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class FolderTest extends TestCase {
 
 
@@ -10,10 +14,13 @@ class FolderTest extends TestCase {
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
     function setUp(): void {
+
+        require_once 'classes/helper/Folder.class.php';
 
         $this->vfs = VfsForTest::setUp();
     }

@@ -4,25 +4,29 @@
 
 declare(strict_types=1);
 
-require_once "unit-tests/VfsForTest.class.php";
-require_once "classes/helper/JSON.class.php";
-require_once "classes/helper/Version.class.php";
-
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class VersionTest extends TestCase {
 
     private vfsStreamDirectory $vfs;
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
-        VfsForTest::setUp(false);
     }
 
 
     function setUp(): void {
+
+        require_once "classes/helper/JSON.class.php";
+        require_once "classes/helper/Version.class.php";
 
         $this->vfs = VfsForTest::setUp(false);
         file_put_contents($this->vfs->url() . '/composer.json', '{"version":"5.1.0"}');

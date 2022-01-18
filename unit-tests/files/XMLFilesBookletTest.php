@@ -7,8 +7,6 @@ require_once "classes/files/File.class.php";
 require_once "classes/files/XMLFile.class.php";
 require_once "classes/files/XMLFileBooklet.class.php";
 
-
-
 class XMLFileBookletExposed extends XMLFileBooklet {
 
     public function getAllUnitIds(): array {
@@ -17,11 +15,27 @@ class XMLFileBookletExposed extends XMLFileBooklet {
 };
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class XMLFilesBookletTest extends TestCase {
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
+    }
+
+
+    public function setUp(): void {
+
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/helper/FileName.class.php";
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileBooklet.class.php";
+
         VfsForTest::setUp();
     }
 

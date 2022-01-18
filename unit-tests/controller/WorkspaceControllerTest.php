@@ -16,6 +16,7 @@ use Slim\Http\Response;
 
 /**
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 final class WorkspaceControllerTest extends TestCase {
 
@@ -44,8 +45,7 @@ final class WorkspaceControllerTest extends TestCase {
     private int $workspaceId = 1;
     private string $dataIds = 'id1,id2';
 
-
-    static function setUpBeforeClass(): void {
+    function setUp(): void {
 
         require_once "classes/controller/Controller.class.php";
         require_once "classes/controller/WorkspaceController.class.php";
@@ -55,9 +55,6 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "classes/exception/HttpException.class.php";
         require_once "classes/exception/HttpSpecializedException.class.php";
         require_once "classes/exception/HttpNotFoundException.class.php";
-    }
-
-    function setUp(): void {
 
         $this->callable = [WorkspaceController::class, 'getReport'];
         $this->reportMock = Mockery::mock('overload:' . Report::class);

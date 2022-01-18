@@ -14,10 +14,7 @@ require_once "classes/dao/TestDAO.class.php";
 
 class TestDAOTest extends TestCase {
 
-    private $dbc;
-    /* @type DAO
-     * @throws Exception
-     */
+    private TestDAO $dbc;
 
     function setUp(): void {
 
@@ -43,7 +40,7 @@ class TestDAOTest extends TestCase {
         $this->assertEquals($expected, $result);
 
         $expected = [];
-        $result = $this->dbc->getTestState(2);
+        $result = $this->dbc->getTestState(3);
 
         $this->assertEquals($expected, $result);
     }
@@ -188,14 +185,14 @@ class TestDAOTest extends TestCase {
             ],
             "dataType" => 'the-response-type'
         ];
-        $result = $this->dbc->getDataParts(0, 'UNIT.SAMPLE');
+        $result = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
         $this->assertEquals($expected, $result);
     }
 
 
     function test_updateDataParts() {
         $this->dbc->updateDataParts(
-            0,
+            1,
             'UNIT.SAMPLE',
             [
                 "other" =>  '{"other": "overwritten"}',
@@ -212,7 +209,7 @@ class TestDAOTest extends TestCase {
             ],
             "dataType" => 'the-response-type'
         ];
-        $result = $this->dbc->getDataParts(0, 'UNIT.SAMPLE');
+        $result = $this->dbc->getDataParts(1, 'UNIT.SAMPLE');
         $this->assertEquals($expected, $result);
     }
 }

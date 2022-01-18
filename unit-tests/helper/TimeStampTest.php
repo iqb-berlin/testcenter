@@ -2,12 +2,18 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/helper/TimeStamp.class.php";
-require_once "classes/exception/HttpError.class.php";
 
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class TimeStampTest extends TestCase {
 
     function setUp(): void {
+
+        require_once "classes/helper/TimeStamp.class.php";
+        require_once "classes/exception/HttpError.class.php";
 
         TimeStamp::setup();
     }
@@ -109,7 +115,7 @@ class TimeStampTest extends TestCase {
 
         TimeStamp::setup(null, "@$past");
         $actual = TimeStamp::expirationFromNow($today, $aroundTwentyYears);
-        $this->assertEquals(1577448000, $actual, 'was expired around 20 years after $past');
+        $this->assertEquals(1577444400, $actual, 'was expired around 20 years after $past');
     }
 
 

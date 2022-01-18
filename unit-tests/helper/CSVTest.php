@@ -1,9 +1,18 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/helper/CSV.class.php";
 
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class CSVTest extends TestCase {
+
+    public function setUp(): void {
+
+        require_once "classes/helper/CSV.class.php";
+    }
 
     private $_testData = [
         ['a' => 'A', 'b' => 'B'],

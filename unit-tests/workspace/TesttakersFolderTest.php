@@ -1,23 +1,38 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
+use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-require_once "classes/workspace/Workspace.class.php";
-require_once "classes/workspace/TesttakersFolder.class.php";
-require_once "unit-tests/VfsForTest.class.php";
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class TesttakersFolderTest extends TestCase {
 
-    private $vfs;
-    private $folder;
+    private vfsStreamDirectory $vfs;
+    private TesttakersFolder $folder;
+
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
+
     function setUp(): void {
+
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/data-collection/Group.class.php";
+        require_once "classes/data-collection/ValidationReportEntry.class.php";
+        require_once "classes/workspace/Workspace.class.php";
+        require_once "classes/workspace/TesttakersFolder.class.php";
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileTesttakers.class.php";
+        require_once "classes/helper/FileName.class.php";
 
         $this->vfs = VfsForTest::setUp();
         $this->folder = new TesttakersFolder(1);

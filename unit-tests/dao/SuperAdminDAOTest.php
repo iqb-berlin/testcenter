@@ -1,22 +1,26 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/exception/HttpError.class.php";
-require_once "classes/data-collection/DBConfig.class.php";
-require_once "classes/helper/DB.class.php";
-require_once "classes/helper/Password.class.php";
-require_once "classes/dao/DAO.class.php";
-require_once "classes/dao/SuperAdminDAO.class.php";
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class SuperAdminDAOTest extends TestCase {
 
-    private $dbc;
-    /* @type DAO
-     * @throws Exception
-     */
+    private SuperAdminDAO $dbc;
 
     function setUp(): void {
+
+        require_once "classes/exception/HttpError.class.php"
+        ;
+        require_once "classes/data-collection/DataCollection.class.php";
+        require_once "classes/data-collection/DBConfig.class.php";
+        require_once "classes/helper/DB.class.php";
+        require_once "classes/helper/Password.class.php";
+        require_once "classes/dao/DAO.class.php";
+        require_once "classes/dao/SuperAdminDAO.class.php";
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new SuperAdminDAO();

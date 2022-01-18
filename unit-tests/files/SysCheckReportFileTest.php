@@ -1,18 +1,26 @@
 <?php
 
-use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
-require_once "classes/files/SysCheckReportFile.class.php";
-require_once "classes/helper/Folder.class.php";
 
+
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class SysCheckReportFileTest extends TestCase {
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
     function setUp(): void {
+
+        require_once "classes/files/SysCheckReportFile.class.php";
+        require_once "classes/helper/Folder.class.php";
+        require_once "classes/helper/JSON.class.php";
+        require_once "classes/helper/TimeStamp.class.php";
 
         VfsForTest::setUp();
     }

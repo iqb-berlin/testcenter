@@ -4,30 +4,11 @@
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 
-require_once "unit-tests/VfsForTest.class.php";
-require_once "unit-tests/mock-classes/ExternalFileMock.php";
-require_once "unit-tests/mock-classes/ZIPMock.php";
 
-require_once "classes/helper/FileSize.class.php";
-require_once "classes/helper/Folder.class.php";
-require_once "classes/helper/FileName.class.php";
-require_once "classes/helper/Version.class.php";
-require_once "classes/helper/XMLSchema.class.php";
-require_once "classes/exception/HttpError.class.php";
-require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-require_once "classes/data-collection/ValidationReportEntry.class.php";
-require_once "classes/data-collection/PlayerMeta.class.php";
-require_once "classes/data-collection/FileSpecialInfo.class.php";
-require_once "classes/files/File.class.php";
-require_once "classes/files/ResourceFile.class.php";
-require_once "classes/files/XMLFile.class.php";
-require_once "classes/files/XMLFileUnit.class.php";
-require_once "classes/files/XMLFileTesttakers.class.php";
-require_once "classes/files/XMLFileBooklet.class.php";
-require_once "classes/files/XMLFileSysCheck.class.php";
-require_once "classes/workspace/WorkspaceValidator.class.php";
-
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class WorkspaceTest extends TestCase {
 
     private $vfs;
@@ -54,11 +35,41 @@ class WorkspaceTest extends TestCase {
 
     public static function setUpBeforeClass(): void {
 
+        require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
 
     function setUp(): void {
+
+        require_once "unit-tests/mock-classes/ExternalFileMock.php";
+        require_once "unit-tests/mock-classes/ZIPMock.php";
+        require_once "unit-tests/mock-classes/PasswordMock.php";
+
+        require_once "classes/helper/FileSize.class.php";
+        require_once "classes/helper/Folder.class.php";
+        require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/Version.class.php";
+        require_once "classes/helper/XMLSchema.class.php";
+        require_once "classes/helper/JSON.class.php";
+        require_once "classes/helper/TimeStamp.class.php";
+        require_once "classes/exception/HttpError.class.php";
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/data-collection/ValidationReportEntry.class.php";
+        require_once "classes/data-collection/PlayerMeta.class.php";
+        require_once "classes/data-collection/FileSpecialInfo.class.php";
+        require_once "classes/data-collection/Login.class.php";
+        require_once "classes/data-collection/LoginArray.class.php";
+        require_once "classes/data-collection/Group.class.php";
+        require_once "classes/workspace/TesttakersFolder.class.php";
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/ResourceFile.class.php";
+        require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileUnit.class.php";
+        require_once "classes/files/XMLFileTesttakers.class.php";
+        require_once "classes/files/XMLFileBooklet.class.php";
+        require_once "classes/files/XMLFileSysCheck.class.php";
+        require_once "classes/workspace/WorkspaceValidator.class.php";
 
         $this->vfs = VfsForTest::setUp();
         $this->workspace = new Workspace(1);
