@@ -32,21 +32,14 @@ class TestController extends Controller {
         self::testDAO()->setTestRunning((int) $test['id']);
 
         // TODO check for Mode::hasCapability('monitorable'))
-        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), (int) $test['id']);
+        $testState = isset($test['lastState']) && $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'];
         if ($test['_newlyCreated']) {
-            // can happen when mode is run-hot-return for example
-            $personLogin = self::sessionDAO()->getPersonSessionFromToken($authToken->getToken());
-            $message->setLogin(
-                $personLogin->getLoginSession()->getLogin()->getName(),
-                $authToken->getMode(),
-                $personLogin->getLoginSession()->getLogin()->getGroupLabel(),
-                $personLogin->getPerson()->getCode()
-            );
+            $personSession = self::sessionDAO()->getPersonSessionFromToken($authToken->getToken());
+            $message = SessionChangeMessage::session((int) $test['id'], $personSession);
+            $message->setTestState($testState, $body['bookletName']);
+        } else {
+            $message = SessionChangeMessage::testState($authToken->getId(), (int) $test['id'], $body['bookletName']);
         }
-        $message->setTestState(
-            isset($test['lastState']) && $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'],
-            $body['bookletName']
-        );
         BroadcastService::sessionChange($message);
 
         $response->getBody()->write($test['id']);
@@ -232,7 +225,7 @@ class TestController extends Controller {
         }
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken, $testId, $newState)
+            SessionChangeMessage::testState($authToken->getId(), $testId, $newState)
         );
 
         return $response->withStatus(200);
@@ -282,7 +275,7 @@ class TestController extends Controller {
         }
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::unitState($authToken, $testId, $unitName, $newState)
+            SessionChangeMessage::unitState($authToken->getId(), $testId, $unitName, $newState)
         );
 
         return $response->withStatus(200);
@@ -326,7 +319,7 @@ class TestController extends Controller {
         self::testDAO()->addTestLog($testId, $lockEvent['message'], $lockEvent['timeStamp']);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken, $testId, ['status' => 'locked'])
+            SessionChangeMessage::testState($authToken->getId(), $testId, ['status' => 'locked'])
         );
 
         return $response->withStatus(200);
@@ -367,8 +360,7 @@ class TestController extends Controller {
         $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
         self::testDAO()->addTestLog($testId, '"' . $field . '"', 0, $value);
 
-        $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $testSession['group_name'], $testId);
-        $sessionChangeMessage->setTestState($newState);
+        $sessionChangeMessage = SessionChangeMessage::testState((int) $testSession['person_id'], $testId, $newState);
         BroadcastService::sessionChange($sessionChangeMessage);
     }
 

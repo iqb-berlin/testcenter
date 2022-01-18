@@ -120,7 +120,10 @@ error_log("\n !1 " . count($members));
                             $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
                         }
                         $test = self::testDAO()->getOrCreateTest($memberPerson->getId(), $booklet, $bookletLabels[$booklet]);
-                        $sessionMessage = SessionChangeMessage::newSession($member->getLogin(), $memberPerson, (int) $test['id']);
+                        $sessionMessage = SessionChangeMessage::session((int) $test['id'], new PersonSession(
+                            $member,
+                            $memberPerson
+                        ));
                         $sessionMessage->setTestState([], $booklet);
                         BroadcastService::sessionChange($sessionMessage);
                     }

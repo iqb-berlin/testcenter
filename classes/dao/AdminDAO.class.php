@@ -151,6 +151,7 @@ class AdminDAO extends DAO {
 	}
 
 
+    // TODO FIXME 13
 	public function deleteResultData(int $workspaceId, string $groupName): void { // TODO write unit test
 
 		$this->_(
@@ -167,17 +168,15 @@ class AdminDAO extends DAO {
 
 	public function getWorkspaces(string $token): array {
 
-		$data = $this->_(
-			'SELECT workspaces.id, workspaces.name, workspace_users.role FROM workspaces
-				INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
-				INNER JOIN users ON workspace_users.user_id = users.id
-				INNER JOIN admin_sessions ON  users.id = admin_sessions.user_id
-				WHERE admin_sessions.token =:token',
-			[':token' => $token],
-			true
-		);
-
-		return $data;
+        return $this->_(
+            'SELECT workspaces.id, workspaces.name, workspace_users.role FROM workspaces
+                INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
+                INNER JOIN users ON workspace_users.user_id = users.id
+                INNER JOIN admin_sessions ON  users.id = admin_sessions.user_id
+                WHERE admin_sessions.token =:token',
+            [':token' => $token],
+            true
+        );
 	}
 
 
@@ -233,7 +232,7 @@ class AdminDAO extends DAO {
 		return $user['role'] ?? '';
 	}
 
-
+    // FIXME 13
 	public function getResultsCount(int $workspaceId): array { // TODO add unit test  // TODO use dataclass an camelCase-objects
 
 		return $this->_(
@@ -268,17 +267,22 @@ class AdminDAO extends DAO {
         $modeSelector = "'" . implode("', '", Mode::getByCapability('monitorable')) . "'";
 
         $sql = 'SELECT
-                 person_sessions.id as "personId",
+                 person_sessions.id as "person_id",
                  login_sessions.name as "loginName",
-                 logins.group_name as "groupName",
+       
+                 login_sessions.id as "login_sessions_id",
+                 logins.name,
                  logins.mode,
+                 logins.group_name,
+                 logins.group_label,
+                 logins.workspace_id,
                  person_sessions.code,
-                 tests.id as "testId",
-                 tests.name as "bookletName",
+                 tests.id as "test_id",
+                 tests.name as "booklet_name",
                  tests.locked,
                  tests.running,
-                 tests.laststate as "testState",
-                 tests.timestamp_server as "testTimestampServer"
+                 tests.laststate as "test_state",
+                 tests.timestamp_server as "test_timestamp_server"
             FROM person_sessions
                  LEFT JOIN tests ON person_sessions.id = tests.person_id
                  LEFT JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
@@ -297,28 +301,40 @@ class AdminDAO extends DAO {
 
             $testState = $this->getTestFullState($testSession);
 
-		    $sessionChangeMessage = new SessionChangeMessage(
-		        (int) $testSession['personId'],
-                $testSession['groupName'],
-                (int) $testSession['testId'],
-                TimeStamp::fromSQLFormat($testSession['testTimestampServer']),
-            );
-		    $sessionChangeMessage->setLogin(
-                $testSession['loginName'],
-                $testSession['mode'],
-                ucfirst(str_replace('_', " ", $testSession['groupName'])),
-                $testSession['code']
+		    $sessionChangeMessage = SessionChangeMessage::session(
+                (int) $testSession['test_id'],
+                new PersonSession(
+                    new LoginSession(
+                        (int) $testSession['login_sessions_id'],
+                        '',
+                        new Login(
+                            $testSession['name'],
+                            '',
+                            $testSession['mode'],
+                            $testSession['group_name'],
+                            $testSession['group_label'],
+                            null,
+                            (int) ['workspace_id']
+                        )
+                    ),
+                    new Person(
+                        (int) $testSession['person_id'],
+                    '',
+                        $testSession['code'],
+                    )
+                ),
+                TimeStamp::fromSQLFormat($testSession['test_timestamp_server']),
             );
             $sessionChangeMessage->setTestState(
                 $testState,
-                $testSession['bookletName'] ?? ""
+                $testSession['booklet_name'] ?? ""
             );
 
             $currentUnitName = isset($testState['CURRENT_UNIT_ID']) ? $testState['CURRENT_UNIT_ID'] : null;
 
             if ($currentUnitName) {
 
-                $currentUnitState = $this->getUnitState((int) $testSession['testId'], $currentUnitName);
+                $currentUnitState = $this->getUnitState((int) $testSession['test_id'], $currentUnitName);
 
                 if ($currentUnitState) {
 
@@ -361,52 +377,7 @@ class AdminDAO extends DAO {
     }
 
 
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     * @deprecated
-     */
-    public function getResponses($workspaceId, $groups): array {
-        // TODO use dataclass an camelCase-objects
-
-		$groupsString = implode("','", $groups);
-		return $this->_(
-        <<<EOT
-            select
-                units.name as unitname,
-                '{' || group_concat('"' || unit_data.part_id || '": "' || replace(unit_data.content, '"', char(0x5C) || '"') || '"') || '}' as responses,
-                -- thanks to PIPES_AS_CONCAT works like in sqlite as concat 
-                unit_data.response_type as responsetype,
-                units.laststate,
-                tests.name as bookletname,
-                max(unit_data.ts) as 'responses_ts',
-                person_sessions.group_name as groupname,
-                login_sessions.name as loginname,
-                case
-                    when person_sessions.code != ''
-                    then person_sessions.code
-                    else person_sessions.id
-                end as code
-            from units
-                inner join tests ON tests.id = units.booklet_id
-                inner join person_sessions ON person_sessions.id = tests.person_id 
-                inner join login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-                left join unit_data on unit_data.unit_id = units.id
-            where
-                login_sessions.workspace_id =:workspaceId
-                and person_sessions.group_name IN ('$groupsString')
-            group by
-                units.id
-        EOT,
-			[
-				':workspaceId' => $workspaceId,
-			],
-			true
-		);
-	}
-
-
+    // TODO FIXME
     public function getResponseReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
@@ -447,64 +418,6 @@ class AdminDAO extends DAO {
     }
 
 
-	// $return = []; groupname, loginname, code, bookletname, unitname, timestamp, logentry
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     * @deprecated
-     */
-    public function getLogs($workspaceId, $groups) { // TODO add unit test // TODO use dataclass and camelCase-objects
-
-		$groupsString = implode("','", $groups);
-
-		$unitData = $this->_(
-			"SELECT
-                units.name as unitname,
-                tests.name as bookletname,
-				person_sessions.group_name as groupname, 
-                login_sessions.name as loginname,
-                case
-                    when person_sessions.code != '' then person_sessions.code
-                    else person_sessions.id
-                end as code,
-                unit_logs.timestamp,
-                unit_logs.logentry
-			FROM unit_logs
-			INNER JOIN units ON units.id = unit_logs.unit_id
-			INNER JOIN tests ON tests.id = units.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-
-		$bookletData = $this->_(
-			"SELECT tests.name as bookletname,
-					person_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
-					test_logs.timestamp, test_logs.logentry
-			FROM test_logs
-			INNER JOIN tests ON tests.id = test_logs.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-        foreach ($data as $index => $row) {
-            $data[$index]['responses'] = $this->getResponseDataParts((int) $row['unit_id']);
-            unset($data[$index]['unit_id']);
-        }
-
-        return $data;
-    }
-
-
     public function getResponseDataParts(int $unitId): array {
         $data = $this->_(
             'select
@@ -530,6 +443,7 @@ class AdminDAO extends DAO {
      * @param $groups
      * @return array|null
      */
+    // TODO FIXME 13
     public function getLogReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
@@ -589,61 +503,8 @@ class AdminDAO extends DAO {
      * @param $workspaceId
      * @param $groups
      * @return array|null
-     * @deprecated
      */
-    public function getReviews($workspaceId, $groups) { // TODO add unit test
-
-        // $return = []; groupname, loginname, code, bookletname, unitname, priority, categories, entry
-
-        $groupsString = implode("','", $groups);
-
-		$unitData = $this->_(
-			"SELECT units.name as unitname, tests.name as bookletname,
-					person_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
-					unit_reviews.reviewtime, unit_reviews.entry,
-					unit_reviews.priority, unit_reviews.categories
-			FROM unit_reviews
-			INNER JOIN units ON units.id = unit_reviews.unit_id
-			INNER JOIN tests ON tests.id = units.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-
-		$bookletData = $this->_(
-			"SELECT tests.name as bookletname,
-					person_sessions.group_name as groupname, login_sessions.name as loginname, person_sessions.code,
-					test_reviews.reviewtime, test_reviews.entry,
-					test_reviews.priority, test_reviews.categories
-			FROM test_reviews
-			INNER JOIN tests ON tests.id = test_reviews.booklet_id
-			INNER JOIN person_sessions ON person_sessions.id = tests.person_id
-			INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
-			WHERE login_sessions.workspace_id =:workspaceId AND person_sessions.group_name IN ('$groupsString')",
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-
-		foreach ($bookletData as $bd) {
-			$bd['unitname'] = '';
-			array_push($unitData, $bd);
-		}
-
-		return $unitData;
-	}
-
-
-    /**
-     * @param $workspaceId
-     * @param $groups
-     * @return array|null
-     */
+    // TODO FIXME 13
     public function getReviewReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));

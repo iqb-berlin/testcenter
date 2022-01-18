@@ -28,7 +28,7 @@ class WorkspaceInitializer {
             throw new Exception("File not found: `$importFileName`");
         }
 
-        $dir = pathinfo($target, PATHINFO_DIRNAME);;
+        $dir = pathinfo($target, PATHINFO_DIRNAME);
         $fileName = basename($target);
         $fileName = Folder::createPath(DATA_DIR . "/ws_$workspaceId/$dir") . $fileName;
 

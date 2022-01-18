@@ -15,7 +15,7 @@ class Person extends DataCollectionTypeSafe {
         int $id,
         string $token,
         string $code,
-        int $validTo
+        int $validTo = 0
     ) {
 
         $this->id = $id;

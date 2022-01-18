@@ -4,107 +4,62 @@ declare(strict_types=1);
 
 class SessionChangeMessage implements JsonSerializable {
 
-    /**
-     * @var int
-     */
-    protected $personId;
-
-    /**
-     * @var string
-     */
-    protected $groupName;
-
-    /**
-     * @var int
-     */
-    protected $testId;
-
-    /**
-     * @var string
-     */
-    protected $personLabel = "";
-
-    /**
-     * @var string
-     */
-    protected $groupLabel = "";
-
-    /**
-     * @var string
-     */
-    protected $mode = "";
-
-    /**
-     * @var string
-     */
-    protected $testState = [];
-
-    /**
-     * @var string
-     */
-    protected $bookletName = "";
-
-    /**
-     * @var string
-     */
-    protected $unitName = "";
-
-    /**
-     * @var array
-     */
-    protected $unitState = [];
-
-    /**
-     * @var int
-     */
-    protected $timestamp = 0;
+    protected int $personId;
+    protected int $timestamp = 0;
+    protected ?int $testId;
+    protected ?string $groupName;
+    protected ?string $groupLabel = "";
+    protected ?string $personLabel = "";
+    protected ?string $mode = "";
+    protected ?array $testState = [];
+    protected ?string $bookletName = "";
+    protected ?string $unitName = "";
+    protected ?array $unitState = [];
 
 
-    public function __construct(int $personId, string $groupName, int $testId, int $timestamp = null) {
+    private function __construct(int $personId, int $testId, int $timestamp = null) {
 
         $this->personId = $personId;
-        $this->groupName = $groupName;
         $this->testId = $testId;
 
         $this->timestamp = $timestamp ?? TimeStamp::now();
     }
 
 
-    public static function newSession(Login $login, Person $person, int $testId): SessionChangeMessage {
+    public static function session(int $testId, PersonSession $session, int $timestamp = null): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($person->getId(), $person->getGroup(), $testId);
-        $message->setLogin(
-            $login->getName(),
-            $login->getMode(),
-            $login->getGroupLabel(),
-            $person->getCode()
-        );
+        $message = new SessionChangeMessage($session->getPerson()->getId(), $testId, $timestamp);
+        $message->setSession($session);
         return $message;
     }
 
 
-    public static function testState(AuthToken $authToken, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
+    public static function testState(int $personId, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), $testId);
+        $message = new SessionChangeMessage($personId, $testId);
         $message->setTestState($testState, $bookletName);
         return $message;
     }
 
 
-    public static function unitState(AuthToken $authToken, int $testId, string $unitName, array $unitState): SessionChangeMessage {
+    public static function unitState(int $personId, int $testId, string $unitName, array $unitState): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($authToken->getId(), $authToken->getGroup(), $testId);
-        $message->testId = $testId;
+        $message = new SessionChangeMessage($personId, $testId);
         $message->setUnitState($unitName, $unitState);
         return $message;
     }
 
 
-    public function setLogin(string $loginLabel, string $mode, string $groupLabel, string $code): void {
+    public function setSession(PersonSession $session): void {
 
-        $this->personLabel = $loginLabel  . ($code ? '/' . $code : '');
-        $this->mode = $mode;
-        $this->groupLabel = $groupLabel;
+        $login = $session->getLoginSession()->getLogin();
+        $code = $session->getPerson()->getCode();
+
+        $this->personLabel = $login->getName() . ($code ? '/' . $code : '');
+
+        $this->mode = $login->getMode();
+        $this->groupName = $login->getGroupName();
+        $this->groupLabel = $login->getGroupLabel();
     }
 
 

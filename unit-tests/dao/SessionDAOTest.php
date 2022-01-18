@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class SessionDAOTest extends TestCase {
 
-    private DAO $dbc;
+    private SessionDAO $dbc;
 
     private $testLoginSession;
 

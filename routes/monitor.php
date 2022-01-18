@@ -6,6 +6,8 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+global $app;
+
 $app->group('/monitor', function(App $app) {
 
     $app->get('/group/{group_name}', [MonitorController::class, 'getGroup']);

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+global $app;
+
 $app->put('/session/admin', [SessionController::class, 'putSessionAdmin']);
 
 

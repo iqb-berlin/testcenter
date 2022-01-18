@@ -28,7 +28,7 @@ class Login extends DataCollectionTypeSafe {
         string $groupLabel,
         array $booklets,
         int $workspaceId,
-        int $validTo,
+        int $validTo = 0,
         int $validFrom = 0,
         int $validForMinutes = 0,
         $customTexts = null
