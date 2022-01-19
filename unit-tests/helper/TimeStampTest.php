@@ -15,6 +15,7 @@ class TimeStampTest extends TestCase {
         require_once "classes/helper/TimeStamp.class.php";
         require_once "classes/exception/HttpError.class.php";
 
+        date_default_timezone_set('Europe/Berlin');
         TimeStamp::setup();
     }
 
