@@ -7,10 +7,10 @@ abstract class Controller {
 
     // TODO refactor DAO to be static, than this would not be needed
 
-    private static $_adminDAO;
-    private static $_superAdminDAO;
-    private static $_sessionDAO;
-    private static $_testDAO;
+    protected static $_adminDAO;
+    protected static $_superAdminDAO;
+    protected static $_sessionDAO;
+    protected static $_testDAO;
 
     protected static function sessionDAO(): SessionDAO {
 
