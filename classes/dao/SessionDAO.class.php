@@ -361,7 +361,7 @@ class SessionDAO extends DAO {
     }
 
 
-    public function getOrCreatePersonSession(LoginSession $loginSession, string $code, bool $renewToken = true): Person {
+    public function getOrCreatePersonSession(LoginSession $loginSession, string $code, bool $renewToken = true): PersonSession {
         $person = $this->_(
             'SELECT 
                     person_sessions.id,
@@ -392,16 +392,19 @@ class SessionDAO extends DAO {
             $personToken = $this->renewPersonToken((int) $person['id'], $tokenName);
         }
 
-        return new Person(
-            (int) $person['id'],
-            $personToken,
-            $person['code'],
-            TimeStamp::fromSQLFormat($person['valid_until'])
+        return new PersonSession(
+            $loginSession,
+            new Person(
+                (int) $person['id'],
+                $personToken,
+                $person['code'],
+                TimeStamp::fromSQLFormat($person['valid_until'])
+            )
         );
     }
 
 
-    public function createPersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): Person {
+    public function createPersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): PersonSession {
 
         $login = $loginSession->getLogin();
 
@@ -427,11 +430,14 @@ class SessionDAO extends DAO {
             ]
         );
 
-        return new Person(
-            (int) $this->pdoDBhandle->lastInsertId(),
-            $newPersonToken,
-            $code,
-            $validUntil
+        return new PersonSession(
+            $loginSession,
+            new Person(
+                (int) $this->pdoDBhandle->lastInsertId(),
+                $newPersonToken,
+                $code,
+                $validUntil
+            )
         );
     }
 

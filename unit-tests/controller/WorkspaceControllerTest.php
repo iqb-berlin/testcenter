@@ -152,7 +152,6 @@ final class WorkspaceControllerTest extends TestCase {
     function testGetReportWithInvalidReportTypeAndJSONShouldThrowException(): void {
 
         $this->testGetReportWithInvalidReportTypeShouldThrowException('application/json');
-
     }
 
     /**
