@@ -142,7 +142,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
     public function getLoginsByGroup(string $groupName, int $workspaceId): array {
 
         $logins = [];
@@ -181,7 +180,7 @@ class SessionDAO extends DAO {
                     $row["token"],
                     new Login(
                         $row['name'],
-                        $row['password'], // TODO keep this here?
+                        '',
                         $row['mode'],
                         $row['group_name'],
                         $row['group_label'],
@@ -217,7 +216,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
     public function createLoginSession(Login $login, bool $allowExpired = false): LoginSession {
 
         if (!$allowExpired) {
@@ -246,7 +244,7 @@ class SessionDAO extends DAO {
 
 
     // TODO unit-test
-    private function getLoginSession($name, $password): ?LoginSession {
+    public function getLoginSession($name, $password): ?LoginSession {
 
         $loginSession = $this->_(
             'SELECT 
@@ -273,7 +271,7 @@ class SessionDAO extends DAO {
             ]
         );
 
-        // we always check one password to not leak the existence of username to time-attacks // TODO does this work?
+        // we always check one password to not leak the existence of username to time-attacks
         if (!$loginSession) {
             $loginSession = ['password' => 'dummy'];
         }
@@ -292,7 +290,7 @@ class SessionDAO extends DAO {
             $loginSession['token'],
             new Login(
                 $loginSession['name'],
-                $loginSession['password'], // TODO keep this here?
+                '',
                 $loginSession['mode'],
                 $loginSession['group_name'],
                 $loginSession['group_label'],

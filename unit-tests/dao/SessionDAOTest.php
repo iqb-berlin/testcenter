@@ -11,9 +11,12 @@ class SessionDAOTest extends TestCase {
 
     private SessionDAO $dbc;
 
-    private $testLoginSession;
+    private LoginSession $testLoginSession;
+    private array $testDataLoginSessions;
 
     static function setUpBeforeClass(): void {
+
+        require_once "unit-tests/mock-classes/PasswordMock.php";
 
         require_once "classes/exception/HttpError.class.php";
         require_once "classes/data-collection/DataCollection.class.php";
@@ -35,8 +38,8 @@ class SessionDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp", "staticTokens" => true]));
         $this->dbc = new SessionDAO();
-        $this->dbc->runFile('scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile('unit-tests/testdata.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/scripts/sql-schema/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/unit-tests/testdata.sql');
 
         $this->testLoginSession = new LoginSession(
             1,
@@ -52,6 +55,94 @@ class SessionDAOTest extends TestCase {
                 TimeStamp::fromXMLFormat('1/1/2030 12:00')
             )
         );
+
+        $this->testDataLoginSessions = [
+            new LoginSession(
+                1,
+                "nice_token",
+                new Login(
+                    "test",
+                    "",
+                    "run-hot-return",
+                    "sample_group",
+                    "Sample Group",
+                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    1,
+                    1893574800,
+                    0,
+                    0,
+                    new stdClass(),
+                )
+            ),
+            new LoginSession(
+                2,
+                "expired_token",
+                new Login(
+                    "test-expired",
+                    "",
+                    "run-hot-return",
+                    "sample_group",
+                    "Sample Group",
+                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    1,
+                    946803600,
+                    0,
+                    0,
+                    new stdClass()
+                )
+            ),
+            new LoginSession(
+                3,
+                "monitor_token",
+                new Login(
+                    "monitor",
+                    "",
+                    "monitor-group",
+                    "sample_group",
+                    "Sample Group",
+                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    1,
+                    1893574800,
+                    0,
+                    0,
+                    new stdClass(),
+                )
+            ),
+            new LoginSession(
+                4,
+                "test_token",
+                new Login(
+                    "sample_user",
+                    "",
+                    "run-hot-return",
+                    "sample_group",
+                    "Sample Group",
+                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    1,
+                    1893574800,
+                    0,
+                    0,
+                    new stdClass()
+                )
+            ),
+            new LoginSession(
+                5,
+                "future_token",
+                new Login(
+                    "future_user",
+                    "",
+                    "run-hot-return",
+                    "sample_group",
+                    "Sample Group",
+                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    1,
+                    2209107600,
+                    1893574800,
+                    0,
+                    new stdClass()
+                )
+            )
+        ];
     }
 
 
@@ -119,10 +210,11 @@ class SessionDAOTest extends TestCase {
 
         $result = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code');
 
-        $this->assertEquals(5, $result->getId());
-        $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getToken());
-        $this->assertEquals('existing_code', $result->getCode());
-        $this->assertEquals(1893495600, $result->getValidTo() );
+        $this->assertEquals(5, $result->getPerson()->getId());
+        $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
+        $this->assertEquals('existing_code', $result->getPerson()->getCode());
+        $this->assertEquals(1893495600, $result->getPerson()->getValidTo());
+        $this->assertEquals(5, $this->countTableRows('person_sessions'));
     }
 
 
@@ -200,10 +292,12 @@ class SessionDAOTest extends TestCase {
 
         $result = $this->dbc->createPersonSession($testLoginSession, 'existing_code');
 
-        $this->assertEquals(5, $result->getId());
-        $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getToken());
-        $this->assertEquals('existing_code', $result->getCode());
-        $this->assertEquals(1577877000, $result->getValidTo() ); // 1577877000 = 1/1/2020 12:10 GMT+1
+        $this->assertEquals(5, $result->getPerson()->getId());
+        $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
+        $this->assertEquals('existing_code', $result->getPerson()->getCode());
+        $this->assertEquals(1577877000, $result->getPerson()->getValidTo() ); // 1577877000 = 1/1/2020 12:10 GMT+1
+        $this->assertEquals($testLoginSession, $result->getLoginSession());
+        $this->assertEquals(5, $this->countTableRows('person_sessions'));
     }
 
 
@@ -257,8 +351,7 @@ class SessionDAOTest extends TestCase {
     function test_getPersonSessionFromToken_futureLogin() {
 
         $this->expectException('HttpError');
-        $g = $this->dbc->getPersonSessionFromToken('person-of-future-login-token');
-        print_r($g);
+        $this->dbc->getPersonSessionFromToken('person-of-future-login-token');
     }
 
 
@@ -266,5 +359,93 @@ class SessionDAOTest extends TestCase {
 
         $this->expectException('HttpError');
         $this->dbc->getPersonSessionFromToken('expired-person-token');
+    }
+
+
+    function test_getLoginsByGroup() {
+
+
+        $result = $this->dbc->getLoginsByGroup('sample_group', 1);
+
+        $this->assertEquals($this->testDataLoginSessions, $result);
+    }
+
+
+    function test_getLoginsByGroup_notExistingGroup() {
+
+        $result = $this->dbc->getLoginsByGroup('notExistingGroup', 1);
+
+        $this->assertEquals([], $result);
+    }
+
+
+    function test_createLoginSession() {
+
+        $anotherLogin = new Login(
+            "another_one",
+            "blablaa",
+            "hot-run-restart",
+            "another_group",
+            "Another Group",
+            [ '' => 'A.BOOKLET' ],
+            1,
+            946803600
+        );
+
+        $expectation = new LoginSession(
+            7,
+            'static:login:another_one',
+            $anotherLogin
+        );
+
+        $result = $this->dbc->createLoginSession($anotherLogin, true);
+
+        $this->assertEquals($expectation, $result);
+        $this->assertEquals(7, $this->countTableRows('login_sessions'));
+
+
+        $this->expectException(HttpError::class);
+        $this->dbc->createLoginSession($anotherLogin, false);
+    }
+
+
+    public function test_getLoginSession_okay(): void {
+
+        $result = $this->dbc->getLoginSession("test", "pw_hash");
+        $this->assertEquals($this->testDataLoginSessions[0], $result);
+    }
+
+
+    public function test_getLoginSession_expired(): void {
+
+        $this->expectException(HttpError::class);
+        $this->dbc->getLoginSession("test-expired", "pw_hash");
+    }
+
+
+    public function test_getLoginSession_wrongPassword(): void {
+
+        $loginSession = $this->dbc->getLoginSession("test", "wrong");
+        $this->assertNull($loginSession);
+    }
+
+
+    public function test_getLoginSession_missingPassword(): void {
+
+        $loginSession = $this->dbc->getLoginSession("test", "");
+        $this->assertNull($loginSession);
+    }
+
+
+    public function test_getLoginSession_futureUser(): void {
+
+        $this->expectException(HttpError::class);
+        $this->dbc->getLoginSession("future_user", "pw_hash");
+    }
+
+
+    private function countTableRows(string $tableName): int {
+
+        return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];
     }
 }
