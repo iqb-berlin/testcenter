@@ -18,7 +18,7 @@ insert into logins (name, password, mode, workspace_id, codes_to_booklets, sourc
 values ('sample_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', null, '2030-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
 insert into logins (name, password, mode, workspace_id, codes_to_booklets, source, valid_from, valid_to, valid_for, group_name, group_label, custom_texts)
-values ('future_user', 'pw_hash', 'run-hot-return', 1, '{"xxx":["BOOKLET.SAMPLE-1"]}', 'testdata.sql', '2030-01-02 10:00:00', '2040-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
+values ('future_user', 'pw_hash', 'run-hot-return', 1, '{}', 'testdata.sql', '2030-01-02 10:00:00', '2040-01-02 10:00:00', null, 'sample_group', 'Sample Group', '');
 
 
 insert into login_sessions (name, workspace_id, group_name, token)
@@ -54,8 +54,8 @@ values ('', 5, '2040-01-02 10:00:00', 'person-of-future-login-token');
 insert into tests (name, person_id, laststate, locked, label)
 values ('first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label');
 
-insert into tests (name, person_id, laststate, locked, label)
-values ('BOOKLET.SAMPLE-1', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'second test label');
+insert into tests (name, person_id, laststate, locked, label, running)
+values ('BOOKLET.SAMPLE-1', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'second test label', 1);
 
 insert into units (name, booklet_id, laststate)
 values ('UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}');

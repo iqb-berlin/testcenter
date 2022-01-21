@@ -5,8 +5,6 @@ declare(strict_types=1);
 
 class SessionDAO extends DAO {
 
-
-    // TODO unit-test
     public function getToken(string $tokenString, array $requiredTypes): AuthToken {
 
         $tokenInfo = $this->_(
@@ -77,6 +75,9 @@ class SessionDAO extends DAO {
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function updateLoginSource(int $workspaceId, string $source, LoginArray $logins): void {
 
         $this->deleteLoginSource($workspaceId, $source);
@@ -128,7 +129,9 @@ class SessionDAO extends DAO {
         );
     }
 
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function deleteLoginSource(int $workspaceId, string $source): int {
 
         $this->_(
@@ -198,6 +201,9 @@ class SessionDAO extends DAO {
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getOrCreateLoginSession(string $name, string $password): ?LoginSession {
 
         $loginSession = $this->getLoginSession($name, $password);
@@ -243,7 +249,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
     public function getLoginSession($name, $password): ?LoginSession {
 
         $loginSession = $this->_(
@@ -505,7 +510,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO add unit-test
     public function getTestStatus(string $personToken, string $bookletName): array {
 
         $person = $this->getPersonSessionFromToken($personToken);
@@ -538,7 +542,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO add unit-test
     public function personHasBooklet(string $personToken, string $bookletName): bool {
 
         $bookletDef = $this->_('
@@ -563,7 +566,6 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit test
     public function ownsTest(string $personToken, string $testId): bool {
 
         $test = $this->_(
@@ -575,8 +577,6 @@ class SessionDAO extends DAO {
                 ':testId' => $testId
             ]
         );
-
-        // TODO check for mode?!
 
         return !!$test;
     }

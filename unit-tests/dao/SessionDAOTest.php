@@ -21,6 +21,7 @@ class SessionDAOTest extends TestCase {
         require_once "classes/exception/HttpError.class.php";
         require_once "classes/data-collection/DataCollection.class.php";
         require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/data-collection/AuthToken.class.php";
         require_once "classes/helper/DB.class.php";
         require_once "classes/helper/JSON.class.php";
         require_once "classes/data-collection/DBConfig.class.php";
@@ -134,7 +135,7 @@ class SessionDAOTest extends TestCase {
                     "run-hot-return",
                     "sample_group",
                     "Sample Group",
-                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    [],
                     1,
                     2209107600,
                     1893574800,
@@ -149,6 +150,72 @@ class SessionDAOTest extends TestCase {
     function tearDown(): void {
 
         unset($this->dbc);
+    }
+
+
+    function test_getToken_admin() {
+
+        $expectation = new AuthToken(
+            "admin_token",
+            1,
+            'admin',
+            -1,
+            'super-admin',
+            '[admins]'
+        );
+        $result = $this->dbc->getToken('admin_token', ['admin']);
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    function test_getToken_person() {
+
+        $expectation = new AuthToken(
+            "person-token",
+            1,
+            'person',
+            1,
+            'run-hot-return',
+            'sample_group'
+        );
+        $result = $this->dbc->getToken('person-token', ['person']);
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    function test_getToken_login() {
+
+        $expectation = new AuthToken(
+            "nice_token",
+            1,
+            'login',
+            1,
+            'run-hot-return',
+            'sample_group'
+        );
+        $result = $this->dbc->getToken('nice_token', ['login']);
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    function test_getToken_wrongToken() {
+
+        $this->expectException(HttpError::class);
+        $this->dbc->getToken('not-existing', ['admin']);
+    }
+
+
+    function test_getToken_wrongTokenType() {
+
+        $this->expectException(HttpError::class);
+        $this->dbc->getToken('person-token', ['admin']);
+    }
+
+
+    function test_getToken_Expired() {
+
+        $this->expectException(HttpError::class);
+        $this->dbc->getToken('person-of-expired-login-token', ['person']);
     }
 
 
@@ -441,6 +508,56 @@ class SessionDAOTest extends TestCase {
 
         $this->expectException(HttpError::class);
         $this->dbc->getLoginSession("future_user", "pw_hash");
+    }
+
+
+    public function test_getTestStatus(): void {
+
+        $expectation = [
+            'running' => false,
+            'locked' => false,
+            'label' => ""
+        ];
+        $result = $this->dbc->getTestStatus('person-token', 'no_test_for_this_booklet');
+        $this->assertEquals($expectation, $result);
+
+
+        $expectation = [
+            'running' => false,
+            'locked' => false,
+            'label' => "first test label"
+        ];
+        $result = $this->dbc->getTestStatus('person-token', 'first sample test');
+        $this->assertEquals($expectation, $result);
+
+
+        $expectation = [
+            'running' => true,
+            'locked' => false,
+            'label' => "second test label"
+        ];
+        $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.SAMPLE-1');
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_personHasBooklet(): void {
+
+        $result = $this->dbc->personHasBooklet('person-token', 'BOOKLET.SAMPLE-1');
+        $this->assertTrue($result);
+
+        $result = $this->dbc->personHasBooklet('person-of-future-login-token', 'BOOKLET.SAMPLE-1');
+        $this->assertFalse($result);
+    }
+
+
+    public function test_ownsTest() {
+
+        $result = $this->dbc->ownsTest('person-token', 1);
+        $this->assertTrue($result);
+
+        $result = $this->dbc->ownsTest('person-of-future-login-token', 1);
+        $this->assertFalse($result);
     }
 
 

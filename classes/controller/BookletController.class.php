@@ -28,7 +28,7 @@ class BookletController extends Controller {
 
         $bookletsFolder = new BookletsFolder((int) $authToken->getWorkspaceId());
 
-        if (!$bookletStatus['running']) { // TODO is this OK?
+        if (!$bookletStatus['running']) { // because label could not be obtained from DB
 
             $bookletStatus['label'] = $bookletsFolder->getBookletLabel($bookletName);
         }
