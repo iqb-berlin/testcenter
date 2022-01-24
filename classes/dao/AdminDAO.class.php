@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 class AdminDAO extends DAO {
 
-
     public function getAdminSession(string $adminToken): Session {
 
         $admin = $this->getAdmin($adminToken);
@@ -28,6 +27,7 @@ class AdminDAO extends DAO {
     }
 
 
+    // TODO uni-test
     public function refreshAdminToken(string $token): void {
 
         $this->_(

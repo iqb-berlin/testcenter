@@ -85,6 +85,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-test
     public function addLoginSource(int $workspaceId, string $source, LoginArray $logins): int {
 
         foreach ($logins as $login) {
@@ -95,6 +96,9 @@ class SessionDAO extends DAO {
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function createLogin(Login $login, int $workspaceId, string $source): void {
 
         $this->_('insert into logins 
@@ -364,6 +368,7 @@ class SessionDAO extends DAO {
     }
 
 
+    // TODO unit-tesrt
     public function getOrCreatePersonSession(LoginSession $loginSession, string $code, bool $renewToken = true): PersonSession {
         $person = $this->_(
             'SELECT 
@@ -582,6 +587,9 @@ class SessionDAO extends DAO {
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function renewPersonToken(int $id, string $name): string {
 
         $newToken = $this->randomToken('person', $name);
