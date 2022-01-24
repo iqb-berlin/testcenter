@@ -14,6 +14,9 @@ class SessionController extends Controller {
 
     protected static array $_bookletFolders = [];
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function putSessionAdmin(Request $request, Response $response): Response {
 
         $body = RequestBodyParser::getElements($request, [
@@ -77,6 +80,9 @@ class SessionController extends Controller {
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public static function putSessionPerson(Request $request, Response $response): Response {
 
         $body = RequestBodyParser::getElements($request, [
@@ -139,6 +145,7 @@ class SessionController extends Controller {
     }
 
 
+    // TODO unit-test
     public static function getSession(Request $request, Response $response): Response {
 
         $authToken = self::authToken($request);
