@@ -1,6 +1,7 @@
 insert into `users` values (1,'super','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,1);
 insert into `users` values (2,'i_exist_but_am_not_allowed_anything','f75b1eaaf7cd2d28210b360435259648aff4cecb',NULL,0);
 insert into admin_sessions (token, user_id, valid_until) values('admin_token', 1, '2222-01-01 00:00:00');
+insert into admin_sessions (token, user_id, valid_until) values('other_admin_token', 2, '2222-01-01 00:00:00');
 insert into `workspaces` values (1,'example_workspace');
 insert into `workspace_users` values (1, 1, 'RW');
 
@@ -55,7 +56,7 @@ insert into tests (name, person_id, laststate, locked, label, running, timestamp
 values ('first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label', 1, 1643014459);
 
 insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
-values ('BOOKLET.SAMPLE-1', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'second test label', 1, 1643014459);
+values ('BOOKLET.SAMPLE-1', 1, '', 0, 'second test label', 1, 1643014459);
 
 insert into units (name, booklet_id, laststate)
 values ('UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}');

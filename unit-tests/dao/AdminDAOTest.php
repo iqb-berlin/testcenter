@@ -21,8 +21,17 @@ final class AdminDAOTest extends TestCase {
         require_once "classes/exception/HttpError.class.php";
         require_once "classes/data-collection/DBConfig.class.php";
         require_once "classes/data-collection/Command.class.php";
+        require_once "classes/data-collection/Session.class.php";
+        require_once "classes/data-collection/SessionChangeMessage.class.php";
+        require_once "classes/data-collection/SessionChangeMessageArray.class.php";
+        require_once "classes/data-collection/PersonSession.class.php";
+        require_once "classes/data-collection/Person.class.php";
+        require_once "classes/data-collection/Login.class.php";
+        require_once "classes/data-collection/LoginSession.class.php";
         require_once "classes/dao/DAO.class.php";
         require_once "classes/dao/AdminDAO.class.php";
+        require_once "classes/helper/Mode.class.php";
+        require_once "classes/helper/JSON.class.php";
         require_once "classes/helper/DB.class.php";
         require_once "classes/helper/TimeStamp.class.php";
         require_once "classes/helper/Password.class.php";
@@ -40,7 +49,25 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    function test_login() {
+    public function test_getAdminSession() {
+
+        $expectation = new Session('admin_token', 'super');
+        $expectation->addAccessObjects('workspaceAdmin', '1');
+        $expectation->addAccessObjects('superAdmin');
+        $result = $this->dbc->getAdminSession('admin_token');
+        $this->assertEquals($expectation, $result);
+
+        $expectation = new Session('other_admin_token', 'i_exist_but_am_not_allowed_anything');
+        $expectation->addAccessObjects('workspaceAdmin');
+        $result = $this->dbc->getAdminSession('other_admin_token');
+        $this->assertEquals($expectation, $result);
+
+        $this->expectException(HttpError::class);
+        $this->dbc->getAdminSession('not_existing_admin_token');
+    }
+
+
+    public function test_login() {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $this->assertNotNull($token);
@@ -50,7 +77,7 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    function test_validateToken() {
+    public function test_validateToken() {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->getAdmin($token);
@@ -60,7 +87,7 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    function test_getWorkspaces() {
+    public function test_getWorkspaces() {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->getWorkspaces($token);
@@ -79,7 +106,7 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    function test_hasAdminAccessToWorkspace() {
+    public function test_hasAdminAccessToWorkspace() {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->hasAdminAccessToWorkspace($token, 1);
@@ -91,7 +118,7 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    function test_getWorkspaceRole() {
+    public function test_getWorkspaceRole() {
 
         $token = $this->dbc->createAdminToken('super', 'user123');
         $result = $this->dbc->getWorkspaceRole($token, 1);
@@ -103,7 +130,7 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    function testGetResponseReportData(): void {
+    public function testGetResponseReportData(): void {
 
         // Arrange
         $workspaceId = 1;
@@ -311,6 +338,62 @@ final class AdminDAOTest extends TestCase {
         ]];
         $result = $this->dbc->getResultStats(1);
         $this->assertSame($expectation, $result);
+    }
+
+
+    public function test_getTestSessions() {
+
+        $expectation = [
+            [
+                'personId' => 1,
+                'timestamp' => 1643014459,
+                'testId' => 1,
+                'groupName' => 'sample_group',
+                'groupLabel' => 'Sample Group',
+                'personLabel' => 'sample_user/xxx',
+                'mode' => 'run-hot-return',
+                'testState' => [
+                    'CURRENT_UNIT_ID' => 'UNIT_1',
+                    'status' => 'running'
+                ],
+                'bookletName' => 'first sample test',
+                'unitName' => 'UNIT_1',
+                'unitState' => [
+                    'SOME_STATE' => 'WHATEVER'
+                ]
+            ],
+            [
+                'personId' => 1,
+                'timestamp' => 1643014459,
+                'testId' => 2,
+                'groupName' => 'sample_group',
+                'groupLabel' => 'Sample Group',
+                'personLabel' => 'sample_user/xxx',
+                'mode' => 'run-hot-return',
+                'testState' => [
+                    'status' => 'running',
+                ],
+                'bookletName' => 'BOOKLET.SAMPLE-1',
+                'unitState' => []
+            ]
+        ];
+        $result = $this->dbc->getTestSessions(1, ['sample_group']);
+        $resultAsArray = array_map(function(SessionChangeMessage $s) {
+            return $s->jsonSerialize();
+        }, $result->asArray());
+        $this->assertSame($expectation, $resultAsArray);
+
+        $result = $this->dbc->getTestSessions(1, []); // all groups
+        $resultAsArray = array_map(function(SessionChangeMessage $s) {
+            return $s->jsonSerialize();
+        }, $result->asArray());
+        $this->assertSame($expectation, $resultAsArray);
+
+        $result = $this->dbc->getTestSessions(1, ['unknown_group']);
+        $resultAsArray = array_map(function(SessionChangeMessage $s) {
+            return $s->jsonSerialize();
+        }, $result->asArray());
+        $this->assertSame([], $resultAsArray);
     }
 
     

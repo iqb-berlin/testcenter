@@ -137,7 +137,7 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function deleteResultData(int $workspaceId, string $groupName): void { // TODO write unit test
+	public function deleteResultData(int $workspaceId, string $groupName): void {
 
 		$this->_(
             "delete from login_sessions where group_name = :group_name and workspace_id = :workspace_id",
@@ -216,7 +216,7 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray { // TODO add unit test
+	public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray {
 
         $groupSelector = false;
         if (count($groups)) {
@@ -240,7 +240,7 @@ class AdminDAO extends DAO {
                  tests.name as "booklet_name",
                  tests.locked,
                  tests.running,
-                 tests.laststate as "test_state",
+                 tests.laststate as "testState",
                  tests.timestamp_server as "test_timestamp_server"
             FROM person_sessions
                  LEFT JOIN tests ON person_sessions.id = tests.person_id
@@ -249,7 +249,7 @@ class AdminDAO extends DAO {
             WHERE
                 login_sessions.workspace_id = :workspaceId
                 AND tests.id is not null'
-                . ($groupSelector ? " AND person_sessions.group_name IN ($groupSelector)" : '')
+                . ($groupSelector ? " AND login_sessions.group_name IN ($groupSelector)" : '')
                 . " AND logins.mode IN ($modeSelector)";
 
 		$testSessionsData = $this->_($sql, [':workspaceId' => $workspaceId],true);
@@ -272,7 +272,7 @@ class AdminDAO extends DAO {
                             $testSession['mode'],
                             $testSession['group_name'],
                             $testSession['group_label'],
-                            null,
+                            [],
                             (int) ['workspace_id']
                         )
                     ),
@@ -289,7 +289,7 @@ class AdminDAO extends DAO {
                 $testSession['booklet_name'] ?? ""
             );
 
-            $currentUnitName = isset($testState['CURRENT_UNIT_ID']) ? $testState['CURRENT_UNIT_ID'] : null;
+            $currentUnitName = $testState['CURRENT_UNIT_ID'] ?? null;
 
             if ($currentUnitName) {
 

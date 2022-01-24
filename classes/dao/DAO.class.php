@@ -177,7 +177,7 @@ class DAO {
 
     protected function getTestFullState(array $testSessionData): array {
 
-        $testState = JSON::decode($testSessionData['testState'], true);
+        $testState = JSON::decode($testSessionData['testState'] ?? '', true);
 
         if ($testSessionData['locked']) {
             $testState['status'] = 'locked';
