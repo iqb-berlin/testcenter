@@ -38,7 +38,7 @@ class TestController extends Controller {
             $message = SessionChangeMessage::session((int) $test['id'], $personSession);
             $message->setTestState($testState, $body['bookletName']);
         } else {
-            $message = SessionChangeMessage::testState($authToken->getId(), (int) $test['id'], $body['bookletName']);
+            $message = SessionChangeMessage::testState($authToken->getId(), (int) $test['id'], $testState, $body['bookletName']);
         }
         BroadcastService::sessionChange($message);
 

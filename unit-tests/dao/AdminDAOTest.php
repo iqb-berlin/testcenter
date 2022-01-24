@@ -1,5 +1,7 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
+declare(strict_types=1);
+
 use PHPUnit\Framework\TestCase;
 
 require_once "classes/data-collection/DataCollection.class.php";
@@ -27,8 +29,8 @@ final class AdminDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new AdminDAO();
-        $this->dbc->runFile('scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile('unit-tests/testdata.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/scripts/sql-schema/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/unit-tests/testdata.sql');
     }
 
 
@@ -279,7 +281,38 @@ final class AdminDAOTest extends TestCase {
         $this->assertEquals(0, $this->countTableRows('unit_data'));
         $this->assertEquals(0, $this->countTableRows('unit_logs'));
     }
-    
+
+
+    public function test_getResultStats() {
+
+        $expectation = [[
+            'groupName' => 'sample_group',
+            'bookletsStarted' => 2,
+            'numUnitsMin' => 0,
+            'numUnitsMax' => 2,
+            'numUnitsTotal' => 2,
+            'numUnitsAvg' => 1.0,
+            'lastChange' => 1643014459
+        ]];
+        $result = $this->dbc->getResultStats(1);
+        $this->assertSame($expectation, $result);
+
+        $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server) values ('BOOKLET.SAMPLE-2', 1,  0, 1, 1700000000)");
+        $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 3)");
+
+        $expectation = [[
+            'groupName' => 'sample_group',
+            'bookletsStarted' => 3,
+            'numUnitsMin' => 0,
+            'numUnitsMax' => 2,
+            'numUnitsTotal' => 3,
+            'numUnitsAvg' => 1.0,
+            'lastChange' => 1700000000
+        ]];
+        $result = $this->dbc->getResultStats(1);
+        $this->assertSame($expectation, $result);
+    }
+
     
     private function countTableRows(string $tableName): int {
 

@@ -109,20 +109,6 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function logout($token) {
-
-		$this->_(
-			'DELETE FROM admin_sessions
-			WHERE admin_sessions.token=:token',
-			[':token' => $token]
-		);
-		// TODO check this function carefully
-		// original description was "deletes all tokens of this user", what is not what this function does
-		// check where this is used at all and which behavior exactly was intended
-        // then: write unit test
-	}
-
-
 	public function getAdmin(string $token): array {
 
 		$tokenInfo = $this->_(
@@ -229,31 +215,6 @@ class AdminDAO extends DAO {
 		return $user['role'] ?? '';
 	}
 
-    // FIXME 13
-	public function getResultsCount(int $workspaceId): array { // TODO add unit test  // TODO use dataclass
-
-		return $this->_(
-			'select
-                    login_sessions.group_name as groupname,
-                    login_sessions.name       as loginname,
-                    person_sessions.code,
-                    tests.name                as bookletname,
-                    count(distinct units.id)  as num_units,
-                    MAX(tests.timestamp_server)   as lastchange
-                from tests
-                    left join person_sessions on person_sessions.id = tests.person_id
-                    inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-                    inner join logins on logins.name = login_sessions.name
-                    inner join units on units.booklet_id = tests.id
-                where login_sessions.workspace_id = :workspaceId
-                group by tests.name, person_sessions.id',
-			[
-				':workspaceId' => $workspaceId
-			],
-			true
-		);
-	}
-
 
 	public function getTestSessions(int $workspaceId, array $groups): SessionChangeMessageArray { // TODO add unit test
 
@@ -268,7 +229,6 @@ class AdminDAO extends DAO {
         $sql = 'SELECT
                  person_sessions.id as "person_id",
                  login_sessions.name as "loginName",
-       
                  login_sessions.id as "login_sessions_id",
                  logins.name,
                  logins.mode,
@@ -551,45 +511,50 @@ class AdminDAO extends DAO {
     }
 
 
-    public function getAssembledResults(int $workspaceId): array {
+    public function getResultStats(int $workspaceId): array {
 
-        $keyedReturn = [];
+        // TODO add group label. Problem: when login is gone, label is gone
 
-        foreach($this->getResultsCount($workspaceId) as $resultSet) {
-            // groupname, loginname, code, bookletname, num_units
-            if (!isset($keyedReturn[$resultSet['groupname']])) {
-                $keyedReturn[$resultSet['groupname']] = [
-                    'groupname' => $resultSet['groupname'],
-                    'bookletsStarted' => 1,
-                    'num_units_min' => $resultSet['num_units'],
-                    'num_units_max' => $resultSet['num_units'],
-                    'num_units_total' => $resultSet['num_units'],
-                    'lastchange' => $resultSet['lastchange']
-                ];
-            } else {
-                $keyedReturn[$resultSet['groupname']]['bookletsStarted'] += 1;
-                $keyedReturn[$resultSet['groupname']]['num_units_total'] += $resultSet['num_units'];
-                if ($resultSet['num_units'] > $keyedReturn[$resultSet['groupname']]['num_units_max']) {
-                    $keyedReturn[$resultSet['groupname']]['num_units_max'] = $resultSet['num_units'];
-                }
-                if ($resultSet['num_units'] < $keyedReturn[$resultSet['groupname']]['num_units_min']) {
-                    $keyedReturn[$resultSet['groupname']]['num_units_min'] = $resultSet['num_units'];
-                }
-                if ($resultSet['lastchange'] > $keyedReturn[$resultSet['groupname']]['lastchange']) {
-                    $keyedReturn[$resultSet['groupname']]['lastchange'] = $resultSet['lastchange'];
-                }
-            }
-        }
+        $resultStats = $this->_(
+            'select group_name,
+                       count(*)   as bookletsStarted,
+                       min(num_units) as num_units_min,
+                       max(num_units) as num_units_max,
+                       sum(num_units) as num_units_total,
+                       avg(num_units) as num_units_mean,
+                       max(timestamp_server) as lastchange
+                from (
+                         select
+                                login_sessions.group_name,
+                                count(distinct units.id)    as num_units,
+                                max(tests.timestamp_server) as timestamp_server
+                         from tests
+                                  left join person_sessions on person_sessions.id = tests.person_id
+                                  inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
+                                  left join units on units.booklet_id = tests.id
+                         where
+                               login_sessions.workspace_id = :workspaceId
+                               and tests.running = 1
+                         group by tests.name, person_sessions.id
+                     ) as byGroup
+                group by group_name',
+            [
+                ':workspaceId' => $workspaceId
+            ],
+            true
+        );
 
-        $returner = [];
-
-        // get rid of the key and calculate mean
-        foreach($keyedReturn as $group => $groupData) {
-            $groupData['num_units_mean'] = $groupData['num_units_total'] / $groupData['bookletsStarted'];
-            array_push($returner, $groupData);
-        }
-
-        return $returner;
+        return array_map(function($groupStats) {
+            return [
+                "groupName" => $groupStats["group_name"],
+                "bookletsStarted" => (int) $groupStats["bookletsStarted"],
+                "numUnitsMin" => (int) $groupStats["num_units_min"],
+                "numUnitsMax" => (int) $groupStats["num_units_max"],
+                "numUnitsTotal" => (int) $groupStats["num_units_total"],
+                "numUnitsAvg" => (float) $groupStats["num_units_mean"],
+                "lastChange" => TimeStamp::fromSQLFormat($groupStats["lastchange"])
+            ];
+        }, $resultStats);
     }
 
 

@@ -51,11 +51,11 @@ values ('', 2, '2000-01-02 10:00:00', 'person-of-expired-login-token');
 insert into person_sessions(code, login_sessions_id, valid_until, token)
 values ('', 5, '2040-01-02 10:00:00', 'person-of-future-login-token');
 
-insert into tests (name, person_id, laststate, locked, label)
-values ('first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label');
+insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
+values ('first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label', 1, 1643014459);
 
-insert into tests (name, person_id, laststate, locked, label, running)
-values ('BOOKLET.SAMPLE-1', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'second test label', 1);
+insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
+values ('BOOKLET.SAMPLE-1', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'second test label', 1, 1643014459);
 
 insert into units (name, booklet_id, laststate)
 values ('UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}');

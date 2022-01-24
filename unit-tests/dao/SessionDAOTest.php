@@ -523,20 +523,11 @@ class SessionDAOTest extends TestCase {
 
 
         $expectation = [
-            'running' => false,
+            'running' => true,
             'locked' => false,
             'label' => "first test label"
         ];
         $result = $this->dbc->getTestStatus('person-token', 'first sample test');
-        $this->assertEquals($expectation, $result);
-
-
-        $expectation = [
-            'running' => true,
-            'locked' => false,
-            'label' => "second test label"
-        ];
-        $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.SAMPLE-1');
         $this->assertEquals($expectation, $result);
     }
 
