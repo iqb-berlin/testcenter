@@ -84,6 +84,9 @@ class DAO {
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function runFile(string $path) {
 
         if (!file_exists($path)) {
@@ -95,6 +98,9 @@ class DAO {
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getDBType(): string {
 
         return $this->pdoDBhandle->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -168,14 +174,14 @@ class DAO {
         );
 
         if ($workspace == null) {
-            throw new HttpError("Workspace `$workspaceId` not found", 404);
+            throw new HttpError("Workspace `$workspaceId` not found", 404); // @codeCoverageIgnore
         }
 
         return $workspace['name'];
     }
 
 
-    protected function getTestFullState(array $testSessionData): array {
+    public function getTestFullState(array $testSessionData): array {
 
         $testState = JSON::decode($testSessionData['testState'] ?? '', true);
 

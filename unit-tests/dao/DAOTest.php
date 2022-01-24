@@ -17,13 +17,14 @@ class DAOTest extends TestCase {
         require_once "classes/exception/HttpError.class.php";
         require_once "classes/data-collection/DataCollection.class.php";
         require_once "classes/helper/DB.class.php";
+        require_once "classes/helper/JSON.class.php";
         require_once "classes/data-collection/DBConfig.class.php";
         require_once "classes/dao/DAO.class.php";
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new DAO();
-        $this->dbc->runFile('scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile('unit-tests/testdata.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/scripts/sql-schema/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/unit-tests/testdata.sql');
     }
 
 
@@ -94,5 +95,21 @@ class DAOTest extends TestCase {
             ]
         ];
         $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_getTestFullState() {
+
+        $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => true, "running" => true]);
+        $this->assertSame(["A" => "B", "status" => 'locked'], $result);
+
+        $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => false, "running" => false]);
+        $this->assertSame(["A" => "B", "status" => 'pending'], $result);
+
+        $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => false, "running" => true]);
+        $this->assertSame(["A" => "B", "status" => 'running'], $result);
+
+        $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => true, "running" => false]);
+        $this->assertSame(["A" => "B", "status" => 'locked'], $result);
     }
 }
