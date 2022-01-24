@@ -5,47 +5,6 @@ declare(strict_types=1);
 
 class TesttakersFolder extends Workspace {
 
-// TODO fix 13 cleanup
-//    static function searchAllForLogin(string $name, string $password = ''): ?PotentialLogin {
-//
-//        $loginData = null;
-//
-//        foreach (TesttakersFolder::getAll() as $testtakersFolder) { /* @var TesttakersFolder $testtakersFolder */
-//
-//            $loginData = $testtakersFolder->findLoginData($name, $password);
-//
-//            if ($loginData != null) {
-//                break;
-//            }
-//        }
-//
-//        return $loginData;
-//    }
-
-
-//    public function findLoginData(string $name, string $password): ?PotentialLogin { // TODO unit-test
-//
-//        // STAND Validator hier!
-//
-//        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
-//
-//            $xFile = new XMLFileTesttakers($fullFilePath);
-//
-//            if ($xFile->isValid()) {
-//
-//                $potentialLogin = $xFile->getLogin($name, $password, $this->workspaceId);
-//
-//                if ($potentialLogin) {
-//
-//                    return $potentialLogin;
-//                }
-//            }
-//        }
-//
-//        return null;
-//    }
-
-
     public function findGroup(string $groupName): ?Group {
 
         foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
@@ -60,22 +19,6 @@ class TesttakersFolder extends Workspace {
         }
 
         return null;
-    }
-
-
-    public function getLoginsInSameGroup(string $loginName): LoginArray { // TODO unit-test
-
-        foreach (Folder::glob($this->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
-
-            $xFile = new XMLFileTesttakers($fullFilePath);
-
-            $members = $xFile->getLoginsInSameGroup($loginName, $this->workspaceId);
-
-            if ($members) {
-                return $members;
-            }
-        }
-        return new LoginArray();
     }
 
 
