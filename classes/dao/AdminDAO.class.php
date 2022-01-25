@@ -27,7 +27,9 @@ class AdminDAO extends DAO {
     }
 
 
-    // TODO uni-test
+    /**
+     * @codeCoverageIgnore
+     */
     public function refreshAdminToken(string $token): void {
 
         $this->_(
@@ -309,8 +311,6 @@ class AdminDAO extends DAO {
 	}
 
 
-    // TODO Unit-test
-    // TODO use data-collection class
 	private function getUnitState(int $testId, string $unitName): stdClass {
 
         $unitData = $this->_("select
@@ -336,7 +336,6 @@ class AdminDAO extends DAO {
     }
 
 
-    // TODO FIXME
     public function getResponseReportData($workspaceId, $groups): ?array {
 
         $groupsPlaceholders = implode(',', array_fill(0, count($groups), '?'));
@@ -594,5 +593,4 @@ class AdminDAO extends DAO {
     public function updateMetadata(int $workspaceId, string $getId, FileSpecialInfo $getSpecialInfo) {
         // TODO implement
     }
-
 }

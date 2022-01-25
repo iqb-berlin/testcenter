@@ -56,6 +56,7 @@ class SessionController extends Controller {
         if (!$loginSession->getLogin()->isCodeRequired()) {
 
             $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
+            $personSession = self::sessionDAO()->renewPersonToken($personSession);
             $accessObject = Session::createFromPersonSession($personSession);
 
             if ($loginSession->getLogin()->getMode() == 'monitor-group') {
@@ -90,6 +91,7 @@ class SessionController extends Controller {
         ]);
         $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
         $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
+        $personSession = self::sessionDAO()->renewPersonToken($personSession);
         $session = Session::createFromPersonSession($personSession);
         return $response->withJson($session);
     }

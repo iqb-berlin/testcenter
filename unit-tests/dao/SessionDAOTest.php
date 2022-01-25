@@ -13,6 +13,7 @@ class SessionDAOTest extends TestCase {
 
     private LoginSession $testLoginSession;
     private array $testDataLoginSessions;
+    private PersonSession $testPersonSession;
 
     static function setUpBeforeClass(): void {
 
@@ -144,6 +145,32 @@ class SessionDAOTest extends TestCase {
                 )
             )
         ];
+
+        $this->testPersonSession = new PersonSession(
+            new LoginSession(
+                4,
+                'test_token',
+                new Login(
+                    'sample_user',
+                    'pw_hash',
+                    'run-hot-return',
+                    'sample_group',
+                    'Sample Group',
+                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    1,
+                    1893574800,
+                    0,
+                    0,
+                    (object) []
+                )
+            ),
+            new Person(
+                1,
+                'person-token',
+                'xxx',
+                1893574800
+            )
+        );
     }
 
 
@@ -273,6 +300,32 @@ class SessionDAOTest extends TestCase {
     }
 
 
+    function test_getPersonSession_correctCode() {
+
+        $result = $this->dbc->getPersonSession($this->testDataLoginSessions[3], 'xxx');
+
+        $this->assertSame(1, $result->getPerson()->getId());
+        $this->assertSame('person-token', $result->getPerson()->getToken());
+        $this->assertSame('xxx', $result->getPerson()->getCode());
+        $this->assertSame(1893574800, $result->getPerson()->getValidTo());
+        $this->assertEquals($this->testDataLoginSessions[3], $result->getLoginSession());
+    }
+
+
+    function test_getLoginSessionByToken_wrongCode() {
+
+        $result = $this->dbc->getPersonSession($this->testDataLoginSessions[3], 'not_existing');
+        $this->assertNull($result);
+    }
+
+
+    function test_getLoginSessionByToken_notExistingLoginSession() {
+
+        $result = $this->dbc->getPersonSession($this->testLoginSession, 'existing_code');
+        $this->assertNull($result);
+    }
+
+
     function test_createPersonSession_correctCode() {
 
         $result = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code');
@@ -372,32 +425,7 @@ class SessionDAOTest extends TestCase {
     function test_getPersonSessionFromToken_correctToken() {
 
         $result = $this->dbc->getPersonSessionFromToken('person-token');
-        $expectation = new PersonSession(
-            new LoginSession(
-                4,
-                'test_token',
-                new Login(
-                    'sample_user',
-                    'pw_hash',
-                    'run-hot-return',
-                    'sample_group',
-                    'Sample Group',
-                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
-                    1,
-                    1893574800,
-                    0,
-                    0,
-                    (object) []
-                )
-            ),
-            new Person(
-                1,
-                'person-token',
-                'xxx',
-                1893574800
-            )
-        );
-        $this->assertEquals($expectation, $result);
+        $this->assertEquals($this->testPersonSession, $result);
     }
 
 
@@ -539,6 +567,39 @@ class SessionDAOTest extends TestCase {
 
         $result = $this->dbc->personHasBooklet('person-of-future-login-token', 'BOOKLET.SAMPLE-1');
         $this->assertFalse($result);
+    }
+
+
+    public function test_renewPersonToken(): void {
+
+        $expectation = new PersonSession(
+            new LoginSession(
+                4,
+                'test_token',
+                new Login(
+                    'sample_user',
+                    'pw_hash',
+                    'run-hot-return',
+                    'sample_group',
+                    'Sample Group',
+                    ["xxx" => ["BOOKLET.SAMPLE-1"]],
+                    1,
+                    1893574800,
+                    0,
+                    0,
+                    (object) []
+                )
+            ),
+            new Person(
+                1,
+                'static:person:sample_group_sample_user_xxx',
+                'xxx',
+                1893574800
+            )
+        );
+
+        $result = $this->dbc->renewPersonToken($this->testPersonSession);
+        $this->assertEquals($expectation, $result);
     }
 
 

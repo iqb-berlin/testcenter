@@ -47,4 +47,15 @@ class Person extends DataCollectionTypeSafe {
 
         return $this->validTo;
     }
+
+
+    public function withNewToken(string $token): Person {
+
+        return new Person(
+            $this->id,
+            $token,
+            $this->code,
+            $this->validTo
+        );
+    }
 }

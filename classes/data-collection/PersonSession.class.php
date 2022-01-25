@@ -25,4 +25,13 @@ class PersonSession extends DataCollectionTypeSafe {
 
         return $this->person;
     }
+
+
+    public function withNewToken(string $token): PersonSession {
+
+       return new PersonSession(
+           $this->loginSession,
+           $this->person->withNewToken($token)
+       );
+    }
 }

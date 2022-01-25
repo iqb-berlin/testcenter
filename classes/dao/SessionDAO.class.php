@@ -85,7 +85,9 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-test
+    /**
+     * @codeCoverageIgnore
+     */
     public function addLoginSource(int $workspaceId, string $source, LoginArray $logins): int {
 
         foreach ($logins as $login) {
@@ -353,7 +355,7 @@ class SessionDAO extends DAO {
             $loginSession["token"],
             new Login(
                 $loginSession['name'],
-                $loginSession['password'], // TODO keep this here?
+                '',
                 $loginSession['mode'],
                 $loginSession['group_name'],
                 $loginSession['group_label'],
@@ -368,8 +370,24 @@ class SessionDAO extends DAO {
     }
 
 
-    // TODO unit-tesrt
-    public function getOrCreatePersonSession(LoginSession $loginSession, string $code, bool $renewToken = true): PersonSession {
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getOrCreatePersonSession(LoginSession $loginSession, string $code): PersonSession {
+
+        $personSession = $this->getPersonSession($loginSession, $code);
+
+        if ($personSession == null) {
+
+            return $this->createPersonSession($loginSession, $code);
+        }
+
+        return $personSession;
+    }
+
+
+    public function getPersonSession(LoginSession $loginSession, string $code): ?PersonSession {
+
         $person = $this->_(
             'SELECT 
                     person_sessions.id,
@@ -389,22 +407,16 @@ class SessionDAO extends DAO {
             ]
         );
 
-        if ($person === null) {
+        if ($person == null) {
 
-            return $this->createPersonSession($loginSession, $code);
-        }
-
-        $personToken = $person['token'];
-        if ($renewToken) {
-            $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_$code";
-            $personToken = $this->renewPersonToken((int) $person['id'], $tokenName);
+            return null;
         }
 
         return new PersonSession(
             $loginSession,
             new Person(
                 (int) $person['id'],
-                $personToken,
+                $person['token'],
                 $person['code'],
                 TimeStamp::fromSQLFormat($person['valid_until'])
             )
@@ -587,20 +599,19 @@ class SessionDAO extends DAO {
     }
 
 
-    /**
-     * @codeCoverageIgnore
-     */
-    private function renewPersonToken(int $id, string $name): string {
+    public function renewPersonToken(PersonSession $personSession): PersonSession {
 
-        $newToken = $this->randomToken('person', $name);
+        $loginSession = $personSession->getLoginSession();
+        $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_{$personSession->getPerson()->getCode()}";
+        $newToken = $this->randomToken('person', $tokenName);
         $this->_(
             "UPDATE person_sessions SET token = :token WHERE id = :id",
             [
                 ':token' => $newToken,
-                ':id'=> $id
+                ':id'=> $loginSession->getId()
             ]
         );
 
-        return $newToken;
+        return $personSession->withNewToken($newToken);
     }
 }
