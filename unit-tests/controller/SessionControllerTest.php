@@ -54,7 +54,7 @@ final class SessionControllerTest extends TestCase {
         require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
         require_once "classes/data-collection/Login.class.php";
         require_once "classes/data-collection/LoginSession.class.php";
-        require_once "classes/data-collection/Session.class.php";
+        require_once "classes/data-collection/AccessSet.class.php";
         require_once "classes/data-collection/PersonSession.class.php";
         require_once "classes/data-collection/Person.class.php";
         require_once "classes/data-collection/SessionChangeMessage.class.php";
@@ -484,11 +484,11 @@ final class SessionControllerTest extends TestCase {
 
         $adminToken = new AuthToken('admin_token', 1, 'admin', -1, 'admin', '[admins]');
 
-        $accessObject = new Session('admin_token', 'Super', []);
+        $accessObject = new AccessSet('admin_token', 'Super', []);
         $accessObject->addAccessObjects("workspaceAdmin", "1");
 
         $this->mockAdminDao([
-            'getAdminSession' => $accessObject,
+            'getAdminAccessSet' => $accessObject,
             'refreshAdminToken' => function(): void {}
         ]);
 

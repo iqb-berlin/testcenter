@@ -26,16 +26,16 @@ class SessionController extends Controller {
 
         $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
 
-        $session = self::adminDAO()->getAdminSession($token);
+        $accessSet = self::adminDAO()->getAdminAccessSet($token);
 
         self::adminDAO()->refreshAdminToken($token);
 
-        if (!$session->hasAccess('workspaceAdmin') and !$session->hasAccess('superAdmin')) {
+        if (!$accessSet->hasAccess('workspaceAdmin') and !$accessSet->hasAccess('superAdmin')) {
 
             throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
         }
 
-        return $response->withJson($session);
+        return $response->withJson($accessSet);
     }
 
 
@@ -57,7 +57,7 @@ class SessionController extends Controller {
 
             $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
             $personSession = self::sessionDAO()->renewPersonToken($personSession);
-            $accessObject = Session::createFromPersonSession($personSession);
+            $accessObject = AccessSet::createFromPersonSession($personSession);
 
             if ($loginSession->getLogin()->getMode() == 'monitor-group') {
 
@@ -69,7 +69,7 @@ class SessionController extends Controller {
 
         } else {
 
-            $accessObject = Session::createFromLoginSession($loginSession);
+            $accessObject = AccessSet::createFromLoginSession($loginSession);
         }
 
         return $response->withJson($accessObject);
@@ -87,8 +87,7 @@ class SessionController extends Controller {
         $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
         $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
         $personSession = self::sessionDAO()->renewPersonToken($personSession);
-        $session = Session::createFromPersonSession($personSession);
-        return $response->withJson($session);
+        return $response->withJson(AccessSet::createFromPersonSession($personSession));
     }
 
 
@@ -142,7 +141,6 @@ class SessionController extends Controller {
     }
 
 
-    // TODO unit-test
     public static function getSession(Request $request, Response $response): Response {
 
         $authToken = self::authToken($request);
@@ -150,30 +148,28 @@ class SessionController extends Controller {
         if ($authToken->getType() == "login") {
 
             $loginSession = self::sessionDAO()->getLoginSessionByToken($authToken->getToken());
-            $session = Session::createFromLoginSession($loginSession);
-
-            return $response->withJson($session);
+            return $response->withJson(AccessSet::createFromLoginSession($loginSession));
         }
 
         if ($authToken->getType() == "person") {
 
             $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
-            $session = Session::createFromPersonSession($personSession);
+            $accessSet = AccessSet::createFromPersonSession($personSession);
 
             if ($authToken->getMode() == 'monitor-group') {
 
                 $booklets = $personSession->getLoginSession()->getLogin()->getBooklets()[''];
-                $session->addAccessObjects('test', ...$booklets);
+                $accessSet->addAccessObjects('test', ...$booklets);
             }
 
-            return $response->withJson($session);
+            return $response->withJson($accessSet);
         }
 
         if ($authToken->getType() == "admin") {
 
-            $session = self::adminDAO()->getAdminSession($authToken->getToken());
+            $accessSet = self::adminDAO()->getAdminAccessSet($authToken->getToken());
             self::adminDAO()->refreshAdminToken($authToken->getToken());
-            return $response->withJson($session);
+            return $response->withJson($accessSet);
         }
 
         throw new HttpUnauthorizedException($request);

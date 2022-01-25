@@ -28,7 +28,7 @@ class SessionDAOTest extends TestCase {
         require_once "classes/data-collection/DBConfig.class.php";
         require_once "classes/data-collection/Login.class.php";
         require_once "classes/data-collection/LoginSession.class.php";
-        require_once "classes/data-collection/Session.class.php";
+        require_once "classes/data-collection/AccessSet.class.php";
         require_once "classes/data-collection/Person.class.php";
         require_once "classes/data-collection/PersonSession.class.php";
         require_once "classes/helper/TimeStamp.class.php";

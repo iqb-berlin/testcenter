@@ -21,7 +21,7 @@ final class AdminDAOTest extends TestCase {
         require_once "classes/exception/HttpError.class.php";
         require_once "classes/data-collection/DBConfig.class.php";
         require_once "classes/data-collection/Command.class.php";
-        require_once "classes/data-collection/Session.class.php";
+        require_once "classes/data-collection/AccessSet.class.php";
         require_once "classes/data-collection/SessionChangeMessage.class.php";
         require_once "classes/data-collection/SessionChangeMessageArray.class.php";
         require_once "classes/data-collection/PersonSession.class.php";
@@ -49,21 +49,21 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    public function test_getAdminSession() {
+    public function test_getAdminAccessSet() {
 
-        $expectation = new Session('admin_token', 'super');
+        $expectation = new AccessSet('admin_token', 'super');
         $expectation->addAccessObjects('workspaceAdmin', '1');
         $expectation->addAccessObjects('superAdmin');
-        $result = $this->dbc->getAdminSession('admin_token');
+        $result = $this->dbc->getAdminAccessSet('admin_token');
         $this->assertEquals($expectation, $result);
 
-        $expectation = new Session('other_admin_token', 'i_exist_but_am_not_allowed_anything');
+        $expectation = new AccessSet('other_admin_token', 'i_exist_but_am_not_allowed_anything');
         $expectation->addAccessObjects('workspaceAdmin');
-        $result = $this->dbc->getAdminSession('other_admin_token');
+        $result = $this->dbc->getAdminAccessSet('other_admin_token');
         $this->assertEquals($expectation, $result);
 
         $this->expectException(HttpError::class);
-        $this->dbc->getAdminSession('not_existing_admin_token');
+        $this->dbc->getAdminAccessSet('not_existing_admin_token');
     }
 
 

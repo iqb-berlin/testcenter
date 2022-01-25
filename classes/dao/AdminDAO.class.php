@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 class AdminDAO extends DAO {
 
-    public function getAdminSession(string $adminToken): Session {
+    public function getAdminAccessSet(string $adminToken): AccessSet {
 
         $admin = $this->getAdmin($adminToken);
-        $session = new Session(
+        $accessSet = new AccessSet(
             $admin['adminToken'],
             $admin['name']
         );
@@ -17,13 +17,13 @@ class AdminDAO extends DAO {
             return (string) $workspace['id'];
         }, $this->getWorkspaces($adminToken));
 
-        $session->addAccessObjects('workspaceAdmin', ...$workspacesIds);
+        $accessSet->addAccessObjects('workspaceAdmin', ...$workspacesIds);
 
         if ($admin["isSuperadmin"]) {
-            $session->addAccessObjects('superAdmin');
+            $accessSet->addAccessObjects('superAdmin');
         }
 
-        return $session;
+        return $accessSet;
     }
 
 

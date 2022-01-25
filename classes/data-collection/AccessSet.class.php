@@ -1,7 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-class Session extends DataCollectionTypeSafe {
+class AccessSet extends DataCollectionTypeSafe {
 
     static $accessObjectTypes = [
         'test',
@@ -18,11 +18,11 @@ class Session extends DataCollectionTypeSafe {
 
 
     // TODO add unit-test
-    static function createFromPersonSession(PersonSession $loginWithPerson): Session {
+    static function createFromPersonSession(PersonSession $loginWithPerson): AccessSet {
 
         $login = $loginWithPerson->getLoginSession()->getLogin();
 
-        $session = new Session(
+        $accessSet = new AccessSet(
             $loginWithPerson->getPerson()->getToken(),
             "{$login->getGroupLabel()}/{$login->getName()}/{$loginWithPerson->getPerson()->getCode()}",
             [],
@@ -32,22 +32,22 @@ class Session extends DataCollectionTypeSafe {
         switch ($login->getMode()) {
 
             case "monitor-group":
-                $session->addAccessObjects('testGroupMonitor', $login->getGroupName());
+                $accessSet->addAccessObjects('testGroupMonitor', $login->getGroupName());
                 break;
 
             default:
                 $personsBooklets = $login->getBooklets()[$loginWithPerson->getPerson()->getCode()] ?? [];
-                $session->addAccessObjects('test', ...$personsBooklets);
+                $accessSet->addAccessObjects('test', ...$personsBooklets);
                 break;
         }
 
-        return $session;
+        return $accessSet;
     }
 
 
-    static function createFromLoginSession(LoginSession $loginSession): Session {
+    static function createFromLoginSession(LoginSession $loginSession): AccessSet {
 
-        return new Session(
+        return new AccessSet(
             $loginSession->getToken(),
             "{$loginSession->getLogin()->getGroupLabel()}/{$loginSession->getLogin()->getName()}",
             $loginSession->getLogin()->isCodeRequired() ? ['codeRequired'] : [],
@@ -75,7 +75,7 @@ class Session extends DataCollectionTypeSafe {
     }
 
 
-    public function addAccessObjects(string $type, string ...$accessObjects): Session {
+    public function addAccessObjects(string $type, string ...$accessObjects): AccessSet {
 
         if (!in_array($type, $this::$accessObjectTypes)) {
 
