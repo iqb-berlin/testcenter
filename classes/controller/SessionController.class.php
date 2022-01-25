@@ -69,12 +69,7 @@ class SessionController extends Controller {
 
         } else {
 
-            $accessObject = new Session(
-                $loginSession->getToken(),
-                "{$loginSession->getLogin()->getGroupName()}/{$loginSession->getLogin()->getName()}",
-                ['codeRequired'],
-                $loginSession->getLogin()->getCustomTexts()
-            );
+            $accessObject = Session::createFromLoginSession($loginSession);
         }
 
         return $response->withJson($accessObject);
@@ -97,7 +92,7 @@ class SessionController extends Controller {
     }
 
 
-    public static function registerGroup(LoginSession $login): void { // TODO make private
+    private static function registerGroup(LoginSession $login): void {
 
         if ($login->getLogin()->getMode() == 'monitor-group') {
 
@@ -162,12 +157,12 @@ class SessionController extends Controller {
 
         if ($authToken->getType() == "person") {
 
-            $loginWithPerson = self::sessionDAO()->getPersonSessionFromToken($authToken->getToken());
-            $session = Session::createFromPersonSession($loginWithPerson);
+            $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+            $session = Session::createFromPersonSession($personSession);
 
             if ($authToken->getMode() == 'monitor-group') {
 
-                $booklets = $loginWithPerson->getLoginSession()->getLogin()->getBooklets()[''];
+                $booklets = $personSession->getLoginSession()->getLogin()->getBooklets()[''];
                 $session->addAccessObjects('test', ...$booklets);
             }
 

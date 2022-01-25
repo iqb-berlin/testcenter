@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\MockObject\Rule\InvokedCount;
 use PHPUnit\Framework\TestCase;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
 use Slim\Http\Request;
@@ -14,8 +14,7 @@ use Slim\Http\Uri;
 
 require_once "classes/controller/Controller.class.php";
 require_once "classes/controller/SessionController.class.php";
-require_once "classes/dao/DAO.class.php";
-require_once "classes/dao/SessionDAO.class.php";
+
 
 class SessionControllerInjector extends SessionController {
 
@@ -30,6 +29,11 @@ class SessionControllerInjector extends SessionController {
         SessionController::$_testDAO = $testDAO;
     }
 
+
+    public static function injectAdminDAO(AdminDAO $adminDAO) {
+
+        SessionController::$_adminDAO = $adminDAO;
+    }
 
     public static function injectBookletsFolder(BookletsFolder $bookletsFolder, int $workspaceId) {
 
@@ -54,6 +58,7 @@ final class SessionControllerTest extends TestCase {
         require_once "classes/data-collection/PersonSession.class.php";
         require_once "classes/data-collection/Person.class.php";
         require_once "classes/data-collection/SessionChangeMessage.class.php";
+        require_once "classes/data-collection/AuthToken.class.php";
         require_once "classes/controller/Controller.class.php";
         require_once "classes/controller/SessionController.class.php";
         require_once "classes/helper/RequestBodyParser.class.php";
@@ -65,11 +70,13 @@ final class SessionControllerTest extends TestCase {
         require_once "classes/dao/DAO.class.php";
         require_once "classes/dao/SessionDAO.class.php";
         require_once "classes/dao/TestDAO.class.php";
+        require_once "classes/dao/AdminDAO.class.php";
         require_once "classes/exception/HttpException.class.php";
         require_once "classes/exception/HttpSpecializedException.class.php";
         require_once "classes/exception/HttpBadRequestException.class.php";
         require_once "classes/workspace/Workspace.class.php";
         require_once "classes/workspace/BookletsFolder.class.php";
+        require_once "classes/exception/HttpUnauthorizedException.class.php";
 
 
         $mockBookletsFolder = $this->createMock('BookletsFolder');
@@ -100,21 +107,27 @@ final class SessionControllerTest extends TestCase {
     }
 
 
-    private function mockSessionDAO(array $functionsAndResults, array $expectFunctionCalls = []): MockObject {
+    private function mockSessionDAO(array $functionsAndResults, array $expectFunctionCalls = []): void {
 
         $daoStub = $this->createMock('SessionDAO');
         $this->addMockFunctions($daoStub, $functionsAndResults, $expectFunctionCalls);
         SessionControllerInjector::injectSessionDAO($daoStub);
-        return $daoStub;
     }
 
 
-    private function mockTestDAO(array $functionsAndResults, array $expectFunctionCalls = []): MockObject {
+    private function mockTestDAO(array $functionsAndResults, array $expectFunctionCalls = []): void {
 
         $daoStub = $this->createMock('TestDAO');
         $this->addMockFunctions($daoStub, $functionsAndResults, $expectFunctionCalls);
         SessionControllerInjector::injectTestDAO($daoStub);
-        return $daoStub;
+    }
+
+
+    private function mockAdminDAO(array $functionsAndResults, array $expectFunctionCalls = []): void {
+
+        $daoStub = $this->createMock('AdminDAO');
+        $this->addMockFunctions($daoStub, $functionsAndResults, $expectFunctionCalls);
+        SessionControllerInjector::injectAdminDAO($daoStub);
     }
 
 
@@ -142,7 +155,7 @@ final class SessionControllerTest extends TestCase {
     }
 
 
-    public function test_putSessionLogin_loginThatRequiresCode(): void {
+    public function test_putSessionLogin_loginThatRequiresCode(): void { //!
 
         $this->mockSessionDAO([
             'getOrCreateLoginSession' => new LoginSession(
@@ -157,7 +170,10 @@ final class SessionControllerTest extends TestCase {
                     ['aaa' => ['THE_BOOKLET']],
                     1
                 )
-            )
+            ),
+            'renewPersonToken' => function(PersonSession $personSession): PersonSession {
+                return $personSession->withNewToken('new_token');
+            }
         ]);
 
         $response = SessionController::putSessionLogin(
@@ -168,7 +184,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"some_token","displayName":"sample_group\/sample_user","customTexts":{},"flags":["codeRequired"],"access":{}}',
+            '{"token":"some_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"access":{}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -229,7 +245,10 @@ final class SessionControllerTest extends TestCase {
             'getOrCreatePersonSession' => new PersonSession(
                 $loginSession,
                 new Person(1, 'person_token', '')
-            )
+            ),
+            'renewPersonToken' => function(PersonSession $personSession): PersonSession {
+                return $personSession->withNewToken('new_token');
+            }
         ]);
 
         $response = SessionController::putSessionLogin(
@@ -240,7 +259,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"person_token","displayName":"Sample Group\/sample_user\/","customTexts":{},"flags":[],"access":{"test":["THE_BOOKLET"]}}',
+            '{"token":"new_token","displayName":"Sample Group\/sample_user\/","customTexts":{},"flags":[],"access":{"test":["THE_BOOKLET"]}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -303,7 +322,10 @@ final class SessionControllerTest extends TestCase {
                 'getLoginsByGroup' => [
                     new LoginSession(2, '', $loginTesteeA),
                     new LoginSession(3, '', $loginTesteeB)
-                ]
+                ],
+                'renewPersonToken' => function(PersonSession $personSession): PersonSession {
+                    return $personSession->withNewToken('new_token');
+                }
             ],
             [
                 'getOrCreateLoginSession' => 1,
@@ -329,9 +351,169 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"person_token","displayName":"Sample Group\/test-monitor\/","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
+            '{"token":"new_token","displayName":"Sample Group\/test-monitor\/","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+
+    public function test_getSession_loginSession() {
+
+        $loginSession = new LoginSession(
+            1,
+            'login_token',
+            new Login(
+                'sample_user',
+                'password_hash',
+                'run-hot-return',
+                'sample_group',
+                'Sample Group',
+                ['xxx' => ['THE_BOOKLET']],
+                1
+            ));
+
+        $loginToken = new AuthToken('login_token', 1, 'login', 1, 'run-hot-return', 'sample_group');
+
+
+        $this->mockSessionDAO([
+            'getLoginSessionByToken' => $loginSession
+        ]);
+
+        $response = SessionController::getSession(
+            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $loginToken),
+            new Response()
+        );
+
+        $response->getBody()->rewind();
+
+        $this->assertEquals(
+            '{"token":"login_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"access":{}}',
+            $response->getBody()->getContents()
+        );
+
+    }
+
+    public function test_getSession_personSession() {
+
+        $personSession = new PersonSession(
+            new LoginSession(
+                1,
+                'login_token',
+                new Login(
+                    'sample_user',
+                    'password_hash',
+                    'run-hot-return',
+                    'sample_group',
+                    'Sample Group',
+                    ['xxx' => ['THE_BOOKLET']],
+                    1
+                )
+            ),
+            new Person(
+                1,
+                'person_token',
+                'xxx'
+            )
+        );
+
+        $personToken = new AuthToken('person_token', 1, 'person', 1, 'run-hot-return', 'sample_group');
+
+        $this->mockSessionDAO([
+            'getPersonSessionByToken' => $personSession
+        ]);
+
+        $response = SessionController::getSession(
+            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $personToken),
+            new Response()
+        );
+
+        $response->getBody()->rewind();
+
+        $this->assertEquals(
+            '{"token":"person_token","displayName":"Sample Group\/sample_user\/xxx","customTexts":{},"flags":[],"access":{"test":["THE_BOOKLET"]}}',
+            $response->getBody()->getContents()
+        );
+    }
+
+
+    public function test_getSession_monitor() {
+
+        $personSession = new PersonSession(
+            new LoginSession(
+                2,
+                'login_token',
+                new Login(
+                    'sample_monitor',
+                    'password_hash',
+                    'monitor-group',
+                    'sample_group',
+                    'Sample Group',
+                    ['' => ['THE_BOOKLET']],
+                    1
+                )
+            ),
+            new Person(
+                2,
+                'monitor_token',
+                ''
+            )
+        );
+
+        $personToken = new AuthToken('monitor_token', 2, 'person', 1, 'monitor-group', 'sample_group');
+
+        $this->mockSessionDAO([
+            'getPersonSessionByToken' => $personSession
+        ]);
+
+        $response = SessionController::getSession(
+            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $personToken),
+            new Response()
+        );
+
+        $response->getBody()->rewind();
+
+        $this->assertEquals(
+            '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor\/","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
+            $response->getBody()->getContents()
+        );
+    }
+
+
+    public function test_getSession_adminSession() {
+
+        $adminToken = new AuthToken('admin_token', 1, 'admin', -1, 'admin', '[admins]');
+
+        $accessObject = new Session('admin_token', 'Super', []);
+        $accessObject->addAccessObjects("workspaceAdmin", "1");
+
+        $this->mockAdminDao([
+            'getAdminSession' => $accessObject,
+            'refreshAdminToken' => function(): void {}
+        ]);
+
+        $response = SessionController::getSession(
+            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $adminToken),
+            new Response()
+        );
+
+        $response->getBody()->rewind();
+
+        $this->assertEquals(
+            '{"token":"admin_token","displayName":"Super","customTexts":{},"flags":[],"access":{"workspaceAdmin":["1"]}}',
+            $response->getBody()->getContents()
+        );
+    }
+
+
+    public function test_getSession_unknownTokenType() {
+
+        $unknownToken = new AuthToken('whoever', 1, 'unknown', -1, 'whatever', 'whatever');
+
+        $this->expectException(HttpUnauthorizedException::class);
+        SessionController::getSession(
+            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $unknownToken),
+            new Response()
+        );
     }
 }

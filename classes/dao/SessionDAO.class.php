@@ -393,8 +393,7 @@ class SessionDAO extends DAO {
                     person_sessions.id,
                     person_sessions.token,
                     person_sessions.code,
-                    person_sessions.valid_until,
-                    logins.group_name
+                    person_sessions.valid_until
                 FROM logins
                     left join login_sessions on (logins.name = login_sessions.name)
                     left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
@@ -462,7 +461,7 @@ class SessionDAO extends DAO {
     }
 
 
-    public function getPersonSessionFromToken(string $personToken): PersonSession {
+    public function getPersonSessionByToken(string $personToken): PersonSession {
 
         $personSession = $this->_(
             'SELECT 
@@ -529,7 +528,7 @@ class SessionDAO extends DAO {
 
     public function getTestStatus(string $personToken, string $bookletName): array {
 
-        $person = $this->getPersonSessionFromToken($personToken);
+        $person = $this->getPersonSessionByToken($personToken);
 
         $test = $this->_(
             'SELECT tests.laststate, tests.locked, tests.label, tests.id, tests.running FROM tests

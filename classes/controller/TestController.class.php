@@ -34,7 +34,7 @@ class TestController extends Controller {
         // TODO check for Mode::hasCapability('monitorable'))
         $testState = isset($test['lastState']) && $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'];
         if ($test['_newlyCreated']) {
-            $personSession = self::sessionDAO()->getPersonSessionFromToken($authToken->getToken());
+            $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
             $message = SessionChangeMessage::session((int) $test['id'], $personSession);
             $message->setTestState($testState, $body['bookletName']);
         } else {

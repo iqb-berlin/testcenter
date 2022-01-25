@@ -254,7 +254,7 @@ class SessionDAOTest extends TestCase {
             'nice_token',
             new Login(
                 'test',
-                'pw_hash',
+                '',
                 'run-hot-return',
                 'sample_group',
                 'Sample Group',
@@ -422,38 +422,38 @@ class SessionDAOTest extends TestCase {
 
 
 
-    function test_getPersonSessionFromToken_correctToken() {
+    function test_getPersonSessionByToken_correctToken() {
 
-        $result = $this->dbc->getPersonSessionFromToken('person-token');
+        $result = $this->dbc->getPersonSessionByToken('person-token');
         $this->assertEquals($this->testPersonSession, $result);
     }
 
 
-    function test_getPersonSessionFromToken_wrongToken() {
+    function test_getPersonSessionByToken_wrongToken() {
 
         $this->expectException('HttpError');
-        $this->dbc->getPersonSessionFromToken('wrong-token');
+        $this->dbc->getPersonSessionByToken('wrong-token');
     }
 
 
-    function test_getPersonSessionFromToken_expiredLogin() {
+    function test_getPersonSessionByToken_expiredLogin() {
 
         $this->expectException('HttpError');
-        $this->dbc->getPersonSessionFromToken('person-of-expired-login-token');
+        $this->dbc->getPersonSessionByToken('person-of-expired-login-token');
     }
 
 
-    function test_getPersonSessionFromToken_futureLogin() {
+    function test_getPersonSessionByToken_futureLogin() {
 
         $this->expectException('HttpError');
-        $this->dbc->getPersonSessionFromToken('person-of-future-login-token');
+        $this->dbc->getPersonSessionByToken('person-of-future-login-token');
     }
 
 
-    function test_getPersonSessionFromToken_expired() {
+    function test_getPersonSessionByToken_expired() {
 
         $this->expectException('HttpError');
-        $this->dbc->getPersonSessionFromToken('expired-person-token');
+        $this->dbc->getPersonSessionByToken('expired-person-token');
     }
 
 

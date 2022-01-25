@@ -41,41 +41,6 @@ class BookletsFolderTest extends TestCase {
         $this->bookletsFolder = new BookletsFolder(1);
     }
 
-// TODO fix 13
-//    function test_getTestStatusOverview() {
-//
-//        $result = $this->bookletsFolder->getTestStatusOverview(
-//            [
-//                'sample_group' => [
-//                    'bookletsStarted' => 2,
-//                    'bookletsLocked' => 1,
-//                    'laststart' => strtotime("3/3/2003"),
-//                    'laststartStr' => '3.3.2003'
-//                ],
-//                'orphaned_group' => [
-//                    'bookletsStarted' => 2,
-//                    'bookletsLocked' => 0,
-//                    'laststart' => strtotime("3/3/2003"),
-//                    'laststartStr' => '3.3.2003'
-//                ]
-//            ]
-//        );
-//
-//        $this->assertEquals('sample_group', $result[0]['groupname']);
-//        $this->assertEquals(2, $result[0]['loginsPrepared']); // test login, group- monitor
-//        $this->assertEquals(3, $result[0]['personsPrepared']); // two codes for login, 1 monitor account
-//        $this->assertEquals(9, $result[0]['bookletsPrepared']); // two codes on three booklets + 3 for monitor
-//        $this->assertEquals(2, $result[0]['bookletsStarted']);
-//        $this->assertEquals(1, $result[0]['bookletsLocked']);
-//        $this->assertEquals('future_group', $result[5]['groupname']);
-//        $this->assertEquals(1, $result[5]['loginsPrepared']);
-//        $this->assertEquals(1, $result[5]['personsPrepared']);
-//        $this->assertEquals(1, $result[5]['bookletsPrepared']);
-//        $this->assertEquals(0, $result[5]['bookletsStarted']);
-//        $this->assertEquals(0, $result[5]['bookletsLocked']);
-//        $this->assertEquals(true, $result[6]['orphaned']);
-//    }
-
 
     function test_getBookletLabel() {
 
