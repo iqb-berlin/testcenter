@@ -35,8 +35,8 @@ paths:
               examples:
                 personToken:
                   value:
-                    token:  "static:person:sample_group_sample_user_xxx"
-                    displayName: "sample_group/sample_user/xxx"
+                    token:  "static:person:sample_group_test_xxx"
+                    displayName: "sample_group/test/xxx"
                     access:
                       test:  ["BOOKLET.SAMPLE-1"]
                     customTexts: {}
@@ -44,7 +44,7 @@ paths:
                 loginToken:
                   value:
                     token: "static:login:test"
-                    displayName: "sample_group/sample_user"
+                    displayName: "sample_group/test"
                     access: {}
                     customTexts: {}
                     flags: ["codeRequired"]
@@ -122,7 +122,7 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/session'
               example:
                 token:  "static_login_sample_login"
-                displayName: "sample_group/sample_user"
+                displayName: "sample_group/test"
                 access: {}
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
                 flags: ['codeRequired']
@@ -168,7 +168,7 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/session'
               example:
                 token:  "static_person_xxx"
-                displayName: "sample_group/sample_user/xxx"
+                displayName: "sample_group/test/xxx"
                 access:
                   test:
                     - ["BOOKLET.SAMPLE-1"]

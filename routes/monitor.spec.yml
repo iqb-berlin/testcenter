@@ -68,7 +68,7 @@ paths:
               example:
               - personId: 1
                 groupName: sample_group
-                personLabel: sample_user/xxx
+                personLabel: test/xxx
                 groupLabel: Sample group
                 mode: run-hot-return
                 testId: 1
@@ -81,7 +81,7 @@ paths:
                 timestamp: 1596455898
               - personId: 1
                 groupName: "sample_group"
-                personLabel: "sample_user/xxx"
+                personLabel: "test/xxx"
                 groupLabel: "Sample group"
                 mode: "run-hot-return"
                 testId: 2,

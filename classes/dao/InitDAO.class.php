@@ -17,7 +17,7 @@ class InitDAO extends SessionDAO {
     ];
 
 
-    public function createSampleLoginsReviewsLogs(string $loginCode): void {
+    public function createSampleLoginsReviewsLogs(): void {
 
         $timestamp = TimeStamp::now();
 
@@ -25,12 +25,12 @@ class InitDAO extends SessionDAO {
         $testDAO = new TestDAO();
 
         $testLogin = new Login(
-            'sample_user',
-            'user123',
+            'test',
+            Password::encrypt('user123', $this->passwordSalt),
             'run-hot-return',
             'sample_group',
             'sample_group',
-            [$loginCode => ['BOOKLET.SAMPLE-1']],
+            ['xxx' => ['BOOKLET.SAMPLE-1']],
             1,
             TimeStamp::fromXMLFormat('1/1/2030 12:00'),
             0,
@@ -40,9 +40,8 @@ class InitDAO extends SessionDAO {
         $sessionDAO->createLogin($testLogin, 1, 'init');
         $loginSession = $sessionDAO->createLoginSession($testLogin, true);
 
-        $loginSession->_validTo = TimeStamp::fromXMLFormat('1/1/2030 12:00'); // TODO fix this
 
-        $personSession = $sessionDAO->getOrCreatePersonSession($loginSession, $loginCode);
+        $personSession = $sessionDAO->getOrCreatePersonSession($loginSession, 'xxx');
         $test = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
@@ -55,28 +54,26 @@ class InitDAO extends SessionDAO {
         $testDAO->lockTest((int) $test2['id']);
     }
 
-    /**
-     * @param string $loginCode
-     * @throws HttpError
-     */
-    public function createSampleExpiredSessions(string $loginCode): void {
+
+    public function createSampleExpiredSessions(): void {
 
         $superAdminDAO = new SuperAdminDAO();
         $adminDAO = new AdminDAO();
+        $sessionDAO = new SessionDAO();
 
-        $testSession = new Login(
+        $login = new Login(
             'expired_user',
             '',
             'run-hot-return',
             'expired_group',
             'expired_group',
-             [$loginCode => ['BOOKLET.SAMPLE-1']],
+             ['xxx' => ['BOOKLET.SAMPLE-1']],
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
-
-        $login = $this->createLoginSession($testSession, true);
-        $this->createPersonSession($login, $loginCode, true);
+        $sessionDAO->createLogin($login, 1, 'init');
+        $login = $this->createLoginSession($login, true);
+        $this->createPersonSession($login, 'xxx', true);
 
         $superAdminDAO->createUser("expired_user", "whatever", true);
         $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
@@ -85,9 +82,11 @@ class InitDAO extends SessionDAO {
 
     public function createSampleMonitorSessions(): array {
 
-        $persons = [];
+        $sessionDAO = new SessionDAO();
 
-        $testSessionGroupMonitor = new Login(
+        $personsSessions = [];
+
+        $login = new Login(
             'test-group-monitor',
             'user123',
             'monitor-group',
@@ -97,10 +96,11 @@ class InitDAO extends SessionDAO {
             1,
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
-        $login = $this->createLoginSession($testSessionGroupMonitor);
-        $persons['test-group-monitor'] = $this->createPersonSession($login, '');
+        $loginSession = $this->createLoginSession($login);
+        $sessionDAO->createLogin($login, 1, 'init');
+        $personsSessions['test-group-monitor'] = $this->createPersonSession($loginSession, '');
 
-        $testSession = new Login(
+        $login = new Login(
             'expired-group-monitor',
             'user123',
             'monitor-group',
@@ -110,10 +110,11 @@ class InitDAO extends SessionDAO {
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
-        $login = $this->createLoginSession($testSession, true);
-        $persons['expired-group-monitor'] = $this->createPersonSession($login, '', true);
+        $loginSession = $this->createLoginSession($login, true);
+        $sessionDAO->createLogin($login, 1, 'init');
+        $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', true);
 
-        return $persons;
+        return $personsSessions;
     }
 
 

@@ -117,12 +117,12 @@ class TestEnvironment {
         $initializer->cleanWorkspace($workspaceId);
         $initializer->importSampleData($workspaceId);
 
-        $initDAO->createSampleLoginsReviewsLogs('xxx');
-        $initDAO->createSampleExpiredSessions('xxx');
+        $initDAO->createSampleLoginsReviewsLogs();
+        $initDAO->createSampleExpiredSessions();
         $initDAO->createSampleMetaData();
-        $persons = $initDAO->createSampleMonitorSessions();
-        $groupMonitor = $persons['test-group-monitor']; /* @var $groupMonitor Person */
-        $initDAO->createSampleCommands($groupMonitor->getId());
+        $personSessions = $initDAO->createSampleMonitorSessions();
+        $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
+        $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
     }
 
 

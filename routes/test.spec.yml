@@ -740,7 +740,7 @@ paths:
         - in: path
           name: auth_token
           description: the (person-)auth-token which would usually be found in the header
-          example: "static:person:sample_group_sample_user_xxx"
+          example: "static:person:sample_group_test_xxx"
           required: true
           schema:
             type: string

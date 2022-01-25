@@ -52,6 +52,13 @@ class SessionDAO extends DAO {
 
         if ($tokenInfo == null) {
 
+            $x = $this->_(
+                'select
+                    *
+                from logins', [], true);
+            print_r($x);
+
+
             throw new HttpError("Invalid token: `$tokenString`", 403);
         }
 

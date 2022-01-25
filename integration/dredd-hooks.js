@@ -82,8 +82,8 @@ dreddHooks.beforeEach(function(transaction, done) {
     case '413':
       changeAuthToken(transaction, {
         adminToken: 'static:admin:super',
-        loginToken: 'static:login:sample_user',
-        personToken: 'static:person:sample_group_sample_user_xxx',
+        loginToken: 'static:login:test',
+        personToken: 'static:person:sample_group_test_xxx',
         workspaceMonitorToken: 'static:person:sample_group_test-study-monitor_',
         groupMonitorToken: 'static:person:sample_group_test-group-monitor_'
       });
@@ -94,7 +94,7 @@ dreddHooks.beforeEach(function(transaction, done) {
         code: "__invalid_code__"
       });
       changeAuthToken(transaction, {
-        loginToken: 'static:login:sample_user',
+        loginToken: 'static:login:test',
         adminToken: 'static:admin:super',
       });
       break;
@@ -106,18 +106,18 @@ dreddHooks.beforeEach(function(transaction, done) {
         adminToken: '__invalid_token__',
         loginToken: '__invalid_token__',
         personToken: '__invalid_token__',
-        workspaceMonitorToken: 'static:person:sample_group_sample_user_xxx',
-        groupMonitorToken: 'static:person:sample_group_sample_user_xxx'
+        workspaceMonitorToken: 'static:person:sample_group_test_xxx',
+        groupMonitorToken: 'static:person:sample_group_test_xxx'
       });
       changeUri(transaction, {
-         '/static%3Aperson%3Asample_group_sample_user_xxx/': '/__invalid_token__/'
+         '/static%3Aperson%3Asample_group_test_xxx/': '/__invalid_token__/'
       });
       break;
     case '404':
       changeAuthToken(transaction, {
         adminToken: 'static:admin:super',
-        loginToken: 'static:login:sample_user',
-        personToken: 'static:person:sample_group_sample_user_xxx',
+        loginToken: 'static:login:test',
+        personToken: 'static:person:sample_group_test_xxx',
         workspaceMonitorToken: 'static:person:sample_group_test-study-monitor_',
         groupMonitorToken: 'static:person:sample_group_test-group-monitor_'
       });
