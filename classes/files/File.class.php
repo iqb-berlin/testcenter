@@ -17,19 +17,28 @@ class File extends DataCollectionTypeSafe {
     protected string $description = '';
     private ?array $usedBy = [];
 
-    static function get(string $path, string $type = null, bool $validate = false): File {
+    static function get(string $path, string $type = null, bool $validate = false, string $content = ''): File {
 
         if (!$type) {
             $type = File::determineType($path);
         }
 
+        $isRawXml = false;
+
+        if ($content) {
+
+            $isRawXml = true;
+            $path = $content;
+        }
+
+
         switch ($type) {
-            case 'Testtakers': return new XMLFileTesttakers($path, $validate);
-            case 'SysCheck': return new XMLFileSysCheck($path, $validate);
-            case 'Booklet': return new XMLFileBooklet($path, $validate);
-            case 'Unit': return new XMLFileUnit($path, $validate);
+            case 'Testtakers': return new XMLFileTesttakers($path, $validate, $isRawXml);
+            case 'SysCheck': return new XMLFileSysCheck($path, $validate, $isRawXml);
+            case 'Booklet': return new XMLFileBooklet($path, $validate, $isRawXml);
+            case 'Unit': return new XMLFileUnit($path, $validate, $isRawXml);
             case 'Resource': return new ResourceFile($path, $validate);
-            case 'xml': return new XMLFile($path, $validate);
+            case 'xml': return new XMLFile($path, $validate, $isRawXml);
         }
 
         return new File($path, $type);
@@ -37,10 +46,10 @@ class File extends DataCollectionTypeSafe {
 
 
     // TODO unit-test
-    private static function determineType(string $path): string {
+    private static function determineType(string $path, bool $isRawXml = false): string {
 
         if (strtoupper(substr($path, -4)) == '.XML') {
-            $asGenericXmlFile = new XMLFile($path, false);
+            $asGenericXmlFile = new XMLFile($path, false, $isRawXml);
             if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownTypes)) {
                 return 'xml';
             }

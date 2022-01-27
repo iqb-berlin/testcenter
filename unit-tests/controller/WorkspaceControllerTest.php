@@ -45,6 +45,7 @@ final class WorkspaceControllerTest extends TestCase {
 
     private Workspace $workspaceMock;
     private SessionDAO $sessionDaoMock;
+    private UploadedFilesHandler $uploadedFilesHandler;
 
     function setUp(): void {
 
@@ -52,6 +53,10 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "classes/controller/Controller.class.php";
         require_once "classes/controller/WorkspaceController.class.php";
 //        require_once "classes/workspace/Workspace.class.php";
+        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "classes/data-collection/ValidationReportEntry.class.php";
+        require_once "classes/data-collection/PlayerMeta.class.php";
+        require_once "classes/data-collection/PlayerMeta.class.php";
         require_once "classes/data-collection/ReportType.php";
         require_once "classes/data-collection/ReportFormat.php";
         require_once "classes/exception/HttpException.class.php";
@@ -59,6 +64,12 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "classes/exception/HttpNotFoundException.class.php";
         require_once "classes/helper/RequestBodyParser.class.php";
         require_once "classes/helper/JSON.class.php";
+        require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/XMLSchema.class.php";
+        require_once "classes/helper/Version.class.php";
+        require_once "classes/files/File.class.php";
+        require_once "classes/files/ResourceFile.class.php";
+        require_once "classes/files/XMLFile.class.php";
 
         $this->callable = [WorkspaceController::class, 'getReport'];
         $this->reportMock = Mockery::mock('overload:' . Report::class);
@@ -67,6 +78,9 @@ final class WorkspaceControllerTest extends TestCase {
 
         $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
         $this->sessionDaoMock = Mockery::mock('overload:' . SessionDAO::class);
+        $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
+
+        define('ROOT_DIR', REAL_ROOT_DIR);
     }
 
     function tearDown(): void {
@@ -424,5 +438,40 @@ final class WorkspaceControllerTest extends TestCase {
 
         $this->assertEquals(207, $response->getStatusCode());
         $this->assertEquals(json_encode($deletionReport), $response->getBody()->getContents());
+    }
+
+
+    function test_postFile() {
+
+        $files = [
+            'Booklet.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Booklet.xml'),
+            'Unit2.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Unit2.xml'),
+            'Testtakers.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Testtakers.xml')
+        ];
+
+        $filesAsFileObjects = array_reduce(
+            array_keys($files),
+            function($agg, $fileName) use ($files) {
+                $agg[$fileName] = File::get($fileName, null, false, $files[$fileName]);
+                return $agg;
+            },
+            []
+        );
+
+        $this->uploadedFilesHandler
+            ->expects('handleUploadedFiles')
+            ->andReturn($filesAsFileObjects);
+
+        $response = WorkspaceController::postFile(
+            RequestCreator::createFileUpload(
+                'DELETE',
+                '/workspace/1/files/',
+                'fileforvo',
+                $files
+            )->withAttribute('ws_id', 1),
+            new Response()
+        );
+
+        $response->getBody()->rewind();
     }
 }

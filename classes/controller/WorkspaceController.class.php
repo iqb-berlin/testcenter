@@ -142,7 +142,7 @@ class WorkspaceController extends Controller {
         foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
             $reports[$localPath] = $file->getValidationReportSorted();
-            $containsErrors = ($containsErrors or count($reports[$localPath]['error']));
+            $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
 
             $reports[$localPath]["type"] = $file->getType();
             if ($file->isValid() and ($file->getType() == 'Testtakers')) {
@@ -207,12 +207,6 @@ class WorkspaceController extends Controller {
     }
 
 
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return Response|null
-     * @throws HttpNotFoundException
-     */
     public static function getReport(Request $request, Response $response): ?Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
