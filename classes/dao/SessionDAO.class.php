@@ -607,7 +607,7 @@ class SessionDAO extends DAO {
             "UPDATE person_sessions SET token = :token WHERE id = :id",
             [
                 ':token' => $newToken,
-                ':id'=> $loginSession->getId()
+                ':id'=> $personSession->getPerson()->getId()
             ]
         );
 
