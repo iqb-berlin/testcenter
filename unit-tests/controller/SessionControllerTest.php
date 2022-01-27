@@ -5,12 +5,8 @@ declare(strict_types=1);
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Slim\Exception\HttpUnauthorizedException;
-use Slim\Http\Environment;
-use Slim\Http\Headers;
-use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\Stream;
-use Slim\Http\Uri;
+
 
 require_once "classes/controller/Controller.class.php";
 require_once "classes/controller/SessionController.class.php";
@@ -51,6 +47,7 @@ final class SessionControllerTest extends TestCase {
 
     function setUp(): void {
 
+        require_once "unit-tests/test-helper/RequestCreator.class.php";
         require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
         require_once "classes/data-collection/Login.class.php";
         require_once "classes/data-collection/LoginSession.class.php";
@@ -85,25 +82,6 @@ final class SessionControllerTest extends TestCase {
             ->willReturn('A BOOKLET LABEL READ FROM FILE');
 
         SessionControllerInjector::injectBookletsFolder($mockBookletsFolder, 1);
-    }
-
-
-    private static function createRequest(
-        string $method,
-        string $uri,
-        string $body = '',
-        array $environment = [],
-        array $cookies = [],
-        array $serverParams = []
-    ) {
-        return new Request(
-            $method,
-            Uri::createFromString($uri),
-            Headers::createFromEnvironment(Environment::mock($environment)),
-            $cookies,
-            $serverParams,
-            new Stream(fopen(sprintf('data://text/plain,%s', $body), 'r'))
-        );
     }
 
 
@@ -177,7 +155,7 @@ final class SessionControllerTest extends TestCase {
         ]);
 
         $response = SessionController::putSessionLogin(
-            SessionControllerTest::createRequest('PUT', '/session/login', '{"name":"test", "password":"user123"}'),
+            RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"user123"}'),
             new Response()
         );
 
@@ -202,7 +180,7 @@ final class SessionControllerTest extends TestCase {
         $this->expectException(Exception::class);
 
         SessionController::putSessionLogin(
-            SessionControllerTest::createRequest('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
+            RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
             new Response()
         );
     }
@@ -219,7 +197,7 @@ final class SessionControllerTest extends TestCase {
         $this->expectException(Exception::class);
 
         SessionController::putSessionLogin(
-            SessionControllerTest::createRequest('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
+            RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
             new Response()
         );
     }
@@ -252,7 +230,7 @@ final class SessionControllerTest extends TestCase {
         ]);
 
         $response = SessionController::putSessionLogin(
-            SessionControllerTest::createRequest('PUT', '/session/login', '{"name":"sample_user", "password":"foo"}'),
+            RequestCreator::create('PUT', '/session/login', '{"name":"sample_user", "password":"foo"}'),
             new Response()
         );
 
@@ -344,7 +322,7 @@ final class SessionControllerTest extends TestCase {
         );
 
         $response = SessionController::putSessionLogin(
-            SessionControllerTest::createRequest('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
+            RequestCreator::create('PUT', '/session/login', '{"name":"test", "password":"foo"}'),
             new Response()
         );
 
@@ -381,7 +359,7 @@ final class SessionControllerTest extends TestCase {
         ]);
 
         $response = SessionController::getSession(
-            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $loginToken),
+            RequestCreator::create('GET', '/session')->withAttribute('AuthToken', $loginToken),
             new Response()
         );
 
@@ -424,7 +402,7 @@ final class SessionControllerTest extends TestCase {
         ]);
 
         $response = SessionController::getSession(
-            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $personToken),
+            RequestCreator::create('GET', '/session')->withAttribute('AuthToken', $personToken),
             new Response()
         );
 
@@ -467,7 +445,7 @@ final class SessionControllerTest extends TestCase {
         ]);
 
         $response = SessionController::getSession(
-            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $personToken),
+            RequestCreator::create('GET', '/session')->withAttribute('AuthToken', $personToken),
             new Response()
         );
 
@@ -493,7 +471,7 @@ final class SessionControllerTest extends TestCase {
         ]);
 
         $response = SessionController::getSession(
-            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $adminToken),
+            RequestCreator::create('GET', '/session')->withAttribute('AuthToken', $adminToken),
             new Response()
         );
 
@@ -512,7 +490,7 @@ final class SessionControllerTest extends TestCase {
 
         $this->expectException(HttpUnauthorizedException::class);
         SessionController::getSession(
-            SessionControllerTest::createRequest('GET', '/session')->withAttribute('AuthToken', $unknownToken),
+            RequestCreator::create('GET', '/session')->withAttribute('AuthToken', $unknownToken),
             new Response()
         );
     }

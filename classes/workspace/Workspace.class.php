@@ -98,10 +98,7 @@ class Workspace {
         return $files;
     }
 
-    /**
-     * @param $filesToDelete - array containing file paths local relative to this workspace
-     * @return array
-     */
+
     public function deleteFiles(array $filesToDelete): array {
 
         $report = [

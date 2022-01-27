@@ -292,7 +292,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    protected static function collectBookletsPerCode(SimpleXMLElement $loginNode) {
+    protected static function collectBookletsPerCode(SimpleXMLElement $loginNode): array {
 
         $noCodeBooklets = [];
         $codeBooklets = [];

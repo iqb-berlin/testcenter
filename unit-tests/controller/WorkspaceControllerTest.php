@@ -7,8 +7,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Slim\App;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\MethodNotAllowedException;
-use Slim\Exception\NotFoundException;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -45,21 +43,30 @@ final class WorkspaceControllerTest extends TestCase {
     private int $workspaceId = 1;
     private string $dataIds = 'id1,id2';
 
+    private Workspace $workspaceMock;
+    private SessionDAO $sessionDaoMock;
+
     function setUp(): void {
 
+        require_once "unit-tests/test-helper/RequestCreator.class.php";
         require_once "classes/controller/Controller.class.php";
         require_once "classes/controller/WorkspaceController.class.php";
-        require_once "classes/workspace/Workspace.class.php";
+//        require_once "classes/workspace/Workspace.class.php";
         require_once "classes/data-collection/ReportType.php";
         require_once "classes/data-collection/ReportFormat.php";
         require_once "classes/exception/HttpException.class.php";
         require_once "classes/exception/HttpSpecializedException.class.php";
         require_once "classes/exception/HttpNotFoundException.class.php";
+        require_once "classes/helper/RequestBodyParser.class.php";
+        require_once "classes/helper/JSON.class.php";
 
         $this->callable = [WorkspaceController::class, 'getReport'];
         $this->reportMock = Mockery::mock('overload:' . Report::class);
         $this->adminDaoMock = Mockery::mock(AdminDAO::class);
         $this->sysChecksFolderMock = Mockery::mock(SysChecksFolder::class);
+
+        $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
+        $this->sessionDaoMock = Mockery::mock('overload:' . SessionDAO::class);
     }
 
     function tearDown(): void {
@@ -67,19 +74,13 @@ final class WorkspaceControllerTest extends TestCase {
         Mockery::close();
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithInvalidReportTypeAndCSVShouldThrowException(): void {
+
+    function test_GetReport_WithInvalidReportTypeAndCSVShouldThrowException(): void {
 
         $this->testGetReportWithInvalidReportTypeShouldThrowException('text/csv');
     }
 
-    /**
-     * @throws NotFoundException
-     * @throws MethodNotAllowedException
-     */
+
     private function testGetReportWithInvalidReportTypeShouldThrowException(string $mediaType): void {
 
         // Arrange
@@ -93,14 +94,7 @@ final class WorkspaceControllerTest extends TestCase {
         $this->callSlimFramework($path, $mediaType, $reportType);
     }
 
-    /**
-     * @param string $path
-     * @param string $mediaType
-     * @param string $reportType
-     * @return ResponseInterface
-     * @throws MethodNotAllowedException
-     * @throws NotFoundException
-     */
+
     private function callSlimFramework(string $path, string $mediaType, string $reportType): ResponseInterface {
 
         $app = new App();
@@ -113,14 +107,7 @@ final class WorkspaceControllerTest extends TestCase {
         return $response;
     }
 
-    /**
-     * @param string $requestMethod
-     * @param string $mediaType
-     * @param int|null $workspaceId
-     * @param string $reportType
-     * @param string|null $dataIds
-     * @return Request
-     */
+
     private function createReportRequest(
         string  $requestMethod,
         string  $mediaType,
@@ -145,28 +132,19 @@ final class WorkspaceControllerTest extends TestCase {
         return $request->withHeader('Content-Type', $mediaType);
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithInvalidReportTypeAndJSONShouldThrowException(): void {
+
+    function test_GetReport_WithInvalidReportTypeAndJSONShouldThrowException(): void {
 
         $this->testGetReportWithInvalidReportTypeShouldThrowException('application/json');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithLogAndCSVAndEmptyDataIds(): void {
+
+    function test_GetReport_WithLogAndCSVAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::LOG, 'text/csv', 'setAdminDAOInstance');
     }
 
-    /**
-     * @throws MethodNotAllowedException
-     * @throws NotFoundException
-     */
+    
     private function testGetReportWithEmptyDataIds(string $reportType, string $mediaType, string $expectedMethod): void {
 
         // Arrange
@@ -186,82 +164,55 @@ final class WorkspaceControllerTest extends TestCase {
         parent::assertEmpty($response->getBody()->getContents());
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithLogAndJSONAndEmptyDataIds(): void {
+
+    function test_GetReportWithLogAndJSONAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::LOG, 'application/json', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithResponseAndCSVAndEmptyDataIds(): void {
+
+    function test_GetReportWithResponseAndCSVAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE, 'text/csv', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithResponseAndJSONAndEmptyDataIds(): void {
+
+    function test_GetReportWithResponseAndJSONAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::RESPONSE, 'application/json', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithReviewAndCSVAndEmptyDataIds(): void {
+
+    function test_GetReportWithReviewAndCSVAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::REVIEW, 'text/csv', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithReviewAndJSONAndEmptyDataIds(): void {
+
+    function test_GetReportWithReviewAndJSONAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::REVIEW, 'application/json', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithSystemCheckAndCSVAndEmptyDataIds(): void {
+
+    function test_GetReportWithSystemCheckAndCSVAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::SYSTEM_CHECK, 'text/csv', 'setSysChecksFolderInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithSystemCheckAndJSONAndEmptyDataIds(): void {
+
+    function test_GetReportWithSystemCheckAndJSONAndEmptyDataIds(): void {
 
         $this->testGetReportWithEmptyDataIds(ReportType::SYSTEM_CHECK, 'application/json', 'setSysChecksFolderInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithLogAndCSVAndNoneReportGeneration(): void {
+
+    function test_GetReportWithLogAndCSVAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::LOG, 'text/csv', 'setAdminDAOInstance');
     }
 
-    /**
-     * @throws NotFoundException
-     * @throws MethodNotAllowedException
-     */
+
     private function testGetReportWithoutReportGeneration(string $reportType, string $mediaType, string $expectedMethod): void {
 
         // Arrange
@@ -280,84 +231,55 @@ final class WorkspaceControllerTest extends TestCase {
         parent::assertEmpty($response->getBody()->getContents());
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithLogAndJSONAndNoneReportGeneration(): void {
+
+    function test_GetReport_LogAndJSONAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::LOG, 'application/json', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithResponseAndCSVAndNoneReportGeneration(): void {
+
+    function test_GetReport_ResponseAndCSVAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE, 'text/csv', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithResponseAndJSONAndNoneReportGeneration(): void {
+
+    function test_GetReport_ResponseAndJSONAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::RESPONSE, 'application/json', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithReviewAndCSVAndNoneReportGeneration(): void {
+
+    function test_GetReport_ReviewAndCSVAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::REVIEW, 'text/csv', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithReviewAndJSONAndNoneReportGeneration(): void {
+
+    function test_GetReport_ReviewAndJSONAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::REVIEW, 'application/json', 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithSystemCheckAndCSVAndNoneReportGeneration(): void {
+
+    function test_GetReport_SystemCheckAndCSVAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::SYSTEM_CHECK, 'text/csv', 'setSysChecksFolderInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithSystemCheckAndJSONAndNoneReportGeneration(): void {
+
+    function test_GetReport_SystemCheckAndJSONAndNoneReportGeneration(): void {
 
         $this->testGetReportWithoutReportGeneration(ReportType::SYSTEM_CHECK, 'application/json', 'setSysChecksFolderInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithLogAndCSV(): void {
+
+    function test_GetReport_LogAndCSV(): void {
 
         $this->testGetCSVReport(ReportType::LOG, 'setAdminDAOInstance');
     }
 
-    /**
-     * @param string $reportType
-     * @param string $expectedMethod
-     * @throws MethodNotAllowedException
-     * @throws NotFoundException
-     */
+
     private function testGetCSVReport(string $reportType, string $expectedMethod): void {
 
         // Arrange
@@ -377,23 +299,13 @@ final class WorkspaceControllerTest extends TestCase {
         parent::assertEquals(self::CSV_REPORT_DATA_SAMPLE, $response->getBody()->getContents());
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithLogAndJSON(): void {
+
+    function test_GetReport_LogAndJSON(): void {
 
         $this->testGetJSONReport(ReportType::LOG, 'application/json', ['application/json'], 'setAdminDAOInstance');
     }
 
-    /**
-     * @param string $reportType
-     * @param string $mediaType
-     * @param array $expectedContentTypes
-     * @param string $expectedMethod
-     * @throws MethodNotAllowedException
-     * @throws NotFoundException
-     */
+
     private function testGetJSONReport(string $reportType, string $mediaType, array $expectedContentTypes, string $expectedMethod): void {
 
         // Arrange
@@ -412,99 +324,105 @@ final class WorkspaceControllerTest extends TestCase {
         parent::assertEquals(json_encode(self::JSON_REPORT_DATA_SAMPLE), $response->getBody()->getContents());
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithResponseAndCSV(): void {
+
+    function test_GetReport_ResponseAndCSV(): void {
 
         $this->testGetCSVReport(ReportType::RESPONSE, 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithResponseAndJSON(): void {
+
+    function test_GetReport_ResponseAndJSON(): void {
 
         $this->testGetJSONReport(ReportType::RESPONSE, 'application/json', ['application/json'], 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithReviewAndCSV(): void {
+
+    function test_GetReport_ReviewAndCSV(): void {
 
         $this->testGetCSVReport(ReportType::REVIEW, 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithReviewAndJSON(): void {
+
+    function test_GetReport_ReviewAndJSON(): void {
 
         $this->testGetJSONReport(ReportType::REVIEW, 'application/json', ['application/json'], 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithSystemCheckAndCSV(): void {
+
+    function test_GetReport_SystemCheckAndCSV(): void {
 
         $this->testGetCSVReport(ReportType::SYSTEM_CHECK, 'setSysChecksFolderInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithSystemCheckAndJSON(): void {
+
+    function test_GetReport_SystemCheckAndJSON(): void {
 
         $this->testGetJSONReport(ReportType::SYSTEM_CHECK, 'application/json', ['application/json'], 'setSysChecksFolderInstance');
     }
 
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithLogAndInvalidAcceptHeader(): void {
+    function test_GetReport_LogAndInvalidAcceptHeader(): void {
 
         $this->testGetJSONReport(
             ReportType::LOG, 'application/xml', ['application/json'], 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithResponseAndInvalidAcceptHeader(): void {
+
+    function test_GetReport_WithResponseAndInvalidAcceptHeader(): void {
 
         $this->testGetJSONReport(
             ReportType::RESPONSE, 'application/xml', ['application/json'], 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithReviewAndInvalidAcceptHeader(): void {
+
+    function test_GetReport_WithReviewAndInvalidAcceptHeader(): void {
 
         $this->testGetJSONReport(
             ReportType::REVIEW, 'application/xml', ['application/json'], 'setAdminDAOInstance');
     }
 
-    /**
-     * @preserveGlobalState disabled
-     * @throws Exception
-     */
-    function testGetReportWithSystemCheckAndInvalidAcceptHeader(): void {
+
+    function test_GetReport_WithSystemCheckAndInvalidAcceptHeader(): void {
 
         $this->testGetJSONReport(
             ReportType::SYSTEM_CHECK, 'application/xml', ['application/json'], 'setSysChecksFolderInstance');
     }
 
+
+    function test_deleteFiles(): void {
+
+        $deletionReport = [
+            'deleted' => ['Testtakers/local_path.file', 'Booklet/other_local_path.xml'],
+            'did_not_exist' => ['Unit/not_exist.xml'],
+            'not_allowed' => ['Unit/not_allowed.xml'],
+            'was_used' => ['Resource/in_use.voud']
+        ];
+
+        $deletionRequest = call_user_func_array('array_merge', array_values($deletionReport));
+
+        $this->workspaceMock
+            ->expects('deleteFiles')
+            ->andReturn($deletionReport)
+            ->once();
+
+        $this->sessionDaoMock
+            ->expects('deleteLoginSource')
+            ->with(1, 'local_path.file')
+            ->once()
+            ->andReturn(2);
+
+        $response = WorkspaceController::deleteFiles(
+            RequestCreator::create(
+                'DELETE',
+                '/workspace/1/files/',
+                json_encode(['f' => $deletionRequest])
+            )->withAttribute('ws_id', 1),
+            new Response()
+        );
+
+        $response->getBody()->rewind();
+
+        $this->assertEquals(207, $response->getStatusCode());
+        $this->assertEquals(json_encode($deletionReport), $response->getBody()->getContents());
+    }
 }

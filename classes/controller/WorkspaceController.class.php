@@ -189,11 +189,19 @@ class WorkspaceController extends Controller {
 
     public static function deleteFiles(Request $request, Response $response): Response {
 
-        $workspaceId = (int)$request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
         $filesToDelete = RequestBodyParser::getRequiredElement($request, 'f');
 
-        $workspaceController = new Workspace($workspaceId);
-        $deletionReport = $workspaceController->deleteFiles($filesToDelete);
+        $workspace = new Workspace($workspaceId);
+        $deletionReport = $workspace->deleteFiles($filesToDelete);
+
+        foreach ($deletionReport['deleted'] as $deletedFile) {
+
+            list($type, $name) = explode('/', $deletedFile);
+            if ($type === 'Testtakers') {
+                self::sessionDAO()->deleteLoginSource($workspaceId, $name);
+            }
+        }
 
         return $response->withJson($deletionReport)->withStatus(207);
     }
