@@ -61,7 +61,6 @@ class WorkspaceTest extends TestCase {
         require_once "classes/data-collection/Login.class.php";
         require_once "classes/data-collection/LoginArray.class.php";
         require_once "classes/data-collection/Group.class.php";
-        require_once "classes/workspace/TesttakersFolder.class.php";
         require_once "classes/files/File.class.php";
         require_once "classes/files/ResourceFile.class.php";
         require_once "classes/files/XMLFile.class.php";

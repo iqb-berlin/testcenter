@@ -44,7 +44,6 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "classes/files/XMLFileUnit.class.php";
         require_once "classes/files/XMLFileTesttakers.class.php";
         require_once "classes/files/ResourceFile.class.php";
-        require_once "classes/workspace/TesttakersFolder.class.php";
         require_once "classes/workspace/WorkspaceValidator.class.php";
 
         require_once "unit-tests/mock-classes/PasswordMock.php";

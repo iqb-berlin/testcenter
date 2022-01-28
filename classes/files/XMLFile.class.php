@@ -34,7 +34,7 @@ class XMLFile extends File {
 
         } else {
 
-            $xmlElem = new SimpleXMLElement($path);
+            $xmlElem = simplexml_load_string($path);
         }
 
 

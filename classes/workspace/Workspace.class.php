@@ -219,7 +219,7 @@ class Workspace {
         foreach ($localFilePaths as $localFilePath) {
 
             $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
-            $validator->addFile($file->getType(), $file);
+            $validator->addFile($file->getType(), $file, true);
             $files[$localFilePath] = $file;
         }
 

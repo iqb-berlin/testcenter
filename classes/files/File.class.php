@@ -20,7 +20,7 @@ class File extends DataCollectionTypeSafe {
     static function get(string $path, string $type = null, bool $validate = false, string $content = ''): File {
 
         if (!$type) {
-            $type = File::determineType($path);
+            $type = File::determineType($path, $content);
         }
 
         $isRawXml = false;
@@ -46,10 +46,10 @@ class File extends DataCollectionTypeSafe {
 
 
     // TODO unit-test
-    private static function determineType(string $path, bool $isRawXml = false): string {
+    private static function determineType(string $path, string $content = ''): string {
 
         if (strtoupper(substr($path, -4)) == '.XML') {
-            $asGenericXmlFile = new XMLFile($path, false, $isRawXml);
+            $asGenericXmlFile = new XMLFile(empty($content) ? $path : $content, false, !!$content);
             if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownTypes)) {
                 return 'xml';
             }

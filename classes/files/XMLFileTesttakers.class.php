@@ -72,42 +72,31 @@ class XMLFileTesttakers extends XMLFile {
         $loginList = $this->getAllLoginNames();
         $groupList = array_keys($this->getGroups());
 
-        foreach (TesttakersFolder::getAll() as $otherTesttakersFolder) {
+        foreach ($validator->getGlobalIds() as $workspaceId => $sources) {
 
-            /* @var TesttakersFolder $otherTesttakersFolder */
+            foreach ($sources as $source => $globalIdsByType) {
 
-            foreach ($otherTesttakersFolder->getAllLoginNames() as $otherFilePath => $otherLoginList) {
-
-                if ($this->getPath() == $otherFilePath) {
+                if (($source == $this->getName()) and ($workspaceId == $validator->getId())) {
                     continue;
                 }
 
                 $this->reportDuplicates(
                     'login',
-                    array_intersect($loginList, $otherLoginList),
-                    basename($otherFilePath),
+                    array_intersect($loginList, array_values($globalIdsByType['login'])),
+                    $source,
                     $validator->getId(),
-                    $otherTesttakersFolder->getId()
+                    $workspaceId
                 );
-            }
-
-            foreach ($otherTesttakersFolder->getAllGroups() as $otherFilePath => $otherGroupList) {
-
-                if ($this->getPath() == $otherFilePath) {
-                    continue;
-                }
-
                 $this->reportDuplicates(
                     'group',
-                    array_intersect($groupList, array_keys($otherGroupList)),
-                    basename($otherFilePath),
+                    array_intersect($groupList, array_values($globalIdsByType['group'])),
+                    $source,
                     $validator->getId(),
-                    $otherTesttakersFolder->getId()
+                    $workspaceId
                 );
             }
         }
     }
-
 
     private function reportDuplicates(string $type, array $duplicates, string $otherFileName, int $thisWsId, int $otherWsId) {
 

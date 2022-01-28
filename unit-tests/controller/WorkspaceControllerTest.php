@@ -50,15 +50,19 @@ final class WorkspaceControllerTest extends TestCase {
     function setUp(): void {
 
         require_once "unit-tests/test-helper/RequestCreator.class.php";
+
+        require_once "unit-tests/mock-classes/PasswordMock.php";
+
         require_once "classes/controller/Controller.class.php";
         require_once "classes/controller/WorkspaceController.class.php";
-//        require_once "classes/workspace/Workspace.class.php";
         require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
         require_once "classes/data-collection/ValidationReportEntry.class.php";
         require_once "classes/data-collection/PlayerMeta.class.php";
         require_once "classes/data-collection/PlayerMeta.class.php";
         require_once "classes/data-collection/ReportType.php";
         require_once "classes/data-collection/ReportFormat.php";
+        require_once "classes/data-collection/Login.class.php";
+        require_once "classes/data-collection/LoginArray.class.php";
         require_once "classes/exception/HttpException.class.php";
         require_once "classes/exception/HttpSpecializedException.class.php";
         require_once "classes/exception/HttpNotFoundException.class.php";
@@ -67,9 +71,13 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "classes/helper/FileName.class.php";
         require_once "classes/helper/XMLSchema.class.php";
         require_once "classes/helper/Version.class.php";
+        require_once "classes/helper/TimeStamp.class.php";
         require_once "classes/files/File.class.php";
         require_once "classes/files/ResourceFile.class.php";
         require_once "classes/files/XMLFile.class.php";
+        require_once "classes/files/XMLFileTesttakers.class.php";
+        require_once "classes/files/XMLFileBooklet.class.php";
+//        require_once "classes/files/XMLFileTesttakers.class.php";
 
         $this->callable = [WorkspaceController::class, 'getReport'];
         $this->reportMock = Mockery::mock('overload:' . Report::class);
@@ -445,7 +453,7 @@ final class WorkspaceControllerTest extends TestCase {
 
         $files = [
             'Booklet.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Booklet.xml'),
-            'Unit2.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Unit2.xml'),
+            'Unit2.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus',
             'Testtakers.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Testtakers.xml')
         ];
 
@@ -458,9 +466,25 @@ final class WorkspaceControllerTest extends TestCase {
             []
         );
 
+        $this->workspaceMock
+            ->expects('importUnsortedFile')
+            ->times(3)
+            ->andReturn($filesAsFileObjects);
+
+        $this->workspaceMock
+            ->expects('getWorkspacePath')
+            ->once()
+            ->andReturn('..whataver');
+
         $this->uploadedFilesHandler
             ->expects('handleUploadedFiles')
-            ->andReturn($filesAsFileObjects);
+            ->once()
+            ->andReturn(array_values($files));
+
+        $this->sessionDaoMock
+            ->expects('updateLoginSource')
+            ->once()
+            ->andReturn([0, 3]);
 
         $response = WorkspaceController::postFile(
             RequestCreator::createFileUpload(
@@ -473,5 +497,11 @@ final class WorkspaceControllerTest extends TestCase {
         );
 
         $response->getBody()->rewind();
+
+        $this->assertEquals(207, $response->getStatusCode());
+        $this->assertEquals(
+            '{"Booklet.xml":[],"Unit2.xml":{"error":["Invalid File"]},"Testtakers.xml":{"info":["Logins Updated (-0, +3)"]}}',
+            $response->getBody()->getContents()
+        );
     }
 }

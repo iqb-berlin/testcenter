@@ -38,7 +38,7 @@ class UploadedFilesHandler {
     ];
 
 
-    static function handleUploadedFiles(Request $request, string $fieldName, int $workspaceId): array {
+    static function handleUploadedFiles(Request $request, string $fieldName, string $workspacePath): array {
 
         $allUploadedFiles = $request->getUploadedFiles();
 
@@ -63,8 +63,6 @@ class UploadedFilesHandler {
 
         $importedFiles = [];
 
-        $workspace = new Workspace($workspaceId);
-
         foreach ($uploadedFiles as $uploadedFile) { /** @var UploadedFile $uploadedFile */
 
             if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
@@ -76,11 +74,9 @@ class UploadedFilesHandler {
 
                 throw new HttpException($request, $error['message'], $error['code']);
             }
-
-            // TODO move Workspace-dependency out of here!
             $originalFileName = $uploadedFile->getClientFilename();
-            $uploadedFile->moveTo($workspace->getWorkspacePath() . '/' . $originalFileName);
-            $importedFiles = array_merge($importedFiles, $workspace->importUnsortedFile($originalFileName));
+            $uploadedFile->moveTo($workspacePath . '/' . $originalFileName);
+            $importedFiles[] = $originalFileName;
         }
 
         return $importedFiles;

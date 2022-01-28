@@ -73,6 +73,43 @@ class DAO {
     }
 
 
+    public function getGlobalIds(): array {
+
+        $globalIds = $this->_(
+            " select
+                id,
+                source,
+                workspace_id,
+                type
+            from (
+                     select name as id, source, workspace_id, 'login' as type from logins
+                     union
+                     select group_name as id, source, workspace_id, 'group' as type from logins group by group_name, source
+            ) as globalIds",
+            [],
+            true
+        );
+
+        return array_reduce(
+            $globalIds,
+            function($agg, $globalId) {
+                if (!isset($agg[$globalId['workspace_id']])) {
+                    $agg[$globalId['workspace_id']] = [];
+                }
+                if (!isset($agg[$globalId['workspace_id']][$globalId['source']])) {
+                    $agg[$globalId['workspace_id']][$globalId['source']] = [];
+                }
+                if (!isset($agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']])) {
+                    $agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']] = [];
+                }
+                $agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']][] = $globalId['id'];
+                return $agg;
+            },
+            []
+        );
+    }
+
+
     protected function randomToken(string $type, string $name) {
 
         if (DB::getConfig()->staticTokens) {

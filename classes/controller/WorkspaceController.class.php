@@ -135,26 +135,31 @@ class WorkspaceController extends Controller {
     public static function postFile(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
-        $importedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspaceId);
+        $workspace = new Workspace($workspaceId);
+
+        $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
+        $importedFiles = [];
+
+        foreach ($uploadedFiles as $uploadedFile) {
+            $importedFiles = array_merge($importedFiles, $workspace->importUnsortedFile($uploadedFile));
+        }
 
         $reports = [];
         $containsErrors = false;
         foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
-            $reports[$localPath] = $file->getValidationReportSorted();
-            $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
-
-            $reports[$localPath]["type"] = $file->getType();
             if ($file->isValid() and ($file->getType() == 'Testtakers')) {
                 /* @var $file XMLFileTesttakers */
-                self::sessionDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
-                $reports[$localPath]['special'] = 'logins updated';
-                $reports[$localPath]['tt'] = $file->getAllLogins();
+                list($deleted, $added) = self::sessionDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
+                $file->report('info', "Logins Updated (-$deleted, +$added)");
             }
-            if ($file->isValid() and ($file->getType() == 'Resource')) {
-                self::AdminDAO()->updateMetadata($workspaceId, $file->getId(), $file->getSpecialInfo());
-                $reports[$localPath]['special'] = 'metadata cached';
-            }
+            // TODO implement
+//            if ($file->isValid() and ($file->getType() == 'Resource')) {
+//                self::AdminDAO()->updateMetadata($workspaceId, $file->getId(), $file->getSpecialInfo());
+//                $file->report('info', 'metadata cached');
+//            }
+            $reports[$localPath] = $file->getValidationReportSorted();
+            $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
         }
 
         return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);

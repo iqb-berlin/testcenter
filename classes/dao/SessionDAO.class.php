@@ -78,10 +78,11 @@ class SessionDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function updateLoginSource(int $workspaceId, string $source, LoginArray $logins): void {
+    public function updateLoginSource(int $workspaceId, string $source, LoginArray $logins): array {
 
-        $this->deleteLoginSource($workspaceId, $source);
-        $this->addLoginSource($workspaceId, $source, $logins);
+        $deleted = $this->deleteLoginSource($workspaceId, $source);
+        $added = $this->addLoginSource($workspaceId, $source, $logins);
+        return [$deleted, $added];
     }
 
 

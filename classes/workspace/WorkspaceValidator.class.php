@@ -8,11 +8,12 @@ class WorkspaceValidator {
     protected array $allFiles = [];
     protected array $versionMap = [];
     protected int $workspaceId = -1;
+    protected array $globalIds = []; // type => [id => fileName]
 
-
-    function __construct(int $workspaceId) {
+    function __construct(int $workspaceId, array $globalIds = []) {
 
         $this->workspaceId = $workspaceId;
+        $this->setGlobalIds();
         $this->readFiles();
         $this->createVersionMap();
     }
@@ -131,12 +132,16 @@ class WorkspaceValidator {
     }
 
 
-    public function addFile(string $type, File $file): string {
+    public function addFile(string $type, File $file, $overwriteAllowed = false): string {
 
         if (isset($this->allFiles[$type][$file->getId()])) {
 
-            $type = $this->getPseudoTypeForDuplicate($type, $file->getId());
+            $duplicate = $this->allFiles[$type][$file->getId()];
 
+            if (!$overwriteAllowed or ($file->getName() !== $duplicate->getName())) {
+
+                $this->getPseudoTypeForDuplicate($type, $file->getId());
+            }
         }
 
         $this->allFiles[$type][$file->getId()] = $file;
@@ -238,5 +243,17 @@ class WorkspaceValidator {
                 }
             }
         }
+    }
+
+    private function setGlobalIds() {
+
+        $dao = new DAO();
+        $this->globalIds = $dao->getGlobalIds();
+    }
+
+
+    public function getGlobalIds(): array {
+
+        return $this->globalIds;
     }
 }
