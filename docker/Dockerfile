@@ -92,6 +92,9 @@ RUN pecl install xdebug && docker-php-ext-enable xdebug
 WORKDIR /var/www/html
 
 # configure Xdebug
+COPY docker/scripts/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# configure phpunit
 COPY phpunit.xml .
 
 COPY integration integration
