@@ -150,7 +150,7 @@ class WorkspaceController extends Controller {
 
             if ($file->isValid() and ($file->getType() == 'Testtakers')) {
                 /* @var $file XMLFileTesttakers */
-                list($deleted, $added) = self::sessionDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
+                list($deleted, $added) = self::workspaceDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
                 $file->report('info', "Logins Updated (-$deleted, +$added)");
             }
             // TODO implement
@@ -204,7 +204,7 @@ class WorkspaceController extends Controller {
 
             list($type, $name) = explode('/', $deletedFile);
             if ($type === 'Testtakers') {
-                self::sessionDAO()->deleteLoginSource($workspaceId, $name);
+                self::workspaceDAO()->deleteLoginSource($workspaceId, $name);
             }
         }
 

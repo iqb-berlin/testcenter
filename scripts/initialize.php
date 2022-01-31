@@ -194,10 +194,26 @@ try  {
 
         $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
         $workspaceIds[] = $workspaceData['id'];
+        CLI::h3("Workspace `{$workspaceData['name']}`");
         if (isset($workspaceData['restored'])) {
-            CLI::warning("Workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
-        } else {
-            CLI::p("Workspace `{$workspaceData['name']}` found.");
+            CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
+        }
+
+        $validator = new WorkspaceValidator($workspace);
+
+        foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+
+            $xFile = new XMLFileTesttakers($fullFilePath);
+            $xFile->crossValidate($validator);
+
+            if ($xFile->isValid()) {
+
+                $logins = $xFile->getAllLogins();
+                list($deleted, $added) = $workspace->workspaceDAO->updateLoginSource($workspace->getId(), $xFile->getName(), $logins);
+                CLI::p("file: {$xFile->getName()}  (-$deleted/+$added logins)");
+            } else {
+                CLI::warning("file: {$xFile->getName()} (invalid)");
+            }
         }
     }
 

@@ -134,7 +134,8 @@ class CLI {
     static function h3(string $text): void {
 
 
-        CLI::printColored($text, "Green", "Grey", true);
+
+        CLI::printColored($text, "Brown", "Grey", true);
     }
 
 

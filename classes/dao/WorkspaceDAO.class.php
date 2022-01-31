@@ -57,4 +57,81 @@ class WorkspaceDAO extends DAO {
             []
         );
     }
+
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function updateLoginSource(int $workspaceId, string $source, LoginArray $logins): array {
+
+        $deleted = $this->deleteLoginSource($workspaceId, $source);
+        $added = $this->addLoginSource($workspaceId, $source, $logins);
+        return [$deleted, $added];
+    }
+
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function addLoginSource(int $workspaceId, string $source, LoginArray $logins): int {
+
+        foreach ($logins as $login) {
+
+            $this->createLogin($login, $workspaceId, $source);
+        }
+        return count($logins->asArray());
+    }
+
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function createLogin(Login $login, int $workspaceId, string $source): void {
+
+        $this->_('insert into logins 
+                 (
+                     name,
+                     mode,
+                     workspace_id,
+                     codes_to_booklets,
+                     group_name,
+                     group_label,
+                     custom_texts,
+                     password,
+                     source,
+                     valid_from,
+                     valid_to,
+                     valid_for
+                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                $login->getName(),
+                $login->getMode(),
+                $workspaceId,
+                json_encode($login->getBooklets()),
+                $login->getGroupName(),
+                $login->getGroupLabel(),
+                json_encode($login->getCustomTexts()),
+                $login->getPassword(),
+                $source,
+                TimeStamp::toSQLFormat($login->getValidFrom()),
+                TimeStamp::toSQLFormat($login->getValidTo()),
+                $login->getValidForMinutes()
+            ]
+        );
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function deleteLoginSource(int $workspaceId, string $source): int {
+
+        $this->_(
+            'delete from logins where source = :source and workspace_id = :ws_id',
+            [
+                ':source' => $source,
+                ':ws_id' => $workspaceId
+            ]
+        );
+        return $this->lastAffectedRows;
+    }
 }
