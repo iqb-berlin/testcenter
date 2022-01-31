@@ -112,19 +112,4 @@ class DAOTest extends TestCase {
         $result = $this->dbc->getTestFullState(['testState' => '{"A":"B"}', "locked" => true, "running" => false]);
         $this->assertSame(["A" => "B", "status" => 'locked'], $result);
     }
-
-
-    public function test_getGlobalIds() {
-
-        $expectation = [
-            1 => [
-                'testdata.sql' => [
-                    'login' => ['future_user', 'monitor', 'sample_user', 'test', 'test-expired'],
-                    'group' => ['sample_group']
-                ]
-            ]
-        ];
-        $result = $this->dbc->getGlobalIds();
-        $this->assertEquals($expectation, $result);
-    }
 }

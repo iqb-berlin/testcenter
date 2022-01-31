@@ -21,7 +21,7 @@ try {
 
         CLI::h1("workspace " . $workspace->getId());
         $initDAO->createWorkspaceIfMissing($workspace);
-        $validator = new WorkspaceValidator($workspace->getId());
+        $validator = new WorkspaceValidator($workspace);
 
         foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 

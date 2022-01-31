@@ -7,6 +7,7 @@ class Workspace {
 
     protected int $workspaceId = 0;
     protected string $workspacePath = '';
+    public WorkspaceDAO $workspaceDAO;
 
     // dont' change order, it's the order of possible dependencies
     const subFolders = ['Resource', 'Unit', 'Booklet', 'Testtakers', 'SysCheck'];
@@ -32,6 +33,7 @@ class Workspace {
 
         $this->workspaceId = $workspaceId;
         $this->workspacePath = $this->getOrCreateWorkspacePath();
+        $this->workspaceDAO = new WorkspaceDAO();
     }
 
 
@@ -108,7 +110,7 @@ class Workspace {
             'was_used' => []
         ];
 
-        $validator = new WorkspaceValidator($this->workspaceId);
+        $validator = new WorkspaceValidator($this);
         $validator->validate();
         $allFiles = $validator->getFiles();
 
@@ -214,7 +216,7 @@ class Workspace {
 
         $files = [];
 
-        $validator = new WorkspaceValidator($this->getId());
+        $validator = new WorkspaceValidator($this);
 
         foreach ($localFilePaths as $localFilePath) {
 

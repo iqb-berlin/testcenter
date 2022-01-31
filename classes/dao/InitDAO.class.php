@@ -37,7 +37,7 @@ class InitDAO extends SessionDAO {
             0,
             (object) ['somStr' => 'someLabel']
         );
-        $sessionDAO->createLogin($testLogin, 1, 'init');
+        $sessionDAO->createLogin($testLogin, 1, 'SAMPLE_TESTTAKERS.XML');
         $loginSession = $sessionDAO->createLoginSession($testLogin, true);
 
 
@@ -71,7 +71,7 @@ class InitDAO extends SessionDAO {
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
-        $sessionDAO->createLogin($login, 1, 'init');
+        $sessionDAO->createLogin($login, 1, 'SAMPLE_TESTTAKERS.XML');
         $login = $this->createLoginSession($login, true);
         $this->createPersonSession($login, 'xxx', true);
 
@@ -97,7 +97,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $loginSession = $this->createLoginSession($login);
-        $sessionDAO->createLogin($login, 1, 'init');
+        $sessionDAO->createLogin($login, 1, 'SAMPLE_TESTTAKERS.XML');
         $personsSessions['test-group-monitor'] = $this->createPersonSession($loginSession, '');
 
         $login = new Login(
@@ -111,7 +111,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $loginSession = $this->createLoginSession($login, true);
-        $sessionDAO->createLogin($login, 1, 'init');
+        $sessionDAO->createLogin($login, 1, 'SAMPLE_TESTTAKERS.XML');
         $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', true);
 
         return $personsSessions;

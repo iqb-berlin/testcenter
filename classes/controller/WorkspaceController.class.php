@@ -17,14 +17,14 @@ class WorkspaceController extends Controller {
 
     public static function get(Request $request, Response $response): Response {
 
-        $workspaceId = (int)$request->getAttribute('ws_id');
+        $workspaceId = (int) $request->getAttribute('ws_id');
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
 
         return $response->withJson([
             "id" => $workspaceId,
-            "name" => self::adminDAO()->getWorkspaceName($workspaceId),
+            "name" => self::workspaceDAO()->getWorkspaceName($workspaceId),
             "role" => self::adminDAO()->getWorkspaceRole($authToken->getToken(), $workspaceId)
         ]);
     }
@@ -169,10 +169,10 @@ class WorkspaceController extends Controller {
     public static function getFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
-        $workspace = new WorkspaceValidator($workspaceId);
-        $workspace->validate();
+        $validator = new WorkspaceValidator(new Workspace($workspaceId));
+        $validator->validate();
         $fileDigestList = [];
-        foreach ($workspace->getFiles() as $file) {
+        foreach ($validator->getFiles() as $file) {
 
             if (!isset($fileDigestList[$file->getType()])) {
                 $fileDigestList[$file->getType()] = [];
@@ -322,10 +322,10 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
 
-        $workspaceValidator = new WorkspaceValidator($workspaceId);
+        $validator = new WorkspaceValidator(new Workspace($workspaceId));
 
         /* @var XMLFileSysCheck $sysCheck */
-        $sysCheck = $workspaceValidator->getSysCheck($sysCheckName);
+        $sysCheck = $validator->getSysCheck($sysCheckName);
         if (($sysCheck == null)) {
             throw new NotFoundException($request, $response);
         }
@@ -338,20 +338,20 @@ class WorkspaceController extends Controller {
             ]);
         }
 
-        $sysCheck->crossValidate($workspaceValidator);
+        $sysCheck->crossValidate($validator);
         if (!$sysCheck->isValid()) {
 
             throw new HttpInternalServerErrorException($request, 'SysCheck is invalid');
         }
 
-        $unit = $workspaceValidator->getUnit($sysCheck->getUnitId());
-        $unit->crossValidate($workspaceValidator);
+        $unit = $validator->getUnit($sysCheck->getUnitId());
+        $unit->crossValidate($validator);
         if (!$unit->isValid()) {
 
             throw new HttpInternalServerErrorException($request, 'Unit is invalid');
         }
 
-        $player = $unit->getPlayerIfExists($workspaceValidator);
+        $player = $unit->getPlayerIfExists($validator);
         if (!$player or !$player->isValid()) {
 
             throw new HttpInternalServerErrorException($request, 'Player is invalid');
@@ -359,7 +359,7 @@ class WorkspaceController extends Controller {
 
         return $response->withJson([
             'player_id' => $unit->getPlayerId(),
-            'def' => $unit->getContent($workspaceValidator),
+            'def' => $unit->getContent($validator),
             'player' => $player->getContent()
         ]);
     }

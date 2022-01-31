@@ -36,7 +36,10 @@ class BookletsFolderTest extends TestCase {
         require_once "classes/helper/TimeStamp.class.php";
         require_once "unit-tests/mock-classes/PasswordMock.php";
 
-
+        $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
+        $this->workspaceDaoMock->allows([
+            'getGlobalIds' => VfsForTest::globalIds
+        ]);
         $this->vfs = VfsForTest::setUp();
         $this->bookletsFolder = new BookletsFolder(1);
     }

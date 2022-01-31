@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
+use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 
@@ -11,8 +12,9 @@ use org\bovigo\vfs\vfsStream;
  */
 class WorkspaceTest extends TestCase {
 
-    private $vfs;
-    private $workspace;
+    private vfsStreamDirectory $vfs;
+    private Workspace $workspace;
+    private WorkspaceDAO $workspaceDaoMock;
 
     const validFile = '<Unit ><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
     const invalidFile = '<Unit><Metadata><Id>id</Id></Metadata></Unit>';
@@ -53,7 +55,10 @@ class WorkspaceTest extends TestCase {
         require_once "classes/helper/XMLSchema.class.php";
         require_once "classes/helper/JSON.class.php";
         require_once "classes/helper/TimeStamp.class.php";
+//        require_once "classes/helper/DB.class.php";
         require_once "classes/exception/HttpError.class.php";
+//        require_once "classes/dao/DAO.class.php";
+//        require_once "classes/dao/WorkspaceDAO.class.php";
         require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
         require_once "classes/data-collection/ValidationReportEntry.class.php";
         require_once "classes/data-collection/PlayerMeta.class.php";
@@ -70,6 +75,10 @@ class WorkspaceTest extends TestCase {
         require_once "classes/files/XMLFileSysCheck.class.php";
         require_once "classes/workspace/WorkspaceValidator.class.php";
 
+        $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
+        $this->workspaceDaoMock->allows([
+            'getGlobalIds' => VfsForTest::globalIds
+        ]);
         $this->vfs = VfsForTest::setUp();
         $this->workspace = new Workspace(1);
     }
@@ -247,6 +256,7 @@ class WorkspaceTest extends TestCase {
         $this->assertGreaterThan(0, count($result["valid.xml"]->getValidationReportSorted()['warning']), 'return warning if filename and id is the same');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
     }
+
 
 
     function test_importUnsortedFile_zipWithValidFilesWithDependencies() {

@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 class SuperAdminDAOTest extends TestCase {
 
     private SuperAdminDAO $dbc;
+    private WorkspaceDAO $workspaceDAO;
 
     function setUp(): void {
 
@@ -176,7 +177,7 @@ class SuperAdminDAOTest extends TestCase {
     public function test_renameWorkspace() {
 
         $this->dbc->setWorkspaceName(1, 'new_name');
-        $result = $this->dbc->getWorkspaceName(1);
+        $result = $this->dbc->_('select name from workspaces where id = 1')['name'];
         $expectation = 'new_name';
         $this->assertEquals($expectation, $result);
 
@@ -240,14 +241,6 @@ class SuperAdminDAOTest extends TestCase {
             1 => 'RO',
             2 => 'MO'
         );
-        $this->assertEquals($expectation, $result);
-    }
-
-
-    public function test_getWorkspaceName() {
-
-        $result = $this->dbc->getWorkspaceName(1);
-        $expectation = 'example_workspace';
         $this->assertEquals($expectation, $result);
     }
 

@@ -30,6 +30,10 @@ class SysChecksFolderTest extends TestCase {
         require_once "classes/files/XMLFile.class.php";
         require_once "classes/files/XMLFileSysCheck.class.php";
 
+        $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
+        $this->workspaceDaoMock->allows([
+            'getGlobalIds' => VfsForTest::globalIds
+        ]);
         $this->vfs = VfsForTest::setUp();
         $this->folder = new SysChecksFolder(1);
     }

@@ -28,6 +28,7 @@ final class AdminDAOTest extends TestCase {
         require_once "classes/data-collection/Person.class.php";
         require_once "classes/data-collection/Login.class.php";
         require_once "classes/data-collection/LoginSession.class.php";
+        require_once "classes/data-collection/Group.class.php";
         require_once "classes/dao/DAO.class.php";
         require_once "classes/dao/AdminDAO.class.php";
         require_once "classes/helper/Mode.class.php";
@@ -396,7 +397,18 @@ final class AdminDAOTest extends TestCase {
         $this->assertSame([], $resultAsArray);
     }
 
-    
+
+    public function test_getGroup(): void {
+
+        $result = $this->dbc->getGroup('sample_group');
+        $expectation = new Group('sample_group', 'Sample Group');
+        $this->assertEquals($expectation, $result);
+
+        $result = $this->dbc->getGroup('gibberish');
+        $this->assertNull($result);
+    }
+
+
     private function countTableRows(string $tableName): int {
 
         return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];

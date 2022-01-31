@@ -11,6 +11,7 @@ abstract class Controller {
     protected static $_superAdminDAO;
     protected static $_sessionDAO;
     protected static $_testDAO;
+    protected static $_workspaceDAO;
 
     protected static function sessionDAO(): SessionDAO {
 
@@ -49,6 +50,16 @@ abstract class Controller {
         }
 
         return self::$_superAdminDAO;
+    }
+
+
+    protected static function workspaceDAO(): WorkspaceDAO {
+
+        if (!self::$_workspaceDAO) {
+            self::$_workspaceDAO = new WorkspaceDAO();
+        }
+
+        return self::$_workspaceDAO;
     }
 
 

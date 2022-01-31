@@ -14,6 +14,60 @@ use org\bovigo\vfs\vfsStreamDirectory;
 
 class VfsForTest {
 
+    const globalIds = [
+        '1' => [
+            "SAMPLE_TESTTAKERS.XML" => [
+                "login" => [
+                    "test",
+                    "test-group-monitor",
+                    "test-review",
+                    "test-trial",
+                    "test-demo",
+                    "test-no-pw",
+                    "test-no-pw-trial",
+                    "test-expired",
+                    "expired-group-monitor",
+                    "test-future"
+                ],
+                "group" => [
+                    "sample_group",
+                    "review_group",
+                    "trial_group",
+                    "passwordless_group",
+                    "expired_group",
+                    "future_group"
+                ]
+            ],
+            "testtakers-missing-booklet.xml" => [
+                "login" => ["a_login"],
+                "group" => ["a_group"]
+            ],
+            "testtakers-duplicate-login-name.xml" => [
+                "login" => ["duplicate_login"],
+                "group" => [""]
+            ],
+            "testtakers-duplicate-login-name-cross-file-1.xml" => [
+                "login" => ["double_login"],
+                "group" => ["unique_group_1"]
+            ],
+            "testtakers-duplicate-login-name-cross-file-2.xml" => [
+                "login" => ["double_login"],
+                "group" => ["unique_group_2"]
+            ],
+            "testtakers-duplicate-login-name-cross-ws.xml" => [
+                "group" => ["another_group"],
+                "login" => ["another_login"]
+            ]
+        ],
+        '2' => [
+            "testtakers-duplicate-login-name-cross-ws.xml" => [
+                "group" => ["another_group"],
+                "login" => ["another_login"]
+            ]
+        ]
+    ];
+
+
     static function setUpBeforeClass(): void {
 
         ini_set('max_execution_time', 30);
@@ -112,12 +166,12 @@ class VfsForTest {
                 "testtakers-duplicate-login-name-cross-file-1.xml" =>
                     '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
                     . '<Metadata><Description>Teststakers with id which is used on other file in same ws (1/2)</Description></Metadata>'
-                    . '<Group id="double_group" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
+                    . '<Group id="unique_group_1" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
                     . '</Login></Group></Testtakers>',
                 "testtakers-duplicate-login-name-cross-file-2.xml" =>
                     '<?xml version="1.0" encoding="utf-8"?><Testtakers>'
                     . '<Metadata><Description>Teststakers with id which is used on other file in same ws (2/2)</Description></Metadata>'
-                    . '<Group id="double_group_1" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
+                    . '<Group id="unique_group_2" label="A"><Login mode="monitor-group" name="double_login" pw="13245678">'
                     . '</Login></Group></Testtakers>',
                 "testtakers-duplicate-login-name-cross-ws.xml" =>
                     '<?xml version="1.0" encoding="utf-8"?><Testtakers>'

@@ -17,9 +17,7 @@ class MonitorController extends Controller {
         $authToken = $request->getAttribute('AuthToken');
         $groupName = $request->getAttribute('group_name');
 
-        $testtakersFolder = new TesttakersFolder($authToken->getWorkspaceId());
-
-        $group = $testtakersFolder->findGroup($groupName);
+        $group = self::adminDAO()->getGroup($groupName);
 
         if (!$group) {
 
@@ -109,8 +107,7 @@ class MonitorController extends Controller {
             self::testDAO()->changeTestLockStatus((int) $testId, true);
 
             $testSession = self::testDAO()->getTestSession($testId);
-            $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName, $testId);
-            $sessionChangeMessage->setTestState($testSession['laststate']);
+            $sessionChangeMessage = SessionChangeMessage::testState((int) $testSession['person_id'], $testId, $testSession['laststate']);
             BroadcastService::sessionChange($sessionChangeMessage);
         }
 
@@ -131,8 +128,7 @@ class MonitorController extends Controller {
 
             $testSession = self::testDAO()->getTestSession($testId);
             self::testDAO()->addTestLog($testId, 'locked by monitor', 0, (string) $authToken->getId());
-            $sessionChangeMessage = new SessionChangeMessage((int) $testSession['person_id'], $groupName, $testId);
-            $sessionChangeMessage->setTestState($testSession['laststate']);
+            $sessionChangeMessage = SessionChangeMessage::testState((int) $testSession['person_id'], $testId, $testSession['laststate']);
             BroadcastService::sessionChange($sessionChangeMessage);
         }
 

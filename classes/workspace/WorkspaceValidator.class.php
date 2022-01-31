@@ -7,12 +7,12 @@ class WorkspaceValidator {
 
     protected array $allFiles = [];
     protected array $versionMap = [];
-    protected int $workspaceId = -1;
+    protected Workspace $workspace;
     protected array $globalIds = []; // type => [id => fileName]
 
-    function __construct(int $workspaceId, array $globalIds = []) {
+    function __construct(Workspace $workspace) {
 
-        $this->workspaceId = $workspaceId;
+        $this->workspace = $workspace;
         $this->setGlobalIds();
         $this->readFiles();
         $this->createVersionMap();
@@ -30,7 +30,7 @@ class WorkspaceValidator {
 
     public function getId(): int {
 
-        return $this->workspaceId;
+        return $this->workspace->getId();
     }
 
 
@@ -140,7 +140,7 @@ class WorkspaceValidator {
 
             if (!$overwriteAllowed or ($file->getName() !== $duplicate->getName())) {
 
-                $this->getPseudoTypeForDuplicate($type, $file->getId());
+                $type = $this->getPseudoTypeForDuplicate($type, $file->getId());
             }
         }
 
@@ -153,12 +153,12 @@ class WorkspaceValidator {
     private function readFiles() {
 
         $this->allFiles = [];
-        $workspace = new Workspace($this->workspaceId);
+
 
         foreach (Workspace::subFolders as $type) {
 
             $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-            $files = Folder::glob($workspace->getOrCreateSubFolderPath($type), $pattern);
+            $files = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern);
 
             $this->allFiles[$type] = [];
 
@@ -247,8 +247,7 @@ class WorkspaceValidator {
 
     private function setGlobalIds() {
 
-        $dao = new DAO();
-        $this->globalIds = $dao->getGlobalIds();
+        $this->globalIds = $this->workspace->workspaceDAO->getGlobalIds();
     }
 
 
