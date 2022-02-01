@@ -546,7 +546,7 @@ class SessionDAOTest extends TestCase {
             'locked' => false,
             'label' => ""
         ];
-        $result = $this->dbc->getTestStatus('person-token', 'no_test_for_this_booklet');
+        $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.SAMPLE-2');
         $this->assertEquals($expectation, $result);
 
 
@@ -557,6 +557,13 @@ class SessionDAOTest extends TestCase {
         ];
         $result = $this->dbc->getTestStatus('person-token', 'first sample test');
         $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_getTestStatus_missingTest(): void {
+
+        $this->expectException(HttpError::class);
+        $this->dbc->getTestStatus('person-token', 'no_test_for_this_booklet');
     }
 
 

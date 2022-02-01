@@ -452,33 +452,35 @@ class SessionDAO extends DAO {
 
     public function getTestStatus(string $personToken, string $bookletName): array {
 
-        $person = $this->getPersonSessionByToken($personToken);
-
-        $test = $this->_(
-            'SELECT tests.laststate, tests.locked, tests.label, tests.id, tests.running FROM tests
-            WHERE tests.person_id = :personid and tests.name = :bookletname',
+        $testStatus = $this->_(
+            'select tests.laststate,
+                       tests.locked,
+                       tests.id,
+                       tests.running,
+                       files.label
+                from
+                    person_sessions
+                    left join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
+                    left join logins on (logins.name = login_sessions.name)
+                    left join files on (files.workspace_id = logins.workspace_id)
+                    left join tests on (person_sessions.id = tests.person_id and tests.name = files.id)
+                where person_sessions.token = :token
+                  and files.id = :bookletname',
             [
-                ':personid' => $person->getPerson()->getId(),
+                ':token' => $personToken,
                 ':bookletname' => $bookletName
             ]
         );
 
-        if ($test !== null) {
-
-            return [
-                'running' => (bool) $test['running'],
-                'locked' => (bool) $test['locked'],
-                'label' => $test['label']
-            ];
-
-        } else {
-
-            return [
-                'running' => false,
-                'locked' => false,
-                'label' => ""
-            ];
+        if ($testStatus == null) {
+            throw new HttpError("Test `$bookletName` not found!", 404);
         }
+
+        $testStatus['running'] = (bool) $testStatus['running'];
+        $testStatus['locked'] = (bool) $testStatus['locked'];
+        $testStatus['id'] = (int) $testStatus['id'];
+
+        return $testStatus;
     }
 
 
