@@ -604,9 +604,4 @@ class AdminDAO extends DAO {
         );
         return ($group == null) ? null : new Group($group['group_name'], $group['group_label']);
     }
-
-
-    public function updateMetadata(int $workspaceId, string $getId, FileSpecialInfo $getSpecialInfo) {
-        // TODO implement
-    }
 }

@@ -134,4 +134,53 @@ class WorkspaceDAO extends DAO {
         );
         return $this->lastAffectedRows;
     }
+
+
+    public function storeFileMeta(int $workspaceId, File $file): void {
+
+        $version = Version::split($file->getSpecialInfo()->version);
+
+
+        $this->_("replace into files (
+                    workspace_id,
+                    name,
+                    id,
+                    version_mayor,
+                    version_minor,
+                    version_patch,
+                    version_label,
+                    label,
+                    description,
+                    type,
+                    verona_module_type,
+                    verona_version,
+                    verona_module_id
+                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+            [
+                $workspaceId,
+                $file->getName(),
+                $file->getId(),
+                $version['major'],
+                $version['minor'],
+                $version['patch'],
+                $version['label'],
+                $file->getLabel(),
+                $file->getDescription(),
+                $file->getType(),
+                ($file instanceof ResourceFile) and $file->isPlayer() ? 'player' : '',
+                $file->getSpecialInfo()->veronaVersion,
+                $file->getSpecialInfo()->playerId
+            ]
+        );
+    }
+
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function deleteFileMeta(int $workspaceId, $name): void {
+
+        $this->_("delete from files where workspace_id = ? and name = ?", [$workspaceId, $name]);
+    }
+
 }

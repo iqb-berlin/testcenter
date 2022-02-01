@@ -29,7 +29,7 @@ class XMLFileTesttakers extends XMLFile {
 
     public function getLoginCount(): int {
 
-        return count($this->logins->asArray());
+        return isset($this->logins) ? count($this->logins->asArray()) : 0;
     }
 
 

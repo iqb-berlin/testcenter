@@ -25,7 +25,7 @@ class ResourceFile extends File {
     }
 
 
-    private function isPlayer(): bool {
+    public function isPlayer(): bool {
 
         $pathInfo = pathinfo($this->getPath());
         if (!isset($pathInfo['extension'])) {

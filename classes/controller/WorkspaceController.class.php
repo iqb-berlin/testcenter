@@ -153,11 +153,10 @@ class WorkspaceController extends Controller {
                 list($deleted, $added) = self::workspaceDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
                 $file->report('info', "Logins Updated (-$deleted, +$added)");
             }
-            // TODO implement
-//            if ($file->isValid() and ($file->getType() == 'Resource')) {
-//                self::AdminDAO()->updateMetadata($workspaceId, $file->getId(), $file->getSpecialInfo());
-//                $file->report('info', 'metadata cached');
-//            }
+
+            if ($file->isValid()) {
+                self::workspaceDAO()->storeFileMeta($workspaceId, $file);
+            }
             $reports[$localPath] = $file->getValidationReportSorted();
             $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
         }
@@ -206,6 +205,7 @@ class WorkspaceController extends Controller {
             if ($type === 'Testtakers') {
                 self::workspaceDAO()->deleteLoginSource($workspaceId, $name);
             }
+            self::workspaceDAO()->deleteFileMeta($workspaceId, $name);
         }
 
         return $response->withJson($deletionReport)->withStatus(207);

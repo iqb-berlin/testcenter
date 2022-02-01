@@ -148,6 +148,30 @@ CREATE TABLE "workspaces"
     "id"   integer  NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" varchar(50) NOT NULL
 );
+
+create table files
+(
+    "workspace_id"       integer                                                                        not null,
+    "name"               varchar(40)                                                                    not null,
+    "id"                 varchar(40)                                                                        null,
+    "version_mayor"      integer                                                                            null,
+    "version_minor"      integer                                                                            null,
+    "version_patch"      integer                                                                            null,
+    "version_label"      integer                                                                            null,
+    "label"              text                                                                               null,
+    "description"        text                                                                               null,
+    "type"               text check (type in ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource')) not null,
+    "verona_module_type" text check (verona_module_type in ('player', 'schemer', 'editor', ''))             null,
+    "verona_version"     varchar(12)                                                                        null,
+    "verona_module_id"   varchar(50)                                                                        null,
+    constraint files_pk primary key (workspace_id, name),
+    constraint files_workspaces_id_fk foreign key (workspace_id) references workspaces (id) on delete cascade
+);
+
+create index files_workspace_id_name_index on files (workspace_id, name);
+create index files_id_index on files (id);
+
+
 CREATE INDEX "unit_reviews_index_fk_review_unit" ON "unit_reviews" ("unit_id");
 CREATE INDEX "test_commands_test_commands_id_uindex" ON "test_commands" ("id", "test_id");
 CREATE INDEX "test_commands_test_commands_person_sessions_id_fk" ON "test_commands" ("commander_id");

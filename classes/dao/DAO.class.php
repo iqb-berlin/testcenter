@@ -21,7 +21,8 @@ class DAO {
         'workspace_users',
         'workspaces',
         'meta',
-        'unit_data'
+        'unit_data',
+        'files'
     ];
 
     protected $pdoDBhandle = false;

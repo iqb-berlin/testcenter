@@ -433,6 +433,11 @@ final class WorkspaceControllerTest extends TestCase {
             ->once()
             ->andReturn(2);
 
+        $this->workspaceDaoMock
+            ->expects('deleteFileMeta')
+            ->times(2) // two valid files
+            ->andReturn();
+
         $response = WorkspaceController::deleteFiles(
             RequestCreator::create(
                 'DELETE',
@@ -486,9 +491,14 @@ final class WorkspaceControllerTest extends TestCase {
             ->once()
             ->andReturn([0, 3]);
 
+        $this->workspaceDaoMock
+            ->expects('storeFileMeta')
+            ->times(2) // two valid files
+            ->andReturn();
+
         $response = WorkspaceController::postFile(
             RequestCreator::createFileUpload(
-                'DELETE',
+                'POST',
                 '/workspace/1/files/',
                 'fileforvo',
                 $files

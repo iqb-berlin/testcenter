@@ -200,20 +200,41 @@ try  {
         }
 
         $validator = new WorkspaceValidator($workspace);
+        $stats = array_fill_keys(Workspace::subFolders, 0);
+        $invalid = 0;
 
-        foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+        foreach ($validator->getFiles() as $file /* @var $file File */) {
 
-            $xFile = new XMLFileTesttakers($fullFilePath);
-            $xFile->crossValidate($validator);
+            $file->crossValidate($validator);
 
-            if ($xFile->isValid()) {
-
-                $logins = $xFile->getAllLogins();
-                list($deleted, $added) = $workspace->workspaceDAO->updateLoginSource($workspace->getId(), $xFile->getName(), $logins);
-                CLI::p("file: {$xFile->getName()}  (-$deleted/+$added logins)");
-            } else {
-                CLI::warning("file: {$xFile->getName()} (invalid)");
+            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
+                /* @var $file XMLFileTesttakers */
+                list($deleted, $added) = $workspace->workspaceDAO->updateLoginSource($workspace->getId(), $file->getName(), $file->getAllLogins());
+                CLI::p("Logins updated ({$file->getName()}): -$deleted / +$added");
             }
+
+            if ($file->isValid()) {
+                $workspace->workspaceDAO->storeFileMeta($workspace->getId(), $file);
+                $stats[$file->getType()] += 1;
+            } else {
+                $invalid++;
+            }
+        }
+
+        $statsString = implode(
+            ", ",
+            array_filter(
+                array_map(
+                    function($key, $value) { return $value ? "$key: $value" : null; },
+                    array_keys($stats),
+                    array_values($stats),
+                )
+            )
+        );
+        CLI::p("Files found: " . $statsString);
+
+        if ($invalid) {
+            CLI::warning("Invalid files found: $invalid");
         }
     }
 
