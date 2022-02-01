@@ -8,7 +8,6 @@ class File extends DataCollectionTypeSafe {
     protected ?string $type;
     protected string $path = '';
     protected string $name = '';
-    protected string $folder = '';
     protected int $size = 0;
     protected int $modificationTime = 0;
     protected string $id = '';
