@@ -44,7 +44,7 @@ final class WorkspaceControllerTest extends TestCase {
     private string $dataIds = 'id1,id2';
 
     private Workspace $workspaceMock;
-    private SessionDAO $sessionDaoMock;
+    private WorkspaceDAO $workspaceDaoMock;
     private UploadedFilesHandler $uploadedFilesHandler;
 
     function setUp(): void {
@@ -77,7 +77,6 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "classes/files/XMLFile.class.php";
         require_once "classes/files/XMLFileTesttakers.class.php";
         require_once "classes/files/XMLFileBooklet.class.php";
-//        require_once "classes/files/XMLFileTesttakers.class.php";
 
         $this->callable = [WorkspaceController::class, 'getReport'];
         $this->reportMock = Mockery::mock('overload:' . Report::class);
@@ -85,7 +84,8 @@ final class WorkspaceControllerTest extends TestCase {
         $this->sysChecksFolderMock = Mockery::mock(SysChecksFolder::class);
 
         $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
-        $this->sessionDaoMock = Mockery::mock('overload:' . SessionDAO::class);
+        $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
+
         $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
 
         define('ROOT_DIR', REAL_ROOT_DIR);
@@ -427,7 +427,7 @@ final class WorkspaceControllerTest extends TestCase {
             ->andReturn($deletionReport)
             ->once();
 
-        $this->sessionDaoMock
+        $this->workspaceDaoMock
             ->expects('deleteLoginSource')
             ->with(1, 'local_path.file')
             ->once()
@@ -481,7 +481,7 @@ final class WorkspaceControllerTest extends TestCase {
             ->once()
             ->andReturn(array_values($files));
 
-        $this->sessionDaoMock
+        $this->workspaceDaoMock
             ->expects('updateLoginSource')
             ->once()
             ->andReturn([0, 3]);
