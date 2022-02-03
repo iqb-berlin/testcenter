@@ -14,7 +14,7 @@ create table files
     verona_version     varchar(12)                                                    null,
     verona_module_id   varchar(50)                                                    null,
 
-    constraint files_pk primary key (workspace_id, name),
+    constraint files_pk primary key (workspace_id, name, type),
     constraint files_workspaces_id_fk foreign key (workspace_id) references workspaces (id) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_german2_ci;
 
