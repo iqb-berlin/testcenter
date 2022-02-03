@@ -246,20 +246,23 @@ class InitDAO extends SessionDAO {
             [':ws_id' => $workspace->getId()]
         );
 
-        if ($workspaceFromDb == null) {
-
-            $name = "ws {$workspace->getId()} [restored " . TimeStamp::toSQLFormat(TimeStamp::now()) . "]";
-            $id = $this->createWorkspace($name);
-            return [
-                "name" => $name,
-                "restored" => true,
-                "id" => $id
-            ];
-
-        } else {
+        if ($workspaceFromDb) {
 
             return $workspaceFromDb;
         }
+
+        $name = "ws {$workspace->getId()} [restored " . TimeStamp::toSQLFormat(TimeStamp::now()) . "]";
+
+        $this->_(
+            'INSERT INTO workspaces (name, id) VALUES (:ws_name, :ws_id)',
+            [':ws_name' => $name, ':ws_id' => $workspace->getId()]
+        );
+
+        return [
+            "name" => $name,
+            "restored" => true,
+            "id" => $workspace->getId()
+        ];
     }
 
 
