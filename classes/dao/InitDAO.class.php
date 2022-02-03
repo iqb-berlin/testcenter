@@ -22,7 +22,6 @@ class InitDAO extends SessionDAO {
         $timestamp = TimeStamp::now();
 
         $sessionDAO = new SessionDAO();
-        $workspaceDAO = new WorkspaceDAO();
         $testDAO = new TestDAO();
 
         $testLogin = new Login(
@@ -38,9 +37,7 @@ class InitDAO extends SessionDAO {
             0,
             (object) ['somStr' => 'someLabel']
         );
-        $workspaceDAO->createLogin($testLogin, 1, 'SAMPLE_TESTTAKERS.XML');
         $loginSession = $sessionDAO->createLoginSession($testLogin, true);
-
 
         $personSession = $sessionDAO->getOrCreatePersonSession($loginSession, 'xxx');
         $test = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
@@ -60,7 +57,6 @@ class InitDAO extends SessionDAO {
 
         $superAdminDAO = new SuperAdminDAO();
         $adminDAO = new AdminDAO();
-        $workspaceDAO = new WorkspaceDAO();
 
         $login = new Login(
             'expired_user',
@@ -72,7 +68,6 @@ class InitDAO extends SessionDAO {
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
-        $workspaceDAO->createLogin($login, 1, 'SAMPLE_TESTTAKERS.XML');
         $login = $this->createLoginSession($login, true);
         $this->createPersonSession($login, 'xxx', true);
 
@@ -82,8 +77,6 @@ class InitDAO extends SessionDAO {
 
 
     public function createSampleMonitorSessions(): array {
-
-        $workspaceDAO = new WorkspaceDAO();
 
         $personsSessions = [];
 
@@ -98,7 +91,6 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $loginSession = $this->createLoginSession($login);
-        $workspaceDAO->createLogin($login, 1, 'SAMPLE_TESTTAKERS.XML');
         $personsSessions['test-group-monitor'] = $this->createPersonSession($loginSession, '');
 
         $login = new Login(
@@ -112,7 +104,6 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $loginSession = $this->createLoginSession($login, true);
-        $workspaceDAO->createLogin($login, 1, 'SAMPLE_TESTTAKERS.XML');
         $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', true);
 
         return $personsSessions;

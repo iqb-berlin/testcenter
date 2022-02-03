@@ -199,52 +199,36 @@ try  {
             CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
         }
 
-        $validator = new WorkspaceValidator($workspace);
-        $stats = array_fill_keys(Workspace::subFolders, 0);
-        $invalid = 0;
+        $stats = $workspace->storeAllFilesMeta();
 
-        foreach ($validator->getFiles() as $file /* @var $file File */) {
-
-            $file->crossValidate($validator);
-
-            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
-                /* @var $file XMLFileTesttakers */
-                list($deleted, $added) = $workspace->workspaceDAO->updateLoginSource($workspace->getId(), $file->getName(), $file->getAllLogins());
-                CLI::p("Logins updated ({$file->getName()}): -$deleted / +$added");
-            }
-
-            if ($file->isValid()) {
-                $workspace->workspaceDAO->storeFileMeta($workspace->getId(), $file);
-                $stats[$file->getType()] += 1;
-            } else {
-                $invalid++;
-            }
-        }
+        CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
         $statsString = implode(
             ", ",
             array_filter(
                 array_map(
                     function($key, $value) { return $value ? "$key: $value" : null; },
-                    array_keys($stats),
-                    array_values($stats),
+                    array_keys($stats['valid']),
+                    array_values($stats['valid']),
                 )
             )
         );
         CLI::p("Files found: " . $statsString);
 
-        if ($invalid) {
-            CLI::warning("Invalid files found: $invalid");
+        if ($stats['invalid']) {
+            CLI::warning("Invalid files found: {$stats['invalid']}");
         }
     }
 
     if (!count($workspaceIds) and $installationArguments->workspace) {
 
         $sampleWorkspaceId = $initDAO->createWorkspace($installationArguments->workspace);
+        $sampleWorkspace = new Workspace($sampleWorkspaceId);
 
         CLI::success("Sample Workspace `{$installationArguments->workspace}` as `ws_{$sampleWorkspaceId}` created");
 
         $initializer->importSampleData($sampleWorkspaceId);
+        $stats = $sampleWorkspace->storeAllFilesMeta();
         CLI::success("Sample content files created.");
 
         $workspaceIds[] = $sampleWorkspaceId;

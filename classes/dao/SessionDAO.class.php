@@ -453,9 +453,8 @@ class SessionDAO extends DAO {
     public function getTestStatus(string $personToken, string $bookletName): array {
 
         $testStatus = $this->_(
-            'select tests.laststate,
+            'select
                        tests.locked,
-                       tests.id,
                        tests.running,
                        files.label
                 from
@@ -478,7 +477,6 @@ class SessionDAO extends DAO {
 
         $testStatus['running'] = (bool) $testStatus['running'];
         $testStatus['locked'] = (bool) $testStatus['locked'];
-        $testStatus['id'] = (int) $testStatus['id'];
 
         return $testStatus;
     }

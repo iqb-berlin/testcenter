@@ -110,12 +110,14 @@ class TestEnvironment {
         $initDAO = new InitDAO();
 
         $workspaceId = $initDAO->createWorkspace('sample_workspace');
+        $workspace = new Workspace($workspaceId);
         $adminId = $initDAO->createAdmin('super', 'user123');
         $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
 
         $initializer = new WorkspaceInitializer();
         $initializer->cleanWorkspace($workspaceId);
         $initializer->importSampleData($workspaceId);
+        $workspace->storeAllFilesMeta();
 
         $initDAO->createSampleLoginsReviewsLogs();
         $initDAO->createSampleExpiredSessions();

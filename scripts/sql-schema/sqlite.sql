@@ -164,7 +164,7 @@ create table files
     "verona_module_type" text check (verona_module_type in ('player', 'schemer', 'editor', ''))             null,
     "verona_version"     varchar(12)                                                                        null,
     "verona_module_id"   varchar(50)                                                                        null,
-    constraint files_pk primary key (workspace_id, name),
+    constraint files_pk primary key (workspace_id, name, type),
     constraint files_workspaces_id_fk foreign key (workspace_id) references workspaces (id) on delete cascade
 );
 

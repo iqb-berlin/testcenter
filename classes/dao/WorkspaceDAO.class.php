@@ -125,6 +125,7 @@ class WorkspaceDAO extends DAO {
      */
     public function deleteLoginSource(int $workspaceId, string $source): int {
 
+        error_log("delete $workspaceId $source");
         $this->_(
             'delete from logins where source = :source and workspace_id = :ws_id',
             [
@@ -139,7 +140,6 @@ class WorkspaceDAO extends DAO {
     public function storeFileMeta(int $workspaceId, File $file): void {
 
         $version = Version::split($file->getSpecialInfo()->version);
-
 
         $this->_("replace into files (
                     workspace_id,
@@ -167,7 +167,7 @@ class WorkspaceDAO extends DAO {
                 $file->getLabel(),
                 $file->getDescription(),
                 $file->getType(),
-                ($file instanceof ResourceFile) and $file->isPlayer() ? 'player' : '',
+                (($file instanceof ResourceFile) and $file->isPlayer()) ? 'player' : '',
                 $file->getSpecialInfo()->veronaVersion,
                 $file->getSpecialInfo()->playerId
             ]

@@ -379,4 +379,41 @@ class Workspace {
         Folder::deleteContentsRecursive($this->workspacePath);
         rmdir($this->workspacePath);
     }
+
+
+    public function storeAllFilesMeta(): array {
+
+        $validator = new WorkspaceValidator($this);
+        $typeStats = array_fill_keys(Workspace::subFolders, 0);
+        $loginStats = [
+            'deleted' => 0,
+            'added' => 0
+        ];
+        $invalidCount = 0;
+
+        foreach ($validator->getFiles() as $file /* @var $file File */) {
+
+            $file->crossValidate($validator);
+
+            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
+                /* @var $file XMLFileTesttakers */
+                list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
+                $loginStats['deleted'] += $deleted;
+                $loginStats['added'] += $added;
+            }
+
+            if ($file->isValid()) {
+                $this->workspaceDAO->storeFileMeta($this->getId(), $file);
+                $typeStats[$file->getType()] += 1;
+            } else {
+                $invalidCount++;
+            }
+        }
+
+        return [
+            'valid' => $typeStats,
+            'invalid' => $invalidCount,
+            'logins' => $loginStats
+        ];
+    }
 }

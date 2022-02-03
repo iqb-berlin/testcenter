@@ -64,25 +64,41 @@ class WorkspaceDAOTest extends TestCase {
 
     public function test_storeFileMeta(): void {
 
-        $bookletXML = '<Booklet><Metadata><Id>x_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>';
+        $file = new XMLFileBooklet('<Booklet><Metadata><Id>BOOKLET.SAMPLE-1</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>', false, true);
+        $file->setFilePath(REAL_ROOT_DIR . '/sampledata/Booklet.xml');
 
-        $this->dbc->storeFileMeta(1, new XMLFileBooklet($bookletXML, false, true));
+        $this->dbc->storeFileMeta(1, $file);
         $files = $this->dbc->_("select * from files", [], true);
         $expectation = [
             [
-                "workspace_id" => 1,
-                "name" => "",
-                "id" => "X_BOOKLET",
-                "version_mayor" => 0,
-                "version_minor" => 0,
-                "version_patch" => 0,
-                "version_label" => "",
-                "label" => "l",
-                "description" => "",
-                "type" => "Booklet",
-                "verona_module_type" => "",
-                "verona_version" => "",
-                "verona_module_id" => ""
+                'workspace_id' => '1',
+                'name' => 'Booklet-no-test.xml',
+                'id' => 'BOOKLET.NO.TEST',
+                'version_mayor' => null,
+                'version_minor' => null,
+                'version_patch' => null,
+                'version_label' => null,
+                'label' => 'Booklet without test',
+                'description' => 'No test yet',
+                'type' => 'Booklet',
+                'verona_module_type' => null,
+                'verona_version' => null,
+                'verona_module_id' => null,
+            ],
+            [
+                'workspace_id' => '1',
+                'name' => 'Booklet.xml',
+                'id' => 'BOOKLET.SAMPLE-1',
+                'version_mayor' => '0',
+                'version_minor' => '0',
+                'version_patch' => '0',
+                'version_label' => '',
+                'label' => 'l',
+                'description' => '',
+                'type' => 'Booklet',
+                'verona_module_type' => '',
+                'verona_version' => '',
+                'verona_module_id' => ''
             ]
         ];
         $this->assertEquals($expectation, $files);

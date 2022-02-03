@@ -542,20 +542,20 @@ class SessionDAOTest extends TestCase {
     public function test_getTestStatus(): void {
 
         $expectation = [
-            'running' => false,
+            'running' => true,
             'locked' => false,
-            'label' => ""
+            'label' => 'Sample Booklet Label'
         ];
-        $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.SAMPLE-2');
+        $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.SAMPLE-1');
         $this->assertEquals($expectation, $result);
 
 
         $expectation = [
-            'running' => true,
+            'running' => false,
             'locked' => false,
-            'label' => "first test label"
+            'label' => "Booklet without test"
         ];
-        $result = $this->dbc->getTestStatus('person-token', 'first sample test');
+        $result = $this->dbc->getTestStatus('person-token', 'BOOKLET.NO.TEST');
         $this->assertEquals($expectation, $result);
     }
 
@@ -563,7 +563,7 @@ class SessionDAOTest extends TestCase {
     public function test_getTestStatus_missingTest(): void {
 
         $this->expectException(HttpError::class);
-        $this->dbc->getTestStatus('person-token', 'no_test_for_this_booklet');
+        $this->dbc->getTestStatus('person-token', 'first sample test');
     }
 
 

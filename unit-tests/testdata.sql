@@ -98,3 +98,9 @@ insert into meta(category, metaKey, value) values ('cat1', 'keyB', 'valueB');
 insert into meta(category, metaKey, value) values ('cat2', 'keyA', 'valueA');
 insert into meta(category, metaKey, value) values ('cat2', 'keyB', 'valueB');
 insert into meta(category, metaKey, value) values (null, 'key-no-cat', 'value-no-cat');
+
+insert into files(workspace_id, name, id, label, description, type)
+values(1, 'Booklet.xml', 'BOOKLET.SAMPLE-1', 'Sample Booklet Label', 'Desc', 'Booklet');
+
+insert into files(workspace_id, name, id, label, description, type)
+values(1, 'Booklet-no-test.xml', 'BOOKLET.NO.TEST', 'Booklet without test', 'No test yet', 'Booklet');
