@@ -105,3 +105,8 @@ function fake_patch() {
 function delete_workspace() {
   php integration/test-init/db-dump/delete-workspace.php --ws_id="$1"
 }
+
+# param 1: sql
+function run() {
+  php "integration/test-init/db-dump/$1.php"
+}

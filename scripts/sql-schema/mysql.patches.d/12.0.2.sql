@@ -4,25 +4,40 @@
 
 alter table unit_data modify content text null;
 
-start transaction;
+drop procedure if exists fix_broken_responses_migration;
+insert into meta(metaKey, value, category) values ('12.0.2', 'started', 'debug fix_broken_responses_migration');
 
-    insert unit_data (unit_id, part_id, content, ts, response_type)
-        (
-            select id,
-                   'all',
-                   responses,
-                   responses_ts,
-                   responsetype
-            from units as u
-            where not exists(
-                    select * from unit_data as ud where ud.unit_id = u.id
-                )
-        );
 
-    alter table units drop column responses;
-    alter table units drop column responsetype;
-    alter table units drop column responses_ts;
-    alter table units drop column restorepoint;
-    alter table units drop column restorepoint_ts;
+create procedure fix_broken_responses_migration()
+    begin
 
-commit;
+    insert into meta(metaKey, value, category) values ('fix_broken_responses_migration called', '1', 'debug fix_broken_responses_migration');
+
+    if exists (select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'units' and COLUMN_NAME = 'responses')
+    then
+
+        insert into meta(metaKey, value, category) values ('fix_broken_responses_migration if', ' 2', 'debug fix_broken_responses_migration');
+
+        insert unit_data (unit_id, part_id, content, ts, response_type)
+            (
+                select id,
+                       'all',
+                       responses,
+                       responses_ts,
+                       responsetype
+                from units as u
+                where not exists(
+                        select * from unit_data as ud where ud.unit_id = u.id
+                    )
+            );
+
+        alter table units drop column responses;
+        alter table units drop column responsetype;
+        alter table units drop column responses_ts;
+        alter table units drop column restorepoint;
+        alter table units drop column restorepoint_ts;
+    end if;
+end;
+
+
+call fix_broken_responses_migration();

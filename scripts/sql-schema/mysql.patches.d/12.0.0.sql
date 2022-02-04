@@ -1,4 +1,4 @@
-create table unit_data (
+create table if not exists unit_data (
   unit_id bigint(20) unsigned,
   part_id varchar(50) not null,
   content text not null,
