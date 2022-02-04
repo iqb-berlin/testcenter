@@ -243,11 +243,12 @@ class AdminDAO extends DAO {
                        COUNT(distinct units.id)  AS num_units,
                        MAX(tests.timestamp_server)   as lastchange
                 FROM tests
-                         INNER JOIN person_sessions ON person_sessions.id = tests.person_id
+                         left JOIN person_sessions ON person_sessions.id = tests.person_id
                          INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_id
                          INNER JOIN units ON units.booklet_id = tests.id
-                WHERE login_sessions.workspace_id = :workspaceId
-                GROUP BY tests.name, login_sessions.group_name, login_sessions.name, person_sessions.code',
+                WHERE
+                      login_sessions.workspace_id = :workspaceId
+                GROUP BY tests.name, person_sessions.id',
 			[
 				':workspaceId' => $workspaceId
 			],

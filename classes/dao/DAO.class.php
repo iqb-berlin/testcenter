@@ -24,7 +24,7 @@ class DAO {
     ];
 
     protected $pdoDBhandle = false;
-    protected $timeUserIsAllowedInMinutes = 30;
+    protected $timeUserIsAllowedInMinutes = 600;
     protected $passwordSalt = 't';
     protected $insecurePasswords = false;
 

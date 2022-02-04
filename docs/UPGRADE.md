@@ -1,5 +1,13 @@
 # Changelog & Upgrade Information
 
+## 12.0.1
+* Timeout for admin sessions was extended to 10h (from 30min)
+
+### Bugfixes:
+* Wrong numbers in Results overview
+* Handle bogus Player-Metadata
+ 
+
 ## 12.0.0
 This update makes the Teststudio Verona3- and 4 compatible.
 
