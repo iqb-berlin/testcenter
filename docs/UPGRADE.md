@@ -1,5 +1,11 @@
 # Changelog & Upgrade Information
 
+## 12.0.2
+Fixes data-migration from versions before 12.0.0. With the update to version 12.0.0 the way, response-data is stored
+changed. Data from existing units should be migrated, but that might fail in some installations. With this patch
+12.0.2 this state will be repaired and the remaining data will get migrated.
+
+
 ## 12.0.1
 * Timeout for admin sessions was extended to 10h (from 30min)
 
