@@ -1,22 +1,28 @@
--- While updating to 12.0.0, it occurred, that the update script failed in the middle, when
--- there was unit with a null-entry for responses.
--- This script should fix it: transfer the data and finish the script correctly.
+start transaction;
 
-alter table unit_data modify content text null;
+create table if not exists unit_data (
+    unit_id bigint(20) unsigned,
+    part_id varchar(50) not null,
+    content text null,
+    ts bigint(20) NOT NULL DEFAULT '0',
+    response_type varchar(50),
+    constraint unit_data_pk primary key (unit_id, part_id)
+);
 
-drop procedure if exists fix_broken_responses_migration;
-insert into meta(metaKey, value, category) values ('12.0.2', 'started', 'debug fix_broken_responses_migration');
+drop procedure if exists data_migration;
 
 
-create procedure fix_broken_responses_migration()
+create procedure data_migration()
     begin
 
-    insert into meta(metaKey, value, category) values ('fix_broken_responses_migration called', '1', 'debug fix_broken_responses_migration');
+    -- While updating to 12.0.0 with the original 12.0.0 patch, it occurred, that the update script failed in
+    -- the middle, when there was unit with a null-entry for responses.
+    -- This script should handle even this half-successfully patch
 
     if exists (select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'units' and COLUMN_NAME = 'responses')
     then
 
-        insert into meta(metaKey, value, category) values ('fix_broken_responses_migration if', ' 2', 'debug fix_broken_responses_migration');
+        alter table unit_data modify content text null;
 
         insert unit_data (unit_id, part_id, content, ts, response_type)
             (
@@ -39,5 +45,7 @@ create procedure fix_broken_responses_migration()
     end if;
 end;
 
+call data_migration();
+drop procedure if exists data_migration;
 
-call fix_broken_responses_migration();
+commit;
