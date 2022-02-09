@@ -1,37 +1,51 @@
--- 1. remove data from login-session which will be part of new logins table
--- data can be deleted safely, because it is stored in teh XMLs and they have to be read in after patching the DB anyway
+start transaction;
 
-alter table login_sessions drop column mode;
-alter table login_sessions drop column codes_to_booklets;
-alter table login_sessions drop column custom_texts;
-alter table login_sessions drop column valid_until;
-
-
--- 2. create table logins
-
-create table logins (
-    name varchar(50) not null,
-    password varchar(100) not null,
-    mode varchar(20) not null,
-    workspace_id bigint not null,
-    codes_to_booklets text null,
-    source varchar(30) null,
-    valid_from timestamp null,
-    valid_to timestamp null,
-    valid_for int null,
-    group_name varchar(100),
-    group_label text null,
-    custom_texts text null,
-    constraint logins_pk primary key (name)
+create table if not exists unit_data (
+                                         unit_id bigint(20) unsigned,
+                                         part_id varchar(50) not null,
+                                         content text null,
+                                         ts bigint(20) NOT NULL DEFAULT '0',
+                                         response_type varchar(50),
+                                         constraint unit_data_pk primary key (unit_id, part_id)
 );
 
-create index index_fk_logins on login_sessions (name);
-create index index_fk_login_session_login on login_sessions (id);
+drop procedure if exists data_migration;
 
 
--- 3. change person_sessions table logins
+create procedure data_migration()
+begin
 
-alter table person_sessions change login_id login_sessions_id bigint unsigned not null;
-alter table person_sessions change laststate group_name varchar(100) null;
-alter table person_sessions drop column group_name;
+    -- While updating to 12.0.0 with the original 12.0.0 patch, it occurred, that the update script failed in
+    -- the middle, when there was unit with a null-entry for responses.
+    -- This script should handle even this half-successfully patch
 
+    if exists (select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'units' and COLUMN_NAME = 'responses')
+    then
+
+        alter table unit_data modify content text null;
+
+        insert unit_data (unit_id, part_id, content, ts, response_type)
+            (
+                select id,
+                       'all',
+                       responses,
+                       responses_ts,
+                       responsetype
+                from units as u
+                where not exists(
+                        select * from unit_data as ud where ud.unit_id = u.id
+                    )
+            );
+
+        alter table units drop column responses;
+        alter table units drop column responsetype;
+        alter table units drop column responses_ts;
+        alter table units drop column restorepoint;
+        alter table units drop column restorepoint_ts;
+    end if;
+end;
+
+call data_migration();
+drop procedure if exists data_migration;
+
+commit;
