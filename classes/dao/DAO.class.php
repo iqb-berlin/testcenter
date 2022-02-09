@@ -87,14 +87,21 @@ class DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function runFile(string $path) {
+    public function runFile(string $path): void {
 
         if (!file_exists($path)) {
 
             throw New HttpError("File does not exist: `$path`");
         }
 
-        $this->pdoDBhandle->exec(file_get_contents($path));
+        try {
+            $this->pdoDBhandle->beginTransaction();
+            $this->pdoDBhandle->exec(file_get_contents($path));
+            $this->pdoDBhandle->commit();
+        } catch (PDOException $e) {
+            $this->pdoDBhandle->rollBack();
+            throw $e;
+        }
     }
 
 
