@@ -3,10 +3,18 @@ require_once "cli.php";
 
 runCli(function() {
     $stdin = fopen('php://stdin', 'r');
-    $strChar = stream_get_contents($stdin);
-    echo "\n execute `$strChar`";
+    $strChar = trim(stream_get_contents($stdin));
     $initDAO = new InitDAO();
-    $r = $initDAO->_($strChar);
-    print_r($r);
+    try {
+        $result = $initDAO->_($strChar, [], true);
+        if ($result and count($result)) {
+            $result = array_map('array_values', $result);
+            echo json_encode($result);
+        }
+    } catch (Exception $exception) {
+        echo "Error: {$exception->getMessage()}\n";
+        exit(1);
+    }
+
     fclose($stdin);
 });
