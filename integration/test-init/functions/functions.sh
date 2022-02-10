@@ -61,7 +61,7 @@ function expect_table_to_have_rows() {
 
 # param 1: expectation file name
 function expect_data_dir_equals() {
-  result=$(cd vo_data && find . | sort | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/")
+  result=$(cd vo_data && find . -not -path '*/.*' | sort | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/")
   expectation_file="integration/test-init/expectations/$1"
   differences=$(diff <(echo "$result") "$expectation_file")
   if [ "$differences" != "" ]
