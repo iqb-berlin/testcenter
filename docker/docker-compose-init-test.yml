@@ -23,7 +23,7 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile
-    entrypoint: ["bash", "-c", "(cd /var/www/html && bash integration/test-init/tests/test_$TEST_NAME.sh)"]
+    entrypoint: ["bash", "-c", "(cd /var/www/html && bash integration/test-init/tests/$TEST_NAME.sh)"]
     container_name: testcenter-backend-init-test
     environment:
       <<: *env-mysql
