@@ -37,7 +37,6 @@ services:
       - ../docs/specs.yml:/var/www/html/docs/specs.yml
       - ../composer.json:/var/www/html/composer.original.json
       - ../integration/test-init:/var/www/html/integration/test-init
-      - ../scripts:/var/www/html/scripts
       - init_test_vendor:/var/www/html/vendor
     depends_on:
       - testcenter-db-backend-init-test
