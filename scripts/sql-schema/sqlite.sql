@@ -1,7 +1,6 @@
-PRAGMA synchronous = OFF;
 PRAGMA journal_mode = MEMORY;
 PRAGMA foreign_keys = ON;
-BEGIN TRANSACTION;
+
 CREATE TABLE "admin_sessions"
 (
     "token"       varchar(50) NOT NULL,
@@ -167,4 +166,4 @@ CREATE INDEX "login_sessions_index_fk_logins" ON "login_sessions" ("name");
 CREATE INDEX "login_sessions_index_fk_login_session_login" ON "login_sessions" ("id");
 CREATE INDEX "workspace_users_index_fk_workspace_users_user" ON "workspace_users" ("user_id");
 CREATE INDEX "workspace_users_index_fk_workspace_users_workspace" ON "workspace_users" ("workspace_id");
-END TRANSACTION;
+
