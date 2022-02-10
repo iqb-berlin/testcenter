@@ -2,7 +2,7 @@
 
 source integration/test-init/functions/functions.sh
 
-echo_h1 "Test 4.1: If DB-Schema is unknown, allow failing on installing patches"
+echo_h1 "If DB-Schema is unknown, allow failing on installing patches"
 
 # so already installed patches can be re-installed
 
@@ -19,19 +19,22 @@ php scripts/initialize.php \
 expect_init_script_ok
 
 php scripts/initialize.php \
+--workspace "" \
 --skip_db_integrity_check=true
 expect_init_script_ok
 
-echo_h1 "Test 4.2: Fail when bogus patch appears on updates between non-legacy versions"
+echo_h1 "Fail when bogus patch appears on updates between non-legacy versions"
 
 fake_version 10.0.0
 php scripts/initialize.php \
+--workspace "" \
 --skip_db_integrity_check=true
 expect_init_script_ok
 
 fake_patch 10.0.9999 "totally not valid SQL"
 fake_version 11.0.0
 php scripts/initialize.php \
+--workspace "" \
 --skip_db_integrity_check=true
 expect_init_script_failed
 

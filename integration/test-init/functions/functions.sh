@@ -95,9 +95,10 @@ function expect_sql_to_return() {
 function expect_init_script_ok() {
   errorCode=$?
   if [ "$errorCode" == 1 ] ;then
-    echo_fail "Init-Script failed!"
+    echo_fail "Init-Script failed unexpectedly"
     exit 1
   fi;
+  echo_success "Init-Script succeeded as expected"
 }
 
 function expect_init_script_failed() {
