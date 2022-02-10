@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source integration/test-init/tests/functions.sh
+source integration/test-init/functions/functions.sh
 
 echo_h1 "The patch 12.0.0 was unstable and might break on some data. The replacing Patch 12.0.2 should not cause any trouble even if the original 12.0.0 had no problems.";
 
@@ -14,6 +14,7 @@ php scripts/initialize.php \
 --dbname=$MYSQL_DATABASE \
 --user=$MYSQL_USER \
 --password=$MYSQL_PASSWORD \
+--skip_read_workspace_files=true \
 --skip_db_integrity_check=true
 expect_init_script_ok
 
@@ -32,6 +33,7 @@ cp integration/test-init/data/broken-12.0.0-patch.sql scripts/sql-schema/mysql.p
 php scripts/initialize.php \
 --user_name "" \
 --workspace "" \
+--skip_read_workspace_files=true \
 --skip_db_integrity_check=true # to maintain test's compatibility with future versions
 expect_init_script_ok
 expect_table_to_have_rows unit_data 2
@@ -58,6 +60,7 @@ fake_version 12.0.2
 php scripts/initialize.php \
 --user_name "" \
 --workspace "" \
+--skip_read_workspace_files=true \
 --skip_db_integrity_check=true # to maintain test's compatibility with future versions
 expect_init_script_ok
 expect_table_to_have_rows unit_data 4

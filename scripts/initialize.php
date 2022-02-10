@@ -199,20 +199,25 @@ try  {
             CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
         }
 
-        $validator = new WorkspaceValidator($workspace);
+        if (!$installationArguments->skip_read_workspace_files) {
 
-        foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
+            $validator = new WorkspaceValidator($workspace);
 
-            $xFile = new XMLFileTesttakers($fullFilePath);
-            $xFile->crossValidate($validator);
+            foreach (Folder::glob($workspace->getOrCreateSubFolderPath('Testtakers'), "*.[xX][mM][lL]") as $fullFilePath) {
 
-            if ($xFile->isValid()) {
+                $xFile = new XMLFileTesttakers($fullFilePath);
+                $xFile->crossValidate($validator);
 
-                $logins = $xFile->getAllLogins();
-                list($deleted, $added) = $workspace->workspaceDAO->updateLoginSource($workspace->getId(), $xFile->getName(), $logins);
-                CLI::p("file: {$xFile->getName()}  (-$deleted/+$added logins)");
-            } else {
-                CLI::warning("file: {$xFile->getName()} (invalid)");
+                if ($xFile->isValid()) {
+
+                    $logins = $xFile->getAllLogins();
+
+                    list($deleted, $added) = $workspace->workspaceDAO->updateLoginSource($workspace->getId(), $xFile->getName(), $logins);
+                    CLI::p("file: {$xFile->getName()}  (-$deleted/+$added logins)");
+
+                } else {
+                    CLI::warning("file: {$xFile->getName()} (invalid)");
+                }
             }
         }
     }
