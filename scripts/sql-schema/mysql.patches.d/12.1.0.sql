@@ -10,19 +10,19 @@ alter table login_sessions drop column valid_until;
 -- 2. create table logins
 
 create table logins (
-                        name varchar(50) not null,
-                        password varchar(100) not null,
-                        mode varchar(20) not null,
-                        workspace_id bigint not null,
-                        codes_to_booklets text null,
-                        source varchar(30) null,
-                        valid_from timestamp null,
-                        valid_to timestamp null,
-                        valid_for int null,
-                        group_name varchar(100),
-                        group_label text null,
-                        custom_texts text null,
-                        constraint logins_pk primary key (name)
+    name varchar(50) not null,
+    password varchar(100) not null,
+    mode varchar(20) not null,
+    workspace_id bigint not null,
+    codes_to_booklets text null,
+    source varchar(30) null,
+    valid_from timestamp null,
+    valid_to timestamp null,
+    valid_for int null,
+    group_name varchar(100),
+    group_label text null,
+    custom_texts text null,
+    constraint logins_pk primary key (name)
 );
 
 create index index_fk_logins on login_sessions (name);
