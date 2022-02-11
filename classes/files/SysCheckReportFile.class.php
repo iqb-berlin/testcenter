@@ -45,8 +45,8 @@ class SysCheckReportFile {
 
         $this->fileName = basename($reportFilePath);
 
-        $this->addEntry('fileData', 'date', 'DatumTS', (string) filemtime($reportFilePath));
-        $this->addEntry('fileData', 'datestr', 'Datum', TimeStamp::toSQLFormat(filemtime($reportFilePath)));
+        $this->addEntry('fileData', 'date', 'DatumTS', (string) FileTime::modification($reportFilePath));
+        $this->addEntry('fileData', 'datestr', 'Datum', TimeStamp::toSQLFormat(FileTime::modification($reportFilePath)));
         $this->addEntry('fileData', 'filename', 'FileName', basename($reportFilePath));
     }
 

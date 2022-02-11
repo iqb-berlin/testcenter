@@ -82,7 +82,7 @@ class File extends DataCollectionTypeSafe {
 
             $this->size = filesize($path);
             $this->name = basename($path);
-            $this->modificationTime = filemtime($path);
+            $this->modificationTime = FileTime::modification($path);
         }
     }
 

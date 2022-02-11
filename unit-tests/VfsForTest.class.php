@@ -102,7 +102,7 @@ class VfsForTest {
         $initializer = new WorkspaceInitializer();
         $initializer->importSampleData(1);
 
-        TestEnvironment::overwriteModificationDates();
+        TestEnvironment::overwriteModificationDatesVfs();
 
         self::insertTrashFiles();
         if ($includeBogusMaterial) {

@@ -26,10 +26,10 @@ class TestEnvironment {
             TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
+            FileTime::setup(TestEnvironment::staticDate);
 
             TestEnvironment::resetState();
             TestEnvironment::setUpTestData();
-
             TestEnvironment::makeRandomStatic();
 
         } catch (Throwable $exception) {
@@ -59,7 +59,7 @@ class TestEnvironment {
             $initDAO->runFile('scripts/sql-schema/sqlite.sql');
 
             TestEnvironment::setUpTestData();
-            TestEnvironment::overwriteModificationDates();
+            TestEnvironment::overwriteModificationDatesVfs();
             TestEnvironment::debugVirtualEnvironment();
 
             TestEnvironment::makeRandomStatic();
@@ -126,7 +126,7 @@ class TestEnvironment {
     }
 
 
-    public static function overwriteModificationDates(vfsStreamContent $dir = null): void {
+    public static function overwriteModificationDatesVfs(vfsStreamContent $dir = null): void {
 
         if (!$dir) {
             $dir = vfsStreamWrapper::getRoot()->getChild('vo_data');
@@ -135,7 +135,7 @@ class TestEnvironment {
         foreach ($dir->getChildren() as $child) {
             $child->lastModified(TestEnvironment::staticDate);
             if (is_dir($child->url())) {
-                TestEnvironment::overwriteModificationDates($child);
+                TestEnvironment::overwriteModificationDatesVfs($child);
             }
         }
     }
