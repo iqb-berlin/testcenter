@@ -9,7 +9,7 @@ services:
     image: iqbberlin/testcenter-backend:12.0.2
 
   testcenter-frontend:
-    image: iqbberlin/testcenter-frontend:12.0.2
+    image: iqbberlin/testcenter-frontend:12.0.3
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:4.0.3
