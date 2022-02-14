@@ -19,6 +19,7 @@ class XMLFilesUnitTest extends TestCase {
         require_once "classes/files/XMLFileUnit.class.php";
         require_once "classes/files/ResourceFile.class.php";
         require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/FileTime.class.php";
         require_once "classes/workspace/Workspace.class.php";
         require_once "classes/workspace/WorkspaceValidator.class.php";
         require_once "unit-tests/mock-classes/ResourceFileMock.php";

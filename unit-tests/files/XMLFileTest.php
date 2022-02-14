@@ -23,6 +23,7 @@ class XMLFileTest extends TestCase {
         require_once "classes/helper/FileName.class.php";
         require_once "classes/helper/XMLSchema.class.php";
         require_once "classes/helper/JSON.class.php";
+        require_once "classes/helper/FileTime.class.php";
         require_once "classes/helper/Version.class.php";
         require_once "classes/files/File.class.php";
         require_once "classes/files/XMLFile.class.php";
