@@ -291,7 +291,7 @@ final class AdminDAOTest extends TestCase {
 
     function test_deleteResultData() {
 
-        $this->dbc->deleteResultData(1, 'not_existsing');
+        $this->dbc->deleteResultData(1, 'not_existing');
         $this->assertGreaterThan(0, $this->countTableRows('login_sessions'));
         $this->assertGreaterThan(0, $this->countTableRows('person_sessions'));
         $this->assertGreaterThan(0, $this->countTableRows('tests'));
@@ -412,5 +412,5 @@ final class AdminDAOTest extends TestCase {
     private function countTableRows(string $tableName): int {
 
         return (int) $this->dbc->_("select count(*) as c from $tableName")["c"];
-    } 
+    }
 }

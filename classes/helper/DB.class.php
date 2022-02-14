@@ -25,6 +25,7 @@ class DB {
         } elseif (self::$config->type === 'temp') {
 
             self::$pdo = new PDO('sqlite::memory:');
+            self::$pdo->exec('PRAGMA foreign_keys = ON;');
 
         } else {
 
