@@ -1,9 +1,0 @@
-[submodule "testcenter-backend"]
-	path = testcenter-backend
-	url = https://github.com/iqb-berlin/testcenter-backend
-[submodule "testcenter-frontend"]
-	path = testcenter-frontend
-	url = https://github.com/iqb-berlin/testcenter-frontend
-[submodule "testcenter-broadcasting-service"]
-	path = testcenter-broadcasting-service
-	url = https://github.com/iqb-berlin/testcenter-broadcasting-service
