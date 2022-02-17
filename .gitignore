@@ -1,5 +1,2 @@
 .env
 frontend/src/environments/environment.ts.bu
-
-.idea
-*.iml
