@@ -1,0 +1,17 @@
+<form [formGroup]="editworkspaceform">
+  <h1 mat-dialog-title>Arbeitsbereich "{{data}}" ändern</h1>
+
+  <mat-dialog-content>
+    <p>
+      <mat-form-field class="full-width">
+        <input matInput formControlName="name" placeholder="Name" [value]="data">
+      </mat-form-field>
+    </p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="editworkspaceform" [disabled]="editworkspaceform.invalid">Speichern</button>
+    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+  </mat-dialog-actions>
+
+</form>

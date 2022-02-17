@@ -1,0 +1,143 @@
+:root {
+  --tc-body-background: gray;
+  --tc-box-background: lightgray;
+  min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  background: var(--tc-body-background);
+}
+
+.mat-tooltip {
+  font-size: 100%
+}
+
+
+.page-body {
+  overflow-x: auto;
+  position: absolute;
+  width: 100%;
+  top: 70px;
+  bottom: 0;
+}
+
+.root-body {
+  overflow-x: auto;
+  position: absolute;
+  width: 100%;
+  top: 20px;
+  bottom: 0;
+}
+
+.spinner {
+  bottom: 0;
+  height: 2em;
+  left: 0;
+  margin: auto;
+  overflow: visible;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 2em;
+  z-index: 999;
+}
+
+.spinner-container-local { /* TODO remove */
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  z-index: 999;
+}
+
+iframe.unitHost { /* has to be global because dynamic created element is not in the scope of the component */
+  width: 100%;
+  background-color: white;
+  border: none;
+  margin: 0;
+}
+
+.logo {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 999;
+}
+
+div.logo img {
+  width: 100px;
+}
+
+.page-header {
+  position: absolute;
+  left: 140px;
+  width: calc(100% - 140px);
+  top: 0;
+  padding: 0 10px 0 0;
+}
+
+.page-header mat-toolbar {
+  position: fixed;
+  z-index: 100;
+  top: 4px;
+  right: 90px;
+}
+
+.page-header mat-icon {
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
+}
+
+.page-header p {
+  font-size: 1.5em;
+  color: white;
+}
+
+.main-alert {
+  position: fixed !important;
+  top: 20%;
+  right: 10%;
+  left: 10%;
+  padding: 3em;
+  z-index: 999;
+  background: white;
+  cursor: pointer;
+}
+
+.main-alert mat-card-title {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.main-alert-close-button {
+  position: absolute !important;
+  right: 3px;
+  top: 3px;
+}
+
+mat-button-toggle-group {
+  flex-wrap: nowrap !important
+}
+
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content,
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 36px !important;
+}
+
+.mat-button-toggle-checked .mat-button-toggle-button,
+.mat-button-toggle-checked .mat-button-toggle-button {
+  background-color: var(--accent);
+}

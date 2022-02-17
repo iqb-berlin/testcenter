@@ -1,0 +1,14 @@
+<div class="root-frame" fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <mat-card fxFlex="0 0 400px" fxLayout="column">
+    <mat-card-title>Diese Seite wurde nicht gefunden.</mat-card-title>
+    <mat-card-content>
+      <div style="{margin: 50px;}">
+        {{url}}
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button [routerLink]="['/']" mat-raised-button color="primary">Zur Startseite</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

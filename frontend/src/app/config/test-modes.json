@@ -1,0 +1,67 @@
+{
+  "DEMO": {
+    "label": "Nur Ansicht (Demo)",
+    "config": {
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
+    }
+  },
+  "MONITOR-GROUP": {
+    "label": "Testgruppen-Monitor (Demo)",
+    "config": {
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
+    }
+  },
+  "HOT": {
+    "label": "Durchführung Test/Befragung",
+    "config": {
+      "canReview": false,
+      "saveResponses": true,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": false,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": true
+    }
+  },
+  "REVIEW": {
+    "label": "Prüfdurchgang ohne Speichern",
+    "config": {
+      "canReview": true,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": true,
+      "receiveRemoteCommands": false
+    }
+  },
+  "TRIAL": {
+    "label": "Prüfdurchgang mit Speichern",
+    "config": {
+      "canReview": false,
+      "saveResponses": true,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": true,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
+    }
+  }
+}

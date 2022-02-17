@@ -1,0 +1,21 @@
+<form [formGroup]="newworkspaceform">
+  <h1 mat-dialog-title>Neuer Arbeitsbereich</h1>
+
+  <mat-dialog-content>
+    <p>
+      <mat-form-field class="full-width">
+        <input matInput formControlName="name" placeholder="Name">
+      </mat-form-field>
+    </p>
+    <div class="infobox">
+      <p>Nach dem Anlegen des Arbeitsbereiches können Sie die Zugriffsrechte zuweisen.
+      </p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="newworkspaceform" [disabled]="newworkspaceform.invalid">Speichern</button>
+    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+  </mat-dialog-actions>
+
+</form>

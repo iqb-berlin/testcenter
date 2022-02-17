@@ -1,0 +1,409 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>itc-ng documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">itc-ng documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Interfaces</li>
+  <li
+  >
+  LoadingProgress</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/test-controller/interfaces/test-controller.interfaces.ts</code>
+        </p>
+
+
+
+
+        <section>
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#progress" 
+>
+                                            progress
+                                        </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section>
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="progress"></a>
+                                        <span class="name "><b>progress</b>
+                                            <a href="#progress">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>progress:     <code>number | &quot;UNKNOWN&quot; | &quot;PENDING&quot;</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>number | &quot;UNKNOWN&quot; | &quot;PENDING&quot;</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface TaggedString {
+  tag: string;
+  value: string;
+}
+
+export interface KeyValuePairString {
+  [K: string]: string;
+}
+
+export enum WindowFocusState {
+  PLAYER &#x3D; &#x27;PLAYER&#x27;,
+  HOST &#x3D; &#x27;HOST&#x27;,
+  UNKNOWN &#x3D; &#x27;UNKNOWN&#x27;
+}
+
+// for backend ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+export type UnitData &#x3D; {
+  data: string;
+  state: { [k in UnitStateKey]?: string };
+  playerId: string;
+  definitionRef?: string;
+  definition?: string;
+};
+
+export interface TestData {
+  xml: string;
+  mode: string;
+  laststate: { [k in TestStateKey]?: string };
+}
+
+export enum TestStateKey {
+  CURRENT_UNIT_ID &#x3D; &#x27;CURRENT_UNIT_ID&#x27;,
+  TESTLETS_TIMELEFT &#x3D; &#x27;TESTLETS_TIMELEFT&#x27;,
+  TESTLETS_CLEARED_CODE &#x3D; &#x27;TESTLETS_CLEARED_CODE&#x27;,
+  FOCUS &#x3D; &#x27;FOCUS&#x27;,
+  CONTROLLER &#x3D; &#x27;CONTROLLER&#x27;,
+  CONNECTION &#x3D; &#x27;CONNECTION&#x27;
+}
+
+/**
+ * TestState.state
+ * In what state is the whole controller?
+ */
+export enum TestControllerState {
+  INIT &#x3D; &#x27;INIT&#x27;,
+  LOADING &#x3D; &#x27;LOADING&#x27;,
+  RUNNING &#x3D; &#x27;RUNNING&#x27;,
+  TERMINATED &#x3D; &#x27;TERMINATED&#x27;,
+  FINISHED &#x3D; &#x27;FINISHED&#x27;,
+  PAUSED &#x3D; &#x27;PAUSED&#x27;,
+  ERROR &#x3D; &#x27;ERROR&#x27;
+}
+
+/**
+ * TestState.FOCUS
+ * Do the application-window has focus or not (because another window or tab has it)?
+ */
+export enum AppFocusState {
+  HAS &#x3D; &#x27;HAS&#x27;,
+  HAS_NOT &#x3D; &#x27;HAS_NOT&#x27;,
+  DEAD &#x3D; &#x27;DEAD&#x27;
+}
+
+/**
+ * TestState.CONNECTION
+ * What kind of connection to the server do we have to receive possible commands from a group-monitor?
+ * This can get a third special-value called LOST, which is set *by the backend* on connection loss.
+ */
+export enum TestStateConnectionValue {
+  WEBSOCKET &#x3D; &#x27;WEBSOCKET&#x27;,
+  POLLING &#x3D; &#x27;POLLING&#x27;
+}
+
+export enum TestLogEntryKey {
+  LOADCOMPLETE &#x3D; &#x27;LOADCOMPLETE&#x27;
+}
+
+export interface StateReportEntry {
+  key: TestStateKey | TestLogEntryKey | UnitStateKey | string;
+  timeStamp: number;
+  content: string;
+}
+
+export interface UnitStateData {
+  unitDbKey: string;
+  dataPartsAllString: string;
+  unitStateDataType: string;
+}
+
+export enum UnitPlayerState {
+  LOADING &#x3D; &#x27;LOADING&#x27;,
+  RUNNING &#x3D; &#x27;RUNNING&#x27;,
+  PAGE_NAVIGATING &#x3D; &#x27;PAGE_NAVIGATING&#x27;
+}
+
+export enum UnitStateKey {
+  PRESENTATION_PROGRESS &#x3D; &#x27;PRESENTATION_PROGRESS&#x27;,
+  RESPONSE_PROGRESS &#x3D; &#x27;RESPONSE_PROGRESS&#x27;,
+  CURRENT_PAGE_ID &#x3D; &#x27;CURRENT_PAGE_ID&#x27;,
+  CURRENT_PAGE_NR &#x3D; &#x27;CURRENT_PAGE_NR&#x27;,
+  PAGE_COUNT &#x3D; &#x27;PAGE_COUNT&#x27;,
+  PLAYER &#x3D; &#x27;PLAYER&#x27;
+}
+
+export interface UnitLogData {
+  bookletDbId: number;
+  unitDbKey: string;
+  timestamp: number;
+  entry: string;
+}
+
+// for testcontroller service ++++++++++++++++++++++++++++++++++++++++
+
+export enum MaxTimerDataType {
+  STARTED &#x3D; &#x27;STARTED&#x27;,
+  STEP &#x3D; &#x27;STEP&#x27;,
+  CANCELLED &#x3D; &#x27;CANCELLED&#x27;,
+  INTERRUPTED &#x3D; &#x27;INTERRUPTED&#x27;,
+  ENDED &#x3D; &#x27;ENDED&#x27;
+}
+
+export interface UnitNaviButtonData {
+  sequenceId: number;
+  disabled: boolean;
+  shortLabel: string;
+  longLabel: string;
+  testletLabel: string;
+  isCurrent: boolean;
+}
+
+// for unithost ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+export interface PageData {
+  index: number;
+  id: string;
+  type: &#x27;#next&#x27; | &#x27;#previous&#x27; | &#x27;#goto&#x27;;
+  disabled: boolean;
+}
+
+export interface ReviewDialogData {
+  loginname: string;
+  bookletname: string;
+  unitDbKey: string;
+  unitTitle: string;
+}
+
+export enum NoUnitFlag {
+  END &#x3D; &#x27;end&#x27;,
+  ERROR &#x3D; &#x27;error&#x27;
+}
+
+export interface PendingUnitData {
+  playerId: string;
+  unitDataParts: string;
+  unitDefinition: string;
+  currentPage: string;
+}
+
+export interface KeyValuePairNumber {
+  [K: string]: number;
+}
+
+export enum UnitNavigationTarget {
+  NEXT &#x3D; &#x27;#next&#x27;,
+  ERROR &#x3D; &#x27;#error&#x27;,
+  PREVIOUS &#x3D; &#x27;#previous&#x27;,
+  FIRST &#x3D; &#x27;#first&#x27;,
+  LAST &#x3D; &#x27;#last&#x27;,
+  END &#x3D; &#x27;#end&#x27;,
+  PAUSE &#x3D; &#x27;#pause&#x27;
+}
+
+export const commandKeywords &#x3D; [
+  &#x27;pause&#x27;,
+  &#x27;goto&#x27;,
+  &#x27;terminate&#x27;,
+  &#x27;resume&#x27;,
+  &#x27;debug&#x27;
+];
+export type CommandKeyword &#x3D; (typeof commandKeywords)[number];
+export function isKnownCommand(keyword: string): keyword is CommandKeyword {
+  return (commandKeywords as readonly string[]).includes(keyword);
+}
+
+export interface Command {
+  keyword: CommandKeyword;
+  id: number; // a unique id for each command, to make sure each one get only performed once (even in polling mode)
+  arguments: string[];
+  timestamp: number;
+}
+
+export type NavigationLeaveRestrictionValue &#x3D; &#x27;ON&#x27; | &#x27;OFF&#x27; | &#x27;ALWAYS&#x27;;
+export function isNavigationLeaveRestrictionValue(s: string): s is NavigationLeaveRestrictionValue {
+  return [&#x27;ON&#x27;, &#x27;OFF&#x27;, &#x27;ALWAYS&#x27;].indexOf(s) &gt; -1;
+}
+
+export interface LoadingProgress {
+  progress: number | &#x27;UNKNOWN&#x27; | &#x27;PENDING&#x27;;
+}
+
+// export type LoadingProgress &#x3D; LoadingProgressSpecial | LoadingProgressRegular;
+
+export interface LoadedFile {
+  content: string;
+}
+
+export type LoadingFile &#x3D; LoadingProgress | LoadedFile;
+
+export function isLoadingFileLoaded(loadingFile: LoadingFile): loadingFile is LoadedFile {
+  return &#x27;content&#x27; in loadingFile;
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'LoadingProgress.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

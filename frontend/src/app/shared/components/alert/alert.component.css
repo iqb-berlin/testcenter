@@ -1,0 +1,34 @@
+.alert {
+    margin-bottom: 2px;
+}
+
+.vertical-align-middle {
+    display: inline-flex;
+    vertical-align: middle;
+    align-items: center;
+}
+
+.alert-error {
+    color: #821324;
+}
+
+.alert-warning {
+    color: goldenrod;
+}
+
+.alert-info {
+    color: blue;
+}
+
+.alert-success {
+    color: green;
+}
+
+.highlight {
+    color: #003333;
+    font-style: italic;
+}
+
+mat-icon {
+    margin-right: 0.2em
+}

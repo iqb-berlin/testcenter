@@ -1,0 +1,13 @@
+<div fxLayout="column">
+  <div *ngIf="loginName">
+    <p><b>Status: Angemeldet als "{{loginName}}"</b></p>
+    <p style="margin-bottom: 0;">
+      <b *ngIf="loginAuthority.length > 1">Berechtigungen:</b>
+      <b *ngIf="loginAuthority.length === 1">Berechtigung:</b>
+    </p>
+    <ul style="margin: 0;">
+      <li *ngFor="let loginAuth of loginAuthority">{{loginAuth}}</li>
+    </ul>
+  </div>
+  <p *ngIf="!loginName"><b>Status: Derzeit nicht angemeldet.</b></p>
+</div>

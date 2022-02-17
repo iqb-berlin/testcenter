@@ -1,0 +1,30 @@
+<div class="root-body">
+  <div fxLayout="row" fxLayoutAlign="center start">
+    <mat-card fxFlex="0 0 500px">
+      <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+      <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+
+      <!-- - - - - - - - - - - - - - - - - -->
+      <mat-card-content>
+        <div [innerHTML]="mds.appConfig?.trustedLegalNoticeHtml"></div>
+        <status-card></status-card>
+        <p style="margin-bottom: 0;"><b>Angaben zu dieser Web-Anwendung:</b></p>
+        <ul style="margin: 0;">
+          <li *ngIf="!isProductionMode">Build-Modus: Dev</li>
+          <li>Version {{appVersion}}</li>
+          <li>API: Version {{mds.appConfig?.detectedApiVersion}}, {{mds.expectedApiVersion}} erforderlich</li>
+          <li>Broadcasting-Service: {{mds.appConfig?.broadcastingService.status}}
+            <span *ngIf="mds.appConfig?.broadcastingService.version"> - Version {{mds.appConfig?.broadcastingService.version}},
+              {{mds.appConfig?.broadcastingService.versionExpected}} erforderlich
+            </span>
+          </li>
+          <li>Verona Player Interface: Versionen {{veronaPlayerApiVersionMin}} bis {{veronaPlayerApiVersionMax}} unterstützt</li>
+          <li>Code Maintainer: {{appPublisher}}</li>
+        </ul>
+      </mat-card-content>
+      <mat-card-actions>
+        <button [routerLink]="['/']" mat-raised-button color="primary"><i class="material-icons">arrow_back</i> zurück zur Startseite</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

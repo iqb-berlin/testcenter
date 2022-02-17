@@ -1,0 +1,69 @@
+<form [formGroup]="configForm" fxFlex fxLayout="column" fxLayoutAlign="start stretch">
+  <p>Warnung auf der Startseite</p>
+  <div class="block-ident" fxLayout="column">
+    <mat-form-field>
+      <mat-label>Text</mat-label>
+      <textarea matInput formControlName="globalWarningText"
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="1"></textarea>
+    </mat-form-field>
+    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px">
+      <p>Zeige Warnung bis</p>
+      <mat-form-field>
+        <mat-label>Datum</mat-label>
+        <input matInput formControlName="globalWarningExpiredDay" [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select placeholder="Stunde" formControlName="globalWarningExpiredHour">
+          <mat-option *ngFor="let m of expiredHours | keyvalue" [value]="m.key">
+            {{m.value}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <p *ngIf="warningIsExpired" class="warning-warning">Zeitpunkt ist in der Vergangenheit.</p>
+    </div>
+  </div>
+  <mat-form-field fxLayout="column">
+    <mat-label>Name der Anwendung</mat-label>
+    <input matInput formControlName="appTitle" placeholder="Name">
+  </mat-form-field>
+  <mat-form-field  fxLayout="column" fxLayoutAlign="start stretch">
+    <mat-label>Html-Inhalt für die Startseite rechts</mat-label>
+    <textarea matInput formControlName="introHtml"
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="6"></textarea>
+  </mat-form-field>
+  <mat-form-field  fxLayout="column" fxLayoutAlign="start stretch">
+    <mat-label>Html-Inhalt für die Impressum-/Datenschutzseite</mat-label>
+    <textarea matInput formControlName="legalNoticeHtml"
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="6"></textarea>
+  </mat-form-field>
+  <label>Logo</label>
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+    <img class="logo-img" [src]="logoImageBase64" />
+    <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
+    <button mat-raised-button (click)="hiddenimgfileinput.click()" matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above">
+      <mat-icon>cloud_upload</mat-icon>
+    </button>
+    <button mat-raised-button (click)="removeLogoImg()" matTooltip="Logo auf Standard setzen" matTooltipPosition="above">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <alert *ngIf="imageError" level="error" [text]="imageError"></alert>
+  </div>
+  <mat-form-field fxLayout="column">
+    <mat-label>Hintergrundfarbe Anwendung</mat-label>
+    <input matInput formControlName="backgroundBody" placeholder="Farbe">
+  </mat-form-field>
+  <mat-form-field fxLayout="column">
+    <mat-label>Hintergrundfarbe sekundäre Boxen</mat-label>
+    <input matInput formControlName="backgroundBox" placeholder="Farbe">
+  </mat-form-field>
+  <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
+    <button mat-raised-button color="primary" [disabled]="!dataChanged" (click)="saveData()">
+      Speichern
+    </button>
+  </div>
+</form>

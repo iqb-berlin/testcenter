@@ -1,0 +1,135 @@
+<div class="debug-pane" *ngIf="debugPane" cdkDrag>
+  <div><b>STATUS:</b> {{tcs.testStatus$ | async}}</div>
+  <div><b>TIMER:</b> {{timerValue?.timeLeftString}}<b> {{timerValue?.testletId}} {{timerValue?.type}}</b></div>
+  <div><b>MODE:</b> {{tcs.testMode.modeId}}</div>
+  <div><b>FOCUS:</b> {{tcs.windowFocusState$ | async}}</div>
+  <div><b>BS:</b> {{cmd.connectionStatus$ | async}}</div>
+  <div><b>CONFIG:</b> <pre>{{tcs.bookletConfig | json}}</pre></div>
+  <div><b>TESTMODE:</b> <pre>{{tcs.testMode | json}}</pre></div>
+</div>
+
+<div id="header" fxLayout="row" fxLayoutAlign="space-between center" *ngIf="tcs.bookletConfig.unit_screenheader !== 'OFF'">
+  <div fxFlex="0 1 auto">
+    <h1 *ngIf="unitScreenHeader">{{unitScreenHeader}}</h1>
+  </div>
+
+  <p class="timer" *ngIf="tcs.testMode.showTimeLeft || (tcs.bookletConfig.unit_show_time_left === 'ON')">
+    {{timerValue?.timeLeftString}}
+  </p>
+  <div
+    fxFlex="0 1 auto"
+    fxLayout="row"
+    fxLayoutAlign="end center"
+  >
+    <div
+      *ngIf="(tcs.bookletConfig.unit_navibuttons !== 'OFF') && ((tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING)"
+      id="unitNav"
+      fxFlex="0 1 auto"
+      fxLayout="row"
+      fxLayoutAlign="end center"
+    >
+      <a mat-fab
+         *ngIf="tcs.bookletConfig.controller_design === '2018'"
+         [disabled]="tcs.currentUnitSequenceId <= 1"
+         (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+         matTooltip="Zurück"
+         fxFlex="none"
+      >
+        <i class="material-icons">chevron_left</i>
+      </a>
+      <a mat-flat-button
+         *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+         [disabled]="tcs.currentUnitSequenceId <= 1"
+         (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
+         matTooltip="Zurück"
+         fxFlex="none"
+      >
+        <i class="material-icons">chevron_left</i>
+      </a>
+      <mat-selection-list #unitList [multiple]="false"
+                          *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'"
+                          (selectionChange)="tcs.setUnitNavigationRequest(unitList.selectedOptions.selected[0].value)"
+                          fxLayout="row wrap"
+                          fxLayoutAlign="start center"
+                          fxFlex="0 1 auto"
+                          role="menubar"
+      >
+        <div [class]="u.isCurrent ? 'unit-nav-item-selected' : 'unit-nav-item'"
+             *ngFor="let u of unitNavigationList"
+             (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
+             fxLayout="row"
+             fxLayoutAlign="start center"
+             fxFlex>
+          <mat-list-option
+            [value]="u.sequenceId.toString()"
+            [selected]="u.isCurrent"
+            fxFlex
+            role="menuitem"
+            [attr.aria-label]="u.longLabel"
+          >
+            {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
+          </mat-list-option>
+        </div>
+      </mat-selection-list>
+
+      <a mat-fab
+         *ngIf="tcs.bookletConfig.controller_design === '2018'"
+         [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+         (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+         matTooltip="Weiter"
+         fxFlex="none"
+      >
+        <i class="material-icons">chevron_right</i>
+      </a>
+      <a mat-flat-button
+         *ngIf="tcs.bookletConfig.controller_design !== '2018'"
+         [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
+         (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
+         matTooltip="Weiter"
+         fxFlex="none"
+      >
+        <i class="material-icons">chevron_right</i>
+      </a>
+    </div>
+
+    <div class="plus-buttons" fxLayout="row" fxFlex="none">
+      <button
+        mat-button
+        (click)="showReviewDialog()"
+        *ngIf="tcs.testMode.canReview"
+        matTooltip="Kommentar senden"
+      >
+        <mat-icon>rate_review</mat-icon>
+      </button>
+      <button
+        mat-button
+        (click)="toggleSidebar()"
+        *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
+        matTooltip="Zur Aufgabenliste"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<mat-sidenav-container
+  [class]="{'tc-body': true, 'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF'}"
+  hasBackdrop="true"
+>
+  <mat-sidenav
+    [(opened)]="sidebarOpen"
+    (click)="toggleSidebar()"
+    mode="over"
+    class="sidebar"
+    fixedInViewport="true"
+    fixedTopGap="55"
+    position="end"
+  >
+    <unit-menu></unit-menu>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

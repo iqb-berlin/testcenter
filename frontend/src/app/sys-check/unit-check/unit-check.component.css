@@ -1,0 +1,55 @@
+.unit-check-body {
+  overflow-x: auto;
+  position: absolute;
+  width: 100%;
+  top: 10px;
+  bottom: 0;
+}
+
+#iFrameHost {
+  position: fixed;
+  width: 100%;
+  padding: 0;
+  top: 120px;
+  bottom: 0;
+  background-color: white;
+}
+
+#unit-title {
+  position: absolute;
+  width: 100%;
+  /* top: set by .tc-body */
+  height: 39px;
+  padding: 0;
+  font-size: 1.5em;
+  background-color: white;
+  border-bottom: solid 1px black;
+}
+
+#pageNav {
+  position: absolute;
+  right: 0;
+  height: 45px;
+  bottom: 0;
+  padding: 0 30px;
+  font-size: 1.2em;
+  background: transparent;
+}
+
+#pageNav button {
+  font-size: 1.1em;
+}
+
+#pageNav button i {
+  font-size: 1.2em;
+}
+
+.pageNavDisabled {
+  height: 5px;
+  background-color: orangered;
+}
+
+.pageNavEnabled {
+  height: 5px;
+  background-color: darkgrey;
+}

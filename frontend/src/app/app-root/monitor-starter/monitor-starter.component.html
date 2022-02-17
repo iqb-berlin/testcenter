@@ -1,0 +1,40 @@
+<div fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <mat-card fxFlex="0 0 400px" fxLayout="column">
+    <mat-card-title>Testdurchführung überwachen</mat-card-title>
+    <mat-card-content>
+      <div fxLayoutGap="10px" fxLayout="column">
+
+        <p *ngIf="problemText" style="color: chocolate"><b>{{ problemText }}</b></p>
+
+        <p *ngIf="!accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR] || accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR].length === 0">
+          Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
+        </p>
+
+        <button mat-raised-button color="primary" (click)="buttonGotoMonitor(accessObject)"
+                *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]">
+          <span class="booklet_title">{{accessObject.name}}</span>
+          <span class="booklet_status">Überwachung starten</span>
+        </button>
+
+        <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
+
+        <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="b.locked"
+                *ngFor="let b of accessObjects[AuthAccessKeyType.TEST]">
+          <span class="booklet_title">{{b.label}}</span>
+          <span class="booklet_status">{{b.locked ? 'gesperrt' : (b.running ? 'Fortsetzen' : 'Ansehen')}}</span>
+        </button>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card fxFlex="0 0 400px" class="mat-card-box">
+    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-content>
+      <status-card></status-card>
+    </mat-card-content>
+  </mat-card>
+</div>

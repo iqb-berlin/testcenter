@@ -1,0 +1,50 @@
+<div fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <form [formGroup]="loginForm" (ngSubmit)="login($event.submitter.id)">
+    <mat-card fxFlex="0 0 400px">
+      <mat-card-title>Anmelden</mat-card-title>
+      <mat-card-content *ngIf="mds.appConfig?.isValidApiVersion">
+        <mat-form-field>
+          <mat-label>Anmeldename</mat-label>
+          <input matInput formControlName="name" (keyup.enter)="pw.focus()" (keyup)="clearWarning()">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Kennwort</mat-label>
+          <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" (keyup)="clearWarning()">
+          <mat-icon
+            id="toggle-show-password"
+            (click)="showPassword = !showPassword"
+            [style]="!showPassword ? 'color:silver' : ''"
+            matSuffix
+          >
+            visibility
+          </mat-icon>
+        </mat-form-field>
+
+        <alert level="error" *ngIf="problemText" [text]="problemText"></alert>
+        <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>
+      </mat-card-content>
+      <mat-card-content *ngIf="!mds.appConfig?.isValidApiVersion">
+        <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
+      </mat-card-content>
+      <mat-card-actions>
+        <button id="login" mat-raised-button type="submit" [disabled]="!loginForm.get('name').valid" color="primary">Weiter</button>
+        <div fxFlex></div>
+        <button id="admin" mat-raised-button type="submit" [disabled]="loginForm.invalid" color="secondary">Weiter als Admin</button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+
+  <mat-card fxFlex="0 0 400px" class="mat-card-box">
+    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-content>
+      <div [innerHTML]="mds.appConfig?.trustedIntroHtml"></div>
+      <status-card></status-card>
+    </mat-card-content>
+    <mat-card-actions>
+      <a *ngIf="this.mds.sysCheckAvailable" [routerLink]="['/r/check-starter']" mat-raised-button color="primary">System-Check</a>
+      <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
+    </mat-card-actions>
+  </mat-card>
+  <div id="version-number">IQB-Testcenter version {{appVersion}}@{{mds.appConfig?.detectedApiVersion}}</div>
+</div>

@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-main {
+  padding: 15px;
+  margin-bottom: 1em;
+  flex: 1;
+}
+
+.sidebar-bottom {
+  padding: 15px;
+}
+
+.testlet-label {
+  text-align: center;
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 1em;
+  width: 100%;
+}
+
+a {
+  width: 100%;
+  margin-bottom: 0.4em;
+  overflow: hidden;
+}
+
+a:last-of-type {
+  margin-bottom: 0;
+}
+
+.current {
+  background: var(--accent);
+}
+

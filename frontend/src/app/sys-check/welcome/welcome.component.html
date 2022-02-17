@@ -1,0 +1,30 @@
+<div class="sys-check-body">
+  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
+
+    <mat-card fxFlex="0 0 400px">
+      <mat-card-title>{{ ds.loadConfigComplete ? ds.checkConfig?.label : 'Bitte warten' }}</mat-card-title>
+      <mat-card-content *ngIf="ds.loadConfigComplete">
+        <p>{{'Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.'| customtext:'syscheck_intro' | async}}
+        </p>
+        <h3>Schritte</h3>
+        <ol>
+          <li *ngFor="let step of ds.stepLabels">{{step}}</li>
+        </ol>
+        <p *ngIf="ds.stepLabels.length > 1">Bitte oben den grünen Schalter nutzen für den nächsten Schritt!</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card fxFlex="0 0 400px" *ngIf="ds.loadConfigComplete">
+      <mat-card-content>
+        <table fxFlex="100%">
+          <tbody>
+          <tr *ngFor="let ed of ds.environmentReport">
+            <td>{{ed.label}}: </td>
+            <td>&nbsp;{{ed.value}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

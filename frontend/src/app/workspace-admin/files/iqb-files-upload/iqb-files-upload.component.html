@@ -1,0 +1,23 @@
+<div class="mat-body">
+  <ng-container *ngIf="status == 1">
+    <div class="subheading-2">
+      {{file.name}}
+      <mat-icon class="cancel" (click)="remove()">cancel</mat-icon>
+    </div>
+    <div>
+      <mat-progress-bar class="upload-progress-bar" [value]="progressPercentage"></mat-progress-bar>
+    </div>
+    <div>{{progressPercentage}}%</div>
+  </ng-container>
+
+  <ng-container *ngIf="status > 1">
+    <ng-container *ngFor="let uploadedFile of uploadResponse | keyvalue">
+      <div class="subheading-2 {{uploadedFile.value.error ? 'error' : 'success'}}">
+        {{uploadedFile.key}} - {{uploadedFile.value.error ? 'Abgelehnt' : 'Erfolgreich hochgeladen'}}
+      </div>
+      <ng-container *ngFor="let report of uploadedFile.value | keyvalue">
+        <alert *ngFor="let reportEntry of report.value" [level]="report.key" [text]="reportEntry"></alert>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>

@@ -1,0 +1,25 @@
+.status-body {
+  position: absolute;
+  width: 100%;
+}
+
+mat-card {
+  margin: 10px;
+}
+
+.mat-card-box {
+  background-color: var(--tc-box-background)
+}
+
+.progress-bar {
+  position: absolute;
+  right: 150px;
+  top: 300px;
+  left: 150px;
+  z-index: 999;
+}
+
+#errorDetails {
+  background: white;
+  font-family: monospace;
+}

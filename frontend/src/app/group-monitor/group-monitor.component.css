@@ -1,0 +1,261 @@
+.page-body {
+  overflow-x: hidden;
+}
+
+.test-session-table {
+  border-collapse: collapse;
+  display: table;
+  width: 100%;
+}
+
+.test-session-table thead tr td {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.test-session-table td {
+  padding-top: 15px;
+  margin-right: 1em;
+}
+
+.test-session-table td[mat-sort-header="_checked"] {
+  padding-left: 5px;
+}
+
+.adminbackground {
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  margin: 0 0 0 15px;
+  padding: 0 25px 25px 25px;
+  height: 100%;
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.page-header > p:last-child {
+  margin-right: 15px;
+}
+
+.page-header > div {
+  text-align: right;
+  vertical-align: middle;
+}
+
+.page-header .fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+.connection-status {
+  text-transform: uppercase;
+  color: white;
+  font-size: 80%;
+  justify-content: space-between;
+  width: 120px
+}
+
+.connection-status mat-icon {
+  font-size: 100%;
+  padding: 0;
+  top: 2px;
+}
+
+.connection-status.error {
+  background: #821123
+}
+
+.connection-status.ws-offline {
+  background: orange;
+}
+
+.connection-status.ws-online {
+  animation-name: pulse;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+.connection-status.polling-fetch,
+.connection-status.polling-sleep {
+  position: relative;
+  background-image: linear-gradient(90deg, rgba(0,146,0,1) 0%, rgba(0,199,0,1) 100%, rgba(0,146,0,1) 200%);
+  background-repeat: repeat-x;
+  background-position: 0;
+  animation-name: move-gradient;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes move-gradient {
+  0% {
+    background-position: 0;
+  }
+  100% {
+    background-position: 120px;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    background: rgba(0,199,0,1);
+  }
+  50% {
+    background: rgba(0,146,0,1);
+  }
+  100% {
+    background: rgba(0,199,0,1);
+  }
+}
+
+.toolbar {
+  padding: 15px;
+}
+
+.toolbar h2 {
+  margin-top: 0;
+  font-size: 1.5em;
+}
+
+.toolbar .mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
+.toolbar-section {
+  margin-bottom: 1em
+}
+
+.toolbar button {
+  text-transform: uppercase;
+}
+
+.toolbar .control ~ .control {
+  margin-left: 15px;
+}
+
+.min-height-section {
+  min-height: 3em;
+}
+
+.toolbar-section-bottom {
+  position: absolute;
+  bottom: 0;
+}
+
+mat-sidenav {
+  width: 350px;
+}
+
+.mat-drawer-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 25px;
+  overflow: initial;
+  height: initial;
+}
+
+.mat-drawer-container {
+  position: initial;
+  background: none;
+}
+
+.mat-drawer {
+  margin: 15px 0 0 0;
+}
+
+.corner-menu {
+  position: fixed;
+  right: 10px;
+  top: 72px;
+  z-index: 10000;
+  border-bottom-left-radius: 10px;
+}
+
+.scroll-hint {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  background: #b2ff59;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 20Px;
+  height: 40px;
+  width: 40px;
+  line-height: 20px;
+  text-align: center;
+  z-index: 9000;
+  color: #003333;
+}
+
+.hide-scroll-hint .scroll-hint {
+  animation: fade-and-shrink 0.3s reverse forwards;
+}
+
+@keyframes fade-and-shrink {
+  0% {
+    opacity: 0;
+    transform: scale(0)
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1)
+  }
+}
+
+.drawer-button-open {
+  top: 50%;
+  left: 320px;
+  position: fixed;
+  z-index: 10000;
+}
+
+.drawer-button-close {
+  top: 50%;
+  left: -12px;
+  color: white;
+  position: fixed;
+  z-index: 10000;
+}
+
+.emph {
+  color: #b2ff59;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+[disabled] .emph {
+  color: #821123
+}
+
+#message-panel alert:first-of-type {
+  background: #b2ff59;
+  animation: fade 7s reverse forwards;
+}
+
+
+@keyframes fade {
+  0% {
+    opacity: 0.1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+#shield {
+  position: fixed;
+  background: white;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  animation: fade 6s forwards;
+  z-index: 100000;
+}

@@ -1,0 +1,29 @@
+<div fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <mat-card fxFlex="0 0 400px" fxLayout="column">
+    <mat-card-title>Verwaltung</mat-card-title>
+    <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>
+    <mat-card-content>
+      <div fxLayoutGap="10px" fxLayout="column">
+        <p *ngIf="workspaces.length === 0">
+          Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
+        </p>
+        <button mat-raised-button color="primary" (click)="buttonGotoWorkspaceAdmin(ws)"
+                *ngFor="let ws of workspaces">
+          {{ws.name}}
+        </button>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="foreground" *ngIf="isSuperAdmin" [routerLink]="['/superadmin']">System-Admin</button>
+      <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card fxFlex="0 0 400px" class="mat-card-box">
+    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-content>
+      <status-card></status-card>
+    </mat-card-content>
+  </mat-card>
+</div>

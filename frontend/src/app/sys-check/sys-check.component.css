@@ -1,0 +1,26 @@
+.sys-check-body {
+  position: absolute;
+  width: 100%;
+}
+
+mat-card {
+  margin: 10px;
+}
+
+#header {
+  position: absolute;
+  width: 100%;
+  padding-top: 10px;
+  color: white;
+  z-index: 444;
+}
+button {
+  margin-left: 15px;
+}
+#header .material-icons {
+  /* font-size: 2.0rem; */
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
+}

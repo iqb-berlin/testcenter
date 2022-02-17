@@ -1,0 +1,8 @@
+<div class="alert">
+  <div class="vertical-align-middle">
+    <mat-icon class="alert-{{level}}">{{icons[level]}}</mat-icon>
+      <span [innerHTML]="displayText$ | async"></span>
+  </div>
+</div>
+
+

@@ -1,0 +1,15 @@
+<div id="header" fxLayout="row" fxLayoutAlign="center center">
+  <p>System-Check: {{checkLabel}}</p>
+  <button mat-fab [disabled]="!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done" color="accent"
+          [routerLink]="[ds.prevStep]" matTooltip="Zurück" fxFlex="none">
+    <i class="material-icons">chevron_left</i>
+  </button>
+  <button mat-fab [disabled]="!ds.nextStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done || !ds.timeCheckDone" color="accent"
+          [routerLink]="[ds.nextStep]" matTooltip="Weiter" fxFlex="none">
+    <i class="material-icons">chevron_right</i>
+  </button>
+</div>
+
+<div class="page-body">
+  <router-outlet></router-outlet>
+</div>

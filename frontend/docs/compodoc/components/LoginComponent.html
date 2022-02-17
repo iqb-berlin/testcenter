@@ -1,0 +1,861 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>itc-ng documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">itc-ng documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  LoginComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/app/app-root/login/login.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+                    <code><a href="https://angular.io/api/core/OnDestroy" target="_blank" >OnDestroy</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">styles</td>
+                <td class="col-md-9"><code>mat-card {margin: 10px;},.mat-card-box {background: var(--tc-box-background)},#toggle-show-password {cursor: pointer},.mat-form-field {display: block},.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap},.mat-card-content {flex-grow: 1; overflow: auto}</code></td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./login.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#loginForm" >loginForm</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#mds" >mds</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#oldLoginName" >oldLoginName</a>
+                            </li>
+                            <li>
+                                <a href="#problemText" >problemText</a>
+                            </li>
+                            <li>
+                                <a href="#returnTo" >returnTo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#routingSubscription" >routingSubscription</a>
+                            </li>
+                            <li>
+                                <a href="#showPassword" >showPassword</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#login" >login</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(mds: <a href="../injectables/MainDataService.html" target="_self">MainDataService</a>, bs: <a href="../injectables/BackendService.html" target="_self">BackendService</a>, router: <a href="https://angular.io/api/router/Router" target="_blank">Router</a>, route: <a href="https://angular.io/api/router/ActivatedRoute" target="_blank">ActivatedRoute</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/app-root/login/login.component.ts:31</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>mds</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MainDataService.html" target="_self" >MainDataService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>bs</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BackendService.html" target="_self" >BackendService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/router/Router" target="_blank" >Router</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>route</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/router/ActivatedRoute" target="_blank" >ActivatedRoute</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="login"></a>
+                    <span class="name">
+                        <span ><b>login</b></span>
+                        <a href="#login"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>login()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="47"
+                            class="link-to-prism">src/app/app-root/login/login.component.ts:47</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="86"
+                            class="link-to-prism">src/app/app-root/login/login.component.ts:86</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="40"
+                            class="link-to-prism">src/app/app-root/login/login.component.ts:40</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loginForm"></a>
+                    <span class="name">
+                        <span ><b>loginForm</b></span>
+                        <a href="#loginForm"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new FormGroup({
+    name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
+    pw: new FormControl(&#x27;&#x27;)
+  })</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">src/app/app-root/login/login.component.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>mds</b></span>
+                        <a href="#mds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/MainDataService.html" target="_self" >MainDataService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/app-root/login/login.component.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="oldLoginName"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>oldLoginName</b></span>
+                        <a href="#oldLoginName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/app-root/login/login.component.ts:22</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="problemText"></a>
+                    <span class="name">
+                        <span ><b>problemText</b></span>
+                        <a href="#problemText"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">src/app/app-root/login/login.component.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="returnTo"></a>
+                    <span class="name">
+                        <span ><b>returnTo</b></span>
+                        <a href="#returnTo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/app/app-root/login/login.component.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="routingSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>routingSubscription</b></span>
+                        <a href="#routingSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/app-root/login/login.component.ts:23</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="showPassword"></a>
+                    <span class="name">
+                        <span ><b>showPassword</b></span>
+                        <a href="#showPassword"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">src/app/app-root/login/login.component.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnDestroy, OnInit } from &#x27;@angular/core&#x27;;
+import { FormControl, FormGroup, Validators } from &#x27;@angular/forms&#x27;;
+import { ActivatedRoute, Router } from &#x27;@angular/router&#x27;;
+import { Subscription } from &#x27;rxjs&#x27;;
+import { MainDataService } from &#x27;../../maindata.service&#x27;;
+import { AuthData } from &#x27;../../app.interfaces&#x27;;
+import { BackendService } from &#x27;../../backend.service&#x27;;
+
+@Component({
+  templateUrl: &#x27;./login.component.html&#x27;,
+  styles: [
+    &#x27;mat-card {margin: 10px;}&#x27;,
+    &#x27;.mat-card-box {background: var(--tc-box-background)}&#x27;,
+    &#x27;#toggle-show-password {cursor: pointer}&#x27;,
+    &#x27;.mat-form-field {display: block}&#x27;,
+    &#x27;.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}&#x27;,
+    &#x27;.mat-card-content {flex-grow: 1; overflow: auto}&#x27;
+  ]
+})
+
+export class LoginComponent implements OnInit, OnDestroy {
+  static oldLoginName &#x3D; &#x27;&#x27;;
+  private routingSubscription: Subscription &#x3D; null;
+  returnTo &#x3D; &#x27;&#x27;;
+  problemText &#x3D; &#x27;&#x27;;
+  showPassword &#x3D; false;
+
+  loginForm &#x3D; new FormGroup({
+    name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
+    pw: new FormControl(&#x27;&#x27;)
+  });
+
+  constructor(
+    public mds: MainDataService,
+    private bs: BackendService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
+
+  ngOnInit(): void {
+    this.mds.setSpinnerOff();
+    this.mds.appSubTitle$.next(&#x27;Bitte anmelden&#x27;);
+    this.routingSubscription &#x3D; this.route.params
+      .subscribe(params &#x3D;&gt; { this.returnTo &#x3D; params.returnTo; });
+  }
+
+  login(): void {
+    const loginData &#x3D; this.loginForm.value;
+    LoginComponent.oldLoginName &#x3D; loginData.name;
+    this.mds.setSpinnerOn();
+    this.bs.login(loginData.name, loginData.pw).subscribe(
+      authData &#x3D;&gt; {
+        this.mds.setSpinnerOff();
+        this.problemText &#x3D; &#x27;&#x27;;
+        if (typeof authData &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {
+          const errCode &#x3D; authData as number;
+          if (errCode &#x3D;&#x3D;&#x3D; 400) {
+            this.problemText &#x3D; &#x27;Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!&#x27;;
+          } else if (errCode &#x3D;&#x3D;&#x3D; 401) {
+            this.problemText &#x3D; &#x27;Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.&#x27;;
+          } else if (errCode &#x3D;&#x3D;&#x3D; 204) {
+            this.problemText &#x3D; &#x27;Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.&#x27;;
+          } else if (errCode &#x3D;&#x3D;&#x3D; 410) {
+            this.problemText &#x3D; &#x27;Anmeldedaten sind abgelaufen&#x27;;
+          } else {
+            this.problemText &#x3D; &#x27;Problem bei der Anmeldung.&#x27;;
+            // app.interceptor will show error message
+          }
+        } else {
+          const authDataTyped &#x3D; authData as AuthData;
+          this.mds.setAuthData(authDataTyped);
+          if (this.returnTo) {
+            this.router.navigateByUrl(this.returnTo).then(navOk &#x3D;&gt; {
+              if (!navOk) {
+                this.router.navigate([&#x27;/r&#x27;]);
+              }
+            });
+          } else {
+            this.router.navigate([&#x27;/r&#x27;]);
+          }
+        }
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    if (this.routingSubscription !&#x3D;&#x3D; null) {
+      this.routingSubscription.unsubscribe();
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div fxLayout&#x3D;&quot;row wrap&quot; fxLayoutAlign&#x3D;&quot;center stretch&quot;&gt;
+  &lt;form [formGroup]&#x3D;&quot;loginForm&quot; (ngSubmit)&#x3D;&quot;login()&quot;&gt;
+    &lt;mat-card fxFlex&#x3D;&quot;0 0 400px&quot;&gt;
+      &lt;mat-card-title&gt;Anmelden&lt;/mat-card-title&gt;
+      &lt;mat-card-content *ngIf&#x3D;&quot;mds.appConfig?.isValidApiVersion&quot;&gt;
+        &lt;mat-form-field&gt;
+          &lt;input matInput formControlName&#x3D;&quot;name&quot; placeholder&#x3D;&quot;Anmeldename&quot; (keyup.enter)&#x3D;&quot;pw.focus()&quot;&gt;
+        &lt;/mat-form-field&gt;
+        &lt;mat-form-field&gt;
+          &lt;input matInput #pw [type]&#x3D;&quot;showPassword ? &#x27;text&#x27; : &#x27;password&#x27;&quot; formControlName&#x3D;&quot;pw&quot; placeholder&#x3D;&quot;Kennwort&quot;&gt;
+          &lt;mat-icon
+            id&#x3D;&quot;toggle-show-password&quot;
+            (click)&#x3D;&quot;showPassword &#x3D; !showPassword&quot;
+            [style]&#x3D;&quot;!showPassword ? &#x27;color:silver&#x27; : &#x27;&#x27;&quot;
+            matSuffix
+          &gt;
+            visibility
+          &lt;/mat-icon&gt;
+        &lt;/mat-form-field&gt;
+
+        &lt;alert level&#x3D;&quot;error&quot; *ngIf&#x3D;&quot;problemText&quot; [text]&#x3D;&quot;problemText&quot;&gt;&lt;/alert&gt;
+        &lt;alert *ngIf&#x3D;&quot;mds.globalWarning&quot; level&#x3D;&quot;warning&quot; [text]&#x3D;&quot;mds.globalWarning&quot;&gt;&lt;/alert&gt;
+      &lt;/mat-card-content&gt;
+      &lt;mat-card-content *ngIf&#x3D;&quot;!mds.appConfig?.isValidApiVersion&quot;&gt;
+        &lt;alert level&#x3D;&quot;error&quot; text&#x3D;&quot;Die Verbindung mit dem Server ist nicht möglich.&quot;&gt;&lt;/alert&gt;
+      &lt;/mat-card-content&gt;
+      &lt;mat-card-actions&gt;
+        &lt;button mat-raised-button type&#x3D;&quot;submit&quot; [disabled]&#x3D;&quot;loginForm.invalid&quot; color&#x3D;&quot;primary&quot;&gt;Weiter&lt;/button&gt;
+      &lt;/mat-card-actions&gt;
+    &lt;/mat-card&gt;
+  &lt;/form&gt;
+
+  &lt;mat-card fxFlex&#x3D;&quot;0 0 400px&quot; class&#x3D;&quot;mat-card-box&quot;&gt;
+    &lt;mat-card-title&gt;{{mds.appTitle$ | async}}&lt;/mat-card-title&gt;
+    &lt;mat-card-subtitle&gt;{{mds.appSubTitle$ | async}}&lt;/mat-card-subtitle&gt;
+    &lt;mat-card-content&gt;
+      &lt;div [innerHTML]&#x3D;&quot;mds.appConfig?.trustedIntroHtml&quot;&gt;&lt;/div&gt;
+      &lt;status-card&gt;&lt;/status-card&gt;
+    &lt;/mat-card-content&gt;
+    &lt;mat-card-actions&gt;
+      &lt;button *ngIf&#x3D;&quot;this.mds.sysCheckAvailable&quot; [routerLink]&#x3D;&quot;[&#x27;/r/check-starter&#x27;]&quot; mat-raised-button color&#x3D;&quot;primary&quot;&gt;System-Check&lt;/button&gt;
+      &lt;button [routerLink]&#x3D;&quot;[&#x27;/legal-notice&#x27;]&quot; mat-raised-button color&#x3D;&quot;primary&quot;&gt;Impressum/Datenschutz&lt;/button&gt;
+    &lt;/mat-card-actions&gt;
+  &lt;/mat-card&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+            <pre class="line-numbers"><code class="language-scss">mat-card {margin: 10px;}
+.mat-card-box {background: var(--tc-box-background)}
+#toggle-show-password {cursor: pointer}
+.mat-form-field {display: block}
+.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}
+.mat-card-content {flex-grow: 1; overflow: auto}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div fxLayout="row wrap" fxLayoutAlign="center stretch">  <form [formGroup]="loginForm" (ngSubmit)="login()">    <mat-card fxFlex="0 0 400px">      <mat-card-title>Anmelden</mat-card-title>      <mat-card-content *ngIf="mds.appConfig?.isValidApiVersion">        <mat-form-field>          <input matInput formControlName="name" placeholder="Anmeldename" (keyup.enter)="pw.focus()">        </mat-form-field>        <mat-form-field>          <input matInput #pw [type]="showPassword ? \'text\' : \'password\'" formControlName="pw" placeholder="Kennwort">          <mat-icon            id="toggle-show-password"            (click)="showPassword = !showPassword"            [style]="!showPassword ? \'color:silver\' : \'\'"            matSuffix          >            visibility          </mat-icon>        </mat-form-field>        <alert level="error" *ngIf="problemText" [text]="problemText"></alert>        <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>      </mat-card-content>      <mat-card-content *ngIf="!mds.appConfig?.isValidApiVersion">        <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>      </mat-card-content>      <mat-card-actions>        <button mat-raised-button type="submit" [disabled]="loginForm.invalid" color="primary">Weiter</button>      </mat-card-actions>    </mat-card>  </form>  <mat-card fxFlex="0 0 400px" class="mat-card-box">    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>    <mat-card-content>      <div [innerHTML]="mds.appConfig?.trustedIntroHtml"></div>      <status-card></status-card>    </mat-card-content>    <mat-card-actions>      <button *ngIf="this.mds.sysCheckAvailable" [routerLink]="[\'/r/check-starter\']" mat-raised-button color="primary">System-Check</button>      <button [routerLink]="[\'/legal-notice\']" mat-raised-button color="primary">Impressum/Datenschutz</button>    </mat-card-actions>  </mat-card></div></div>'
+    var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
+    var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
+    var ACTUAL_COMPONENT = {'name': 'LoginComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'LoginComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

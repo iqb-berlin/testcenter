@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="de">
+  <meta charset="utf-8">
+  <title>States of Running Tests</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    i {
+      font-family: "Material Icons";
+      font-style: normal;
+      font-size: xx-large;
+    }
+    i.warning {
+      color: #821123;
+    }
+    i.danger {
+      color: #821123;
+    }
+    i.success {
+      color: #b2ff59 !important
+    }
+  </style>
+</html>
+<body>
+  <h1>States of Running Tests</h1>
+  <p>
+    These are the different states of running tests which can be shown by the group-monitor.
+  </p>
+  <p>
+    Background: There are plenty of different combinations of state-values of a running test: Some states are reported 
+    by the frontend, like <quote>CONTROLLER</quote>, some come from the backend like if the test is locked. 
+    State means a set of values represenatating, wether the test is started, which unit was shown last, the remaining 
+    time, an error if there is any, wether it is locked and so on. Various combinations are possible: a test can be 
+    locked and paused at the same time for example. Those things are boiled down to the following states 
+    (internally called super-states) to be displayed to be more convinient for the user. The order means the importance:
+    if there is a error, the super-state will be <quote>error</quote>, regardless of if the test is paused or not.
+  </p>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">person_outline</i></td>
+    <td><strong>pending</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test noch nicht gestartet</code></td>
+  </tr>
+   <tr>
+    <td>The test has not been started yet.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">lock</i></td>
+    <td><strong>locked</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test gesperrt</code></td>
+  </tr>
+   <tr>
+    <td>This state is reached if the participant pressed the "Quit"-button or a supervisor hit the "Quit all"-button</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">error</i></td>
+    <td><strong>error</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Es ist ein Fehler aufgetreten!</code></td>
+  </tr>
+   <tr>
+    <td>An error has occurred a the participants computer. Probably a network error or the like, but can also indicate bugs and should be investigated if possible. The participant should reload his browser and get support if the problem still exists.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">sync_problem</i></td>
+    <td><strong>controller_terminated</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Testausführung wurde beendet und kann wieder aufgenommen werden. Der Browser des Teilnehmers ist nicht verbunden und muss neu geladen werden!</code></td>
+  </tr>
+   <tr>
+    <td>Test execution has been completed and can be resumed. The browser of the participant is not connected and must be reloaded! Condition occurs when the "Unlock"-Button was used in the group monitor.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">error</i></td>
+    <td><strong>connection_lost</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Seite wurde verlassen oder Browserfenster geschlossen!</code></td>
+  </tr>
+   <tr>
+    <td>The connection to the participant's browser is demolished. He could have closed the window or the network connection is demolished.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">pause</i></td>
+    <td><strong>paused</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test pausiert</code></td>
+  </tr>
+   <tr>
+    <td>undefined</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="danger material-icons">warning</i></td>
+    <td><strong>focus_lost</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Fenster/Tab wurde verlassen!</code></td>
+  </tr>
+   <tr>
+    <td>Another window or another tab was selected, but the site is still open and connected.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">hourglass_full</i></td>
+    <td><strong>idle</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test ist 5 Minuten oder länger inaktiv!</code></td>
+  </tr>
+   <tr>
+    <td>The participant was idle for five minutes or longer. This state can only be displayed on polling mode and is intended to be a fallback for the case that the participant's browser or computer was shut down and not able to report the lost connection. It' s not appropriate to measure testees behaviour.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="success material-icons">play_circle_filled</i></td>
+    <td><strong>connection_websocket</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test läuft, Verbindung ist live</code></td>
+  </tr>
+   <tr>
+    <td>Test runs and participant is connected in live mode (= WebSocket).</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class="success material-icons">play_circle_outline</i></td>
+    <td><strong>connection_polling</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test läuft</code></td>
+  </tr>
+   <tr>
+    <td>Test runs and participant is connected in the polling mode connection. This si a fallback for the case that the live-mode is not possible due to the supervisor's browser or a technical error. It works the same but the monitors performance is less smooth because new data is polled every 5 seconds and not pushedwhen there is anything.</td>
+  </tr>
+</table>
+<br>
+  
+<table>
+  <tr>
+    <td rowspan="3"><i class=" material-icons">play_circle_filled</i></td>
+    <td><strong>ok</strong></td>
+  </tr>
+  <tr>
+    <td>Tooltip: <code>Test läuft</code></td>
+  </tr>
+   <tr>
+    <td>Test seems to run but the connection type is unknown. This is is more or less a fallback state which indicates, that nothing is known about the test except for it's existence. This could be the case in various error-scenarios or misconfigurations but should not happen in general. It should be investigated, but most likely the test can be continued safely since the error is more likely on the monitor's side.</td>
+  </tr>
+</table>
+<br>
+  
+</body>

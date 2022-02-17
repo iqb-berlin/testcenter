@@ -1,0 +1,82 @@
+{
+  "name": "itc-ng",
+  "version": "12.1.0",
+  "iqb": {
+    "verona-player-api-versions": {
+      "min": 2,
+      "max": 4
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iqb-berlin/testcenter-iqb-ng"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test  --watch=false",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "compodoc": "npx compodoc -p tsconfig.doc.json -s -d ./docs/compodoc",
+    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
+  },
+  "private": true,
+  "eslintConfig": {
+    "extends": "@iqb/eslint-config",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
+  },
+  "dependencies": {
+    "@angular/animations": "~12.1.0",
+    "@angular/cdk": "^12.1.0",
+    "@angular/common": "~12.1.0",
+    "@angular/compiler": "~12.1.0",
+    "@angular/core": "~12.1.0",
+    "@angular/flex-layout": "^12.0.0-beta.34",
+    "@angular/forms": "~12.1.0",
+    "@angular/material": "^12.1.0",
+    "@angular/platform-browser": "~12.1.0",
+    "@angular/platform-browser-dynamic": "~12.1.0",
+    "@angular/router": "~12.1.0",
+    "@types/file-saver": "^2.0.1",
+    "classlist.js": "^1.1.20150312",
+    "core-js": "^3.15.1",
+    "fibers": "^4.0.3",
+    "file-saver": "^2.0.5",
+    "html-webpack-plugin": "^3.2.0",
+    "material-design-icons": "~3.0.1",
+    "rxjs": "^6.5.5",
+    "sass-loader": "^8.0.2",
+    "srcdoc-polyfill": "git+https://github.com/jugglinmike/srcdoc-polyfill.git",
+    "tslib": "^2.0.0",
+    "ua-parser": "^0.3.5",
+    "ua-parser-js": "^0.7.23",
+    "web-animations-js": "^2.3.2",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~12.1.0",
+    "@angular/cli": "~12.1.0",
+    "@angular/compiler-cli": "~12.1.0",
+    "@angular/language-service": "~12.1.0",
+    "@compodoc/compodoc": "^1.1.11",
+    "@iqb/eslint-config": "1.0.2",
+    "@types/jasminewd2": "~2.0.8",
+    "jasmine-core": "~3.6.0",
+    "jasmine-spec-reporter": "~5.0.0",
+    "karma": "~6.3.14",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage-istanbul-reporter": "~3.0.2",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "^1.6.0",
+    "protractor": "~7.0.0",
+    "ts-node": "~8.6.2",
+    "typescript": "~4.3.4"
+  },
+  "resolutions": {
+    "tree-kill": "1.2.2"
+  }
+}

@@ -1,0 +1,1900 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>itc-ng documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">itc-ng documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li >TestLoaderService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/app/test-controller/services/test-loader.service.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#appVersion" >appVersion</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#environment" >environment</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isProductionMode" >isProductionMode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#lastUnitSequenceId" >lastUnitSequenceId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#loadStartTimeStamp" >loadStartTimeStamp</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#tcs" >tcs</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#totalLoadingProgressParts" >totalLoadingProgressParts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#unitContentLoadingQueue" >unitContentLoadingQueue</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#unitContentLoadSubscription" >unitContentLoadSubscription</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addTestletContentFromBookletXml" >addTestletContentFromBookletXml</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getBookletFromXml" >getBookletFromXml</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Static</span>
+                                <a href="#getChildElements" >getChildElements</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#incrementTotalProgress" >incrementTotalProgress</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#loadTest" >loadTest</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#loadUnit" >loadUnit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#loadUnitContents" >loadUnitContents</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#loadUnits" >loadUnits</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#prepareUnitContentLoadingQueueOrder" >prepareUnitContentLoadingQueueOrder</a>
+                            </li>
+                            <li>
+                                <a href="#reset" >reset</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#restoreRestrictions" >restoreRestrictions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#resumeTest" >resumeTest</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#unsubscribeTestSubscriptions" >unsubscribeTestSubscriptions</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(appVersion: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, isProductionMode: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, tcs: <a href="../injectables/TestControllerService.html" target="_self">TestControllerService</a>, bs: <a href="../injectables/BackendService.html" target="_self">BackendService</a>, cts: CustomtextService)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:34</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>appVersion</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>isProductionMode</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>tcs</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TestControllerService.html" target="_self" >TestControllerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>bs</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BackendService.html" target="_self" >BackendService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>cts</td>
+                                                  
+                                                        <td>
+                                                                    <code>CustomtextService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addTestletContentFromBookletXml"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>addTestletContentFromBookletXml</b></span>
+                        <a href="#addTestletContentFromBookletXml"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addTestletContentFromBookletXml(targetTestlet: <a href="../interfaces/Testlet.html" target="_self">Testlet</a>, node: Element, navigationLeaveRestrictions: <a href="../interfaces/Restrictions.html" target="_self">NavigationLeaveRestrictions</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="339"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:339</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>targetTestlet</td>
+                                    <td>
+                                                <code><a href="../interfaces/Testlet.html" target="_self" >Testlet</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>node</td>
+                                    <td>
+                                            <code>Element</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>navigationLeaveRestrictions</td>
+                                    <td>
+                                                <code><a href="../interfaces/Restrictions.html" target="_self" >NavigationLeaveRestrictions</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getBookletFromXml"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>getBookletFromXml</b></span>
+                        <a href="#getBookletFromXml"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getBookletFromXml(xmlString: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="283"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:283</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>xmlString</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Testlet.html" target="_self" >Testlet</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getChildElements"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Static</span>
+                        <span ><b>getChildElements</b></span>
+                        <a href="#getChildElements"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getChildElements(element: Element)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="268"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:268</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>element</td>
+                                    <td>
+                                            <code>Element</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Element[]</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="incrementTotalProgress"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>incrementTotalProgress</b></span>
+                        <a href="#incrementTotalProgress"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>incrementTotalProgress(progress: <a href="../interfaces/LoadingProgress.html" target="_self">LoadingProgress</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="273"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:273</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>progress</td>
+                                    <td>
+                                                <code><a href="../interfaces/LoadingProgress.html" target="_self" >LoadingProgress</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>file</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadTest"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>loadTest</b></span>
+                        <a href="#loadTest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>loadTest()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="45"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:45</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadUnit"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>loadUnit</b></span>
+                        <a href="#loadUnit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>loadUnit(unitDef: <a href="../interfaces/Unit.html" target="_self">UnitDef</a>, sequenceId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="128"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:128</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>unitDef</td>
+                                    <td>
+                                                <code><a href="../interfaces/Unit.html" target="_self" >UnitDef</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>sequenceId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Observable&lt;number&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadUnitContents"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>loadUnitContents</b></span>
+                        <a href="#loadUnitContents"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>loadUnitContents()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="200"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:200</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadUnits"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>loadUnits</b></span>
+                        <a href="#loadUnits"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>loadUnits()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="113"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:113</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="prepareUnitContentLoadingQueueOrder"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>prepareUnitContentLoadingQueueOrder</b></span>
+                        <a href="#prepareUnitContentLoadingQueueOrder"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>prepareUnitContentLoadingQueueOrder(currentUnitId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="187"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:187</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>currentUnitId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>&#x27;1&#x27;</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="reset"></a>
+                    <span class="name">
+                        <span ><b>reset</b></span>
+                        <a href="#reset"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>reset()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:71</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="restoreRestrictions"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>restoreRestrictions</b></span>
+                        <a href="#restoreRestrictions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>restoreRestrictions(lastState)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="99"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:99</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>lastState</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resumeTest"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>resumeTest</b></span>
+                        <a href="#resumeTest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resumeTest(lastState)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="87"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:87</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>lastState</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unsubscribeTestSubscriptions"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>unsubscribeTestSubscriptions</b></span>
+                        <a href="#unsubscribeTestSubscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>unsubscribeTestSubscriptions()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="261"
+                            class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:261</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="appVersion"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>appVersion</b></span>
+                        <a href="#appVersion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Inject(&#x27;APP_VERSION&#x27;)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="environment"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>environment</b></span>
+                        <a href="#environment"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/EnvironmentData.html" target="_self" >EnvironmentData</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isProductionMode"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>isProductionMode</b></span>
+                        <a href="#isProductionMode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Inject(&#x27;IS_PRODUCTION_MODE&#x27;)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lastUnitSequenceId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>lastUnitSequenceId</b></span>
+                        <a href="#lastUnitSequenceId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loadStartTimeStamp"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>loadStartTimeStamp</b></span>
+                        <a href="#loadStartTimeStamp"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>0</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tcs"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>tcs</b></span>
+                        <a href="#tcs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/TestControllerService.html" target="_self" >TestControllerService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="totalLoadingProgressParts"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>totalLoadingProgressParts</b></span>
+                        <a href="#totalLoadingProgressParts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>literal type</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unitContentLoadingQueue"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>unitContentLoadingQueue</b></span>
+                        <a href="#unitContentLoadingQueue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/TaggedString.html" target="_self" >TaggedString[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unitContentLoadSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>unitContentLoadSubscription</b></span>
+                        <a href="#unitContentLoadSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>null</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">src/app/test-controller/services/test-loader.service.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@angular/core&#x27;;
+import {
+  BehaviorSubject, from, Observable, of, Subject, Subscription, throwError
+} from &#x27;rxjs&#x27;;
+import {
+  concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
+} from &#x27;rxjs/operators&#x27;;
+import { CustomtextService } from &#x27;iqb-components&#x27;;
+import {
+  isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
+  TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
+} from &#x27;../interfaces/test-controller.interfaces&#x27;;
+import { TestMode } from &#x27;../../config/test-mode&#x27;;
+import {
+  EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
+} from &#x27;../classes/test-controller.classes&#x27;;
+import { MainDataService } from &#x27;../../maindata.service&#x27;;
+import { TestControllerService } from &#x27;./test-controller.service&#x27;;
+import { BackendService } from &#x27;./backend.service&#x27;;
+import { LocalStorage } from &#x27;../utils/local-storage.util&#x27;;
+// eslint-disable-next-line import/extensions
+import { BookletConfig } from &#x27;../../config/booklet-config&#x27;;
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+export class TestLoaderService {
+  private loadStartTimeStamp &#x3D; 0;
+  private unitContentLoadSubscription: Subscription &#x3D; null;
+  private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
+  private lastUnitSequenceId &#x3D; 0;
+  private unitContentLoadingQueue: TaggedString[] &#x3D; [];
+  private totalLoadingProgressParts: { [loadingId: string]: number } &#x3D; {};
+
+  constructor(
+    @Inject(&#x27;APP_VERSION&#x27;) public appVersion: string,
+    @Inject(&#x27;IS_PRODUCTION_MODE&#x27;) public isProductionMode: boolean,
+    public tcs: TestControllerService,
+    private bs: BackendService,
+    private cts: CustomtextService
+  ) {
+  }
+
+  async loadTest(): Promise&lt;void&gt; {
+    let testData: TestData;
+    try {
+      this.reset();
+
+      this.tcs.testStatus$.next(TestControllerState.LOADING);
+      LocalStorage.setTestId(this.tcs.testId);
+
+      testData &#x3D; await this.bs.getTestData(this.tcs.testId).toPromise();
+      this.tcs.testMode &#x3D; new TestMode(testData.mode);
+      this.restoreRestrictions(testData.laststate);
+      this.tcs.rootTestlet &#x3D; this.getBookletFromXml(testData.xml);
+
+      await this.loadUnits();
+      this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || &#x27;1&#x27;);
+      this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+    } catch (e) {
+      return Promise.reject(e);
+    }
+    return this.loadUnitContents()
+      .then(() &#x3D;&gt; {
+        this.resumeTest(testData.laststate);
+      });
+    // when this promise resolves, it is allowed to start the test
+  }
+
+  reset(): void {
+    this.unsubscribeTestSubscriptions();
+
+    // Reset TestMode to be Demo, before the correct one comes with getTestData
+    // TODO maybe it would be better to retrieve the testmode from the login
+    this.tcs.testMode &#x3D; new TestMode();
+    this.tcs.resetDataStore();
+
+    this.tcs.totalLoadingProgress &#x3D; 0;
+    this.totalLoadingProgressParts &#x3D; {};
+
+    this.environment &#x3D; new EnvironmentData(this.appVersion);
+    this.loadStartTimeStamp &#x3D; Date.now();
+    this.unitContentLoadingQueue &#x3D; [];
+  }
+
+  private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
+    this.tcs.resumeTargetUnitSequenceId &#x3D;
+      this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[TestStateKey.CURRENT_UNIT_ID]) || 1;
+    if (lastState[TestStateKey.CONTROLLER] &amp;&amp; (lastState[TestStateKey.CONTROLLER] &#x3D;&#x3D;&#x3D; TestControllerState.PAUSED)) {
+      this.tcs.testStatus$.next(TestControllerState.PAUSED);
+      this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
+      return;
+    }
+    this.tcs.testStatus$.next(TestControllerState.RUNNING);
+    this.tcs.setUnitNavigationRequest(this.tcs.resumeTargetUnitSequenceId.toString());
+  }
+
+  private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
+    Object.keys(lastState).forEach(stateKey &#x3D;&gt; {
+      switch (stateKey) {
+        case (TestStateKey.TESTLETS_TIMELEFT):
+          this.tcs.maxTimeTimers &#x3D; JSON.parse(lastState[stateKey]);
+          break;
+        case (TestStateKey.TESTLETS_CLEARED_CODE):
+          this.tcs.clearCodeTestlets &#x3D; JSON.parse(lastState[stateKey]);
+          break;
+        default:
+      }
+    });
+  }
+
+  private loadUnits(): Promise&lt;number&gt; {
+    const sequence &#x3D; [];
+    for (let i &#x3D; 1; i &lt; this.lastUnitSequenceId; i++) {
+      this.totalLoadingProgressParts[&#x60;unit-${i}&#x60;] &#x3D; 0;
+      this.totalLoadingProgressParts[&#x60;player-${i}&#x60;] &#x3D; 0;
+      this.totalLoadingProgressParts[&#x60;content-${i}&#x60;] &#x3D; 0;
+      sequence.push(i);
+    }
+    return from(sequence)
+      .pipe(
+        concatMap(nr &#x3D;&gt; this.loadUnit(this.tcs.rootTestlet.getUnitAt(nr).unitDef, nr))
+      )
+      .toPromise();
+  }
+
+  private loadUnit(unitDef: UnitDef, sequenceId: number): Observable&lt;number&gt; {
+    return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
+      .pipe(
+        switchMap(unit &#x3D;&gt; {
+          if (typeof unit &#x3D;&#x3D;&#x3D; &#x27;boolean&#x27;) {
+            return throwError(&#x60;error requesting unit ${this.tcs.testId}/${unitDef.id}&#x60;);
+          }
+
+          this.incrementTotalProgress({ progress: 100 }, &#x60;unit-${sequenceId}&#x60;);
+
+          this.tcs.setOldUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
+          this.tcs.setOldUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
+          this.tcs.setOldUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
+
+          try {
+            const dataParts &#x3D; unit.data ? JSON.parse(unit.data) : &#x27;&#x27;;
+            // TODO why has the above to be done. an issue in the simple-player?
+            this.tcs.addUnitStateDataParts(sequenceId, dataParts);
+          } catch (error) {
+            console.warn(&#x60;error parsing unit state ${this.tcs.testId}/${unitDef.id} (${error.toString()})&#x60;, unit.data);
+          }
+
+          unitDef.playerId &#x3D; unit.playerId;
+          if (unit.definitionRef) {
+            this.unitContentLoadingQueue.push(&lt;TaggedString&gt;{
+              tag: sequenceId.toString(),
+              value: unit.definitionRef
+            });
+          } else {
+            this.tcs.addUnitDefinition(sequenceId, unit.definition);
+            this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
+            this.incrementTotalProgress({ progress: 100 }, &#x60;content-${sequenceId}&#x60;);
+          }
+
+          if (this.tcs.hasPlayer(unit.playerId)) {
+            this.incrementTotalProgress({ progress: 100 }, &#x60;player-${sequenceId}&#x60;);
+            return of(sequenceId);
+          }
+
+          // this.tcs.addPlayer(unit.playerId, &#x27;&#x27;);
+          const playerFileId &#x3D; TestControllerService.normaliseId(unit.playerId, &#x27;html&#x27;);
+          return this.bs.getResource(this.tcs.testId, playerFileId, true)
+            .pipe(
+              tap((progress: LoadedFile | LoadingProgress) &#x3D;&gt; {
+                this.incrementTotalProgress(
+                  isLoadingFileLoaded(progress) ? { progress: 100 } : progress,
+                  &#x60;player-${sequenceId}&#x60;
+                );
+              }),
+              last(),
+              map((player: LoadedFile) &#x3D;&gt; {
+                this.tcs.addPlayer(unit.playerId, player.content);
+                return sequenceId;
+              })
+            );
+        })
+      );
+  }
+
+  private prepareUnitContentLoadingQueueOrder(currentUnitId: string &#x3D; &#x27;1&#x27;): void {
+    const currentUnitSequenceId &#x3D; this.tcs.rootTestlet.getSequenceIdByUnitAlias(currentUnitId);
+    const queue &#x3D; this.unitContentLoadingQueue;
+    let firstToLoadQueuePosition;
+    for (firstToLoadQueuePosition &#x3D; 0; firstToLoadQueuePosition &lt; queue.length; firstToLoadQueuePosition++) {
+      if (Number(queue[firstToLoadQueuePosition % queue.length].tag) &gt;&#x3D; currentUnitSequenceId) {
+        break;
+      }
+    }
+    const offset &#x3D; ((firstToLoadQueuePosition % queue.length) + queue.length) % queue.length;
+    this.unitContentLoadingQueue &#x3D; queue.slice(offset).concat(queue.slice(0, offset));
+  }
+
+  private loadUnitContents(): Promise&lt;void&gt; {
+    // we don&#x27;t load files in parallel since it made problems, when a whole class tried it at once
+    const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject&lt;LoadingProgress&gt; } &#x3D; {};
+    this.unitContentLoadingQueue
+      .forEach(unitToLoad &#x3D;&gt; {
+        unitContentLoadingProgresses$[Number(unitToLoad.tag)] &#x3D;
+          new BehaviorSubject&lt;LoadingProgress&gt;({ progress: &#x27;PENDING&#x27; });
+        this.tcs.setUnitLoadProgress$(
+          Number(unitToLoad.tag),
+          unitContentLoadingProgresses$[Number(unitToLoad.tag)].asObservable()
+        );
+      });
+
+    return new Promise&lt;void&gt;((resolve, reject) &#x3D;&gt; {
+      if (this.tcs.bookletConfig.loading_mode &#x3D;&#x3D;&#x3D; &#x27;LAZY&#x27;) {
+        resolve();
+      }
+
+      this.unitContentLoadSubscription &#x3D; from(this.unitContentLoadingQueue)
+        .pipe(
+          concatMap(queueEntry &#x3D;&gt; {
+            const unitSequenceID &#x3D; Number(queueEntry.tag);
+
+            const unitContentLoading$ &#x3D; this.bs.getResource(this.tcs.testId, queueEntry.value)
+              .pipe(shareReplay());
+
+            unitContentLoading$
+              .pipe(
+                map(loadingFile &#x3D;&gt; {
+                  if (!isLoadingFileLoaded(loadingFile)) {
+                    return loadingFile;
+                  }
+                  this.tcs.addUnitDefinition(unitSequenceID, loadingFile.content);
+                  return { progress: 100 };
+                }),
+                distinctUntilChanged((v1, v2) &#x3D;&gt; v1.progress &#x3D;&#x3D;&#x3D; v2.progress),
+                tap(progress &#x3D;&gt; this.incrementTotalProgress(progress, &#x60;content-${unitSequenceID}&#x60;))
+              )
+              .subscribe(unitContentLoadingProgresses$[unitSequenceID]);
+
+            return unitContentLoading$;
+          })
+        )
+        .subscribe({
+          error: reject,
+          complete: () &#x3D;&gt; {
+            if (this.tcs.testMode.saveResponses) {
+              this.environment.loadTime &#x3D; Date.now() - this.loadStartTimeStamp;
+              this.bs.addTestLog(this.tcs.testId, [&lt;StateReportEntry&gt;{
+                key: TestLogEntryKey.LOADCOMPLETE, timeStamp: Date.now(), content: JSON.stringify(this.environment)
+              }]);
+            }
+            this.tcs.totalLoadingProgress &#x3D; 100;
+            if (this.tcs.bookletConfig.loading_mode &#x3D;&#x3D;&#x3D; &#x27;EAGER&#x27;) {
+              resolve();
+            }
+          }
+        });
+    });
+  }
+
+  private unsubscribeTestSubscriptions(): void {
+    if (this.unitContentLoadSubscription !&#x3D;&#x3D; null) {
+      this.unitContentLoadSubscription.unsubscribe();
+      this.unitContentLoadSubscription &#x3D; null;
+    }
+  }
+
+  private static getChildElements(element: Element): Element[] {
+    return Array.prototype.slice.call(element.childNodes)
+      .filter(e &#x3D;&gt; e.nodeType &#x3D;&#x3D;&#x3D; 1);
+  }
+
+  private incrementTotalProgress(progress: LoadingProgress, file: string): void {
+    if (typeof progress.progress !&#x3D;&#x3D; &#x27;number&#x27;) {
+      return;
+    }
+    this.totalLoadingProgressParts[file] &#x3D; progress.progress;
+    const sumOfProgresses &#x3D; Object.values(this.totalLoadingProgressParts).reduce((i, a) &#x3D;&gt; i + a, 0);
+    const maxProgresses &#x3D; Object.values(this.totalLoadingProgressParts).length * 100;
+    this.tcs.totalLoadingProgress &#x3D; (sumOfProgresses / maxProgresses) * 100;
+  }
+
+  private getBookletFromXml(xmlString: string): Testlet {
+    let rootTestlet: Testlet &#x3D; null;
+    const oParser &#x3D; new DOMParser();
+    const oDOM &#x3D; oParser.parseFromString(xmlString, &#x27;text/xml&#x27;);
+
+    if (oDOM.documentElement.nodeName !&#x3D;&#x3D; &#x27;Booklet&#x27;) {
+      throw Error(&#x27;Root element fo Booklet should be &lt;Booklet&gt;&#x27;);
+    }
+    const metadataElements &#x3D; oDOM.documentElement.getElementsByTagName(&#x27;Metadata&#x27;);
+    if (metadataElements.length &#x3D;&#x3D;&#x3D; 0) {
+      throw Error(&#x27;&lt;Metadata&gt;-Element missing&#x27;);
+    }
+    const metadataElement &#x3D; metadataElements[0];
+    const IdElement &#x3D; metadataElement.getElementsByTagName(&#x27;Id&#x27;)[0];
+    const LabelElement &#x3D; metadataElement.getElementsByTagName(&#x27;Label&#x27;)[0];
+    rootTestlet &#x3D; new Testlet(0, IdElement.textContent, LabelElement.textContent);
+    const unitsElements &#x3D; oDOM.documentElement.getElementsByTagName(&#x27;Units&#x27;);
+    if (unitsElements.length &gt; 0) {
+      const customTextsElements &#x3D; oDOM.documentElement.getElementsByTagName(&#x27;CustomTexts&#x27;);
+      if (customTextsElements.length &gt; 0) {
+        const customTexts &#x3D; TestLoaderService.getChildElements(customTextsElements[0]);
+        const customTextsForBooklet &#x3D; {};
+        for (let childIndex &#x3D; 0; childIndex &lt; customTexts.length; childIndex++) {
+          if (customTexts[childIndex].nodeName &#x3D;&#x3D;&#x3D; &#x27;Text&#x27;) {
+            const customTextKey &#x3D; customTexts[childIndex].getAttribute(&#x27;key&#x27;);
+            if ((typeof customTextKey !&#x3D;&#x3D; &#x27;undefined&#x27;) &amp;&amp; (customTextKey !&#x3D;&#x3D; null)) {
+              customTextsForBooklet[customTextKey] &#x3D; customTexts[childIndex].textContent;
+            }
+          }
+        }
+        this.cts.addCustomTexts(customTextsForBooklet);
+      }
+
+      const bookletConfigElements &#x3D; oDOM.documentElement.getElementsByTagName(&#x27;BookletConfig&#x27;);
+
+      this.tcs.bookletConfig &#x3D; new BookletConfig();
+      this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
+      if (bookletConfigElements.length &gt; 0) {
+        this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
+      }
+
+      // recursive call through all testlets
+      this.lastUnitSequenceId &#x3D; 1;
+      this.tcs.allUnitIds &#x3D; [];
+      this.addTestletContentFromBookletXml(
+        rootTestlet,
+        unitsElements[0],
+        new NavigationLeaveRestrictions(
+          this.tcs.bookletConfig.force_presentation_complete,
+          this.tcs.bookletConfig.force_response_complete
+        )
+      );
+    }
+    return rootTestlet;
+  }
+
+  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element,
+                                          navigationLeaveRestrictions: NavigationLeaveRestrictions) {
+    const childElements &#x3D; TestLoaderService.getChildElements(node);
+    if (childElements.length &gt; 0) {
+      let codeToEnter &#x3D; &#x27;&#x27;;
+      let codePrompt &#x3D; &#x27;&#x27;;
+      let maxTime &#x3D; -1;
+      let forcePresentationComplete &#x3D; navigationLeaveRestrictions.presentationComplete;
+      let forceResponseComplete &#x3D; navigationLeaveRestrictions.responseComplete;
+
+      let restrictionElement: Element &#x3D; null;
+      for (let childIndex &#x3D; 0; childIndex &lt; childElements.length; childIndex++) {
+        if (childElements[childIndex].nodeName &#x3D;&#x3D;&#x3D; &#x27;Restrictions&#x27;) {
+          restrictionElement &#x3D; childElements[childIndex];
+          break;
+        }
+      }
+      if (restrictionElement !&#x3D;&#x3D; null) {
+        const restrictionElements &#x3D; TestLoaderService.getChildElements(restrictionElement);
+        for (let childIndex &#x3D; 0; childIndex &lt; restrictionElements.length; childIndex++) {
+          if (restrictionElements[childIndex].nodeName &#x3D;&#x3D;&#x3D; &#x27;CodeToEnter&#x27;) {
+            const restrictionParameter &#x3D; restrictionElements[childIndex].getAttribute(&#x27;code&#x27;);
+            if ((typeof restrictionParameter !&#x3D;&#x3D; &#x27;undefined&#x27;) &amp;&amp; (restrictionParameter !&#x3D;&#x3D; null)) {
+              codeToEnter &#x3D; restrictionParameter.toUpperCase();
+              codePrompt &#x3D; restrictionElements[childIndex].textContent;
+            }
+          }
+          if (restrictionElements[childIndex].nodeName &#x3D;&#x3D;&#x3D; &#x27;TimeMax&#x27;) {
+            const restrictionParameter &#x3D; restrictionElements[childIndex].getAttribute(&#x27;minutes&#x27;);
+            if ((typeof restrictionParameter !&#x3D;&#x3D; &#x27;undefined&#x27;) &amp;&amp; (restrictionParameter !&#x3D;&#x3D; null)) {
+              maxTime &#x3D; Number(restrictionParameter);
+              if (Number.isNaN(maxTime)) {
+                maxTime &#x3D; -1;
+              }
+            }
+          }
+          if (restrictionElements[childIndex].nodeName &#x3D;&#x3D;&#x3D; &#x27;DenyNavigationOnIncomplete&#x27;) {
+            const presentationComplete &#x3D; restrictionElements[childIndex].getAttribute(&#x27;presentation&#x27;);
+            if (isNavigationLeaveRestrictionValue(presentationComplete)) {
+              forcePresentationComplete &#x3D; presentationComplete;
+            }
+            const responseComplete &#x3D; restrictionElements[childIndex].getAttribute(&#x27;response&#x27;);
+            if (isNavigationLeaveRestrictionValue(responseComplete)) {
+              forceResponseComplete &#x3D; responseComplete;
+            }
+          }
+        }
+      }
+
+      if (codeToEnter.length &gt; 0) {
+        targetTestlet.codeToEnter &#x3D; codeToEnter;
+        targetTestlet.codePrompt &#x3D; codePrompt;
+      }
+      targetTestlet.maxTimeLeft &#x3D; maxTime;
+      if (this.tcs.maxTimeTimers) {
+        if (targetTestlet.id in this.tcs.maxTimeTimers) {
+          targetTestlet.maxTimeLeft &#x3D; this.tcs.maxTimeTimers[targetTestlet.id];
+        }
+      }
+      const newNavigationLeaveRestrictions &#x3D;
+        new NavigationLeaveRestrictions(forcePresentationComplete, forceResponseComplete);
+
+      for (let childIndex &#x3D; 0; childIndex &lt; childElements.length; childIndex++) {
+        if (childElements[childIndex].nodeName &#x3D;&#x3D;&#x3D; &#x27;Unit&#x27;) {
+          const unitId &#x3D; childElements[childIndex].getAttribute(&#x27;id&#x27;);
+          let unitAlias &#x3D; childElements[childIndex].getAttribute(&#x27;alias&#x27;);
+          if (!unitAlias) {
+            unitAlias &#x3D; unitId;
+          }
+          let unitAliasClear &#x3D; unitAlias;
+          let unitIdSuffix &#x3D; 1;
+          while (this.tcs.allUnitIds.indexOf(unitAliasClear) &gt; -1) {
+            unitAliasClear &#x3D; &#x60;${unitAlias}-${unitIdSuffix.toString()}&#x60;;
+            unitIdSuffix +&#x3D; 1;
+          }
+          this.tcs.allUnitIds.push(unitAliasClear);
+
+          targetTestlet.addUnit(
+            this.lastUnitSequenceId,
+            unitId,
+            childElements[childIndex].getAttribute(&#x27;label&#x27;),
+            unitAliasClear,
+            childElements[childIndex].getAttribute(&#x27;labelshort&#x27;),
+            newNavigationLeaveRestrictions
+          );
+          this.lastUnitSequenceId +&#x3D; 1;
+        } else if (childElements[childIndex].nodeName &#x3D;&#x3D;&#x3D; &#x27;Testlet&#x27;) {
+          const testletId: string &#x3D; childElements[childIndex].getAttribute(&#x27;id&#x27;);
+          let testletLabel: string &#x3D; childElements[childIndex].getAttribute(&#x27;label&#x27;);
+          testletLabel &#x3D; testletLabel ? testletLabel.trim() : &#x27;&#x27;;
+
+          this.addTestletContentFromBookletXml(
+            targetTestlet.addTestlet(testletId, testletLabel),
+            childElements[childIndex],
+            newNavigationLeaveRestrictions
+          );
+        }
+      }
+    }
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'TestLoaderService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

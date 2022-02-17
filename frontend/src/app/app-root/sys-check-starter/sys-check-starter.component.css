@@ -1,0 +1,18 @@
+.check-title {
+  font-size: 16pt;
+  margin-top: 4px;
+  margin-bottom: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 130%;
+}
+
+.check-description {
+  font-size: 9pt;
+  margin-top: 8px;
+  color: lightgray;
+  height: 24px;
+  margin-bottom: 18px;
+  white-space: normal;
+  line-height: 16px;
+}

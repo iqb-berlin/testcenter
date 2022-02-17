@@ -1,0 +1,21 @@
+<mat-card *ngIf="files.length > 0">
+  <mat-card-header>
+    <mat-card-title>Upload-Report</mat-card-title>
+  </mat-card-header>
+
+  <iqb-files-upload
+    *ngFor="let file of files; let i = index"
+    [file]="file"
+    [id]="i"
+    [fileAlias]="fileAlias"
+    [folderName]="folderName"
+    [folder]="folder"
+    (removeFileRequestEvent)="removeFile($event)"
+    (statusChangedEvent)="analyseStatus()">
+  </iqb-files-upload>
+
+
+  <mat-card-actions>
+    <button *ngIf="!disableClearButton" (click)="removeAll()" mat-raised-button color="primary">OK</button>
+  </mat-card-actions>
+</mat-card>

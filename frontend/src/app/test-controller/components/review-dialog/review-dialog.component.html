@@ -1,0 +1,55 @@
+<form [formGroup]="reviewform">
+  <p mat-dialog-title>Kommentar geben</p>
+
+  <mat-dialog-content fxLayout="column">
+    <div fxLayout="row">
+      <div fxLayout="column" fxFlex="0 0 55%">
+        <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="20px">
+          <div fxFlex>
+            <p>Sie sind angemeldet als "{{data.loginname}}". Bitte geben Sie Ihren Namen ein, damit eine Zuordnung möglich ist.</p>
+          </div>
+          <div fxFlex>
+            <mat-form-field>
+              <input matInput formControlName="sender" placeholder="Mein Name">
+            </mat-form-field>
+          </div>
+        </div>
+        <p>Der Kommentar wird gegeben für:</p>
+        <mat-radio-group formControlName="target" fxLayout="column" fxLayoutGap="4px">
+          <p><mat-radio-button value="b" [matTooltip]="data.bookletname"></mat-radio-button>aktuelles Testheft "{{ data.bookletname }}"<br/>
+          <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey"></mat-radio-button>aktuelle Aufgabe/Seite "{{ data.unitTitle }}"</p>
+        </mat-radio-group>
+        <mat-divider></mat-divider>
+        <div fxLayout="row" fxLayoutGap="20px">
+          <div fxLayout="column" fxFlex="0 0 45%">
+            <p>Priorität</p>
+            <mat-radio-group formControlName="priority">
+              <p><mat-radio-button value="1">dringend/kritisch</mat-radio-button><br/>
+              <mat-radio-button value="2">mittelfristig</mat-radio-button><br/>
+              <mat-radio-button value="3">optional</mat-radio-button></p>
+            </mat-radio-group>
+          </div>
+          <div fxLayout="column" fxFlex="0 0 45%">
+            <p>Kategorie</p>
+            <p><mat-checkbox formControlName="tech">Technisches</mat-checkbox><br/>
+            <mat-checkbox formControlName="content">Inhaltliches</mat-checkbox><br/>
+            <mat-checkbox formControlName="design">Gestaltung</mat-checkbox></p>
+          </div>
+        </div>
+      </div>
+      <div fxFlex="0 0 45%" fxLayout="column">
+        <mat-form-field fxFlex>
+          <textarea matInput fxFlex formControlName="entry"
+                    placeholder="Kommentar"
+                    style="resize: none;border: grey solid 1px"
+                    rows="28"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="reviewform.value" [disabled]="reviewform.invalid">Speichern</button>
+    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+  </mat-dialog-actions>
+</form>

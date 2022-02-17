@@ -1,0 +1,35 @@
+#buttonsContainer {
+  color: white;
+  padding: 0 10px 0 0;
+}
+
+#buttonsContainer .material-icons {
+  font-size: 2.0rem;
+}
+
+#buttonsContainer img {
+  width: 100px;
+}
+
+mat-toolbar {
+  position: fixed;
+  z-index: 100;
+  top: 4px;
+  right: 90px;
+}
+
+#buttonsContainer .material-icons {
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
+}
+
+.adminbackground {
+  flex:  10 0 900px;
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  min-height: 85%;
+  margin: 15px;
+  padding: 25px;
+}

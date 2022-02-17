@@ -1,0 +1,36 @@
+<div fxLayout="row wrap" fxLayoutAlign="center stretch">
+  <mat-card fxFlex="0 2 500px">
+    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-content>
+      <p>Hier können Sie ermitteln, ob das Computersystem, das Sie gerade benutzen, für
+        die hier vorgesehenen Testungen geeignet ist.</p>
+      <p *ngIf="loading">
+        Bitte warten... Konfiguration wird geladen
+      </p>
+      <span *ngIf="!loading">
+        <p *ngIf="checkConfigList.length === 0">
+          Auf diesem Server ist aktuell kein System-Check verfügbar.
+        </p>
+        <p *ngIf="checkConfigList.length > 1">
+          Bitte wählen Sie einen Check aus!
+        </p>
+        <p *ngIf="checkConfigList.length === 1">
+          Bitte klicken Sie auf den Schalter, um den Check zu starten!
+        </p>
+      </span>
+      <div fxLayout="column" fxLayoutGap="10px" *ngIf="checkConfigList?.length > 0">
+        <button mat-raised-button color="primary" (click)="buttonStartCheck(c)"
+                *ngFor="let c of checkConfigList">
+          <div fxLayout="column">
+            <p class="check-title">{{c.label}}</p>
+            <p class="check-description">{{c.description}}</p>
+          </div>
+        </button>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button [routerLink]="['/']" mat-raised-button color="primary"><i class="material-icons">arrow_back</i> zurück zur Startseite</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

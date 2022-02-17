@@ -1,0 +1,35 @@
+<div class="sidebar-main">
+  <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
+  <ng-container *ngFor="let blockLabelOrUnitList of menu; let i = index">
+    <div
+      *ngIf="isArray(blockLabelOrUnitList); else testLetLabel"
+      style="width: 100%"
+    >
+      <a mat-raised-button
+        *ngFor="let u of blockLabelOrUnitList"
+        [class]="{'current': u.isCurrent}"
+        (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
+        [disabled]="u.disabled"
+      >
+        <mat-icon *ngIf="!tcs.isUnitContentLoaded(u.sequenceId)" matTooltip="wird geladen">
+          hourglass_empty
+        </mat-icon>
+        {{u.longLabel}}
+      </a>
+    </div>
+    <ng-template #testLetLabel>
+      <h4 *ngIf="blockLabelOrUnitList || i > 0" class='testlet-label'>
+        {{blockLabelOrUnitList}}
+      </h4>
+    </ng-template>
+  </ng-container>
+</div>
+
+<div class="sidebar-bottom">
+  <a mat-raised-button color="primary" (click)="terminateTest()">
+    {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
+  </a>
+</div>
+
+
+

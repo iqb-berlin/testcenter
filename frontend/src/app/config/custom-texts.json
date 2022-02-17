@@ -1,0 +1,291 @@
+{
+  "app_title": {
+    "label": "Titel der Hauptanwendung",
+    "defaultvalue": "IQB-Testcenter"
+  },
+  "app_intro1": {
+    "label": "Begrüßungstext auf der Startseite (Text nach IQB-Link)",
+    "defaultvalue": "betreibt auf diesen Seiten eine Anwendung für das computerbasierte Leistungstesten von Schülerinnen und Schülern. Der Zugang zu einem Test ist nur möglich, wenn Sie von Testverantwortlichen Zugangsdaten erhalten haben. Es sind keine weiteren Seiten öffentlich verfügbar."
+  },
+  "login_testEndButtonLabel": {
+    "label": "Schalterbeschriftung für 'Test beenden'",
+    "defaultvalue": "Test beenden"
+  },
+  "booklet_warningLeaveTimerBlockTextPrompt": {
+    "label": "Schalterbeschriftung für 'Zurück zum Test'",
+    "defaultvalue": "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"
+  },
+  "login_bookletSelectPromptNull": {
+    "label": "Nachricht für den Fall, dass Booklet(s) beendet wurden und keine weiteren zur Verfügung stehen",
+    "defaultvalue": "Beendet. Es können keine weiteren Testhefte gestartet werden."
+  },
+  "login_pagesNaviPrompt": {
+    "label": "Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'",
+    "defaultvalue": "Weitere Seiten:"
+  },
+  "login_bookletSelectPromptOne": {
+    "label": "Aufforderung, den einen gefundenen Test anzuklicken (auf Schalter klicken)",
+    "defaultvalue": "Bitte klicke auf die Schaltfläche auf der linken Seite, um den Test zu starten!"
+  },
+  "login_bookletSelectPromptMany": {
+    "label": "Aufforderung, aus der Liste der gefundenen Tests einen auszusuchen (auf Schalter klicken)",
+    "defaultvalue": "Bitte klicke auf eine der Schaltflächen auf der linken Seite, um einen Test zu starten!"
+  },
+  "login_codeInputPrompt": {
+    "label": "Aufforderung, Code einzugeben (bei einem zweistufigen Login-Prozess)",
+    "defaultvalue": "Bitte Log-in eingeben, der auf dem Zettel steht!"
+  },
+  "login_codeInputTitle": {
+    "label": "Titel des Eingabeformulares für den Code",
+    "defaultvalue": "Log-in eingeben"
+  },
+  "booklet_msgNavigationDeniedTitle": {
+    "label": "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.",
+    "defaultvalue": "Aufgabe darf nicht verlassen werden"
+  },
+  "booklet_msgNavigationDeniedText_presentationIncomplete": {
+    "label": "Text der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig gesehen worden ist.",
+    "defaultvalue": "Es müssen erst alle Audio-Dateien vollständig abgespielt werden und auf allen Seiten bis ganz nach unten gescrollt werden."
+  },
+  "booklet_msgNavigationDeniedText_responsesIncomplete": {
+    "label": "Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet worden ist.",
+    "defaultvalue": "Es müssen erst alle Teilaufgaben bearbeitet werden."
+  },
+  "booklet_codeToEnterTitle": {
+    "label": "Titel der Dialogbox für die Eingabe eines Freigabewortes",
+    "defaultvalue": "Aufgabenblock ist noch gesperrt"
+  },
+  "booklet_codeToEnterPrompt": {
+    "label": "Aufforderung für die Eingabe eines Freigabewortes (Dialog-Box)",
+    "defaultvalue": "Bitte gib das Freigabewort ein, das angesagt wurde!"
+  },
+  "booklet_msgSoonTimeOver5Minutes": {
+    "label": "Nachricht, dass für die Bearbeitung eines Abschnittes noch 5 min Zeit sind",
+    "defaultvalue": "Du hast noch 5 Minuten Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt."
+  },
+  "booklet_msgSoonTimeOver1Minute": {
+    "label": "Nachricht, dass für die Bearbeitung eines Abschnittes noch 1 min Zeit ist",
+    "defaultvalue": "Du hast noch 1 Minute Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt."
+  },
+  "booklet_msgTimerStarted": {
+    "label": "Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde",
+    "defaultvalue": "Die Bearbeitungszeit für diesen Abschnitt hat begonnen: "
+  },
+  "booklet_msgTimerCancelled": {
+    "label": "Nachricht, dass die Bearbeitung eines Abschnittes mit Timer abgebrochen wurde",
+    "defaultvalue": "Die Bearbeitung des Abschnittes wurde abgebrochen."
+  },
+  "booklet_msgTimeOver": {
+    "label": "Nachricht, dass die Bearbeitungszeit für einen Abschnitt abgelaufen ist.",
+    "defaultvalue": "Die Bearbeitung des Abschnittes ist beendet."
+  },
+  "booklet_warningLeaveTimerBlockTitle": {
+    "label": "Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer",
+    "defaultvalue": "Aufgabenabschnitt verlassen?"
+  },
+  "booklet_tasklisttitle": {
+    "label": "Titel für die Auflistung der Aufgaben (Schalter)",
+    "defaultvalue": "Aufgaben"
+  },
+  "syscheck_questionsintro": {
+    "label": "Aufforderung, die Fragen (Questionnaire) zu beantworten",
+    "defaultvalue": "Bitte bearbeiten Sie die nachfolgenden Fragen."
+  },
+  "booklet_errormessage": {
+    "label": "Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist",
+    "defaultvalue": "Es ist ein schwerer Fehler aufgetreten. Bitte rufe die Aufsichtsperson und beschreibe das Problem!"
+  },
+  "booklet_pausedmessage": {
+    "label": "Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde",
+    "defaultvalue": "Der Test wurde kurz angehalten."
+  },
+  "booklet_loadingBlock" : {
+    "label": "Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde",
+    "defaultvalue": "Aufgabenblock wird geladen"
+  },
+  "booklet_loadingUnit" : {
+    "label": "Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde",
+    "defaultvalue": "Aufgabe wird geladen"
+  },
+  "booklet_unitLoadingUnknownProgress" : {
+    "label": "Untertitel des Ladebalkens, wenn Aufgabe geladen wird, Fortschritt aber unbekannt",
+    "defaultvalue": "wird geladen"
+  },
+  "booklet_unitLoadingPending" : {
+    "label": "Untertitel des Ladebalkens, wenn Aufgabe geladen werden wird, aber noch nicht dran ist",
+    "defaultvalue": "in der Warteschleife"
+  },
+  "booklet_unitLoading" : {
+    "label": "Untertitel des Ladebalkens, xxx% geladen",
+    "defaultvalue": "geladen"
+  },
+  "booklet_loading": {
+    "label": "Test wird geladen",
+    "defaultvalue": "bitte warten"
+  },
+  "booklet_lockedBlock": {
+    "label": "Zeit von zeitgesteuertem Aufgabenblock ist abgelaufen",
+    "defaultvalue": "Aufgabenzeit ist abgelaufen"
+  },
+  "syscheck_questionsRequiredMessage": {
+    "label": "Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden",
+    "defaultvalue": "Bitte prüfen Sie die Eingaben (unvollständig):"
+  },
+  "syscheck_unitPrompt": {
+    "label": "Titelzeile über der Aufgabe",
+    "defaultvalue": "Bitte prüfen Sie die folgenden Aufgaben-Elemente"
+  },
+  "syscheck_intro": {
+    "label": "Text auf der ersten Seite des System-Checks",
+    "defaultvalue": "Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist."
+  },
+
+  "gm_headline": {
+    "label": "Überschrift: Gruppenmonitor",
+    "defaultvalue": "Gruppenüberwachung"
+  },
+  "gm_menu_filter": {
+    "label": "Meinueintrag: Sitzungen ausblenden",
+    "defaultvalue": "Sitzungen ausblenden"
+  },
+  "gm_menu_cols": {
+    "label": "Meinueintrag: Spalten",
+    "defaultvalue": "Spalten"
+  },
+  "gm_menu_activity": {
+    "label": "Meinueintrag: Aktivität",
+    "defaultvalue": "Aktivität"
+  },
+  "gm_col_group": {
+    "label": "Spalte: Gruppe",
+    "defaultvalue": "Gruppe"
+  },
+  "gm_col_booklet": {
+    "label": "Spalte: Testheft",
+    "defaultvalue": "Testheft"
+  },
+  "gm_col_testlet": {
+    "label": "Spalte: Block",
+    "defaultvalue": "Block"
+  },
+  "gm_col_unit": {
+    "label": "Spalte: Aufgabe",
+    "defaultvalue": "Aufgabe"
+  },
+  "gm_view_full": {
+    "label": "Ansicht: Vollständig",
+    "defaultvalue": "Vollständig"
+  },
+  "gm_view_medium": {
+    "label": "Ansicht: Nur Blöcke",
+    "defaultvalue": "Nur Blöcke"
+  },
+  "gm_view_small": {
+    "label": "Ansicht: Kurz",
+    "defaultvalue": "Kurz"
+  },
+  "gm_controls": {
+    "label": "Überschrift: Test-Steuerung",
+    "defaultvalue": "Test-Steuerung"
+  },
+  "gm_selection_info": {
+    "label": "Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)",
+    "defaultvalue": "%s %s Test%s mit %s Testheft%s ausgewählt."
+  },
+  "gm_selection_info_none": {
+    "label": "Information gewählte Tests: Keiner",
+    "defaultvalue": "Kein Test gewählt."
+  },
+  "gm_control_resume": {
+    "label": "Control: weiter",
+    "defaultvalue": "weiter"
+  },
+  "gm_control_pause": {
+    "label": "Control: pause",
+    "defaultvalue": "pause"
+  },
+  "gm_control_goto": {
+    "label": "Control: Springe zu Block",
+    "defaultvalue": "Springe zu"
+  },
+  "gm_control_unlock": {
+    "label": "Control: Entsperren",
+    "defaultvalue": "Test Entsperren"
+  },
+  "gm_control_unlock_success_warning": {
+    "label": "Wird angezeigt, wenn Tests entsperrt wurden",
+    "defaultvalue": "ACHTUNG! Die betreffenden Browser müssen ggf. neu gestartet werden."
+  },
+  "gm_control_finish_everything": {
+    "label": "Control: Testung beenden",
+    "defaultvalue": "Testung beenden"
+  },
+  "gm_settings_tooltip": {
+    "label": "Control: Ansicht",
+    "defaultvalue": "Ansicht"
+  },
+  "gm_scroll_down": {
+    "label": "Control: Ganz nach unten",
+    "defaultvalue": "Ganz nach unten"
+  },
+  "gm_col_person": {
+    "label": "Spalte: Teilnehmer",
+    "defaultvalue": "Teilnehmer"
+  },
+  "gm_col_activity": {
+    "label": "Spalte: Aktivität",
+    "defaultvalue": "Aktivität"
+  },
+  "gm_hide_controls_tooltip": {
+    "label": "Tooltip: Test-Steuerung verbergen",
+    "defaultvalue": "Test-Steuerung verbergen"
+  },
+  "gm_control_unlock_tooltip": {
+    "label": "Tooltip: Freigeben",
+    "defaultvalue": "Test Freigeben"
+  },
+  "gm_filter_locked": {
+    "label": "Filter: gesperrte ausblenden",
+    "defaultvalue": "gesperrte"
+  },
+  "gm_filter_pending": {
+    "label": "Filter: nicht gestartete ausblenden",
+    "defaultvalue": "nicht gestartete"
+  },
+  "gm_timeleft_tooltip": {
+    "label": "Tooltip: verbleibende Zeit",
+    "defaultvalue": "Verbleibende Zeit"
+  },
+  "gm_booklet_error_missing_id":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet",
+    "defaultvalue": "Kein Testheft zugeordnet!"
+  },
+  "gm_booklet_error_missing_file":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!",
+    "defaultvalue": "Kein Zugriff auf Testheft-Datei!"
+  },
+  "gm_booklet_error_xml":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: Invalides XML",
+    "defaultvalue": "Konnte Testheft-Datei nicht lesen!"
+  },
+  "gm_booklet_error_general":
+  {
+    "label": "Fehleranzeige im Gruppen monitor: unbekannter Fehler",
+    "defaultvalue": "Fehler beim Zugriff aus Testheft-Datei!"
+  },
+  "gm_control_goto_tooltip": {
+    "label": "Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist",
+    "defaultvalue": "Bitte Block auswählen"
+  },
+  "gm_multiple_booklet_species_warning": {
+    "label": "Tooltip über dem 'Immer alle Auswählen'-Schalter, der erscheint, wenn dieser deaktiviert ist",
+    "defaultvalue": " - Die verwendeten Booklets sind zu unterschiedlich, um gemeinsam gesteuert zu werden."
+  },
+  "gm_auto_checkall": {
+    "label": "Der 'Immer alle Auswählen'-Schalter",
+    "defaultvalue": "Alle Tests gleichzeitig steuern"
+  }
+}
