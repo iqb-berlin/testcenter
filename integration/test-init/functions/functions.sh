@@ -2,7 +2,12 @@
 
 # param 1: headline text
 function echo_h1() {
-  printf "\033[0;36;40m$1\033[0m\n"
+  printf "\033[1;36;40m$1\033[0m\n"
+}
+
+# param 1: headline text
+function echo_h2() {
+  printf "\033[0;30;46m$1\033[0m\n"
 }
 
 # param 1: success text
@@ -56,25 +61,44 @@ function expect_table_to_have_rows() {
 
 # param 1: expectation file name
 function expect_data_dir_equals() {
-  result=$(cd vo_data && find . | sort | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/")
+  result=$(cd vo_data && find . -not -path '*/.*' | sort | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/")
   expectation_file="integration/test-init/expectations/$1"
   differences=$(diff <(echo "$result") "$expectation_file")
   if [ "$differences" != "" ]
   then
     echo "$result"
-    echo_fail "Expectation '$1' failed: $differences"
+    echo_fail "Expectation '$1' failed"
+    echo "$differences"
     exit 1
   else
     echo_success "Expectation '$1' met"
   fi
 }
 
+# param 1: sql
+# param 2: expected output
+function expect_sql_to_return() {
+  result=$(echo "$1" | run sql)
+  differences=$(diff <(echo "$result") <(echo "$2"))
+  if [ "$differences" != "" ]
+  then
+    echo_fail "Expectation Failed:"
+    echo "Query: $1"
+    echo "$differences"
+    exit 1
+  else
+    echo_success "Expected '$2': OK"
+  fi
+}
+
+
 function expect_init_script_ok() {
   errorCode=$?
   if [ "$errorCode" == 1 ] ;then
-    echo_fail "Init-Script failed!"
+    echo_fail "Init-Script failed unexpectedly"
     exit 1
   fi;
+  echo_success "Init-Script succeeded as expected"
 }
 
 function expect_init_script_failed() {

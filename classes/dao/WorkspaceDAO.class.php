@@ -33,7 +33,7 @@ class WorkspaceDAO extends DAO {
             from (
                      select name as id, source, workspace_id, 'login' as type from logins
                      union
-                     select group_name as id, source, workspace_id, 'group' as type from logins group by group_name, source
+                     select group_name as id, source, workspace_id, 'group' as type from logins group by group_name, source, workspace_id
             ) as globalIds",
             [],
             true

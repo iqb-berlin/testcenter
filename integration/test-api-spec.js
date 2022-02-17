@@ -26,6 +26,13 @@ gulp.task('start', done => {
 
   cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
 
+  if (process.env.ALLOW_REAL_DATA_MODE && (process.env.ALLOW_REAL_DATA_MODE === 'yes')) {
+
+      cliPrint.red('You run this in REAL-DATA-MODE');
+      done();
+      return;
+  }
+
   if ((specialTestConfig !== false) && (typeof specialTestConfig.configFile !== "undefined")) {
 
     inquirer.prompt([{
@@ -35,7 +42,7 @@ gulp.task('start', done => {
         `config/DBConnectionData.${specialTestConfig.configFile}.json` +
         'data folder as configured in `config/DBConnectionData.json`\n' +
         'YOU WILL LOOSE ALL DATA IN DB AND FOLDER BY DOING THIS!!!' +
-        '...you want to do this for real?'),
+        '...you want to do this for real?\n'),
       default: false,
       name: 'start'
     }]).then((answers) => {

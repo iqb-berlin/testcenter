@@ -22,14 +22,17 @@ test-e2e:
 test-e2e-no-spec-update:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run dredd_test_no_specs
 
-test-init:
-	TEST_NAME=db-versions docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
-	TEST_NAME=vanilla-installation docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
-	TEST_NAME=no-db-but-files docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
-	TEST_NAME=install-db-patches docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
+test-init-all-general:
+	TEST_NAME=general/db-versions make test-init
+	TEST_NAME=general/vanilla-installation make test-init
+	TEST_NAME=general/no-db-but-files make test-init
+	TEST_NAME=general/install-db-patches make test-init
 
-test13:
-	TEST_NAME=patch_13_0_0 docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
+test-e2e-against-mysql:
+	TEST_NAME=plus/installation-and-e2e make test-init
+
+test-init:
+	docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
 
 update-docs:
 	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs

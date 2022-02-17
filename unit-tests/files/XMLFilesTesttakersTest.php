@@ -71,6 +71,7 @@ END;
         require_once "classes/data-collection/LoginArray.class.php";
         require_once "classes/data-collection/Group.class.php";
         require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/FileTime.class.php";
         require_once "classes/helper/TimeStamp.class.php";
         require_once "unit-tests/mock-classes/PasswordMock.php";
     }

@@ -330,6 +330,7 @@ final class ReportTest extends TestCase {
         require_once "classes/helper/CSV.class.php";
         require_once "classes/helper/TimeStamp.class.php";
         require_once "classes/helper/JSON.class.php";
+        require_once "classes/helper/FileTime.class.php";
 
         $this->workspaceId = 1;
         $this->dataIds = ["sample_group", "sample_group"];

@@ -26,6 +26,7 @@ class SysChecksFolderTest extends TestCase {
         require_once "classes/workspace/Workspace.class.php";
         require_once "classes/workspace/SysChecksFolder.class.php";
         require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/FileTime.class.php";
         require_once "classes/files/File.class.php";
         require_once "classes/files/XMLFile.class.php";
         require_once "classes/files/XMLFileSysCheck.class.php";

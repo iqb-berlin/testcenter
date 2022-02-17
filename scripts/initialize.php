@@ -199,24 +199,27 @@ try  {
             CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
         }
 
-        $stats = $workspace->storeAllFilesMeta();
+        if (!$installationArguments->skip_read_workspace_files) {
 
-        CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
+            $stats = $workspace->storeAllFilesMeta();
 
-        $statsString = implode(
-            ", ",
-            array_filter(
-                array_map(
-                    function($key, $value) { return $value ? "$key: $value" : null; },
-                    array_keys($stats['valid']),
-                    array_values($stats['valid']),
+            CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
+
+            $statsString = implode(
+                ", ",
+                array_filter(
+                    array_map(
+                        function($key, $value) { return $value ? "$key: $value" : null; },
+                        array_keys($stats['valid']),
+                        array_values($stats['valid']),
+                    )
                 )
-            )
-        );
-        CLI::p("Files found: " . $statsString);
+            );
+            CLI::p("Files found: " . $statsString);
 
-        if ($stats['invalid']) {
-            CLI::warning("Invalid files found: {$stats['invalid']}");
+            if ($stats['invalid']) {
+                CLI::warning("Invalid files found: {$stats['invalid']}");
+            }
         }
     }
 

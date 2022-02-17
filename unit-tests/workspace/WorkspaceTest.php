@@ -51,14 +51,12 @@ class WorkspaceTest extends TestCase {
         require_once "classes/helper/FileSize.class.php";
         require_once "classes/helper/Folder.class.php";
         require_once "classes/helper/FileName.class.php";
+        require_once "classes/helper/FileTime.class.php";
         require_once "classes/helper/Version.class.php";
         require_once "classes/helper/XMLSchema.class.php";
         require_once "classes/helper/JSON.class.php";
         require_once "classes/helper/TimeStamp.class.php";
-//        require_once "classes/helper/DB.class.php";
         require_once "classes/exception/HttpError.class.php";
-//        require_once "classes/dao/DAO.class.php";
-//        require_once "classes/dao/WorkspaceDAO.class.php";
         require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
         require_once "classes/data-collection/ValidationReportEntry.class.php";
         require_once "classes/data-collection/PlayerMeta.class.php";

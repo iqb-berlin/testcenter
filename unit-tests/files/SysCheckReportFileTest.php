@@ -21,6 +21,7 @@ class SysCheckReportFileTest extends TestCase {
         require_once "classes/helper/Folder.class.php";
         require_once "classes/helper/JSON.class.php";
         require_once "classes/helper/TimeStamp.class.php";
+        require_once "classes/helper/FileTime.class.php";
 
         VfsForTest::setUp();
     }

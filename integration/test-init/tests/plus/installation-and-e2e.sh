@@ -2,10 +2,8 @@
 
 source integration/test-init/functions/functions.sh
 
-echo_h1 "Test 2: Blank installation of current Version";
-
+echo_h1 "Blank installation of current Version";
 take_current_version
-
 php scripts/initialize.php \
 --user_name=super \
 --user_password=user123 \
@@ -15,9 +13,16 @@ php scripts/initialize.php \
 --dbname=$MYSQL_DATABASE \
 --user=$MYSQL_USER \
 --password=$MYSQL_PASSWORD
-
 expect_init_script_ok
 expect_data_dir_equals sample_content_present
 expect_table_to_have_rows workspaces 1
 expect_table_to_have_rows users 1
 
+echo_h2 "Run E2e-Tests"
+service apache2 start
+cd /var/www/html || exit
+cp config/DBConnectionData.json config/DBConnectionData.mysql.json
+echo "{\"configFile\":\"mysql\"}" > config/e2eTests.json
+chmod -R 777 vo_data
+ALLOW_REAL_DATA_MODE=yes npm --prefix=integration run dredd_test_no_specs
+service apache2 stop
