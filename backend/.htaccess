@@ -1,0 +1,29 @@
+Header add Access-Control-Allow-Origin "*"
+Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type, content-length, responseType, options, observe, Access-Control-Allow-Headers, Authorization, X-Requested-With, Accept, authtoken"
+Header add Access-Control-Allow-Methods "PUT, GET, POST, DELETE, PATCH, OPTIONS"
+Header add Access-Control-Expose-Headers "SubscribeURI"
+Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+
+Options +FollowSymLinks
+Options -Indexes
+
+RewriteEngine on
+
+# can be installed in subdir or not
+RewriteBase /
+
+# exception for this file (guthub takes other root dir than local installation)
+RewriteRule ^specs.yml docs/specs.yml [L]
+
+# rewrite all calls except docs to index.php
+RewriteCond %{REQUEST_FILENAME} !index.php
+
+# exclude certain directories, which can be accessed directly
+RewriteCond %{REQUEST_URI} !/docs
+
+# find real base
+RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
+
+# redirect everything to index.php
+RewriteRule ^.*$ %2index.php [QSA,L]
+

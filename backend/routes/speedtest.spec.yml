@@ -1,0 +1,62 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+
+  /speed-test/random-package/{size}:
+    get:
+      summary: download speedtest package
+      description: returns a random byte package - for speedtests in system-check
+      tags:
+        - run system check
+      parameters:
+        - in: path
+          name: size
+          description: number of bytes to bedelivered - between 16 and 67108864
+          example: 16
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: a object containg information about booklet
+          content:
+            text/plain;charset=utf-8:
+              schema:
+                type: string
+              example: "lrOI/JLFOAPBOHt="
+        "406":
+          description: bad package size
+        "500":
+          description: server error
+
+  /speed-test/random-package:
+    post:
+      summary: upload speedtest package
+      description: receives any package and returns information about size and time - for speedtests in system-checks
+      tags:
+        - run system check
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+            example: "1324567890123456"
+      responses:
+        "200":
+          description: a object containg information about booklet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestTime:
+                    type: number
+                  packageReceivedSize:
+                    type: number
+                    example: 16
+        "500":
+          description: server error

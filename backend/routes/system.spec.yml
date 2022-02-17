@@ -1,0 +1,345 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+  /list/routes:
+    get:
+      summary: Lists all available endpoints
+      tags:
+        - api info
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              example:
+                - "[GET] /list/routes"
+        "500":
+          description: Server Error
+
+  /system/config:
+    get:
+      summary: get system config
+      description: "returns publicly available parts of system config
+        - version number
+        - customTexts for UI
+        - information about a broadcastingService
+        - serverTimestamp (in milliseconds)"
+      tags:
+        - api info
+        - super admin
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  customTexts:
+                    type: object
+                  appConfig:
+                    type: object
+                  broadcastingService:
+                    type: object
+                    properties:
+                      versionExpected:
+                        type: string
+                      status:
+                        type: string
+                      version:
+                        type: string
+                  baseUrl:
+                      type: string
+                      description: base url of the API
+                required:
+                  - version
+                  - customTexts
+                  - broadcastingService
+                  - appConfig
+              example:
+                version: "%%%VERSION%%%"
+                customTexts: {}
+                appConfig: {}
+                broadcastingService:
+                  versionExpected: 1.0.0
+                  status: online
+                  version: 1.0.0
+        "500":
+          description: Server Error
+
+  /system/config/app:
+    patch:
+      summary: Update AppConfig
+      description: The AppConfig is a key-values store containing instance-specific settings for the frontend analogous
+        to the CustomTexts, except that the values could be objects as well - they would become stringyfied then.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              key: value-pairs, values can be are
+              whatever: you want
+              maybe:
+                an: object
+              or:
+                - an
+                - array
+              even: null
+      responses:
+        "200":
+          description: successfully updated appConfig
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /system/config/custom-texts:
+    patch:
+      summary: Update CustomTexts
+      description: The CustomTexts is a key-values store containing instance-specific settings for the frontend analogous
+        to the AppConfig. The Endpoint accepts anything as value, but CustomTexts should normally only contain
+        string-values.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              key: value
+              another_key: another_value
+      responses:
+        "200":
+          description: successfully updated appConfig
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /version:
+    get:
+      summary: get API version
+      tags:
+        - api info
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              example:
+                version: "%%%VERSION%%%"
+
+  /workspaces:
+    get:
+      summary: get a list of workspaces
+      description: get a list of all workspaces
+      tags:
+        - super admin
+
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+
+      responses:
+        "200":
+          description: List of Workspaces
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/workspace_list'
+              example:
+                - id: '1'
+                  name: "example_workspace"
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+    delete:
+      summary: delete some workspaces
+      description: deletes a list of workspaces given by their ids
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: array
+                  description: list of Workspace-Id
+                  items:
+                    type: integer
+              required:
+                - ws
+            example:
+              ws: [2]
+
+      responses:
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /users:
+    get:
+      summary: get a list of users
+      description: returns info about all registered users.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/user_list'
+              example:
+                - name: super
+                  id: '1'
+                  email: null
+                  isSuperadmin: true
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+    delete:
+      summary: delete some users
+      description: deletes a list of given user-ids. ids wich did not exist get skipped; in other words there is no
+        check if the user exists beforeheand.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                u:
+                  type: array
+                  items:
+                    type: string
+                    description: user-id
+            example:
+              u:
+                - 2
+
+      responses:
+        "200":
+          description: ok
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /sys-checks:
+    get:
+      summary: get a list of system checks
+      description: get a list of available SysChecks (from all workspaces)
+      tags:
+        - run system check
+      responses:
+        "200":
+          description: list of SysChecks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    workspaceId:
+                      type: integer
+                    name:
+                      type: string
+                    label:
+                      type: string
+                    description:
+                      type: string
+              example:
+                - workspaceId: 1
+                  name: "SYSCHECK.SAMPLE"
+                  label: "An example SysCheck definition"
+                  description: "An example SysCheck definition with long description"
+        "204": # TODO check return code on empty folder
+          description: No SysChecks found.
+        "500":
+          description: Server Error
+
+  /system/time:
+    get:
+      summary: get the server time
+      description: return the server's current timestamp and timezone
+      tags:
+        - run monitor
+      responses:
+        "200":
+          description: list of SysChecks
+          content:
+            application/json:
+              example:
+                timezone: "Europe/Berlin"
+                timestamp: 1618816319707.522
+        "500":
+          description: Server Error

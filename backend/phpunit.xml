@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit bootstrap="unit-tests/bootstrap.php" beStrictAboutTestsThatDoNotTestAnything="true">
+    <coverage>
+        <include>
+            <directory suffix=".php">classes/</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">vendor/</directory>
+            <!--file>src/example.php</file-->
+        </exclude>
+    </coverage>
+</phpunit>

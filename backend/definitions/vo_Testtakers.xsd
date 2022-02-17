@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="vo_Testtakers" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Testtakers" >
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Description" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="CustomTexts" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CustomText" type="customTextType" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Group" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Login" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Booklet" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="codes" type="xs:string" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:ID" use="required"/>
+                  <xs:attribute name="pw" type="xs:string"/>
+                  <xs:attribute name="mode">
+                    <xs:annotation>
+                      <xs:documentation>
+                        See: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md
+                      </xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="run-hot-return">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Default. Execute the test with all restrictions set by booklet definition. If the
+                              test execution stops for any reason and the login is used again, return to the former
+                              state: Restore the responses and and continue execution.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-hot-restart">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with all restrictions set by booklet definition. If the
+                              test execution stops for any reason and the login is used again, assume another testee:
+                              Ignore all former states and restart the test.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-trial">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with most of the restrictions set by booklet definition,
+                              store responses
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-review">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with no restrictions, do not save responses permanently,
+                              allow review comments for the test in general and every unit
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="monitor-group">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Monitor of test execution: For the group.
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="run-demo">
+                          <xs:annotation>
+                            <xs:documentation>
+                              Execute the test with no restrictions, do not save responses permanently,
+                              don't allow review comments for the test in general and every unit
+                            </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="monitorcode" type="xs:string">
+                    <xs:annotation>
+                      <xs:documentation>
+                        This attribute creates an group-monitor for this group which has the same login-credentials as
+                        the testees but it's own code.
+                        ** This feature is only a proposal and not implemented **
+                      </xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="id" type="xs:string" use="required"/>
+            <xs:attribute name="label" type="xs:string" use="required"/>
+            <xs:attribute name="validTo">
+              <xs:annotation>
+                <xs:documentation>
+                  Login-/Person-Token of this group are valid until the specified date and can not be created after.
+                  Provide the date in the format `dd\mm\yyyy hh:mm`.
+                  If omitted, they are valid forever or, if provided, until `validFor` is reached.
+                </xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:pattern value="\d{1,2}/\d{1,2}/\d{2,4}\W\d{1,2}:\d{2}" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="validFrom">
+              <xs:annotation>
+                <xs:documentation>
+                  If provided, Login-/Person-Token are only valid and can only be created *after* this date.
+                  Provide the date in the format `dd\mm\yyyy hh:mm`.
+                </xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:pattern value="\d{1,2}/\d{1,2}/\d{2,4}\W\d{1,2}:\d{2}" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="validFor" type="xs:integer">
+              <xs:annotation>
+                <xs:documentation>
+                  Login-/Person-Token of this group are valid for the specified timespan (in minutes)
+                  after their creation.
+                  If omitted, they are valid forever or, if provided until `validTo` is reached.
+                  If both is provided, `validFor` and `validTo`, the Login-/Person-Token is valid to whatever comes
+                  first, the specified moment of `validTo` or the expiration of `validFor` minutes.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="TesttakerLogin">
+      <xs:selector xpath="Login"/>
+      <xs:field xpath="@name"/>
+    </xs:unique>
+    <xs:unique name="CustomTextKey">
+      <xs:selector xpath="CustomText"/>
+      <xs:field xpath="@key"/>
+    </xs:unique>
+    <xs:unique name="GroupId">
+      <xs:selector xpath="Group"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+  </xs:element>
+
+  <xs:complexType name="customTextType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="key" type="xs:ID" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

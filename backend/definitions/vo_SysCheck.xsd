@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="vo_SysCheck" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="SysCheck" >
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" type="xs:ID" />
+              <xs:element name="Label" type="xs:string" />
+              <xs:element name="Description" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Config" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="UploadSpeed" type="SpeedType" minOccurs = "0" />
+              <xs:element name="DownloadSpeed" type="SpeedType" minOccurs = "0" />
+              <xs:element name="CustomText" type="customTextType" minOccurs = "0" maxOccurs="unbounded" />
+              <xs:element name="Q" type="QuestionType" minOccurs = "0" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="unit" type="xs:string"/>
+            <xs:attribute name="savekey" type="xs:string"/>
+            <xs:attribute name="skipnetwork" type="xs:boolean"/>
+          </xs:complexType>
+          <xs:unique name="UniqueQuestionId">
+            <xs:selector xpath=".|Q"/>
+            <xs:field xpath="@id"/>
+          </xs:unique>
+          <xs:unique name="CustomTextKey">
+            <xs:selector xpath=".|CustomText"/>
+            <xs:field xpath="@key"/>
+          </xs:unique>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="customTextType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="key" type="xs:ID" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="QuestionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="type" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="string" />
+              <xs:enumeration value="select" />
+              <xs:enumeration value="header" />
+              <xs:enumeration value="check" />
+              <xs:enumeration value="text" />
+              <xs:enumeration value="radio" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="prompt" type="xs:string"/>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="required" type="xs:boolean"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="SpeedType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="min" type="xs:integer" use="required"/>
+        <xs:attribute name="good" type="xs:integer"/>
+        <xs:attribute name="maxDevianceBytesPerSecond" type="xs:integer"/>
+        <xs:attribute name="maxErrorsPerSequence" type="xs:integer"/>
+        <xs:attribute name="maxSequenceRepetitions" type="xs:integer"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

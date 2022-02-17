@@ -1,0 +1,765 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+
+  /test/{test_id}:
+    get:
+      summary: get a test
+      description: |-
+        Retrieves a certain test: It's content, state and the mode of current login-session.
+        `laststate` is an array of key-value-pairs stored for this test.
+        The test-mode is basically a string to be interpretated by the frontend. For more details
+        about that see: https://github.com/iqb-berlin/testcenter-frontend/blob/master/docs/test-mode.md
+
+          * `run-hot-return` and `run-hot-restart` - the real testing situation
+          * `run-review` - for reviewers of of units and booklets
+          * `run-trial` - for trying out the booklet
+          * `run-demo` - for showcase only
+
+        From the backend's point of view these modes are all the same. Some have special meanings for the backend
+        nevertheless:
+
+          * `monitor-group` is the monitor account to supervise a group of testees
+          * For `run-hot-restart` and `demo` every session is unique so the test will be restarted everytime a new session is started (eg after logout) and it will not possible to return to the previous session. Provided data from previous sessions will be stored anyway.
+          * `run-hot-return` and `run-hot-restart` - only these types of test wil be broadcasted via broadcasting service, so they can be views in the group-monitor.
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: id of a executed test
+          example: 1
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Test and it's contents
+          content:
+            application/json:
+              example:
+                mode: "run-hot-return"
+                laststate: {"CURRENT_UNIT_ID": "1"}
+                xml: "(contents of a booklet.xml)"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/unit/{unit_name}:
+    get:
+      summary: get a unit of a test
+      description: |-
+        Retrieves a certain unit for a certain executed test - the booklet-file XML, last state and lock status.
+
+        You can insert an optional parameter `/alias/{alias}` in the end to obtain data if unit is defined with
+        an alias in the booklet. This is an HotFix for https://github.com/iqb-berlin/testcenter-frontend/issues/261.
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: id of a executed test
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: unit_name
+          description: unit-name (not alias!) as defined in booklet
+          examples:
+            externalUnitContents:
+              value: 'UNIT.SAMPLE'
+            directUnitContents:
+              value: 'UNIT.SAMPLE-2'
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of Workspaces
+          content:
+            application/json:
+              examples:
+                externalUnitContents:
+                  value:
+                    state: { PRESENTATIONCOMPLETE: "yes" }
+                    dataParts: { all: "{\"name\":\"Sam Sample\",\"age\":34}" }
+                    playerId: "VERONA-PLAYER-SIMPLE-4.HTML"
+                    unitStateDataType: "example-data-format"
+                    definitionRef: "SAMPLE_UNITCONTENTS.HTM"
+                directUnitContents:
+                  value:
+                    state: {}
+                    dataParts: {}
+                    unitStateDataType: null
+                    playerId: "VERONA-PLAYER-SIMPLE-4.HTML"
+                    definition: "(content of Sample Unit 2)"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/resource/{resource_name}: # gets manipulated in hooks.file, change summary carefully
+    get:
+      summary: get resource by name
+      description: retrieves a resource-file by its name (filename without extension)
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: id of a executed test
+          example: 1
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: resource_name
+          description: resource_name (filename without extension in case of plaayer, else filename)
+          example: verona-player-simple-4.0.0.html
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The Resource
+          content:
+            application/octet-stream:
+              example: "(HTML code containing player)"
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/review:
+    put:
+      summary: add review to unit
+      description: adds a review item to unit in a test
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                priority:
+                  description: priority, 1=critical, 2=medium, 3=optional
+                  type: integer
+                entry:
+                  description: text of the review entry
+                  type: string
+                categories:
+                  description: whitespace separated list of categories
+                  type: string
+              required:
+                - entry
+            example:
+              entry: I am a critical review item for unit 1
+              priority: 1
+              categories: content whatever
+      responses:
+        "201":
+          x-dredd-test-order: 1
+          description: OK, created
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/review:
+    put:
+      summary: add review to booklet
+      description: adds a review item to a certain booklet
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                priority:
+                  description: priority, 1=critical, 2=medium, 3=optional
+                  type: integer
+                entry:
+                  description: text of the review entry
+                  type: string
+                categories:
+                  description: whitespace separated list of categories
+                  type: string
+              required:
+                - entry
+            example:
+              entry: I am a critical review item for booklet 1
+              priority: 1
+              categories: content whatever
+      responses:
+        "201":
+          description: OK, created
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/response:
+    put:
+      summary: add response to a unit
+      description: when running a test this endpoint is used to store given responses. Format and content of responses
+        are business of the corresponding player, the endpoints take everything as raw, may it be JSON or XML or
+        whatever.
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                response:
+                  description: response data
+                  type: string
+                timeStamp:
+                  description: timestamp of the response
+                  type: integer
+                responseType:
+                  description: TODO what is this?
+                  type: string
+              required:
+                - response
+                - timeStamp
+            example:
+              response: I am the answers to your questions.
+              timeStamp: 1582550888563
+      responses:
+        "201":
+          description: OK, created
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/state:
+    patch:
+      summary: save a state for a unit
+      description: "Updates the state (a key-value list) of a unit in a running test with a given key-value pair.
+        Some known state-keys are:
+         - 'PRESENTATIONCOMPLETE'
+         - 'RESPONSECOMPLETE'
+         - 'PAGE_NR'
+         - 'PAGE_COUNT'
+         - 'PAGE_NAME'
+         but all strings are allowed.
+         For more about states see
+         - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53
+         - https://verona-interfaces.github.io/player/#operation-subscribe-vopStateChangedNotification
+         "
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/state'
+            example:
+            - key: PRESENTATIONCOMPLETE
+              content: |
+                yes
+              timeStamp: 50003
+            - key: SOME_OTHER_KEY
+              content: any_value
+              timeStamp: 50002
+      responses:
+        "200":
+          description: OK, updated
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/state:
+    patch:
+      summary: update state of a running test
+      description: "Updates the state (a key-value list) of a running test with a given key-value pair.
+        Some known state-keys are:
+          - 'CURRENT_UNIT'
+          - 'CONTROLLER'
+          but all strings are allowed.
+          For more about states see
+          - https://github.com/iqb-berlin/testcenter-frontend/blob/55b2ba599264587e0175503cae66073211c3adb1/src/app/test-controller/test-controller.interfaces.ts#L53
+          "
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/state'
+            example:
+              - key: "CURRENT_UNIT_ID"
+                content: "UNIT_ID_X"
+                timeStamp: 60000
+              - key: "CONTROLLER"
+                content: "PAUSED"
+                timeStamp: 70000
+      responses:
+        "200":
+          description: OK, updated
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/unit/{unit_name}/log:
+    put:
+      summary: save a log-entry for a unit
+      description: Saves an array of log-entries for a unit in a running test.
+        A log entry consists of a (JSON-encoded) content which is optional.
+        Some currently used logentry key words for units are- UNITENTER, UNITTRYLEAVE, PRESENTATIONCOMPLETE,
+        RESPONSESCOMPLETE, PAGENAVIGATIONSTART, PAGENAVIGATIONCOMPLETE.
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: unit_name
+          description: unit-name (or alias) as defined in booklet
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/log_set'
+            example:
+              - key: 'PAGENAVIGATIONSTART: "#first"'
+                timeStamp: 1582230020
+              - key: 'PAGENAVIGATIONEND'
+                content: '#first'
+                timeStamp: 1234596899
+      responses:
+        "201":
+          description: OK, log saved
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test/{test_id}/log:
+    put:
+      summary: save log-entries for a running test
+      description: Saves an array of log-entries for a running test.
+        A log entry consists of a (JSON-encoded) content which is optional.
+        Some currently used logentry key words for booklets are- BOOKLETLOADSTART, BOOKLETLOADCOMPLETE, BOOKLETLOCKEDbyTESTEE.
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/log_set'
+            example:
+              - key: 'BOOKLETLOADSTART'
+                content: '{Browser:"Dredd"}'
+                timeStamp: 1582230020
+      responses:
+        "201":
+          description:  OK, log saved
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+
+  /test/{test_id}/lock:
+    patch:
+      summary: finish a test
+      description: locks (finishes) a running test
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  description: message to log
+                  type: string
+                timeStamp:
+                  description: timestamp of locking event
+                  type: integer
+              required:
+                - timeStamp
+                - message
+            example:
+              timeStamp: 123456789
+              message: "test was locked"
+      responses:
+        "200":
+          description:  OK, locked
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /test:
+    put:
+      summary: start a test
+      description: |-
+        Creates a new test for a given person and booklet-name
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                bookletName:
+                  description: name of the booklet to start
+                  type: string
+              required:
+                - bookletName
+            example:
+              bookletName: 'BOOKLET.SAMPLE-1'
+      responses:
+        "201":
+          description:  OK, started
+          content:
+            text/html; charset=UTF-8:
+              example: "1"
+        "401":
+          description: Not authenticated - auth token header is missing or not containing a login token
+        "403":
+          description: Forbidden
+        "423":
+          description: Test is locked!
+        "500":
+          description: Server Error
+
+  /test/{test_id}/command/{command_id}/executed:
+    patch:
+      summary: set command as executed
+      description: |-
+        When the frontend executed a command, we send back this information to Backend via this command,
+        to make sure it never gets executed again.
+      tags:
+        - run test
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: command_id
+          description: unique id of a command
+          example: 3
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: OK, command is marked as executed (or was already set as executed before)
+        "401":
+          description: Not authenticated - auth token header is missing or not containing a login token
+        "403":
+          description: Forbidden
+        "423":
+          description: Test is locked!
+        "500":
+          description: Server Error
+
+  /test/{test_id}/commands:
+    get:
+      summary: get commands
+      description: |-
+        Returns commands from the group-monitor (test-proctor) if given. They can be polled or subscribed via websocket
+        if available. The websocket address is stored in header "SubscribeURI".
+      tags:
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user
+          example: "p:0000000000000.00000000000"
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                lastCommandId:
+                  description: Optional. The id of a command. If given, only subsequent commands will be retrieved.
+                  type: integer
+              required:
+                - bookletName
+            example:
+              lastCommandId: 2
+      responses:
+        "200":
+          description:  list of subsequent commands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: number
+                      description: a unique ID to make sure, the command get never executed twice
+                    keyword:
+                      type: string
+                      description: the command-keyword. TODO - add known keywords
+                    arguments:
+                      type: array
+                      description: a list of token as arguments provided with the keyword
+                      items:
+                        type: string
+                    timeStamp:
+                      type: number
+                      description: timstamp when the command was given
+              example:
+                - id: 3
+                  keyword: COMMAND
+                  arguments:
+                    - p4
+        "401":
+          description: Not authenticated - auth token header is missing or not containing a login token
+        "403":
+          description: Forbidden
+        "423":
+          description: Test is locked!
+        "500":
+          description: Server Error
+
+  /test/{test_id}/connection-lost:
+    post:
+      summary: Notify Closing Test
+      description: |-
+        A closing browser or such can use this window to notify, that a running test was closed. Because it has to
+        be called under special circumstances, it does not need any authentication.
+      tags:
+        - run test
+        - run monitor
+      parameters:
+        - in: path
+          name: test_id
+          description: test-id - id of a test execution.
+          example: 1
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK, test was marked as disconnected
+        "404":
+          description: Test not found
+        "500":
+          description: Server Error
+
+  /{auth_token}/resource/{resource_name}:
+    get:
+      summary: get resource for directDownloadUrl
+      description: Since Verona v4 spec, additional resources can be loaded by the unit on demand. This
+        `directDownloadUrl`-parameter can use this endpoint wich contains the auth-token in the url, not in the header.
+      tags:
+        - run test
+      parameters:
+        - in: path
+          name: auth_token
+          description: the (person-)auth-token which would usually be found in the header
+          example: "static:person:sample_group_test_xxx"
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: resource_name
+          description: name/id of the resource
+          example: SAMPLE_UNITCONTENTS.HTM
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The resource
+          content:
+            application/octet-stream:
+              example: "(the resource's content)"
+        "404":
+          description: The resource was not found
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error

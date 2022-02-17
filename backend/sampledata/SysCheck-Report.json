@@ -1,0 +1,203 @@
+{
+  "date": "2020-02-17 13:01:31",
+  "checkId": "SYSCHECK.SAMPLE",
+  "checkLabel": "An example SysCheck definition",
+  "title": "SAMPLE SYS-CHECK REPORT",
+  "environment": [
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Betriebsystem",
+      "value": "Linux",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Betriebsystem-Version",
+      "value": "x86_64",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Bildschirm-Aufl\u00f6sung",
+      "value": "1680 x 1050",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Browser",
+      "value": "Chrome",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Browser-Cookies aktiviert",
+      "value": true,
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Browser-Plugins:",
+      "value": "Chromium PDF Plugin, Chromium PDF Viewer",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Browser-Sprache",
+      "value": "en-US",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Browser-Version",
+      "value": "79",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "CPU-Architektur",
+      "value": "amd64",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "CPU-Kerne",
+      "value": 8,
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "environment",
+      "label": "Fenster-Gr\u00f6\u00dfe",
+      "value": "1680 x 914",
+      "warning": false
+    }
+  ],
+  "network": [
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Downloadgeschwindigkeit",
+      "value": "75.72 Mbit\/s",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Downloadgeschwindigkeit ben\u00f6tigt",
+      "value": "8.19 kbit\/s",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Downloadbewertung",
+      "value": "good",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Uploadgeschwindigkeit",
+      "value": "2.84 Mbit\/s",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Uploadgeschwindigkeit ben\u00f6tigt",
+      "value": "8.19 kbit\/s",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Uploadbewertung",
+      "value": "good",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Gesamtbewertung",
+      "value": "good",
+      "warning": false
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "RoundTrip in Ms",
+      "warning": false,
+      "value": "100"
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Netzwerktyp nach Leistung",
+      "warning": false,
+      "value": "4g"
+    },
+    {
+      "id": "0",
+      "type": "network",
+      "label": "Downlink MB\/s",
+      "warning": false,
+      "value": "1.45"
+    }
+  ],
+  "questionnaire": [
+    {
+      "id": "2",
+      "type": "string",
+      "label": "Name",
+      "value": "Sam Sample",
+      "warning": false
+    },
+    {
+      "id": "3",
+      "type": "select",
+      "label": "Who am I?",
+      "value": "Harvy Dent",
+      "warning": false
+    },
+    {
+      "id": "4",
+      "type": "text",
+      "label": "Why so serious?",
+      "value": "Because.",
+      "warning": false
+    },
+    {
+      "id": "5",
+      "type": "check",
+      "label": "Check this out",
+      "value": true,
+      "warning": false
+    },
+    {
+      "id": "6",
+      "type": "radio",
+      "label": "All we here is",
+      "value": "Radio Gaga",
+      "warning": false
+    }
+  ],
+  "unit": [
+    {
+      "id": "0",
+      "type": "unit\/player",
+      "label": "loading time",
+      "value": "1594.295166015625",
+      "warning": false
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="vo_Booklet" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xs:element name="Booklet">
+    <xs:complexType>
+      <xs:all>
+
+        <xs:element name="Metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Id" type="xs:ID" />
+              <xs:element name="Label" type="xs:string" />
+              <xs:element name="Description" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="BookletConfig" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Config" type="ConfigType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="Units" type="FirstTestletType">
+          <xs:unique name="unitId">
+            <xs:selector xpath=".//Unit" />
+            <xs:field xpath="@id" />
+            <xs:field xpath="@alias" />
+          </xs:unique>
+          <xs:unique name="testletId">
+            <xs:selector xpath=".//Testlet" />
+            <xs:field xpath="@id" />
+          </xs:unique>
+        </xs:element>
+
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="TestletRestrictionsType">
+    <xs:sequence>
+      <xs:element name="CodeToEnter" type="CodeToEnterRestrictionType" minOccurs="0" />
+      <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
+      <xs:element name="DenyNavigationOnIncomplete" type="DenyNavigationOnIncompleteRestrictionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TimeMaxRestrictionType">
+    <xs:attribute name="minutes" type="xs:positiveInteger"/>
+  </xs:complexType>
+
+  <xs:complexType name="CodeToEnterRestrictionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="code" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="DenyNavigationOnIncompleteRestrictionValue">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ON"/>
+      <xs:enumeration value="OFF"/>
+      <xs:enumeration value="ALWAYS"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="DenyNavigationOnIncompleteRestrictionType">
+    <xs:simpleContent><!-- TODO should be camleCase.. -->
+      <xs:extension base="xs:string">
+        <xs:attribute type="DenyNavigationOnIncompleteRestrictionValue" name="presentation" />
+        <xs:attribute type="DenyNavigationOnIncompleteRestrictionValue" name="response" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="FirstRestrictionsType">
+    <xs:all>
+      <xs:element name="TimeMax" type="TimeMaxRestrictionType" minOccurs="0" />
+      <xs:element name="DenyNavigationOnIncomplete" type="DenyNavigationOnIncompleteRestrictionType" minOccurs="0" />
+    </xs:all>
+  </xs:complexType>
+
+  <xs:complexType name="TestletType">
+    <xs:sequence>
+      <xs:element name="Restrictions" type="TestletRestrictionsType" minOccurs="0" />
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="Unit" type="UnitType" />
+          <xs:element name="Testlet" type="TestletType" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="label" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="FirstTestletType">
+    <xs:sequence>
+      <xs:element name="Restrictions" type="FirstRestrictionsType" minOccurs="0" />
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="Unit" type="UnitType" />
+          <xs:element name="Testlet" type="TestletType" />
+        </xs:choice>
+      </xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="UnitType">
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="label" type="xs:string" use="required"/>
+    <xs:attribute name="labelshort" type="xs:string"/>
+    <xs:attribute name="alias" type="xs:string" default="alias" />
+  </xs:complexType>
+
+  <xs:complexType name="ConfigType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="key" type="xs:ID" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

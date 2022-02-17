@@ -1,0 +1,8 @@
+{
+  "type": "<type>",
+  "host": "<host>",
+  "port": "<port>",
+  "dbname": "<name>",
+  "user": "<user>",
+  "password": "<password>"
+}

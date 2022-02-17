@@ -1,0 +1,15 @@
+.
+  |-ws_1
+  |  |-Booklet
+  |  |-Resource
+  |  |-SysCheck
+  |  |  |-SysCheck.xml
+  |  |-Testtakers
+  |  |-Unit
+  |-ws_2
+  |  |-Booklet
+  |  |-Resource
+  |  |-SysCheck
+  |  |  |-SysCheck.xml
+  |  |-Testtakers
+  |  |-Unit

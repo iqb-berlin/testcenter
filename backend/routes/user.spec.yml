@@ -1,0 +1,223 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+  /user/{user_id}/workspaces:
+    get:
+      summary: get a list of workspaces
+      description: get a list of all workspaces belonging to a given user
+      tags:
+        - session management
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+        - in: path
+          name: user_id
+          description: user-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        "200":
+          description: List of Workspaces
+          content:
+            application/json:
+              schema:
+                $ref: './components.spec.yml#/components/schemas/workspace_list'
+              example:
+                - id: '1'
+                  name: "example_workspace"
+                  selected: false
+                  role: ''
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
+    patch:
+      summary: change user roles
+      description: changes user roles for a given user in several workspaces. *Provide user-name, not user-id!*
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+        - in: path
+          name: user_id
+          description: user-id
+          example: 1
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ws:
+                  type: array
+                  description: array of pairs role-id
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: workspace-id
+                      role:
+                        type: string # because dredd does not support enum
+                        description: "role: 'RW', 'RO'"
+              required:
+                - ws
+            example:
+              ws:
+                - role: RW
+                  id: 1
+      responses:
+        "200":
+          description: OK, roles have been updated
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
+  /user:
+    put:
+      summary: add a user
+      description: adds a user
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/user'
+            example:
+              n: thirdUser
+              p: thirdUsersPassword
+
+      responses:
+        "201":
+          description: OK, user has been added
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
+  /user/{user_id}/password:
+    patch:
+      summary: change user-password
+      description: changes the password of a given user.
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+        - in: path
+          name: user_id
+          description: user-id
+          example: 2
+          required: true
+          schema:
+            type: integer
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components.spec.yml#/components/schemas/user'
+            example:
+              p: secondUsersNewPassword
+
+      responses:
+        "200":
+          description: password has changed / user did not exist
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
+
+  /user/{user_id}/super-admin/{new_status}:
+    patch:
+      summary: change super-admin status
+      description: changes the super-admin status of a given user.
+       * **requires a super-admin**
+       * **requires the password of the performing user for security reasons**
+       * `new_status` is `on` or `off`
+      tags:
+        - super admin
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for admin-user with super-admin privilege
+          example: "a:user000000000.superadmin0"
+        - in: path
+          name: user_id
+          description: user-id
+          example: 2
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: new_status
+          description: super-user status of the given user `on` or `off`
+          example: "on"
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                p:
+                  type: string
+                  description: "performing user's password"
+                  example: user123
+
+      responses:
+        "200":
+          description: password has changed / user did not exist
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "410":
+          description: Session Expired
+        "500":
+          description: Server Error
