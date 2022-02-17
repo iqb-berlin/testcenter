@@ -28,6 +28,9 @@ test-init-all-general:
 	TEST_NAME=general/no-db-but-files make test-init
 	TEST_NAME=general/install-db-patches make test-init
 
+test-e2e-against-mysql:
+	TEST_NAME=plus/installation-and-e2e make test-init
+
 test-init:
 	docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
 
