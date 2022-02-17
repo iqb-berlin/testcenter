@@ -131,8 +131,8 @@ dreddHooks.beforeEach(function(transaction, done) {
     case '410':
       changeAuthToken(transaction,{
         adminToken: 'static:admin:expired_user',
-        loginToken: 'static:login:expired_user',
-        personToken: 'static:person:expired_group_expired_user_xxx',
+        loginToken: 'static:login:test-expired',
+        personToken: 'static:person:expired_group_test-expired_xxx',
         workspaceMonitorToken: 'static:person:expired_group_expired-study-monitor_',
         groupMonitorToken: 'static:person:expired_group_expired-group-monitor_'
       });

@@ -59,7 +59,7 @@ class InitDAO extends SessionDAO {
         $adminDAO = new AdminDAO();
 
         $login = new Login(
-            'expired_user',
+            'test-expired',
             '',
             'run-hot-return',
             'expired_group',
