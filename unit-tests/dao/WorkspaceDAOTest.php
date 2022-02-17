@@ -24,6 +24,7 @@ class WorkspaceDAOTest extends TestCase {
         require_once "classes/helper/JSON.class.php";
         require_once "classes/helper/Version.class.php";
         require_once "classes/helper/XMLSchema.class.php";
+        require_once "classes/helper/FileTime.class.php";
         require_once "classes/data-collection/DBConfig.class.php";
         require_once "classes/dao/DAO.class.php";
         require_once "classes/dao/WorkspaceDAO.class.php";
