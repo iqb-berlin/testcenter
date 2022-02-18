@@ -49,15 +49,7 @@ try {
     $container['settings']['addContentLengthHeader'] = true;
     $app = new App($container);
 
-    include_once 'routes/session.php';
-    include_once 'routes/system.php';
-    include_once 'routes/workspace.php';
-    include_once 'routes/user.php';
-
-    include_once 'routes/test.php';
-    include_once 'routes/monitor.php';
-    include_once 'routes/booklet.php';
-    include_once 'routes/speedtest.php';
+    include_once 'routes.php';
 
     $app->run();
 
@@ -68,5 +60,6 @@ try {
     $id = uniqid('fatal-', true);
     header('Error-ID:' . $id);
     error_log("$id (500) at {$e->getFile()}:{$e->getLine()}");
+    error_log($e->getMessage());
     echo "Fatal error!" . "$id (500) at {$e->getFile()}:{$e->getLine()}";
 }
