@@ -1,6 +1,53 @@
-data
+# IDEs and editors
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# data-dir if running locally
+/data
+
+# backend-dependencies
+/backend/vendor
+
+# backend installation remains, if running locally
+/backend/composer.phar
+/backend/auth.json
+
+# backend config
+/backend/config
+
+# frontend config
+/frontend/src/environments/environment.ts
+/frontend/src/environments/environment.ts.bu
+
+# frontend-dependencies
+/frontend/node_modules
+
+# frontend compiled output
+/frontend/dist
+/frontend/tmp
+/frontend/out-tsc
+
+# frontend misc
+#frontend/.sass-cache
+#/connect.lock
+#/coverage
+#/libpeerconnection.log
+#npm-debug.log
+#yarn-error.log
+#testem.log
+#/typings
 
 
-#
+# env
 .env
-frontend/src/environments/environment.ts.bu

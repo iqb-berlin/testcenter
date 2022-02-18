@@ -56,6 +56,9 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/sebastian/comparator" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/iqb-berlin/verona-player-simple" />
+      <excludeFolder url="file://$MODULE_DIR$/data" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/config" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
