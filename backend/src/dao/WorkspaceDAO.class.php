@@ -125,7 +125,6 @@ class WorkspaceDAO extends DAO {
      */
     public function deleteLoginSource(int $workspaceId, string $source): int {
 
-        error_log("delete $workspaceId $source");
         $this->_(
             'delete from logins where source = :source and workspace_id = :ws_id',
             [

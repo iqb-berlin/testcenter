@@ -48,8 +48,8 @@ if (php_sapi_name() !== 'cli') {
     exit(1);
 }
 
-define('ROOT_DIR', realpath(dirname(__FILE__) . '/..'));
-define('DATA_DIR', ROOT_DIR . '/vo_data');
+define('ROOT_DIR', dirname(__FILE__));
+define('DATA_DIR', realpath(ROOT_DIR . '/..') . '/data');
 
 require_once(ROOT_DIR . '/autoload.php');
 
@@ -70,6 +70,11 @@ try  {
         BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
 
         CLI::success("Provided arguments OK.");
+
+        if (!file_exists(ROOT_DIR . '/config')) {
+            mkdir(ROOT_DIR . '/config');
+            file_put_contents(ROOT_DIR . '/config/readme.md', "#backend-config\nthis directory persists config setting for the testcenter-backend");
+        }
 
         if (!file_put_contents(ROOT_DIR . '/config/system.json', json_encode($sysConf))) {
 
@@ -129,7 +134,7 @@ try  {
     if ($installationArguments->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
 
         CLI::p("Install basic database structure");
-        $initDAO->runFile(ROOT_DIR . "/scripts/sql-schema/mysql.sql");
+        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
     }
 
     $dbSchemaVersion = $initDAO->getDBSchemaVersion();
@@ -143,7 +148,7 @@ try  {
 
         CLI::p("Install patches if necessary");
         $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
-        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/sql-schema/mysql.patches.d", $allowFailing);
+        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", $allowFailing);
         foreach ($patchInstallReport['patches'] as $patch) {
 
           if (isset($patchInstallReport['errors'][$patch])) {
@@ -239,6 +244,8 @@ try  {
 
     if (!file_exists(DATA_DIR)) {
       mkdir(DATA_DIR);
+      file_put_contents(DATA_DIR . '/readme.md', "#Data-Directory\n");
+      CLI::success("Data-Directory created: `{". DATA_DIR . "`}");
     }
 
     CLI::h2("Sys-Admin");

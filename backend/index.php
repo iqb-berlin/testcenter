@@ -10,7 +10,7 @@ try {
 
     date_default_timezone_set('Europe/Berlin'); // just to be safe. TimeStamp-class should be used everywhere anyway
 
-    define('ROOT_DIR', dirname(__FILE__));
+    define('ROOT_DIR', realpath(dirname(__FILE__)));
 
     require_once "vendor/autoload.php";
     require_once "autoload.php";

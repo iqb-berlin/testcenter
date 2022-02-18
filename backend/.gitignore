@@ -1,33 +1,7 @@
-.env
-
 # composer
 vendor
 composer.phar
 auth.json
 
-# data folder
-vo_data
-
-# IDE stuff
-*.iml
-.idea
-.vscode
-
-# integration
-integration/node_modules
-integration/tmp
-
-# unit tests
-.phpunit.result.cache
-
 # config
-config/DBConnectionData.json
-config/DBConnectionData.*.json
-config/system.json
-config/system.*.json
-config/e2eTests.backup.json
-config/e2eTests.json
-
-# legacy
-logs/*
-trash
+config
