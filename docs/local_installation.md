@@ -7,5 +7,7 @@ php -r "unlink('composer-setup.php');"
 php composer.phar install
 
 cd..
-php backend/initialize.php --dbname=testcenter-monorepo --user=root --password=somesql
+php backend/initialize.php --dbname=testcenter_monorepo --user=root --password=somesql
+
+
 
