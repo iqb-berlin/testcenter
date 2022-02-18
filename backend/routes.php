@@ -14,6 +14,8 @@ $app->group('/booklet', function(App $app) {
 })
     ->add(new RequireToken('person'));
 
+$app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroadcastingService']);
+
 $app->get('/list/routes', [SystemController::class, 'getListRoutes']);
 
 $app->get('/session', [SessionController::class, 'getSession'])
@@ -32,6 +34,8 @@ $app->group('/speed-test', function(App $app) {
 
     $app->post('/random-package', [SpeedtestController::class, 'postRandomPackage']);
 });
+
+$app->get('/sys-checks', [SystemController::class, 'getSysChecks']);
 
 $app->get('/system/config', [SystemController::class, 'getSystemConfig']);
 
