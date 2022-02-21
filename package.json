@@ -5,7 +5,8 @@
     "verona-player-api-versions": {
       "min": 2,
       "max": 4
-    }
+    },
+    "defintionsUrl": "https://raw.githubusercontent.com/iqb-berlin/testcenter-backend"
   },
   "license": "MIT",
   "repository": {
@@ -13,6 +14,9 @@
     "url": "https://github.com/iqb-berlin/testcenter"
   },
   "private": true,
+  "scripts": {
+    "update_specs": "npx gulp --gulpfile=./scripts/update-specs.js update_specs"
+  },
   "eslintConfig": {
     "overrides": [
       {

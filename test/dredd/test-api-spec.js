@@ -69,17 +69,7 @@ gulp.task('clear_tmp_dir', done => {
   done();
 });
 
-gulp.task('compile_spec_files', function() {
 
-  cliPrint.headline(`compile spec files to one`);
-
-  return gulp.src(`../routes/*.spec.yml`)
-    .on("data", (d) => { console.log("File: " + d.path);})
-    .on("error", (e) => { console.warn(e);})
-    .pipe(yamlMerge('compiled.specs.yml'))
-    .on("error", (e) => { console.warn(e);})
-    .pipe(gulp.dest('./tmp/'));
-});
 
 gulp.task('prepare_spec_for_dredd', done => {
 
@@ -185,60 +175,7 @@ gulp.task('run_dredd', done => {
 });
 
 
-gulp.task('update_docs', done => {
 
-  cliPrint.headline('write compiled spec to docs folder');
-
-  const compiledFileName = 'tmp/compiled.specs.yml';
-  const targetFileName = '../docs/api/specs.yml';
-  const yamlTree = YAML.parse(fs.readFileSync(compiledFileName, "utf8"));
-
-  const localizeReference = (key, val) => {
-    const referenceString = val.substring(val.lastIndexOf('#'));
-    return {
-      key: '$ref',
-      val: referenceString
-    }
-  };
-
-  const replaceVersion = (key, val) => ({
-    key: "version",
-    val: (val === "%%%VERSION%%%") ? composerFile['version'] : val
-  });
-
-  const makeRedocCompatible = {
-    "schema > \\$ref$": localizeReference,
-    "items > \\$ref$": localizeReference,
-    "> version$": replaceVersion
-  };
-
-  const transformed = jsonTransform(yamlTree, makeRedocCompatible, false);
-  const transformedAsString = YAML.stringify(transformed, 10);
-  fs.writeFileSync(targetFileName, transformedAsString, "utf8");
-
-  done();
-});
-
-
-
-gulp.task('update_sample_files', done => {
-
-  cliPrint.headline('Update sample files');
-
-  const regex = /xsi:noNamespaceSchemaLocation="[^"]+\/definitions\/v?o?_?(\S*).xsd"/gm;
-  const reference = `xsi:noNamespaceSchemaLocation="${xsdUrl}/${composerFile['version']}/definitions/vo_$1.xsd"`;
-
-  fs.readdirSync('../sampledata').forEach(file => {
-    if (file.includes('.xml')) {
-      console.log(`updating: ${file}`);
-      const fileContents = fs.readFileSync('../sampledata/' + file);
-      const newContents = fileContents.toString().replace(regex, reference);
-      fs.writeFileSync('../sampledata/' + file, newContents);
-    }
-  });
-
-  done();
-});
 
 
 gulp.task('delete_special_config_file', done => {
