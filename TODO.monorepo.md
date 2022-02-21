@@ -3,7 +3,7 @@
 [x] eslint/IDE
 [x] eslint/js
 [x] eslint/html
-[ ] eslint/cli
+[x] eslint/cli
 [ ] fe/build prod
 [ ] single source of version !
 [ ] xdebug

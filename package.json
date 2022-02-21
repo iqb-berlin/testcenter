@@ -15,7 +15,8 @@
   },
   "private": true,
   "scripts": {
-    "update_specs": "npx gulp --gulpfile=./scripts/update-specs.js update_specs"
+    "update_specs": "npx gulp --gulpfile=./scripts/update-specs.js update_specs",
+    "lint": "npx eslint frontend/src/**/*.ts frontend/src/**/*.js broadcasting-service/src/**/*.ts scripts/**/*.js"
   },
   "eslintConfig": {
     "overrides": [
