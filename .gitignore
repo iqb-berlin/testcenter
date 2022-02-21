@@ -38,6 +38,9 @@
 /frontend/tmp
 /frontend/out-tsc
 
+# dev dependencies
+/node_modules
+
 # frontend misc
 #frontend/.sass-cache
 #/connect.lock

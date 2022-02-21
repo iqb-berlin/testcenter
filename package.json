@@ -1,0 +1,26 @@
+{
+  "name": "iqb-testcenter",
+  "version": "13.0.0",
+  "iqb": {
+    "verona-player-api-versions": {
+      "min": 2,
+      "max": 4
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iqb-berlin/testcenter"
+  },
+  "private": true,
+  "eslintConfig": {
+    "extends": "@iqb/eslint-config",
+    "parserOptions": {
+      "project": "./**/tsconfig.json"
+    }
+  },
+  "devDependencies": {
+    "@iqb/eslint-config": "1.0.2",
+    "typescript": "~4.3.4"
+  }
+}
