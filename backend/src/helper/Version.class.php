@@ -7,7 +7,7 @@ class Version {
 
     static function get(): string {
 
-        $composerFile = file_get_contents(ROOT_DIR . '/composer.json');
+        $composerFile = file_get_contents(realpath(ROOT_DIR . '/../package.json'));
         $composerData = JSON::decode($composerFile);
         return $composerData->version;
     }

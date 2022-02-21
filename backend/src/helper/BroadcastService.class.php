@@ -23,18 +23,6 @@ class BroadcastService {
     }
 
 
-    static function getVersionExpected(): string {
-
-        $composerFile = file_get_contents(ROOT_DIR . '/composer.json');
-        $composerData = JSON::decode($composerFile, true);
-        if (!isset($composerData['extra']) or !isset($composerData['extra']['broadcastingServiceVersionExpected'])) {
-
-            throw new Exception("BroadcastingService Version Expected not set.");
-        }
-        return $composerData['extra']['broadcastingServiceVersionExpected'];
-    }
-
-
     static function getStatus(): array {
 
         $status = [
@@ -49,7 +37,7 @@ class BroadcastService {
         }
 
         $version = BroadcastService::send('version', '', 'GET');
-        $status['versionExpected'] = BroadcastService::getVersionExpected();
+        $status['versionExpected'] = Version::get(); // TODO is this needed anymore at all?
 
         if ($version === null) {
 
