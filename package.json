@@ -20,6 +20,15 @@
   "eslintConfig": {
     "overrides": [
       {
+        "files": [ "*.html" ],
+        "plugins": [ "html" ],
+        "parserOptions": {
+          "ecmaVersion": 2015,
+          "sourceType": "module"
+        },
+        "extends": "@iqb/eslint-config/javascript"
+      },
+      {
         "files": [ "*.ts" ],
         "extends": "@iqb/eslint-config",
         "parserOptions": {
@@ -35,6 +44,7 @@
   "devDependencies": {
     "@iqb/eslint-config": "1.0.2",
     "dredd": "^14.0.0",
+    "eslint-plugin-html": "^6.2.0",
     "fs-extra": "^10.0.0",
     "gulp": "^4.0.2",
     "gulp-yaml-merge": "^2.0.0",
