@@ -21,22 +21,6 @@ getTestBed().initTestEnvironment(
       useValue: environment.testcenterUrl
     },
     {
-      provide: 'APP_PUBLISHER',
-      useValue: environment.appPublisher
-    },
-    {
-      provide: 'APP_NAME',
-      useValue: packageJSON.name
-    },
-    {
-      provide: 'APP_VERSION',
-      useValue: packageJSON.version
-    },
-    {
-      provide: 'API_VERSION_EXPECTED',
-      useValue: environment.apiVersionExpected
-    },
-    {
       provide: 'VERONA_PLAYER_API_VERSION_MIN',
       useValue: packageJSON.iqb['verona-player-api-versions'].min
     },

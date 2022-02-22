@@ -5,7 +5,7 @@
 [x] eslint/html
 [x] eslint/cli
 [ ] fe/build prod
-[ ] single source of version !
+[x] single source of version !
 [ ] xdebug
 [ ] coverage
 [ ] docker
@@ -25,3 +25,6 @@
 [ ] be/init-test
 [ ] integration-test
 [ ] CORS?
+[ ] fe/doc-scripts
+[ ] compodoc
+[ ] PSR warning

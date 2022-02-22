@@ -247,7 +247,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.mds.appError$.next({
             label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed?
             description: (err.info) ? err.info : err,
-            category: 'PROBLEM'
+            category: 'ERROR'
           });
         },
         complete: () => this.prepareUnit()

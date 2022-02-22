@@ -117,7 +117,9 @@ export class BackendService {
   getSysConfig(): Observable<SysConfig> {
     return this.http
       .get<SysConfig>(`${this.serverUrl}system/config`)
-      .pipe(catchError(() => of(null)));
+      .pipe(
+        catchError(() => of(null))
+      );
   }
 
   getSysCheckInfo(): Observable<SysCheckInfo[]> {

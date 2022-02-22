@@ -90,14 +90,17 @@ class SystemController extends Controller {
     public static function getSystemConfig(Request $request, Response $response): Response {
 
         $meta = self::adminDAO()->getMeta(['customTexts', 'appConfig']);
+        $version = Version::getAll(); // TODo use DB!
 
         return $response->withJson(
             [
-                'version' => Version::get(),
+                'version' => $version['version'],
                 'customTexts' => (object) $meta['customTexts'],
                 'appConfig' => (object) $meta['appConfig'],
                 'broadcastingService' => BroadcastService::getStatus(),
-                'baseUrl' => Server::getUrl()
+                'baseUrl' => Server::getUrl(),
+                'veronaPlayerApiVersionMin' => $version['veronaMin'],
+                'veronaPlayerApiVersionMax' => $version['veronaMax']
             ]
         );
     }

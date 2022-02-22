@@ -40,8 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     public mds: MainDataService,
     private bs: BackendService,
     private router: Router,
-    private route: ActivatedRoute,
-    @Inject('APP_VERSION') public appVersion: string
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {

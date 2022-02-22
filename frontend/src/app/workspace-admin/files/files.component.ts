@@ -67,8 +67,6 @@ export class FilesComponent implements OnInit {
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
-    @Inject('VERONA_PLAYER_API_VERSION_MIN') public veronaPlayerApiVersionMin: number,
-    @Inject('VERONA_PLAYER_API_VERSION_MAX') public veronaPlayerApiVersionMax: number,
     private bs: BackendService,
     public wds: WorkspaceDataService,
     public confirmDialog: MatDialog,
@@ -212,9 +210,15 @@ export class FilesComponent implements OnInit {
         // eslint-disable-next-line no-param-reassign
         file.report.error = [];
       }
-      if (fileMayor < this.veronaPlayerApiVersionMin || fileMayor > this.veronaPlayerApiVersionMax) {
-        file.report.error.push(`Verona Version \`${fileMayor}\` is not supported
-          (only versions between \`${this.veronaPlayerApiVersionMin}\` and \`${this.veronaPlayerApiVersionMax}\`)`);
+      if (
+        fileMayor < this.mds.appConfig?.veronaPlayerApiVersionMin ||
+        fileMayor > this.mds.appConfig?.veronaPlayerApiVersionMax
+      ) {
+        file.report.error.push(
+          `Verona Version \`${fileMayor}\` is not supported
+          (only versions between \`${this.mds.appConfig?.veronaPlayerApiVersionMin}\` 
+          and \`${this.mds.appConfig?.veronaPlayerApiVersionMax}\`)`
+        );
       }
     }
     return file;

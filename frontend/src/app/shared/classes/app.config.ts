@@ -12,10 +12,11 @@ import {
 
 export class AppConfig {
   customTexts: KeyValuePairs = {};
-  detectedApiVersion = '';
+  version = '';
+  veronaPlayerApiVersionMin: number;
+  veronaPlayerApiVersionMax: number;
   mainLogo = standardLogo;
   testConfig: KeyValuePairs = {};
-  serverTimestamp = 0;
   broadcastingService: BroadCastingServiceInfo = { status: 'none' };
   appTitle = 'IQB-Testcenter';
   backgroundBody: string;
@@ -27,7 +28,6 @@ export class AppConfig {
   globalWarningText = '';
   globalWarningExpiredDay = '';
   globalWarningExpiredHour = '';
-  isValidApiVersion = false;
   sanitizer: DomSanitizer = null;
   cts: CustomtextService = null;
 
@@ -42,7 +42,6 @@ export class AppConfig {
   constructor(
     sysConfig: SysConfig,
     cts: CustomtextService,
-    expectedApiVersion: string,
     sanitizer: DomSanitizer
   ) {
     this.sanitizer = sanitizer;
@@ -52,17 +51,17 @@ export class AppConfig {
       this.customTexts = sysConfig.customTexts;
       this.setCustomTexts(sysConfig.customTexts);
       this.setAppConfig(sysConfig.appConfig);
-      this.testConfig = sysConfig.testConfig;
-      this.serverTimestamp = sysConfig.serverTimestamp;
       if (sysConfig.broadcastingService && sysConfig.broadcastingService.status) {
         this.broadcastingService = sysConfig.broadcastingService;
       }
-      this.detectedApiVersion = sysConfig.version;
+      this.version = sysConfig.version;
+      this.veronaPlayerApiVersionMin = sysConfig.veronaPlayerApiVersionMin;
+      this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;
     } else {
       this.setCustomTexts(null);
       this.setAppConfig(null);
     }
-    this.isValidApiVersion = AppConfig.checkApiVersion(this.detectedApiVersion, expectedApiVersion);
+
     if (this.testConfig) {
       localStorage.setItem(localStorageTestConfigKey, JSON.stringify(this.testConfig));
     } else {
@@ -122,32 +121,6 @@ export class AppConfig {
   applyBackgroundColors(): void {
     document.documentElement.style.setProperty('--tc-body-background', this.backgroundBody);
     document.documentElement.style.setProperty('--tc-box-background', this.backgroundBox);
-  }
-
-  private static checkApiVersion(versionToCheck: string, expectedVersion: string): boolean {
-    if (!expectedVersion || !versionToCheck) {
-      return false;
-    }
-    const searchPattern = /\d+/g;
-    const expectedVersionNumbers = expectedVersion.match(searchPattern);
-    const reportedVersionNumbers = versionToCheck.match(searchPattern);
-    if (expectedVersionNumbers && reportedVersionNumbers) {
-      if (reportedVersionNumbers[0] !== expectedVersionNumbers[0]) {
-        return false;
-      }
-      if (expectedVersionNumbers.length > 1) {
-        if ((reportedVersionNumbers.length < 2) || +reportedVersionNumbers[1] < +expectedVersionNumbers[1]) {
-          return false;
-        }
-        if ((expectedVersionNumbers.length > 2) && reportedVersionNumbers[1] === expectedVersionNumbers[1]) {
-          if ((reportedVersionNumbers.length < 3) || +reportedVersionNumbers[2] < +expectedVersionNumbers[2]) {
-            return false;
-          }
-        }
-      }
-      return true;
-    }
-    return false;
   }
 
   static isWarningExpired(warningDay: string, warningHour: string): boolean {

@@ -2,7 +2,7 @@
   <form [formGroup]="loginForm" (ngSubmit)="login($event.submitter.id)">
     <mat-card fxFlex="0 0 400px">
       <mat-card-title>Anmelden</mat-card-title>
-      <mat-card-content *ngIf="mds.appConfig?.isValidApiVersion">
+      <mat-card-content *ngIf="mds.appConfig">
         <mat-form-field>
           <mat-label>Anmeldename</mat-label>
           <input matInput formControlName="name" (keyup.enter)="pw.focus()" (keyup)="clearWarning()">
@@ -23,7 +23,7 @@
         <alert level="error" *ngIf="problemText" [text]="problemText"></alert>
         <alert *ngIf="mds.globalWarning" level="warning" [text]="mds.globalWarning"></alert>
       </mat-card-content>
-      <mat-card-content *ngIf="!mds.appConfig?.isValidApiVersion">
+      <mat-card-content *ngIf="!mds.appConfig">
         <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
       </mat-card-content>
       <mat-card-actions>
@@ -46,5 +46,5 @@
       <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
     </mat-card-actions>
   </mat-card>
-  <div id="version-number">IQB-Testcenter version {{appVersion}}@{{mds.appConfig?.detectedApiVersion}}</div>
+  <div id="version-number">IQB-Testcenter Version {{mds.appConfig?.version}}</div>
 </div>

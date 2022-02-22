@@ -111,7 +111,6 @@ describe('TestControllerComponent', () => {
         { provide: CommandService, useValue: MockCommandService },
         { provide: MainDataService, useValue: MockMainDataService },
         { provide: ActivatedRoute, useValue: MockActivatedRoute },
-        { provide: 'APP_VERSION', useValue: '0000' },
         { provide: 'IS_PRODUCTION_MODE', useValue: false }
       ]
     })

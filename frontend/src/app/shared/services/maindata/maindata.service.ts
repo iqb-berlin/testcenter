@@ -65,7 +65,6 @@ export class MainDataService {
   }
 
   constructor(
-    @Inject('API_VERSION_EXPECTED') readonly expectedApiVersion: string,
     private cts: CustomtextService
   ) {
   }

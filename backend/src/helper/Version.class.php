@@ -13,6 +13,19 @@ class Version {
     }
 
 
+    static function getAll(): array {
+
+        $composerFile = file_get_contents(realpath(ROOT_DIR . '/../package.json'));
+        $composerData = JSON::decode($composerFile);
+        $v = "verona-player-api-versions";
+        return [
+            'version' => $composerData->version,
+            'veronaMax' => $composerData->iqb->$v->max,
+            'veronaMin' => $composerData->iqb->$v->min
+        ];
+    }
+
+
     static function isCompatible(string $subject, ?string $object = null): bool {
 
         if (!$object) {

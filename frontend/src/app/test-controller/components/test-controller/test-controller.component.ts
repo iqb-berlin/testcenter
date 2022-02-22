@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, ViewChild
+  Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import {
   Subscription
@@ -58,8 +58,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   @ViewChild('navButtons') navButtons: ElementRef;
 
   constructor(
-    @Inject('APP_VERSION') public appVersion: string,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     public mds: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
@@ -117,14 +115,14 @@ export class TestControllerComponent implements OnInit, OnDestroy {
                 this.mds.appError$.next({
                   label: 'Kritischer Fehler',
                   description: error.message,
-                  category: 'PROBLEM'
+                  category: 'ERROR'
                 });
               }
               if (error instanceof ApiError) {
                 this.mds.appError$.next({
                   label: error.code === 423 ? 'Test ist gesperrt' : 'Problem beim Laden des Tests',
                   description: error.info,
-                  category: 'PROBLEM'
+                  category: 'ERROR'
                 });
               }
             });

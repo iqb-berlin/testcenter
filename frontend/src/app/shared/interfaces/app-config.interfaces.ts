@@ -1,6 +1,6 @@
 import { KeyValuePairs } from '../../app.interfaces';
 
-export interface AppSettings {
+export interface AppSettingsObject {
   appTitle: string,
   mainLogo: string,
   backgroundBody: string,
@@ -12,14 +12,16 @@ export interface AppSettings {
   globalWarningExpiredHour: string
 }
 
+export type AppSettings = AppSettingsObject | Record<string, never>;
+
 export interface SysConfig {
-  customTexts: KeyValuePairs;
   version: string;
-  mainLogo: string;
-  testConfig: KeyValuePairs;
-  serverTimestamp: number;
-  broadcastingService: BroadCastingServiceInfo;
+  customTexts: KeyValuePairs;
   appConfig: AppSettings;
+  broadcastingService: BroadCastingServiceInfo;
+  baseUrl: string;
+  veronaPlayerApiVersionMin: number;
+  veronaPlayerApiVersionMax: number;
 }
 
 export interface BroadCastingServiceInfo {

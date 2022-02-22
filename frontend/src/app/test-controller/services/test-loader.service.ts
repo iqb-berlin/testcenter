@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   BehaviorSubject, from, Observable, of, Subject, Subscription, throwError
 } from 'rxjs';
@@ -33,8 +33,6 @@ export class TestLoaderService {
   private totalLoadingProgressParts: { [loadingId: string]: number } = {};
 
   constructor(
-    @Inject('APP_VERSION') public appVersion: string,
-    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     public tcs: TestControllerService,
     private bs: BackendService,
     private cts: CustomtextService
@@ -78,7 +76,7 @@ export class TestLoaderService {
     this.tcs.totalLoadingProgress = 0;
     this.totalLoadingProgressParts = {};
 
-    this.environment = new EnvironmentData(this.appVersion);
+    this.environment = new EnvironmentData();
     this.loadStartTimeStamp = Date.now();
     this.unitContentLoadingQueue = [];
   }

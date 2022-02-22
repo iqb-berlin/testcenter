@@ -258,7 +258,6 @@ export class Testlet extends TestletContentElement {
 }
 
 export class EnvironmentData {
-  appVersion: string;
   browserVersion = '';
   browserName = '';
   get browserTxt(): string {
@@ -275,9 +274,7 @@ export class EnvironmentData {
     return `Bildschirmgröße ist ${this.screenSizeWidth} x ${this.screenSizeWidth}`;
   }
 
-  constructor(appVersion: string) {
-    this.appVersion = appVersion;
-
+  constructor() {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const UAParser = window['UAParser']();
 

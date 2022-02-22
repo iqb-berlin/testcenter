@@ -50,7 +50,7 @@ export interface KeyValuePairs {
 export interface AppError {
   label: string;
   description: string;
-  category: 'WARNING' | 'FATAL' | 'PROBLEM';
+  category: 'WARNING' | 'ERROR';
 }
 
 export class ApiError {

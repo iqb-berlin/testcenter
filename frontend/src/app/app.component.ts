@@ -69,11 +69,11 @@ export class AppComponent implements OnInit, OnDestroy {
           this.mds.appError$.next({
             label: 'Server-Problem: Konnte Konfiguration nicht laden',
             description: 'getSysConfig ist fehlgeschlagen',
-            category: 'FATAL'
+            category: 'ERROR'
           });
           return;
         }
-        this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.mds.expectedApiVersion, this.sanitizer);
+        this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.sanitizer);
         this.mds.appTitle$.next(this.mds.appConfig.appTitle);
         this.mds.appConfig.applyBackgroundColors();
         this.mds.globalWarning = this.mds.appConfig.warningMessage;
@@ -81,15 +81,6 @@ export class AppComponent implements OnInit, OnDestroy {
         const authData = MainDataService.getAuthData();
         if (authData) {
           this.cts.addCustomTexts(authData.customTexts);
-        }
-
-        if (!this.mds.appConfig.isValidApiVersion) {
-          this.mds.appError$.next({
-            label: 'Server-Problem: API-Version ungültig',
-            description:
-              `erwartet: ${this.mds.expectedApiVersion}, gefunden: ${this.mds.appConfig.detectedApiVersion}`,
-            category: 'FATAL'
-          });
         }
       });
 
