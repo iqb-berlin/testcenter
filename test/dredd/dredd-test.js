@@ -6,12 +6,13 @@ const YAML = require('yamljs');
 const inquirer = require('inquirer');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
+const testcenterConfig = require('../../config/testcenter.json');
 const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 
-const apiUrl = process.env.TC_API_URL || 'http://localhost';
-const specialTestConfig = fs.existsSync('../backend/config/e2eTests.json')
+const apiUrl = testcenterConfig.testcenterUrl || 'http://localhost';
+const specialTestConfig = fs.existsSync('../backend/config/e2eTests.json') // TODo use config/testcenter.json
   ? JSON.parse(fs.readFileSync('../backend/config/e2eTests.json').toString())
   : false;
 
@@ -23,7 +24,7 @@ const confirmTestConfig = async done => {
 
   cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
 
-  if (process.env.ALLOW_REAL_DATA_MODE && (process.env.ALLOW_REAL_DATA_MODE === 'yes')) {
+  if (testcenterConfig.dreddTest.allowRealDataMode) {
     cliPrint.error('You run this in REAL-DATA-MODE.');
     return;
   }
@@ -131,7 +132,7 @@ const prepareSpecsForDredd = done => {
 };
 
 const runDredd = async done => {
-  cliPrint.headline(`run dredd against ${apiUrl}`);
+  cliPrint.headline(`Run Dredd against ${apiUrl}`);
 
   new Dredd({
     endpoint: apiUrl,
@@ -143,13 +144,9 @@ const runDredd = async done => {
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
-      console.log("1");
-      console.log(err);
       done(new Error(cliPrint.get.error(`Dredd Tests: ${err}`)));
     }
     if (stats.errors + stats.failures > 0) {
-      console.log("2");
-      console.log(stats);
       done(new Error(
         cliPrint.get.error(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`)
       ));

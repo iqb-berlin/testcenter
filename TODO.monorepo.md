@@ -7,7 +7,9 @@
 [ ] fe/build prod
 [x] single source of version !
 [ ] xdebug
-[ ] coverage
+[ ] be/coverage
+[ ] fe/coverage
+[ ] bs/coverage
 [ ] docker
 [ ] prod
 [ ] gitlab-ci
@@ -18,10 +20,11 @@
 [ ] fe/coverage
 [ ] bs/coverage
 [ ] makefiles
-[ ] gulp
+[ ] gulp/docker
 [ ] new_version_scripts
 [ ] fe/e2e-test
-[ ] be/dredd-test
+[x] be/dredd-test
+[ ] be/dredd-test beschleunigung
 [ ] be/init-test
 [ ] integration-test
 [ ] CORS?

@@ -18,6 +18,21 @@ $app->get('/flush-broadcasting-service', [SystemController::class, 'getFlushBroa
 
 $app->get('/list/routes', [SystemController::class, 'getListRoutes']);
 
+$app->group('/monitor', function(App $app) {
+
+    $app->get('/group/{group_name}', [MonitorController::class, 'getGroup']);
+
+    $app->get('/test-sessions', [MonitorController::class, 'getTestSessions']);
+
+    $app->put('/command', [MonitorController::class, 'putCommand']);
+
+    $app->post('/group/{group_name}/tests/unlock', [MonitorController::class, 'postUnlock']);
+
+    $app->post('/group/{group_name}/tests/lock', [MonitorController::class, 'postLock']);
+})
+    ->add(new IsGroupMonitor())
+    ->add(new RequireToken('person'));
+
 $app->get('/session', [SessionController::class, 'getSession'])
     ->add(new RequireToken('login', 'person', 'admin'));
 
@@ -95,8 +110,6 @@ $app->group('/test', function(App $app) { // TODO Spec
 
     $app->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
 });
-
-$app->get('/{auth_token}/resource/{resource_name}', [TestController::class, 'getResource']);
 
 $app->group('/workspace', function(App $app) {
 
@@ -187,3 +200,5 @@ $app->get('/workspaces', [SystemController::class, 'getWorkspaces'])
 $app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
     ->add(new IsSuperAdmin())
     ->add(new RequireToken('admin'));
+
+$app->get('/{auth_token}/resource/{resource_name}', [TestController::class, 'getResource']);

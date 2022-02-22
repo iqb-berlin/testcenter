@@ -45,7 +45,7 @@ class XMLSchema {
 
     static function getLocalSchema(string $type): array {
 
-        if (!file_exists(ROOT_DIR . "/definitions/vo_$type.xsd")) {
+        if (!file_exists(ROOT_DIR . "/../definitions/vo_$type.xsd")) {
 
             throw new Exception("Unknown XML type: `$type`");
         }
@@ -81,7 +81,7 @@ class XMLSchema {
 
     private static function accessDefinitionsDir($schemaData): string {
 
-        $filePath = ROOT_DIR . "/definitions/vo_{$schemaData['type']}.xsd";
+        $filePath = ROOT_DIR . "/../definitions/vo_{$schemaData['type']}.xsd";
 
         if (file_exists($filePath)) {
             return $filePath;

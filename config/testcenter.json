@@ -1,0 +1,6 @@
+{
+  "testcenterUrl": "http://localhost/testcenter/backend/",
+  "dreddTest": {
+    "allowRealDataMode": false
+  }
+}

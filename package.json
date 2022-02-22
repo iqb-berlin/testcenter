@@ -26,8 +26,12 @@
   "eslintConfig": {
     "overrides": [
       {
-        "files": [ "*.html" ],
-        "plugins": [ "html" ],
+        "files": [
+          "*.html"
+        ],
+        "plugins": [
+          "html"
+        ],
         "parserOptions": {
           "ecmaVersion": 2015,
           "sourceType": "module"
@@ -35,14 +39,18 @@
         "extends": "@iqb/eslint-config/javascript"
       },
       {
-        "files": [ "*.ts" ],
+        "files": [
+          "*.ts"
+        ],
         "extends": "@iqb/eslint-config",
         "parserOptions": {
           "project": "./**/tsconfig.json"
         }
       },
       {
-        "files": [ "*.js" ],
+        "files": [
+          "*.js"
+        ],
         "extends": "@iqb/eslint-config/javascript"
       }
     ]

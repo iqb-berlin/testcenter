@@ -41,6 +41,9 @@
 # dev dependencies
 /node_modules
 
+# tmp
+/tmp
+
 # frontend misc
 #frontend/.sass-cache
 #/connect.lock

@@ -527,6 +527,8 @@ paths:
                                     customTexts: {type: object}
                                     appConfig: {type: object}
                                     broadcastingService: {type: object, properties: {versionExpected: {type: string}, status: {type: string}, version: {type: string}}}
+                                    veronaPlayerApiVersionMin: {type: number}
+                                    veronaPlayerApiVersionMax: {type: number}
                                     baseUrl: {type: string, description: 'base url of the API'}
                                 required:
                                     - version
@@ -541,6 +543,8 @@ paths:
                                     versionExpected: 1.0.0
                                     status: online
                                     version: 1.0.0
+                                veronaPlayerApiVersionMin: 2
+                                veronaPlayerApiVersionMax: 4
                 '500':
                     description: 'Server Error'
     /system/config/app:
