@@ -1,0 +1,760 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>iqb-testcenter documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">iqb-testcenter documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  ReportComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>frontend/src/app/sys-check/report/report.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./report.component.css,<br>../sys-check.component.css</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./report.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#csvReport" >csvReport</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ds" >ds</a>
+                            </li>
+                            <li>
+                                <a href="#questionnaireDataWarnings" >questionnaireDataWarnings</a>
+                            </li>
+                            <li>
+                                <a href="#saved" >saved</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#saveReport" >saveReport</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(bs: <a href="../injectables/BackendService.html" target="_self">BackendService</a>, ds: <a href="../injectables/SysCheckDataService.html" target="_self">SysCheckDataService</a>, saveDialog: MatDialog, snackBar: MatSnackBar)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">frontend/src/app/sys-check/report/report.component.ts:16</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>bs</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BackendService.html" target="_self" >BackendService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>ds</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SysCheckDataService.html" target="_self" >SysCheckDataService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>saveDialog</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatDialog</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>snackBar</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatSnackBar</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="60"
+                            class="link-to-prism">frontend/src/app/sys-check/report/report.component.ts:60</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="saveReport"></a>
+                    <span class="name">
+                        <span ><b>saveReport</b></span>
+                        <a href="#saveReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>saveReport()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="26"
+                            class="link-to-prism">frontend/src/app/sys-check/report/report.component.ts:26</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="csvReport"></a>
+                    <span class="name">
+                        <span ><b>csvReport</b></span>
+                        <a href="#csvReport"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">frontend/src/app/sys-check/report/report.component.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>ds</b></span>
+                        <a href="#ds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/SysCheckDataService.html" target="_self" >SysCheckDataService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">frontend/src/app/sys-check/report/report.component.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="questionnaireDataWarnings"></a>
+                    <span class="name">
+                        <span ><b>questionnaireDataWarnings</b></span>
+                        <a href="#questionnaireDataWarnings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ReportEntry.html" target="_self" >ReportEntry[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">frontend/src/app/sys-check/report/report.component.ts:16</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="saved"></a>
+                    <span class="name">
+                        <span ><b>saved</b></span>
+                        <a href="#saved"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">frontend/src/app/sys-check/report/report.component.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit } from &#x27;@angular/core&#x27;;
+import { MatDialog } from &#x27;@angular/material/dialog&#x27;;
+import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;;
+import { BackendService } from &#x27;../backend.service&#x27;;
+import { SysCheckDataService } from &#x27;../sys-check-data.service&#x27;;
+import { SaveReportComponent } from &#x27;./save-report/save-report.component&#x27;;
+import { ReportEntry } from &#x27;../sys-check.interfaces&#x27;;
+
+@Component({
+  templateUrl: &#x27;./report.component.html&#x27;,
+  styleUrls: [&#x27;./report.component.css&#x27;, &#x27;../sys-check.component.css&#x27;]
+})
+export class ReportComponent implements OnInit {
+  csvReport &#x3D; &#x27;&#x27;;
+  saved &#x3D; false;
+  questionnaireDataWarnings: ReportEntry[] &#x3D; [];
+
+  constructor(
+    private bs: BackendService,
+    public ds: SysCheckDataService,
+    private saveDialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {
+  }
+
+  saveReport(): void {
+    const dialogRef &#x3D; this.saveDialog.open(SaveReportComponent, {
+      width: &#x27;500px&#x27;,
+      height: &#x27;600px&#x27;
+    });
+    dialogRef.afterClosed().subscribe(result &#x3D;&gt; {
+      if (typeof result !&#x3D;&#x3D; &#x27;undefined&#x27;) {
+        if (result !&#x3D;&#x3D; false) {
+          const reportKey &#x3D; result.get(&#x27;key&#x27;).value as string;
+          const reportTitle &#x3D; result.get(&#x27;title&#x27;).value as string;
+          this.bs.saveReport(
+            this.ds.checkConfig.workspaceId,
+            this.ds.checkConfig.name,
+            {
+              keyPhrase: reportKey,
+              title: reportTitle,
+              environment: this.ds.environmentReport,
+              network: this.ds.networkReport,
+              questionnaire: this.ds.questionnaireReport,
+              unit: []
+            }
+          ).subscribe((saveReportResult: boolean) &#x3D;&gt; {
+            if (saveReportResult) {
+              this.snackBar.open(&#x27;Bericht gespeichert.&#x27;, &#x27;&#x27;, { duration: 3000 });
+              this.saved &#x3D; true;
+            } else {
+              this.snackBar.open(&#x27;Konnte Bericht nicht speichern.&#x27;, &#x27;&#x27;, { duration: 3000 });
+            }
+          });
+        }
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    setTimeout(() &#x3D;&gt; {
+      this.ds.setNewCurrentStep(&#x27;r&#x27;);
+      this.questionnaireDataWarnings &#x3D; [];
+      if (this.ds.checkConfig &amp;&amp; this.ds.checkConfig.questions.length &gt; 0) {
+        if (this.ds.questionnaireReport.length &gt; 0) {
+          this.ds.questionnaireReport.forEach(re &#x3D;&gt; {
+            if (re.warning) {
+              this.questionnaireDataWarnings.push(re);
+            }
+          });
+        } else {
+          this.questionnaireDataWarnings.push({
+            id: &#x27;tütü&#x27;,
+            type: &#x27;yoyo&#x27;,
+            label: &#x27;keine Antworten registriert&#x27;,
+            value: &#x27;naja&#x27;,
+            warning: true
+          });
+        }
+      }
+    });
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;sys-check-body&quot;&gt;
+  &lt;div fxLayout&#x3D;&quot;row wrap&quot; fxLayoutAlign&#x3D;&quot;center stretch&quot;&gt;
+    &lt;mat-card fxFlex&#x3D;&quot;0 0 700px&quot;&gt;
+      &lt;mat-card-header&gt;
+        &lt;mat-card-title&gt;Bericht {{ saved ? &#x27; - gespeichert&#x27; : &#x27;&#x27;}}&lt;/mat-card-title&gt;
+      &lt;/mat-card-header&gt;
+
+      &lt;mat-card-content&gt;
+        &lt;p *ngIf&#x3D;&quot;questionnaireDataWarnings.length &gt; 0&quot; style&#x3D;&quot;color: goldenrod; font-weight: bold&quot;&gt;{{&#x27;Bitte prüfen Sie die Eingaben (unvollständig):&#x27;| customtext:&#x27;syscheck_questionsRequiredMessage&#x27; | async}}&lt;/p&gt;
+        &lt;ul&gt;
+            &lt;li *ngFor&#x3D;&quot;let qd of questionnaireDataWarnings&quot;&gt;
+              {{qd.label}}
+            &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;h2 *ngIf&#x3D;&quot;ds.environmentReport.length &gt; 0&quot;&gt;Computer (Betriebssystem, Browser)&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;li *ngFor&#x3D;&quot;let reportData of ds.environmentReport&quot;&gt;
+            {{reportData.label}}: {{reportData.value}}
+          &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;h2 *ngIf&#x3D;&quot;ds.networkReport.length &gt; 0&quot;&gt;Netzwerk/Internetverbindung&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;li *ngFor&#x3D;&quot;let reportData of ds.networkReport&quot;&gt;
+            {{reportData.label}}: {{reportData.value}}
+          &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;h2 *ngIf&#x3D;&quot;ds.questionnaireReport.length &gt; 0&quot;&gt;Fragen&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;li *ngFor&#x3D;&quot;let reportData of ds.questionnaireReport&quot;&gt;
+            {{reportData.label}}: {{reportData.value}}
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/mat-card-content&gt;
+
+      &lt;mat-card-actions&gt;
+        &lt;button mat-raised-button color&#x3D;&quot;primary&quot; [disabled]&#x3D;&quot;saved&quot; (click)&#x3D;&quot;saveReport()&quot; class&#x3D;&quot;save_button&quot;&gt;Bericht senden&lt;/button&gt;
+        &lt;button mat-raised-button [routerLink]&#x3D;&quot;[&#x27;/r/check-starter&#x27;]&quot; class&#x3D;&quot;save_button&quot;&gt;{{saved ? &#x27;Zurück&#x27; : &#x27;System-Check Abbrechen&#x27;}}&lt;/button&gt;
+      &lt;/mat-card-actions&gt;
+    &lt;/mat-card&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./report.component.css</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">table {
+  /*width: 400px;*/
+  /*flex-direction: column;*/
+}
+
+#report-cointainer {
+  /*display: flex;*/
+}
+
+table thead td {
+  font-size: 14px;
+  border-bottom: 1px solid silver;
+  padding-top: 0.4em
+}
+
+table tr td {
+  min-width: 160px
+}
+</code></pre>
+                <p class="comment">
+                    <code>../sys-check.component.css</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.sys-check-body {
+  position: absolute;
+  width: 100%;
+}
+
+mat-card {
+  margin: 10px;
+}
+
+#header {
+  position: absolute;
+  width: 100%;
+  padding-top: 10px;
+  color: white;
+  z-index: 444;
+}
+button {
+  margin-left: 15px;
+}
+#header .material-icons {
+  /* font-size: 2.0rem; */
+  position: relative;
+  top: -8px;
+  font-size: 36px;
+  padding: 2px;
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="sys-check-body">  <div fxLayout="row wrap" fxLayoutAlign="center stretch">    <mat-card fxFlex="0 0 700px">      <mat-card-header>        <mat-card-title>Bericht {{ saved ? \' - gespeichert\' : \'\'}}</mat-card-title>      </mat-card-header>      <mat-card-content>        <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">{{\'Bitte prüfen Sie die Eingaben (unvollständig):\'| customtext:\'syscheck_questionsRequiredMessage\' | async}}</p>        <ul>            <li *ngFor="let qd of questionnaireDataWarnings">              {{qd.label}}            </li>        </ul>        <h2 *ngIf="ds.environmentReport.length > 0">Computer (Betriebssystem, Browser)</h2>        <ul>          <li *ngFor="let reportData of ds.environmentReport">            {{reportData.label}}: {{reportData.value}}          </li>        </ul>        <h2 *ngIf="ds.networkReport.length > 0">Netzwerk/Internetverbindung</h2>        <ul>          <li *ngFor="let reportData of ds.networkReport">            {{reportData.label}}: {{reportData.value}}          </li>        </ul>        <h2 *ngIf="ds.questionnaireReport.length > 0">Fragen</h2>        <ul>          <li *ngFor="let reportData of ds.questionnaireReport">            {{reportData.label}}: {{reportData.value}}          </li>        </ul>      </mat-card-content>      <mat-card-actions>        <button mat-raised-button color="primary" [disabled]="saved" (click)="saveReport()" class="save_button">Bericht senden</button>        <button mat-raised-button [routerLink]="[\'/r/check-starter\']" class="save_button">{{saved ? \'Zurück\' : \'System-Check Abbrechen\'}}</button>      </mat-card-actions>    </mat-card>  </div></div></div>'
+    var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'ConfirmDialogComponent', 'selector': 'tc-confirm-dialog'},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MessageDialogComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
+    var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
+    var ACTUAL_COMPONENT = {'name': 'ReportComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ReportComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -15,8 +15,13 @@
   },
   "private": true,
   "scripts": {
-    "update_specs": "npx gulp --gulpfile=./scripts/update-specs.js update_specs",
-    "lint": "npx eslint frontend/src/**/*.ts frontend/src/**/*.js broadcasting-service/src/**/*.ts scripts/**/*.js"
+    "lint": "npx eslint frontend/src/**/*.ts frontend/src/**/*.js broadcasting-service/src/**/*.ts scripts/**/*.js",
+    "update_specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
+    "dredd_test": "node_modules/.bin/gulp --gulpfile=./test/dredd/dredd-test.js runDreddTest",
+    "compodoc:frontend": "npx compodoc -p frontend/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
+    "update-compodoc:frontend": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
+    "compodoc:broadcasting-service": "npx compodoc -p broadcasting-service/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
+    "update-compodoc:broadcasting-service": "npx compodoc -p broadcasting-service/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service"
   },
   "eslintConfig": {
     "overrides": [
@@ -44,6 +49,7 @@
   },
   "devDependencies": {
     "@iqb/eslint-config": "1.0.2",
+    "@compodoc/compodoc": "^1.1.11",
     "dredd": "^14.0.0",
     "eslint-plugin-html": "^6.2.0",
     "fs-extra": "^10.0.0",

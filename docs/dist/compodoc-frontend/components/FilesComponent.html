@@ -1,0 +1,1905 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>iqb-testcenter documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">iqb-testcenter documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li>Components</li>
+  <li
+  >
+  FilesComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li >
+            <a href="#templateData" role="tab" id="templateData-tab" data-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li >
+            <a href="#styleData" role="tab" id="styleData-tab" data-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li >
+            <a href="#tree" role="tab" id="tree-tab" data-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>frontend/src/app/workspace-admin/files/files.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="https://angular.io/api/core/OnInit" target="_blank" >OnInit</a></code>
+    </p>
+
+
+<section>
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./files.component.css</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./files.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#confirmDialog" >confirmDialog</a>
+                            </li>
+                            <li>
+                                <a href="#displayedColumns" >displayedColumns</a>
+                            </li>
+                            <li>
+                                <a href="#fileNameAlias" >fileNameAlias</a>
+                            </li>
+                            <li>
+                                <a href="#files" >files</a>
+                            </li>
+                            <li>
+                                <a href="#fileStats" >fileStats</a>
+                            </li>
+                            <li>
+                                <a href="#fileTypes" >fileTypes</a>
+                            </li>
+                            <li>
+                                <a href="#lastSort" >lastSort</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#messageDialog" >messageDialog</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#snackBar" >snackBar</a>
+                            </li>
+                            <li>
+                                <a href="#typeLabels" >typeLabels</a>
+                            </li>
+                            <li>
+                                <a href="#uploadQueue" >uploadQueue</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#wds" >wds</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addFrontendChecksToFile" >addFrontendChecksToFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addFrontendChecksToFiles" >addFrontendChecksToFiles</a>
+                            </li>
+                            <li>
+                                <a href="#checkAll" >checkAll</a>
+                            </li>
+                            <li>
+                                <a href="#deleteFiles" >deleteFiles</a>
+                            </li>
+                            <li>
+                                <a href="#download" >download</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Static</span>
+                                <a href="#getStats" >getStats</a>
+                            </li>
+                            <li>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                <a href="#setTableSorting" >setTableSorting</a>
+                            </li>
+                            <li>
+                                <a href="#updateFileList" >updateFileList</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(serverUrl: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, bs: <a href="../injectables/BackendService.html" target="_self">BackendService</a>, wds: <a href="../injectables/WorkspaceDataService.html" target="_self">WorkspaceDataService</a>, confirmDialog: MatDialog, messageDialog: MatDialog, mds: <a href="../injectables/MainDataService.html" target="_self">MainDataService</a>, snackBar: MatSnackBar)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:66</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>serverUrl</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>bs</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BackendService.html" target="_self" >BackendService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>wds</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/WorkspaceDataService.html" target="_self" >WorkspaceDataService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>confirmDialog</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatDialog</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>messageDialog</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatDialog</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mds</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MainDataService.html" target="_self" >MainDataService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>snackBar</td>
+                                                  
+                                                        <td>
+                                                                    <code>MatSnackBar</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addFrontendChecksToFile"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>addFrontendChecksToFile</b></span>
+                        <a href="#addFrontendChecksToFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addFrontendChecksToFile(file: <a href="../interfaces/IQBFile.html" target="_self">IQBFile</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="206"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:206</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>file</td>
+                                    <td>
+                                                <code><a href="../interfaces/IQBFile.html" target="_self" >IQBFile</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/IQBFile.html" target="_self" >IQBFile</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addFrontendChecksToFiles"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>addFrontendChecksToFiles</b></span>
+                        <a href="#addFrontendChecksToFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addFrontendChecksToFiles(fileList: <a href="../undefineds/GetFileResponseData.html" target="_self">GetFileResponseData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="198"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:198</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fileList</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#GetFileResponseData" target="_self" >GetFileResponseData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#GetFileResponseData" target="_self" >GetFileResponseData</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkAll"></a>
+                    <span class="name">
+                        <span ><b>checkAll</b></span>
+                        <a href="#checkAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>checkAll(isChecked: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, type: <a href="../interfaces/IQBFile.html" target="_self">IQBFileType</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="86"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:86</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>isChecked</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>type</td>
+                                    <td>
+                                                <code><a href="../interfaces/IQBFile.html" target="_self" >IQBFileType</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteFiles"></a>
+                    <span class="name">
+                        <span ><b>deleteFiles</b></span>
+                        <a href="#deleteFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>deleteFiles()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:93</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="download"></a>
+                    <span class="name">
+                        <span ><b>download</b></span>
+                        <a href="#download"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>download(file: <a href="../interfaces/IQBFile.html" target="_self">IQBFile</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="227"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:227</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>file</td>
+                                    <td>
+                                                <code><a href="../interfaces/IQBFile.html" target="_self" >IQBFile</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getStats"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Static</span>
+                        <span ><b>getStats</b></span>
+                        <a href="#getStats"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getStats(fileList: <a href="../undefineds/GetFileResponseData.html" target="_self">GetFileResponseData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="172"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:172</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fileList</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#GetFileResponseData" target="_self" >GetFileResponseData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/FileStats.html" target="_self" >FileStats</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:78</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setTableSorting"></a>
+                    <span class="name">
+                        <span ><b>setTableSorting</b></span>
+                        <a href="#setTableSorting"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>setTableSorting(sort: Sort)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="240"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:240</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>sort</td>
+                                    <td>
+                                            <code>Sort</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateFileList"></a>
+                    <span class="name">
+                        <span ><b>updateFileList</b></span>
+                        <a href="#updateFileList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>updateFileList(empty)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="152"
+                            class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:152</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>empty</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>false</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="confirmDialog"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>confirmDialog</b></span>
+                        <a href="#confirmDialog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MatDialog</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayedColumns"></a>
+                    <span class="name">
+                        <span ><b>displayedColumns</b></span>
+                        <a href="#displayedColumns"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&#x27;checked&#x27;, &#x27;name&#x27;, &#x27;size&#x27;, &#x27;modificationTime&#x27;]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileNameAlias"></a>
+                    <span class="name">
+                        <span ><b>fileNameAlias</b></span>
+                        <a href="#fileNameAlias"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;fileforvo&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="files"></a>
+                    <span class="name">
+                        <span ><b>files</b></span>
+                        <a href="#files"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileStats"></a>
+                    <span class="name">
+                        <span ><b>fileStats</b></span>
+                        <a href="#fileStats"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/FileStats.html" target="_self" >FileStats</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    total: {
+      count: 0,
+      invalid: 0
+    },
+    invalid: {},
+    testtakers: 0
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileTypes"></a>
+                    <span class="name">
+                        <span ><b>fileTypes</b></span>
+                        <a href="#fileTypes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>IQBFileTypes</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lastSort"></a>
+                    <span class="name">
+                        <span ><b>lastSort</b></span>
+                        <a href="#lastSort"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Sort</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    active: &#x27;name&#x27;,
+    direction: &#x27;asc&#x27;
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:44</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="messageDialog"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>messageDialog</b></span>
+                        <a href="#messageDialog"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MatDialog</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="snackBar"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>snackBar</b></span>
+                        <a href="#snackBar"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MatSnackBar</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="typeLabels"></a>
+                    <span class="name">
+                        <span ><b>typeLabels</b></span>
+                        <a href="#typeLabels"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    Testtakers: &#x27;Teilnehmerlisten&#x27;,
+    Booklet: &#x27;Testhefte&#x27;,
+    SysCheck: &#x27;System-Check-Definitionen&#x27;,
+    Resource: &#x27;Ressourcen&#x27;,
+    Unit: &#x27;Units&#x27;
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="uploadQueue"></a>
+                    <span class="name">
+                        <span ><b>uploadQueue</b></span>
+                        <a href="#uploadQueue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../components/IqbFilesUploadQueueComponent.html" target="_self" >IqbFilesUploadQueueComponent</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(&#x27;fileUploadQueue&#x27;, {static: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="wds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>wds</b></span>
+                        <a href="#wds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/WorkspaceDataService.html" target="_self" >WorkspaceDataService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">frontend/src/app/workspace-admin/files/files.component.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  Component, OnInit, Inject, ViewChild
+} from &#x27;@angular/core&#x27;;
+import { MatTableDataSource } from &#x27;@angular/material/table&#x27;;
+import { MatSnackBar } from &#x27;@angular/material/snack-bar&#x27;;
+import { MatDialog } from &#x27;@angular/material/dialog&#x27;;
+import { Sort } from &#x27;@angular/material/sort&#x27;;
+
+import { saveAs } from &#x27;file-saver&#x27;;
+import { map } from &#x27;rxjs/operators&#x27;;
+import {
+  ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
+  MessageDialogData, MessageType, MainDataService
+} from &#x27;../../shared/shared.module&#x27;;
+import { WorkspaceDataService } from &#x27;../workspacedata.service&#x27;;
+import {
+  IQBFileType, GetFileResponseData, IQBFile, IQBFileTypes
+} from &#x27;../workspace.interfaces&#x27;;
+import { BackendService } from &#x27;../backend.service&#x27;;
+import { IqbFilesUploadQueueComponent } from &#x27;./iqb-files-upload-queue/iqb-files-upload-queue.component&#x27;;
+import { FileDeletionReport } from &#x27;./files.interfaces&#x27;;
+
+interface FileStats {
+  invalid: {
+    [type in IQBFileType]?: number;
+  }
+  total: {
+    count: number;
+    invalid: number;
+  };
+  testtakers: number;
+}
+
+@Component({
+  templateUrl: &#x27;./files.component.html&#x27;,
+  styleUrls: [&#x27;./files.component.css&#x27;]
+})
+export class FilesComponent implements OnInit {
+  files: { [type in IQBFileType]?: MatTableDataSource&lt;IQBFile&gt; } &#x3D; {};
+  fileTypes &#x3D; IQBFileTypes;
+  displayedColumns &#x3D; [&#x27;checked&#x27;, &#x27;name&#x27;, &#x27;size&#x27;, &#x27;modificationTime&#x27;];
+  fileNameAlias &#x3D; &#x27;fileforvo&#x27;;
+
+  lastSort:Sort &#x3D; {
+    active: &#x27;name&#x27;,
+    direction: &#x27;asc&#x27;
+  };
+
+  typeLabels &#x3D; {
+    Testtakers: &#x27;Teilnehmerlisten&#x27;,
+    Booklet: &#x27;Testhefte&#x27;,
+    SysCheck: &#x27;System-Check-Definitionen&#x27;,
+    Resource: &#x27;Ressourcen&#x27;,
+    Unit: &#x27;Units&#x27;
+  };
+
+  fileStats: FileStats &#x3D; {
+    total: {
+      count: 0,
+      invalid: 0
+    },
+    invalid: {},
+    testtakers: 0
+  };
+
+  @ViewChild(&#x27;fileUploadQueue&#x27;, { static: true }) uploadQueue: IqbFilesUploadQueueComponent;
+
+  constructor(
+    @Inject(&#x27;SERVER_URL&#x27;) private serverUrl: string,
+    private bs: BackendService,
+    public wds: WorkspaceDataService,
+    public confirmDialog: MatDialog,
+    public messageDialog: MatDialog,
+    private mds: MainDataService,
+    public snackBar: MatSnackBar
+  ) { }
+
+  ngOnInit(): void {
+    // this.uploadUrl &#x3D; &#x60;${this.serverUrl}workspace/${this.wds.wsId}/file&#x60;;
+    setTimeout(() &#x3D;&gt; {
+      this.mds.setSpinnerOn();
+      this.updateFileList();
+    });
+  }
+
+  checkAll(isChecked: boolean, type: IQBFileType): void {
+    this.files[type].data &#x3D; this.files[type].data.map(file &#x3D;&gt; {
+      file.isChecked &#x3D; isChecked;
+      return file;
+    });
+  }
+
+  deleteFiles(): void {
+    if (this.wds.wsRole !&#x3D;&#x3D; &#x27;RW&#x27;) {
+      return;
+    }
+
+    const filesToDelete &#x3D; [];
+    Object.keys(this.files).forEach(type &#x3D;&gt; {
+      this.files[type].data.forEach(file &#x3D;&gt; {
+        if (file.isChecked) {
+          filesToDelete.push(&#x60;${file.type}/${file.name}&#x60;);
+        }
+      });
+    });
+
+    if (filesToDelete.length &gt; 0) {
+      const p &#x3D; filesToDelete.length &gt; 1;
+      const dialogRef &#x3D; this.confirmDialog.open(ConfirmDialogComponent, {
+        width: &#x27;400px&#x27;,
+        data: &lt;ConfirmDialogData&gt;{
+          title: &#x27;Löschen von Dateien&#x27;,
+          content: &#x60;Sie haben ${p ? filesToDelete.length : &#x27;eine&#x27;} Datei${p ? &#x27;en&#x27; : &#x27;&#x27;}\&#x60;
+            ausgewählt. Soll${p ? &#x27;en&#x27; : &#x27;&#x27;}  diese gelöscht werden?&#x60;,
+          confirmbuttonlabel: &#x27;Löschen&#x27;,
+          showcancel: true
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result &#x3D;&gt; {
+        if (result !&#x3D;&#x3D; false) {
+          this.mds.setSpinnerOn();
+          this.bs.deleteFiles(this.wds.wsId, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) &#x3D;&gt; {
+            const message &#x3D; [];
+            if (fileDeletionReport.deleted.length &gt; 0) {
+              message.push(&#x60;${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.&#x60;);
+            }
+            if (fileDeletionReport.not_allowed.length &gt; 0) {
+              message.push(&#x60;${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.&#x60;);
+            }
+            if (fileDeletionReport.was_used.length &gt; 0) {
+              message.push(&#x60;${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet
+              und wurden nicht gelöscht.&#x60;);
+            }
+            this.snackBar.open(message.join(&#x27;&lt;br&gt;&#x27;), message.length &gt; 1 ? &#x27;Achtung&#x27; : &#x27;&#x27;, { duration: 1000 });
+            this.updateFileList();
+          });
+        }
+      });
+    } else {
+      this.messageDialog.open(MessageDialogComponent, {
+        width: &#x27;400px&#x27;,
+        data: &lt;MessageDialogData&gt;{
+          title: &#x27;Löschen von Dateien&#x27;,
+          content: &#x27;Bitte markieren Sie erst Dateien!&#x27;,
+          type: MessageType.error
+        }
+      });
+    }
+  }
+
+  updateFileList(empty &#x3D; false): void {
+    if (empty) {
+      this.files &#x3D; {};
+      this.mds.setSpinnerOff();
+    } else {
+      this.bs.getFiles(this.wds.wsId)
+        .pipe(map(fileList &#x3D;&gt; this.addFrontendChecksToFiles(fileList)))
+        .subscribe(fileList &#x3D;&gt; {
+          this.files &#x3D; {};
+          Object.keys(fileList)
+            .forEach(type &#x3D;&gt; {
+              this.files[type] &#x3D; new MatTableDataSource(fileList[type]);
+            });
+          this.fileStats &#x3D; FilesComponent.getStats(fileList);
+          this.setTableSorting(this.lastSort);
+          this.mds.setSpinnerOff();
+        });
+    }
+  }
+
+  private static getStats(fileList: GetFileResponseData): FileStats {
+    const stats: FileStats &#x3D; {
+      total: {
+        count: 0,
+        invalid: 0
+      },
+      invalid: {},
+      testtakers: 0
+    };
+    Object.keys(fileList)
+      .forEach(type &#x3D;&gt; {
+        fileList[type].forEach(file &#x3D;&gt; {
+          if (typeof stats.invalid[type] &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) {
+            stats.invalid[type] &#x3D; 0;
+          }
+          stats.total.count +&#x3D; 1;
+          if (file.report.error &amp;&amp; file.report.error.length) {
+            stats.invalid[type] +&#x3D; 1;
+            stats.total.invalid +&#x3D; 1;
+          }
+          stats.testtakers +&#x3D; (typeof file.info.testtakers &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) ? file.info.testtakers : 0;
+        });
+      });
+    return stats;
+  }
+
+  private addFrontendChecksToFiles(fileList: GetFileResponseData): GetFileResponseData {
+    Object.keys(fileList).forEach(type &#x3D;&gt; {
+      // eslint-disable-next-line no-param-reassign
+      fileList[type] &#x3D; fileList[type].map(files &#x3D;&gt; this.addFrontendChecksToFile(files));
+    });
+    return fileList;
+  }
+
+  private addFrontendChecksToFile(file: IQBFile): IQBFile {
+    if (file.info.veronaVersion) {
+      const fileMayor &#x3D; parseInt(file.info.veronaVersion.toString().split(&#x27;.&#x27;).shift(), 10);
+      if (typeof file.report.error &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) {
+        // eslint-disable-next-line no-param-reassign
+        file.report.error &#x3D; [];
+      }
+      if (
+        fileMayor &lt; this.mds.appConfig?.veronaPlayerApiVersionMin ||
+        fileMayor &gt; this.mds.appConfig?.veronaPlayerApiVersionMax
+      ) {
+        file.report.error.push(
+          &#x60;Verona Version \&#x60;${fileMayor}\&#x60; is not supported
+          (only versions between \&#x60;${this.mds.appConfig?.veronaPlayerApiVersionMin}\&#x60; 
+          and \&#x60;${this.mds.appConfig?.veronaPlayerApiVersionMax}\&#x60;)&#x60;
+        );
+      }
+    }
+    return file;
+  }
+
+  download(file: IQBFile): void {
+    this.mds.setSpinnerOn();
+    this.bs.downloadFile(this.wds.wsId, file.type, file.name)
+      .subscribe(
+        (fileData: Blob | boolean) &#x3D;&gt; {
+          this.mds.setSpinnerOff();
+          if (fileData !&#x3D;&#x3D; false) {
+            saveAs(fileData as Blob, file.name);
+          }
+        }
+      );
+  }
+
+  setTableSorting(sort: Sort): void {
+    this.lastSort &#x3D; sort;
+    function compare(a: number | string, b: number | string, isAsc: boolean) {
+      if ((typeof a &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) &amp;&amp; (typeof b &#x3D;&#x3D;&#x3D; &#x27;string&#x27;)) {
+        return a.localeCompare(b) * (isAsc ? 1 : -1);
+      }
+      return (a &lt; b ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+    Object.keys(this.files).forEach(type &#x3D;&gt; {
+      this.files[type].data &#x3D; this.files[type].data
+        .sort((a, b) &#x3D;&gt; compare(a[sort.active], b[sort.active], (sort.direction &#x3D;&#x3D;&#x3D; &#x27;asc&#x27;)));
+    });
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;columnhost&quot;&gt;
+  &lt;div class&#x3D;&quot;filelist&quot;&gt;
+
+    &lt;mat-accordion class&#x3D;&quot;example-headers-align&quot; multi&#x3D;&quot;true&quot;&gt;
+      &lt;ng-container *ngFor&#x3D;&quot;let type of fileTypes&quot;&gt;
+        &lt;mat-expansion-panel [expanded]&#x3D;&quot;true&quot; *ngIf&#x3D;&quot;files &amp;&amp; files[type]&quot;&gt;
+          &lt;mat-expansion-panel-header&gt;
+            &lt;mat-panel-title&gt;{{typeLabels[type]}}&lt;/mat-panel-title&gt;
+            &lt;mat-panel-description&gt;
+              &lt;span&gt;{{files[type].data.length}} Datei{{files[type].data.length &#x3D;&#x3D;&#x3D; 1 ? &#x27;&#x27; : &#x27;en&#x27;}}&lt;/span&gt;
+              &lt;span *ngIf&#x3D;&quot;fileStats.invalid[type]&quot;&gt;, davon {{fileStats.invalid[type]}} Fehlerhaft&lt;/span&gt;
+              &lt;span *ngIf&#x3D;&quot;type&#x3D;&#x3D;&#x27;Testtakers&#x27;&quot;&gt;, {{fileStats.testtakers}} Teilnehmer&lt;/span&gt;
+            &lt;/mat-panel-description&gt;
+          &lt;/mat-expansion-panel-header&gt;
+
+          &lt;mat-table [dataSource]&#x3D;&quot;files[type]&quot; matSort (matSortChange)&#x3D;&quot;setTableSorting($event)&quot;&gt;
+            &lt;ng-container matColumnDef&#x3D;&quot;checked&quot;&gt;
+              &lt;mat-header-cell *matHeaderCellDef class&#x3D;&quot;checkboxcell&quot;&gt;
+                &lt;mat-checkbox (change)&#x3D;&quot;checkAll($event.checked, type)&quot;&gt;&lt;/mat-checkbox&gt;
+              &lt;/mat-header-cell&gt;
+              &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;checkboxcell&quot;&gt;
+                &lt;mat-checkbox [checked]&#x3D;&quot;element.isChecked&quot; (change)&#x3D;&quot;element.isChecked&#x3D;$event.checked&quot;&gt;&lt;/mat-checkbox&gt;
+              &lt;/mat-cell&gt;
+            &lt;/ng-container&gt;
+
+            &lt;ng-container matColumnDef&#x3D;&quot;name&quot;&gt;
+              &lt;mat-header-cell *matHeaderCellDef mat-sort-header class&#x3D;&quot;namecell&quot;&gt;Dateiname&lt;/mat-header-cell&gt;
+              &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;namecell&quot;&gt;
+                &lt;div class&#x3D;&quot;file-report&quot;&gt;
+                  &lt;button mat-button (click)&#x3D;&quot;download(element)&quot;&gt;{{element.name}}&lt;/button&gt;
+                  &lt;span class&#x3D;&quot;vertical-align-middle&quot;&gt;
+                    &lt;ng-container *ngIf&#x3D;&quot;element.report.error &amp;&amp; element.report.error?.length; else: noError&quot;&gt;
+                      &lt;mat-icon class&#x3D;&quot;report-error&quot;&gt;error&lt;/mat-icon&gt;
+                    &lt;/ng-container&gt;
+                    &lt;ng-template #noError&gt;
+                      &lt;ng-container *ngIf&#x3D;&quot;element.report.warning &amp;&amp; element.report.warning?.length&quot;&gt;
+                        &lt;mat-icon class&#x3D;&quot;report-warning&quot;&gt;warning&lt;/mat-icon&gt;
+                      &lt;/ng-container&gt;
+                    &lt;/ng-template&gt;
+                  &lt;/span&gt;
+                  &lt;mat-card class&#x3D;&quot;full-file-report&quot;&gt;
+                    &lt;mat-card-header *ngIf&#x3D;&quot;element.info.label || element.id&quot;&gt;
+                      &lt;mat-card-title&gt;
+                        {{element.info.label}}
+                        &lt;span
+                            *ngIf&#x3D;&quot;element.id !&#x3D;&#x3D; element.name.toUpperCase()&quot;
+                            style&#x3D;&quot;{{element.info.label ? &#x27;color:silver&#x27; : &#x27;&#x27;}}&quot;&gt;
+                        #{{element.id}}
+                      &lt;/span&gt;
+                      &lt;/mat-card-title&gt;
+                      &lt;mat-card-subtitle&gt;{{element.info.description}}&lt;/mat-card-subtitle&gt;
+                    &lt;/mat-card-header&gt;
+                    &lt;mat-card-content&gt;
+                      &lt;alert level&#x3D;&quot;info&quot; *ngIf&#x3D;&quot;element.info.testtakers&quot; text&#x3D;&quot;{{element.info.testtakers}} Teilnehmer definiert&quot;&gt;&lt;/alert&gt;
+                      &lt;ng-container *ngFor&#x3D;&quot;let level of [&#x27;error&#x27;, &#x27;warning&#x27;, &#x27;info&#x27;]&quot;&gt;
+                        &lt;div *ngFor&#x3D;&quot;let message of element.report[level]&quot;&gt;
+                          &lt;alert [level]&#x3D;&quot;level&quot; [text]&#x3D;&quot;message&quot;&gt;&lt;/alert&gt;
+                        &lt;/div&gt;
+                      &lt;/ng-container&gt;
+                    &lt;/mat-card-content&gt;
+                  &lt;/mat-card&gt;
+                &lt;/div&gt;
+              &lt;/mat-cell&gt;
+            &lt;/ng-container&gt;
+
+            &lt;ng-container matColumnDef&#x3D;&quot;modificationTime&quot;&gt;
+              &lt;mat-header-cell *matHeaderCellDef mat-sort-header class&#x3D;&quot;datecell&quot;&gt; Letzte Änderung &lt;/mat-header-cell&gt;
+              &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot; class&#x3D;&quot;datecell&quot;&gt;
+                {{(element.modificationTime * 1000) | date: &#x27;dd.MM.yy HH:mm&#x27;}}
+              &lt;/mat-cell&gt;
+            &lt;/ng-container&gt;
+
+            &lt;ng-container matColumnDef&#x3D;&quot;size&quot;&gt;
+              &lt;mat-header-cell *matHeaderCellDef mat-sort-header&gt; Volle Größe  &lt;/mat-header-cell&gt;
+              &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot; style&#x3D;&quot;white-space: nowrap;&quot;&gt;
+                {{(element.info.totalSize || element.size) | bytes}}
+              &lt;/mat-cell&gt;
+            &lt;/ng-container&gt;
+
+            &lt;mat-header-row *matHeaderRowDef&#x3D;&quot;displayedColumns&quot;&gt;&lt;/mat-header-row&gt;
+            &lt;mat-row *matRowDef&#x3D;&quot;let row; columns: displayedColumns;&quot;&gt;&lt;/mat-row&gt;
+          &lt;/mat-table&gt;
+
+        &lt;/mat-expansion-panel&gt;
+      &lt;/ng-container&gt;
+    &lt;/mat-accordion&gt;
+  &lt;/div&gt;
+
+  &lt;div class&#x3D;&quot;sidebar&quot;&gt;
+
+    &lt;div class&#x3D;&quot;buttons&quot;&gt;
+      &lt;button mat-raised-button (click)&#x3D;&quot;deleteFiles()&quot; matTooltip&#x3D;&quot;Markierte Dateien löschen&quot; matTooltipPosition&#x3D;&quot;above&quot; [disabled]&#x3D;&quot;wds.wsRole !&#x3D;&#x3D; &#x27;RW&#x27;&quot;&gt;
+        &lt;mat-icon&gt;delete&lt;/mat-icon&gt;
+      &lt;/button&gt;
+      &lt;button mat-raised-button (click)&#x3D;&quot;hiddenfileinput.click()&quot; matTooltip&#x3D;&quot;Dateien hochladen/aktualisieren&quot; matTooltipPosition&#x3D;&quot;above&quot; [disabled]&#x3D;&quot;wds.wsRole !&#x3D;&#x3D; &#x27;RW&#x27;&quot;&gt;
+        &lt;mat-icon&gt;cloud_upload&lt;/mat-icon&gt;
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;input #hiddenfileinput type&#x3D;&quot;file&quot; name&#x3D;&quot;fileforvo&quot; multiple [iqbFilesUploadInputFor]&#x3D;&quot;fileUploadQueue&quot; [hidden]&#x3D;&quot;true&quot;/&gt;
+
+    &lt;iqb-files-upload-queue #fileUploadQueue
+      [fileAlias]&#x3D;&quot;fileNameAlias&quot;
+      [folderName]&#x3D;&quot;&#x27;ws&#x27;&quot;
+      [folder]&#x3D;&quot;&#x27;workspace&#x27;&quot;
+      (uploadCompleteEvent)&#x3D;&quot;updateFileList()&quot;&gt;
+    &lt;/iqb-files-upload-queue&gt;
+
+    &lt;div *ngIf&#x3D;&quot;!uploadQueue.files?.length&quot; class&#x3D;&quot;workspace-report&quot;&gt;
+      &lt;alert *ngIf&#x3D;&quot;fileStats.total.invalid; else: workspaceValid&quot; level&#x3D;&quot;error&quot; text&#x3D;&quot;{{fileStats.total.invalid}}
+        Datei{{fileStats.total.invalid &#x3D;&#x3D; 1 ? &#x27;&#x27; : &#x27;en&#x27;}} von {{fileStats.total.count}}
+        {{fileStats.total.invalid &#x3D;&#x3D; 1 ? &#x27;ist&#x27; : &#x27;sind&#x27;}} nicht valide oder
+        {{fileStats.total.invalid &#x3D;&#x3D; 1 ? &#x27;hat&#x27; : &#x27;haben&#x27;}} fehlende Abhängigkeiten
+        und {{fileStats.total.invalid &#x3D;&#x3D; 1 ? &#x27;wird&#x27; : &#x27;werden&#x27;}} ignoriert!&quot;&gt;
+      &lt;/alert&gt;
+      &lt;ng-template #workspaceValid&gt;
+        &lt;alert level&#x3D;&quot;success&quot; *ngIf&#x3D;&quot;fileStats.total.count&quot; text&#x3D;&quot;Alle
+          {{fileStats.total.count &gt; 1 ? fileStats.total.count : &#x27;&#x27;}} Dateien im Workspace sind Valide.&quot;&gt;&lt;/alert&gt;
+      &lt;/ng-template&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-styleData">
+                <p class="comment">
+                    <code>./files.component.css</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">.columnhost {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: left;
+}
+
+.filelist {
+  flex:  10 0 400px;
+  margin-top: 0.7em;
+}
+
+mat-expansion-panel {
+  overflow: visible;
+}
+
+mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type {
+  padding-left: 0
+}
+
+.checkboxcell {
+  overflow: visible;
+  flex: 0 0 30px;
+}
+
+.namecell {
+  flex: 3 3 60px;
+}
+
+.namecell.mat-header-cell {
+  padding-left: 16px;
+}
+
+.datecell {
+  flex: 1 1 5px;
+}
+
+.sidebar {
+  flex:  10 0 200px;
+  padding-left: 1em;
+}
+
+.sidebar .buttons {
+  margin-top: 0.7em;
+  margin-bottom: 0.7em;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.checkerror, .checkwarning, .checkinfo  {
+  margin: 20px;
+  font-size: 0.8em;
+}
+
+.report-error {
+  color: #821324;
+}
+
+.report-warning {
+  color: silver;
+}
+
+.report-info {
+  color: blue;
+}
+
+.mat-raised-button {
+  min-width: 100px;
+  margin: 2px;
+}
+
+.file-report {
+  cursor: pointer
+}
+
+.full-file-report {
+  display: none;
+}
+
+.file-report:hover .full-file-report {
+  display: block;
+  position: absolute ;
+  background: white;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  cursor: default;
+  margin: 2px;
+}
+
+.full-file-report .mat-card-title,
+.full-file-report .mat-card-subtitle {
+  margin-left: -16px;
+}
+
+.full-file-report mat-card-content {
+  max-height: 15em;
+  overflow-y: auto
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="c-tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="columnhost">  <div class="filelist">    <mat-accordion class="example-headers-align" multi="true">      <ng-container *ngFor="let type of fileTypes">        <mat-expansion-panel [expanded]="true" *ngIf="files && files[type]">          <mat-expansion-panel-header>            <mat-panel-title>{{typeLabels[type]}}</mat-panel-title>            <mat-panel-description>              <span>{{files[type].data.length}} Datei{{files[type].data.length === 1 ? \'\' : \'en\'}}</span>              <span *ngIf="fileStats.invalid[type]">, davon {{fileStats.invalid[type]}} Fehlerhaft</span>              <span *ngIf="type==\'Testtakers\'">, {{fileStats.testtakers}} Teilnehmer</span>            </mat-panel-description>          </mat-expansion-panel-header>          <mat-table [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">            <ng-container matColumnDef="checked">              <mat-header-cell *matHeaderCellDef class="checkboxcell">                <mat-checkbox (change)="checkAll($event.checked, type)"></mat-checkbox>              </mat-header-cell>              <mat-cell *matCellDef="let element" class="checkboxcell">                <mat-checkbox [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>              </mat-cell>            </ng-container>            <ng-container matColumnDef="name">              <mat-header-cell *matHeaderCellDef mat-sort-header class="namecell">Dateiname</mat-header-cell>              <mat-cell *matCellDef="let element" class="namecell">                <div class="file-report">                  <button mat-button (click)="download(element)">{{element.name}}</button>                  <span class="vertical-align-middle">                    <ng-container *ngIf="element.report.error && element.report.error?.length; else: noError">                      <mat-icon class="report-error">error</mat-icon>                    </ng-container>                    <ng-template #noError>                      <ng-container *ngIf="element.report.warning && element.report.warning?.length">                        <mat-icon class="report-warning">warning</mat-icon>                      </ng-container>                    </ng-template>                  </span>                  <mat-card class="full-file-report">                    <mat-card-header *ngIf="element.info.label || element.id">                      <mat-card-title>                        {{element.info.label}}                        <span                            *ngIf="element.id !== element.name.toUpperCase()"                            style="{{element.info.label ? \'color:silver\' : \'\'}}">                        #{{element.id}}                      </span>                      </mat-card-title>                      <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>                    </mat-card-header>                    <mat-card-content>                      <alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></alert>                      <ng-container *ngFor="let level of [\'error\', \'warning\', \'info\']">                        <div *ngFor="let message of element.report[level]">                          <alert [level]="level" [text]="message"></alert>                        </div>                      </ng-container>                    </mat-card-content>                  </mat-card>                </div>              </mat-cell>            </ng-container>            <ng-container matColumnDef="modificationTime">              <mat-header-cell *matHeaderCellDef mat-sort-header class="datecell"> Letzte Änderung </mat-header-cell>              <mat-cell *matCellDef="let element" class="datecell">                {{(element.modificationTime * 1000) | date: \'dd.MM.yy HH:mm\'}}              </mat-cell>            </ng-container>            <ng-container matColumnDef="size">              <mat-header-cell *matHeaderCellDef mat-sort-header> Volle Größe  </mat-header-cell>              <mat-cell *matCellDef="let element" style="white-space: nowrap;">                {{(element.info.totalSize || element.size) | bytes}}              </mat-cell>            </ng-container>            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>          </mat-table>        </mat-expansion-panel>      </ng-container>    </mat-accordion>  </div>  <div class="sidebar">    <div class="buttons">      <button mat-raised-button (click)="deleteFiles()" matTooltip="Markierte Dateien löschen" matTooltipPosition="above" [disabled]="wds.wsRole !== \'RW\'">        <mat-icon>delete</mat-icon>      </button>      <button mat-raised-button (click)="hiddenfileinput.click()" matTooltip="Dateien hochladen/aktualisieren" matTooltipPosition="above" [disabled]="wds.wsRole !== \'RW\'">        <mat-icon>cloud_upload</mat-icon>      </button>    </div>    <input #hiddenfileinput type="file" name="fileforvo" multiple [iqbFilesUploadInputFor]="fileUploadQueue" [hidden]="true"/>    <iqb-files-upload-queue #fileUploadQueue      [fileAlias]="fileNameAlias"      [folderName]="\'ws\'"      [folder]="\'workspace\'"      (uploadCompleteEvent)="updateFileList()">    </iqb-files-upload-queue>    <div *ngIf="!uploadQueue.files?.length" class="workspace-report">      <alert *ngIf="fileStats.total.invalid; else: workspaceValid" level="error" text="{{fileStats.total.invalid}}        Datei{{fileStats.total.invalid == 1 ? \'\' : \'en\'}} von {{fileStats.total.count}}        {{fileStats.total.invalid == 1 ? \'ist\' : \'sind\'}} nicht valide oder        {{fileStats.total.invalid == 1 ? \'hat\' : \'haben\'}} fehlende Abhängigkeiten        und {{fileStats.total.invalid == 1 ? \'wird\' : \'werden\'}} ignoriert!">      </alert>      <ng-template #workspaceValid>        <alert level="success" *ngIf="fileStats.total.count" text="Alle          {{fileStats.total.count > 1 ? fileStats.total.count : \'\'}} Dateien im Workspace sind Valide."></alert>      </ng-template>    </div>  </div></div></div>'
+    var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'ConfirmDialogComponent', 'selector': 'tc-confirm-dialog'},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MessageDialogComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
+    var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
+    var ACTUAL_COMPONENT = {'name': 'FilesComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'FilesComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
