@@ -10,7 +10,7 @@ class ModeTest extends TestCase {
 
     function setUp(): void {
 
-        require_once 'classes/helper/Mode.class.php';
+        require_once 'src/helper/Mode.class.php';
     }
 
     public function test_getWorkspaceName() {

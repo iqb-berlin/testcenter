@@ -12,16 +12,16 @@ class XMLFilesUnitTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileUnit.class.php";
-        require_once "classes/files/ResourceFile.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/workspace/Workspace.class.php";
-        require_once "classes/workspace/WorkspaceValidator.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileUnit.class.php";
+        require_once "src/files/ResourceFile.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/workspace/Workspace.class.php";
+        require_once "src/workspace/WorkspaceValidator.class.php";
         require_once "unit-tests/mock-classes/ResourceFileMock.php";
         require_once "unit-tests/mock-classes/WorkspaceValidatorMock.php";
 

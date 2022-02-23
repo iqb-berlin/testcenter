@@ -11,7 +11,7 @@ class CSVTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/helper/CSV.class.php";
+        require_once "src/helper/CSV.class.php";
     }
 
     private $_testData = [

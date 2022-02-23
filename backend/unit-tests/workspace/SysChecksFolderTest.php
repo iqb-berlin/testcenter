@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
  */
 class SysChecksFolderTest extends TestCase {
 
-    private vfsStreamDirectory $vfs;
     private SysChecksFolder $folder;
 
     public static function setUpBeforeClass(): void {
@@ -22,20 +21,20 @@ class SysChecksFolderTest extends TestCase {
 
     function setUp(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/workspace/Workspace.class.php";
-        require_once "classes/workspace/SysChecksFolder.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileSysCheck.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/workspace/Workspace.class.php";
+        require_once "src/workspace/SysChecksFolder.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileSysCheck.class.php";
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([
             'getGlobalIds' => VfsForTest::globalIds
         ]);
-        $this->vfs = VfsForTest::setUp();
+        VfsForTest::setUp();
         $this->folder = new SysChecksFolder(1);
     }
 

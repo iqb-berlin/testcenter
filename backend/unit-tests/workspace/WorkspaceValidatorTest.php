@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
  */
 class WorkspaceValidatorTest extends TestCase{
 
-    private vfsStreamDirectory $vfs;
     private WorkspaceValidator $validator;
     private WorkspaceDAO  $workspaceDaoMock;
 
@@ -27,28 +26,28 @@ class WorkspaceValidatorTest extends TestCase{
 
     function setUp(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/data-collection/PlayerMeta.class.php";
-        require_once "classes/data-collection/Login.class.php";
-        require_once "classes/data-collection/LoginArray.class.php";
-        require_once "classes/data-collection/Group.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/helper/Version.class.php";
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/helper/XMLSchema.class.php";
-        require_once "classes/helper/TimeStamp.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileSysCheck.class.php";
-        require_once "classes/files/XMLFileBooklet.class.php";
-        require_once "classes/files/XMLFileUnit.class.php";
-        require_once "classes/files/XMLFileTesttakers.class.php";
-        require_once "classes/files/ResourceFile.class.php";
-        require_once "classes/workspace/Workspace.class.php";
-        require_once "classes/workspace/WorkspaceValidator.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/data-collection/PlayerMeta.class.php";
+        require_once "src/data-collection/Login.class.php";
+        require_once "src/data-collection/LoginArray.class.php";
+        require_once "src/data-collection/Group.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/helper/Version.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/helper/XMLSchema.class.php";
+        require_once "src/helper/TimeStamp.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileSysCheck.class.php";
+        require_once "src/files/XMLFileBooklet.class.php";
+        require_once "src/files/XMLFileUnit.class.php";
+        require_once "src/files/XMLFileTesttakers.class.php";
+        require_once "src/files/ResourceFile.class.php";
+        require_once "src/workspace/Workspace.class.php";
+        require_once "src/workspace/WorkspaceValidator.class.php";
 
         require_once "unit-tests/mock-classes/PasswordMock.php";
 
@@ -56,7 +55,7 @@ class WorkspaceValidatorTest extends TestCase{
         $this->workspaceDaoMock->allows([
             'getGlobalIds' => VfsForTest::globalIds
         ]);
-        $this->vfs = VfsForTest::setUp(true);
+        VfsForTest::setUp(true);
         $this->validator = new WorkspaceValidator(new Workspace(1));
     }
 

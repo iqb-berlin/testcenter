@@ -11,7 +11,7 @@ class FileNameTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/helper/FileName.class.php";
+        require_once "src/helper/FileName.class.php";
     }
 
     function test_normalize() {

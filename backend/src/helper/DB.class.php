@@ -11,7 +11,7 @@ class DB {
 
     static function connect(?DBConfig $config = null): void {
 
-        self::$config = $config ?? DBConfig::fromFile(ROOT_DIR . '/config/DBConnectionData.json');
+        self::$config = $config ?? DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
 
         if (self::$config->type === 'mysql') {
 

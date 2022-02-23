@@ -9,7 +9,7 @@ final class ReportTypeTest extends TestCase {
 
     static function setUpBeforeClass(): void {
 
-        require_once "classes/data-collection/ReportType.php";
+        require_once "src/data-collection/ReportType.php";
     }
 
     /**

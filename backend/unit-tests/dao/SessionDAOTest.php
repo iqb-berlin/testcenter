@@ -19,29 +19,29 @@ class SessionDAOTest extends TestCase {
 
         require_once "unit-tests/mock-classes/PasswordMock.php";
 
-        require_once "classes/exception/HttpError.class.php";
-        require_once "classes/data-collection/DataCollection.class.php";
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/AuthToken.class.php";
-        require_once "classes/helper/DB.class.php";
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/data-collection/DBConfig.class.php";
-        require_once "classes/data-collection/Login.class.php";
-        require_once "classes/data-collection/LoginSession.class.php";
-        require_once "classes/data-collection/AccessSet.class.php";
-        require_once "classes/data-collection/Person.class.php";
-        require_once "classes/data-collection/PersonSession.class.php";
-        require_once "classes/helper/TimeStamp.class.php";
-        require_once "classes/dao/DAO.class.php";
-        require_once "classes/dao/SessionDAO.class.php";
+        require_once "src/exception/HttpError.class.php";
+        require_once "src/data-collection/DataCollection.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/AuthToken.class.php";
+        require_once "src/helper/DB.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/data-collection/DBConfig.class.php";
+        require_once "src/data-collection/Login.class.php";
+        require_once "src/data-collection/LoginSession.class.php";
+        require_once "src/data-collection/AccessSet.class.php";
+        require_once "src/data-collection/Person.class.php";
+        require_once "src/data-collection/PersonSession.class.php";
+        require_once "src/helper/TimeStamp.class.php";
+        require_once "src/dao/DAO.class.php";
+        require_once "src/dao/SessionDAO.class.php";
     }
 
     function setUp(): void {
 
         DB::connect(new DBConfig(["type" => "temp", "staticTokens" => true]));
         $this->dbc = new SessionDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile(REAL_ROOT_DIR . '/unit-tests/testdata.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/database/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/unit-tests/testdata.sql');
 
         $this->testLoginSession = new LoginSession(
             1,

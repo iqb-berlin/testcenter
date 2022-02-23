@@ -48,10 +48,11 @@ if (php_sapi_name() !== 'cli') {
     exit(1);
 }
 
-define('ROOT_DIR', dirname(__FILE__));
-define('DATA_DIR', realpath(ROOT_DIR . '/..') . '/data');
+define('ROOT_DIR', realpath(__DIR__ . '/..'));
+define('DATA_DIR', ROOT_DIR . '/data');
 
-require_once(ROOT_DIR . '/autoload.php');
+
+require_once(ROOT_DIR . '/backend/autoload.php');
 
 try  {
     $args = CLI::getOpt();
@@ -61,9 +62,9 @@ try  {
     CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
     CLI::h2("System-Config");
-    if (!file_exists(ROOT_DIR . '/config/system.json')) {
+    if (!file_exists(ROOT_DIR . '/backend/config/system.json')) {
 
-        CLI::p("System-Config not file found (`/config/system.json`). Will be created.");
+        CLI::p("System-Config not file found (`/backend/config/system.json`). Will be created.");
 
         $sysConf = new SystemConfig($args, true);
 
@@ -71,14 +72,14 @@ try  {
 
         CLI::success("Provided arguments OK.");
 
-        if (!file_exists(ROOT_DIR . '/config')) {
-            mkdir(ROOT_DIR . '/config');
-            file_put_contents(ROOT_DIR . '/config/readme.md', "#backend-config\nthis directory persists config setting for the testcenter-backend");
+        if (!file_exists(ROOT_DIR . '/backend/config')) {
+            mkdir(ROOT_DIR . '/backend/config');
+            file_put_contents(ROOT_DIR . '/backend/config/readme.md', "#backend-config\nthis directory persists config setting for the testcenter-backend");
         }
 
-        if (!file_put_contents(ROOT_DIR . '/config/system.json', json_encode($sysConf))) {
+        if (!file_put_contents(ROOT_DIR . '/backend/config/system.json', json_encode($sysConf))) {
 
-            throw new Exception("Could not write file `/config/system.json`. Check file permissions on `/config/`.");
+            throw new Exception("Could not write file `/backend/config/system.json`. Check file permissions on `/config/`.");
         }
 
         CLI::p("System-Config file written.");
@@ -89,16 +90,16 @@ try  {
     }
 
     CLI::h2("Database config");
-    if (!file_exists(ROOT_DIR . '/config/DBConnectionData.json')) {
+    if (!file_exists(ROOT_DIR . '/backend/config/DBConnectionData.json')) {
 
-        CLI::p("Database-Config not file found (`/config/DBConnectionData.json`), will be created.");
+        CLI::p("Database-Config not file found (`/backend/config/DBConnectionData.json`), will be created.");
 
         $config = new DBConfig($args, true);
         CLI::connectDBWithRetries($config, 5);
 
         CLI::success("Provided arguments OK.");
 
-        if (!file_put_contents(ROOT_DIR . '/config/DBConnectionData.json', json_encode(DB::getConfig()))) {
+        if (!file_put_contents(ROOT_DIR . '/backend/config/DBConnectionData.json', json_encode(DB::getConfig()))) {
 
             throw new Exception("Could not write file. Check file permissions on `/config/`.");
         }
@@ -134,7 +135,7 @@ try  {
     if ($installationArguments->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
 
         CLI::p("Install basic database structure");
-        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
+        $initDAO->runFile(ROOT_DIR . "/backend/database/mysql.sql");
     }
 
     $dbSchemaVersion = $initDAO->getDBSchemaVersion();
@@ -148,7 +149,7 @@ try  {
 
         CLI::p("Install patches if necessary");
         $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
-        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", $allowFailing);
+        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/backend/database/mysql.patches.d", $allowFailing);
         foreach ($patchInstallReport['patches'] as $patch) {
 
           if (isset($patchInstallReport['errors'][$patch])) {
@@ -235,7 +236,7 @@ try  {
 
         CLI::success("Sample Workspace `{$installationArguments->workspace}` as `ws_{$sampleWorkspaceId}` created");
 
-        $initializer->importSampleData($sampleWorkspaceId);
+        $initializer->importSampleFiles($sampleWorkspaceId);
         $stats = $sampleWorkspace->storeAllFilesMeta();
         CLI::success("Sample content files created.");
 

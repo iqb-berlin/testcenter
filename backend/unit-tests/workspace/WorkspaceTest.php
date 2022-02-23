@@ -48,30 +48,30 @@ class WorkspaceTest extends TestCase {
         require_once "unit-tests/mock-classes/ZIPMock.php";
         require_once "unit-tests/mock-classes/PasswordMock.php";
 
-        require_once "classes/helper/FileSize.class.php";
-        require_once "classes/helper/Folder.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/helper/Version.class.php";
-        require_once "classes/helper/XMLSchema.class.php";
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/helper/TimeStamp.class.php";
-        require_once "classes/exception/HttpError.class.php";
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/data-collection/PlayerMeta.class.php";
-        require_once "classes/data-collection/FileSpecialInfo.class.php";
-        require_once "classes/data-collection/Login.class.php";
-        require_once "classes/data-collection/LoginArray.class.php";
-        require_once "classes/data-collection/Group.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/ResourceFile.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileUnit.class.php";
-        require_once "classes/files/XMLFileTesttakers.class.php";
-        require_once "classes/files/XMLFileBooklet.class.php";
-        require_once "classes/files/XMLFileSysCheck.class.php";
-        require_once "classes/workspace/WorkspaceValidator.class.php";
+        require_once "src/helper/FileSize.class.php";
+        require_once "src/helper/Folder.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/helper/Version.class.php";
+        require_once "src/helper/XMLSchema.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/helper/TimeStamp.class.php";
+        require_once "src/exception/HttpError.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/data-collection/PlayerMeta.class.php";
+        require_once "src/data-collection/FileSpecialInfo.class.php";
+        require_once "src/data-collection/Login.class.php";
+        require_once "src/data-collection/LoginArray.class.php";
+        require_once "src/data-collection/Group.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/ResourceFile.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileUnit.class.php";
+        require_once "src/files/XMLFileTesttakers.class.php";
+        require_once "src/files/XMLFileBooklet.class.php";
+        require_once "src/files/XMLFileSysCheck.class.php";
+        require_once "src/workspace/WorkspaceValidator.class.php";
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([
@@ -90,11 +90,11 @@ class WorkspaceTest extends TestCase {
 
     function test___construct() {
 
-        $workspaceDirectories = scandir(vfsStream::url('root/vo_data'));
+        $workspaceDirectories = scandir(vfsStream::url('root/data'));
         $expectation = array('.', '..', 'ws_1');
         $this->assertEquals($expectation, $workspaceDirectories);
 
-        $workspace1Directories = scandir(vfsStream::url('root/vo_data/ws_1'));
+        $workspace1Directories = scandir(vfsStream::url('root/data/ws_1'));
         $expectation = array('.', '..', 'Booklet', 'Resource', 'SysCheck', 'Testtakers', 'Unit');
         $this->assertEquals($expectation, $workspace1Directories);
     }
@@ -102,7 +102,7 @@ class WorkspaceTest extends TestCase {
     function test_getWorkspacePath() {
 
         $result = $this->workspace->getWorkspacePath();
-        $expectation = 'vfs://root/vo_data/ws_1';
+        $expectation = 'vfs://root/data/ws_1';
         $this->assertEquals($expectation, $result);
     }
 
@@ -133,7 +133,7 @@ class WorkspaceTest extends TestCase {
     function test_deleteFiles() {
 
         /** @var $voDataDir \org\bovigo\vfs\vfsStreamContent */
-        $voDataDir = $this->vfs->getChild('vo_data')->getChild('ws_1')->getChild('SysCheck');
+        $voDataDir = $this->vfs->getChild('data')->getChild('ws_1')->getChild('SysCheck');
         $voDataDir->chmod(0444);
         file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
 
@@ -155,7 +155,7 @@ class WorkspaceTest extends TestCase {
         ];
         $this->assertEquals($expectation, $result);
 
-        $resourcesLeft = scandir('vfs://root/vo_data/ws_1/Resource');
+        $resourcesLeft = scandir('vfs://root/data/ws_1/Resource');
         $resourcesLeftExpected = [
             '.',
             '..',
@@ -427,7 +427,7 @@ class WorkspaceTest extends TestCase {
 
         $result = $this->workspace->findFileById('SysCheck', 'SYSCHECK.SAMPLE');
         $this->assertEquals('XMLFileSysCheck', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', $result->getPath());
 
         try {
             $this->workspace->findFileById('SysCheck', 'not-existing-id');
@@ -446,44 +446,44 @@ class WorkspaceTest extends TestCase {
 
         $result = $this->workspace->findFileById('Resource', 'verona-player-simple-4.0.0.html', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
 
         $result = $this->workspace->findFileById('Resource', 'verona-player-simple-4.0.99.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
 
-        copy('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html',
-            'vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.99.html');
+        copy('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html',
+            'vfs://root/data/ws_1/Resource/verona-player-simple-4.0.99.html');
 
         $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.0.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
 
         $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.99.html', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.99.html', $result->getPath());
 
-        unlink('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.99.html');
-        copy('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html',
-            'vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.7.0.html');
+        unlink('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.99.html');
+        copy('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html',
+            'vfs://root/data/ws_1/Resource/verona-player-simple-4.7.0.html');
 
         $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.0.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
 
         $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.1.0.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.7.0.html', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.7.0.html', $result->getPath());
 
         $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.7.HTML', true);
         $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.7.0.html', $result->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.7.0.html', $result->getPath());
     }
 
 
     function test_findFileById_newerMinorRequested() {
-        copy('vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.0.0.html',
-            'vfs://root/vo_data/ws_1/Resource/verona-player-simple-4.5.0.html');
+        copy('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html',
+            'vfs://root/data/ws_1/Resource/verona-player-simple-4.5.0.html');
         $this->expectException('HttpError');
         $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.6.HTML', true);
     }

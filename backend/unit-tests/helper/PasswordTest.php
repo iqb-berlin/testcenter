@@ -11,8 +11,8 @@ class PasswordTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/helper/Password.class.php";
-        require_once "classes/exception/HttpError.class.php";
+        require_once "src/helper/Password.class.php";
+        require_once "src/exception/HttpError.class.php";
     }
 
     function test_encrypt_normal() {
@@ -57,7 +57,8 @@ class PasswordTest extends TestCase {
 
     function test_validate() {
 
-        $this->assertNull(Password::validate(str_repeat('x', 30)));
+        $this->expectNotToPerformAssertions();
+        Password::validate(str_repeat('x', 30));
     }
 
 

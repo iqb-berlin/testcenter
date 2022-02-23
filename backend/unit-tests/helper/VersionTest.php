@@ -25,11 +25,11 @@ class VersionTest extends TestCase {
 
     function setUp(): void {
 
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/helper/Version.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/helper/Version.class.php";
 
         $this->vfs = VfsForTest::setUp(false);
-        file_put_contents($this->vfs->url() . '/composer.json', '{"version":"5.1.0"}');
+        file_put_contents($this->vfs->url() . '/package.json', '{"version":"5.1.0"}');
     }
 
     function test_get() {

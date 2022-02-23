@@ -307,7 +307,7 @@ final class ReportTest extends TestCase {
             ]
         ]
     ];
-    const SYS_CHECK_SAMPLE_DATA_FILE = "sampledata/SysCheck-Report.json";
+    const SYS_CHECK_SAMPLE_DATA_FILE = REAL_ROOT_DIR . "/sampledata/SysCheck-Report.json";
 
     private int $workspaceId;
     private array $dataIds;
@@ -319,18 +319,19 @@ final class ReportTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/workspace/Report.php";
-        require_once "classes/workspace/Workspace.class.php";
-        require_once "classes/workspace/SysChecksFolder.class.php";
-        require_once "classes/files/SysCheckReportFile.class.php";
-        require_once "classes/dao/DAO.class.php";
-        require_once "classes/dao/AdminDAO.class.php";
-        require_once "classes/data-collection/ReportType.php";
-        require_once "classes/data-collection/ReportFormat.php";
-        require_once "classes/helper/CSV.class.php";
-        require_once "classes/helper/TimeStamp.class.php";
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/helper/FileTime.class.php";
+        require_once "src/workspace/Report.php";
+        require_once "src/workspace/Workspace.class.php";
+        require_once "src/workspace/SysChecksFolder.class.php";
+        require_once "src/files/SysCheckReportFile.class.php";
+        require_once "src/dao/DAO.class.php";
+        require_once "src/dao/AdminDAO.class.php";
+        require_once "src/data-collection/ReportType.php";
+        require_once "src/data-collection/ReportFormat.php";
+        require_once "src/helper/CSV.class.php";
+        require_once "src/helper/TimeStamp.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/exception/HttpError.class.php";
 
         $this->workspaceId = 1;
         $this->dataIds = ["sample_group", "sample_group"];

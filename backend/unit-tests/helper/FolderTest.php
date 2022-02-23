@@ -20,7 +20,7 @@ class FolderTest extends TestCase {
 
     function setUp(): void {
 
-        require_once 'classes/helper/Folder.class.php';
+        require_once 'src/helper/Folder.class.php';
 
         $this->vfs = VfsForTest::setUp();
     }
@@ -44,7 +44,7 @@ class FolderTest extends TestCase {
 
     function test_getContentsRecursive() {
 
-        $result = Folder::getContentsRecursive($this->vfs->url() . '/vo_data');
+        $result = Folder::getContentsRecursive($this->vfs->url() . '/data');
         $expected = [
             "ws_1" => [
                 "Booklet" => [
@@ -79,7 +79,7 @@ class FolderTest extends TestCase {
 
     function test_getContentsFlat() {
 
-        $result = Folder::getContentsFlat($this->vfs->url() . '/vo_data');
+        $result = Folder::getContentsFlat($this->vfs->url() . '/data');
         $expected = [
             "ws_1/Booklet/SAMPLE_BOOKLET.XML",
             "ws_1/Booklet/SAMPLE_BOOKLET2.XML",
@@ -100,8 +100,8 @@ class FolderTest extends TestCase {
 
     function test_deleteContentsRecursive() {
 
-        Folder::deleteContentsRecursive($this->vfs->url() . '/vo_data/ws_1/SysCheck');
-        $result = Folder::getContentsFlat($this->vfs->url() . '/vo_data');
+        Folder::deleteContentsRecursive($this->vfs->url() . '/data/ws_1/SysCheck');
+        $result = Folder::getContentsFlat($this->vfs->url() . '/data');
         $expected = [
             "ws_1/Booklet/SAMPLE_BOOKLET.XML",
             "ws_1/Booklet/SAMPLE_BOOKLET2.XML",

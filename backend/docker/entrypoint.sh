@@ -14,7 +14,7 @@ php /var/www/html/scripts/initialize.php \
 --broadcastServiceUriSubscribe=$BROADCAST_SERVICE_URI_SUBSCRIBE
 
 # file-rights
-chown -R www-data:www-data /var/www/html/vo_data
+chown -R www-data:www-data /var/www/html/vo_data # TODO 13
 
 # keep container open
 apache2-foreground

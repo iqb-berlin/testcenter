@@ -11,7 +11,7 @@ class ServerTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/helper/Server.class.php";
+        require_once "src/helper/Server.class.php";
     }
 
     function test_getUrl() {

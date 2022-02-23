@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit bootstrap="unit-tests/bootstrap.php" beStrictAboutTestsThatDoNotTestAnything="true">
+<phpunit bootstrap="unit-tests/bootstrap.php" beStrictAboutTestsThatDoNotTestAnything="true" cacheResult ="false">
     <coverage>
         <include>
-            <directory suffix=".php">classes/</directory>
+            <directory suffix=".php">src/</directory>
         </include>
         <exclude>
             <directory suffix=".php">vendor/</directory>
-            <!--file>src/example.php</file-->
         </exclude>
     </coverage>
 </phpunit>

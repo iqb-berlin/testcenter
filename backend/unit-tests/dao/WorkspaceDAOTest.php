@@ -14,28 +14,28 @@ class WorkspaceDAOTest extends TestCase {
 
     function setUp(): void {
 
-        require_once "classes/exception/HttpError.class.php";
-        require_once "classes/data-collection/DataCollection.class.php";
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/data-collection/PlayerMeta.class.php";
-        require_once "classes/data-collection/FileSpecialInfo.class.php";
-        require_once "classes/helper/DB.class.php";
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/helper/Version.class.php";
-        require_once "classes/helper/XMLSchema.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/data-collection/DBConfig.class.php";
-        require_once "classes/dao/DAO.class.php";
-        require_once "classes/dao/WorkspaceDAO.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileBooklet.class.php";
+        require_once "src/exception/HttpError.class.php";
+        require_once "src/data-collection/DataCollection.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/data-collection/PlayerMeta.class.php";
+        require_once "src/data-collection/FileSpecialInfo.class.php";
+        require_once "src/helper/DB.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/helper/Version.class.php";
+        require_once "src/helper/XMLSchema.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/data-collection/DBConfig.class.php";
+        require_once "src/dao/DAO.class.php";
+        require_once "src/dao/WorkspaceDAO.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileBooklet.class.php";
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new WorkspaceDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile(REAL_ROOT_DIR . '/unit-tests/testdata.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/database/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/unit-tests/testdata.sql');
         define('ROOT_DIR', REAL_ROOT_DIR);
     }
 

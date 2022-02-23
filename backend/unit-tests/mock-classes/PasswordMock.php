@@ -11,9 +11,8 @@ class Password {
     }
 
 
-    static function validate(string $password) {
+    static function validate(string $password): void {
 
-        return true;
     }
 
 

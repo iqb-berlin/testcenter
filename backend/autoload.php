@@ -6,7 +6,7 @@ spl_autoload_register(function($className) {
     $className = array_pop($className);
 
     $includeDirs = [
-        ROOT_DIR . "/src"
+        ROOT_DIR . "/backend/src"
     ];
 
     foreach ($includeDirs as $includeDir) {

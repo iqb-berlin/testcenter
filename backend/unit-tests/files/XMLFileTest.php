@@ -17,16 +17,16 @@ class XMLFileTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/helper/XMLSchema.class.php";
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/helper/Version.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/helper/XMLSchema.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/helper/Version.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
 
         VfsForTest::setUp(true);
     }
@@ -37,7 +37,7 @@ class XMLFileTest extends TestCase {
 
         $this->assertEquals('SAMPLE_BOOKLET.XML', $xf->getName());
         $this->assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
-        $this->assertEquals('vfs://root/vo_data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
         $this->assertEquals('Sample booklet', $xf->getLabel());
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRoottagName());
@@ -51,12 +51,12 @@ class XMLFileTest extends TestCase {
 
         $this->assertEquals('', $xf->getName());
         $this->assertEquals('', $xf->getId());
-        $this->assertEquals('vfs://root/vo_data/ws_1/Booklet/not-existing.XML', $xf->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Booklet/not-existing.XML', $xf->getPath());
         $this->assertEquals('', $xf->getLabel());
         $this->assertEquals(0, $xf->getSize());
         $this->assertEquals('', $xf->getRoottagName());
         $this->assertEquals('', $xf->getDescription());
-        $this->assertEquals('[error] file does not exist `vfs://root/vo_data/ws_1/Booklet/not-existing.XML`',
+        $this->assertEquals('[error] file does not exist `vfs://root/data/ws_1/Booklet/not-existing.XML`',
             $xf->getErrorString());
     }
 
@@ -69,7 +69,7 @@ class XMLFileTest extends TestCase {
 
         $this->assertEquals('arbitrary.xml', $xf->getName());
         $this->assertEquals('ARBITRARY.XML', $xf->getId());
-        $this->assertEquals('vfs://root/vo_data/ws_1/arbitrary.xml', $xf->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/arbitrary.xml', $xf->getPath());
         $this->assertEquals('', $xf->getLabel());
         $this->assertEquals(59, $xf->getSize());
         $this->assertEquals('a', $xf->getRoottagName());
@@ -84,7 +84,7 @@ class XMLFileTest extends TestCase {
 
         $this->assertEquals('testtakers-broken.xml', $xf->getName());
         $this->assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
-        $this->assertEquals('vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml', $xf->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Testtakers/testtakers-broken.xml', $xf->getPath());
         $this->assertEquals('', $xf->getLabel());
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
         $this->assertEquals('', $xf->getRoottagName());
@@ -99,7 +99,7 @@ class XMLFileTest extends TestCase {
 
         $this->assertEquals('SAMPLE_BOOKLET.XML', $xf->getName());
         $this->assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
-        $this->assertEquals('vfs://root/vo_data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Booklet/SAMPLE_BOOKLET.XML', $xf->getPath());
         $this->assertEquals('Sample booklet', $xf->getLabel());
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRoottagName());
@@ -114,7 +114,7 @@ class XMLFileTest extends TestCase {
 
         $this->assertEquals('testtakers-broken.xml', $xf->getName());
         $this->assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
-        $this->assertEquals('vfs://root/vo_data/ws_1/Testtakers/testtakers-broken.xml', $xf->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/Testtakers/testtakers-broken.xml', $xf->getPath());
         $this->assertEquals('', $xf->getLabel());
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
         $this->assertEquals('', $xf->getRoottagName());
@@ -130,7 +130,7 @@ class XMLFileTest extends TestCase {
 
         $this->assertEquals('invalid.xml', $xf->getName());
         $this->assertEquals('C', $xf->getId());
-        $this->assertEquals('vfs://root/vo_data/ws_1/invalid.xml', $xf->getPath());
+        $this->assertEquals('vfs://root/data/ws_1/invalid.xml', $xf->getPath());
         $this->assertEquals('d', $xf->getLabel());
         $this->assertEquals(85, $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRoottagName());

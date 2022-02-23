@@ -11,8 +11,6 @@ use PHPUnit\Framework\TestCase;
  */
 class XMLSchemaTest extends TestCase {
 
-    private vfsStreamDirectory $vfs;
-
     public static function setUpBeforeClass(): void {
 
         require_once "unit-tests/VfsForTest.class.php";
@@ -21,13 +19,13 @@ class XMLSchemaTest extends TestCase {
 
     function setUp(): void {
 
-        require_once "classes/helper/Version.class.php";
-        require_once "classes/helper/XMLSchema.class.php";
-        require_once "classes/helper/JSON.class.php";
+        require_once "src/helper/Version.class.php";
+        require_once "src/helper/XMLSchema.class.php";
+        require_once "src/helper/JSON.class.php";
         require_once "unit-tests/VfsForTest.class.php";
         require_once "unit-tests/mock-classes/ExternalFileMock.php";
 
-        $this->vfs = VfsForTest::setUp();
+        VfsForTest::setUp();
         $this->testUrls['local_full'] = DATA_DIR . '/definitions/vo_SysCheck.xsd';
     }
 
@@ -109,7 +107,7 @@ class XMLSchemaTest extends TestCase {
     function test_schemaCache() {
 
         $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid']));
-        $this->assertEquals("vfs://root/vo_data/.schemas/SysCheck/v5/SysCheck-5.0.1.xsd", $result);
+        $this->assertEquals("vfs://root/data/.schemas/SysCheck/v5/SysCheck-5.0.1.xsd", $result);
         $this->assertEquals(
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",
             $this->readFirstChars($result, 66)
@@ -119,11 +117,11 @@ class XMLSchemaTest extends TestCase {
             XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid_but_not_existing']));
 //            $this->fail("exepected exception");
 //        } catch(Exception $e) {}
-        $this->assertTrue(file_exists("vfs://root/vo_data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd"));
-        $this->assertTrue(filesize("vfs://root/vo_data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd") == 0);
+        $this->assertTrue(file_exists("vfs://root/data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd"));
+        $this->assertTrue(filesize("vfs://root/data/.schemas/SysCheck/v500/SysCheck-500.0.100.xsd") == 0);
 
         // fake cache file
-        copy("vfs://root/vo_data/.schemas/SysCheck/v5/SysCheck-5.0.1.xsd", "vfs://root/vo_data/.schemas/SysCheck/v5/SysCheck-5.0.1000.xsd");
+        copy("vfs://root/data/.schemas/SysCheck/v5/SysCheck-5.0.1.xsd", "vfs://root/data/.schemas/SysCheck/v5/SysCheck-5.0.1000.xsd");
         $result = XMLSchema::getSchemaFilePath(XMLSchema::parseSchemaUrl($this->testUrls['valid_but_minor_not_existing']));
         $this->assertEquals(
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<xs:schema id=\"vo_SysCheck\"",

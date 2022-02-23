@@ -1,12 +1,12 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 
-require_once "classes/data-collection/DataCollection.class.php";
-require_once "classes/data-collection/InstallationArguments.class.php";
-require_once "classes/workspace/WorkspaceInitializer.class.php";
-require_once "classes/workspace/Workspace.class.php";
-require_once "classes/helper/Folder.class.php";
-require_once "classes/helper/TestEnvironment.class.php";
+require_once "src/data-collection/DataCollection.class.php";
+require_once "src/data-collection/InstallationArguments.class.php";
+require_once "src/workspace/WorkspaceInitializer.class.php";
+require_once "src/workspace/Workspace.class.php";
+require_once "src/helper/Folder.class.php";
+require_once "src/helper/TestEnvironment.class.php";
 
 
 use org\bovigo\vfs\vfsStream;
@@ -79,7 +79,7 @@ class VfsForTest {
 
         if (!defined('DATA_DIR')) {
 
-            define('DATA_DIR', vfsStream::url('root/vo_data'));
+            define('DATA_DIR', vfsStream::url('root/data'));
         }
     }
 
@@ -88,19 +88,20 @@ class VfsForTest {
         $vfs = vfsStream::setup('root', 0777);
 
         $sampledataDir = vfsStream::newDirectory('sampledata', 0777)->at($vfs);
-        $vendorDir = vfsStream::newDirectory('vendor', 0777)->at($vfs);
+        $backendDir = vfsStream::newDirectory('backend', 0777)->at($vfs);
+        $vendorDir = vfsStream::newDirectory('vendor', 0777)->at($backendDir);
         $iqbDir = vfsStream::newDirectory('iqb-berlin', 0777)->at($vendorDir);
         $definitionsDir = vfsStream::newDirectory('definitions', 0777)->at($vfs);
 
-        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../sampledata'), $sampledataDir);
-        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../vendor/iqb-berlin'), $iqbDir);
-        vfsStream::copyFromFileSystem(realpath(__DIR__ . '/../definitions'), $definitionsDir);
-        copy(realpath(__DIR__ . '/../composer.json'), $vfs->url() . '/composer.json');
+        vfsStream::copyFromFileSystem(realpath(REAL_ROOT_DIR . '/sampledata'), $sampledataDir);
+        vfsStream::copyFromFileSystem(realpath(REAL_ROOT_DIR . '/backend/vendor/iqb-berlin'), $iqbDir);
+        vfsStream::copyFromFileSystem(realpath(REAL_ROOT_DIR . '/definitions'), $definitionsDir);
+        copy(realpath(REAL_ROOT_DIR . '/package.json'), $vfs->url() . '/package.json');
 
-        $voDataDir = vfsStream::newDirectory('vo_data', 0777)->at($vfs);
+        vfsStream::newDirectory('data', 0777)->at($vfs);
 
         $initializer = new WorkspaceInitializer();
-        $initializer->importSampleData(1);
+        $initializer->importSampleFiles(1);
 
         TestEnvironment::overwriteModificationDatesVfs();
 

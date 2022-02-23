@@ -13,7 +13,7 @@
 [ ] docker
 [ ] prod
 [ ] gitlab-ci
-[ ] be/unit-test
+[x] be/unit-test
 [ ] fe/unit-test
 [ ] bs/unit-test
 [ ] be/coverage

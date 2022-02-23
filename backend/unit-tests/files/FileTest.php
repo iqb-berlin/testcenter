@@ -10,26 +10,23 @@ use PHPUnit\Framework\TestCase;
  */
 class FileTest extends TestCase {
 
-    private vfsStreamDirectory $vfs;
-
     public static function setUpBeforeClass(): void {
-
         require_once "unit-tests/VfsForTest.class.php";
         VfsForTest::setUpBeforeClass();
     }
 
     function setUp(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/PlayerMeta.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileBooklet.class.php";
-        require_once "classes/files/ResourceFile.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/PlayerMeta.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileBooklet.class.php";
+        require_once "src/files/ResourceFile.class.php";
 
-        $this->vfs = VfsForTest::setUp();
+        VfsForTest::setUp();
     }
 
     function test_get() {

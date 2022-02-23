@@ -14,12 +14,12 @@ class TestEnvironment {
 
         try {
 
-            define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
+            define('DATA_DIR', ROOT_DIR . '/data');
 
-            $e2eConfig = JSON::decode(file_get_contents(ROOT_DIR . "/config/e2eTests.json"));
+            $e2eConfig = JSON::decode(file_get_contents(ROOT_DIR . "/backend/config/e2eTests.json")); // TODO 13
 
             /* @var DBConfig $dbConfig */
-            $dbConfig = DBConfig::fromFile(ROOT_DIR . "/config/DBConnectionData.{$e2eConfig->configFile}.json");
+            $dbConfig = DBConfig::fromFile(ROOT_DIR . "/backend/config/DBConnectionData.{$e2eConfig->configFile}.json");
             $dbConfig->staticTokens = true;
             DB::connect($dbConfig);
 
@@ -85,8 +85,8 @@ class TestEnvironment {
 
         $initDAO->clearDb();
 
-        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
-        $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", true);
+        $initDAO->runFile(ROOT_DIR . "/backend/database/mysql.sql");
+        $initDAO->installPatches(ROOT_DIR . "/backend/database/mysql.patches.d", true);
 
         $dbStatus = $initDAO->getDbStatus();
         if ($dbStatus['missing']) {
@@ -98,10 +98,10 @@ class TestEnvironment {
     private static function setUpVirtualFilesystem(): void {
 
         $vfs = vfsStream::setup('root', 0777);
-        vfsStream::newDirectory('vo_data', 0777)->at($vfs);
-        vfsStream::newDirectory('vo_data/ws_1', 0777)->at($vfs);
+        vfsStream::newDirectory('data', 0777)->at($vfs);
+        vfsStream::newDirectory('data/ws_1', 0777)->at($vfs);
 
-        define('DATA_DIR', vfsStream::url('root/vo_data'));
+        define('DATA_DIR', vfsStream::url('root/data'));
     }
 
 
@@ -116,7 +116,7 @@ class TestEnvironment {
 
         $initializer = new WorkspaceInitializer();
         $initializer->cleanWorkspace($workspaceId);
-        $initializer->importSampleData($workspaceId);
+        $initializer->importSampleFiles($workspaceId);
         $workspace->storeAllFilesMeta();
 
         $initDAO->createSampleLoginsReviewsLogs();
@@ -131,7 +131,7 @@ class TestEnvironment {
     public static function overwriteModificationDatesVfs(vfsStreamContent $dir = null): void {
 
         if (!$dir) {
-            $dir = vfsStreamWrapper::getRoot()->getChild('vo_data');
+            $dir = vfsStreamWrapper::getRoot()->getChild('data');
         }
         $dir->lastModified(TestEnvironment::staticDate);
         foreach ($dir->getChildren() as $child) {
@@ -154,7 +154,7 @@ class TestEnvironment {
 
             $fullState .= "## $table\n$content\n";
         }
-        $tmpDir = realpath(ROOT_DIR . '/../tmp');
+        $tmpDir = ROOT_DIR . '/tmp';
         if (!$tmpDir) {
 
             mkdir($tmpDir);

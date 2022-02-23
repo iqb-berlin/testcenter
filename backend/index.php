@@ -10,14 +10,14 @@ try {
 
     date_default_timezone_set('Europe/Berlin'); // just to be safe. TimeStamp-class should be used everywhere anyway
 
-    define('ROOT_DIR', realpath(dirname(__FILE__)));
+    define('ROOT_DIR', realpath(dirname(__FILE__) . '/../'));
 
     require_once "vendor/autoload.php";
     require_once "autoload.php";
 
     if (isset($_SERVER['HTTP_TESTMODE'])) {
 
-        if (file_exists(ROOT_DIR . "/config/e2eTests.json")) {
+        if (file_exists(ROOT_DIR . "/config/e2eTests.json")) { // TODO 13 fix path to testcenter.json
 
             TestEnvironment::setUpEnvironmentForRealDataE2ETests(); // DANGEROUS!!!
 
@@ -29,8 +29,8 @@ try {
     } else { // productive
 
         /* @var $config SystemConfig */
-        $config = SystemConfig::fromFile(ROOT_DIR . '/config/system.json');
-        define('DATA_DIR', ROOT_DIR . '/vo_data'); // TODO make configurable
+        $config = SystemConfig::fromFile(ROOT_DIR . '/backend/config/system.json');
+        define('DATA_DIR', ROOT_DIR . '/data');
         TimeStamp::setup();
         BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
         XMLSchema::setup($config->allowExternalXMLSchema);

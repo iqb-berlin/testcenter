@@ -2,10 +2,10 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-require_once "classes/files/File.class.php";
-require_once "classes/files/XMLFile.class.php";
-require_once "classes/files/XMLFileBooklet.class.php";
+require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+require_once "src/files/File.class.php";
+require_once "src/files/XMLFile.class.php";
+require_once "src/files/XMLFileBooklet.class.php";
 
 class XMLFileBookletExposed extends XMLFileBooklet {
 
@@ -30,12 +30,12 @@ class XMLFilesBookletTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileBooklet.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileBooklet.class.php";
 
         VfsForTest::setUp();
     }

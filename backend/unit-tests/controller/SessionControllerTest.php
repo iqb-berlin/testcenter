@@ -8,8 +8,8 @@ use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\Response;
 
 
-require_once "classes/controller/Controller.class.php";
-require_once "classes/controller/SessionController.class.php";
+require_once "src/controller/Controller.class.php";
+require_once "src/controller/SessionController.class.php";
 
 
 class SessionControllerInjector extends SessionController {
@@ -48,32 +48,32 @@ final class SessionControllerTest extends TestCase {
     function setUp(): void {
 
         require_once "unit-tests/test-helper/RequestCreator.class.php";
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/Login.class.php";
-        require_once "classes/data-collection/LoginSession.class.php";
-        require_once "classes/data-collection/AccessSet.class.php";
-        require_once "classes/data-collection/PersonSession.class.php";
-        require_once "classes/data-collection/Person.class.php";
-        require_once "classes/data-collection/SessionChangeMessage.class.php";
-        require_once "classes/data-collection/AuthToken.class.php";
-        require_once "classes/controller/Controller.class.php";
-        require_once "classes/controller/SessionController.class.php";
-        require_once "classes/helper/RequestBodyParser.class.php";
-        require_once "classes/helper/JSON.class.php";
-        require_once "classes/helper/Password.class.php";
-        require_once "classes/helper/Mode.class.php";
-        require_once "classes/helper/TimeStamp.class.php";
-        require_once "classes/helper/BroadcastService.class.php";
-        require_once "classes/dao/DAO.class.php";
-        require_once "classes/dao/SessionDAO.class.php";
-        require_once "classes/dao/TestDAO.class.php";
-        require_once "classes/dao/AdminDAO.class.php";
-        require_once "classes/exception/HttpException.class.php";
-        require_once "classes/exception/HttpSpecializedException.class.php";
-        require_once "classes/exception/HttpBadRequestException.class.php";
-        require_once "classes/workspace/Workspace.class.php";
-        require_once "classes/workspace/BookletsFolder.class.php";
-        require_once "classes/exception/HttpUnauthorizedException.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/Login.class.php";
+        require_once "src/data-collection/LoginSession.class.php";
+        require_once "src/data-collection/AccessSet.class.php";
+        require_once "src/data-collection/PersonSession.class.php";
+        require_once "src/data-collection/Person.class.php";
+        require_once "src/data-collection/SessionChangeMessage.class.php";
+        require_once "src/data-collection/AuthToken.class.php";
+        require_once "src/controller/Controller.class.php";
+        require_once "src/controller/SessionController.class.php";
+        require_once "src/helper/RequestBodyParser.class.php";
+        require_once "src/helper/JSON.class.php";
+        require_once "src/helper/Password.class.php";
+        require_once "src/helper/Mode.class.php";
+        require_once "src/helper/TimeStamp.class.php";
+        require_once "src/helper/BroadcastService.class.php";
+        require_once "src/dao/DAO.class.php";
+        require_once "src/dao/SessionDAO.class.php";
+        require_once "src/dao/TestDAO.class.php";
+        require_once "src/dao/AdminDAO.class.php";
+        require_once "src/exception/HttpException.class.php";
+        require_once "src/exception/HttpSpecializedException.class.php";
+        require_once "src/exception/HttpBadRequestException.class.php";
+        require_once "src/workspace/Workspace.class.php";
+        require_once "src/workspace/BookletsFolder.class.php";
+        require_once "src/exception/HttpUnauthorizedException.class.php";
 
 
         $mockBookletsFolder = $this->createMock('BookletsFolder');

@@ -1,15 +1,15 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use PHPUnit\Framework\TestCase;
-require_once "classes/exception/HttpError.class.php";
-require_once "classes/data-collection/DataCollection.class.php";
-require_once "classes/helper/DB.class.php";
-require_once "classes/data-collection/DBConfig.class.php";
-require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-require_once "classes/data-collection/Command.class.php";
-//require_once "classes/helper/TimeStamp.class.php";
-require_once "classes/dao/DAO.class.php";
-require_once "classes/dao/TestDAO.class.php";
+require_once "src/exception/HttpError.class.php";
+require_once "src/data-collection/DataCollection.class.php";
+require_once "src/helper/DB.class.php";
+require_once "src/data-collection/DBConfig.class.php";
+require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+require_once "src/data-collection/Command.class.php";
+//require_once "src/helper/TimeStamp.class.php";
+require_once "src/dao/DAO.class.php";
+require_once "src/dao/TestDAO.class.php";
 
 
 class TestDAOTest extends TestCase {
@@ -20,8 +20,8 @@ class TestDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new TestDAO();
-        $this->dbc->runFile('scripts/sql-schema/sqlite.sql');
-        $this->dbc->runFile('unit-tests/testdata.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/database/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/unit-tests/testdata.sql');
     }
 
 

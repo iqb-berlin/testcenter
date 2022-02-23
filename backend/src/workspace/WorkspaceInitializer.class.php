@@ -7,24 +7,24 @@ class WorkspaceInitializer {
 
 
     const sampleDataPaths = [
-      "../sampledata/Booklet.xml" => "Booklet/SAMPLE_BOOKLET.XML",
-      "../sampledata/Booklet2.xml" => "Booklet/SAMPLE_BOOKLET2.XML",
-      "../sampledata/Booklet3.xml" => "Booklet/SAMPLE_BOOKLET3.XML",
-      "../sampledata/Testtakers.xml" => "Testtakers/SAMPLE_TESTTAKERS.XML",
-      "../sampledata/SysCheck.xml" => "SysCheck/SAMPLE_SYSCHECK.XML",
-      "../sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",
-      "vendor/iqb-berlin/verona-player-simple/sample-data/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
-      "../sampledata/Unit2.xml" => "Unit/SAMPLE_UNIT2.XML",
-      "vendor/iqb-berlin/verona-player-simple/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html",
-      "../sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
+      "sampledata/Booklet.xml" => "Booklet/SAMPLE_BOOKLET.XML",
+      "sampledata/Booklet2.xml" => "Booklet/SAMPLE_BOOKLET2.XML",
+      "sampledata/Booklet3.xml" => "Booklet/SAMPLE_BOOKLET3.XML",
+      "sampledata/Testtakers.xml" => "Testtakers/SAMPLE_TESTTAKERS.XML",
+      "sampledata/SysCheck.xml" => "SysCheck/SAMPLE_SYSCHECK.XML",
+      "sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",
+      "backend/vendor/iqb-berlin/verona-player-simple/sample-data/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
+      "sampledata/Unit2.xml" => "Unit/SAMPLE_UNIT2.XML",
+      "backend/vendor/iqb-berlin/verona-player-simple/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html",
+      "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
     ];
 
 
     private function importSampleFile(int $workspaceId, string $source, string $target) {
 
-        $importFileName = realpath(ROOT_DIR . '/' . $source);
+        $importFileName = ROOT_DIR . '/' . $source;
 
-        if (!$importFileName or !file_exists($importFileName)) {
+        if (!file_exists($importFileName)) {
             throw new Exception("File not found: `$importFileName`");
         }
 
@@ -38,14 +38,7 @@ class WorkspaceInitializer {
     }
 
 
-    public function importSampleData(int $workspaceId): void {
-
-        foreach ($this::sampleDataPaths as $source => $target) {
-
-            if (!file_exists(ROOT_DIR . '/' . $source)) {
-                throw new Exception("File not found: `$source`");
-            }
-        }
+    public function importSampleFiles(int $workspaceId): void {
 
         foreach ($this::sampleDataPaths as $source => $target) {
 

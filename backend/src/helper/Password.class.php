@@ -28,7 +28,7 @@ class Password {
     }
 
 
-    static function validate(string $password) {
+    static function validate(string $password): void {
 
         // NIST SP 800-63 recommends longer passwords, at least 8 characters...
         // to accept the test-account with user123, we take 7 as minimum

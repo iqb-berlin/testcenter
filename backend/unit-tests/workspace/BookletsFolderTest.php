@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
  */
 class BookletsFolderTest extends TestCase {
 
-    private vfsStreamDirectory $vfs;
     private BookletsFolder $bookletsFolder;
 
     public static function setUpBeforeClass(): void {
@@ -22,26 +21,26 @@ class BookletsFolderTest extends TestCase {
 
     function setUp(): void {
 
-        require_once "classes/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "classes/data-collection/Login.class.php";
-        require_once "classes/data-collection/LoginArray.class.php";
-        require_once "classes/data-collection/ValidationReportEntry.class.php";
-        require_once "classes/exception/HttpError.class.php";
-        require_once "classes/workspace/Workspace.class.php";
-        require_once "classes/workspace/BookletsFolder.class.php";
-        require_once "classes/files/File.class.php";
-        require_once "classes/files/XMLFile.class.php";
-        require_once "classes/files/XMLFileTesttakers.class.php";
-        require_once "classes/helper/FileTime.class.php";
-        require_once "classes/helper/FileName.class.php";
-        require_once "classes/helper/TimeStamp.class.php";
+        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/Login.class.php";
+        require_once "src/data-collection/LoginArray.class.php";
+        require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/exception/HttpError.class.php";
+        require_once "src/workspace/Workspace.class.php";
+        require_once "src/workspace/BookletsFolder.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileTesttakers.class.php";
+        require_once "src/helper/FileTime.class.php";
+        require_once "src/helper/FileName.class.php";
+        require_once "src/helper/TimeStamp.class.php";
         require_once "unit-tests/mock-classes/PasswordMock.php";
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([
             'getGlobalIds' => VfsForTest::globalIds
         ]);
-        $this->vfs = VfsForTest::setUp();
+        VfsForTest::setUp();
         $this->bookletsFolder = new BookletsFolder(1);
     }
 
