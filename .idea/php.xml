@@ -50,7 +50,7 @@
   </component>
   <component name="PhpProjectServersManager">
     <servers>
-      <server host="localhost" id="9feadf35-3169-4d27-8f5d-4f07e48ca3e8" name="localhost" use_path_mappings="true">
+      <server host="localhost" id="9feadf35-3169-4d27-8f5d-4f07e48ca3e8" name="localhost">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$/backend" remote-root="/testcenter" />
         </path_mappings>

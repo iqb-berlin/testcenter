@@ -6,7 +6,7 @@
 [x] eslint/cli
 [ ] fe/build prod
 [x] single source of version !
-[ ] xdebug
+[x] xdebug/local
 [ ] be/coverage
 [ ] fe/coverage
 [ ] bs/coverage
