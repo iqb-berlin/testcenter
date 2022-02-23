@@ -23,6 +23,7 @@
     "broadcasting-service:compodoc": "npx compodoc -p broadcasting-service/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
     "broadcasting-service:update-compodoc": "npx compodoc -p broadcasting-service/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service",
     "frontend:unit-test": "npx -w frontend ng test --watch=false",
+    "frontend:code-coverage": "npx -w frontend ng test --watch=false --code-coverage",
     "frontend:build": "npx -w frontend ng build",
     "frontend:start": "npx -w frontend ng serve"
   },

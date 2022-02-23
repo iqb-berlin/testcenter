@@ -16,8 +16,9 @@
 [x] be/unit-test
 [ ] fe/unit-test
 [ ] bs/unit-test
-[ ] be/coverage
-[ ] fe/coverage
+[x] be/coverage
+[x] fe/coverage
+[ ] fe/coverage -> IDE
 [ ] bs/coverage
 [ ] makefiles
 [ ] dockerfiles
