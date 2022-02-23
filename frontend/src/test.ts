@@ -8,7 +8,7 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 import { StaticProvider } from '@angular/core';
 import { environment } from './environments/environment';
-import packageJSON from '../package.json';
+import packageJSON from '../../package.json';
 
 declare const require: any;
 

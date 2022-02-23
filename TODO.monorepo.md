@@ -7,7 +7,7 @@
 [ ] fe/build prod
 [x] single source of version !
 [x] xdebug/local
-[ ] be/coverage
+[x] be/coverage
 [ ] fe/coverage
 [ ] bs/coverage
 [ ] docker
@@ -20,6 +20,7 @@
 [ ] fe/coverage
 [ ] bs/coverage
 [ ] makefiles
+[ ] dockerfiles
 [ ] gulp/docker
 [ ] new_version_scripts
 [ ] fe/e2e-test
@@ -31,3 +32,7 @@
 [ ] fe/doc-scripts
 [ ] compodoc
 [ ] PSR warning
+
+--
+
+[ ] remove polyfill

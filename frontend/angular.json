@@ -28,7 +28,7 @@
               "src/assets/fonts/roboto-v29/roboto.css"
             ],
             "scripts": [
-              "node_modules/ua-parser-js/dist/ua-parser.min.js"
+              "../node_modules/ua-parser-js/dist/ua-parser.min.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
