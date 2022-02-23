@@ -6,7 +6,7 @@ create table files
     version_mayor      int                                                            null,
     version_minor      int                                                            null,
     version_patch      int                                                            null,
-    version_label      int                                                            null,
+    version_label      text                                                            null,
     label              text                                                           null,
     description        text                                                           null,
     type               enum ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource') not null,

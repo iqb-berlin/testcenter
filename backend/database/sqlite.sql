@@ -156,7 +156,7 @@ create table files
     "version_mayor"      integer                                                                            null,
     "version_minor"      integer                                                                            null,
     "version_patch"      integer                                                                            null,
-    "version_label"      integer                                                                            null,
+    "version_label"      text                                                                               null,
     "label"              text                                                                               null,
     "description"        text                                                                               null,
     "type"               text check (type in ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource')) not null,
