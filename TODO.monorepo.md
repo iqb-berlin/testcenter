@@ -4,27 +4,22 @@
 [x] eslint/js
 [x] eslint/html
 [x] eslint/cli
-[ ] fe/build prod
+[x] fe/build prod
 [x] single source of version !
 [x] xdebug/local
-[x] be/coverage
-[ ] fe/coverage
-[ ] bs/coverage
-[ ] docker
-[ ] prod
-[ ] gitlab-ci
+[ ] docker/prod
+[ ] docker/dev
 [x] be/unit-test
-[ ] fe/unit-test
+[x] fe/unit-test
 [ ] bs/unit-test
 [x] be/coverage
 [x] fe/coverage
 [ ] fe/coverage -> IDE
 [ ] bs/coverage
 [ ] makefiles
-[ ] dockerfiles
-[ ] gulp/docker
+[ ] docker/gulp
 [ ] new_version_scripts
-[ ] fe/e2e-test
+[ ] fe/cyprus -> huaning
 [x] be/dredd-test
 [ ] be/dredd-test beschleunigung
 [ ] be/init-test
@@ -33,6 +28,7 @@
 [ ] fe/doc-scripts
 [ ] compodoc
 [ ] PSR warning
+[ ] gitlab-ci
 
 --
 

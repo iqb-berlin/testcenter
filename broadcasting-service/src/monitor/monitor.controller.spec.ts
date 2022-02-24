@@ -5,6 +5,7 @@ import { HttpException } from '@nestjs/common';
 import { MonitorController } from './monitor.controller';
 import { TestSessionService } from '../test-session/test-session.service';
 import { Monitor } from './monitor.interface';
+import '@testing-library/jest-dom';
 
 describe('MonitorController Post Register', () => {
   let monitorController: MonitorController;

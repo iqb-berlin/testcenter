@@ -12,5 +12,6 @@
     "baseUrl": "./",
     "incremental": true
   },
+  "types": ["jest"],
   "exclude": ["node_modules", "dist"]
 }
