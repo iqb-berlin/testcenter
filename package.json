@@ -28,7 +28,8 @@
     "frontend:start": "npx -w frontend ng serve",
     "broadcasting-service:build": "npx -w broadcasting-service nest build",
     "broadcasting-service:start": "npx -w broadcasting-service nest start --watch",
-    "broadcasting-service:unit-test": "npx -w broadcasting-service jest"
+    "broadcasting-service:unit-test": "npx -w broadcasting-service jest",
+    "broadcasting-service:coverage": "npx -w broadcasting-service jest --coverage"
   },
   "workspaces": [
     "frontend",
