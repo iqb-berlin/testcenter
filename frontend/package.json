@@ -1,6 +1,34 @@
 {
-  "name": "iqb-testcenter-frontend",
+  "name": "itc-ng",
+  "version": "12.1.0",
+  "iqb": {
+    "verona-player-api-versions": {
+      "min": 2,
+      "max": 4
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iqb-berlin/testcenter-iqb-ng"
+  },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test  --watch=false",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "compodoc": "npx compodoc -p tsconfig.doc.json -s -d ./docs/compodoc",
+    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
+  },
   "private": true,
+  "eslintConfig": {
+    "extends": "@iqb/eslint-config",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
+  },
   "dependencies": {
     "@angular/animations": "~12.1.0",
     "@angular/cdk": "^12.1.0",
@@ -31,20 +59,22 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~12.1.0",
-    "@angular/cli": "~12.1.0",
+    "@angular/cli": "^12.1.4",
     "@angular/compiler-cli": "~12.1.0",
     "@angular/language-service": "~12.1.0",
+    "@compodoc/compodoc": "^1.1.11",
+    "@iqb/eslint-config": "1.0.2",
     "@types/jasminewd2": "~2.0.8",
     "cypress": "^9.5.0",
     "cypress-iframe": "^1.0.1",
-    "jasmine-core": "~3.8.0",
+    "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.3.14",
     "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage": "~2.2.0",
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.6.0",
+    "protractor": "~7.0.0",
     "ts-node": "~8.6.2",
     "typescript": "~4.3.4"
   },
