@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { HttpException } from '@nestjs/common';
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import { TestSessionController } from './test-session.controller';
 import { TestSessionService } from './test-session.service';
-import { SessionChange } from './session-change.interface';
 
 let testSessionController : TestSessionController;
 
@@ -62,7 +62,7 @@ describe('TestSessionController Post', () => {
   });
 
   it('should not throw any errors (happy path)', () => {
-    const mockSessionChange : SessionChange = {
+    const mockSessionChange : TestSessionChange = {
       personId: 3,
       groupName: 'group string',
       personLabel: 'valid personLabel',
@@ -81,7 +81,7 @@ describe('TestSessionController Post', () => {
 });
 
 describe('testSessionController Get', () => {
-  const mockSessionChange1 : SessionChange = {
+  const mockSessionChange1 : TestSessionChange = {
     personId: 3,
     groupName: 'group string',
     personLabel: 'valid personLabel1',
@@ -91,7 +91,7 @@ describe('testSessionController Get', () => {
     timestamp: 12.30
   };
 
-  const mockSessionChange2 : SessionChange = {
+  const mockSessionChange2 : TestSessionChange = {
     personId: 6,
     groupName: 'group string',
     personLabel: 'valid personLabel2',
@@ -101,7 +101,7 @@ describe('testSessionController Get', () => {
     timestamp: 13.30
   };
 
-  const mockSessionChange4 : SessionChange = {
+  const mockSessionChange4 : TestSessionChange = {
     personId: 123,
     groupName: 'group string',
     personLabel: 'valid personLabel4',

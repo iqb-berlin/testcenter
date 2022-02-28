@@ -2,7 +2,7 @@ import {
   Controller, Get, HttpException, Logger, Post, Req
 } from '@nestjs/common';
 import { Request } from 'express';
-import { isSessionChange, SessionChange } from './session-change.interface';
+import { isSessionChange, TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import { TestSessionService } from './test-session.service';
 
 @Controller()
@@ -24,7 +24,7 @@ export class TestSessionController {
   }
 
   @Get('/test-sessions')
-  getTestSessions(): SessionChange[] {
+  getTestSessions(): TestSessionChange[] {
     return this.dataService.getTestSessions();
   }
 }

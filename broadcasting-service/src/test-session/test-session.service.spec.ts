@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { Test, TestingModule } from '@nestjs/testing';
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import { TestSessionService } from './test-session.service';
-import { SessionChange } from './session-change.interface';
 import { Monitor } from '../monitor/monitor.interface';
 import { WebsocketGateway } from '../common/websocket.gateway';
 
@@ -139,7 +139,7 @@ describe('testSessionService: get and clear all monitors', () => {
 });
 
 describe('testSessionService sessionChanges', () => {
-  const mockSessionChange1 : SessionChange = {
+  const mockSessionChange1 : TestSessionChange = {
     personId: 357,
     groupName: 'TestakerGroup1',
     testId: 381,
@@ -161,7 +161,7 @@ describe('testSessionService sessionChanges', () => {
     },
     timestamp: 1630051624
   };
-  const mockSessionChange1Updated : SessionChange = {
+  const mockSessionChange1Updated : TestSessionChange = {
     personId: 357,
     groupName: 'TestakerGroup1',
     testId: 381,
@@ -183,7 +183,7 @@ describe('testSessionService sessionChanges', () => {
     },
     timestamp: 1630051874
   };
-  const mockSessionChangeNoMonitor : SessionChange = {
+  const mockSessionChangeNoMonitor : TestSessionChange = {
     personId: 9,
     groupName: 'Gruppe6',
     testId: 10,
@@ -198,7 +198,7 @@ describe('testSessionService sessionChanges', () => {
     unitState: { PLAYER: 'RUNNING', PRESENTATION_PROGRESS: 'complete', RESPONSE_PROGRESS: 'some' },
     timestamp: 1630051624
   };
-  const mockSessionChange2 : SessionChange = {
+  const mockSessionChange2 : TestSessionChange = {
     personId: 6,
     groupName: 'Gruppe2',
     testId: 7,
@@ -213,7 +213,7 @@ describe('testSessionService sessionChanges', () => {
     unitState: { PLAYER: 'RUNNING', PRESENTATION_PROGRESS: 'complete', RESPONSE_PROGRESS: 'some' },
     timestamp: 1630051624
   };
-  const mockSessionChange3 : SessionChange = {
+  const mockSessionChange3 : TestSessionChange = {
     personId: 7,
     groupName: 'Gruppe3',
     testId: 8,
@@ -257,7 +257,7 @@ describe('testSessionService sessionChanges', () => {
   });
 
   it('should update a session entry (same unit name)', () => {
-    const expectedSession : SessionChange = {
+    const expectedSession : TestSessionChange = {
       personId: 357,
       groupName: 'TestakerGroup1',
       testId: 381,
@@ -299,7 +299,7 @@ describe('testSessionService sessionChanges', () => {
     mockSessionChange1Updated.unitState = {
       PLAYER: 'RUNNING', PRESENTATION_PROGRESS: 'complete'
     };
-    const expectedSession : SessionChange = {
+    const expectedSession : TestSessionChange = {
       personId: 357,
       groupName: 'TestakerGroup1',
       testId: 381,
@@ -333,7 +333,7 @@ describe('testSessionService sessionChanges', () => {
   });
 
   it('should return an array of sessionChanges', () => {
-    const expectedTestSessions : SessionChange[] =
+    const expectedTestSessions : TestSessionChange[] =
     [mockSessionChange1, mockSessionChange2, mockSessionChange3];
 
     testSessionService.applySessionChange(mockSessionChange1);

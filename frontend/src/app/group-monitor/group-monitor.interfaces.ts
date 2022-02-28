@@ -1,31 +1,16 @@
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../config/booklet-config';
+
+export type TestSessionData = Readonly<TestSessionChange>;
 
 export interface TestSession {
   readonly data: TestSessionData;
   readonly state: TestSessionSuperState;
-  readonly current: UnitContext|null;
-  readonly booklet: Booklet|BookletError;
-  readonly clearedCodes: Record<string, unknown>|null;
-  readonly timeLeft: Record<string, unknown>|null;
-}
-
-export interface TestSessionData {
-  readonly personId: number;
-  readonly personLabel?: string;
-  readonly groupName?: string;
-  readonly groupLabel?: string;
-  readonly mode?: string;
-  readonly testId: number;
-  readonly bookletName?: string;
-  readonly testState: {
-    [testStateKey: string]: string
-  };
-  readonly unitName?: string;
-  readonly unitState: {
-    [unitStateKey: string]: string
-  };
-  readonly timestamp: number;
+  readonly current: UnitContext | null;
+  readonly booklet: Booklet | BookletError;
+  readonly clearedCodes: Record<string, unknown> | null;
+  readonly timeLeft: Record<string, unknown> | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',
@@ -46,7 +31,7 @@ export interface BookletError {
   species: null;
 }
 
-export function isBooklet(bookletOrError: Booklet|BookletError): bookletOrError is Booklet {
+export function isBooklet(bookletOrError: Booklet | BookletError): bookletOrError is Booklet {
   return bookletOrError && !('error' in bookletOrError);
 }
 
@@ -64,7 +49,7 @@ export interface Testlet {
   id: string;
   label: string;
   restrictions?: Restrictions;
-  children: (Unit|Testlet)[];
+  children: (Unit | Testlet)[];
   descendantCount: number;
   blockId?: string;
   nextBlockId?: string;
@@ -115,11 +100,11 @@ export interface CheckingOptions {
   autoCheckAll: boolean;
 }
 
-export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
+export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
   return !('children' in testletOrUnit);
 }
 
-export function isTestlet(testletOrUnit: Testlet|Unit): testletOrUnit is Testlet {
+export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
   return ('children' in testletOrUnit);
 }
 
@@ -133,7 +118,7 @@ export interface UnitContext {
 }
 
 export interface Selected {
-  element: Testlet|null;
+  element: Testlet | null;
   originSession: TestSession;
   spreading: boolean;
   inversion: boolean;

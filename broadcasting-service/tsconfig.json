@@ -1,17 +1,23 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "baseUrl": "./",
     "declaration": true,
-    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "target": "es2017",
-    "sourceMap": true,
+    "incremental": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "target": "es2017",
+    "paths": {
+      "testcenter-common/*": [
+        "../@common/src/*"
+      ]
+    },
+    "types": ["jest"]
   },
-  "types": ["jest"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { SessionChange } from './session-change.interface';
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import { Monitor } from '../monitor/monitor.interface';
 import { WebsocketGateway } from '../common/websocket.gateway';
 
-const mergeSessionChanges = (testSession: SessionChange, sessionChange: SessionChange): SessionChange => {
+const mergeSessionChanges = (testSession: TestSessionChange, sessionChange: TestSessionChange): TestSessionChange => {
   if ((sessionChange.unitName) && (sessionChange.unitName !== testSession.unitName)) {
     testSession.unitState = {};
   }
@@ -28,7 +28,7 @@ export class TestSessionService {
 
   private testSessions: {
     [group: string]: {
-      [sessionId: string]: SessionChange
+      [sessionId: string]: TestSessionChange
     }
   } = {};
 
@@ -38,12 +38,12 @@ export class TestSessionService {
     }
   } = {};
 
-  applySessionChange(sessionChange: SessionChange): void {
+  applySessionChange(sessionChange: TestSessionChange): void {
     this.addSessionChange(sessionChange);
     this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
   }
 
-  private addSessionChange(sessionChange: SessionChange): void {
+  private addSessionChange(sessionChange: TestSessionChange): void {
     const group: string = sessionChange.groupName;
     const testId = sessionChange.testId;
 
@@ -111,11 +111,11 @@ export class TestSessionService {
       .filter((v: Monitor, i: number, a: Monitor[]) => a.indexOf(v) === i);
   }
 
-  getTestSessions(): SessionChange[] {
+  getTestSessions(): TestSessionChange[] {
     return Object.values(this.testSessions)
       .reduce(
         // eslint-disable-next-line max-len
-        (allTestSessions: SessionChange[], groupTestSessions: { [g: string]: SessionChange }): SessionChange[] => allTestSessions.concat(Object.values(groupTestSessions)), []
+        (allTestSessions: TestSessionChange[], groupTestSessions: { [g: string]: TestSessionChange }): TestSessionChange[] => allTestSessions.concat(Object.values(groupTestSessions)), []
       );
   }
 

@@ -7,27 +7,38 @@
 [x] fe/build prod
 [x] single source of version !
 [x] xdebug/local
-[ ] docker/prod
-[ ] docker/dev
 [x] be/unit-test
 [x] fe/unit-test
-[ ] bs/unit-test
+[x] bs/unit-test
 [x] be/coverage
 [x] fe/coverage
-[ ] fe/coverage -> IDE
-[ ] bs/coverage
-[ ] makefiles
+[x] bs/coverage
+[x] compodoc
+[ ] fe/breakpoints
+
+[ ] be/docker
+[ ] fe/docker
+[ ] bs/docker
+[ ] docker/prod
 [ ] docker/gulp
+[ ] docker/lint
+[ ] docker/xdebug
+
 [ ] new_version_scripts
+[ ] makefiles
+
+[ ] shared interfaces // STAND 
+[ ] fe/doc-scripts
 [ ] fe/cyprus -> huaning
 [x] be/dredd-test
-[ ] be/dredd-test beschleunigung
 [ ] be/init-test
+
+[ ] be/dredd-test beschleunigung
+
 [ ] integration-test
 [ ] CORS?
-[ ] fe/doc-scripts
-[ ] compodoc
-[ ] PSR warning
+[x] PSR warning
+
 [ ] gitlab-ci
 
 --
