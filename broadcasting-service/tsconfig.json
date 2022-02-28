@@ -14,7 +14,7 @@
     "target": "es2017",
     "paths": {
       "testcenter-common/*": [
-        "../@common/src/*"
+        "../common/src/*"
       ]
     },
     "types": ["jest"]
