@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1645707642359" clover="3.2.0">
-  <project timestamp="1645707642359" name="All files">
-    <metrics statements="192" coveredstatements="192" conditionals="45" coveredconditionals="43" methods="63" coveredmethods="62" elements="300" coveredelements="297" complexity="0" loc="192" ncloc="192" packages="5" files="11" classes="11"/>
+<coverage generated="1646044065576" clover="3.2.0">
+  <project timestamp="1646044065577" name="All files">
+    <metrics statements="190" coveredstatements="190" conditionals="42" coveredconditionals="40" methods="62" coveredmethods="61" elements="294" coveredelements="291" complexity="0" loc="190" ncloc="190" packages="5" files="10" classes="10"/>
     <package name="command">
       <metrics statements="16" coveredstatements="16" conditionals="9" coveredconditionals="9" methods="3" coveredmethods="3"/>
       <file name="command.controller.ts" path="/var/www/html/testcenter/broadcasting-service/src/command/command.controller.ts">
@@ -106,12 +106,7 @@
       </file>
     </package>
     <package name="test-session">
-      <metrics statements="65" coveredstatements="65" conditionals="17" coveredconditionals="16" methods="21" coveredmethods="21"/>
-      <file name="session-change.interface.ts" path="/var/www/html/testcenter/broadcasting-service/src/test-session/session-change.interface.ts">
-        <metrics statements="2" coveredstatements="2" conditionals="3" coveredconditionals="3" methods="1" coveredmethods="1"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="22" count="7" type="cond" truecount="3" falsecount="0"/>
-      </file>
+      <metrics statements="63" coveredstatements="63" conditionals="14" coveredconditionals="13" methods="20" coveredmethods="20"/>
       <file name="test-session.controller.ts" path="/var/www/html/testcenter/broadcasting-service/src/test-session/test-session.controller.ts">
         <metrics statements="13" coveredstatements="13" conditionals="1" coveredconditionals="1" methods="3" coveredmethods="3"/>
         <line num="1" count="1" type="stmt"/>
