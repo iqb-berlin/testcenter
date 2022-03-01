@@ -1,3 +1,5 @@
+# noinspection SqlResolveForFile
+
 start transaction;
 
 create table if not exists unit_data (

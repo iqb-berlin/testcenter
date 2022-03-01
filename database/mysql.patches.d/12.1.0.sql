@@ -1,3 +1,5 @@
+# noinspection SqlResolveForFile
+
 -- 1. remove data from login-session which will be part of new logins table
 -- data can be deleted safely, because it is stored in teh XMLs and they have to be read in after patching the DB anyway
 

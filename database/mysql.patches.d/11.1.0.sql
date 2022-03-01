@@ -1,3 +1,5 @@
+# noinspection SqlResolveForFile
+
 alter table meta
     add category varChar(30) null;
 
