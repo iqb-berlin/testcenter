@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-      target: prod
+      target: dev
       args:
         <<: *env-php
     volumes:

@@ -16,13 +16,17 @@
 [x] compodoc
 [ ] fe/breakpoints
 
-[ ] be/docker
-[ ] fe/docker
-[ ] bs/docker
+[x] be/docker
+    [ ]  Cannot GET /version
+[x] fe/docker
+[x] bs/docker
+    [ ] --watch !
 [ ] docker/prod
 [ ] docker/gulp
 [ ] docker/lint
-[ ] docker/xdebug
+[x] docker/xdebug
+[x] docker/db
+    [ ] weniger verbose
 
 [ ] new_version_scripts
 [ ] makefiles
@@ -40,6 +44,8 @@
 [x] PSR warning
 
 [ ] gitlab-ci
+
+[ ] fe css-warning
 
 --
 
