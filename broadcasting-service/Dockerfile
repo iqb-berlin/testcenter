@@ -1,14 +1,26 @@
-FROM node:13.14.0
-
-ENV PATH /app/node_modules/.bin:$PATH
+FROM node:14.15.0 as dev
 
 WORKDIR /app
 
-COPY package.json /app/package.json
+COPY broadcasting-service/src .
+COPY broadcasting-service/package.json .
+COPY broadcasting-service/nest-cli.json .
+COPY broadcasting-service/tsconfig.json .
+COPY broadcasting-service/tsconfig.build.json .
+COPY common /common
+
 RUN npm install
 
-COPY . /app
+# build prod
+RUN npx nest build
 
 EXPOSE 3000
+CMD npx nest start
 
-CMD npm run start
+FROM nginx:1.19.1-alpine as prod
+
+COPY --from=dev /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

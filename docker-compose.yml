@@ -40,7 +40,7 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     volumes:
       - dbdata:/var/lib/mysql
-      - ./config/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
 
   testcenter-backend:
     container_name: testcenter-backend

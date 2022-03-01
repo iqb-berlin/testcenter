@@ -135,7 +135,7 @@ try  {
     if ($installationArguments->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
 
         CLI::p("Install basic database structure");
-        $initDAO->runFile(ROOT_DIR . "/backend/database/mysql.sql");
+        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
     }
 
     $dbSchemaVersion = $initDAO->getDBSchemaVersion();
@@ -149,7 +149,7 @@ try  {
 
         CLI::p("Install patches if necessary");
         $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
-        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/backend/database/mysql.patches.d", $allowFailing);
+        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", $allowFailing);
         foreach ($patchInstallReport['patches'] as $patch) {
 
           if (isset($patchInstallReport['errors'][$patch])) {

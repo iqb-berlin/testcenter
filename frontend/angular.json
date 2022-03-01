@@ -1,9 +1,9 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "../node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "itc-ng": {
+    "testcenter-frontend": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/itc-ng",
+            "outputPath": "dist/testcenter-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -59,25 +59,13 @@
               "vendorChunk": false,
               "buildOptimizer": true
             },
-            "build": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
+            "dev": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.build.ts"
+                  "with": "src/environments/environment.dev.ts"
                 }
-              ],
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": false,
-              "extractLicenses": true,
-              "vendorChunk": false
+              ]
             },
             "e2e": {
               "budgets": [
@@ -105,21 +93,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "itc-ng:build"
+            "browserTarget": "testcenter-frontend:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "itc-ng:build:production"
+              "browserTarget": "testcenter-frontend:build:production"
+            },
+            "dev": {
+              "browserTarget": "testcenter-frontend:build:dev"
             },
             "e2e": {
-              "browserTarget": "itc-ng:build:e2e"
+              "browserTarget": "testcenter-frontend:build:e2e"
             }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "itc-ng:build"
           }
         },
         "test": {
@@ -141,7 +126,7 @@
         }
       }
     },
-    "itc-ng-e2e": {
+    "testcenter-frontend-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -149,19 +134,19 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "itc-ng:serve"
+            "devServerTarget": "testcenter-frontend:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "itc-ng:serve:production"
+              "devServerTarget": "testcenter-frontend:serve:production"
             },
             "e2e": {
-              "devServerTarget": "itc-ng:serve:e2e"
+              "devServerTarget": "testcenter-frontend:serve:e2e"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "itc-ng"
+  "defaultProject": "testcenter-frontend"
 }

@@ -18,37 +18,50 @@ services:
 
   testcenter-backend:
     build:
-      context: testcenter-backend
-      dockerfile: docker/Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
+      target: prod
       args:
         <<: *env-php
     volumes:
-      - ./testcenter-backend/classes:/var/www/html/classes
-      - ./testcenter-backend/definitions:/var/www/html/definitions
-      - ./testcenter-backend/docs/specs.yml:/var/www/html/docs/specs.yml
-      - ./testcenter-backend/routes:/var/www/html/routes
-      - ./testcenter-backend/sampledata:/var/www/html/sampledata
-      - ./testcenter-backend/vo_data:/var/www/html/vo_data
-      - ./testcenter-backend/vendor:/var/www/html/vendor
-      - ./testcenter-backend/composer.json:/var/www/html/composer.json
-      - ./testcenter-backend/composer.lock:/var/www/html/composer.lock
+      - ./backend/.htaccess:/var/www/backend/.htaccess
+      - ./backend/autoload.php:/var/www/backend/autoload.php
+      - ./backend/index.php:/var/www/backend/index.php
+      - ./backend/initialize.php:/var/www/backend/initialize.php
+      - ./backend/routes.php:/var/www/backend/routes.php
+      - ./backend/src:/var/www/backend/src
+      - ./data:/var/www/data
+      - ./database:/var/www/database
+      - ./definitions:/var/www/definitions
+      - ./package.json:/var/www/package.json
+      - ./sampledata:/var/www/sampledata
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   testcenter-frontend:
     build:
-      context: testcenter-frontend
-      dockerfile: docker/Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
       target: dev
     volumes:
-      - ./testcenter-frontend:/app
-      - testcenter_frontend_node_modules:/app/node_modules
+      - ./frontend/.browserslistrc:/app/.browserslistrc
+      - ./frontend/angular.json:/app/angular.json
+      - ./frontend/dist:/app/dist
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/src:/app/src
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./common:/common
 
   testcenter-broadcasting-service:
     build:
-      context: testcenter-broadcasting-service
-      dockerfile: docker/Dockerfile
-
-
-volumes:
-  testcenter_frontend_node_modules:
+      context: .
+      dockerfile: broadcasting-service/Dockerfile
+      target: dev
+    volumes:
+      - ./broadcasting-service/dist:/app/dist
+      - ./broadcasting-service/nest-cli.json:/app/nest-cli.json
+      - ./broadcasting-service/package.json:/app/package.json
+      - ./broadcasting-service/src:/app/src
+      - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
+      - ./broadcasting-service/tsconfig.json:/app/tsconfig.json
+      - ./common:/common

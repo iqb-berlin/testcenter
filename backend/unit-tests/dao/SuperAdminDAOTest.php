@@ -25,7 +25,7 @@ class SuperAdminDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new SuperAdminDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/database/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/database/sqlite.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/unit-tests/testdata.sql');
     }
 

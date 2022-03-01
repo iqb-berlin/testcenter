@@ -56,7 +56,7 @@ class TestEnvironment {
             XMLSchema::setup(false);
 
             $initDAO = new InitDAO();
-            $initDAO->runFile('database/sqlite.sql');
+            $initDAO->runFile(ROOT_DIR . '/database/sqlite.sql');
 
             TestEnvironment::setUpTestData();
             TestEnvironment::overwriteModificationDatesVfs();
@@ -85,8 +85,8 @@ class TestEnvironment {
 
         $initDAO->clearDb();
 
-        $initDAO->runFile(ROOT_DIR . "/backend/database/mysql.sql");
-        $initDAO->installPatches(ROOT_DIR . "/backend/database/mysql.patches.d", true);
+        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
+        $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", true);
 
         $dbStatus = $initDAO->getDbStatus();
         if ($dbStatus['missing']) {

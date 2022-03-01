@@ -1,6 +1,5 @@
 {
-  "name": "testcenter-broadcasting-service",
-  "description": "",
+  "name": "iqb-testcenter-broadcasting-service",
   "private": true,
   "dependencies": {
     "@nestjs/common": "^7.0.0",

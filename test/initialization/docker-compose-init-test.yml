@@ -14,7 +14,7 @@ services:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
     volumes:
-      - ./scripts/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
     ports:
       - "9091:3306"
       - "22:22"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # init data
-php /var/www/html/scripts/initialize.php \
+php /var/www/backend/initialize.php \
 --user_name=$SUPERUSER_NAME \
 --user_password=$SUPERUSER_PASSWORD \
 --workspace=$WORKSPACE_NAME \
@@ -14,7 +14,7 @@ php /var/www/html/scripts/initialize.php \
 --broadcastServiceUriSubscribe=$BROADCAST_SERVICE_URI_SUBSCRIBE
 
 # file-rights
-chown -R www-data:www-data /var/www/html/vo_data # TODO 13
+chown -R www-data:www-data /var/www/data
 
 # keep container open
 apache2-foreground

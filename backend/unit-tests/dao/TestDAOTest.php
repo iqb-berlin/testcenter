@@ -20,7 +20,7 @@ class TestDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new TestDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/database/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/database/sqlite.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/unit-tests/testdata.sql');
     }
 

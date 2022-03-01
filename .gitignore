@@ -13,7 +13,7 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# data-dir if running locally
+# data-dir
 /data
 
 # backend-dependencies
@@ -30,16 +30,15 @@
 /frontend/src/environments/environment.ts
 /frontend/src/environments/environment.ts.bu
 
-# frontend-dependencies
-/frontend/node_modules
-
-# frontend compiled output
+# dist
 /frontend/dist
 /frontend/tmp
 /frontend/out-tsc
+/broadcasting-service/dist
 
 # dev dependencies
 /node_modules
+*/node_modules
 
 # tmp
 /tmp

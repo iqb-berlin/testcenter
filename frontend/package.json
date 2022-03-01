@@ -1,10 +1,5 @@
 {
   "name": "iqb-testcenter-frontend",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/iqb-berlin/testcenter"
-  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.1.0",
