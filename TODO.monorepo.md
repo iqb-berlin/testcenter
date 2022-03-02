@@ -21,6 +21,7 @@
 [x] fe/docker
 [x] bs/docker
     [ ] --watch !
+    [ ] logger
 [ ] docker/prod
 [ ] docker/gulp
 [ ] docker/lint

@@ -23,44 +23,16 @@ class BroadcastService {
     }
 
 
-    static function getStatus(): array {
-
-        $status = [
-            "versionExpected" => "none",
-            "version" => "none",
-            "status" => "not installed"
-        ];
+    static function getStatus(): string {
 
         if (!BroadcastService::$bsUriPush or !BroadcastService::$bsUriSubscribe) {
 
-            return $status;
+            return 'off';
         }
 
-        $version = BroadcastService::send('version', '', 'GET');
-        $status['versionExpected'] = Version::get(); // TODO is this needed anymore at all?
+        $ping = BroadcastService::send('', '', 'GET');
 
-        if ($version === null) {
-
-            $status['status'] = 'offline';
-            return $status;
-        }
-
-        $status['status'] = 'online';
-        $status['version'] = $version;
-
-        if (version_compare($version, $status['versionExpected']) < 0) { // TODO use Version::isCompatible instead
-
-            throw new Exception("BroadcastingService is set up and online but version `$version` is too old; 
-                `{$status['versionExpected']}` expected");
-        }
-
-        if (explode('.', $version)[0] >  explode('.', $status['versionExpected'])[0]) {
-
-            throw new Exception("BroadcastingService is set up and online but version `$version` is too new; 
-                `{$status['versionExpected']}` expected");
-        }
-
-        return $status;
+        return ($ping === null) ? 'unreachable' : 'on';
     }
 
 

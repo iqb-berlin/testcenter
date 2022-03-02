@@ -9,13 +9,13 @@
         <status-card></status-card>
         <p style="margin-bottom: 0;"><b>Angaben zu dieser Web-Anwendung:</b></p>
         <ul style="margin: 0;">
-          <li *ngIf="!isProductionMode">Build-Modus: Dev</li>
-          <li>IQB-Testcenter Version {{mds.appConfig?.version}}</li>
-          <li>Live-Modus: {{mds.appConfig?.broadcastingService.status}}</li>
+          <li>Version {{mds.appConfig?.version}}</li>
+          <li>Live-Modus: {{mds.appConfig?.broadcastingService}}</li>
           <li>
             Verona Player Interface: Versionen {{mds.appConfig?.veronaPlayerApiVersionMin}}
             bis {{mds.appConfig?.veronaPlayerApiVersionMax}} unterstützt
           </li>
+          <li *ngIf="!isProductionMode">Build-Modus: Entwicklung</li>
         </ul>
       </mat-card-content>
       <mat-card-actions>

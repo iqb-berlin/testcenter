@@ -4,7 +4,7 @@ import customTextsDefault from '../../config/custom-texts.json';
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
-  BroadCastingServiceInfo,
+  BroadCastingServiceStatus,
   localStorageTestConfigKey, standardBackgroundBody, standardBackgroundBox,
   standardLogo,
   SysConfig
@@ -17,7 +17,7 @@ export class AppConfig {
   veronaPlayerApiVersionMax: number;
   mainLogo = standardLogo;
   testConfig: KeyValuePairs = {};
-  broadcastingService: BroadCastingServiceInfo = { status: 'none' };
+  broadcastingService: BroadCastingServiceStatus = 'off';
   appTitle = 'IQB-Testcenter';
   backgroundBody: string;
   backgroundBox: string;
@@ -51,9 +51,7 @@ export class AppConfig {
       this.customTexts = sysConfig.customTexts;
       this.setCustomTexts(sysConfig.customTexts);
       this.setAppConfig(sysConfig.appConfig);
-      if (sysConfig.broadcastingService && sysConfig.broadcastingService.status) {
-        this.broadcastingService = sysConfig.broadcastingService;
-      }
+      this.broadcastingService = sysConfig.broadcastingService;
       this.version = sysConfig.version;
       this.veronaPlayerApiVersionMin = sysConfig.veronaPlayerApiVersionMin;
       this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;

@@ -1,7 +1,6 @@
 import {
-  Controller, Post, Req, Logger
+  Controller, Post, Logger, Get, HttpCode
 } from '@nestjs/common';
-import { Request } from 'express';
 import { TestSessionService } from '../test-session/test-session.service';
 import { TesteeService } from '../testee/testee.service';
 import { WebsocketGateway } from '../common/websocket.gateway';
@@ -17,10 +16,15 @@ export class SystemController {
   private readonly logger = new Logger(SystemController.name);
 
   @Post('/system/clean')
-  clean(@Req() request: Request): void {
+  clean(): void {
     this.logger.warn('clean system');
     this.wsGateway.disconnectAll();
     this.dataService.clean();
     this.testeeService.clean();
   }
+
+  @Get('')
+  @HttpCode(200)
+  // eslint-disable-next-line class-methods-use-this
+  root(): void {}
 }

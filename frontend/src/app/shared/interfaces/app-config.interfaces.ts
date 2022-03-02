@@ -14,20 +14,16 @@ export interface AppSettingsObject {
 
 export type AppSettings = AppSettingsObject | Record<string, never>;
 
+export type BroadCastingServiceStatus = 'on' | 'off' | 'unreachable';
+
 export interface SysConfig {
   version: string;
   customTexts: KeyValuePairs;
   appConfig: AppSettings;
-  broadcastingService: BroadCastingServiceInfo;
+  broadcastingService: BroadCastingServiceStatus;
   baseUrl: string;
   veronaPlayerApiVersionMin: number;
   veronaPlayerApiVersionMax: number;
-}
-
-export interface BroadCastingServiceInfo {
-  status: string;
-  version?: string;
-  versionExpected?: string;
 }
 
 export const localStorageTestConfigKey = 'iqb-tc-c';
