@@ -20,14 +20,14 @@
     [ ]  Cannot GET /version
 [x] fe/docker
 [x] bs/docker
-    [ ] --watch !
-    [ ] logger
+    [x] --watch !
+    [x] logger
 [ ] docker/prod
 [ ] docker/gulp
 [ ] docker/lint
 [x] docker/xdebug
 [x] docker/db
-    [ ] weniger verbose
+    [x] weniger verbose
 
 [ ] new_version_scripts
 [ ] makefiles

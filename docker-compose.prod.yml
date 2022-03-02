@@ -13,3 +13,7 @@ services:
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:4.0.3
+
+  testcenter-db:
+    command:
+      - --log_error_verbosity=1
