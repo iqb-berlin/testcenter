@@ -13,14 +13,17 @@ RUN npm install
 
 RUN npx nest build
 
+RUN more /app/dist/main.js
+
 EXPOSE 3000
 CMD DEV_MODE=true npx nest start --watch --preserveWatchOutput
 
 
-FROM nginx:1.19.1-alpine as prod
+FROM node:14.15.0 as prod
 
-COPY --from=dev /app/dist /usr/share/nginx/html
+COPY --from=dev /app/dist /app
+COPY --from=dev /app/node_modules /app/node_modules
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "/app/main.js"]

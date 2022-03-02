@@ -53,9 +53,6 @@ RUN mkdir /var/www/backend/config
 
 RUN chown -R www-data:www-data /var/www
 
-RUN ls -l /var/www/backend/
-RUN ls -l /var/www
-
 EXPOSE 80
 
 

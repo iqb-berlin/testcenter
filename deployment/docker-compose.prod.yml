@@ -1,0 +1,19 @@
+#  Compose file for production environment. Images are NOT locally built but
+#  downloaded from Docker-Hub. This is the non-TLS variant using unencrypted
+#  communication.
+version: '3.7'
+
+services:
+
+  testcenter-backend:
+    image: iqbberlin/testcenter-backend:12.0.2
+
+  testcenter-frontend:
+    image: iqbberlin/testcenter-frontend:12.0.3
+
+  testcenter-broadcasting-service:
+    image: iqbberlin/testcenter-broadcasting-service:4.0.3
+
+  testcenter-db:
+    command:
+      - --log_error_verbosity=1

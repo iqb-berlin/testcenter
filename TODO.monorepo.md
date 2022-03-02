@@ -17,7 +17,7 @@
 [ ] fe/breakpoints
 
 [x] be/docker
-    [ ]  Cannot GET /version
+    [x]  Cannot GET /version
 [x] fe/docker
 [x] bs/docker
     [x] --watch !
@@ -32,7 +32,15 @@
 [ ] new_version_scripts
 [ ] makefiles
 
-[ ] shared interfaces // STAND 
+[x] docker/be/dredd-test
+[x] docker/be/unit-test
+[x] docker/fe/unit-test
+[x] docker/bs/unit-test
+[x] docker/be/coverage
+[x] docker/fe/coverage
+[x] docker/bs/coverage
+
+[x] shared interfaces 
 [ ] fe/doc-scripts
 [ ] fe/cyprus -> huaning
 [x] be/dredd-test
@@ -47,6 +55,8 @@
 [ ] gitlab-ci
 
 [ ] fe css-warning
+
+[ ] container stop when initialize fails
 
 --
 

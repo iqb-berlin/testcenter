@@ -9,9 +9,9 @@ run:
 run-detached:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(container)
 stop:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(container)
 down:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down $(container)
 
 #composer-install: - is this necessary? or automatically done with building the container
 #	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
@@ -77,10 +77,12 @@ update-docs:
 #install-packages:
 #	docker exec testcenter-frontend-dev npm install $(packages)
 
-#run-prod:
-#	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
-#run-prod-detached:
-#	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+run-prod:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(container)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(container)
+run-prod-detached:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(container)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(container)
 #
 #run-prod-tls:
 #	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up
