@@ -14,7 +14,7 @@ RUN npm install
 RUN npx nest build
 
 EXPOSE 3000
-CMD npx nest start --watch --preserveWatchOutput
+CMD DEV_MODE=true npx nest start --watch --preserveWatchOutput
 
 
 FROM nginx:1.19.1-alpine as prod

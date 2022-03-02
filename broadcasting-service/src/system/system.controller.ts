@@ -26,5 +26,7 @@ export class SystemController {
   @Get('')
   @HttpCode(200)
   // eslint-disable-next-line class-methods-use-this
-  root(): void {}
+  root(): void {
+    this.logger.log('ping');
+  }
 }
