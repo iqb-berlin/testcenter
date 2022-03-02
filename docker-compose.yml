@@ -2,6 +2,12 @@
 # For concrete images check the environment specific override files.
 version: '3.7'
 
+x-env-php: &env-php
+  PHP_VERSION: 7.4.22
+
+x-env-node: &env-node
+  NODE_VERSION: 14.15.0
+
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -63,6 +69,9 @@ services:
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
+    build:
+      args:
+        <<: *env-php
 
   testcenter-frontend:
     container_name: testcenter-frontend
@@ -72,6 +81,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+    build:
+      args:
+        <<: *env-node
 
   testcenter-broadcasting-service:
     container_name: testcenter-broadcasting-service
@@ -83,6 +95,9 @@ services:
       - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
+    build:
+      args:
+        <<: *env-node
 
 volumes:
   dbdata:

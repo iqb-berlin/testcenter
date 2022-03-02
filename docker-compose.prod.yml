@@ -2,10 +2,6 @@
 # local directories which need to be cloned from the repository.
 version: '3.7'
 
-x-env-php: &env-php
-  PHP_VERSION: 7.4.22
-
-
 services:
   testcenter-db:
     command:

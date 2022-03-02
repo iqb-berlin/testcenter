@@ -1,4 +1,6 @@
-FROM node:14.15.0 as dev
+ARG NODE_VERSION=14.15.0
+
+FROM node:${NODE_VERSION} as dev
 
 WORKDIR /app
 

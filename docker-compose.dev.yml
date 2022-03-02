@@ -2,10 +2,6 @@
 # local directories which need to be cloned from the repository.
 version: '3.7'
 
-x-env-php: &env-php
-  PHP_VERSION: 7.4.22
-
-
 services:
   traefik:
     command:
@@ -23,8 +19,6 @@ services:
       context: .
       dockerfile: backend/Dockerfile
       target: dev
-      args:
-        <<: *env-php
     volumes:
       - ./backend/.htaccess:/var/www/backend/.htaccess
       - ./backend/autoload.php:/var/www/backend/autoload.php

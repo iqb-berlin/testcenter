@@ -32,13 +32,13 @@
 
 [ ] makefiles
 
-[x] docker/be/dredd-test
-[x] docker/be/unit-test
-[x] docker/fe/unit-test
-[x] docker/bs/unit-test
-[x] docker/be/coverage
-[x] docker/fe/coverage
-[x] docker/bs/coverage
+[ ] docker/be/dredd-test
+[ ] docker/be/unit-test
+[ ] docker/fe/unit-test
+[ ] docker/bs/unit-test
+[ ] docker/be/coverage
+[ ] docker/fe/coverage
+[ ] docker/bs/coverage
 
 [x] shared interfaces 
 [ ] fe/doc-scripts
