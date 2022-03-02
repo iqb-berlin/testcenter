@@ -58,8 +58,7 @@ services:
       dockerfile: broadcasting-service/Dockerfile
       target: dev
     volumes:
-      - ./broadcasting-service/dist:/app/dist
-      - ./broadcasting-service/nest-cli.json:/app/nest-cli.json
+#      - ./broadcasting-service/nest-cli.json:/app/nest-cli.json
       - ./broadcasting-service/package.json:/app/package.json
       - ./broadcasting-service/src:/app/src
       - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json

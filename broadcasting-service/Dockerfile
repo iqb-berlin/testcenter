@@ -2,20 +2,20 @@ FROM node:14.15.0 as dev
 
 WORKDIR /app
 
-COPY broadcasting-service/src .
+COPY broadcasting-service/src /app/src
 COPY broadcasting-service/package.json .
-COPY broadcasting-service/nest-cli.json .
+COPY broadcasting-service/nest-cli.docker.json /app/nest-cli.json
 COPY broadcasting-service/tsconfig.json .
 COPY broadcasting-service/tsconfig.build.json .
 COPY common /common
 
 RUN npm install
 
-# build prod
 RUN npx nest build
 
 EXPOSE 3000
-CMD npx nest start
+CMD npx nest start --watch --preserveWatchOutput
+
 
 FROM nginx:1.19.1-alpine as prod
 

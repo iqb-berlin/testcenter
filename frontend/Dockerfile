@@ -20,7 +20,7 @@ RUN ls -l /node_modules
 RUN npx ng build --configuration production --output-path=dist
 
 EXPOSE 4200
-CMD npx ng serve --configuration dev --disableHostCheck --host 0.0.0.0
+CMD npx ng serve --configuration dev --disable-host-check --host 0.0.0.0
 
 FROM nginx:1.19.1-alpine as prod
 

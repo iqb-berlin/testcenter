@@ -3,11 +3,11 @@ init:
 	cp .env-default .env
 
 build:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(container)
 run:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(container)
 run-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(container)
 stop:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop
 down:

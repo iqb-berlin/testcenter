@@ -1,9 +1,5 @@
 include:
-  - template: Code-Quality.gitlab-ci.yml
-  - template: Security/SAST.gitlab-ci.yml
   - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Dependency-Scanning.gitlab-ci.yml
-  - template: Security/License-Scanning.gitlab-ci.yml
 
 image: docker:20.10.5
 
@@ -15,23 +11,18 @@ services:
   - docker:20.10.5-dind
 
 stages:
-  - test
+#  - test
   - check
+#
+#test-e2e:
+#  stage: test
+#  script:
+#    - apk add make docker-compose
+#    - make init-dev-config
+#    - make test-e2e
+#
 
-test-e2e:
-  stage: test
-  script:
-    - apk add make docker-compose
-    - make init-dev-config
-    - make test-e2e
 
-code_quality:
-  stage: check
-sast:
-  stage: check
 .secret-analyzer:
   stage: check
-dependency_scanning:
-  stage: check
-license_scanning:
-  stage: check
+
