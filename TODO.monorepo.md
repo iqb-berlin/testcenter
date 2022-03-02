@@ -22,14 +22,14 @@
 [x] bs/docker
     [x] --watch !
     [x] logger
-[ ] docker/prod
+[x] docker/prod
 [ ] docker/gulp
 [ ] docker/lint
 [x] docker/xdebug
 [x] docker/db
     [x] weniger verbose
 
-[ ] new_version_scripts
+
 [ ] makefiles
 
 [x] docker/be/dredd-test
@@ -45,6 +45,9 @@
 [ ] fe/cyprus -> huaning
 [x] be/dredd-test
 [ ] be/init-test
+
+[ ] new_version_scripts
+[ ] installer / deployment
 
 [ ] be/dredd-test beschleunigung
 

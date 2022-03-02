@@ -5,9 +5,19 @@ init:
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(container)
 run:
+	make build container=$(container)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(container)
 run-detached:
+	make build container=$(container)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(container)
+build-prod:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(container)
+run-prod:
+	make build-prod container=$(container)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(container)
+run-prod-detached:
+	make build-prod container=$(container)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(container)
 stop:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(container)
 down:
@@ -77,12 +87,7 @@ update-docs:
 #install-packages:
 #	docker exec testcenter-frontend-dev npm install $(packages)
 
-run-prod:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(container)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(container)
-run-prod-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(container)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(container)
+
 #
 #run-prod-tls:
 #	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up
