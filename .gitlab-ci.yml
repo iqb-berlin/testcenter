@@ -11,7 +11,7 @@ services:
   - docker:20.10.5-dind
 
 stages:
-#  - test
+  - test
   - check
 #
 #test-e2e:
