@@ -19,7 +19,8 @@ stages:
 #  stage: test
 #  script:
 #    - apk add make docker-compose
-#    - make init-dev-config
+#    - make init
+
 #    - make test-e2e
 #
 
@@ -27,7 +28,8 @@ build:
   stage: build
   script:
     - apk add make docker-compose
-    - make init-dev-config
+    - make init
+
     - make build
 #    - docker tag docker_testcenter-backend iqbberlin/testcenter-backend:latest
     - docker save docker_testcenter-backend > backend_image.tar
@@ -40,7 +42,8 @@ build:
 #  stage: test
 #  script:
 #    - apk add make docker-compose
-#    - make init-dev-config
+#    - make init
+
 #    - docker load -i backend_image.tar
 #    - make run-detached
 #    - make test-unit
@@ -49,7 +52,8 @@ test-backend-dredd:
   stage: test
   script:
     - apk add make docker-compose
-    - make init-dev-config
+    - make init
+
     - docker load -i backend_image.tar
     - make run-detached
     - sleep 20
