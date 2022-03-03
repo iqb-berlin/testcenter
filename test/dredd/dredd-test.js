@@ -3,52 +3,22 @@ const fs = require('fs');
 const Dredd = require('dredd');
 const gulp = require('gulp');
 const YAML = require('yamljs');
-const inquirer = require('inquirer');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
-const testcenterConfig = require('../../config/testcenter.json');
+const testcenterConfig = require('./config/dredd_test_config.json');
 const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 
-const apiUrl = testcenterConfig.testcenterUrl || 'http://localhost';
-const specialTestConfig = fs.existsSync('../backend/config/e2eTests.json') // TODo use config/testcenter.json
-  ? JSON.parse(fs.readFileSync('../backend/config/e2eTests.json').toString())
-  : false;
+const apiUrl = testcenterConfig.testcenterUrl;
 
 const confirmTestConfig = async done => {
   if (!apiUrl) {
-    cliPrint.error('No API Url given!');
-    return;
+    return done(new Error(cliPrint.get.error('No API Url given!')));
   }
 
   cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
-
-  if (testcenterConfig.dreddTest.allowRealDataMode) {
-    cliPrint.error('You run this in REAL-DATA-MODE.');
-    return;
-  }
-
-  if ((specialTestConfig !== false) && (typeof specialTestConfig.configFile !== 'undefined')) {
-    inquirer.prompt([{
-      type: 'confirm',
-      message: cliPrint.get.error('You run this in REAL-DATA-MODE - that means you want '
-        + 'to run tests against REAL database-configuration as defined in '
-        + `config/DBConnectionData.${specialTestConfig.configFile}.json `
-        + 'data folder as configured in `config/DBConnectionData.json`\n'
-        + 'YOU WILL LOOSE ALL DATA IN DB AND FOLDER BY DOING THIS!!! '
-        + '...you want to do this for real?\n'),
-      default: false,
-      name: 'start'
-    }]).then(answers => {
-      if (!answers.start) {
-        cliPrint.error('Aborted.');
-        done(new Error('Aborted'));
-      } else {
-        done();
-      }
-    });
-  }
+  return done();
 };
 
 const prepareSpecsForDredd = done => {
@@ -138,7 +108,7 @@ const runDredd = async done => {
     endpoint: apiUrl,
     path: [`${tmpDir}/transformed.specs.*.yml`],
     hookfiles: ['dredd-hooks.js'],
-    output: [`${tmpDir}/report.html`],
+    output: [`${tmpDir}/report.html`], // TODO 13
     reporter: ['html'],
     names: false
   }).run((err, stats) => {
@@ -155,23 +125,10 @@ const runDredd = async done => {
   });
 };
 
-const deleteSpecialConfigFile = done => {
-  if (specialTestConfig) {
-    try {
-      fs.renameSync('../config/e2eTests.json', '../config/e2eTests.backup.json');
-      cliPrint.error("Special test config file 'config/e2eTests.json' was renamed for security reasons!");
-    } catch (exception) {
-      cliPrint.error("Please delete config file 'config/e2eTests.json' for security reasons!");
-    }
-  }
-  done();
-};
-
 exports.runDreddTest = gulp.series(
   confirmTestConfig,
   clearTmpDir,
   mergeSpecFiles,
   prepareSpecsForDredd,
-  runDredd,
-  deleteSpecialConfigFile
+  runDredd
 );

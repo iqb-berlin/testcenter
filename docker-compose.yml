@@ -36,6 +36,8 @@ services:
       - "80:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      testcenter:
 
   testcenter-db:
     container_name: testcenter-db
@@ -47,6 +49,8 @@ services:
     volumes:
       - dbdata:/var/lib/mysql
       - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      testcenter:
 
   testcenter-backend:
     container_name: testcenter-backend
@@ -63,7 +67,7 @@ services:
       options:
         <<: *env-logging-conf
     volumes:
-      - testcenter_backend_vo_data:/var/www/html/vo_data
+      - testcenter_backend_data:/var/www/html/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
@@ -72,6 +76,8 @@ services:
     build:
       args:
         <<: *env-php
+    networks:
+      testcenter:
 
   testcenter-frontend:
     container_name: testcenter-frontend
@@ -84,6 +90,8 @@ services:
     build:
       args:
         <<: *env-node
+    networks:
+      testcenter:
 
   testcenter-broadcasting-service:
     container_name: testcenter-broadcasting-service
@@ -98,7 +106,13 @@ services:
     build:
       args:
         <<: *env-node
+    networks:
+      testcenter:
 
 volumes:
   dbdata:
-  testcenter_backend_vo_data:
+  testcenter_backend_data:
+
+networks:
+  testcenter:
+    name: testcenter

@@ -30,6 +30,9 @@
 /frontend/src/environments/environment.ts
 /frontend/src/environments/environment.ts.bu
 
+# test config
+/test/dredd/config
+
 # dist
 /frontend/dist
 /frontend/tmp

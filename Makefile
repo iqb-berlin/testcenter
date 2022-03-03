@@ -34,8 +34,8 @@ test-backend-unit:
 
 
 test-backend-dredd:
-#TODO
-#docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run dredd_test
+	docker build -f runner.Dockerfile -t testcenter-task-runner .
+	docker run --network testcenter --entrypoint npm testcenter-task-runner run backend:dredd-test
 
 test-backend-dredd-mysql:
 #TODO

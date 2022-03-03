@@ -32,7 +32,7 @@
 
 [ ] makefiles
 
-[ ] docker/be/dredd-test
+[x] docker/be/dredd-test
 [ ] docker/be/unit-test
 [ ] docker/fe/unit-test
 [ ] docker/bs/unit-test
@@ -60,6 +60,10 @@
 [ ] fe css-warning
 
 [ ] container stop when initialize fails
+
+
+[ ] hardcode BROADCAST_SERVICE_URI_SUBSCRIBE
+[ ] do something with dredd-report
 
 --
 

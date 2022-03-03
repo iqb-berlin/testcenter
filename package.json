@@ -16,8 +16,8 @@
   "private": true,
   "scripts": {
     "lint": "npx eslint frontend/src/**/*.ts frontend/src/**/*.js broadcasting-service/src/**/*.ts scripts/**/*.js",
-    "backend:update_specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
-    "backend:dredd_test": "node_modules/.bin/gulp --gulpfile=./test/dredd/dredd-test.js runDreddTest",
+    "backend:update-specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
+    "backend:dredd-test": "node_modules/.bin/gulp --gulpfile=./test/dredd/dredd-test.js runDreddTest",
     "frontend:compodoc": "npx compodoc -p frontend/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
     "frontend:update-compodoc": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
     "broadcasting-service:compodoc": "npx compodoc -p broadcasting-service/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
