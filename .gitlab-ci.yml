@@ -22,6 +22,38 @@ stages:
 #    - make test-e2e
 #
 
+build:
+  stage: build
+  script:
+    - apk add make docker-compose
+    - make init-dev-config
+    - make build
+#    - docker tag docker_testcenter-backend iqbberlin/testcenter-backend:latest
+    - docker save docker_testcenter-backend > backend_image.tar
+  artifacts:
+    paths:
+      - backend_image.tar
+    expire_in: 1 day
+
+#test-unit:
+#  stage: test
+#  script:
+#    - apk add make docker-compose
+#    - make init-dev-config
+#    - docker load -i backend_image.tar
+#    - make run-detached
+#    - make test-unit
+
+test-backend-dredd:
+  stage: test
+  script:
+    - apk add make docker-compose
+    - make init-dev-config
+    - docker load -i backend_image.tar
+    - make run-detached
+    - sleep 20
+    - make test-backend-dredd
+
 
 .secret-analyzer:
   stage: check

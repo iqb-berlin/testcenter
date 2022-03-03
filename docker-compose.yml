@@ -73,6 +73,7 @@ services:
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
+    image: iqbberlin/testcenter-backend:current
     build:
       args:
         <<: *env-php
@@ -87,6 +88,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+    image: iqbberlin/testcenter-frontend:current
     build:
       args:
         <<: *env-node
@@ -103,6 +105,7 @@ services:
       - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
+    image: iqbberlin/testcenter-broadcasting-service:current
     build:
       args:
         <<: *env-node

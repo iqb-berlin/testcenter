@@ -3,37 +3,40 @@ init:
 	cp .env-default .env
 
 build:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(container)
-run:
-	make build container=$(container)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(container)
-run-detached:
-	make build container=$(container)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(container)
-build-prod:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(container)
-run-prod:
-	make build-prod container=$(container)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(container)
-run-prod-detached:
-	make build-prod container=$(container)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(container)
-stop:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(container)
-down:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down $(container)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
 
-#composer-install: - is this necessary? or automatically done with building the container
-#	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
-#	docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
+run:
+	make build container=$(service)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(service)
+
+run-detached:
+	make build container=$(service)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(service)
+
+build-prod:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(service)
+
+run-prod:
+	make build-prod container=$(service)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(service)
+
+run-prod-detached:
+	make build-prod container=$(service)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(service)
+
+stop:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(service)
+
+down:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down $(service)
+
 
 test-backend-unit:
-#TODO
-
-#	docker run --entrypoint vendor/phpunit/phpunit/phpunit docker_testcenter-backend --bootstrap /var/www/html/unit-tests/bootstrap.php --configuration /var/www/html/phpunit.xml unit-tests/.
-
+	make build service=testcenter-backend
+	docker run --entrypoint vendor/phpunit/phpunit/phpunit iqbberlin/testcenter-backend:current --bootstrap unit-tests/bootstrap.php --configuration phpunit.xml unit-tests/.
 
 test-backend-dredd:
+	make run-detached
 	docker build -f runner.Dockerfile -t testcenter-task-runner .
 	docker run --network testcenter --entrypoint npm testcenter-task-runner run backend:dredd-test
 
@@ -41,6 +44,8 @@ test-backend-dredd-mysql:
 #TODO
 #	TEST_NAME=plus/installation-and-e2e make test-init
 
+#test-frontend-unit:
+#	docker-compose -f docker-compose.yml exec -T testcenter-frontend npx -w frontend ng test --watch=false
 
 test-backend-init:
 #TODO
@@ -55,13 +60,6 @@ test-backend-init-general:
 
 
 
-
-
-test-backend-init:
-#TODO
-
-test-frontend-unit:
-#TODO
 
 test-frontend-e2e:
 #TODO
@@ -93,7 +91,13 @@ update-docs:
 #	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up
 #run-prod-tls-detached:
 #	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d
-#
+
+
+
+#composer-install: - is this necessary? or automatically done with building the container
+#	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+#	docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
+
 #composer-install:
 #	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 #	docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
@@ -104,9 +108,7 @@ update-docs:
 #
 
 #
-#update-submodules:
-#	git submodule update --remote --merge
-#
+
 ## Running setup must be stopped because a special env file needs to used
 #test-e2e:
 #	cp testcenter-frontend/src/environments/environment.ts testcenter-frontend/src/environments/environment.ts.bu

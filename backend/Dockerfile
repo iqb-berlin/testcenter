@@ -65,7 +65,7 @@ ENTRYPOINT ["/root/entrypoint.sh"]
 
 FROM prod as dev
 
-WORKDIR /var/www/html
+WORKDIR /var/www/backend
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
