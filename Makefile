@@ -1,6 +1,7 @@
 init:
 	#composer-install
 	cp .env-default .env
+	cp src/environments/environment.dev.ts src/environments/environment.ts
 
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
@@ -44,8 +45,9 @@ test-backend-dredd-mysql:
 #TODO
 #	TEST_NAME=plus/installation-and-e2e make test-init
 
-#test-frontend-unit:
-#	docker-compose -f docker-compose.yml exec -T testcenter-frontend npx -w frontend ng test --watch=false
+test-frontend-unit:
+	make build service=testcenter-frontend
+	docker run --entrypoint npx iqbberlin/testcenter-frontend:current ng test --watch=false
 
 test-backend-init:
 #TODO
