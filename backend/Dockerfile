@@ -60,8 +60,10 @@ FROM base as prod
 
 COPY backend/docker/entrypoint.sh /root/entrypoint.sh
 
-ENTRYPOINT ["/root/entrypoint.sh"]
+# CI needs this:
+RUN chmod +x /home/entrypoint.sh
 
+ENTRYPOINT ["/root/entrypoint.sh"]
 
 FROM prod as dev
 
@@ -75,11 +77,3 @@ COPY backend/docker/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-p
 COPY backend/phpunit.xml .
 
 COPY backend/unit-tests unit-tests
-
-
-#========================
-#COPY integration integration
-#RUN apt-get update && apt-get install -y npm
-#RUN npm install npm@latest -g
-#RUN npm install -C integration
-
