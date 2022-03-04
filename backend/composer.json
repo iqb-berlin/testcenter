@@ -7,24 +7,6 @@
     "issues": "https://github.com/iqb-berlin/testcenter-backend/issues",
     "docs": "https://iqb-berlin.github.io/testcenter-backend/"
   },
-  "repositories": [
-    {
-      "type": "github",
-      "url": "https://github.com/iqb-berlin/testcenter-backend.git"
-    },
-    {
-      "type": "package",
-      "package": {
-        "name": "iqb-berlin/verona-player-simple",
-        "version": "12.0.0",
-        "source": {
-          "url": "https://github.com/iqb-berlin/verona-player-simple.git",
-          "type": "git",
-          "reference": "4.0.0"
-        }
-      }
-    }
-  ],
   "readme": "README.md",
   "license": "MIT",
   "require": {
@@ -47,7 +29,6 @@
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
     "phpunit/phpunit":  "^9",
-    "mockery/mockery": "dev-master",
-    "iqb-berlin/verona-player-simple": "4.0.0"
+    "mockery/mockery": "dev-master"
   }
 }

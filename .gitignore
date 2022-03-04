@@ -18,6 +18,7 @@
 
 # backend-dependencies
 /backend/vendor
+/sampledata/verona-player-simple-4.0.0.html
 
 # backend installation remains, if running locally
 /backend/composer.phar

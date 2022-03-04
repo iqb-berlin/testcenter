@@ -60,7 +60,7 @@ test-backend-unit:
   stage: test
   script:
     - apk add make docker-compose
-    - make init
+    - make init-env
     - docker load -i backend_image.tar
     - make test-backend-unit
 
@@ -68,7 +68,7 @@ test-frontent-unit:
   stage: test
   script:
     - apk add make docker-compose
-    - make init
+    - make init-env
     - docker load -i frontent_image.tar
     - make test-frontent-unit
 

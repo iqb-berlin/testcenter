@@ -1,7 +1,7 @@
 init:
-	composer-install
-	cp .env-default .env
-	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+	make init-env
+	make init-frontend
+	make init-backend
 
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
@@ -34,7 +34,8 @@ down:
 
 test-backend-unit:
 	make build service=testcenter-backend
-	docker run --entrypoint vendor/phpunit/phpunit/phpunit iqbberlin/testcenter-backend:current --bootstrap unit-tests/bootstrap.php --configuration phpunit.xml unit-tests/.
+	docker run --entrypoint vendor/phpunit/phpunit/phpunit \
+		iqbberlin/testcenter-backend:current --bootstrap unit-tests/bootstrap.php --configuration phpunit.xml unit-tests/.
 
 test-backend-dredd:
 	make run-detached
@@ -60,11 +61,15 @@ test-backend-init-general:
 #	TEST_NAME=general/no-db-but-files make test-init
 #	TEST_NAME=general/install-db-patches make test-init
 
-
-
-
 test-frontend-e2e:
 #TODO
+
+
+test-broadcasting-service-unit:
+	#TODO
+#	make build service=testcenter-broadcasting-service
+#	docker run --entrypoint npx iqbberlin/testcenter-frontend:current -w broadcasting-service jest
+
 
 test-integration:
 #TODO
@@ -94,20 +99,36 @@ update-docs:
 #run-prod-tls-detached:
 #	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d
 
+init-env:
+	cp .env-default .env
 
+init-backend:
+	make download-simple-player
+	make composer-install
 
-#composer-install: - is this necessary? or automatically done with building the container
-#	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
-#	docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
+download-simple-player:
+	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/verona-player-simple-4.0.0.html -O sampledata/verona-player-simple-4.0.0.html
 
-#composer-install:
-#	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
-#	docker run -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer install --no-interaction --no-ansi
-#
-#composer-update:
-#	cd testcenter-backend/ && docker build -f docker/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
-#	docker run -v ${PWD}/testcenter-backend/auth.json:/auth.json  -v ${PWD}/testcenter-backend/composer.json:/composer.json -v ${PWD}/testcenter-backend/composer.lock:/composer.lock -v ${PWD}/testcenter-backend/vendor:/vendor testcenter-backend-composer composer update --no-interaction --no-ansi
-#
+composer-install: # TODO 13 - is this necessary? or automatically done with building the container
+	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+	docker run \
+		-v $(CURDIR)/backend/composer.json:/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/composer.lock \
+		-v $(CURDIR)/backend/vendor:/vendor \
+		testcenter-backend-composer \
+		composer install --no-interaction --no-ansi
+
+composer-update:
+	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+	docker run \
+		-v $(CURDIR)/backend/composer.json:/composer.json \
+		-v $(CURDIR)/backend/composer.lock:/composer.lock \
+		-v $(CURDIR)/backend/vendor:/vendor \
+		testcenter-backend-composer \
+		composer update --no-interaction --no-ansi
+
+init-frontend:
+	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
 
 #
 
