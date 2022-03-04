@@ -1,5 +1,5 @@
 init:
-	#composer-install
+	composer-install
 	cp .env-default .env
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
 
