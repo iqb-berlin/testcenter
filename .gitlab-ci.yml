@@ -31,6 +31,8 @@ build:
     - make init
     - make build
     - docker save iqbberlin/testcenter-backend > backend_image.tar
+    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
+    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
   artifacts:
     paths:
       - backend_image.tar
@@ -51,12 +53,24 @@ test-backend-dredd:
   script:
     - apk add make docker-compose
     - make init
-
     - docker load -i backend_image.tar
-    - make run-detached
-    - sleep 20
     - make test-backend-dredd
 
+test-backend-unit:
+  stage: test
+  script:
+    - apk add make docker-compose
+    - make init
+    - docker load -i backend_image.tar
+    - make test-backend-unit
+
+test-frontent-unit:
+  stage: test
+  script:
+    - apk add make docker-compose
+    - make init
+    - docker load -i frontent_image.tar
+    - make test-frontent-unit
 
 .secret-analyzer:
   stage: check
