@@ -47,7 +47,7 @@ test-backend-dredd-mysql:
 
 test-frontend-unit:
 	make build service=testcenter-frontend
-	docker run --entrypoint npx iqbberlin/testcenter-frontend:current ng test --watch=false
+	docker run --entrypoint npx iqbberlin/testcenter-frontend:current ng test --watch=false --code-coverage
 
 test-backend-init:
 #TODO

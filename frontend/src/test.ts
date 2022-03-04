@@ -8,7 +8,6 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 import { StaticProvider } from '@angular/core';
 import { environment } from './environments/environment';
-import packageJSON from '../../package.json';
 
 declare const require: any;
 
@@ -19,18 +18,6 @@ getTestBed().initTestEnvironment(
     {
       provide: 'SERVER_URL',
       useValue: environment.testcenterUrl
-    },
-    {
-      provide: 'VERONA_PLAYER_API_VERSION_MIN',
-      useValue: packageJSON.iqb['verona-player-api-versions'].min
-    },
-    {
-      provide: 'VERONA_PLAYER_API_VERSION_MAX',
-      useValue: packageJSON.iqb['verona-player-api-versions'].max
-    },
-    {
-      provide: 'REPOSITORY_URL',
-      useValue: packageJSON.repository.url
     },
     {
       provide: 'IS_PRODUCTION_MODE',

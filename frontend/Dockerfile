@@ -1,6 +1,4 @@
-ARG NODE_VERSION=14.15.0
-
-FROM node:${NODE_VERSION} as dev
+FROM scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-container:latest as dev
 
 WORKDIR /app
 
@@ -33,10 +31,6 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
 
-# install chrome for protractor tests
-#RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-#RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-#RUN apt-get update && apt-get install -yq google-chrome-stable
 #RUN npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
 #RUN npx webdriver-manager clean
 #RUN npx webdriver-manager update --versions.chrome=`google-chrome --product-version`

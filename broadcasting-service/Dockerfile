@@ -15,8 +15,6 @@ RUN npm install
 
 RUN npx nest build
 
-RUN more /app/dist/main.js
-
 EXPOSE 3000
 CMD DEV_MODE=true npx nest start --watch --preserveWatchOutput
 
