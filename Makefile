@@ -1,7 +1,7 @@
 init:
 	#composer-install
 	cp .env-default .env
-	cp src/environments/environment.dev.ts src/environments/environment.ts
+	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
 
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
