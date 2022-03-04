@@ -61,7 +61,7 @@ FROM base as prod
 COPY backend/docker/entrypoint.sh /root/entrypoint.sh
 
 # CI needs this:
-RUN chmod +x /home/entrypoint.sh
+RUN chmod +x /root/entrypoint.sh
 
 ENTRYPOINT ["/root/entrypoint.sh"]
 
