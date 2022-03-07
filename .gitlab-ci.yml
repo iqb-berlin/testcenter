@@ -36,6 +36,8 @@ build:
   artifacts:
     paths:
       - backend_image.tar
+      - frontend_image.tar
+      - broadcasting-service_image.tar
     expire_in: 1 day
 
 #test-unit:
