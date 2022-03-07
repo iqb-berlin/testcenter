@@ -30,7 +30,7 @@
     [x] weniger verbose
 
 
-[ ] makefiles
+
 
 [x] docker/be/dredd-test
 [x] docker/be/unit-test
@@ -55,7 +55,12 @@
 [ ] CORS?
 [x] PSR warning
 
+[ ] makefiles
 [ ] gitlab-ci
+
+[ ] docker/watch tests
+
+[ ] doku
 
 [ ] fe css-warning
 

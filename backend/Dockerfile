@@ -76,4 +76,4 @@ COPY backend/docker/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-p
 # configure phpunit
 COPY backend/phpunit.xml .
 
-COPY backend/unit-tests unit-tests
+COPY backend/test test

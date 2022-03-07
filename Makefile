@@ -36,7 +36,7 @@ down:
 test-backend-unit:
 	make build service=testcenter-backend
 	docker run --entrypoint vendor/phpunit/phpunit/phpunit \
-		iqbberlin/testcenter-backend:current --bootstrap unit-tests/bootstrap.php --configuration phpunit.xml unit-tests/.
+		iqbberlin/testcenter-backend:current --bootstrap test/unit/bootstrap.php --configuration phpunit.xml test/unit/.
 
 test-backend-dredd:
 	make run-detached
@@ -51,13 +51,12 @@ test-frontend-unit:
 	make build service=testcenter-frontend
 	docker run --entrypoint npx iqbberlin/testcenter-frontend:current ng test --watch=false --code-coverage
 
-test-backend-init:
-#TODO
-#docker-compose -f docker/docker-compose-init-test.yml up --force-recreate --abort-on-container-exit --renew-anon-volumes
+test-backend-initialization:
+	make stop
+	TEST_NAME=$(test) docker-compose -f docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
 
 test-backend-init-general:
-#TODO
-#	TEST_NAME=general/db-versions make test-init
+	make test-init test=general/db-versions
 #	TEST_NAME=general/vanilla-installation make test-init
 #	TEST_NAME=general/no-db-but-files make test-init
 #	TEST_NAME=general/install-db-patches make test-init

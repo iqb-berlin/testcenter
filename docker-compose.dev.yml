@@ -26,6 +26,7 @@ services:
       - ./backend/initialize.php:/var/www/backend/initialize.php
       - ./backend/routes.php:/var/www/backend/routes.php
       - ./backend/src:/var/www/backend/src
+      - ./backend/test:/var/www/backend/test
       - ./data:/var/www/data
       - ./database:/var/www/database
       - ./definitions:/var/www/definitions
