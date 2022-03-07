@@ -13,9 +13,9 @@ class WorkspaceInitializer {
       "sampledata/Testtakers.xml" => "Testtakers/SAMPLE_TESTTAKERS.XML",
       "sampledata/SysCheck.xml" => "SysCheck/SAMPLE_SYSCHECK.XML",
       "sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",
-      "backend/vendor/iqb-berlin/verona-player-simple/sample-data/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
+      "sampledata/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
       "sampledata/Unit2.xml" => "Unit/SAMPLE_UNIT2.XML",
-      "backend/vendor/iqb-berlin/verona-player-simple/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html",
+      "sampledata/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html",
       "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
     ];
 

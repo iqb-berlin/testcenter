@@ -61,6 +61,7 @@ test-backend-unit:
   script:
     - apk add make docker-compose
     - make init-env
+    - make composer-install
     - docker load -i backend_image.tar
     - make test-backend-unit
 
@@ -69,6 +70,8 @@ test-frontent-unit:
   script:
     - apk add make docker-compose
     - make init-env
+    - make init-frontend
+    - make download-simple-player
     - docker load -i frontent_image.tar
     - make test-frontent-unit
 

@@ -1,7 +1,8 @@
 init:
 	make init-env
 	make init-frontend
-	make init-backend
+	make download-simple-player
+	make composer-install
 
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
@@ -102,12 +103,9 @@ update-docs:
 init-env:
 	cp .env-default .env
 
-init-backend:
-	make download-simple-player
-	make composer-install
-
 download-simple-player:
 	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/verona-player-simple-4.0.0.html -O sampledata/verona-player-simple-4.0.0.html
+	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/sample-data/introduction-unit.htm -O sampledata/introduction-unit.htm
 
 composer-install: # TODO 13 - is this necessary? or automatically done with building the container
 	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .

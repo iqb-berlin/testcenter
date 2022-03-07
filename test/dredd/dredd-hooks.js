@@ -10,7 +10,6 @@ const skipAfterFirstFail = true; // change this to debug
 let errorOccurred = false;
 
 const sampledataDir = fs.realpathSync(`${__dirname}'/../../sampledata`);
-const backendDir = fs.realpathSync(`${__dirname}'/../../backend`);
 
 const changeAuthToken = (transaction, newAuthTokenData) => {
   if (typeof transaction.request.headers.AuthToken === 'undefined') {
@@ -199,7 +198,7 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (
 });
 
 dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > get resource by name > 200 > application/octet-stream', (transaction, done) => {
-  transaction.expected.body = fs.readFileSync(`${backendDir}/vendor/iqb-berlin/verona-player-simple/verona-player-simple-4.0.0.html`).toString();
+  transaction.expected.body = fs.readFileSync(`${sampledataDir}/verona-player-simple/verona-player-simple-4.0.0.html`).toString();
   done();
 });
 
