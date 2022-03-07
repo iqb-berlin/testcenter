@@ -75,6 +75,14 @@ test-frontent-unit:
     - docker load -i frontent_image.tar
     - make test-frontent-unit
 
+test-broadcasting-service-unit:
+  stage: test
+  script:
+    - apk add make docker-compose
+    - make init-env
+    - docker load -i broadcasting-service_image.tar
+    - make test-broadcasting-service-unit
+
 .secret-analyzer:
   stage: check
 

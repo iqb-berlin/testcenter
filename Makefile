@@ -67,9 +67,8 @@ test-frontend-e2e:
 
 
 test-broadcasting-service-unit:
-	#TODO
-#	make build service=testcenter-broadcasting-service
-#	docker run --entrypoint npx iqbberlin/testcenter-frontend:current -w broadcasting-service jest
+	make build service=testcenter-broadcasting-service
+	docker run --entrypoint npx iqbberlin/testcenter-broadcasting-service:current jest --coverage
 
 
 test-integration:
@@ -80,9 +79,7 @@ update-docs:
 #	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs
 
 
-#init-dev-config:
-#	cp src/environments/environment.dev.ts src/environments/environment.ts
-#
+
 #copy-packages:
 #	mkdir -p node_modules
 #	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
@@ -94,11 +91,6 @@ update-docs:
 #	docker exec testcenter-frontend-dev npm install $(packages)
 
 
-#
-#run-prod-tls:
-#	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up
-#run-prod-tls-detached:
-#	docker-compose -f docker-compose.yml -f docker-compose.prod.tls.yml up -d
 
 init-env:
 	cp .env-default .env
