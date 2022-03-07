@@ -2,7 +2,7 @@
 
 source backend/test/initialization/functions/functions.sh
 
-echo_h1 "Test 1.1: fresh installation with legacy-version of DB should work -- $MYSQL_DATABASE";
+echo_h1 "Fresh installation with legacy-version of DB should work -- $MYSQL_DATABASE";
 fake_version "5.0.0"
 php backend/initialize.php \
 --workspace="" \
@@ -19,7 +19,7 @@ expect_db_structure_dump_equals blank_legacy_version_5
 expect_data_dir_equals empty_data_dir
 
 
-echo_h1 "Test 1.2: Update to later version";
+echo_h1 "Update to later version";
 fake_version "7.0.0"
 php backend/initialize.php \
 --workspace "" \
@@ -30,7 +30,7 @@ expect_init_script_ok
 expect_db_structure_dump_equals blank_legacy_version_7
 
 
-echo_h1 "Test 1.3: Update version with meta-table";
+echo_h1 "Update version with meta-table";
 fake_version "10.0.0"
 php backend/initialize.php \
 --workspace "" \
@@ -41,7 +41,7 @@ expect_init_script_ok
 expect_db_structure_dump_equals blank_version_10
 
 
-echo_h1 "Test 1.4: Overwrite Existing Installation with no init data";
+echo_h1 "Overwrite Existing Installation with no init data";
 fake_version "5.0.0"
 php backend/initialize.php \
 --workspace "" \

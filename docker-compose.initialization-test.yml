@@ -17,10 +17,12 @@ services:
     volumes:
       - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
     command:
-      - --log_error_verbosity=2
+      - --log_error_verbosity=1
     ports:
       - "9091:3306"
       - "22:22"
+    networks:
+      testcenter-initialization-test:
 
   testcenter-initialization-test:
     build:
@@ -28,7 +30,6 @@ services:
       dockerfile: backend/Dockerfile
       target: dev
     entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/$TEST_NAME.sh)"]
-#    entrypoint: ["apache2-foreground"]
     container_name: testcenter-initialization-test
     environment:
       <<: *env-mysql
@@ -42,11 +43,15 @@ services:
       - ./backend/routes.php:/var/www/backend/routes.php
       - ./backend/src:/var/www/backend/src
       - ./backend/test:/var/www/backend/test
-      - ./data:/var/www/data
-      - ./database:/var/www/database
       - ./definitions:/var/www/definitions
       - ./package.json:/var/www/package.original.json
       - ./sampledata:/var/www/sampledata
     depends_on:
       - testcenter-db-initialization-test
+    networks:
+      testcenter-initialization-test:
 
+
+networks:
+  testcenter-initialization-test:
+    name: testcenter-initialization-test

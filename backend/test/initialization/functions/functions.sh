@@ -132,5 +132,5 @@ function delete_workspace() {
 
 # param 1: script name
 function run() {
-  php "backend/test/initialization/tests/$1.php"
+  php "backend/test/initialization/functions/$1.php"
 }

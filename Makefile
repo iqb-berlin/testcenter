@@ -52,14 +52,15 @@ test-frontend-unit:
 	docker run --entrypoint npx iqbberlin/testcenter-frontend:current ng test --watch=false --code-coverage
 
 test-backend-initialization:
-	make stop
 	TEST_NAME=$(test) docker-compose -f docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
 
-test-backend-init-general:
-	make test-init test=general/db-versions
-#	TEST_NAME=general/vanilla-installation make test-init
-#	TEST_NAME=general/no-db-but-files make test-init
-#	TEST_NAME=general/install-db-patches make test-init
+test-backend-initialization-general:
+	make stop
+	docker-compose -f docker-compose.initialization-test.yml build
+	make test-backend-initialization test=general/db-versions
+	make test-backend-initialization test=general/vanilla-installation
+	make test-backend-initialization test=general/no-db-but-files
+	make test-backend-initialization test=general/install-db-patches
 
 test-frontend-e2e:
 #TODO

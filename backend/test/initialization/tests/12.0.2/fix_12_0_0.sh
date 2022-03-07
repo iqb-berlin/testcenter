@@ -34,7 +34,7 @@ echo "INSERT INTO units (name, booklet_id, laststate, responses, responsetype, r
 
 echo_h2 "do the bogus update";
 fake_version 12.0.0
-cp test/initialize/data/broken-12.0.0-patch.sql database/mysql.patches.d/12.0.0.sql
+cp backend/test/initialization/data/broken-12.0.0-patch.sql database/mysql.patches.d/12.0.0.sql
 php backend/initialize.php \
 --user_name "" \
 --workspace "" \

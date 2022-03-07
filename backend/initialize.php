@@ -175,8 +175,12 @@ try  {
     $initDAO->setDBSchemaVersion($systemVersion);
     CLI::success("DB passed integrity check.");
 
-
     CLI::h2("Workspaces");
+
+    if (!file_exists(DATA_DIR)) {
+        mkdir(DATA_DIR);
+        CLI::success("Data-Directory created: `". DATA_DIR . "`");
+    }
 
     $initializer = new WorkspaceInitializer();
 
@@ -237,16 +241,15 @@ try  {
         CLI::success("Sample Workspace `{$installationArguments->workspace}` as `ws_{$sampleWorkspaceId}` created");
 
         $initializer->importSampleFiles($sampleWorkspaceId);
-        $stats = $sampleWorkspace->storeAllFilesMeta();
+
+        if (!$installationArguments->skip_read_workspace_files) {
+
+            $stats = $sampleWorkspace->storeAllFilesMeta();
+        }
+
         CLI::success("Sample content files created.");
 
         $workspaceIds[] = $sampleWorkspaceId;
-    }
-
-    if (!file_exists(DATA_DIR)) {
-      mkdir(DATA_DIR);
-      file_put_contents(DATA_DIR . '/readme.md', "#Data-Directory\n");
-      CLI::success("Data-Directory created: `{". DATA_DIR . "`}");
     }
 
     CLI::h2("Sys-Admin");
