@@ -40,16 +40,6 @@ build:
       - broadcasting-service_image.tar
     expire_in: 1 day
 
-#test-unit:
-#  stage: test
-#  script:
-#    - apk add make docker-compose
-#    - make init
-
-#    - docker load -i backend_image.tar
-#    - make run-detached
-#    - make test-unit
-
 test-backend-dredd:
   stage: test
   script:
@@ -84,6 +74,16 @@ test-broadcasting-service-unit:
     - make init-env
     - docker load -i broadcasting-service_image.tar
     - make test-broadcasting-service-unit
+
+test-backend-init-general:
+  stage: test
+  script:
+    - apk add make docker-compose
+    - make init
+    - docker load -i broadcasting-service_image.tar
+    - docker load -i frontent_image.tar
+    - docker load -i backend_image.tar
+    - make test-backend-init-general
 
 .secret-analyzer:
   stage: check
