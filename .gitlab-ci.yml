@@ -14,15 +14,6 @@ stages:
   - build
   - test
   - check
-#
-#test-e2e:
-#  stage: test
-#  script:
-#    - apk add make docker-compose
-#    - make init
-
-#    - make test-e2e
-#
 
 build:
   stage: build
@@ -31,14 +22,14 @@ build:
     - make init
     - make build
     - docker save iqbberlin/testcenter-backend > backend_image.tar
-    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
-    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
+#    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
+#    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
   artifacts:
     paths:
       - backend_image.tar
       - frontend_image.tar
       - broadcasting-service_image.tar
-    expire_in: 1 day
+    expire_in: 10 minutes
 
 test-backend-dredd:
   stage: test
