@@ -23,6 +23,8 @@ VOLUME /vendor
 
 FROM php:${PHP_VERSION}-apache-bullseye AS base
 
+RUN ls -l
+
 RUN apt-get update && apt-get install -y libzip-dev
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
