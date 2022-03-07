@@ -6,11 +6,11 @@ create table files
     version_mayor      int                                                            null,
     version_minor      int                                                            null,
     version_patch      int                                                            null,
-    version_label      text                                                            null,
+    version_label      text                                                           null,
     label              text                                                           null,
     description        text                                                           null,
     type               enum ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource') not null,
-    verona_module_type enum ('player', 'schemer', 'editor')                           null,
+    verona_module_type enum ('player', 'schemer', 'editor', '')                       null,
     verona_version     varchar(12)                                                    null,
     verona_module_id   varchar(50)                                                    null,
 
