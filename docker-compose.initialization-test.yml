@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile
       target: dev
-    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME-fallback}.sh)"]
+    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)"]
     container_name: testcenter-initialization-test-backend
     environment:
       <<: *env-mysql
@@ -63,7 +63,6 @@ services:
     environment:
       TC_API_URL: http://testcenter-initialization-test-backend
     volumes:
-      - ./testIfBackendIsReady.sh:/app/testIfBackendIsReady.sh
       - ./sampledata /app/sampledata
       - ./test /app/test
     depends_on:

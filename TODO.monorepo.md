@@ -24,10 +24,12 @@
     [x] logger
 [x] docker/prod
 [ ] docker/gulp
-[ ] docker/lint
+[ ] docker/lint + deps outside for IDE
 [x] docker/xdebug
 [x] docker/db
     [x] weniger verbose
+
+[!] BACKEND: Repair - [PUT] http://localhost/testcenter/backend/test does not work, because there is a folder "test"
 
 [!] init test for new patch
 
@@ -45,7 +47,7 @@
 [ ] fe/doc-scripts
 [ ] fe/cyprus -> huaning
 [x] be/dredd-test
-[ ] be/init-test
+[x] be/init-test
 
 [ ] new_version_scripts
 [ ] installer / deployment
