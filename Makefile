@@ -44,15 +44,18 @@ test-backend-dredd:
 	docker run --network testcenter --entrypoint npm testcenter-task-runner run backend:dredd-test
 
 test-backend-dredd-mysql:
-#TODO
-#	TEST_NAME=plus/installation-and-e2e make test-init
+	docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql build
+	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
+		docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
+		--force-recreate --renew-anon-volumes --abort-on-container-exit
 
 test-frontend-unit:
 	make build service=testcenter-frontend
 	docker run --entrypoint npx iqbberlin/testcenter-frontend:current ng test --watch=false --code-coverage
 
 test-backend-initialization:
-	TEST_NAME=$(test) docker-compose -f docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+	TEST_NAME=$(test) \
+		docker-compose -f docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
 
 test-backend-initialization-general:
 	make stop

@@ -15,16 +15,17 @@ try {
     require_once "vendor/autoload.php";
     require_once "autoload.php";
 
-    if (isset($_SERVER['HTTP_TESTMODE'])) {
+    $isPreparedForRealDataTest = getenv('TESTMODE_REAL_DATA', true) || getenv('TESTMODE_REAL_DATA');
+    $isTestModeRequested = isset($_SERVER['HTTP_TESTMODE']);
 
-        if (file_exists(ROOT_DIR . "/config/e2eTests.json")) { // TODO 13 fix path to testcenter.json
+    if ($isTestModeRequested and $isPreparedForRealDataTest) {
 
-            TestEnvironment::setUpEnvironmentForRealDataE2ETests(); // DANGEROUS!!!
+        // dangerous: uses the real MySql database and the real data-directory for testing. Data gets erased.
+        TestEnvironment::setUpEnvironmentForRealDataE2ETests();
 
-        } else {
+    } else if ($isTestModeRequested) {
 
-            TestEnvironment::setUpEnvironmentForE2eTests();
-        }
+        TestEnvironment::setUpEnvironmentForE2eTests();
 
     } else { // productive
 

@@ -7,9 +7,9 @@ x-env-mysql: &env-mysql
 
 services:
 
-  testcenter-db-initialization-test:
+  testcenter-initialization-test-db:
     image: mysql:5.7
-    container_name: testcenter-db-backend-init-test
+    container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
@@ -24,17 +24,18 @@ services:
     networks:
       testcenter-initialization-test:
 
-  testcenter-initialization-test:
+  testcenter-initialization-test-backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
       target: dev
-    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/$TEST_NAME.sh)"]
-    container_name: testcenter-initialization-test
+    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME-fallback}.sh)"]
+    container_name: testcenter-initialization-test-backend
     environment:
       <<: *env-mysql
-      MYSQL_HOST: testcenter-db-initialization-test
+      MYSQL_HOST: testcenter-initialization-test-db
       MYSQL_PORT: 3306
+      TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
     volumes:
       - ./backend/.htaccess:/var/www/backend/.htaccess
       - ./backend/autoload.php:/var/www/backend/autoload.php
@@ -47,7 +48,27 @@ services:
       - ./package.json:/var/www/package.original.json
       - ./sampledata:/var/www/sampledata
     depends_on:
-      - testcenter-db-initialization-test
+      - testcenter-initialization-test-db
+    networks:
+      testcenter-initialization-test:
+
+  testcenter-initialization-test-runner:
+    profiles:
+      - dredd_test_against_mysql
+    build:
+      context: .
+      dockerfile: runner.Dockerfile
+    entrypoint: ["npm", "run", "backend:dredd-test"]
+    container_name: testcenter-initialization-test-runner
+    environment:
+      TC_API_URL: http://testcenter-initialization-test-backend
+    volumes:
+      - ./testIfBackendIsReady.sh:/app/testIfBackendIsReady.sh
+      - ./sampledata /app/sampledata
+      - ./test /app/test
+    depends_on:
+      - testcenter-initialization-test-db
+      - testcenter-initialization-test-backend
     networks:
       testcenter-initialization-test:
 

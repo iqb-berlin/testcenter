@@ -16,10 +16,8 @@ class TestEnvironment {
 
             define('DATA_DIR', ROOT_DIR . '/data');
 
-            $e2eConfig = JSON::decode(file_get_contents(ROOT_DIR . "/backend/config/e2eTests.json")); // TODO 13
-
             /* @var DBConfig $dbConfig */
-            $dbConfig = DBConfig::fromFile(ROOT_DIR . "/backend/config/DBConnectionData.{$e2eConfig->configFile}.json");
+            $dbConfig = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
             $dbConfig->staticTokens = true;
             DB::connect($dbConfig);
 

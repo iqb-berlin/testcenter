@@ -100,7 +100,7 @@ class SystemController extends Controller {
                 'broadcastingService' => BroadcastService::getStatus(),
                 'baseUrl' => Server::getUrl(),
                 'veronaPlayerApiVersionMin' => $version['veronaMin'],
-                'veronaPlayerApiVersionMax' => $version['veronaMax']
+                'veronaPlayerApiVersionMax' => $version['veronaMax'],
             ]
         );
     }

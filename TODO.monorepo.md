@@ -31,6 +31,7 @@
 
 [!] init test for new patch
 
+[ ] $SUPERUSER_NAME don't have to be env
 
 [x] docker/be/dredd-test
 [x] docker/be/unit-test

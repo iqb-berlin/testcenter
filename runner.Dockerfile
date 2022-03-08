@@ -13,7 +13,6 @@ COPY test /app/test
 
 RUN mkdir /app/tmp
 
-# for dredd
 RUN echo "{\"testcenterUrl\": \"http://testcenter-backend\"}" > /app/test/dredd/config/dredd_test_config.json
 
 # will be overwritten by makefile

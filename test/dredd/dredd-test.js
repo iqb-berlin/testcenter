@@ -1,8 +1,9 @@
-/* eslint-disable no-console,import/no-extraneous-dependencies */
+/* eslint-disable no-console,import/no-extraneous-dependencies,implicit-arrow-linebreak,function-paren-newline */
 const fs = require('fs');
 const Dredd = require('dredd');
 const gulp = require('gulp');
 const YAML = require('yamljs');
+const request = require('request');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
 const testcenterConfig = require('./config/dredd_test_config.json');
@@ -10,15 +11,36 @@ const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
 
-const apiUrl = testcenterConfig.testcenterUrl;
+const apiUrl = process.env.TC_API_URL || testcenterConfig.testcenterUrl;
 
 const confirmTestConfig = async done => {
   if (!apiUrl) {
     return done(new Error(cliPrint.get.error('No API Url given!')));
   }
 
+  const getStatus = () => new Promise(resolve =>
+    request(`${apiUrl}/system/config`, (error, response) => resolve(!response ? -1 : response.statusCode))
+  );
+
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
   cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
-  return done();
+
+  let retries = 10;
+  let status = 0;
+  // eslint-disable-next-line no-plusplus
+  while ((status !== 200) && retries--) {
+    // eslint-disable-next-line no-await-in-loop
+    status = await getStatus();
+    if (status === 200) {
+      return done();
+    }
+    console.log(`Connection attempt failed; ${retries} retries left`);
+    // eslint-disable-next-line no-await-in-loop
+    await sleep(5000);
+  }
+
+  return done(new Error(cliPrint.get.error(`Could not connect to ${apiUrl}`)));
 };
 
 const prepareSpecsForDredd = done => {

@@ -18,11 +18,7 @@ expect_data_dir_equals sample_content_present
 expect_table_to_have_rows workspaces 1
 expect_table_to_have_rows users 1
 
-echo_h2 "Run E2e-Tests"
-service apache2 start
-cd /var/www/html || exit
-cp config/DBConnectionData.json config/DBConnectionData.mysql.json
-echo "{\"configFile\":\"mysql\"}" > config/e2eTests.json
-chmod -R 777 data
-ALLOW_REAL_DATA_MODE=yes npm --prefix=integration run dredd_test_no_specs
-service apache2 stop
+chown -R www-data:www-data /var/www/data
+
+echo_h2 "Run Server"
+apache2-foreground
