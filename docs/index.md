@@ -6,7 +6,7 @@
 
 ### Compodoc Documentation of Modules, Classes etc
 
-* [Frontend](https://iqb-berlin.github.io/testcenter/dist/compodoc-fontend/index.html)
+* [Frontend](https://iqb-berlin.github.io/testcenter/dist/compodoc-frontend/index.html)
 * [Broadcasting-Service](https://iqb-berlin.github.io/testcenter/dist/compodoc-broadcasting-service/index.html)
 
 ### Test Coverage
