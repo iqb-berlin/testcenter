@@ -6,14 +6,14 @@
 
 ### Compodoc Documentation of Modules, Classes etc
 
-* [Frontend](https://iqb-berlin.github.io/testcenter/dist/compodoc-fontend/)
+* [Frontend](https://iqb-berlin.github.io/testcenter/dist/compodoc-fontend/index.html)
 * [Broadcasting-Service](https://iqb-berlin.github.io/testcenter/dist/compodoc-broadcasting-service/index.html)
 
 ### Test Coverage
 
 * [of Backend by Unit-Tests]
-* [of Frontend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-unit/report/)
-* [of Broadcasting-Service by Unit-Tets](https://iqb-berlin.github.io/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/)
+* [of Frontend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-unit/report/index.html)
+* [of Broadcasting-Service by Unit-Tets](https://iqb-berlin.github.io/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/index.html)
 
 
 
