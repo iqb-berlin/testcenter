@@ -34,6 +34,7 @@ module.exports = config => {
     },
     coverageReporter: {
       dir: '../../docs/dist/test-coverage-frontend-unit/',
+      subdir: 'report',
       includeAllSources: true,
       reporters: [
         { type: 'html' },

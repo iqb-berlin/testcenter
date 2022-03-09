@@ -35,6 +35,9 @@
 
 [ ] $SUPERUSER_NAME don't have to be env
 
+[ ] ports
+[ ] .lock-files
+
 [x] docker/be/dredd-test
 [x] docker/be/unit-test
 [x] docker/fe/unit-test
