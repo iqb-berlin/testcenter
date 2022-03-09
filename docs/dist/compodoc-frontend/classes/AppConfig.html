@@ -367,13 +367,13 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/BroadCastingServiceInfo.html" target="_self" >BroadCastingServiceInfo</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#BroadCastingServiceStatus" target="_self" >BroadCastingServiceStatus</a></code>
 
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>{ status: &#x27;none&#x27; }</code>
+                        <i>Default value : </i><code>&#x27;off&#x27;</code>
                     </td>
                 </tr>
                     <tr>
@@ -861,8 +861,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="121"
-                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:121</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="119"
+                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:119</a></div>
                 </td>
             </tr>
 
@@ -898,8 +898,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="133"
-                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:133</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="131"
+                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:131</a></div>
                 </td>
             </tr>
 
@@ -937,8 +937,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="126"
-                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:126</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="124"
+                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:124</a></div>
                 </td>
             </tr>
 
@@ -1018,8 +1018,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="86"
-                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:86</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:84</a></div>
                 </td>
             </tr>
 
@@ -1087,8 +1087,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="73"
-                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:73</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">frontend/src/app/shared/classes/app.config.ts:71</a></div>
                 </td>
             </tr>
 
@@ -1179,7 +1179,7 @@ import customTextsDefault from &#x27;../../config/custom-texts.json&#x27;;
 import { KeyValuePairs } from &#x27;../../app.interfaces&#x27;;
 import {
   AppSettings,
-  BroadCastingServiceInfo,
+  BroadCastingServiceStatus,
   localStorageTestConfigKey, standardBackgroundBody, standardBackgroundBox,
   standardLogo,
   SysConfig
@@ -1192,7 +1192,7 @@ export class AppConfig {
   veronaPlayerApiVersionMax: number;
   mainLogo &#x3D; standardLogo;
   testConfig: KeyValuePairs &#x3D; {};
-  broadcastingService: BroadCastingServiceInfo &#x3D; { status: &#x27;none&#x27; };
+  broadcastingService: BroadCastingServiceStatus &#x3D; &#x27;off&#x27;;
   appTitle &#x3D; &#x27;IQB-Testcenter&#x27;;
   backgroundBody: string;
   backgroundBox: string;
@@ -1226,9 +1226,7 @@ export class AppConfig {
       this.customTexts &#x3D; sysConfig.customTexts;
       this.setCustomTexts(sysConfig.customTexts);
       this.setAppConfig(sysConfig.appConfig);
-      if (sysConfig.broadcastingService &amp;&amp; sysConfig.broadcastingService.status) {
-        this.broadcastingService &#x3D; sysConfig.broadcastingService;
-      }
+      this.broadcastingService &#x3D; sysConfig.broadcastingService;
       this.version &#x3D; sysConfig.version;
       this.veronaPlayerApiVersionMin &#x3D; sysConfig.veronaPlayerApiVersionMin;
       this.veronaPlayerApiVersionMax &#x3D; sysConfig.veronaPlayerApiVersionMax;
@@ -1322,6 +1320,7 @@ export class AppConfig {
 </code></pre>
     </div>
 </div>
+
 
 
 

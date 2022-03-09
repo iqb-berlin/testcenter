@@ -60,3 +60,26 @@ services:
       - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
       - ./broadcasting-service/tsconfig.json:/app/tsconfig.json
       - ./common:/common
+
+  testcenter-task-runner:
+    profiles:
+      - task-runner
+    build:
+      context: .
+      dockerfile: runner.Dockerfile
+    container_name: testcenter-runner
+    environment:
+      TC_API_URL: http://testcenter-backend
+    volumes:
+      - ./broadcasting-service:/app/broadcasting-service
+      - ./docs/dist:/app/docs/dist
+      - ./frontend:/app/frontend
+      - ./package.json:/app/package.json
+      - ./sampledata:/app/sampledata
+      - ./scripts:/app/scripts
+      - ./test:/app/test
+    depends_on:
+      - testcenter-backend
+      - testcenter-broadcasting-service
+      - testcenter-db
+      - testcenter-frontend

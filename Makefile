@@ -8,7 +8,7 @@ build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
 
 run:
-	make build container=$(service)
+#	make build container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(service)
 
 run-detached:
@@ -19,11 +19,11 @@ build-prod:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(service)
 
 run-prod:
-	make build-prod container=$(service)
+	build-prod container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(service)
 
 run-prod-detached:
-	make build-prod container=$(service)
+	build-prod container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(service)
 
 stop:
@@ -34,24 +34,21 @@ down:
 
 
 test-backend-unit:
-	make build service=testcenter-backend
-	docker run --entrypoint vendor/phpunit/phpunit/phpunit \
-		iqbberlin/testcenter-backend:current --bootstrap test/unit/bootstrap.php --configuration phpunit.xml test/unit/.
+	build service=testcenter-backend
+	docker run \
+		-v $(CURDIR)/docs/dist:/docs/dist \
+		--entrypoint vendor/phpunit/phpunit/phpunit \
+		iqbberlin/testcenter-backend:current \
+		--bootstrap test/unit/bootstrap.php --configuration phpunit.xml test/unit/.
 
 test-backend-dredd:
-	make run-detached
-	docker build -f runner.Dockerfile -t testcenter-task-runner .
-	docker run --network testcenter --entrypoint npm testcenter-task-runner run backend:dredd-test
+	make run-task-runner task=dredd-test
 
 test-backend-dredd-mysql:
 	docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql build
 	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
 		docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
 		--force-recreate --renew-anon-volumes --abort-on-container-exit
-
-test-frontend-unit:
-	make build service=testcenter-frontend
-	docker run --entrypoint npx iqbberlin/testcenter-frontend:current ng test --watch=false --code-coverage
 
 test-backend-initialization:
 	TEST_NAME=$(test) \
@@ -60,19 +57,29 @@ test-backend-initialization:
 test-backend-initialization-general:
 	make stop
 	docker-compose -f docker-compose.initialization-test.yml build
-	make test-backend-initialization test=general/db-versions
-	make test-backend-initialization test=general/vanilla-installation
-	make test-backend-initialization test=general/no-db-but-files
-	make test-backend-initialization test=general/install-db-patches
-
-test-frontend-e2e:
-#TODO
-
+	test-backend-initialization test=general/db-versions
+	test-backend-initialization test=general/vanilla-installation
+	test-backend-initialization test=general/no-db-but-files
+	test-backend-initialization test=general/install-db-patches
 
 test-broadcasting-service-unit:
 	make build service=testcenter-broadcasting-service
-	docker run --entrypoint npx iqbberlin/testcenter-broadcasting-service:current jest --coverage
+	docker run \
+		-v $(CURDIR)/docs/dist:/docs/dist \
+		--entrypoint npx \
+		iqbberlin/testcenter-broadcasting-service:current \
+		jest --coverage
 
+test-frontend-unit:
+	make build service=testcenter-frontend
+	docker run \
+		-v $(CURDIR)/docs/dist:/docs/dist \
+		--entrypoint npx \
+		iqbberlin/testcenter-frontend:current \
+		ng test --watch=false --code-coverage
+
+test-frontend-e2e:
+#TODO
 
 test-integration:
 #TODO
@@ -80,8 +87,19 @@ test-integration:
 update-docs:
 #TODO
 #	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs
+	make docs-frontend-compodoc
+	make docs-broadcasting-service-compodoc
 
+run-task-runner:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
+		--rm --no-deps \
+		testcenter-task-runner npm run $(task)
 
+docs-frontend-compodoc:
+	make run-task-runner task=frontend:update-compodoc
+
+docs-broadcasting-service-compodoc:
+	make run-task-runner task=broadcasting-service:update-compodoc
 
 #copy-packages:
 #	mkdir -p node_modules

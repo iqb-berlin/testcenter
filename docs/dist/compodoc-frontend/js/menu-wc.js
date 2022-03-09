@@ -24,25 +24,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                     <a data-type="chapter-link" href="index.html"><span class="icon ion-ios-home"></span>Getting started</a>
                     <ul class="links">
                         <li class="link">
-                            <a href="overview.html" data-type="chapter-link">
+                            <a href="index.html" data-type="chapter-link">
                                 <span class="icon ion-ios-keypad"></span>Overview
                             </a>
                         </li>
-                        <li class="link">
-                            <a href="index.html" data-type="chapter-link">
-                                <span class="icon ion-ios-paper"></span>README
-                            </a>
-                        </li>
-                        <li class="link">
-                            <a href="changelog.html"  data-type="chapter-link">
-                                <span class="icon ion-ios-paper"></span>CHANGELOG
-                            </a>
-                        </li>
-                        <li class="link">
-                            <a href="license.html"  data-type="chapter-link">
-                                <span class="icon ion-ios-paper"></span>LICENSE
-                            </a>
-                        </li>
+                                <li class="link">
+                                    <a href="properties.html" data-type="chapter-link">
+                                        <span class="icon ion-ios-apps"></span>Properties
+                                    </a>
+                                </li>
                     </ul>
                 </li>
                     <li class="chapter modules">
@@ -617,9 +607,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/BookletMetadata.html" data-type="entity-link" >BookletMetadata</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/BroadCastingServiceInfo.html" data-type="entity-link" >BroadCastingServiceInfo</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/CheckConfig.html" data-type="entity-link" >CheckConfig</a>
                             </li>
                             <li class="link">
@@ -780,9 +767,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/TestSession.html" data-type="entity-link" >TestSession</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/TestSessionData.html" data-type="entity-link" >TestSessionData</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/TestSessionFilter.html" data-type="entity-link" >TestSessionFilter</a>

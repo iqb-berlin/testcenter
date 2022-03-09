@@ -80,6 +80,9 @@
                             <li>
                                 <a href="#clean" >clean</a>
                             </li>
+                            <li>
+                                <a href="#root" >root</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -110,7 +113,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>clean(request: Request)</code>
+<code>clean()</code>
                 </td>
             </tr>
 
@@ -124,8 +127,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="20"
-                            class="link-to-prism">broadcasting-service/src/system/system.controller.ts:20</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="19"
+                            class="link-to-prism">broadcasting-service/src/system/system.controller.ts:19</a></div>
                 </td>
             </tr>
 
@@ -134,40 +137,52 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Parameters :</b>
-                        
-                        <table class="params">
-                            <thead>
-                                <tr>
-                                    <td>Name</td>
-                                    <td>Type</td>
-                                    <td>Optional</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>request</td>
-                                    <td>
-                                            <code>Request</code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div>
-                    </div>
-                    <div class="io-description">
                         <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                     </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="root"></a>
+                    <span class="name">
+                        <span ><b>root</b></span>
+                        <a href="#root"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>root()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;&#x27;)<br />@HttpCode(200)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="29"
+                            class="link-to-prism">broadcasting-service/src/system/system.controller.ts:29</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
                     <div class="io-description">
-                        
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
                     </div>
                 </td>
             </tr>
@@ -178,9 +193,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
-  Controller, Post, Req, Logger
+  Controller, Post, Logger, Get, HttpCode
 } from &#x27;@nestjs/common&#x27;;
-import { Request } from &#x27;express&#x27;;
 import { TestSessionService } from &#x27;../test-session/test-session.service&#x27;;
 import { TesteeService } from &#x27;../testee/testee.service&#x27;;
 import { WebsocketGateway } from &#x27;../common/websocket.gateway&#x27;;
@@ -196,16 +210,24 @@ export class SystemController {
   private readonly logger &#x3D; new Logger(SystemController.name);
 
   @Post(&#x27;/system/clean&#x27;)
-  clean(@Req() request: Request): void {
+  clean(): void {
     this.logger.warn(&#x27;clean system&#x27;);
     this.wsGateway.disconnectAll();
     this.dataService.clean();
     this.testeeService.clean();
   }
+
+  @Get(&#x27;&#x27;)
+  @HttpCode(200)
+  // eslint-disable-next-line class-methods-use-this
+  root(): void {
+    this.logger.log(&#x27;ping&#x27;);
+  }
 }
 </code></pre>
     </div>
 </div>
+
 
 
 

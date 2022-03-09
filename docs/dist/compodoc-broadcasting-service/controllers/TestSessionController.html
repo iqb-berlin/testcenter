@@ -137,7 +137,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/SessionChange.html" target="_self" >SessionChange[]</a></code>
+                        <b>Returns : </b>    <code>TestSessionChange[]</code>
 
                     </div>
                 </td>
@@ -228,7 +228,7 @@
   Controller, Get, HttpException, Logger, Post, Req
 } from &#x27;@nestjs/common&#x27;;
 import { Request } from &#x27;express&#x27;;
-import { isSessionChange, SessionChange } from &#x27;./session-change.interface&#x27;;
+import { isSessionChange, TestSessionChange } from &#x27;testcenter-common/interfaces/test-session-change.interface&#x27;;
 import { TestSessionService } from &#x27;./test-session.service&#x27;;
 
 @Controller()
@@ -250,13 +250,14 @@ export class TestSessionController {
   }
 
   @Get(&#x27;/test-sessions&#x27;)
-  getTestSessions(): SessionChange[] {
+  getTestSessions(): TestSessionChange[] {
     return this.dataService.getTestSessions();
   }
 }
 </code></pre>
     </div>
 </div>
+
 
 
 

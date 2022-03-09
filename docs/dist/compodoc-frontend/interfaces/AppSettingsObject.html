@@ -466,20 +466,16 @@ export interface AppSettingsObject {
 
 export type AppSettings &#x3D; AppSettingsObject | Record&lt;string, never&gt;;
 
+export type BroadCastingServiceStatus &#x3D; &#x27;on&#x27; | &#x27;off&#x27; | &#x27;unreachable&#x27;;
+
 export interface SysConfig {
   version: string;
   customTexts: KeyValuePairs;
   appConfig: AppSettings;
-  broadcastingService: BroadCastingServiceInfo;
+  broadcastingService: BroadCastingServiceStatus;
   baseUrl: string;
   veronaPlayerApiVersionMin: number;
   veronaPlayerApiVersionMax: number;
-}
-
-export interface BroadCastingServiceInfo {
-  status: string;
-  version?: string;
-  versionExpected?: string;
 }
 
 export const localStorageTestConfigKey &#x3D; &#x27;iqb-tc-c&#x27;;
@@ -490,6 +486,7 @@ export const standardBackgroundBox &#x3D; &#x27;lightgray&#x27;;
 </code></pre>
     </div>
 </div>
+
 
 
 

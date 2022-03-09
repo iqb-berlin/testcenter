@@ -28,123 +28,126 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content getting-started">
+               <div class="content overview">
                    <div class="content-data">
 
-<p><a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" class="img-responsive"></a>
-<a href="https://scm.cms.hu-berlin.de/iqb/testcenter-setup"><img src="https://scm.cms.hu-berlin.de/iqb/testcenter-setup/badges/master/pipeline.svg" alt="(CI Status)" class="img-responsive"></a>
-<img src="https://img.shields.io/github/v/tag/iqb-berlin/testcenter-setup" alt="GitHub tag (latest SemVer)" class="img-responsive"></p>
-<h1 id="testcenter-setup">Testcenter-Setup</h1>
-<p>Following the instructions below, you will install the web-application &quot;IQB-Testcenter&quot; on your server. You will get handy commands to start and stop the services.</p>
-<h2 id="application-structure">Application structure</h2>
-<p>The source code and therefore the application is separated in three submodules:</p>
-<ul>
-<li>Frontend: Angular based components to be loaded into the browser as single page application. You find the source code repository <a href="https://github.com/iqb-berlin/testcenter-frontend">here</a>.</li>
-<li>Backend php+database: Php based components to handle most of the requests from frontend; connects to the database; source code ist published <a href="https://github.com/iqb-berlin/testcenter-backend">here</a>, the API is documented <a href="https://iqb-berlin.github.io/testcenter-backend/api/">here</a></li>
-<li>Backend node.js: Additional server component to implement one special feature &quot;test operator&#39;s monitor&quot;</li>
-</ul>
-<p>In order to install the whole application, one must install all components. Sure, this could be done the traditional way:</p>
-<ul>
-<li>clone the code repositories</li>
-<li>install the required software (npm install/compose)</li>
-<li>transpile/build</li>
-<li>setup database</li>
-<li>setup web server, set routes etc.</li>
-</ul>
-<p>To ease this process and to avoid mess after updates/upgrades, every module consist of one folder &quot;docker&quot;. There you find scripts for docker based installation. The repository of this document you&#39;re reading now binds all docker install procedures together. This way, you install everything you need in one step.</p>
-<h1 id="preconditions">Preconditions</h1>
-<p>Before you follow the instructions below, you need to install <a href="https://docs.docker.com/engine/install/ubuntu/#installation-methods">docker</a>,  <a href="https://docs.docker.com/compose/install/">docker-compose</a> and <code>make</code>. We do not explain these applications, this is beyond the scope of this document.</p>
-<p>Although all steps below could be done in another operating system environment, we go for a unix/linux.</p>
-<h1 id="installation-for-production-only">Installation for production only</h1>
-<p>&quot;Production&quot; here means that you just want to install and use the application, not more. You do not like to get a look behind the curtain or to run sophisticated performance analyses. This type of installation has fewer requirements in regard of software and space.</p>
-<p>Technically, you download pre-built images from Docker Hub.</p>
-<h2 id="1-download-install-script">1. Download install script</h2>
-<p>The installation script requires bash to run. Go to a directory of your choice and get it:</p>
-<div><pre class="line-numbers"><code class="language-none"> wget https://raw.githubusercontent.com/iqb-berlin/iqb-scripts/master/install.sh</code></pre></div><p>Also download the project specific configuration for the install script:</p>
-<div><pre class="line-numbers"><code class="language-none"> wget https://raw.githubusercontent.com/iqb-berlin/testcenter-setup/master/config/install_config</code></pre></div><h2 id="2-run-installation">2. Run installation</h2>
-<div><pre class="line-numbers"><code class="language-none"> bash install.sh</code></pre></div><p>Now, your system will get checked to ensure that you have <code>docker</code>, <code>docker-compose</code> and <code>make</code> ready to work. Then, you need to put in some parameters for your installation:</p>
-<ul>
-<li>target directory</li>
-<li>host name (can be changed later)</li>
-<li>MySql connection parameters (database name, root password etc.)</li>
-</ul>
-<h2 id="3-run-server">3. Run server</h2>
-<p>After you&#39;ve got &quot;--- INSTALLATION SUCCESSFUL ---&quot;, you change into the installation directory and type</p>
-<div><pre class="line-numbers"><code class="language-none">make run</code></pre></div><p>Docker will then start all containers: Frontend, Backends, and one traefik service to handle routing. To check, go to another computer and put in the host name of the installation - and enjoy!</p>
-<p>If you like to stop the server later, run</p>
-<div><pre class="line-numbers"><code class="language-none">make stop</code></pre></div><h2 id="4-login-and-change-super-user-password">4. Login and change super user password</h2>
-<p>Right after installation, please log in! At start, you have one user prepared: <code>super</code> with password <code>user123</code>. Because everyone can read this here and in the scripts, you should get up your shields by changing at least the password (go to &quot;System-Admin&quot;).</p>
-<h2 id="5-update">5. Update</h2>
-<p>Run the script <em>update.sh</em> in the root directory. This will compare your local component versions with the latest release and update and restart the software stack.</p>
-<p>Alternatively you may also manually edit the file <code>docker-compose.prod.yml</code>. Find the lines starting with <strong>image</strong> and edit the version tag at the end.</p>
-<p>Check the <a href="https://hub.docker.com/u/iqbberlin">IQB Docker Hub Page</a> for latest images.</p>
-<h1 id="installation-for-development">Installation for development</h1>
-<p>The other way of installation gives you more options to access data, logs, to change settings more in detail, to find bugs and even to change code to meet your needs. Our applications are great, but not perfect at all!</p>
-<p>Technically, you check out all source code and build the application modules as developers do. The whole Angular development framework will be installed with all tools. The build process will include all unit end e2e tests we prepared.  </p>
-<p>We will not explain every step in detail. You should be familiar with git and bash and file handling in Unix, editing a text file etc.</p>
-<h2 id="1-clone-this-setup-repository">1. Clone this setup repository</h2>
-<p>After the clone is done, you need to init the submodules feature of git:</p>
-<div><pre class="line-numbers"><code class="language-none">git submodule init
-git submodule update</code></pre></div><h2 id="2-configuration">2. Configuration</h2>
-<p>Run</p>
-<div><pre class="line-numbers"><code class="language-none">make init-dev-config</code></pre></div><blockquote>
-<p>:warning: This creates configuration files with values meant for
-development purposes only. For any production setup be sure to customize the
-files. Most importantly use your own passwords!</p>
-</blockquote>
-<p>The important configuration files are:</p>
-<ul>
-<li><code>.env</code> - This file contains sensitive information about database access
-and user logins</li>
-<li><code>testcenter-frontend/src/environments/environment.ts</code> - Here information
-about accessing the backend is kept for the frontend component</li>
-</ul>
-<p>There is one important setting to be made in the generated file <code>.env</code>. On the first line, set the variable <em>HOSTNAME</em> to either the IP, or the hostname of the machine under which it is reachable.</p>
-<p>The other setting is the address of the broadcasting service.
-Replace <em>localhost</em> in variable <em>BROADCAST_SERVICE_URI_SUBSCRIBE</em> with the actual hostname.</p>
-<h2 id="3-updating">3. Updating</h2>
-<div><pre class="line-numbers"><code class="language-none">git pull
-git submodule update --recursive</code></pre></div><h1 id="more-server-setup-and-handling">More server setup and handling</h1>
-<h2 id="ssl">SSL</h2>
-<p>For a setup using SSL certificates (HTTPS connection), the certificates need to be placed under <em>config/certs</em> and their name be put in <em>config/cert_config.yml</em>.</p>
-<h2 id="startstop">Start/stop</h2>
-<p>Depending on which setup you are using different commands may be used for starting and stopping the application suite.
-Most commands are usable via Makefile-targets: <code>make &lt;command&gt;</code>.</p>
-<p>For specific commands refer to the <a href="https://docs.docker.com/compose/">docker-compose</a> documentation.</p>
-<h3 id="starting">Starting</h3>
-<p>Every startup command can be used in detached mode, which will free up the console or in blocking mode which uses the current console window
-for all logging. Refer to the OS commands for sending processes to the background etc.</p>
-<div><pre class="line-numbers"><code class="language-none">make run</code></pre></div><p>or</p>
-<div><pre class="line-numbers"><code class="language-none">make run-detached</code></pre></div><h3 id="stopping">Stopping</h3>
-<p>For attached console mode simply terminate the process (Ctrl+C under Linux).</p>
-<p>When in detached mode you may use the following command to stop the applications.</p>
-<div><pre class="line-numbers"><code class="language-none">make stop</code></pre></div><h2 id="logs">Logs</h2>
-<p>Because the server is running in docker, you get logs via <code>docker logs &lt;process&gt;</code>.</p>
-<h2 id="application-access">Application access</h2>
-<p>Open the target hostname (<a href="http://localhost">http://localhost</a> for the development version)
-in your browser. You see now the testcenter application with testdata.</p>
-<p>Right after start, two logins are prepared:</p>
-<ul>
-<li>Username <code>super</code> and password <code>user123</code> as admin user</li>
-<li>Username <code>test</code> and password <code>user123</code> and code <code>xxx</code> as test-taker</li>
-</ul>
-<hr>
-<p>You can reach the backend API directly under the &quot;api&quot; path.</p>
-<p><a href="http://localhost/api">http://localhost/api</a></p>
-<h2 id="trouble-shooting">Trouble Shooting</h2>
-<h3 id="timeouts-when-building-fresh-images">Timeouts when building fresh images</h3>
-<p>Build them separately or increase docker-compose timeout:
-<code>export COMPOSE_HTTP_TIMEOUT=300</code>.</p>
-<h3 id="strange-sql-constraint-error-after-re-build">Strange SQL Constraint error after re-build</h3>
-<p>When you rebuild make sure, that you not only delete all previous volumes but
-delete all contents of <code>testcenter-backend/src/vo_data</code> as well.
-Otherwise, you get an erroneous application state.
-<a href="https://github.com/iqb-berlin/testcenter-setup/issues/9">Will be fixed</a>.</p>
-<h3 id="error-when-using-make-commands">Error when using Make commands</h3>
-<p>Should any produce an error, you may have to build the command manually. Refer the the Makefile-target you used and replace <code>up</code> with <code>stop</code>.
-For example if you ran <code>make run-prod-nontls-detached</code>, you can stop with:</p>
-<div><pre class="line-numbers"><code class="language-none">docker-compose -f docker-compose.yml -f docker-compose.prod.nontls.yml stop</code></pre></div>
 
+<ol class="breadcrumb">
+    <li>Overview</li>
+</ol>
+  
+<div class="text-center module-graph-container">
+    <div id="module-graph-svg">
+        <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.47.3 (20210619.1520)
+ -->
+<!-- Title: dependencies Pages: 1 -->
+<svg width="376pt" height="174pt"
+ viewBox="0.00 0.00 376.00 173.80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 169.8)">
+<title>dependencies</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-169.8 372,-169.8 372,4 -4,4"/>
+<text text-anchor="middle" x="184" y="-8.2" font-family="sans-serif" font-size="14.00">dependencies</text>
+<g id="clust1" class="cluster">
+<title>cluster_AppModule</title>
+<polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-32.8 8,-157.8 360,-157.8 360,-32.8 8,-32.8"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_AppModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-40.8 16,-92.8 352,-92.8 352,-40.8 16,-40.8"/>
+</g>
+<!-- TestSessionService -->
+<g id="node1" class="node">
+<title>TestSessionService</title>
+<ellipse fill="#fdb462" stroke="black" cx="258" cy="-66.8" rx="86.25" ry="18"/>
+<text text-anchor="middle" x="258" y="-62.6" font-family="Times,serif" font-size="14.00">TestSessionService</text>
+</g>
+<!-- AppModule -->
+<g id="node3" class="node">
+<title>AppModule</title>
+<polygon fill="#8dd3c7" stroke="black" points="214.66,-149.8 211.66,-153.8 190.66,-153.8 187.66,-149.8 131.34,-149.8 131.34,-113.8 214.66,-113.8 214.66,-149.8"/>
+<text text-anchor="middle" x="173" y="-127.6" font-family="Times,serif" font-size="14.00">AppModule</text>
+</g>
+<!-- TestSessionService&#45;&gt;AppModule -->
+<g id="edge1" class="edge">
+<title>TestSessionService&#45;&gt;AppModule</title>
+<path fill="none" stroke="black" d="M193.35,-78.72C193.35,-78.72 193.35,-103.57 193.35,-103.57"/>
+<polygon fill="black" stroke="black" points="189.85,-103.57 193.35,-113.57 196.85,-103.57 189.85,-103.57"/>
+</g>
+<!-- TesteeService -->
+<g id="node2" class="node">
+<title>TesteeService</title>
+<ellipse fill="#fdb462" stroke="black" cx="89" cy="-66.8" rx="65.38" ry="18"/>
+<text text-anchor="middle" x="89" y="-62.6" font-family="Times,serif" font-size="14.00">TesteeService</text>
+</g>
+<!-- TesteeService&#45;&gt;AppModule -->
+<g id="edge2" class="edge">
+<title>TesteeService&#45;&gt;AppModule</title>
+<path fill="none" stroke="black" d="M142.68,-77.24C142.68,-77.24 142.68,-103.77 142.68,-103.77"/>
+<polygon fill="black" stroke="black" points="139.18,-103.77 142.68,-113.77 146.18,-103.77 139.18,-103.77"/>
+</g>
+</g>
+</svg>
+
+    </div>
+    <i id="fullscreen" class="icon ion-ios-resize module-graph-fullscreen-btn" aria-hidden="true"></i>
+    <div class="btn-group size-buttons">
+        <button id="zoom-in" class="btn btn-default btn-sm">Zoom in</button>
+        <button id="reset" class="btn btn-default btn-sm">Reset</button>
+        <button id="zoom-out" class="btn btn-default btn-sm">Zoom out</button>
+    </div>
+</div>
+  
+<div class="tab-content overview">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="card text-center">
+                <div class="card-block">
+                    <h4 class="card-title"><span class="icon ion-ios-archive"></span></h4>
+                    <p class="card-text">
+                        <a href="./modules.html">1 Module</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card text-center">
+                <div class="card-block">
+                    <h4 class="card-title"><span class="icon ion-md-swap"></span></h4>
+                    <p class="card-text">5 Controllers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card text-center">
+                <div class="card-block">
+                    <h4 class="card-title"><span class="icon ion-md-arrow-round-down"></span></h4>
+                    <p class="card-text">2 Injectables</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card text-center">
+                <div class="card-block">
+                    <h4 class="card-title"><span class="icon ion-ios-paper"></span></h4>
+                    <p class="card-text">2 Classes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card text-center">
+                <div class="card-block">
+                    <h4 class="card-title"><span class="icon ion-md-information-circle-outline"></span></h4>
+                    <p class="card-text">3 Interfaces</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/libs/svg-pan-zoom.min.js"></script>
+<script src="js/svg-pan-zoom.controls.js"></script> 
 
 
 
@@ -188,7 +191,7 @@ For example if you ran <code>make run-prod-nontls-detached</code>, you can stop 
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 0;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'overview';
             var COMPODOC_CURRENT_PAGE_URL = 'index.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>

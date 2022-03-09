@@ -333,33 +333,19 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BookletConfig } from &#x27;../config/booklet-config&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { TestSessionChange } from &#x27;testcenter-common/interfaces/test-session-change.interface&#x27;;
+// eslint-disable-next-line import/extensions
+import { BookletConfig } from &#x27;../config/booklet-config&#x27;;
+
+export type TestSessionData &#x3D; Readonly&lt;TestSessionChange&gt;;
 
 export interface TestSession {
   readonly data: TestSessionData;
   readonly state: TestSessionSuperState;
-  readonly current: UnitContext|null;
-  readonly booklet: Booklet|BookletError;
-  readonly clearedCodes: Record&lt;string, unknown&gt;|null;
-  readonly timeLeft: Record&lt;string, unknown&gt;|null;
-}
-
-export interface TestSessionData {
-  readonly personId: number;
-  readonly personLabel?: string;
-  readonly groupName?: string;
-  readonly groupLabel?: string;
-  readonly mode?: string;
-  readonly testId: number;
-  readonly bookletName?: string;
-  readonly testState: {
-    [testStateKey: string]: string
-  };
-  readonly unitName?: string;
-  readonly unitState: {
-    [unitStateKey: string]: string
-  };
-  readonly timestamp: number;
+  readonly current: UnitContext | null;
+  readonly booklet: Booklet | BookletError;
+  readonly clearedCodes: Record&lt;string, unknown&gt; | null;
+  readonly timeLeft: Record&lt;string, unknown&gt; | null;
 }
 
 export const TestSessionsSuperStates &#x3D; [&#x27;monitor_group&#x27;, &#x27;demo&#x27;, &#x27;pending&#x27;, &#x27;locked&#x27;, &#x27;error&#x27;,
@@ -380,7 +366,7 @@ export interface BookletError {
   species: null;
 }
 
-export function isBooklet(bookletOrError: Booklet|BookletError): bookletOrError is Booklet {
+export function isBooklet(bookletOrError: Booklet | BookletError): bookletOrError is Booklet {
   return bookletOrError &amp;&amp; !(&#x27;error&#x27; in bookletOrError);
 }
 
@@ -398,7 +384,7 @@ export interface Testlet {
   id: string;
   label: string;
   restrictions?: Restrictions;
-  children: (Unit|Testlet)[];
+  children: (Unit | Testlet)[];
   descendantCount: number;
   blockId?: string;
   nextBlockId?: string;
@@ -449,11 +435,11 @@ export interface CheckingOptions {
   autoCheckAll: boolean;
 }
 
-export function isUnit(testletOrUnit: Testlet|Unit): testletOrUnit is Unit {
+export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
   return !(&#x27;children&#x27; in testletOrUnit);
 }
 
-export function isTestlet(testletOrUnit: Testlet|Unit): testletOrUnit is Testlet {
+export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
   return (&#x27;children&#x27; in testletOrUnit);
 }
 
@@ -467,7 +453,7 @@ export interface UnitContext {
 }
 
 export interface Selected {
-  element: Testlet|null;
+  element: Testlet | null;
   originSession: TestSession;
   spreading: boolean;
   inversion: boolean;
@@ -503,6 +489,7 @@ export interface GotoCommandData {
 </code></pre>
     </div>
 </div>
+
 
 
 

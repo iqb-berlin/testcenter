@@ -281,7 +281,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addSessionChange(sessionChange: <a href="../interfaces/SessionChange.html" target="_self">SessionChange</a>)</code>
+                    <code>addSessionChange(sessionChange: TestSessionChange)</code>
                 </td>
             </tr>
 
@@ -312,7 +312,7 @@
                                 <tr>
                                     <td>sessionChange</td>
                                     <td>
-                                                <code><a href="../interfaces/SessionChange.html" target="_self" >SessionChange</a></code>
+                                            <code>TestSessionChange</code>
                                     </td>
 
                                     <td>
@@ -350,7 +350,7 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>applySessionChange(sessionChange: <a href="../interfaces/SessionChange.html" target="_self">SessionChange</a>)</code>
+<code>applySessionChange(sessionChange: TestSessionChange)</code>
                 </td>
             </tr>
 
@@ -381,7 +381,7 @@
                                 <tr>
                                     <td>sessionChange</td>
                                     <td>
-                                                <code><a href="../interfaces/SessionChange.html" target="_self" >SessionChange</a></code>
+                                            <code>TestSessionChange</code>
                                     </td>
 
                                     <td>
@@ -618,7 +618,7 @@
                 <td class="col-md-4">
 
                     <div class="io-description">
-                        <b>Returns : </b>        <code><a href="../interfaces/SessionChange.html" target="_self" >SessionChange[]</a></code>
+                        <b>Returns : </b>    <code>TestSessionChange[]</code>
 
                     </div>
                 </td>
@@ -798,11 +798,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Logger } from &#x27;@nestjs/common&#x27;;
-import { SessionChange } from &#x27;./session-change.interface&#x27;;
+import { TestSessionChange } from &#x27;testcenter-common/interfaces/test-session-change.interface&#x27;;
 import { Monitor } from &#x27;../monitor/monitor.interface&#x27;;
 import { WebsocketGateway } from &#x27;../common/websocket.gateway&#x27;;
 
-const mergeSessionChanges &#x3D; (testSession: SessionChange, sessionChange: SessionChange): SessionChange &#x3D;&gt; {
+const mergeSessionChanges &#x3D; (testSession: TestSessionChange, sessionChange: TestSessionChange): TestSessionChange &#x3D;&gt; {
   if ((sessionChange.unitName) &amp;&amp; (sessionChange.unitName !&#x3D;&#x3D; testSession.unitName)) {
     testSession.unitState &#x3D; {};
   }
@@ -827,7 +827,7 @@ export class TestSessionService {
 
   private testSessions: {
     [group: string]: {
-      [sessionId: string]: SessionChange
+      [sessionId: string]: TestSessionChange
     }
   } &#x3D; {};
 
@@ -837,12 +837,12 @@ export class TestSessionService {
     }
   } &#x3D; {};
 
-  applySessionChange(sessionChange: SessionChange): void {
+  applySessionChange(sessionChange: TestSessionChange): void {
     this.addSessionChange(sessionChange);
     this.broadcastTestSessionsToGroupMonitors(sessionChange.groupName);
   }
 
-  private addSessionChange(sessionChange: SessionChange): void {
+  private addSessionChange(sessionChange: TestSessionChange): void {
     const group: string &#x3D; sessionChange.groupName;
     const testId &#x3D; sessionChange.testId;
 
@@ -910,11 +910,11 @@ export class TestSessionService {
       .filter((v: Monitor, i: number, a: Monitor[]) &#x3D;&gt; a.indexOf(v) &#x3D;&#x3D;&#x3D; i);
   }
 
-  getTestSessions(): SessionChange[] {
+  getTestSessions(): TestSessionChange[] {
     return Object.values(this.testSessions)
       .reduce(
         // eslint-disable-next-line max-len
-        (allTestSessions: SessionChange[], groupTestSessions: { [g: string]: SessionChange }): SessionChange[] &#x3D;&gt; allTestSessions.concat(Object.values(groupTestSessions)), []
+        (allTestSessions: TestSessionChange[], groupTestSessions: { [g: string]: TestSessionChange }): TestSessionChange[] &#x3D;&gt; allTestSessions.concat(Object.values(groupTestSessions)), []
       );
   }
 
@@ -931,6 +931,7 @@ export class TestSessionService {
     </div>
 
 </div>
+
 
 
 
