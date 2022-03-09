@@ -30,6 +30,7 @@ services:
       - ./data:/var/www/data
       - ./database:/var/www/database
       - ./definitions:/var/www/definitions
+      - ./docs/dist:/docs/dist
       - ./package.json:/var/www/package.json
       - ./sampledata:/var/www/sampledata
     extra_hosts:

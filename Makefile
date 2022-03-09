@@ -32,14 +32,20 @@ stop:
 down:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down $(service)
 
+run-task-runner:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
+		--rm --no-deps \
+		testcenter-task-runner npm run $(task)
 
 test-backend-unit:
-	build service=testcenter-backend
-	docker run \
-		-v $(CURDIR)/docs/dist:/docs/dist \
-		--entrypoint vendor/phpunit/phpunit/phpunit \
-		iqbberlin/testcenter-backend:current \
-		--bootstrap test/unit/bootstrap.php --configuration phpunit.xml test/unit/.
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
+		--rm --no-deps --entrypoint "" \
+		testcenter-backend \
+		php -dxdebug.mode=coverage vendor/phpunit/phpunit/phpunit \
+		--bootstrap test/unit/bootstrap.php \
+		--configuration phpunit.xml \
+		--coverage-html /docs/dist/test-coverage-backend-unit \
+		test/unit/.
 
 test-backend-dredd:
 	make run-task-runner task=dredd-test
@@ -90,10 +96,7 @@ update-docs:
 	make docs-frontend-compodoc
 	make docs-broadcasting-service-compodoc
 
-run-task-runner:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
-		--rm --no-deps \
-		testcenter-task-runner npm run $(task)
+
 
 docs-frontend-compodoc:
 	make run-task-runner task=frontend:update-compodoc
