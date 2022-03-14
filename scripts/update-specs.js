@@ -18,8 +18,18 @@ exports.mergeSpecFiles = () => {
     .on('data', d => { console.log(`File: ${d.path}`); })
     .on('error', e => { console.warn(e); })
     .pipe(yamlMerge('compiled.specs.yml'))
-    .on('error', e => { console.warn(e); })
+    .on('error', e => { console.warn('error', e); })
     .pipe(gulp.dest(tmpDir));
+};
+
+exports.prepareDocsDestinationFolder = done => {
+  cliPrint.headline('Prepare destination Folder');
+
+  if (!fs.existsSync(`${docsDir}/dist/api`)) {
+    fs.mkdirSync(`${docsDir}/dist/api`);
+  }
+  fs.copyFileSync(`${docsDir}/src/api/index.html`, `${docsDir}/dist/api/index.html`);
+  done();
 };
 
 exports.updateDocs = done => {
@@ -82,7 +92,8 @@ exports.clearTmpDir = done => {
 
 exports.updateSpecs = gulp.series(
   exports.clearTmpDir,
+  exports.prepareDocsDestinationFolder,
   exports.mergeSpecFiles,
-  exports.updateDocs,
-  exports.updateSampleFiles
+  exports.updateDocs
+  // exports.updateSampleFiles
 );

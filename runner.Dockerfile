@@ -11,6 +11,7 @@ COPY frontend /app/frontend
 COPY sampledata /app/sampledata
 COPY scripts /app/scripts
 COPY test /app/test
+COPY docs /app/docs
 
 RUN mkdir /app/tmp
 
