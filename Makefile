@@ -95,14 +95,16 @@ update-docs:
 #	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs
 	make docs-frontend-compodoc
 	make docs-broadcasting-service-compodoc
-
-
+	make docs-frontend-compodoc
 
 docs-frontend-compodoc:
 	make run-task-runner task=frontend:update-compodoc
 
 docs-broadcasting-service-compodoc:
 	make run-task-runner task=broadcasting-service:update-compodoc
+
+docs-api-specs:
+	make run-task-runner task=backend:update-specs
 
 #copy-packages:
 #	mkdir -p node_modules

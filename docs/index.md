@@ -4,6 +4,11 @@
 
 ## Documentation for Developers
 
+### API Documentation
+
+* [HTTP API Backend](https://iqb-berlin.github.io/testcenter/dist/api/index.html)
+* [Verona Player](https://verona-interfaces.github.io/player/)
+
 ### Compodoc Documentation of Modules, Classes etc
 
 * [Frontend](https://iqb-berlin.github.io/testcenter/dist/compodoc-frontend/index.html)
