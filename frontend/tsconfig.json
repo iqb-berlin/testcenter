@@ -31,5 +31,6 @@
         "../common/src/*"
       ]
     }
-  }
+  },
+  "exclude": ["node_modules", "../*/cypress/**/*"]
 }
