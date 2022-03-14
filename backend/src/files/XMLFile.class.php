@@ -136,7 +136,6 @@ class XMLFile extends File {
 
         $xmlReader = new XMLReader();
         $xmlReader->open($this->path);
-
         $xmlReader->setSchema($filePath);
         do {
             $continue = $xmlReader->read();

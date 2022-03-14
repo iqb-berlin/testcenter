@@ -1,5 +1,11 @@
 #Changelog
 
+## Frontend 12.1.0
+* There are different login-button for admin-users and for testees now.
+
+## Backend 12.2.2
+* massive performance improvement by caching file information in the DB.
+
 ## Backend 12.0.2
 Fixes data-migration from versions before 12.0.0. With the update to version 12.0.0 the way, response-data is stored
 changed. Data from existing units should be migrated, but that might fail in some installations. With this patch

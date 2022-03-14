@@ -64,6 +64,9 @@ class File extends DataCollectionTypeSafe {
         $this->type = $type;
         $this->setFilePath($path);
         $this->id = FileName::normalize($this->getName(), false);
+        if (strlen($this->getName()) > 120) {
+            $this->report('error', "Filename too long!");
+        }
     }
 
 
