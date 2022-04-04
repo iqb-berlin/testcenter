@@ -30,13 +30,15 @@
     [x] weniger verbose
 
 [!] BACKEND: Repair - [PUT] http://localhost/testcenter/backend/test does not work, because there is a folder "test"
-
 [!] init test for new patch
+[!] Cypress global types https://github.com/cypress-io/cypress/issues/1319#issuecomment-517489190
 
 [ ] $SUPERUSER_NAME don't have to be env
 
 [ ] ports
 [ ] .lock-files
+
+[ ] CI: benutzt anscheinend eine alte docker-compose version
 
 [x] docker/be/dredd-test
 [x] docker/be/unit-test
@@ -76,7 +78,10 @@
 [ ] hardcode BROADCAST_SERVICE_URI_SUBSCRIBE
 [ ] do something with dredd-report
 
+[ ] import last changes from frontend!
+
 --
 
 [ ] remove polyfill
 [ ] salt n pepper
+[ ] XML dokumentationen
