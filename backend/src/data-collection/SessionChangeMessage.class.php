@@ -17,10 +17,11 @@ class SessionChangeMessage implements JsonSerializable {
     protected ?array $unitState = [];
 
 
-    private function __construct(int $personId, int $testId, int $timestamp = null) {
+    private function __construct(string $groupName, int $personId, int $testId, int $timestamp = null) {
 
         $this->personId = $personId;
         $this->testId = $testId;
+        $this->groupName = $groupName;
 
         $this->timestamp = $timestamp ?? TimeStamp::now();
     }
@@ -28,23 +29,28 @@ class SessionChangeMessage implements JsonSerializable {
 
     public static function session(int $testId, PersonSession $session, int $timestamp = null): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($session->getPerson()->getId(), $testId, $timestamp);
+        $message = new SessionChangeMessage(
+            $session->getLoginSession()->getLogin()->getGroupName(),
+            $session->getPerson()->getId(),
+            $testId,
+            $timestamp
+        );
         $message->setSession($session);
         return $message;
     }
 
 
-    public static function testState(int $personId, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
+    public static function testState(string $groupName, int $personId, int $testId, array $testState, string $bookletName = null): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($personId, $testId);
+        $message = new SessionChangeMessage($groupName, $personId, $testId);
         $message->setTestState($testState, $bookletName);
         return $message;
     }
 
 
-    public static function unitState(int $personId, int $testId, string $unitName, array $unitState): SessionChangeMessage {
+    public static function unitState(string $groupName, int $personId, int $testId, string $unitName, array $unitState): SessionChangeMessage {
 
-        $message = new SessionChangeMessage($personId, $testId);
+        $message = new SessionChangeMessage($groupName, $personId, $testId);
         $message->setUnitState($unitName, $unitState);
         return $message;
     }

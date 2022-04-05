@@ -107,8 +107,12 @@ class MonitorController extends Controller {
             self::testDAO()->changeTestLockStatus((int) $testId, true);
 
             $testSession = self::testDAO()->getTestSession($testId);
-            $sessionChangeMessage = SessionChangeMessage::testState((int) $testSession['person_id'], $testId, $testSession['laststate']);
-            BroadcastService::sessionChange($sessionChangeMessage);
+            BroadcastService::sessionChange(SessionChangeMessage::testState(
+                $groupName,
+                (int) $testSession['person_id'],
+                $testId,
+                $testSession['laststate']
+            ));
         }
 
         return $response->withStatus(200);
@@ -128,8 +132,12 @@ class MonitorController extends Controller {
 
             $testSession = self::testDAO()->getTestSession($testId);
             self::testDAO()->addTestLog($testId, 'locked by monitor', 0, (string) $authToken->getId());
-            $sessionChangeMessage = SessionChangeMessage::testState((int) $testSession['person_id'], $testId, $testSession['laststate']);
-            BroadcastService::sessionChange($sessionChangeMessage);
+            BroadcastService::sessionChange(SessionChangeMessage::testState(
+                $groupName,
+                (int) $testSession['person_id'],
+                $testId,
+                $testSession['laststate']
+            ));
         }
 
         return $response->withStatus(200);

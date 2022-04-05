@@ -38,7 +38,13 @@ class TestController extends Controller {
             $message = SessionChangeMessage::session((int) $test['id'], $personSession);
             $message->setTestState($testState, $body['bookletName']);
         } else {
-            $message = SessionChangeMessage::testState($authToken->getId(), (int) $test['id'], $testState, $body['bookletName']);
+            $message = SessionChangeMessage::testState(
+                $authToken->getGroup(),
+                $authToken->getId(),
+                (int) $test['id'],
+                $testState,
+                $body['bookletName']
+            );
         }
         BroadcastService::sessionChange($message);
 
@@ -226,7 +232,7 @@ class TestController extends Controller {
         }
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken->getId(), $testId, $newState)
+            SessionChangeMessage::testState($authToken->getGroup(), $authToken->getId(), $testId, $newState)
         );
 
         return $response->withStatus(200);
@@ -275,9 +281,13 @@ class TestController extends Controller {
             self::testDAO()->addUnitLog($testId, $unitName, $entry['key'], $entry['timeStamp'], $entry['content']);
         }
 
-        BroadcastService::sessionChange(
-            SessionChangeMessage::unitState($authToken->getId(), $testId, $unitName, $newState)
-        );
+        BroadcastService::sessionChange(SessionChangeMessage::unitState(
+            $authToken->getGroup(),
+            $authToken->getId(),
+            $testId,
+            $unitName,
+            $newState
+        ));
 
         return $response->withStatus(200);
     }
@@ -320,7 +330,7 @@ class TestController extends Controller {
         self::testDAO()->addTestLog($testId, $lockEvent['message'], $lockEvent['timeStamp']);
 
         BroadcastService::sessionChange(
-            SessionChangeMessage::testState($authToken->getId(), $testId, ['status' => 'locked'])
+            SessionChangeMessage::testState($authToken->getGroup(), $authToken->getId(), $testId, ['status' => 'locked'])
         );
 
         return $response->withStatus(200);
@@ -361,7 +371,12 @@ class TestController extends Controller {
         $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
         self::testDAO()->addTestLog($testId, '"' . $field . '"', 0, $value);
 
-        $sessionChangeMessage = SessionChangeMessage::testState((int) $testSession['person_id'], $testId, $newState);
+        $sessionChangeMessage = SessionChangeMessage::testState(
+            $testSession['group_name'],
+            (int) $testSession['person_id'],
+            $testId,
+            $newState
+        );
         BroadcastService::sessionChange($sessionChangeMessage);
     }
 
