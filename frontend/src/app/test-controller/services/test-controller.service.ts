@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
-import { debounceTime, map, takeUntil } from 'rxjs/operators';
+import {
+  bufferTime, concatMap, filter, map, takeUntil
+} from 'rxjs/operators';
 import {
   BehaviorSubject, interval, Observable, Subject, Subscription, timer
 } from 'rxjs';
@@ -23,6 +25,8 @@ import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
   providedIn: 'root'
 })
 export class TestControllerService {
+  static readonly unitDataBufferMs = 1000;
+
   testId = '';
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
@@ -45,7 +49,6 @@ export class TestControllerService {
 
   allUnitIds: string[] = [];
 
-  private unitStateDataToSave$ = new Subject<UnitStateData>();
   windowFocusState$ = new Subject<WindowFocusState>();
 
   resumeTargetUnitSequenceId = 0;
@@ -86,24 +89,58 @@ export class TestControllerService {
   private unitDefinitionTypes: { [sequenceId: number]: string } = {};
   private unitStateDataTypes: { [sequenceId: number]: string } = {};
 
+  private unitStateDataToSave$ = new Subject<UnitStateData>();
+  private unitStateDataToSaveSubscription: Subscription;
+
   constructor(
     private router: Router,
     private bs: BackendService
   ) {
-    this.unitStateDataToSave$
-      .pipe(debounceTime(200))
-      .subscribe(dataParts => {
+    this.setupUnitStateBuffer();
+  }
+
+  setupUnitStateBuffer(): void {
+    this.destroyUnitStateBuffer(); // important when called from unit-test with fakeAsync
+    // the last buffer when test gets terminated is lost. Seems not to be important, but noteworthy
+    this.unitStateDataToSaveSubscription = this.unitStateDataToSave$
+      .pipe(
+        bufferTime(TestControllerService.unitDataBufferMs),
+        filter(stateDataBuffer => !!stateDataBuffer.length),
+        concatMap(stateDataBuffer => {
+          const sortedByUnit = stateDataBuffer
+            .reduce(
+              (agg, unitStateData) => {
+                if (!agg[unitStateData.unitDbKey]) agg[unitStateData.unitDbKey] = [];
+                agg[unitStateData.unitDbKey].push(unitStateData);
+                return agg;
+              },
+              <{ [unitId: string]: UnitStateData[] }>{}
+            );
+          return Object.keys(sortedByUnit)
+            .map(unitId => ({
+              unitDbKey: unitId,
+              dataParts: Object.assign({}, ...sortedByUnit[unitId].map(entry => entry.dataParts)),
+              // verona4 does not support different dataTypes for different Chunks
+              unitStateDataType: sortedByUnit[unitId][0].unitStateDataType
+            }));
+        })
+      )
+      .subscribe(changedStates => {
         this.bs.updateDataParts(
           this.testId,
-          dataParts.unitDbKey,
-          dataParts.dataParts,
-          dataParts.unitStateDataType
+          changedStates.unitDbKey,
+          changedStates.dataParts,
+          changedStates.unitStateDataType
         ).subscribe(ok => {
           if (!ok) {
             console.warn('storing unitData failed');
           }
         });
       });
+  }
+
+  destroyUnitStateBuffer(): void {
+    if (this.unitStateDataToSaveSubscription) this.unitStateDataToSaveSubscription.unsubscribe();
   }
 
   resetDataStore(): void {
@@ -139,8 +176,12 @@ export class TestControllerService {
   updateUnitStateDataParts(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString,
                            unitStateDataType: string): void {
     const changedParts:KeyValuePairString = {};
+
     Object.keys(dataParts)
       .forEach(dataPartId => {
+        if (!this.unitStateDataParts[sequenceId]) {
+          this.unitStateDataParts[sequenceId] = {};
+        }
         if (
           !this.unitStateDataParts[sequenceId][dataPartId] ||
           (this.unitStateDataParts[sequenceId][dataPartId] !== dataParts[dataPartId])
@@ -352,7 +393,7 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will an can be logged
+    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
 
     this.router.navigate(['/'], { state: { force } })
       .then(navigationSuccessful => {

@@ -1,5 +1,9 @@
 #Changelog
 
+## Frontend 12.1.1
+* Fix critical bug in debouncing responses between frontend and backend which led to dataloss in case of very fast 
+ navigation between units 
+
 ## Frontend 12.1.0
 * There are different login-button for admin-users and for testees now.
 
