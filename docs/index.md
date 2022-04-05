@@ -2,7 +2,10 @@
 
 * [User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)
 
+* [Overview about super-states of running sessions and their icons](https://iqb-berlin.github.io/testcenter/dist/test-session-super-states.html)
+
 ## Documentation for Developers
+
 
 ### API Documentation
 
