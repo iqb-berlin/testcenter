@@ -50,6 +50,10 @@
 
 [x] shared interfaces 
 [ ] fe/doc-scripts
+    [ ] booklet-config -> XML -> md / json; json in ts
+    [x] super-states
+    [ ] custom-texts
+    [ ] test-mode
 [ ] fe/cyprus -> huaning
 [x] be/dredd-test
 [x] be/init-test

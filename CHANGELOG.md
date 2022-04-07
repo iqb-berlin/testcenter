@@ -1,5 +1,8 @@
 #Changelog
 
+## 12.2.3
+* Fix critical bug which made the group monitor defunct in live-Mode!
+
 ## Frontend 12.1.1
 * Fix critical bug in debouncing responses between frontend and backend which led to dataloss in case of very fast 
  navigation between units 
