@@ -1,6 +1,6 @@
 import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../config/booklet-config';
+import { BookletConfig } from '../shared/shared.module';
 
 export type TestSessionData = Readonly<TestSessionChange>;
 

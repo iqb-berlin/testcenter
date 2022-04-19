@@ -1,7 +1,7 @@
 import { NavigationLeaveRestrictions, Testlet } from '../classes/test-controller.classes';
 import { TestStateKey, UnitData } from '../interfaces/test-controller.interfaces';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../../config/booklet-config';
+import { BookletConfig } from '../../shared/shared.module';
 import { WatcherLogEntry } from './watcher';
 import { perSequenceId } from './unit-test.util';
 import { testlet, unit } from './test-data-constructors';

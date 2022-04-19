@@ -18,6 +18,7 @@ import { CustomtextService } from './services/customtext/customtext.service';
 import { AlertComponent } from './components/alert/alert.component';
 import { WebsocketBackendService } from './services/websocket-backend/websocket-backend.service';
 import { MainDataService } from './services/maindata/maindata.service';
+import { BookletConfig } from './classes/booklet-config';
 
 @NgModule({
   imports: [
@@ -62,3 +63,4 @@ export { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 export { ConnectionStatus } from './interfaces/websocket-backend.interfaces';
 export { MainDataService } from './services/maindata/maindata.service';
 export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';
+export { BookletConfig } from './classes/booklet-config';

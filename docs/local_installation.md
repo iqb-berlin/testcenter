@@ -1,3 +1,7 @@
+Requirements
+* npm 8
+* node 14
+
 
 cd backend
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"

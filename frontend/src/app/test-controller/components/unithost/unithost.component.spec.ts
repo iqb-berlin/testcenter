@@ -9,9 +9,8 @@ import { UnithostComponent } from './unithost.component';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 import { TestControllerService } from '../../services/test-controller.service';
 import { BackendService } from '../../services/backend.service';
-import { MainDataService } from '../../../shared/shared.module';
+import { MainDataService, BookletConfig } from '../../../shared/shared.module';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../../../config/booklet-config';
 import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
 
 const bookletConfig = new BookletConfig();

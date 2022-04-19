@@ -6,7 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CustomtextService, MainDataService } from '../../shared/shared.module';
+import { CustomtextService, MainDataService, BookletConfig } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
@@ -18,8 +18,6 @@ import {
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { LocalStorage } from '../utils/local-storage.util';
-// eslint-disable-next-line import/extensions
-import { BookletConfig } from '../../config/booklet-config';
 
 @Injectable({
   providedIn: 'root'

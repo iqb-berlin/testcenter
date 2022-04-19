@@ -3,13 +3,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { MainDataService } from '../../shared/shared.module';
+import { MainDataService, BookletConfig } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import {
   Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
 } from '../group-monitor.interfaces';
 // eslint-disable-next-line import/extensions
-import { BookletConfig } from '../../config/booklet-config';
 
 @Injectable()
 export class BookletService {

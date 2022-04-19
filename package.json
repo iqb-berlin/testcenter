@@ -30,7 +30,8 @@
     "broadcasting-service:start": "npx -w broadcasting-service nest start --watch",
     "broadcasting-service:unit-test": "npx -w broadcasting-service jest",
     "broadcasting-service:coverage": "npx -w broadcasting-service jest --coverage",
-    "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs"
+    "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
+    "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces"
   },
   "workspaces": [
     "frontend",

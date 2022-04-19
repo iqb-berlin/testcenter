@@ -4,6 +4,7 @@ const gulp = require('gulp');
 const cliPrint = require('./helper/cli-print');
 
 const docsDir = fs.realpathSync(`${__dirname}'/../docs`);
+const definitionsDir = fs.realpathSync(`${__dirname}'/../definitions`);
 
 exports.testSessionSuperStates = done => {
   cliPrint.headline('SuperStates: Writing HTML documentation');
@@ -37,6 +38,28 @@ exports.testSessionSuperStates = done => {
   done();
 };
 
+exports.bookletConfig = done => {
+  cliPrint.headline('BookletConfig: Writing Markdown documentation');
+
+  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/booklet-config.json`).toString());
+
+  let output = fs.readFileSync(`${docsDir}/src/booklet-config/booklet-config.md`).toString();
+
+  Object.keys(definition)
+    .forEach(configParameter => {
+      output += `\n#### \`${configParameter}\`\n${definition[configParameter].label}\n`;
+      Object.keys(definition[configParameter].options)
+        .forEach(value => {
+          const isDefault = (value === definition[configParameter].defaultvalue) ? '(default)' : '';
+          output += ` * "${value}" ${isDefault} ${definition[configParameter].options[value]}\n`;
+        });
+    });
+
+  fs.writeFileSync(`${docsDir}/dist/booklet-config.md`, output);
+  done();
+};
+
 exports.createDocs = gulp.series(
-  exports.testSessionSuperStates
+  exports.testSessionSuperStates,
+  exports.bookletConfig
 );
