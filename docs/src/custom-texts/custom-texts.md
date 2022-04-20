@@ -11,24 +11,6 @@ This document
 describes the ways to bring the custom texts to the application and lists 
 all possible keys.
 
-### Configuration file on the server
-There is one file on the server where the application looks for custom texts:
-```
-/config/customTexts.json
-``` 
-These custom texts are loaded at (re)start of the application and the replacement starts 
-as soon as possible. This is a simple JSON file with key value pairs. Example:
-```
-{
-    "login_testEndButtonLabel": "Test beenden",
-    "login_bookletSelectPrompt": "Bitte wählen",
-...
-}
-```
-The adminstrator of the server can upload this file. We aim at providing an 
-administration feature of the super-admin section of the application to manage 
-these texts.
-
 ### Configuration via login configuration
 For some tests, the test authority might like to change standard titles, prompts or explanations 
 furthermore depending on the testtaker. For example, the questionnaire for teachers 

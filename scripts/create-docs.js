@@ -87,8 +87,27 @@ exports.testMode = done => {
   done();
 };
 
+exports.customTexts = done => {
+  cliPrint.headline('customTexts: Writing Markdown documentation');
+
+  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/custom-texts.json`).toString());
+
+  let output = fs.readFileSync(`${docsDir}/src/custom-texts/custom-texts.md`, 'utf8').toString();
+
+  Object.keys(definition)
+    .sort()
+    .forEach(k => {
+      output += `|${k}|${definition[k].label}|${definition[k].defaultvalue}|\n`;
+    });
+
+  fs.writeFileSync(`${docsDir}/dist/custom-texts.md`, output, 'utf8');
+
+  done();
+};
+
 exports.createDocs = gulp.series(
   exports.testSessionSuperStates,
   exports.bookletConfig,
-  exports.testMode
+  exports.testMode,
+  exports.customTexts
 );
