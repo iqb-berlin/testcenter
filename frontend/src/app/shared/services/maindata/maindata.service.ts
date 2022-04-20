@@ -52,7 +52,7 @@ export class MainDataService {
   }
 
   static getTestConfig(): KeyValuePairs {
-    const storageEntry = localStorage.getItem(localStorageTestConfigKey);
+    const storageEntry = localStorage.getItem(localStorageTestConfigKey); // TODO why at all?
     if (!storageEntry) {
       return {};
     }
