@@ -89,3 +89,4 @@
 [ ] remove polyfill
 [ ] salt n pepper
 [ ] XML dokumentationen
+[ ] enable     "strictNullChecks": true, is tsconfig

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
@@ -54,13 +54,13 @@ export class MainDataService {
   static getTestConfig(): KeyValuePairs {
     const storageEntry = localStorage.getItem(localStorageTestConfigKey);
     if (!storageEntry) {
-      return null;
+      return {};
     }
     try {
       return JSON.parse(storageEntry as string);
     } catch (e) {
       console.warn('corrupt localStorage testConfig entry');
-      return null;
+      return {};
     }
   }
 
