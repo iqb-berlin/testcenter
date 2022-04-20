@@ -1,5 +1,5 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <form [formGroup]="loginForm" (ngSubmit)="login($event.submitter.id)">
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
     <mat-card fxFlex="0 0 400px">
       <mat-card-title>Anmelden</mat-card-title>
       <mat-card-content *ngIf="mds.appConfig">
@@ -29,7 +29,7 @@
       <mat-card-actions>
         <button id="login" mat-raised-button type="submit" [disabled]="!loginForm.get('name').valid" color="primary">Weiter</button>
         <div fxFlex></div>
-        <button id="admin" mat-raised-button type="submit" [disabled]="loginForm.invalid" color="secondary">Weiter als Admin</button>
+        <button id="admin" mat-raised-button type="button" [disabled]="loginForm.invalid" color="secondary" (click)="this.login('admin')">Weiter als Admin</button>
       </mat-card-actions>
     </mat-card>
   </form>

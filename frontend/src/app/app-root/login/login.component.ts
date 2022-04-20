@@ -1,6 +1,4 @@
-import {
-  Component, Inject, OnDestroy, OnInit
-} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -50,7 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       .subscribe(params => { this.returnTo = params.returnTo; });
   }
 
-  login(loginType: 'admin' | 'login'): void {
+  login(loginType: 'admin' | 'login' = 'login'): void {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name;
     this.mds.setSpinnerOn();
