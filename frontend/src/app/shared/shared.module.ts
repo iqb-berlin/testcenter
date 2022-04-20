@@ -9,16 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { HttpClientModule } from '@angular/common/http';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { ConfirmDialogData } from './interfaces/confirm-dialog.interfaces';
 import { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
-import { MessageDialogData, MessageType } from './interfaces/message-dialog.interfaces';
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
-import { CustomtextService } from './services/customtext/customtext.service';
 import { AlertComponent } from './components/alert/alert.component';
-import { WebsocketBackendService } from './services/websocket-backend/websocket-backend.service';
-import { MainDataService } from './services/maindata/maindata.service';
-import { BookletConfig } from './classes/booklet-config';
 
 @NgModule({
   imports: [
@@ -63,4 +57,5 @@ export { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 export { ConnectionStatus } from './interfaces/websocket-backend.interfaces';
 export { MainDataService } from './services/maindata/maindata.service';
 export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';
-export { BookletConfig } from './classes/booklet-config';
+export { BookletConfig } from './classes/booklet-config.class';
+export { TestMode } from './classes/test-mode.class';

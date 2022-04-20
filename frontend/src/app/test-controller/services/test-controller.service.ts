@@ -16,9 +16,7 @@ import {
   UnitStateData, UnitStateKey, WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
-import { TestMode } from '../../config/test-mode';
-// eslint-disable-next-line import/extensions
-import { BookletConfig } from '../../shared/shared.module';
+import { BookletConfig, TestMode } from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 
 @Injectable({

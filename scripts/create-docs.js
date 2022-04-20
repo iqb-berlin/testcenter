@@ -43,7 +43,7 @@ exports.bookletConfig = done => {
 
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/booklet-config.json`).toString());
 
-  let output = fs.readFileSync(`${docsDir}/src/booklet-config/booklet-config.md`).toString();
+  let output = fs.readFileSync(`${docsDir}/src/booklet-config/booklet-config.md`, 'utf8').toString();
 
   Object.keys(definition)
     .forEach(configParameter => {
@@ -55,11 +55,40 @@ exports.bookletConfig = done => {
         });
     });
 
-  fs.writeFileSync(`${docsDir}/dist/booklet-config.md`, output);
+  fs.writeFileSync(`${docsDir}/dist/booklet-config.md`, output, 'utf8');
+  done();
+};
+
+exports.testMode = done => {
+  cliPrint.headline('TestMode: Writing Markdown documentation');
+
+  const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/test-mode.json`).toString());
+  const modeOptions = JSON.parse(fs.readFileSync(`${definitionsDir}/mode-options.json`).toString());
+
+  let output = fs.readFileSync(`${docsDir}/src/test-mode/test-mode.md`, 'utf8').toString();
+
+  let tableHeader1 = '|  | ';
+  let tableHeader2 = '| :------------- |';
+  Object.keys(definition).forEach(k => {
+    output += `* \`${k}${k === 'RUN-DEMO' ? '` (default): ' : '`: '}${definition[k].label}\n`;
+    tableHeader1 += `\`${k}\` | `;
+    tableHeader2 += ' :-------------: |';
+  });
+  output += `\n\n${tableHeader1}\n${tableHeader2}\n`;
+  Object.keys(modeOptions).forEach(mode => {
+    output += `|${modeOptions[mode]}|`;
+    Object.keys(definition).forEach(k => {
+      output += definition[k].config[mode] ? 'X |' : '  |';
+    });
+    output += '\n';
+  });
+  fs.writeFileSync(`${docsDir}/dist/test-mode.md`, output, 'utf8');
+
   done();
 };
 
 exports.createDocs = gulp.series(
   exports.testSessionSuperStates,
-  exports.bookletConfig
+  exports.bookletConfig,
+  exports.testMode
 );

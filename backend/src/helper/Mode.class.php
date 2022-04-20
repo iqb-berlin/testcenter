@@ -15,6 +15,7 @@ class Mode {
         'monitor-group' => [],
     ];
 
+    // capabilities are defined in /definitions/, this is a digest on what concerns the backend TODO use the /definitions/ maybe
     const capabilities = [
         'run-hot-return' => [
             'monitorable'

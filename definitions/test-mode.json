@@ -1,7 +1,8 @@
 {
-  "DEMO": {
+  "RUN-DEMO": {
     "label": "Nur Ansicht (Demo)",
     "config": {
+      "alwaysNewSession": false,
       "canReview": false,
       "saveResponses": false,
       "forceTimeRestrictions": false,
@@ -15,6 +16,7 @@
   "MONITOR-GROUP": {
     "label": "Testgruppen-Monitor (Demo)",
     "config": {
+      "alwaysNewSession": false,
       "canReview": false,
       "saveResponses": false,
       "forceTimeRestrictions": false,
@@ -25,9 +27,10 @@
       "receiveRemoteCommands": false
     }
   },
-  "HOT": {
+  "RUN-HOT-RETURN": {
     "label": "Durchführung Test/Befragung",
     "config": {
+      "alwaysNewSession": true,
       "canReview": false,
       "saveResponses": true,
       "forceTimeRestrictions": true,
@@ -38,9 +41,24 @@
       "receiveRemoteCommands": true
     }
   },
-  "REVIEW": {
+  "RUN-HOT-RESTART": {
+    "label": "Durchführung Test/Befragung",
+    "config": {
+      "alwaysNewSession": true,
+      "canReview": false,
+      "saveResponses": true,
+      "forceTimeRestrictions": true,
+      "forceNaviRestrictions": true,
+      "presetCode": false,
+      "showTimeLeft": false,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": true
+    }
+  },
+  "RUN-REVIEW": {
     "label": "Prüfdurchgang ohne Speichern",
     "config": {
+      "alwaysNewSession": false,
       "canReview": true,
       "saveResponses": false,
       "forceTimeRestrictions": false,
@@ -51,9 +69,10 @@
       "receiveRemoteCommands": false
     }
   },
-  "TRIAL": {
+  "RUN-TRIAL": {
     "label": "Prüfdurchgang mit Speichern",
     "config": {
+      "alwaysNewSession": false,
       "canReview": false,
       "saveResponses": true,
       "forceTimeRestrictions": true,
@@ -65,3 +84,4 @@
     }
   }
 }
+

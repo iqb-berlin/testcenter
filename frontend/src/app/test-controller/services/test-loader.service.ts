@@ -6,12 +6,13 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import { CustomtextService, MainDataService, BookletConfig } from '../../shared/shared.module';
+import {
+  CustomtextService, MainDataService, BookletConfig, TestMode
+} from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
 } from '../interfaces/test-controller.interfaces';
-import { TestMode } from '../../config/test-mode';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
 } from '../classes/test-controller.classes';

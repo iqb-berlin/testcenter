@@ -1,8 +1,10 @@
 {
+  "alwaysNewSession": "Bie jedem Einloggen wird ein neuer Nutzer angelegt",
   "canReview":  "Es können Reviews abgegeben werden (Kommentare/Einschätzungen zur Unit bzw. zum Test)",
   "saveResponses": "Es werden Antworten und Logs gespeichert.",
   "forceTimeRestrictions": "Alle Zeitbeschränkungen für Testabschnitte werden angewendet.",
   "forceNaviRestrictions": "Alle Navigationsbeschränkungen des Booklets werden angewendet (z. B. erst weiter, wenn vollständig angezeigt).",
+  "monitorable": "Kann im Gruppen-Monitor beobachtet werden",
   "presetCode": "Sollte ein Testabschnitt mit einem Freigabewort geschützt sein, wird dieses bei der Eingabebox schon eingetragen.",
   "showTimeLeft": "Sollte eine Maximalzeit für einen Testabschnitt festgelegt sein, wird die verbleibende Zeit angezeigt, auch wenn die Booklet-Konfiguration dies unterbindet.",
   "showUnitMenu": "Die Seite mit der Aufgaben-Übersicht wird erlaubt, auch wenn das Booklet dies unterbindet.",
