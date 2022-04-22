@@ -173,6 +173,11 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return true;
     }
 
+    const currentUnit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    if (currentUnit && currentUnit.codeRequiringTestlets.length) {
+      return true;
+    }
+
     let newUnit: UnitControllerData = null;
     if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
       const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
