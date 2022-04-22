@@ -80,7 +80,7 @@ export class BookletService {
     const bookletConfig = new BookletConfig();
     bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
     if (bookletConfigElements) {
-      bookletConfig.setFromXml(bookletConfigElements[0]);
+      bookletConfig.setFromXml(bookletConfigElements);
     }
     return bookletConfig;
   }
