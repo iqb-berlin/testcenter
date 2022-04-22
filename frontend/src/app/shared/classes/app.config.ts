@@ -1,6 +1,6 @@
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CustomtextService } from '../services/customtext/customtext.service';
-import customTextsDefault from '../../config/custom-texts.json';
+import customTextsDefault from '../../../../../definitions/custom-texts.json';
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,

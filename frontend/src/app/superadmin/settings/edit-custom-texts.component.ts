@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
-import allCustomTexts from '../../config/custom-texts.json';
+import allCustomTexts from '../../../../../definitions/custom-texts.json';
 import { EditCustomTextComponent } from './edit-custom-text.component';
 import { KeyValuePairs } from '../../app.interfaces';
 
