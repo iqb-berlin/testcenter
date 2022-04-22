@@ -7,6 +7,7 @@ COPY package.json .
 RUN npm install
 
 COPY broadcasting-service /app/broadcasting-service
+COPY definitions /app/definitions
 COPY frontend /app/frontend
 COPY sampledata /app/sampledata
 COPY scripts /app/scripts

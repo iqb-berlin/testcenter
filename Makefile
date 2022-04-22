@@ -106,6 +106,13 @@ docs-broadcasting-service-compodoc:
 docs-api-specs:
 	make run-task-runner task=backend:update-specs
 
+docs-user:
+	make run-task-runner task=create-docs
+
+create-interfaces:
+	make run-task-runner task=create-interfaces
+
+
 #copy-packages:
 #	mkdir -p node_modules
 #	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
