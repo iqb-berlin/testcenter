@@ -1,4 +1,5 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
@@ -168,6 +169,7 @@ class SessionDAOTest extends TestCase {
                 1,
                 'person-token',
                 'xxx',
+                'xxx',
                 1893574800
             )
         );
@@ -328,7 +330,7 @@ class SessionDAOTest extends TestCase {
 
     function test_createPersonSession_correctCode() {
 
-        $result = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code');
+        $result = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 0);
 
         $this->assertEquals(5, $result->getPerson()->getId());
         $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
@@ -341,7 +343,7 @@ class SessionDAOTest extends TestCase {
     function test_createPersonSession_wrongCode() {
 
         $this->expectException("HttpError");
-        $this->dbc->createPersonSession($this->testLoginSession, 'wrong_code');
+        $this->dbc->createPersonSession($this->testLoginSession, 'wrong_code',0);
     }
 
 
@@ -363,7 +365,7 @@ class SessionDAOTest extends TestCase {
         );
 
         $this->expectException("HttpError");
-        $this->dbc->createPersonSession($testLoginSession, 'existing_code');
+        $this->dbc->createPersonSession($testLoginSession, 'existing_code', 0);
     }
 
 
@@ -386,7 +388,7 @@ class SessionDAOTest extends TestCase {
         );
 
         $this->expectException("HttpError");
-        $this->dbc->createPersonSession($testLoginSession, 'existing_code');
+        $this->dbc->createPersonSession($testLoginSession, 'existing_code', 0);
     }
 
 
@@ -410,7 +412,7 @@ class SessionDAOTest extends TestCase {
             )
         );
 
-        $result = $this->dbc->createPersonSession($testLoginSession, 'existing_code');
+        $result = $this->dbc->createPersonSession($testLoginSession, 'existing_code', 0);
 
         $this->assertEquals(5, $result->getPerson()->getId());
         $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
@@ -420,6 +422,17 @@ class SessionDAOTest extends TestCase {
         $this->assertEquals(5, $this->countTableRows('person_sessions'));
     }
 
+
+    function test_getPersonSession_restart() {
+
+        $result1 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 1);
+        $result2 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 2);
+        $this->assertEquals(5, $result1->getPerson()->getId());
+        $this->assertEquals('existing_code/1', $result1->getPerson()->getNameSuffix());
+        $this->assertEquals(6, $result2->getPerson()->getId());
+        $this->assertEquals('existing_code/2', $result2->getPerson()->getNameSuffix());
+        $this->assertEquals(6, $this->countTableRows('person_sessions'));
+    }
 
 
     function test_getPersonSessionByToken_correctToken() {
@@ -601,6 +614,7 @@ class SessionDAOTest extends TestCase {
                 1,
                 'static:person:sample_group_sample_user_xxx',
                 'xxx',
+                'xxx',
                 1893574800
             )
         );
@@ -612,10 +626,10 @@ class SessionDAOTest extends TestCase {
 
     public function test_ownsTest() {
 
-        $result = $this->dbc->ownsTest('person-token', 1);
+        $result = $this->dbc->ownsTest('person-token', "1");
         $this->assertTrue($result);
 
-        $result = $this->dbc->ownsTest('person-of-future-login-token', 1);
+        $result = $this->dbc->ownsTest('person-of-future-login-token', "1");
         $this->assertFalse($result);
     }
 

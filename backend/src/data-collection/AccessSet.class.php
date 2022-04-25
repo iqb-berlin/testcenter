@@ -1,5 +1,6 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
 
 class AccessSet extends DataCollectionTypeSafe {
 
@@ -22,9 +23,12 @@ class AccessSet extends DataCollectionTypeSafe {
 
         $login = $loginWithPerson->getLoginSession()->getLogin();
 
+        $displayName = "{$login->getGroupLabel()}/{$login->getName()}";
+        $displayName .= $loginWithPerson->getPerson()->getNameSuffix() ? '/' . $loginWithPerson->getPerson()->getNameSuffix() : '';
+
         $accessSet = new AccessSet(
             $loginWithPerson->getPerson()->getToken(),
-            "{$login->getGroupLabel()}/{$login->getName()}/{$loginWithPerson->getPerson()->getCode()}",
+            $displayName,
             [],
             $login->getCustomTexts() ?? new stdClass()
         );

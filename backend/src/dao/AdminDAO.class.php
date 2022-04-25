@@ -238,6 +238,7 @@ class AdminDAO extends DAO {
                  logins.group_label,
                  logins.workspace_id,
                  person_sessions.code,
+                 person_sessions.name_suffix,
                  tests.id as "test_id",
                  tests.name as "booklet_name",
                  tests.locked,
@@ -282,6 +283,7 @@ class AdminDAO extends DAO {
                         (int) $testSession['person_id'],
                     '',
                         $testSession['code'],
+                        (string) $testSession['name_suffix'],
                     )
                 ),
                 TimeStamp::fromSQLFormat($testSession['test_timestamp_server']),
@@ -346,7 +348,7 @@ class AdminDAO extends DAO {
             select
                 login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
-                person_sessions.code,
+                person_sessions.name_suffix as code,
                 tests.name as bookletname,
                 units.name as unitname,
                 units.laststate,
@@ -406,7 +408,7 @@ class AdminDAO extends DAO {
             SELECT
 				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
-                person_sessions.code,
+                person_sessions.name_suffix as code,
                 tests.name as bookletname,
                 units.name as unitname,
 				unit_logs.timestamp,
@@ -428,7 +430,7 @@ class AdminDAO extends DAO {
             SELECT
 				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
-                person_sessions.code,
+                person_sessions.name_suffix as code,
                 tests.name as bookletname,
                 '' as unitname,
                 test_logs.timestamp,
@@ -461,7 +463,7 @@ class AdminDAO extends DAO {
             SELECT
 				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
-                person_sessions.code,
+                person_sessions.name_suffix as code,
                 tests.name as bookletname,
                 units.name as unitname,
 				unit_reviews.priority,
@@ -485,7 +487,7 @@ class AdminDAO extends DAO {
             SELECT
 				login_sessions.group_name as groupname,
                 login_sessions.name as loginname,
-                person_sessions.code,
+                person_sessions.name_suffix as code,
                 tests.name as bookletname,
                 '' as unitname,
 				test_reviews.priority,
