@@ -145,6 +145,7 @@ class WorkspaceController extends Controller {
         }
 
         $reports = [];
+        $loginsAffected = false;
         $containsErrors = false;
         foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
@@ -152,6 +153,7 @@ class WorkspaceController extends Controller {
                 /* @var $file XMLFileTesttakers */
                 list($deleted, $added) = self::workspaceDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
                 $file->report('info', "Logins Updated (-$deleted, +$added)");
+                $loginsAffected = true;
             }
 
             if ($file->isValid()) {
@@ -159,6 +161,10 @@ class WorkspaceController extends Controller {
             }
             $reports[$localPath] = $file->getValidationReportSorted();
             $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
+        }
+
+        if ($loginsAffected) {
+            BroadcastService::send('system/clean');
         }
 
         return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);
@@ -199,13 +205,20 @@ class WorkspaceController extends Controller {
         $workspace = new Workspace($workspaceId);
         $deletionReport = $workspace->deleteFiles($filesToDelete);
 
+        $loginsAffected = false;
+
         foreach ($deletionReport['deleted'] as $deletedFile) {
 
             list($type, $name) = explode('/', $deletedFile);
             if ($type === 'Testtakers') {
                 self::workspaceDAO()->deleteLoginSource($workspaceId, $name);
+                $loginsAffected = true;
             }
             self::workspaceDAO()->deleteFileMeta($workspaceId, $name);
+        }
+
+        if ($loginsAffected) {
+            BroadcastService::send('system/clean');
         }
 
         return $response->withJson($deletionReport)->withStatus(207);
