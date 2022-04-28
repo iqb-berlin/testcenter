@@ -38,6 +38,7 @@ final class WorkspaceControllerTest extends TestCase {
     private Report $reportMock;
     private AdminDAO $adminDaoMock;
     private SysChecksFolder $sysChecksFolderMock;
+    private BroadcastService $broadcastingServiceMock;
 
     private string $requestMethod = 'GET';
     private int $workspaceId = 1;
@@ -85,6 +86,7 @@ final class WorkspaceControllerTest extends TestCase {
 
         $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
+        $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
 
         $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
 
@@ -438,6 +440,11 @@ final class WorkspaceControllerTest extends TestCase {
             ->times(2) // two valid files
             ->andReturn();
 
+        $this->broadcastingServiceMock
+            ->expects('send')
+            ->times(1)
+            ->andReturn();
+
         $response = WorkspaceController::deleteFiles(
             RequestCreator::create(
                 'DELETE',
@@ -494,6 +501,11 @@ final class WorkspaceControllerTest extends TestCase {
         $this->workspaceDaoMock
             ->expects('storeFileMeta')
             ->times(2) // two valid files
+            ->andReturn();
+
+        $this->broadcastingServiceMock
+            ->expects('send')
+            ->times(1)
             ->andReturn();
 
         $response = WorkspaceController::postFile(
