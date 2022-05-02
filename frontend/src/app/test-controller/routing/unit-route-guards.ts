@@ -94,7 +94,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 
   private checkAndSolveCompleteness(newUnit: UnitControllerData): Observable<boolean> {
-    const direction = (newUnit && this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
+    const direction = (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
     const reasons = this.checkCompleteness(direction);
     if (!reasons.length) {
       return of(true);
@@ -166,11 +166,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
                 currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean> | boolean {
+    console.log(nextState);
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
       return true;
     }
 
-    if (nextState.url === '/r/route-dispatcher') { // clicking on the IQB-Logo
+    const target = nextState.url.split('/').pop();
+    if (['route-dispatcher', 'status'].indexOf(target) > -1) { // clicking on the IQB-Logo
       return true;
     }
 
@@ -186,6 +188,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
 
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
+
     if (forceNavigation) {
       this.tcs.interruptMaxTimer();
       return of(true);
