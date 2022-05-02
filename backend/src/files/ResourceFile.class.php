@@ -22,6 +22,10 @@ class ResourceFile extends File {
         if ($this->isPlayer()) {
             $this->validatePlayer();
         }
+
+        if ($this->isPackage()) {
+            $this->validatePackage();
+        }
     }
 
 
@@ -31,7 +35,17 @@ class ResourceFile extends File {
         if (!isset($pathInfo['extension'])) {
             return false;
         }
-        return in_array(strtoupper($pathInfo['extension']), ['HTML']);
+        return strtoupper($pathInfo['extension']) == 'HTML';
+    }
+
+
+    public function isPackage(): bool {
+
+        $pathInfo = pathinfo($this->getPath());
+        if (!isset($pathInfo['extension'])) {
+            return false;
+        }
+        return strtoupper($pathInfo['extension']) == 'VOPGK';
     }
 
 
@@ -213,6 +227,47 @@ class ResourceFile extends File {
                 )
             ) {
                 $this->report('warning', "Non-Standard-Filename: `{$this->meta->playerId}-{$this->meta->version}.html` expected.");
+            }
+        }
+    }
+
+
+    public function validatePackage(): void {
+
+        $contentsDirName = dirname($this->getPath()) . '/.' . $this->getName();
+        if (file_exists($contentsDirName) and !is_dir($contentsDirName)) {
+            unlink($contentsDirName);
+        }
+
+        if (!file_exists($contentsDirName)) {
+            try {
+                ZIP::extract($this->getPath(), $contentsDirName);
+            } catch(Exception $e) {
+                $this->report('error', "Could not extract package: {$e->getMessage()}");
+                return;
+            }
+        }
+
+        if (!file_exists("$contentsDirName/index.json")) {
+            $this->report('error', "No index file");
+            return;
+        }
+
+        try {
+            $index = JSON::decode(file_get_contents("$contentsDirName/index.json"));
+        } catch(Exception $e) {
+            $this->report('error', "Invalid index file: {$e->getMessage()}");
+            return;
+        }
+
+        foreach ($index as $file => $checksum) {
+
+            if (!file_exists("$contentsDirName/$file")) {
+                $this->report('error', "File `$file` does not exist");
+            }
+
+            if (md5_file("$contentsDirName/$file") !== $checksum) {
+                $this->report('error', "Wrong checksum of file `$file`");
             }
         }
     }

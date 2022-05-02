@@ -93,6 +93,10 @@ class Workspace {
 
             foreach ($filePaths as $filePath) {
 
+                if (!is_file($filePath)) {
+                    continue;
+                }
+
                 $files[] = new File($filePath, $type);
             }
         }
@@ -314,11 +318,29 @@ class Workspace {
     }
 
 
+    public function getResource(string $findId, bool $allowSimilarVersion = false): File {
+
+        $dirToSearch = $this->getOrCreateSubFolderPath('Resource');
+
+        if (file_exists("$dirToSearch/$findId")) {
+
+            return File::get("$dirToSearch/$findId", 'Resource');
+        }
+        return $this->findFileById('Resource', $findId, $allowSimilarVersion);
+    }
+
+
+    // TODO fetch from DB instead of searching
     public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
         $dirToSearch = $this->getOrCreateSubFolderPath($type);
         $bestMatch = null;
         $version = Version::guessFromFileName($findId)['full'];
+
+        if (file_exists("$dirToSearch/$findId")) {
+
+            File::get("$dirToSearch/$findId", $type);
+        }
 
         foreach (Folder::glob($dirToSearch, "*.*", true) as $fullFilePath) {
 

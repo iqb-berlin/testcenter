@@ -128,12 +128,35 @@ class TestController extends Controller {
             $authToken = self::sessionDAO()->getToken($tokenString, ['person']);
         }
 
-
         $resourceName = $request->getAttribute('resource_name');
-        $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
+        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $resourceFile = $workspaceController->findFileById('Resource', $resourceName, $skipSubVersions);
+        $resourceFile = $workspaceController->getResource($resourceName, $allowSimilarVersion);
+
+        return $response
+            ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
+            ->withHeader('Content-type', 'application/octet-stream') // TODO find out why it only works with pdf or octet-stream
+            ->withHeader('Content-length', $resourceFile->getSize());
+    }
+
+
+    public static function getResourceFromPackage(Request $request, Response $response, $args): Response {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        if (!$authToken) {
+            $tokenString = $request->getAttribute('auth_token');
+            $authToken = self::sessionDAO()->getToken($tokenString, ['person']);
+        }
+
+        $packageName = $request->getAttribute('resource_name');
+        $path = explode('/', $args['path']);
+        $resourceName = implode('/', $path);
+
+        $workspaceController = new Workspace($authToken->getWorkspaceId());
+        $resourceFile = $workspaceController->getResource($resourceName, false);
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
