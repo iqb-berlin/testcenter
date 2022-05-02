@@ -275,8 +275,11 @@ try  {
     }
 
 
-    CLI::h2("Flashing Broadcasting-Service if running");
-    BroadcastService::send('system/clean');
+    $bsStatus = BroadcastService::getStatus();
+    if ($bsStatus['status'] == 'online') {
+        CLI::h2("Flashing Broadcasting-Service");
+        BroadcastService::send('system/clean');
+    }
 
     CLI::h1("Ready.");
 
