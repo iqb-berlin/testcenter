@@ -20,7 +20,7 @@ php backend/initialize.php \
 --skip_db_integrity_check=true
 expect_init_script_ok
 
-echo_h2 "12.3.2 misstakenly handles login-names case-insensitive"
+echo_h2 "12.3.2 mistakenly handles login-names case-insensitive"
 echo "<Testtakers><Metadata><Description>UC</Description></Metadata><Group id=\"X\" label=\"x\"><Login mode=\"run-hot-restart\" name=\"x\"><Booklet>BOOKLET.SAMPLE-1</Booklet></Login></Group></Testtakers>" > vo_data/ws_1/Testtakers/uc.xml
 echo "<Testtakers><Metadata><Description>UC</Description></Metadata><Group id=\"x\" label=\"x\"><Login mode=\"run-hot-restart\" name=\"x\"><Booklet>BOOKLET.SAMPLE-1</Booklet></Login></Group></Testtakers>" > vo_data/ws_1/Testtakers/lc.xml
 php backend/initialize.php
@@ -28,3 +28,5 @@ expect_init_script_failed
 
 echo_h2 "But 12.3.3 should handle it case-sensitive";
 take_current_version
+php backend/initialize.php
+expect_init_script_ok
