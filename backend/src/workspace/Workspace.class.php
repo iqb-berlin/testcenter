@@ -137,6 +137,11 @@ class Workspace {
                 continue;
             }
 
+            if ($this->postProcessFileDeletion($validatedFile)) {
+
+                $report['error'][] = $fileToDelete;
+            }
+
             if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
 
                 $report['deleted'][] = $fileToDelete;
@@ -148,6 +153,30 @@ class Workspace {
         }
 
         return $report;
+    }
+
+
+    private function postProcessFileDeletion(File $file): bool {
+
+        try {
+
+            if ($file->getType() == 'Testtakers') {
+
+                $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file->getName());
+            }
+
+            if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+
+                $file->uninstallPackage();
+            }
+
+            $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file->getName());
+
+        } catch (Exception $e) {
+
+            return false;
+        }
+        return true;
     }
 
 
@@ -208,6 +237,8 @@ class Workspace {
 
                 $this->sortUnsortedFile($localFilePath, $file);
             }
+
+            $this->storeFileMeta($file);
 
             $filesAfterSorting[$localFilePath] = $file;
         }
@@ -417,19 +448,17 @@ class Workspace {
 
             $file->crossValidate($validator);
 
-            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
-                /* @var $file XMLFileTesttakers */
-                list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
-                $loginStats['deleted'] += $deleted;
-                $loginStats['added'] += $added;
+            if (!$file->isValid()) {
+
+                $invalidCount++;
+                continue;
             }
 
-            if ($file->isValid()) {
-                $this->workspaceDAO->storeFileMeta($this->getId(), $file);
-                $typeStats[$file->getType()] += 1;
-            } else {
-                $invalidCount++;
-            }
+            $stats = $this->storeFileMeta($file);
+            $loginStats['deleted'] += $stats['logins_deleted'];
+            $loginStats['added'] += $stats['logins_added'];
+
+            $typeStats[$file->getType()] += 1;
         }
 
         return [
@@ -437,5 +466,45 @@ class Workspace {
             'invalid' => $invalidCount,
             'logins' => $loginStats
         ];
+    }
+
+
+    public function storeFileMeta(File $file): ?array {
+
+        $stats = [
+            'logins_deleted' => 0,
+            'logins_added' => 0
+        ];
+
+        if (!$file->isValid()) {
+
+            return null;
+        }
+
+        if ($file->getType() == 'Testtakers') {
+
+            /* @var $file XMLFileTesttakers */
+            list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
+            $stats['logins_deleted'] = $deleted;
+            $stats['logins_added'] = $added;
+        }
+
+        if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+
+            ZIP::forEachFile(
+                $file->getPath(),
+                function(string $fileName, $fileStream) use ($file) {
+
+                    if ($fileName == 'index.json') {
+                        return;
+                    }
+                    $this->workspaceDAO->storePackageFile($this->getId(), $file, $fileName, $fileStream);
+                }
+            );
+        }
+
+        $this->workspaceDAO->storeFileMeta($this->getId(), $file);
+
+        return $stats;
     }
 }

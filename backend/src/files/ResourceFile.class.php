@@ -234,33 +234,76 @@ class ResourceFile extends File {
 
     public function validatePackage(): void {
 
-        $contentsDirName = dirname($this->getPath()) . '/.' . $this->getName();
-        if (file_exists($contentsDirName) and !is_dir($contentsDirName)) {
-            unlink($contentsDirName);
+        $this->readPackageIndex();
+    }
+
+
+    private function readPackageIndex(): array {
+
+//        $contentsDirName = $this->getPackageContentPath();
+//        if (!file_exists("$contentsDirName/index.json")) {
+//            $this->report('error', "No index file");
+//            return [];
+//        }
+//
+        try {
+
+            $indexFileContent = ZIP::readFile($this->getPath(), 'index.json');
+            $index = JSON::decode($indexFileContent, true);
+
+        } catch(Exception $e) {
+
+            $this->report('error', "Could not read index file: {$e->getMessage()}");
+            return [];
         }
 
-        if (!file_exists($contentsDirName)) {
-            try {
-                ZIP::extract($this->getPath(), $contentsDirName);
-            } catch(Exception $e) {
-                $this->report('error', "Could not extract package: {$e->getMessage()}");
-                return;
-            }
-        }
 
-        if (!file_exists("$contentsDirName/index.json")) {
-            $this->report('error', "No index file");
+
+
+        $this->report('info', "Contains " . count((array) $index) . " files.");
+        $this->description = 'some desc';
+        $this->label = 'some label';
+
+        return $index;
+    }
+
+
+    private function getPackageContentPath(): string {
+
+        return dirname($this->getPath()) . '/' . basename($this->getName(), '.vopgk');
+    }
+
+
+    public function getPackageName(): string {
+
+        return basename($this->getName(), '.vopgk');
+    }
+
+    public function installPackage(): void {
+
+        $contentsDirName = $this->getPackageContentPath();
+
+        try {
+            $this->uninstallPackage();
+
+        } catch(Exception $e) {
+
+            $this->report('error', "Could not delete package files: {$e->getMessage()}");
             return;
         }
 
         try {
-            $index = JSON::decode(file_get_contents("$contentsDirName/index.json"));
+            ZIP::extract($this->getPath(), $contentsDirName);
+
         } catch(Exception $e) {
-            $this->report('error', "Invalid index file: {$e->getMessage()}");
+
+            $this->report('error', "Could not extract package: {$e->getMessage()}");
             return;
         }
 
-        foreach ($index as $file => $checksum) {
+        $files = $this->readPackageIndex();
+
+        foreach ($files as $file => $checksum) {
 
             if (!file_exists("$contentsDirName/$file")) {
                 $this->report('error', "File `$file` does not exist");
@@ -268,6 +311,24 @@ class ResourceFile extends File {
 
             if (md5_file("$contentsDirName/$file") !== $checksum) {
                 $this->report('error', "Wrong checksum of file `$file`");
+            }
+        }
+
+        if (!$this->isValid()) {
+
+            unlink($contentsDirName);
+        }
+    }
+
+
+    public function uninstallPackage(): void {
+
+        $contentsDirName = $this->getPackageContentPath();
+        if (file_exists($contentsDirName)) {
+            if (is_dir($contentsDirName)) {
+                Folder::deleteContentsRecursive($contentsDirName);
+            } else {
+                unlink($contentsDirName);
             }
         }
     }
