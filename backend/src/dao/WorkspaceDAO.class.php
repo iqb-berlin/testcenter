@@ -218,13 +218,15 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getPackageFile(int $workspaceId, string $package, string $fileName) { // return type resource does not exist
+    public function getPackageFile(int $workspaceId, string $package, string $fileName): string {
 
         $sqlStatement = $this->pdoDBhandle->prepare("select content from files where workspace_id= ? and package= ? and name = ?");
         $sqlStatement->execute([$workspaceId, $package, $fileName]);
         $sqlStatement->bindColumn(1, $lob, PDO::PARAM_LOB);
         $sqlStatement->fetch(PDO::FETCH_BOUND);
-//        print_r($lob); die();
+
+        // unfortunately MySQl does not support streams, so we retrieve the file as string
+        // TODO make this more efficient and use less memory
         return $lob;
     }
 }
