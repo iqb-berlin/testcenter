@@ -9,13 +9,15 @@ class XMLFileUnit extends XMLFile {
 
     protected int $totalSize = 0;
     protected string $playerId = '';
+    private array $dependencies = [];
 
     public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
 
         parent::__construct($path, $validate, $isRawXml);
 
         if ($this->isValid()) {
-            $this->playerId = $this->getPlayerId();
+            $this->playerId = $this->readPlayerId();
+            $this->dependencies = $this->readDependencies();
         }
     }
 
@@ -73,6 +75,11 @@ class XMLFileUnit extends XMLFile {
     }
 
     public function getPlayerId(): string {
+
+        return $this->playerId;
+    }
+
+    public function readPlayerId(): string {
 
         if (!$this->isValid()) {
             return '';
@@ -133,5 +140,22 @@ class XMLFileUnit extends XMLFile {
         $meta = parent::getSpecialInfo();
         $meta->totalSize = $this->getTotalSize();
         return $meta;
+    }
+
+    public function getDependencies(): array {
+
+        return $this->dependencies;
+    }
+
+    private function readDependencies(): array {
+
+        if (!$this->isValid()) {
+            return [];
+        }
+
+        return array_map(
+            function($e) { return (string) $e;},
+            $this->xml->xpath('/Unit/Dependencies/Package')
+        );
     }
 }

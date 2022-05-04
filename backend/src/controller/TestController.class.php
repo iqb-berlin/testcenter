@@ -96,11 +96,26 @@ class TestController extends Controller {
         // TODO each part could have a different type
         $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
 
+        $dependencies = [
+            [
+                'name' => $unitFile->getPlayerId(),
+                'type' => 'player'
+            ]
+        ];
+
+        foreach ($unitFile->getDependencies() as $dep) {
+            $dependencies[] = [
+                'name' => $dep,
+                'type' => 'package'
+            ];
+        }
+
         $unit = [
             'state' => (object) self::testDAO()->getUnitState($testId, $unitAlias),
             'dataParts' => (object) $unitData['dataParts'],
             'unitStateDataType' => $unitData['dataType'],
             'playerId' => $unitFile->getPlayerId(),
+            'dependencies' => $dependencies
         ];
 
         $definitionRef = $unitFile->getDefinitionRef();
