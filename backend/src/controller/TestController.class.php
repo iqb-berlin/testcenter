@@ -169,13 +169,13 @@ class TestController extends Controller {
         $packageName = $request->getAttribute('package_name');
         $resourceName = $args['path'];
 
-        $size = self::workspaceDAO()->getPackageFileSize($authToken->getWorkspaceId(), $packageName, $resourceName);
-        $content = self::workspaceDAO()->getPackageFile($authToken->getWorkspaceId(), $packageName, $resourceName);
+        $workspaceController = new Workspace($authToken->getWorkspaceId());
+        $resourceFile = $workspaceController->getPackageFilePath($packageName, $resourceName);
 
         return $response
-            ->withHeader('Content-type', 'application/octet-stream') // TODO find out why it only works with pdf or octet-stream
-            ->withHeader('Content-length', $size)
-            ->write($content);
+            ->withBody(new Stream(fopen($resourceFile, 'rb')))
+            ->withHeader('Content-type', 'application/octet-stream')
+            ->withHeader('Content-length', filesize($resourceFile));
     }
 
 

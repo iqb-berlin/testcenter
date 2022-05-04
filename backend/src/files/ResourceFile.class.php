@@ -300,24 +300,6 @@ class ResourceFile extends File {
             $this->report('error', "Could not extract package: {$e->getMessage()}");
             return;
         }
-
-        $files = $this->readPackageIndex();
-
-        foreach ($files as $file => $checksum) {
-
-            if (!file_exists("$contentsDirName/$file")) {
-                $this->report('error', "File `$file` does not exist");
-            }
-
-            if (md5_file("$contentsDirName/$file") !== $checksum) {
-                $this->report('error', "Wrong checksum of file `$file`");
-            }
-        }
-
-        if (!$this->isValid()) {
-
-            unlink($contentsDirName);
-        }
     }
 
 

@@ -491,20 +491,20 @@ class Workspace {
 
         if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
 
-            ZIP::forEachFile(
-                $file->getPath(),
-                function(string $fileName, $fileStream) use ($file) {
-
-                    if ($fileName == 'index.json') {
-                        return;
-                    }
-                    $this->workspaceDAO->storePackageFile($this->getId(), $file, $fileName, $fileStream);
-                }
-            );
+            $file->installPackage();
         }
 
         $this->workspaceDAO->storeFileMeta($this->getId(), $file);
 
         return $stats;
+    }
+
+    public function getPackageFilePath($packageName, $resourceName): string {
+
+        $path = $this->getWorkspacePath() . "/Resource/$packageName/$resourceName";
+        if (!file_exists($path)) {
+            throw new HttpError("File of package `$packageName` not found: `$resourceName` ($path)");
+        }
+        return $path;
     }
 }
