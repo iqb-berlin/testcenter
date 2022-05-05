@@ -234,37 +234,27 @@ class ResourceFile extends File {
 
     public function validatePackage(): void {
 
-        $this->readPackageIndex();
-    }
-
-
-    private function readPackageIndex(): array {
-
-//        $contentsDirName = $this->getPackageContentPath();
-//        if (!file_exists("$contentsDirName/index.json")) {
-//            $this->report('error', "No index file");
-//            return [];
-//        }
-//
         try {
 
-            $indexFileContent = ZIP::readFile($this->getPath(), 'index.json');
-            $index = JSON::decode($indexFileContent, true);
+            $meta = ZIP::readMeta($this->getPath());
 
-        } catch(Exception $e) {
+        } catch (Exception $e) {
 
-            $this->report('error', "Could not read index file: {$e->getMessage()}");
-            return [];
+            $this->report('error', "Could not read archive: {$e->getMessage()}");
         }
 
+        foreach ($meta['list'] as $packagePath) {
 
+            if (!file_exists("{$this->getPackageContentPath()}/$packagePath")) {
 
+                $this->report('error', "Package file missing: $packagePath");
+            }
+        }
 
-        $this->report('info', "Contains " . count((array) $index) . " files.");
-        $this->description = 'some desc';
-        $this->label = 'some label';
+        $this->meta->description = $meta['comment'];
+        $this->description = $meta['comment'];
 
-        return $index;
+        $this->report('info', "Contains {$meta['count']} files.");
     }
 
 
