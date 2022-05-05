@@ -243,14 +243,6 @@ class ResourceFile extends File {
             $this->report('error', "Could not read archive: {$e->getMessage()}");
         }
 
-        foreach ($meta['list'] as $packagePath) {
-
-            if (!file_exists("{$this->getPackageContentPath()}/$packagePath")) {
-
-                $this->report('error', "Package file missing: $packagePath");
-            }
-        }
-
         $this->meta->description = $meta['comment'];
         $this->description = $meta['comment'];
 
@@ -299,6 +291,7 @@ class ResourceFile extends File {
         if (file_exists($contentsDirName)) {
             if (is_dir($contentsDirName)) {
                 Folder::deleteContentsRecursive($contentsDirName);
+                rmdir($contentsDirName);
             } else {
                 unlink($contentsDirName);
             }

@@ -20,17 +20,10 @@ class ZIP {
         }
 
         try {
-            $names = [];
-
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-
-                $names[] = $zip->getNameIndex($i);
-            }
 
             return [
                 "comment" =>  $zip->getArchiveComment(ZipArchive::FL_UNCHANGED),
                 "count" => $zip->numFiles,
-                "list" => $names
             ];
 
         } catch (Exception $exception) {
