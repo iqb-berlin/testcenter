@@ -45,7 +45,7 @@
         <xs:element name="Dependencies">
           <xs:complexType>
             <xs:choice maxOccurs="unbounded" minOccurs="0">
-              <xs:element type="xs:string" name="Package" maxOccurs="unbounded" minOccurs="0"/>
+              <xs:element type="xs:string" name="File" maxOccurs="unbounded" minOccurs="0"/>
             </xs:choice>
           </xs:complexType>
         </xs:element>

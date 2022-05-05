@@ -54,17 +54,22 @@ class XMLFileUnit extends XMLFile {
 
         $definitionRef = $this->getDefinitionRef();
 
-        if (!$definitionRef) {
-            return;
+        $resources = $this->getResources();
+
+        if ($definitionRef) {
+            $resources[] = $definitionRef;
         }
 
-        $resourceId = FileName::normalize($definitionRef, false);
-        $resource = $validator->getResource($resourceId, false);
-        if ($resource != null) {
-            $resource->addUsedBy($this);
-            $this->totalSize += $resource->getSize();
-        } else {
-            $this->report('error', "definitionRef `$definitionRef` not found");
+        foreach ($resources as $resourceName) {
+
+            $resourceId = FileName::normalize($resourceName, false);
+            $resource = $validator->getResource($resourceId, false);
+            if ($resource != null) {
+                $resource->addUsedBy($this);
+                $this->totalSize += $resource->getSize(); // TODO also for additional resources?
+            } else {
+                $this->report('error', "Resource `$resourceName` not found");
+            }
         }
     }
 
@@ -74,10 +79,12 @@ class XMLFileUnit extends XMLFile {
         return $this->totalSize;
     }
 
+
     public function getPlayerId(): string {
 
         return $this->playerId;
     }
+
 
     public function readPlayerId(): string {
 
@@ -125,6 +132,16 @@ class XMLFileUnit extends XMLFile {
 
         $definitionRefNodes = $this->xml->xpath('/Unit/DefinitionRef');
         return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
+    }
+
+
+    public function getResources(): array {
+
+        $resourceNodes = $this->xml->xpath('/Unit/Dependencies/File');
+        return array_map(
+            function(SimpleXMLElement $fileElem) { return (string) $fileElem; },
+            $resourceNodes
+        );
     }
 
 
