@@ -1,6 +1,6 @@
 {
   "name": "iqb-testcenter",
-  "version": "13.0.0",
+  "version": "13.0.7",
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
@@ -31,7 +31,12 @@
     "broadcasting-service:unit-test": "npx -w broadcasting-service jest",
     "broadcasting-service:coverage": "npx -w broadcasting-service jest --coverage",
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
-    "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces"
+    "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
+    "tag-prepare": "bash -c 'npx gulp --gulpfile=./scripts/tag.js tag --options $0'",
+    "tag-prepare-patch": "npx gulp --gulpfile=./scripts/tag.js tag --option patch",
+    "tag-prepare-test": "npx gulp --gulpfile=./scripts/tag.js tag --option patch",
+    "tag-revoke": "npx gulp --gulpfile=./scripts/tag.js tagRevoke",
+    "tag-release": "npx gulp --gulpfile=./scripts/tag.js tagCommitRelease"
   },
   "workspaces": [
     "frontend",
@@ -70,14 +75,16 @@
     ]
   },
   "devDependencies": {
+    "@bytestream/gulp-archiver": "~2.1.0",
     "@compodoc/compodoc": "^1.1.11",
     "@iqb/eslint-config": "1.0.2",
     "@types/jest": "~27.4.1",
     "dredd": "^14.0.0",
-    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-html": "~6.2.0",
     "fs-extra": "^10.0.1",
     "gulp": "^4.0.2",
-    "gulp-yaml-merge": "^2.0.0",
+    "gulp-download2": "~1.1.0",
+    "gulp-yaml-merge": "~2.0.0",
     "ini": ">=1.3.6",
     "is-promise": "^4.0.0",
     "json-pointer": ">=0.6.1",

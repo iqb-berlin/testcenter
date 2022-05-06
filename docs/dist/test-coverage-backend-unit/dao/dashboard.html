@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/backend/src/dao</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="../_css/nv.d3.min.css" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/backend/src</a></li>
+         <li class="breadcrumb-item"><a href="index.html">dao</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="InitDAO.class.php.html#6">InitDAO</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#6">TestDAO</a></td><td class="text-right">48%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="InitDAO.class.php.html#6">InitDAO</a></td><td class="text-right">1482</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#6">TestDAO</a></td><td class="text-right">260</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="TestDAO.class.php.html#419"><abbr title="TestDAO::setCommandExecuted">setCommandExecuted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#304"><abbr title="InitDAO::setDBSchemaVersion">setDBSchemaVersion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#385"><abbr title="TestDAO::setTestRunning">setTestRunning</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#373"><abbr title="TestDAO::addTestLog">addTestLog</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#352"><abbr title="TestDAO::addUnitLog">addUnitLog</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#258"><abbr title="TestDAO::changeTestLockStatus">changeTestLockStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#245"><abbr title="TestDAO::lockTest">lockTest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#132"><abbr title="TestDAO::getTestSession">getTestSession</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#102"><abbr title="TestDAO::addUnitReview">addUnitReview</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#85"><abbr title="TestDAO::addTestReview">addTestReview</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#66"><abbr title="TestDAO::isTestLocked">isTestLocked</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#26"><abbr title="TestDAO::getOrCreateTest">getOrCreateTest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#9"><abbr title="TestDAO::getBookletName">getBookletName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SuperAdminDAO.class.php.html#187"><abbr title="SuperAdminDAO::deleteUsers">deleteUsers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#352"><abbr title="InitDAO::createSampleMetaData">createSampleMetaData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AdminDAO.class.php.html#186"><abbr title="AdminDAO::hasMonitorAccessToWorkspace">hasMonitorAccessToWorkspace</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#329"><abbr title="InitDAO::getDBContentDump">getDBContentDump</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#260"><abbr title="InitDAO::installPatches">installPatches</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#131"><abbr title="InitDAO::addWorkspaceToAdmin">addWorkspaceToAdmin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#20"><abbr title="InitDAO::createSampleLoginsReviewsLogs">createSampleLoginsReviewsLogs</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#56"><abbr title="InitDAO::createSampleExpiredSessions">createSampleExpiredSessions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#79"><abbr title="InitDAO::createSampleMonitorSessions">createSampleMonitorSessions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#113"><abbr title="InitDAO::createAdmin">createAdmin</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#233"><abbr title="InitDAO::createWorkspaceIfMissing">createWorkspaceIfMissing</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#123"><abbr title="InitDAO::createWorkspace">createWorkspace</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#146"><abbr title="InitDAO::clearDb">clearDb</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#171"><abbr title="InitDAO::getDbStatus">getDbStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#203"><abbr title="InitDAO::getTableStatus">getTableStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#217"><abbr title="InitDAO::createSampleCommands">createSampleCommands</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#226"><abbr title="InitDAO::adminExists">adminExists</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#272"><abbr title="TestDAO::getOrCreateUnitId">getOrCreateUnitId</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="SuperAdminDAO.class.php.html#34"><abbr title="SuperAdminDAO::getUserByName">getUserByName</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="AdminDAO.class.php.html#314"><abbr title="AdminDAO::getUnitState">getUnitState</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="AdminDAO.class.php.html#47"><abbr title="AdminDAO::createAdminToken">createAdminToken</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#172"><abbr title="TestDAO::updateTestState">updateTestState</abbr></a></td><td class="text-right">88%</td></tr>
+       <tr><td><a href="SuperAdminDAO.class.php.html#156"><abbr title="SuperAdminDAO::createUser">createUser</abbr></a></td><td class="text-right">88%</td></tr>
+       <tr><td><a href="AdminDAO.class.php.html#560"><abbr title="AdminDAO::storeCommand">storeCommand</abbr></a></td><td class="text-right">88%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="InitDAO.class.php.html#171"><abbr title="InitDAO::getDbStatus">getDbStatus</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#260"><abbr title="InitDAO::installPatches">installPatches</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#146"><abbr title="InitDAO::clearDb">clearDb</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#329"><abbr title="InitDAO::getDBContentDump">getDBContentDump</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#419"><abbr title="TestDAO::setCommandExecuted">setCommandExecuted</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#203"><abbr title="InitDAO::getTableStatus">getTableStatus</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#304"><abbr title="InitDAO::setDBSchemaVersion">setDBSchemaVersion</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#66"><abbr title="TestDAO::isTestLocked">isTestLocked</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#132"><abbr title="TestDAO::getTestSession">getTestSession</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#373"><abbr title="TestDAO::addTestLog">addTestLog</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="InitDAO.class.php.html#233"><abbr title="InitDAO::createWorkspaceIfMissing">createWorkspaceIfMissing</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#352"><abbr title="TestDAO::addUnitLog">addUnitLog</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#258"><abbr title="TestDAO::changeTestLockStatus">changeTestLockStatus</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SuperAdminDAO.class.php.html#187"><abbr title="SuperAdminDAO::deleteUsers">deleteUsers</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#9"><abbr title="TestDAO::getBookletName">getBookletName</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#26"><abbr title="TestDAO::getOrCreateTest">getOrCreateTest</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="SuperAdminDAO.class.php.html#156"><abbr title="SuperAdminDAO::createUser">createUser</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="AdminDAO.class.php.html#47"><abbr title="AdminDAO::createAdminToken">createAdminToken</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#172"><abbr title="TestDAO::updateTestState">updateTestState</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="AdminDAO.class.php.html#560"><abbr title="AdminDAO::storeCommand">storeCommand</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="TestDAO.class.php.html#272"><abbr title="TestDAO::getOrCreateUnitId">getOrCreateUnitId</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="SuperAdminDAO.class.php.html#34"><abbr title="SuperAdminDAO::getUserByName">getUserByName</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="AdminDAO.class.php.html#314"><abbr title="AdminDAO::getUnitState">getUnitState</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 9.2.14</a> using <a href="https://secure.php.net/" target="_top">PHP 7.4.22</a> and <a href="https://phpunit.de/">PHPUnit 9.5.16</a> at Fri May 6 11:02:03 UTC 2022.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/jquery.min.js" type="text/javascript"></script>
+  <script src="../_js/d3.min.js" type="text/javascript"></script>
+  <script src="../_js/nv.d3.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([1,0,0,0,0,1,0,0,0,0,3,2], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([30,0,0,0,0,0,0,1,1,5,1,70], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[95.83333333333334,40,"<a href=\"AdminDAO.class.php.html#6\">AdminDAO<\/a>"],[100,24,"<a href=\"DAO.class.php.html#6\">DAO<\/a>"],[0,38,"<a href=\"InitDAO.class.php.html#6\">InitDAO<\/a>"],[99.34640522875817,33,"<a href=\"SessionDAO.class.php.html#6\">SessionDAO<\/a>"],[95.50561797752809,41,"<a href=\"SuperAdminDAO.class.php.html#6\">SuperAdminDAO<\/a>"],[48.31460674157304,40,"<a href=\"TestDAO.class.php.html#6\">TestDAO<\/a>"],[100,15,"<a href=\"WorkspaceDAO.class.php.html#6\">WorkspaceDAO<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,2,"<a href=\"AdminDAO.class.php.html#8\">AdminDAO::getAdminAccessSet<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#33\">AdminDAO::refreshAdminToken<\/a>"],[85.71428571428571,3,"<a href=\"AdminDAO.class.php.html#47\">AdminDAO::createAdminToken<\/a>"],[100,4,"<a href=\"AdminDAO.class.php.html#65\">AdminDAO::getUserByNameAndPassword<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#89\">AdminDAO::deleteTokensByUser<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#98\">AdminDAO::storeToken<\/a>"],[100,2,"<a href=\"AdminDAO.class.php.html#114\">AdminDAO::getAdmin<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#142\">AdminDAO::deleteResultData<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#154\">AdminDAO::getWorkspaces<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#168\">AdminDAO::hasAdminAccessToWorkspace<\/a>"],[0,1,"<a href=\"AdminDAO.class.php.html#186\">AdminDAO::hasMonitorAccessToWorkspace<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#203\">AdminDAO::getWorkspaceRole<\/a>"],[100,6,"<a href=\"AdminDAO.class.php.html#221\">AdminDAO::getTestSessions<\/a>"],[80,2,"<a href=\"AdminDAO.class.php.html#314\">AdminDAO::getUnitState<\/a>"],[100,2,"<a href=\"AdminDAO.class.php.html#339\">AdminDAO::getResponseReportData<\/a>"],[100,2,"<a href=\"AdminDAO.class.php.html#379\">AdminDAO::getResponseDataParts<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#399\">AdminDAO::getLogReportData<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#454\">AdminDAO::getReviewReportData<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#513\">AdminDAO::getResultStats<\/a>"],[88.88888888888889,3,"<a href=\"AdminDAO.class.php.html#560\">AdminDAO::storeCommand<\/a>"],[100,1,"<a href=\"AdminDAO.class.php.html#585\">AdminDAO::getTest<\/a>"],[100,2,"<a href=\"AdminDAO.class.php.html#594\">AdminDAO::getGroup<\/a>"],[100,1,"<a href=\"DAO.class.php.html#36\">DAO::__construct<\/a>"],[100,2,"<a href=\"DAO.class.php.html#47\">DAO::__destruct<\/a>"],[100,5,"<a href=\"DAO.class.php.html#56\">DAO::_<\/a>"],[100,2,"<a href=\"DAO.class.php.html#77\">DAO::randomToken<\/a>"],[100,3,"<a href=\"DAO.class.php.html#91\">DAO::runFile<\/a>"],[100,1,"<a href=\"DAO.class.php.html#112\">DAO::getDBType<\/a>"],[100,2,"<a href=\"DAO.class.php.html#118\">DAO::getDBSchemaVersion<\/a>"],[100,3,"<a href=\"DAO.class.php.html#132\">DAO::getMeta<\/a>"],[100,2,"<a href=\"DAO.class.php.html#147\">DAO::setMeta<\/a>"],[100,3,"<a href=\"DAO.class.php.html#175\">DAO::getTestFullState<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#20\">InitDAO::createSampleLoginsReviewsLogs<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#56\">InitDAO::createSampleExpiredSessions<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#79\">InitDAO::createSampleMonitorSessions<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#113\">InitDAO::createAdmin<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#123\">InitDAO::createWorkspace<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#131\">InitDAO::addWorkspaceToAdmin<\/a>"],[0,5,"<a href=\"InitDAO.class.php.html#146\">InitDAO::clearDb<\/a>"],[0,6,"<a href=\"InitDAO.class.php.html#171\">InitDAO::getDbStatus<\/a>"],[0,3,"<a href=\"InitDAO.class.php.html#203\">InitDAO::getTableStatus<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#217\">InitDAO::createSampleCommands<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#226\">InitDAO::adminExists<\/a>"],[0,2,"<a href=\"InitDAO.class.php.html#233\">InitDAO::createWorkspaceIfMissing<\/a>"],[0,6,"<a href=\"InitDAO.class.php.html#260\">InitDAO::installPatches<\/a>"],[0,3,"<a href=\"InitDAO.class.php.html#304\">InitDAO::setDBSchemaVersion<\/a>"],[0,4,"<a href=\"InitDAO.class.php.html#329\">InitDAO::getDBContentDump<\/a>"],[0,1,"<a href=\"InitDAO.class.php.html#352\">InitDAO::createSampleMetaData<\/a>"],[100,3,"<a href=\"SessionDAO.class.php.html#8\">SessionDAO::getToken<\/a>"],[100,4,"<a href=\"SessionDAO.class.php.html#81\">SessionDAO::getOrCreateLoginSession<\/a>"],[100,2,"<a href=\"SessionDAO.class.php.html#99\">SessionDAO::createLoginSession<\/a>"],[95.45454545454545,3,"<a href=\"SessionDAO.class.php.html#126\">SessionDAO::getLoginSession<\/a>"],[100,2,"<a href=\"SessionDAO.class.php.html#187\">SessionDAO::getLoginSessionByToken<\/a>"],[100,2,"<a href=\"SessionDAO.class.php.html#241\">SessionDAO::getLoginsByGroup<\/a>"],[100,2,"<a href=\"SessionDAO.class.php.html#300\">SessionDAO::getOrCreatePersonSession<\/a>"],[100,2,"<a href=\"SessionDAO.class.php.html#313\">SessionDAO::getPersonSession<\/a>"],[100,4,"<a href=\"SessionDAO.class.php.html#350\">SessionDAO::createPersonSession<\/a>"],[100,2,"<a href=\"SessionDAO.class.php.html#388\">SessionDAO::getPersonSessionByToken<\/a>"],[100,2,"<a href=\"SessionDAO.class.php.html#453\">SessionDAO::getTestStatus<\/a>"],[100,3,"<a href=\"SessionDAO.class.php.html#485\">SessionDAO::personHasBooklet<\/a>"],[100,1,"<a href=\"SessionDAO.class.php.html#509\">SessionDAO::ownsTest<\/a>"],[100,1,"<a href=\"SessionDAO.class.php.html#525\">SessionDAO::renewPersonToken<\/a>"],[100,1,"<a href=\"SuperAdminDAO.class.php.html#9\">SuperAdminDAO::getWorkspaces<\/a>"],[100,1,"<a href=\"SuperAdminDAO.class.php.html#19\">SuperAdminDAO::getUsers<\/a>"],[75,2,"<a href=\"SuperAdminDAO.class.php.html#34\">SuperAdminDAO::getUserByName<\/a>"],[100,3,"<a href=\"SuperAdminDAO.class.php.html#53\">SuperAdminDAO::getWorkspacesByUser<\/a>"],[100,2,"<a href=\"SuperAdminDAO.class.php.html#77\">SuperAdminDAO::getMapWorkspaceToRoleByUser<\/a>"],[100,3,"<a href=\"SuperAdminDAO.class.php.html#99\">SuperAdminDAO::setWorkspaceRightsByUser<\/a>"],[100,1,"<a href=\"SuperAdminDAO.class.php.html#120\">SuperAdminDAO::setPassword<\/a>"],[100,4,"<a href=\"SuperAdminDAO.class.php.html#134\">SuperAdminDAO::checkPassword<\/a>"],[88.88888888888889,4,"<a href=\"SuperAdminDAO.class.php.html#156\">SuperAdminDAO::createUser<\/a>"],[0,2,"<a href=\"SuperAdminDAO.class.php.html#187\">SuperAdminDAO::deleteUsers<\/a>"],[100,2,"<a href=\"SuperAdminDAO.class.php.html#195\">SuperAdminDAO::getOrCreateWorkspace<\/a>"],[100,2,"<a href=\"SuperAdminDAO.class.php.html#211\">SuperAdminDAO::createWorkspace<\/a>"],[100,2,"<a href=\"SuperAdminDAO.class.php.html#235\">SuperAdminDAO::setWorkspaceName<\/a>"],[100,2,"<a href=\"SuperAdminDAO.class.php.html#257\">SuperAdminDAO::deleteWorkspaces<\/a>"],[100,3,"<a href=\"SuperAdminDAO.class.php.html#270\">SuperAdminDAO::getUsersByWorkspace<\/a>"],[100,2,"<a href=\"SuperAdminDAO.class.php.html#289\">SuperAdminDAO::getMapUserToRoleByWorkspace<\/a>"],[100,3,"<a href=\"SuperAdminDAO.class.php.html#308\">SuperAdminDAO::setUserRightsForWorkspace<\/a>"],[100,2,"<a href=\"SuperAdminDAO.class.php.html#328\">SuperAdminDAO::setSuperAdminStatus<\/a>"],[0,2,"<a href=\"TestDAO.class.php.html#9\">TestDAO::getBookletName<\/a>"],[0,2,"<a href=\"TestDAO.class.php.html#26\">TestDAO::getOrCreateTest<\/a>"],[0,3,"<a href=\"TestDAO.class.php.html#66\">TestDAO::isTestLocked<\/a>"],[0,1,"<a href=\"TestDAO.class.php.html#85\">TestDAO::addTestReview<\/a>"],[0,1,"<a href=\"TestDAO.class.php.html#102\">TestDAO::addUnitReview<\/a>"],[100,2,"<a href=\"TestDAO.class.php.html#119\">TestDAO::getTestState<\/a>"],[0,2,"<a href=\"TestDAO.class.php.html#132\">TestDAO::getTestSession<\/a>"],[88.88888888888889,3,"<a href=\"TestDAO.class.php.html#172\">TestDAO::updateTestState<\/a>"],[100,2,"<a href=\"TestDAO.class.php.html#201\">TestDAO::getUnitState<\/a>"],[100,2,"<a href=\"TestDAO.class.php.html#217\">TestDAO::updateUnitState<\/a>"],[0,1,"<a href=\"TestDAO.class.php.html#245\">TestDAO::lockTest<\/a>"],[0,2,"<a href=\"TestDAO.class.php.html#258\">TestDAO::changeTestLockStatus<\/a>"],[60,2,"<a href=\"TestDAO.class.php.html#272\">TestDAO::getOrCreateUnitId<\/a>"],[100,2,"<a href=\"TestDAO.class.php.html#301\">TestDAO::getDataParts<\/a>"],[100,2,"<a href=\"TestDAO.class.php.html#333\">TestDAO::updateDataParts<\/a>"],[0,2,"<a href=\"TestDAO.class.php.html#352\">TestDAO::addUnitLog<\/a>"],[0,2,"<a href=\"TestDAO.class.php.html#373\">TestDAO::addTestLog<\/a>"],[0,1,"<a href=\"TestDAO.class.php.html#385\">TestDAO::setTestRunning<\/a>"],[100,3,"<a href=\"TestDAO.class.php.html#397\">TestDAO::getCommands<\/a>"],[0,3,"<a href=\"TestDAO.class.php.html#419\">TestDAO::setCommandExecuted<\/a>"],[100,2,"<a href=\"WorkspaceDAO.class.php.html#8\">WorkspaceDAO::getWorkspaceName<\/a>"],[100,4,"<a href=\"WorkspaceDAO.class.php.html#25\">WorkspaceDAO::getGlobalIds<\/a>"],[100,1,"<a href=\"WorkspaceDAO.class.php.html#65\">WorkspaceDAO::updateLoginSource<\/a>"],[100,2,"<a href=\"WorkspaceDAO.class.php.html#76\">WorkspaceDAO::addLoginSource<\/a>"],[100,1,"<a href=\"WorkspaceDAO.class.php.html#89\">WorkspaceDAO::createLogin<\/a>"],[100,1,"<a href=\"WorkspaceDAO.class.php.html#126\">WorkspaceDAO::deleteLoginSource<\/a>"],[100,3,"<a href=\"WorkspaceDAO.class.php.html#139\">WorkspaceDAO::storeFileMeta<\/a>"],[100,1,"<a href=\"WorkspaceDAO.class.php.html#180\">WorkspaceDAO::deleteFileMeta<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

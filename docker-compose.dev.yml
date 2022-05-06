@@ -72,14 +72,7 @@ services:
     environment:
       TC_API_URL: http://testcenter-backend
     volumes:
-      - ./broadcasting-service:/app/broadcasting-service
-      - ./docs:/app/docs
-      - ./frontend:/app/frontend
-      - ./package.json:/app/package.json
-      - ./sampledata:/app/sampledata
-      - ./scripts:/app/scripts
-      - ./test:/app/test
-    depends_on:
+      - ./:/app/
       - testcenter-backend
       - testcenter-broadcasting-service
       - testcenter-db

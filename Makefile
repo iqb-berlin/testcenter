@@ -92,10 +92,11 @@ test-integration:
 
 update-docs:
 #TODO
-#	docker-compose -f docker/docker-compose.yml --env-file docker/.env exec -T testcenter-backend npm --prefix=integration run update_specs
 	make docs-frontend-compodoc
 	make docs-broadcasting-service-compodoc
 	make docs-frontend-compodoc
+	make docs-api-specs
+	make docs-user
 
 docs-frontend-compodoc:
 	make run-task-runner task=frontend:update-compodoc
@@ -167,6 +168,23 @@ init-frontend:
 #	mv testcenter-frontend/src/environments/environment.ts.bu testcenter-frontend/src/environments/environment.ts
 #
 
-new-version:
-# TODO
-#	scripts/new_version.py
+test-and-update:
+#	make build
+#	make create-interfaces
+#	make test-backend-unit
+#	make test-backend-dredd
+#	make test-backend-initialization-general
+#	make test-broadcasting-service-unit
+#	make test-frontend-e2e
+#	make test-frontend-integration
+#	make update-docs
+	echo "test-and-update"
+
+version:
+	make run-task-runner task="tag-prepare-test"
+	if make test-and-update; then \
+  		make run-task-runner task="tag-release"; \
+  	else \
+		make run-task-runner task="tag-revoke"; \
+	fi
+

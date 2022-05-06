@@ -40,6 +40,7 @@
 /frontend/tmp
 /frontend/out-tsc
 /broadcasting-service/dist
+/dist
 
 # dev dependencies
 /node_modules
@@ -48,16 +49,8 @@
 # tmp
 /tmp
 
-# frontend misc
-#frontend/.sass-cache
-#/connect.lock
-#/coverage
-#/libpeerconnection.log
-#npm-debug.log
-#yarn-error.log
-#testem.log
-#/typings
-
+# other
+/dist-src/update.sh
 
 # env
 .env

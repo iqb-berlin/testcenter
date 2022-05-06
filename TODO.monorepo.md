@@ -61,7 +61,7 @@
 [ ] new_version_scripts
 [ ] installer / deployment
 
-[ ] be/dredd-test beschleunigung
+[ ] be/dredd-test Beschleunigung
 
 [ ] integration-test
 [ ] CORS?
