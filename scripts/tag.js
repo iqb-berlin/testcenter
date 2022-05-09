@@ -85,6 +85,8 @@ exports.updateVersionInFiles = async done => {
 
   // TODO package-lock.json
 
+  // TODO example files
+
   // todo sql patch
 
   done();
@@ -93,7 +95,7 @@ exports.updateVersionInFiles = async done => {
 exports.revoke = async done => {
   cliPrint.headline('Revoke to previous state after failure');
   try {
-    execSync('git reset --hard').toString().trim();
+    execSync('git reset --hard');
   } catch (error) {
     done(new Error(cliPrint.get.error(`ERROR: Could not revoke state:${error}`)));
   }
@@ -119,31 +121,28 @@ const createReleasePackage = async () =>
     .pipe(gulp.dest(`${rootPath}/dist`));
 
 const commit = async done => {
-  cliPrint.headline('commit');
-  done();
+  cliPrint.headline(`Commit and tag version ${version.new}`);
+
+  let returner;
+  [
+    'git add *',
+    'git ls-files --deleted | xargs git add',
+    `git commit -m "Update version to ${version.new}"`,
+    'git push origin master',
+    `git tag ${version.new}"`,
+    `git push origin ${version.new}"`
+  ]
+    .every(command => {
+      try {
+        execSync(command);
+      } catch (e) {
+        returner = cliPrint.get.error(`Git command '${command}' failed with: ${e}`);
+        return false;
+      }
+      return true;
+    });
+  done(returner);
 };
-
-/*
-  def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
-    """Add updated compose files and submodules hashes and commit them to repo."""
-    new_version_string = f"{frontend_version}@{backend_version}+{bs_version}"
-    print(f"Creating git tag for version {new_version_string}")
-    subprocess.run("git add testcenter-backend", shell=True, check=True)
-    subprocess.run("git add testcenter-frontend", shell=True, check=True)
-    subprocess.run("git add testcenter-broadcasting-service", shell=True, check=True)
-    # remove old release package from git
-    subprocess.run("git ls-files --deleted | xargs git add", shell=True, check=True)
-    # Add files to commit: compose files and release package
-    for compose_file in COMPOSE_FILE_PATHS:
-        subprocess.run(f"git add {compose_file}", shell=True, check=True)
-    subprocess.run("git add dist/*", shell=True, check=True)
-
-    subprocess.run(f"git commit -m \"Update version to {new_version_string}\"", shell=True, check=True)
-    subprocess.run("git push origin master", shell=True, check=True)
-
-    subprocess.run(f"git tag {new_version_string}", shell=True, check=True)
-    subprocess.run(f"git push origin {new_version_string}", shell=True, check=True)
-   */
 
 exports.updateComposeFiles = async done => {
   cliPrint.headline('Update version in docker-compose.prod.yml');
