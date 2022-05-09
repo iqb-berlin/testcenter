@@ -125,7 +125,7 @@ const commit = async done => {
 
   let returner;
   [
-    'git add .',
+    'git add -A',
     'git ls-files --deleted | xargs git add',
     `git commit -m "Update version to ${packageJson.version}"`,
     'git push origin master',
