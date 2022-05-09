@@ -117,20 +117,20 @@ const createReleasePackage = async () =>
     gulp.src(`${rootPath}/.env-default`),
     gulp.src(`${rootPath}/CHANGELOG.md`)
   ])
-    .pipe(archiver(`${packageJson.version}@${packageJson.version}+${packageJson.version}.tar`))
+    .pipe(archiver(`${version.new}@${version.new}+${version.new}.tar`))
     .pipe(gulp.dest(`${rootPath}/dist`));
 
 const commit = async done => {
-  cliPrint.headline(`Commit and tag version ${packageJson.version}`);
+  cliPrint.headline(`Commit and tag version ${version.new}`);
 
   let returner;
   [
-    'git add .',
+    'git add *',
     'git ls-files --deleted | xargs git add',
-    `git commit -m "Update version to ${packageJson.version}"`,
+    `git commit -m "Update version to ${version.new}"`,
     'git push origin master',
-    `git tag ${packageJson.version}`,
-    `git push origin ${packageJson.version}`
+    `git tag ${version.new}"`,
+    `git push origin ${version.new}"`
   ]
     .every(command => {
       try {
