@@ -129,8 +129,8 @@ const commit = async done => {
     'git ls-files --deleted | xargs git add',
     `git commit -m "Update version to ${packageJson.version}"`,
     'git push origin master',
-    `git tag ${packageJson.version}"`,
-    `git push origin ${packageJson.version}"`
+    `git tag ${packageJson.version}`,
+    `git push origin ${packageJson.version}`
   ]
     .every(command => {
       try {
