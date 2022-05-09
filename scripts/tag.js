@@ -10,7 +10,6 @@ const cliPrint = require('./helper/cli-print');
 
 const packageJson = require('../package.json');
 
-
 // const tmpDir = fs.realpathSync(`${__dirname}'/../tmp`);
 // const docsDir = fs.realpathSync(`${__dirname}'/../docs`);
 // const sampledataDir = fs.realpathSync(`${__dirname}'/../sampledata`);
@@ -124,7 +123,7 @@ const commit = async done => {
   done();
 };
 
-  /*
+/*
   def git_tag_commit_and_push(backend_version, frontend_version, bs_version):
     """Add updated compose files and submodules hashes and commit them to repo."""
     new_version_string = f"{frontend_version}@{backend_version}+{bs_version}"
@@ -147,27 +146,20 @@ const commit = async done => {
    */
 
 exports.updateComposeFiles = async done => {
-  /*
-      backend_pattern = re.compile('(?<=iqbberlin\\/testcenter-backend:)(.*)')
-    frontend_pattern = re.compile('(?<=iqbberlin\\/testcenter-frontend:)(.*)')
-    bs_pattern = re.compile('(?<=iqbberlin\\/testcenter-broadcasting-service:)(.*)')
-    for compose_file in COMPOSE_FILE_PATHS:
-        with open(compose_file, 'r') as f:
-            file_content = f.read()
-        new_file_content = backend_pattern.sub(backend_version, file_content)
-        new_file_content = frontend_pattern.sub(frontend_version, new_file_content)
-        new_file_content = bs_pattern.sub(bs_version, new_file_content)
-        with open(compose_file, 'w') as f:
-            f.write(new_file_content)
-
-   */
+  cliPrint.headline('Update version in docker-compose.prod.yml');
+  const file = `${rootPath}/dist-src/docker-compose.prod.yml`;
+  const fileContent = fs.readFileSync(file).toString('utf-8');
+  const newContent = fileContent
+    .replaceAll(/(iqbberlin\/testcenter-(backend|frontend|broadcasting-service)):(.*)/g, `$1:${version.new}`);
+  fs.writeFileSync(file, newContent);
   done();
 };
 
 exports.tag = gulp.series(
   exports.getVersion,
   exports.checkPrerequisites,
-  exports.updateVersionInFiles
+  exports.updateVersionInFiles,
+  exports.updateComposeFiles
 );
 
 exports.tagRevoke = gulp.series(
