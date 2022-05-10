@@ -1,5 +1,8 @@
 #Changelog
 
+## [next]
+big thing
+
 ## 12.2.3
 * Fix critical bug which made the group monitor defunct in live-Mode!
 

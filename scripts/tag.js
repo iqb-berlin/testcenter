@@ -4,26 +4,26 @@ const fsExtra = require('fs-extra');
 const gulp = require('gulp');
 const { execSync } = require('child_process');
 const merge = require('merge-stream');
+const replace = require('gulp-replace');
+const tap = require('gulp-tap');
 const download = require('gulp-download2');
 const archiver = require('@bytestream/gulp-archiver');
 const cliPrint = require('./helper/cli-print');
 
-const packageJson = require('../package.json');
-
-// const tmpDir = fs.realpathSync(`${__dirname}'/../tmp`);
-// const docsDir = fs.realpathSync(`${__dirname}'/../docs`);
-// const sampledataDir = fs.realpathSync(`${__dirname}'/../sampledata`);
 const rootPath = fs.realpathSync(`${__dirname}'/..`);
+
+const packageJson = require('../package.json');
 
 // see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 // eslint-disable-next-line max-len
 const semVerRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
-const version = {};
 
-exports.getVersion = async done => {
-  const [tagType, newLabel] = process.argv.pop().split('-');
-  cliPrint.headline(`Tag new version: ${tagType}`);
-  [version.old, version.major, version.minor, version.patch, version.label] = packageJson.version.match(semVerRegex);
+const version = {};
+[version.full, version.major, version.minor, version.patch, version.label] = packageJson.version.match(semVerRegex);
+
+const createNewVersionTag = arg => {
+  const [tagType, newLabel] = arg.split('-');
+
   if (typeof version[tagType] !== 'undefined') {
     version[tagType] = parseInt(version[tagType], 10) + 1;
     version.label = '';
@@ -31,14 +31,19 @@ exports.getVersion = async done => {
   if (newLabel) {
     version.label = newLabel;
   }
-  version.new = `${version.major}.${version.minor}.${version.patch}${version.label ? `-${version.label}` : ''}`;
+  version.full = `${version.major}.${version.minor}.${version.patch}${version.label ? `-${version.label}` : ''}`;
+};
 
-  console.log(`Current version ${version.old}`);
-  console.log(`Target version ${version.new}`);
+const updateVersion = async done => {
+  const arg = process.argv.pop();
+  cliPrint.headline(`Prepare new version-tag: ${arg}`);
+  console.log(`Current version is ${version.full}`);
+  createNewVersionTag(arg);
+  console.log(`Target version is ${version.full}`);
   done();
 };
 
-exports.checkPrerequisites = async done => {
+const checkPrerequisites = async done => {
   cliPrint.headline('Check Prerequisites');
 
   // on master?
@@ -55,70 +60,79 @@ exports.checkPrerequisites = async done => {
   }
   cliPrint.success('[x] up to date with remote branch');
 
+  // tag exists
+  let tagExists = true;
+  try {
+    execSync(`git show-ref --tags "${version.full}" --quiet`);
+  } catch (e) {
+    tagExists = false;
+  }
+  if (tagExists) {
+    done(new Error(cliPrint.get.error(`GitTag ${version.full} already exists!`)));
+  }
+  cliPrint.success(`[x] GitTag ${version.full} unused`);
+
+  // port 80 in use?
+  // TODO a way better solution would be to make the whole setup port-independent
+  let port80isFree = false;
+  try {
+    execSync('lsof -i:80');
+  } catch (e) {
+    port80isFree = true;
+  }
+  if (!port80isFree) {
+    done(new Error(cliPrint.get.error('Port 80 in use!')));
+  }
+  cliPrint.success('[x] port 80 is free');
+
+  // changelog updated?
+  const changelog = fs.readFileSync(`${rootPath}/CHANGELOG.md`).toString();
+  if (!changelog.match(`## (\\[next]|${version.full})`)) {
+    const msg = `No section for '## ${version.full}' found in CHANGELOG.md. Add it or use '## [next]'`;
+    done(new Error(cliPrint.get.error(msg)));
+  }
+
   // everything committed?
-  // const committed = execSync('git status --porcelain').toString().trim();
-  // if (committed !== '') {
-  //   done(new Error(cliPrint.get.error('ERROR: Not everything committed')));
-  // }
-  // cliPrint.success('[x] everything committed');
-
-  /*
-      # port 80 in use?
-    if is_port_in_use(80):
-        sys.exit('ERROR: Port 80 in use!' + result.stderr)
-
-   */
-
-  // TODO changelog done
-
-  // TODO tag exists
+  const committed = execSync('git status --porcelain').toString().trim();
+  if (committed !== '') {
+    done(new Error(cliPrint.get.error('Workspace not clean. Commit or stash your changes.')));
+  }
+  cliPrint.success('[x] Workspace clean');
 
   done();
 };
 
-exports.updateVersionInFiles = async done => {
-  cliPrint.headline('Update Shit');
-  // gulp.src([
-  //   `${rootPath}/package.json`,
-  //   `${rootPath}/package-lock.json`,
-  //   `${rootPath}/defintions/*.xsd`,
-  //   `${rootPath}/sampledata/*.xml`
-  // ]);
-
-  packageJson.version = version.new;
+const savePackageJson = async done => {
   fs.writeFileSync('../package.json', JSON.stringify(packageJson, null, 2));
-  cliPrint.success('[x] update package.json');
-
-  // TODO package-lock.json
-
-  // TODO example files
-
-  // todo sql patch
-
+  cliPrint.success('[x] /package.json update');
   done();
 };
 
-const updateFiles = (glob, regex, replacement) =>
+const replaceInFiles = (glob, regex, replacement) =>
   () => gulp.src(glob)
-    .pipe(gulp.replace(regex, replacement))
-    .pipe(gulp.dest('./'))
-    .pipe(gulp.forEach(file => console.log(`[x] ${file} updated`)));
+    .pipe(replace(regex, replacement))
+    .pipe(gulp.dest(file => file.base, { mode: 777 }))
+    .pipe(tap(file => cliPrint.success(`[x] ${file.path.replace(rootPath, '')} updated with ${version.full}`)));
 
-const updateVersionInFiles2 =
-  gulp.series(
-    updateFiles(
-      `${rootPath}/sampledata/*.xml`,
-      /xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter\/(\d+.\d+.\d+)/g,
-      packageJson.version
-    )
-    // updateFiles(
-    //   `${rootPath}/defintions/*.xsd`,
-    //   /xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter\/(\d+.\d+.\d+)/g,
-    //   packageJson.version
-    // )
-  );
+const updateVersionInFiles = gulp.parallel(
+  replaceInFiles(
+    `${rootPath}/sampledata/*.xml`,
+    /(xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter)\/\d+.\d+.\d+/g,
+    `$1/${version.full}`
+  ),
+  replaceInFiles(
+    `${rootPath}/dist-src/docker-compose.prod.yml`,
+    /(iqbberlin\/testcenter-(backend|frontend|broadcasting-service)):(.*)/g,
+    `$1:${version.full}`
+  ),
+  replaceInFiles(
+    `${rootPath}/CHANGELOG.md`,
+    /## \[next]/g,
+    `## ${version.full}`
+  )
+);
 
-exports.revoke = async done => {
+const revokeTag = async done => {
   cliPrint.headline('Revoke to previous state after failure');
   try {
     execSync('git reset --hard');
@@ -143,20 +157,20 @@ const createReleasePackage = async () =>
     gulp.src(`${rootPath}/.env-default`),
     gulp.src(`${rootPath}/CHANGELOG.md`)
   ])
-    .pipe(archiver(`${packageJson.version}@${packageJson.version}+${packageJson.version}.tar`))
+    .pipe(archiver(`${version.full}@${version.full}+${version.full}.tar`))
     .pipe(gulp.dest(`${rootPath}/dist`));
 
 const commit = async done => {
-  cliPrint.headline(`Commit and tag version ${packageJson.version}`);
+  cliPrint.headline(`Commit and tag version ${version.full}`);
 
   let returner;
   [
     'git add -A',
     'git ls-files --deleted | xargs git add',
-    `git commit -m "Update version to ${packageJson.version}"`,
+    `git commit -m "Update version to ${version.full}"`,
     'git push origin master',
-    `git tag ${packageJson.version}`,
-    `git push origin ${packageJson.version}`
+    `git tag ${version.full}`,
+    `git push origin ${version.full}`
   ]
     .every(command => {
       try {
@@ -170,35 +184,24 @@ const commit = async done => {
   done(returner);
 };
 
-exports.updateComposeFiles = async done => {
-  cliPrint.headline('Update version in docker-compose.prod.yml');
-  const file = `${rootPath}/dist-src/docker-compose.prod.yml`;
-  const fileContent = fs.readFileSync(file).toString('utf-8');
-  const newContent = fileContent
-    .replaceAll(/(iqbberlin\/testcenter-(backend|frontend|broadcasting-service)):(.*)/g, `$1:${version.new}`);
-  fs.writeFileSync(file, newContent);
-  done();
-};
-
-exports.tag = gulp.series(
-  exports.getVersion,
-  exports.checkPrerequisites,
-  exports.updateVersionInFiles,
-  updateVersionInFiles2,
-  exports.updateComposeFiles
-);
-
-exports.tagRevoke = gulp.series(
-  exports.revoke
-);
-
-exports.createRelease = gulp.series(
+const createRelease = gulp.series(
   getUpdateSh,
   clearDistDir,
   createReleasePackage
 );
 
+exports.tag = gulp.series(
+  updateVersion,
+  checkPrerequisites,
+  savePackageJson,
+  updateVersionInFiles
+);
+
+exports.tagRevoke = gulp.series(
+  revokeTag
+);
+
 exports.tagCommitRelease = gulp.series(
-  exports.createRelease,
+  createRelease,
   commit
 );
