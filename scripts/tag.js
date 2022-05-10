@@ -56,11 +56,11 @@ exports.checkPrerequisites = async done => {
   cliPrint.success('[x] up to date with remote branch');
 
   // everything committed?
-  const committed = execSync('git status --porcelain').toString().trim();
-  if (committed !== '') {
-    done(new Error(cliPrint.get.error('ERROR: Not everything committed')));
-  }
-  cliPrint.success('[x] everything committed');
+  // const committed = execSync('git status --porcelain').toString().trim();
+  // if (committed !== '') {
+  //   done(new Error(cliPrint.get.error('ERROR: Not everything committed')));
+  // }
+  // cliPrint.success('[x] everything committed');
 
   /*
       # port 80 in use?
@@ -78,6 +78,12 @@ exports.checkPrerequisites = async done => {
 
 exports.updateVersionInFiles = async done => {
   cliPrint.headline('Update Shit');
+  // gulp.src([
+  //   `${rootPath}/package.json`,
+  //   `${rootPath}/package-lock.json`,
+  //   `${rootPath}/defintions/*.xsd`,
+  //   `${rootPath}/sampledata/*.xml`
+  // ]);
 
   packageJson.version = version.new;
   fs.writeFileSync('../package.json', JSON.stringify(packageJson, null, 2));
@@ -91,6 +97,26 @@ exports.updateVersionInFiles = async done => {
 
   done();
 };
+
+const updateFiles = (glob, regex, replacement) =>
+  () => gulp.src(glob)
+    .pipe(gulp.replace(regex, replacement))
+    .pipe(gulp.dest('./'))
+    .pipe(gulp.forEach(file => console.log(`[x] ${file} updated`)));
+
+const updateVersionInFiles2 =
+  gulp.series(
+    updateFiles(
+      `${rootPath}/sampledata/*.xml`,
+      /xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter\/(\d+.\d+.\d+)/g,
+      packageJson.version
+    )
+    // updateFiles(
+    //   `${rootPath}/defintions/*.xsd`,
+    //   /xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter\/(\d+.\d+.\d+)/g,
+    //   packageJson.version
+    // )
+  );
 
 exports.revoke = async done => {
   cliPrint.headline('Revoke to previous state after failure');
@@ -158,6 +184,7 @@ exports.tag = gulp.series(
   exports.getVersion,
   exports.checkPrerequisites,
   exports.updateVersionInFiles,
+  updateVersionInFiles2,
   exports.updateComposeFiles
 );
 
