@@ -181,9 +181,8 @@ test-and-update:
 	echo "test-and-update"
 	make run-task-runner task="tag-release"
 	git push origin master
+	git push origin `git tag -l --sort=-creatordate | head -n 1`
 
-
-tag-release:
 
 
 version:

@@ -206,3 +206,7 @@ exports.tagCommitRelease = gulp.series(
   createRelease,
   createCommit
 );
+
+exports.tagPush = gulp.series(
+  pushCommit
+);
