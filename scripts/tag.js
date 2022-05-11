@@ -76,15 +76,6 @@ const checkPrerequisites = async done => {
   }
   cliPrint.success(`[x] GitTag ${version.full} unused`);
 
-  // port 80 in use?
-  // TODO a way better solution would be to make the whole setup port-independent
-  try {
-    execSync('lsof -i:80');
-  } catch (e) {
-    done(new Error(cliPrint.get.error('Port 80 in use!')));
-  }
-  cliPrint.success('[x] port 80 is free');
-
   // changelog updated?
   const changelog = fs.readFileSync(`${rootPath}/CHANGELOG.md`).toString();
   if (!changelog.match(`## (\\[next]|${version.full})`)) {
