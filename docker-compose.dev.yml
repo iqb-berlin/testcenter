@@ -73,7 +73,8 @@ services:
       TC_API_URL: http://testcenter-backend
     volumes:
       - ./:/app/
-      - testcenter-backend
-      - testcenter-broadcasting-service
-      - testcenter-db
-      - testcenter-frontend
+      - "~/.gitconfig:/etc/gitconfig"
+#      - testcenter-backend
+#      - testcenter-broadcasting-service
+#      - testcenter-db
+#      - testcenter-frontend

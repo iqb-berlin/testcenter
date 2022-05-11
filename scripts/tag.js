@@ -26,15 +26,11 @@ const createNewVersionTag = arg => {
 
   if (typeof version[tagType] !== 'undefined') {
     const newNumber = parseInt(version[tagType], 10) + 1;
-    version.major = 0;
-    version.minor = 0;
-    version.patch = 0;
-    version.label = '';
+    version.minor = (tagType === 'major') ? 0 : version.minor;
+    version.patch = ((tagType === 'major') || (tagType === 'minor')) ? 0 : version.patch;
     version[tagType] = newNumber;
   }
-  if (newLabel) {
-    version.label = newLabel;
-  }
+  version.label = newLabel || '';
   version.full = `${version.major}.${version.minor}.${version.patch}${version.label ? `-${version.label}` : ''}`;
 };
 
@@ -62,7 +58,7 @@ const checkPrerequisites = async done => {
   if (pulled !== '') {
     done(new Error(cliPrint.get.error('ERROR: Not up to date with remote branch!')));
   }
-  cliPrint.success('[x] up to date with remote branch');
+  cliPrint.success('[x] Up to date with remote branch.');
 
   // tag exists
   let tagExists = true;
@@ -74,7 +70,7 @@ const checkPrerequisites = async done => {
   if (tagExists) {
     done(new Error(cliPrint.get.error(`GitTag ${version.full} already exists!`)));
   }
-  cliPrint.success(`[x] GitTag ${version.full} unused`);
+  cliPrint.success(`[x] Git-tag ${version.full} unused.`);
 
   // changelog updated?
   const changelog = fs.readFileSync(`${rootPath}/CHANGELOG.md`).toString();
@@ -88,38 +84,40 @@ const checkPrerequisites = async done => {
   if (committed !== '') {
     done(new Error(cliPrint.get.error('Workspace not clean. Commit or stash your changes.')));
   }
-  cliPrint.success('[x] Workspace clean');
+  cliPrint.success('[x] Workspace clean.');
 
   done();
 };
 
 const savePackageJson = async done => {
   fs.writeFileSync('../package.json', JSON.stringify(packageJson, null, 2));
-  cliPrint.success('[x] /package.json update');
+  cliPrint.success(`[x] /package.json updated with ${version.full}`);
   done();
 };
 
 const replaceInFiles = (glob, regex, replacement) =>
   () => gulp.src(glob)
-    .pipe(replace(regex, replacement))
-    .pipe(gulp.dest(file => file.base, { mode: 777 }))
+    .pipe(replace(regex, replacement.replace('$VERSION', version.full))) // manually replace version here because timing
+    .pipe(tap(file => fs.rmSync(file.path))) // delete file before replacing, so that IDEA realized the change
+    .pipe(gulp.dest(file => file.base))
+    .on('error', err => { throw new Error(cliPrint.get.error(err.toString())); })
     .pipe(tap(file => cliPrint.success(`[x] ${file.path.replace(rootPath, '')} updated with ${version.full}`)));
 
 const updateVersionInFiles = gulp.parallel(
   replaceInFiles(
     `${rootPath}/sampledata/*.xml`,
     /(xsi:noNamespaceSchemaLocation="https:\/\/raw\.githubusercontent\.com\/iqb-berlin\/testcenter)\/\d+.\d+.\d+/g,
-    `$1/${version.full}`
+    '$1/$VERSION'
   ),
   replaceInFiles(
     `${rootPath}/dist-src/docker-compose.prod.yml`,
     /(iqbberlin\/testcenter-(backend|frontend|broadcasting-service)):(.*)/g,
-    `$1:${version.full}`
+    '$1:$VERSION'
   ),
   replaceInFiles(
     `${rootPath}/CHANGELOG.md`,
     /## \[next]/g,
-    `## ${version.full}`
+    '## $VERSION'
   )
 );
 

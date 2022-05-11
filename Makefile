@@ -183,6 +183,7 @@ test-and-update:
 version:
 	make run-task-runner task="tag-prepare-test"
 	if make test-and-update; then \
+  		whoami && \
   		make run-task-runner task="tag-release"; \
   	else \
 		make run-task-runner task="tag-revoke"; \
