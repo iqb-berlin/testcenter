@@ -25,8 +25,12 @@ const createNewVersionTag = arg => {
   const [tagType, newLabel] = arg.split('-');
 
   if (typeof version[tagType] !== 'undefined') {
-    version[tagType] = parseInt(version[tagType], 10) + 1;
+    const newNumber = parseInt(version[tagType], 10) + 1;
+    version.major = 0;
+    version.minor = 0;
+    version.patch = 0;
     version.label = '';
+    version[tagType] = newNumber;
   }
   if (newLabel) {
     version.label = newLabel;
@@ -74,13 +78,9 @@ const checkPrerequisites = async done => {
 
   // port 80 in use?
   // TODO a way better solution would be to make the whole setup port-independent
-  let port80isFree = false;
   try {
     execSync('lsof -i:80');
   } catch (e) {
-    port80isFree = true;
-  }
-  if (!port80isFree) {
     done(new Error(cliPrint.get.error('Port 80 in use!')));
   }
   cliPrint.success('[x] port 80 is free');
@@ -190,7 +190,7 @@ const createRelease = gulp.series(
   createReleasePackage
 );
 
-exports.tag = gulp.series(
+exports.tagPrepare = gulp.series(
   updateVersion,
   checkPrerequisites,
   savePackageJson,
