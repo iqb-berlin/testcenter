@@ -149,29 +149,41 @@ const createReleasePackage = async () =>
     .pipe(archiver(`${version.full}@${version.full}+${version.full}.tar`))
     .pipe(gulp.dest(`${rootPath}/dist`));
 
-const commit = async done => {
-  cliPrint.headline(`Commit and tag version ${version.full}`);
+const execCommands = (headline, commands) =>
+  async done => {
+    cliPrint.headline(headline.replace('$VERSION', version.full));
+    let returner;
+    commands
+      .every(command => {
+        try {
+          execSync(command.replace('$VERSION', version.full));
+        } catch (e) {
+          returner = cliPrint.get.error(`Git command '${command}' failed with: ${e}`);
+          return false;
+        }
+        return true;
+      });
+    done(returner);
+  };
 
-  let returner;
+const createCommit = execCommands(
+  'Create commit tag version $VERSION',
   [
     'git add -A',
     'git ls-files --deleted | xargs git add',
-    `git commit -m "Update version to ${version.full}"`,
-    'git push origin master',
-    `git tag ${version.full}`,
-    `git push origin ${version.full}`
+    'git commit -m "Update version to $VERSION"',
+    'git tag $VERSION'
   ]
-    .every(command => {
-      try {
-        execSync(command);
-      } catch (e) {
-        returner = cliPrint.get.error(`Git command '${command}' failed with: ${e}`);
-        return false;
-      }
-      return true;
-    });
-  done(returner);
-};
+);
+
+// when using the task runner, this should be done by the host, since the task-runner don't have the credentials
+const pushCommit = execCommands(
+  'Push to master and to $VERSION',
+  [
+    'git push origin master',
+    'git push origin $VERSION'
+  ]
+);
 
 const createRelease = gulp.series(
   getUpdateSh,
@@ -192,5 +204,5 @@ exports.tagRevoke = gulp.series(
 
 exports.tagCommitRelease = gulp.series(
   createRelease,
-  commit
+  createCommit
 );

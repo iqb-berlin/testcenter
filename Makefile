@@ -179,12 +179,17 @@ test-and-update:
 #	make test-frontend-integration
 #	make update-docs
 	echo "test-and-update"
+	make run-task-runner task="tag-release"
+	git push origin master
+
+
+tag-release:
+
 
 version:
 	make run-task-runner task="tag-prepare-test"
 	if make test-and-update; then \
-  		whoami && \
-  		make run-task-runner task="tag-release"; \
+  		echo "[SUCCESS]"; \
   	else \
 		make run-task-runner task="tag-revoke"; \
 	fi
