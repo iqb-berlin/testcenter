@@ -42,12 +42,13 @@ services:
       dockerfile: frontend/Dockerfile
       target: dev
     volumes:
+      - ./common:/common
+      - ./definitions:/definitions
       - ./frontend/.browserslistrc:/app/.browserslistrc
       - ./frontend/angular.json:/app/angular.json
       - ./frontend/package.json:/app/package.json
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./common:/common
 
   testcenter-broadcasting-service:
     build:

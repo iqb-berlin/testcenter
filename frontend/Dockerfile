@@ -2,12 +2,13 @@ FROM scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-con
 
 WORKDIR /app
 
-COPY frontend/src /app/src
+COPY common /common
+COPY definitions /definitions
 COPY frontend/.browserslistrc .
 COPY frontend/angular.json .
-COPY frontend/tsconfig.json .
 COPY frontend/package.json .
-COPY common /common
+COPY frontend/src /app/src
+COPY frontend/tsconfig.json .
 
 RUN npm install
 
