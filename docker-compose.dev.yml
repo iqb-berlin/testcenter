@@ -73,9 +73,15 @@ services:
     environment:
       TC_API_URL: http://testcenter-backend
     volumes:
-      - ./:/app/
-      - "~/.gitconfig:/etc/gitconfig"
-#      - testcenter-backend
-#      - testcenter-broadcasting-service
-#      - testcenter-db
-#      - testcenter-frontend
+      - ./broadcasting-service:/app/broadcasting-service
+      - ./definitions:/app/definitions
+      - ./dist-src:/app/dist-src
+      - ./dist:/app/dist
+      - ./docs:/app/docs
+      - ./frontend:/app/frontend
+      - ./sampledata:/app/sampledata
+      - ./scripts:/app/scripts
+      - ./test:/app/test
+      - ~/.gitconfig:/etc/gitconfig
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json

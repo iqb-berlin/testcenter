@@ -4,15 +4,18 @@ FROM node:${NODE_VERSION}
 
 WORKDIR /app
 COPY package.json .
-RUN npm install
+COPY package-lock.json .
+RUN npm install --only=dev
 
 COPY broadcasting-service /app/broadcasting-service
 COPY definitions /app/definitions
+COPY dist /app/dist
+COPY dist-src /app/dist-src
+COPY docs /app/docs
 COPY frontend /app/frontend
 COPY sampledata /app/sampledata
 COPY scripts /app/scripts
 COPY test /app/test
-COPY docs /app/docs
 
 RUN mkdir /app/tmp
 
