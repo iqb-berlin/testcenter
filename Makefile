@@ -63,10 +63,10 @@ test-backend-initialization:
 test-backend-initialization-general:
 	make stop
 	docker-compose -f docker-compose.initialization-test.yml build
-	test-backend-initialization test=general/db-versions
-	test-backend-initialization test=general/vanilla-installation
-	test-backend-initialization test=general/no-db-but-files
-	test-backend-initialization test=general/install-db-patches
+	make test-backend-initialization test=general/db-versions
+	make test-backend-initialization test=general/vanilla-installation
+	make test-backend-initialization test=general/no-db-but-files
+	make test-backend-initialization test=general/install-db-patches
 
 test-broadcasting-service-unit:
 	make build service=testcenter-broadcasting-service
@@ -169,7 +169,7 @@ init-frontend:
 #
 
 test-and-update:
-#	make build
+	make build
 #	make create-interfaces
 #	make test-backend-unit
 #	make test-backend-dredd
@@ -185,8 +185,9 @@ test-and-update:
 
 
 
-version:
-	make run-task-runner task="tag-prepare-test"
+tag:
+	make build service=testcenter-task-runner
+	make run-task-runner task="tag-prepare $(version-patch)"
 	if make test-and-update; then \
   		echo "[SUCCESS]"; \
   	else \
