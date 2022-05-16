@@ -42,7 +42,7 @@
           </xs:choice>
         </xs:sequence>
 
-        <xs:element name="Dependencies">
+        <xs:element name="Dependencies" minOccurs="0">
           <xs:complexType>
             <xs:choice maxOccurs="unbounded" minOccurs="0">
               <xs:element type="xs:string" name="File" maxOccurs="unbounded" minOccurs="0"/>
