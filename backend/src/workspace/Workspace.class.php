@@ -208,7 +208,7 @@ class Workspace {
     // takes a file from the workspace-dir toplevel and puts it to the correct subdir if valid
     public function importUnsortedFile(string $fileName): array {
 
-        if (strtoupper(substr($fileName, -4)) == '.ZIP') {
+        if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
 
             $relativeFilePaths = $this->unpackUnsortedZipArchive($fileName);
             $toDelete = [$fileName, $this->getExtractionDirName($fileName)];

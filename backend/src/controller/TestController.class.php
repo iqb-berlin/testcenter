@@ -174,7 +174,7 @@ class TestController extends Controller {
 
         return $response
             ->withBody(new Stream(fopen($resourceFile, 'rb')))
-            ->withHeader('Content-type', MimeType::get($resourceFile))
+            ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
             ->withHeader('Content-length', filesize($resourceFile));
     }
 

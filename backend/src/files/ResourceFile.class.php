@@ -29,23 +29,16 @@ class ResourceFile extends File {
     }
 
 
+    // TODO don't detect by extension, detect by metadata
     public function isPlayer(): bool {
 
-        $pathInfo = pathinfo($this->getPath());
-        if (!isset($pathInfo['extension'])) {
-            return false;
-        }
-        return strtoupper($pathInfo['extension']) == 'HTML';
+        return FileExt::has($this->getPath(), 'HTML');
     }
 
 
     public function isPackage(): bool {
 
-        $pathInfo = pathinfo($this->getPath());
-        if (!isset($pathInfo['extension'])) {
-            return false;
-        }
-        return strtoupper($pathInfo['extension']) == 'VOPGK';
+        return FileExt::has($this->getPath(), 'ITCR.ZIP');
     }
 
 
@@ -252,13 +245,13 @@ class ResourceFile extends File {
 
     private function getPackageContentPath(): string {
 
-        return dirname($this->getPath()) . '/' . basename($this->getName(), '.vopgk');
+        return dirname($this->getPath()) . '/' . basename($this->getName(), '.itcr.zip');
     }
 
 
     public function getPackageName(): string {
 
-        return basename($this->getName(), '.vopgk');
+        return basename($this->getName(), '.itcr.zip');
     }
 
     public function installPackage(): void {

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
  */
 
-class MimeType {
+class FileExt {
     const knownTypes = [
         "aac" => "audio/aac",
         "abw" => "application/x-abiword",
@@ -92,12 +92,39 @@ class MimeType {
         "7z" => "application/x-7z-compressed"
     ];
     
-    static function get($filePath): string {
+    static function getMimeType($filePath): string {
 
         if (!file_exists($filePath)) {
             return "";
         }
 
-        return MimeType::knownTypes[pathinfo($filePath,  PATHINFO_EXTENSION)] ?? 'application/octet-stream';
+        return FileExt::knownTypes[pathinfo($filePath,  PATHINFO_EXTENSION)] ?? 'application/octet-stream';
+    }
+
+
+    static function get($filePath, int $maxDots = 0): string {
+
+        if (substr_count($filePath, '.') <= $maxDots) {
+
+            return '';
+        }
+
+        return implode(
+            '.',
+            array_slice(
+                explode(
+                    '.',
+                    basename($filePath)
+                ),
+                ($maxDots + 1) * -1,
+                ($maxDots + 1)
+            )
+        );
+    }
+
+
+    static function has(string $filePath, string $ext): bool {
+
+        return strtoupper(FileExt::get($filePath, substr_count($ext, '.'))) == strtoupper($ext);
     }
 }
