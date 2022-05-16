@@ -131,13 +131,13 @@ class Workspace {
             // file does not exist in validator means it must be something not validatable like sysCheck-Reports
             $validatedFile = $allFiles[$fileToDeletePath] ?? null;
 
-            if (!$this->isUnusedFileAndCanBeDeleted($validatedFile, $filesToDelete)) {
+            if ($validatedFile and !$this->isUnusedFileAndCanBeDeleted($validatedFile, $filesToDelete)) {
 
                 $report['was_used'][] = $fileToDelete;
                 continue;
             }
 
-            if ($this->postProcessFileDeletion($validatedFile)) {
+            if ($validatedFile and $this->postProcessFileDeletion($validatedFile)) {
 
                 $report['error'][] = $fileToDelete;
             }
@@ -156,7 +156,7 @@ class Workspace {
     }
 
 
-    private function postProcessFileDeletion(File $file): bool {
+    private function postProcessFileDeletion(?File $file): bool {
 
         try {
 
@@ -180,12 +180,7 @@ class Workspace {
     }
 
 
-    private function isUnusedFileAndCanBeDeleted(?File $file, array $allFilesToDelete): bool {
-
-        if ($file === null) {
-
-            return true;
-        }
+    private function isUnusedFileAndCanBeDeleted(File $file, array $allFilesToDelete): bool {
 
         if (!$file->isUsed()) {
 

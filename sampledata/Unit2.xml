@@ -18,7 +18,7 @@
             document.querySelector("#sample-unit-message").innerHTML = "Fetching external content is not supported by host";
             return;
           }
-          fetch(`${playerConfig.directDownloadUrl}/SAMPLE_UNITCONTENTS.HTM`)
+          fetch(`${playerConfig.directDownloadUrl}/sample_resource_package/file.text`)
             .then(
               async res => {
                 document.querySelector("#unit").innerHTML += await res.text();
@@ -28,4 +28,8 @@
 
     ]]>
   </Definition>
+
+  <Dependencies>
+    <File>sample_resource_package.itcr.zip</File>
+  </Dependencies>
 </Unit>
