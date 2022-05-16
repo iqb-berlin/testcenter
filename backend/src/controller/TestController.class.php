@@ -151,7 +151,7 @@ class TestController extends Controller {
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
-            ->withHeader('Content-type', 'application/octet-stream') // TODO find out why it only works with pdf or octet-stream
+            ->withHeader('Content-type', 'application/octet-stream') // use octet-stream to make progress trackable
             ->withHeader('Content-length', $resourceFile->getSize());
     }
 
@@ -174,7 +174,7 @@ class TestController extends Controller {
 
         return $response
             ->withBody(new Stream(fopen($resourceFile, 'rb')))
-            ->withHeader('Content-type', 'application/octet-stream')
+            ->withHeader('Content-type', MimeType::get($resourceFile))
             ->withHeader('Content-length', filesize($resourceFile));
     }
 
