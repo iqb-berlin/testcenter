@@ -231,15 +231,15 @@ class ResourceFile extends File {
 
             $meta = ZIP::readMeta($this->getPath());
 
+            $this->meta->description = $meta['comment'] ?? '';
+            $this->description = $meta['comment'] ?? '';
+
+            $this->report('info', "Contains {$meta['count']} files.");
+
         } catch (Exception $e) {
 
             $this->report('error', "Could not read archive: {$e->getMessage()}");
         }
-
-        $this->meta->description = $meta['comment'];
-        $this->description = $meta['comment'];
-
-        $this->report('info', "Contains {$meta['count']} files.");
     }
 
 
