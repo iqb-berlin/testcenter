@@ -312,6 +312,12 @@ class Workspace {
         $extractionFolder = $this->getExtractionDirName($fileName);
         $extractionPath = "$this->workspacePath/$extractionFolder";
 
+        // sometimes in error cases there are remains from previous attempts
+        if (file_exists($extractionPath) and is_dir($extractionPath)) {
+            Folder::deleteContentsRecursive($extractionPath);
+            rmdir($extractionPath);
+        }
+
         if (!mkdir($extractionPath)) {
             throw new Exception("Could not create directory for extracted files: `$extractionPath`");
         }
