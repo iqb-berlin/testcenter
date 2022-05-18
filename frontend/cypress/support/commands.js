@@ -25,3 +25,5 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import 'cypress-iframe';
+import 'cypress-file-upload';
+require('cypress-downloadfile/lib/downloadFileCommand');

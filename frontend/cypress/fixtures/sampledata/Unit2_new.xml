@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<Unit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/12.2.0/definitions/vo_Unit.xsd">
+  <Metadata>
+    <Id>UNIT.SAMPLE-2</Id>
+    <Label>A sample unit</Label>
+    <Description>This is an Unit</Description>
+  </Metadata>
+
+  <Definition player="verona-simple-player-1.0.0">
+    <![CDATA[
+      <div class="container">
+          <h1>Sample Unit</h1>
+          <svg class="loader" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340">
+              <circle cx="170" cy="170" r="160"/>
+          </svg>
+      </div>
+      <style>
+          h1 {
+              position: absolute;
+              margin: 0;
+          }
+          .container {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 100vh;
+          }
+
+          .loader {
+              max-width: 15rem;
+              width: 100%;
+              height: auto;
+              stroke-linecap: round;
+          }
+
+          circle {
+              fill: none;
+              stroke: #003333;
+              stroke-width: 10;
+              animation-name: preloader;
+              animation-duration: 3s;
+              animation-iteration-count: infinite;
+              animation-timing-function: linear;
+              transform-origin: 170px 170px;
+              /*will-change: transform;*/
+              stroke-dasharray: 750px;
+          }
+          @keyframes preloader {
+              50% {
+                  stroke: #b2ff59;
+              }
+              100% {
+                  transform: rotate(360deg);
+              }
+          }
+      </style>
+    ]]>
+  </Definition>
+</Unit>
