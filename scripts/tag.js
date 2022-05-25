@@ -2,7 +2,6 @@
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const gulp = require('gulp');
-const { execSync } = require('child_process');
 const merge = require('merge-stream');
 const replace = require('gulp-replace');
 const tap = require('gulp-tap');
@@ -13,6 +12,7 @@ const cliPrint = require('./helper/cli-print');
 const rootPath = fs.realpathSync(`${__dirname}'/..`);
 
 const packageJson = require('../package.json');
+const {exec} = require("./helper/exec");
 
 // see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 // eslint-disable-next-line max-len
@@ -47,14 +47,14 @@ const checkPrerequisites = async done => {
   cliPrint.headline('Check Prerequisites');
 
   // on master?
-  const branch = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
+  const branch = exec('git rev-parse --abbrev-ref HEAD');
   if (branch !== 'master') {
     done(new Error(cliPrint.get.error(`ERROR: Not on master branch! (but on: ${branch})`)));
   }
   cliPrint.success('[x] on master-branch');
 
   // pulled?
-  const pulled = execSync('git fetch origin --dry-run').toString().trim();
+  const pulled = exec('git fetch origin --dry-run');
   if (pulled !== '') {
     done(new Error(cliPrint.get.error('ERROR: Not up to date with remote branch!')));
   }
@@ -63,7 +63,7 @@ const checkPrerequisites = async done => {
   // tag exists
   let tagExists = true;
   try {
-    execSync(`git show-ref --tags "${version.full}" --quiet`);
+    exec(`git show-ref --tags "${version.full}" --quiet`);
   } catch (e) {
     tagExists = false;
   }
@@ -80,7 +80,7 @@ const checkPrerequisites = async done => {
   }
 
   // everything committed?
-  const committed = execSync('git status --porcelain').toString().trim();
+  const committed = exec('git status --porcelain');
   if (committed !== '') {
     done(new Error(cliPrint.get.error('Workspace not clean. Commit or stash your changes.')));
   }
@@ -124,7 +124,7 @@ const updateVersionInFiles = gulp.parallel(
 const revokeTag = async done => {
   cliPrint.headline('Revoke to previous state after failure');
   try {
-    execSync('git reset --hard');
+    //exec('git reset --hard');
   } catch (error) {
     done(new Error(cliPrint.get.error(`ERROR: Could not revoke state:${error}`)));
   }
@@ -156,7 +156,7 @@ const execCommands = (headline, commands) =>
     commands
       .every(command => {
         try {
-          execSync(command.replace('$VERSION', version.full));
+          exec(command.replace('$VERSION', version.full));
         } catch (e) {
           returner = cliPrint.get.error(`Git command '${command}' failed with: ${e}`);
           return false;

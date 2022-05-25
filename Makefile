@@ -168,7 +168,7 @@ init-frontend:
 #	mv testcenter-frontend/src/environments/environment.ts.bu testcenter-frontend/src/environments/environment.ts
 #
 
-test-and-update:
+--test-and-update:
 	make build
 #	make create-interfaces
 #	make test-backend-unit
@@ -188,7 +188,7 @@ test-and-update:
 tag:
 	make build service=testcenter-task-runner
 	make run-task-runner task="tag-prepare $(version-patch)"
-	if make test-and-update; then \
+	if make --test-and-update; then \
   		echo "[SUCCESS]"; \
   	else \
 		make run-task-runner task="tag-revoke"; \

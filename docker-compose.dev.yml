@@ -73,15 +73,18 @@ services:
     environment:
       TC_API_URL: http://testcenter-backend
     volumes:
+      - ./.git:/app/.git
+      - ./.gitignore:/app/.gitignore
+      - ./CHANGELOG.md:/app/CHANGELOG.md
       - ./broadcasting-service:/app/broadcasting-service
       - ./definitions:/app/definitions
       - ./dist-src:/app/dist-src
       - ./dist:/app/dist
       - ./docs:/app/docs
       - ./frontend:/app/frontend
+      - ./package-lock.json:/app/package-lock.json
+      - ./package.json:/app/package.json
       - ./sampledata:/app/sampledata
       - ./scripts:/app/scripts
       - ./test:/app/test
       - ~/.gitconfig:/etc/gitconfig
-      - ./package.json:/app/package.json
-      - ./package-lock.json:/app/package-lock.json
