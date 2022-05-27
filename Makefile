@@ -47,8 +47,9 @@ test-backend-unit:
 		--coverage-html /docs/dist/test-coverage-backend-unit \
 		test/unit/.
 
+# TODO backend and db must be running
 test-backend-dredd:
-	make run-task-runner task=dredd-test
+	make run-task-runner task=backend:dredd-test
 
 test-backend-dredd-mysql:
 	docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql build
