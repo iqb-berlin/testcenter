@@ -7,12 +7,16 @@ services:
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+    networks:
+      - testcenter
 
   testcenter-db:
     ports:
       - "9091:3306"
     command:
       - --log_error_verbosity=2
+    networks:
+      - testcenter
 
   testcenter-backend:
     build:
@@ -35,6 +39,8 @@ services:
       - ./sampledata:/var/www/sampledata
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - testcenter
 
   testcenter-frontend:
     build:
@@ -49,6 +55,8 @@ services:
       - ./frontend/package.json:/app/package.json
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
+    networks:
+      - testcenter
 
   testcenter-broadcasting-service:
     build:
@@ -62,6 +70,8 @@ services:
       - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
       - ./broadcasting-service/tsconfig.json:/app/tsconfig.json
       - ./common:/common
+    networks:
+      - testcenter
 
   testcenter-task-runner:
     profiles:
@@ -71,7 +81,7 @@ services:
       dockerfile: runner.Dockerfile
     container_name: testcenter-runner
     environment:
-      TC_API_URL: http://testcenter-backend
+      TC_API_URL: http://testcenter-backend/
     volumes:
       - ./.git:/app/.git
       - ./.gitignore:/app/.gitignore
@@ -88,3 +98,5 @@ services:
       - ./scripts:/app/scripts
       - ./test:/app/test
       - ~/.gitconfig:/etc/gitconfig
+    networks:
+      - testcenter
