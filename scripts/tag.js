@@ -12,7 +12,7 @@ const cliPrint = require('./helper/cli-print');
 const rootPath = fs.realpathSync(`${__dirname}'/..`);
 
 const packageJson = require('../package.json');
-const {exec} = require("./helper/exec");
+const { exec } = require('./helper/exec');
 
 // see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 // eslint-disable-next-line max-len
@@ -35,10 +35,11 @@ const createNewVersionTag = arg => {
 };
 
 const updateVersion = async done => {
-  const arg = process.argv.pop();
-  cliPrint.headline(`Prepare new version-tag: ${arg}`);
+  const lastArg = process.argv.pop();
+  const versionType = (lastArg === 'bash') ? 'patch' : lastArg;
+  cliPrint.headline(`Prepare new version-tag: ${versionType}`);
   console.log(`Current version is ${version.full}`);
-  createNewVersionTag(arg);
+  createNewVersionTag(versionType);
   console.log(`Target version is ${version.full}`);
   done();
 };
@@ -81,6 +82,7 @@ const checkPrerequisites = async done => {
 
   // everything committed?
   const committed = exec('git status --porcelain');
+  console.log(committed);
   if (committed !== '') {
     done(new Error(cliPrint.get.error('Workspace not clean. Commit or stash your changes.')));
   }
@@ -124,7 +126,7 @@ const updateVersionInFiles = gulp.parallel(
 const revokeTag = async done => {
   cliPrint.headline('Revoke to previous state after failure');
   try {
-    //exec('git reset --hard');
+    exec('git reset --hard');
   } catch (error) {
     done(new Error(cliPrint.get.error(`ERROR: Could not revoke state:${error}`)));
   }

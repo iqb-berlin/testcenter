@@ -187,7 +187,7 @@ init-frontend:
 
 tag:
 	make build service=testcenter-task-runner
-	make run-task-runner task="tag-prepare $(version-patch)"
+	make run-task-runner task="tag-prepare $(version)"
 	if make --test-and-update; then \
   		echo "[SUCCESS]"; \
   	else \
