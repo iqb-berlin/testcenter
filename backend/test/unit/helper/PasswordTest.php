@@ -34,10 +34,12 @@ class PasswordTest extends TestCase {
         $password = "some_password";
         $salt = "whatever";
 
-        $expectation = '4084d373341366b4a4ddf782007181f501ea9767';
+        $exampleHash = '$2y$04$cvGHNrOpxrf1S7UrGViiV.xJeyAtCakbi76ThVjO3bF9M1klQzVKS';
+
         $hash = Password::encrypt($password, $salt, true);
 
-        $this->assertEquals($expectation, $hash);
+        $this->assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
+        $this->assertEquals(strlen($exampleHash), strlen($hash));
     }
 
 
@@ -85,7 +87,7 @@ class PasswordTest extends TestCase {
     }
 
 
-    function test_verify_insecure() {
+    function test_verify_legacy() {
 
         $password = "some_password";
         $wrongPassword = "wrong_password";
@@ -104,6 +106,29 @@ class PasswordTest extends TestCase {
         $this->assertFalse($result);
 
         $result = Password::verify($password, $wrongHash, $salt);
+        $this->assertFalse($result);
+    }
+
+
+    function test_verify_insecure() {
+
+        $password = "some_password";
+        $wrongPassword = "wrong_password";
+        $pepper = "whatever";
+        $wrongPepper = "wrong_pepper";
+        $hash = Password::encrypt($password, $pepper, true);
+        $wrongHash = "Wrong_hash";
+
+        $result = Password::verify($password, $hash, $pepper);
+        $this->assertTrue($result);
+
+        $result = Password::verify($wrongPassword, $hash, $pepper);
+        $this->assertFalse($result);
+
+        $result = Password::verify($password, $hash, $wrongPepper);
+        $this->assertFalse($result);
+
+        $result = Password::verify($password, $wrongHash, $pepper);
         $this->assertFalse($result);
     }
 }
