@@ -221,7 +221,7 @@ class XMLFileTesttakers extends XMLFile {
 
         return new Login(
             $name,
-            Password::encrypt((string) $loginElement['pw'], 't', true), // TODO configurable pepper
+            (string) $loginElement['pw'],
             (string) $loginElement['mode'] ?? 'run-demo',
             (string) $groupElement['id'],
             (string) $groupElement['label'] ?? (string) $groupElement['id'],
