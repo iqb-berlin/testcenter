@@ -23,7 +23,7 @@
     [x] --watch !
     [x] logger
 [x] docker/prod
-[ ] docker/gulp
+[x] docker/gulp
 [ ] docker/lint + deps outside for IDE
 [x] docker/xdebug
 [x] docker/db
@@ -35,7 +35,7 @@
 
 [ ] $SUPERUSER_NAME don't have to be env
 
-[ ] ports
+[ ] ports loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
 [ ] .lock-files
 
 [ ] CI: benutzt anscheinend eine alte docker-compose version
@@ -49,12 +49,16 @@
 [ ] docker/bs/coverage
 
 [x] shared interfaces 
-[ ] fe/doc-scripts
+[ ] fe/doc-scripts (FE #302, FE #148)
     [ ] booklet-config -> XML -> md / json; json in ts
+        [x] json -> ts
+        [ ] xsd -> ts
     [x] super-states
-    [ ] custom-texts
-    [ ] test-mode
-[ ] fe/cyprus -> huaning
+    [x] custom-texts
+        [x] json -> ts
+        [ ] xsd -> ts
+    [x] test-mode
+[ ] fe/cyprus -> huaning branch
 [x] be/dredd-test
 [x] be/init-test
 
@@ -74,21 +78,25 @@
 
 [ ] doku
 
-[ ] fe css-warning
+[ ] fe css-warnings (flex)
 
-[ ] container stop when initialize fails
+[ ] BE container shall stop when initialize fails
 
 
 [ ] hardcode BROADCAST_SERVICE_URI_SUBSCRIBE
 [ ] do something with dredd-report
 
-[ ] import last changes from frontend!
-
 [ ] port 80 loswerden
 
---
+[ ] PHP 8.1 -> extra branch im alten repo
+[ ] node 16
 
-[ ] remove polyfill
-[ ] salt n pepper
-[ ] XML dokumentationen
-[ ] enable     "strictNullChecks": true, is tsconfig
+[ ] CI
+
+
+[ ] salt konfigurierbar
+[ ] XML dokumentationen erzeugen
+[ ] enable "strictNullChecks": true, is tsconfig
+
+[ ] install script
+    [ ] Ports auswählen (setup #22)
