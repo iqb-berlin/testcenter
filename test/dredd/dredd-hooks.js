@@ -73,7 +73,7 @@ dreddHooks.beforeEach((transaction, done) => {
     }
 
     // use virtual environment
-    transaction.request.headers.TestModeClass = true;
+    transaction.request.headers.TestMode = true;
 
     // inject login credentials if necessary
     switch (transaction.expected.statusCode) {
