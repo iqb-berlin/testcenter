@@ -38,7 +38,6 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/helper/FileTime.class.php";
-        require_once "src/helper/FileTime.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileSysCheck.class.php";
@@ -49,6 +48,7 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/workspace/Workspace.class.php";
         require_once "src/workspace/WorkspaceValidator.class.php";
 
+        require_once "test/unit/mock-classes/ExternalFileMock.php";
         require_once "test/unit/mock-classes/PasswordMock.php";
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);

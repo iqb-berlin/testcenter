@@ -203,7 +203,7 @@ final class AdminDAOTest extends TestCase {
                 'code' => 'xxx',
                 'bookletname' => 'first sample test',
                 'unitname' => 'UNIT.SAMPLE',
-                'timestamp' => "1597903000",
+                'timestamp' => 1597903000,
                 'logentry' => 'sample unit log'
             ], [
                 'groupname' => 'sample_group',
@@ -211,7 +211,7 @@ final class AdminDAOTest extends TestCase {
                 'code' => 'xxx',
                 'bookletname' => 'first sample test',
                 'unitname' => '',
-                'timestamp' => "1597903000",
+                'timestamp' => 1597903000,
                 'logentry' => 'sample log entry'
             ]
         ];
@@ -237,7 +237,7 @@ final class AdminDAOTest extends TestCase {
                 'code' => 'xxx',
                 'bookletname' => 'first sample test',
                 'unitname' => 'UNIT.SAMPLE',
-                'priority' => '1',
+                'priority' => 1,
                 'categories' => '',
                 'reviewtime' => '2030-01-01 12:00:00',
                 'entry' => 'this is a sample unit review'
@@ -247,7 +247,7 @@ final class AdminDAOTest extends TestCase {
                 'code' => 'xxx',
                 'bookletname' => 'first sample test',
                 'unitname' => '',
-                'priority' => '1',
+                'priority' => 1,
                 'categories' => '',
                 'reviewtime' => '2030-01-01 12:00:00',
                 'entry' => 'sample booklet review'

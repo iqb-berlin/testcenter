@@ -1,4 +1,4 @@
-ARG PHP_VERSION=7.4.22
+ARG PHP_VERSION=8.1.0
 
 FROM php:${PHP_VERSION} AS backend-composer
 

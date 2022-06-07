@@ -77,7 +77,7 @@ class CSV {
             array_map(
                 function($cell) use ($enclosure, $delimiter) {
 
-                    return $enclosure . preg_replace('#(\\' . $enclosure . ')#', '`', $cell) . $enclosure;
+                    return $enclosure . preg_replace('#(\\' . $enclosure . ')#', '`', (string) $cell) . $enclosure;
                 },
                 $row
             )
