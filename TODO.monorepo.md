@@ -58,7 +58,7 @@
         [x] json -> ts
         [ ] xsd -> ts
     [x] test-mode
-[ ] fe/cyprus -> huaning branch
+[ ] fe/cyprus -> huaning branch (https://github.com/iqb-berlin/testcenter-frontend/tree/e2e/cypress)
 [x] be/dredd-test
 [x] be/init-test
 
@@ -90,6 +90,8 @@
 
 [ ] PHP 8.1 -> extra branch im alten repo
 [ ] node 16
+[ ] nest updated
+[ ] angular 14
 
 [ ] CI
 
@@ -100,3 +102,5 @@
 
 [ ] install script
     [ ] Ports auswählen (setup #22)
+
+[ ] Browserstack -> huaning
