@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
-use Slim\App;
-use Slim\Container;
+//use Slim\App;
+//use Slim\Container;
+use DI\Container;
+use Slim\Factory\AppFactory;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 
 try {
@@ -14,6 +18,7 @@ try {
 
     require_once "vendor/autoload.php";
     require_once "autoload.php";
+
 
     $isPreparedForRealDataTest = getenv('TESTMODE_REAL_DATA', true) || getenv('TESTMODE_REAL_DATA');
     $isTestModeRequested = isset($_SERVER['HTTP_TESTMODE']);
@@ -39,16 +44,32 @@ try {
         DB::connect();
     }
 
+//    $container = new Container();
+
+
     $container = new Container();
-    $container['errorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
-        return new ErrorHandler();
-    };
-    $container['phpErrorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
-        return new ErrorHandler();
-    };
-    $container['settings']['displayErrorDetails'] = true;
-    $container['settings']['addContentLengthHeader'] = true;
-    $app = new App($container);
+
+//    $container['errorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
+//        return new ErrorHandler();
+//    };
+//    $container['phpErrorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
+//        return new ErrorHandler();
+//    };
+//    $container['settings']['displayErrorDetails'] = true;
+//    $container['settings']['addContentLengthHeader'] = true;
+
+
+    AppFactory::setContainer($container);
+    $app = AppFactory::create();
+
+    $app->addRoutingMiddleware();
+    $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+    $errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
+
+//    $app = new App($container);
+
+
+    $app->setBasePath('/testcenter/backend'); // TODO use Server::getUrl() or what to get the correct path
 
     include_once 'routes.php';
 
@@ -62,5 +83,5 @@ try {
     header('Error-ID:' . $id);
     error_log("$id (500) at {$e->getFile()}:{$e->getLine()}");
     error_log($e->getMessage());
-    echo "Fatal error!" . "$id (500) at {$e->getFile()}:{$e->getLine()}";
+    echo "Fatal error!" . "$id (500) at {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}";
 }

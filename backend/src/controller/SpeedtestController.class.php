@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 
 use Slim\Http\Response;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 
 class SpeedtestController extends Controller {
 

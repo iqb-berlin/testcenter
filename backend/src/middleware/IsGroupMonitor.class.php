@@ -4,12 +4,14 @@ declare(strict_types=1);
 // TODO unit test
 
 use Slim\Exception\HttpForbiddenException;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+
 
 class IsGroupMonitor {
 
-    function __invoke(Request $request, Response $response, $next) {
+    function __invoke(Request $request, RequestHandler $handler): ResponseInterface {
 
         /* @var $authToken AuthToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -22,6 +24,6 @@ class IsGroupMonitor {
                 Wrong mode for personSession: `{$authToken->getMode()}`. `monitor-group` required.");
         }
 
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 }

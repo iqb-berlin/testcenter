@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Http\Response;
-use Slim\Http\Request;
-use Slim\Route;
+use Slim\Http\ServerRequest as Request;
+use Slim\Routing\Route;
 
 class SystemController extends Controller {
 
@@ -67,7 +67,7 @@ class SystemController extends Controller {
 
         global $app;
         $routes = array_reduce(
-            $app->getContainer()->get('router')->getRoutes(),
+            $app->getRouteCollector()->getRoutes(),
             function($target, Route $route) {
                 foreach ($route->getMethods() as $method) {
                     $target[] = "[$method] " . $route->getPattern();

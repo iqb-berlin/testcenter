@@ -8,7 +8,7 @@ use Slim\Exception\HttpBadRequestException;
 use slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\NotFoundException;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 use Slim\Http\Stream;
 

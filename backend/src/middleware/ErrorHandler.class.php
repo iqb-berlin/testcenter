@@ -4,7 +4,7 @@ declare(strict_types=1);
 // TODO unit test
 
 use Slim\Exception\HttpException;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 class ErrorHandler {
@@ -61,7 +61,9 @@ class ErrorHandler {
     }
 
 
-    public function __invoke(Request $request, Response $response, Throwable $throwable): Response {
+    public function __invoke(Request $request, Throwable $throwable): Response {
+
+        global $app;
 
         $code = ErrorHandler::getHTTPSaveExceptionCode($throwable);
         $errorUniqueId = ErrorHandler::logException($throwable, $code >= 500);
@@ -74,10 +76,12 @@ class ErrorHandler {
             $throwable = $newThrowable;
         }
 
-        return $response
-            ->withStatus($throwable->getCode(), $throwable->getTitle())
-            ->withHeader('Content-Type', 'text/html')
-            ->withHeader('Error-ID', $errorUniqueId)
-            ->write($throwable->getMessage() ? $throwable->getMessage() : $throwable->getDescription());
+        return $app
+            ->getResponseFactory()
+            ->createResponse()
+                ->withStatus($throwable->getCode(), $throwable->getTitle())
+                ->withHeader('Content-Type', 'text/html')
+                ->withHeader('Error-ID', $errorUniqueId)
+                ->write($throwable->getMessage() ? $throwable->getMessage() : $throwable->getDescription());
     }
 }

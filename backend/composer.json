@@ -10,18 +10,21 @@
   "readme": "README.md",
   "license": "MIT",
   "require": {
-    "slim/slim": "^3.12.0",
-    "php": "8.1",
-    "ext-pdo_mysql": "*",
-    "ext-json": "*",
-    "ext-pdo": "*",
-    "ext-zip": "*",
-    "ext-libxml": "*",
-    "ext-simplexml": "*",
-    "ext-xmlreader": "*",
+    "php": "8.1.6",
+    "php-di/php-di": "^6.4",
+    "slim/psr7": "^1.5",
+    "slim/slim": "4.10.0",
     "ext-curl": "*",
     "ext-dom": "*",
-    "ext-mbstring": "*"
+    "ext-json": "*",
+    "ext-libxml": "*",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-simplexml": "*",
+    "ext-xmlreader": "*",
+    "ext-zip": "*",
+    "slim/http": "^1.2"
   },
   "suggest": {
     "ext-apache": "*"

@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 // TODO unit tests !
 
 use Slim\Exception\HttpForbiddenException;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 

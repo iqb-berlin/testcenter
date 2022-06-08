@@ -436,7 +436,7 @@ class SessionDAO extends DAO {
                     (int) $personSession['workspace_id'],
                     Timestamp::fromSQLFormat($personSession['valid_to']),
                     Timestamp::fromSQLFormat($personSession['valid_from']),
-                    Timestamp::fromSQLFormat($personSession['valid_for']),
+                    $personSession['valid_for'],
                     JSON::decode($personSession['custom_texts'])
                 )
             ),

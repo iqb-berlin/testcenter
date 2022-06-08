@@ -4,9 +4,9 @@ declare(strict_types=1);
 // TODO unit tests !
 
 use Slim\Exception\HttpException;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
-use Slim\Http\Stream;
+use \Slim\Psr7\Stream;
 
 
 class TestController extends Controller {

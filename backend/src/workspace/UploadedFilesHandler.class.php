@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\UploadedFile;
 
 class UploadedFilesHandler {

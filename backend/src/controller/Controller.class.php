@@ -1,7 +1,7 @@
 <?php
 
 
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 
 abstract class Controller {
 

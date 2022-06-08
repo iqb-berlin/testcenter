@@ -3,15 +3,17 @@
 declare(strict_types=1);
 // TODO unit test
 
+use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Http\ServerRequest as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Routing\RouteContext;
 
 class IsWorkspacePermitted {
 
 
-    private $_necessaryRole = "";
+    private string $_necessaryRole = "";
 
 
     function __construct(string $necessaryRole = '') {
@@ -20,9 +22,10 @@ class IsWorkspacePermitted {
     }
 
 
-    function __invoke(Request $request, Response $response, $next) {
+    function __invoke(Request $request, RequestHandler $handler): ResponseInterface {
 
-        $route = $request->getAttribute('route');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
         $params = $route->getArguments();
 
         if (!isset($params['ws_id']) or ((int) $params['ws_id'] < 1)) {
@@ -47,7 +50,7 @@ class IsWorkspacePermitted {
             throw new HttpForbiddenException($request,"Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");
         }
 
-        return $next($request, $response);
+        return $handler->handle($request);
 
     }
 }

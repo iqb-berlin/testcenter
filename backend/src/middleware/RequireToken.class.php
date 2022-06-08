@@ -4,8 +4,8 @@ declare(strict_types=1);
 // TODO unit test
 
 use Slim\Exception\HttpUnauthorizedException;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Http\ServerRequest as Request;
 
 
 class RequireToken {
@@ -17,10 +17,10 @@ class RequireToken {
         $this->requiredTypes = $requiredTypes;
     }
 
-    function __invoke(Request $request, Response $response, $next) {
+    function __invoke(Request $request, RequestHandler $handler) {
 
         if ($request->isOptions()) {
-            return $next($request, $response);
+            return $handler->handle($request);
         }
 
         $tokenString = $this->getTokenFromHeader($request);
@@ -31,7 +31,7 @@ class RequireToken {
 
         $request = $request->withAttribute('AuthToken', $token);
 
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 
 

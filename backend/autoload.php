@@ -5,6 +5,10 @@ spl_autoload_register(function($className) {
     $className = explode("\\", $className);
     $className = array_pop($className);
 
+    if (class_exists($className)) {
+        throw new Exception("Class EXIST: $className");
+    }
+
     $includeDirs = [
         ROOT_DIR . "/backend/src"
     ];
@@ -15,6 +19,4 @@ spl_autoload_register(function($className) {
             return;
         }
     }
-
-    throw new Exception("Fatal error: Class not found: $className");
 });

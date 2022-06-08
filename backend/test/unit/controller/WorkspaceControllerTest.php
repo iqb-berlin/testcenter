@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Slim\App;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\Environment;
-use Slim\Http\Request;
+use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 
@@ -166,7 +166,7 @@ final class WorkspaceControllerTest extends TestCase {
         $this->testGetReportWithEmptyDataIds(ReportType::LOG, 'text/csv', 'setAdminDAOInstance');
     }
 
-    
+
     private function testGetReportWithEmptyDataIds(string $reportType, string $mediaType, string $expectedMethod): void {
 
         // Arrange
