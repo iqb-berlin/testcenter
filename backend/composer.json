@@ -1,11 +1,11 @@
 {
-  "name": "iqb/testcenter-api",
+  "name": "iqb/testcenter-backend",
   "description": "IQB-Testcenter (Backend)",
   "homepage": "https://iqb-testcenter.de",
   "type": "project",
   "support": {
-    "issues": "https://github.com/iqb-berlin/testcenter-backend/issues",
-    "docs": "https://iqb-berlin.github.io/testcenter-backend/"
+    "issues": "https://github.com/iqb-berlin/testcenter/issues",
+    "docs": "https://iqb-berlin.github.io/testcenter/"
   },
   "readme": "README.md",
   "license": "MIT",

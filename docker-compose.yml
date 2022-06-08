@@ -3,7 +3,7 @@
 version: '3.7'
 
 x-env-php: &env-php
-  PHP_VERSION: 8.1.0
+  PHP_VERSION: 8.1.6
 
 x-env-node: &env-node
   NODE_VERSION: 14.15.0

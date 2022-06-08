@@ -1,12 +1,11 @@
-ARG PHP_VERSION=8.1.0
+ARG PHP_VERSION=8.1.6
 
 FROM php:${PHP_VERSION} AS backend-composer
 
 RUN apt-get update && apt-get install -y \
   zlib1g-dev \
   libzip-dev \
-  unzip \
-  git
+  unzip
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
 
