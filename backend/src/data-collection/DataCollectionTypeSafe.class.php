@@ -4,7 +4,7 @@
 abstract class DataCollectionTypeSafe implements JsonSerializable {
 
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
 
         $jsonData = [];
 
