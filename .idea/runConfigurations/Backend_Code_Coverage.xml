@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Backend/Code-Coverage" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" folderName="Run Locally (PHP)">
+    <CommandLine parameters="-dxdebug.mode=coverage" workingDirectory="$PROJECT_DIR$" />
+    <TestRunner bootstrap_file="$PROJECT_DIR$/backend/test/unit/bootstrap.php" configuration_file="$PROJECT_DIR$/backend/phpunit.xml" directory="$PROJECT_DIR$/backend/test/unit" options="--coverage-html ./docs/dist/test-coverage-backend-unit" use_alternative_bootstrap_file="true" />
+    <method v="2" />
+  </configuration>
+</component>
