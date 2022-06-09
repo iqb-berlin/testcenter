@@ -27,14 +27,7 @@ class RequestBodyParser {
         return isset($requestBody->$elementName) ? $requestBody->$elementName : $default;
     }
 
-    /**
-     * @param Request $request
-     * @param array $elements2defaults
-     * @return array - an array
-     *      keys are (root-)elements from body to receive,
-     *      values are default values or 0 if element is required
-     * @throws HttpError
-     */
+
     static function getElements(Request $request, array $elements2defaults = []): array {
 
         $requestBody = JSON::decode($request->getBody()->getContents());

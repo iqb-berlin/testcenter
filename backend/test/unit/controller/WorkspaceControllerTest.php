@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
+use DI\Container;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Slim\App;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Http\Environment;
+use Slim\Factory\AppFactory;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
@@ -35,21 +36,22 @@ final class WorkspaceControllerTest extends TestCase {
     ];
 
     private array $callable;
-    private Report $reportMock;
-    private AdminDAO $adminDaoMock;
-    private SysChecksFolder $sysChecksFolderMock;
+    private Report|MockInterface $reportMock;
+    private AdminDAO|MockInterface $adminDaoMock;
+    private SysChecksFolder|MockInterface $sysChecksFolderMock;
 
     private string $requestMethod = 'GET';
     private int $workspaceId = 1;
     private string $dataIds = 'id1,id2';
 
-    private Workspace $workspaceMock;
-    private WorkspaceDAO $workspaceDaoMock;
-    private UploadedFilesHandler $uploadedFilesHandler;
+    private Workspace|MockInterface $workspaceMock;
+    private WorkspaceDAO|MockInterface $workspaceDaoMock;
+    private UploadedFilesHandler|MockInterface $uploadedFilesHandler;
 
     function setUp(): void {
 
         require_once "test/unit/test-helper/RequestCreator.class.php";
+        require_once "test/unit/test-helper/ResponseCreator.class.php";
 
         require_once "test/unit/mock-classes/PasswordMock.php";
 
@@ -63,9 +65,6 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "src/data-collection/ReportFormat.php";
         require_once "src/data-collection/Login.class.php";
         require_once "src/data-collection/LoginArray.class.php";
-        require_once "src/exception/HttpException.class.php";
-        require_once "src/exception/HttpSpecializedException.class.php";
-        require_once "src/exception/HttpNotFoundException.class.php";
         require_once "src/helper/RequestBodyParser.class.php";
         require_once "src/helper/JSON.class.php";
         require_once "src/helper/FileName.class.php";
@@ -119,11 +118,13 @@ final class WorkspaceControllerTest extends TestCase {
 
     private function callSlimFramework(string $path, string $mediaType, string $reportType): ResponseInterface {
 
-        $app = new App();
+        $container = new Container();
+        AppFactory::setContainer($container);
+        $app = AppFactory::create();
         $app->get($path, $this->callable);
 
         $request = $this->createReportRequest($this->requestMethod, $mediaType, $this->workspaceId, $reportType, $this->dataIds);
-        $response = $app($request, new Response());
+        $response = $app->handle($request);
         $response->getBody()->rewind();
 
         return $response;
@@ -138,18 +139,21 @@ final class WorkspaceControllerTest extends TestCase {
         ?string $dataIds
     ): Request {
 
-        $environment = Environment::mock([
-            'REQUEST_METHOD' => strtoupper($requestMethod),
-            'REQUEST_URI' => "/$workspaceId/report/$reportType",
-            'QUERY_STRING' => empty($dataIds) ? "" : "dataIds=$dataIds",
-            'HTTP_ACCEPT' => $mediaType
-        ]);
-        $request = Request::createFromEnvironment($environment);
-        $request = $request->withMethod(strtoupper($requestMethod));
+        $request = RequestCreator::create(
+            strtoupper($requestMethod),
+            "/$workspaceId/report/$reportType",
+            "",
+            [
+                'REQUEST_METHOD' => strtoupper($requestMethod),
+                'REQUEST_URI' => "/$workspaceId/report/$reportType"
+            ]
+        );
         $request = $request->withAttributes([
             'ws_id' => $workspaceId,
             'type' => $reportType
         ]);
+        $request = $request->withHeader('HTTP_ACCEPT', $mediaType);
+        $request = $request->withQueryParams(empty($dataIds) ? [] : ['dataIds' => $dataIds]);
 
         return $request->withHeader('Content-Type', $mediaType);
     }
@@ -407,7 +411,11 @@ final class WorkspaceControllerTest extends TestCase {
     function test_GetReport_WithSystemCheckAndInvalidAcceptHeader(): void {
 
         $this->testGetJSONReport(
-            ReportType::SYSTEM_CHECK, 'application/xml', ['application/json'], 'setSysChecksFolderInstance');
+            ReportType::SYSTEM_CHECK,
+            'application/xml',
+            ['application/json'],
+            'setSysChecksFolderInstance'
+        );
     }
 
 
@@ -444,7 +452,7 @@ final class WorkspaceControllerTest extends TestCase {
                 '/workspace/1/files/',
                 json_encode(['f' => $deletionRequest])
             )->withAttribute('ws_id', 1),
-            new Response()
+            ResponseCreator::createEmpty()
         );
 
         $response->getBody()->rewind();
@@ -503,7 +511,7 @@ final class WorkspaceControllerTest extends TestCase {
                 'fileforvo',
                 $files
             )->withAttribute('ws_id', 1),
-            new Response()
+            ResponseCreator::createEmpty()
         );
 
         $response->getBody()->rewind();

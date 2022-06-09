@@ -44,7 +44,7 @@ class ErrorHandler {
 
         if (isset($_SERVER['REMOTE_ADDR'])) {
             $ip = explode(".", $_SERVER['REMOTE_ADDR']);
-            return "user-" . md5($ip[0] . ($ip[1] ?? '') . ($ip[2] ?? '') . $_SERVER['HTTP_USER_AGENT']);
+            return "user-" . md5($ip[0] . ($ip[1] ?? '') . ($ip[2] ?? '') . ($_SERVER['HTTP_USER_AGENT'] ?? ''));
         }
 
         return 'pid-' . getmypid();

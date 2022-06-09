@@ -47,7 +47,7 @@ try {
 //    $container = new Container();
 
 
-    $container = new Container();
+
 
 //    $container['errorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
 //        return new ErrorHandler();
@@ -58,7 +58,7 @@ try {
 //    $container['settings']['displayErrorDetails'] = true;
 //    $container['settings']['addContentLengthHeader'] = true;
 
-
+    $container = new Container();
     AppFactory::setContainer($container);
     $app = AppFactory::create();
 

@@ -1,10 +1,11 @@
 <?php
 
-use Slim\Http\Environment;
-use Slim\Http\Headers;
-use Slim\Http\Request;
-use Slim\Http\Stream;
-use Slim\Http\Uri;
+use Slim\Psr7\Environment;
+use Slim\Psr7\Factory\UriFactory;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Request;
+use Slim\Psr7\Stream;
+use Slim\Http\ServerRequest;
 
 class RequestCreator {
     static function create(
@@ -14,14 +15,17 @@ class RequestCreator {
         array $environment = [],
         array $cookies = [],
         array $serverParams = []
-    ):Request {
-        return new Request(
-            $method,
-            Uri::createFromString($uri),
-            Headers::createFromEnvironment(Environment::mock($environment)),
-            $cookies,
-            $serverParams,
-            new Stream(fopen(sprintf('data://text/plain,%s', $body), 'r'))
+    ): ServerRequest {
+        $uriFactory = new UriFactory();
+        return new ServerRequest(
+             new Request(
+                $method,
+                $uriFactory->createUri($uri),
+                new Headers([], Environment::mock($environment)),
+                $cookies,
+                $serverParams,
+                new Stream(fopen(sprintf('data://text/plain,%s', $body), 'r'))
+            )
         );
     }
 
@@ -33,7 +37,7 @@ class RequestCreator {
         array $environment = [],
         array $cookies = [],
         array $serverParams = []
-    ):Request {
+    ): ServerRequest {
 
         $environment = array_merge(
             $environment,

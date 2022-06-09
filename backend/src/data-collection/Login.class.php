@@ -28,9 +28,9 @@ class Login extends DataCollectionTypeSafe {
         string $groupLabel,
         array $booklets,
         int $workspaceId,
-        int $validTo = 0,
-        int $validFrom = 0,
-        int $validForMinutes = 0,
+        ?int $validTo = 0,
+        ?int $validFrom = 0,
+        ?int $validForMinutes = 0,
         $customTexts = null
     ) {
 
@@ -41,15 +41,15 @@ class Login extends DataCollectionTypeSafe {
         $this->groupLabel = $groupLabel;
         $this->booklets = $booklets;
         $this->workspaceId = $workspaceId;
-        $this->validFrom = $validFrom;
-        $this->validTo = $validTo;
-        $this->validForMinutes = $validForMinutes;
+        $this->validFrom = $validFrom ?? 0;
+        $this->validTo = $validTo ?? 0;
+        $this->validForMinutes = $validForMinutes ?? 0;
         $this->customTexts = $customTexts ?? new stdClass();
     }
-    
+
 
     public function getName(): string {
-        
+
         return $this->name;
     }
 
@@ -61,13 +61,13 @@ class Login extends DataCollectionTypeSafe {
 
 
     public function getMode(): string {
-        
+
         return $this->mode;
     }
 
 
     public function getGroupName(): string {
-        
+
         return $this->groupName;
     }
 
@@ -79,11 +79,11 @@ class Login extends DataCollectionTypeSafe {
 
 
     public function getBooklets(): array {
-        
+
         return $this->booklets;
     }
-    
-    
+
+
     public function getWorkspaceId(): int {
 
         return $this->workspaceId;
