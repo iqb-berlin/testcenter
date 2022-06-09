@@ -6,7 +6,7 @@ declare(strict_types=1);
 use Slim\Exception\HttpException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
-use \Slim\Psr7\Stream;
+use Slim\Psr7\Stream;
 
 
 class TestController extends Controller {
@@ -48,7 +48,7 @@ class TestController extends Controller {
         }
         BroadcastService::sessionChange($message);
 
-        $response->getBody()->write($test['id']);
+        $response->getBody()->write((string) $test['id']);
         return $response->withStatus(201);
     }
 

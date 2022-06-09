@@ -7,10 +7,9 @@ declare(strict_types=1);
 use Slim\Exception\HttpBadRequestException;
 use slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\NotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
-use Slim\Http\Stream;
+use Slim\Psr7\Stream;
 
 
 class WorkspaceController extends Controller {
@@ -327,7 +326,7 @@ class WorkspaceController extends Controller {
         /* @var XMLFileSysCheck $sysCheck */
         $sysCheck = $validator->getSysCheck($sysCheckName);
         if (($sysCheck == null)) {
-            throw new NotFoundException($request, $response);
+            throw new HttpNotFoundException($request);
         }
 
         if (!$sysCheck->hasUnit()) {
