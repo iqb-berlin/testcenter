@@ -1,81 +1,83 @@
-include:
-  - template: Security/Secret-Detection.gitlab-ci.yml
+# include:
+  # - template: Security/Secret-Detection.gitlab-ci.yml
 
-image: docker:20.10.5
-
-variables:
-  DOCKER_TLS_CERTDIR: ""
-  GIT_SUBMODULE_STRATEGY: normal
-
-services:
-  - docker:20.10.5-dind
+# image: docker:20.10.5
+#
+# variables:
+#   DOCKER_TLS_CERTDIR: ""
+#   GIT_SUBMODULE_STRATEGY: normal
+#
+# services:
+#   - docker:20.10.5-dind
 
 stages:
   - build
-  - test
-  - check
+  # - test
+  # - check
 
 build:
   stage: build
+  tags:
+    - shell-docker
   script:
-    - apk add make docker-compose
-    - make init
-    - make build
-    - docker save iqbberlin/testcenter-backend > backend_image.tar
+    - docker info
+#    - apk add make docker-compose
+#    - make init
+#    - make build
+#    - docker save iqbberlin/testcenter-backend > backend_image.tar
 #    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
 #    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
-  artifacts:
-    paths:
-      - backend_image.tar
-      - frontend_image.tar
-      - broadcasting-service_image.tar
-    expire_in: 10 minutes
-
-test-backend-dredd:
-  stage: test
-  script:
-    - apk add make docker-compose
-    - make init
-    - docker load -i backend_image.tar
-    - make test-backend-dredd
-
-test-backend-unit:
-  stage: test
-  script:
-    - apk add make docker-compose
-    - make init-env
-    - make composer-install
-    - make download-simple-player
-    - docker load -i backend_image.tar
-    - make test-backend-unit
-
-test-frontent-unit:
-  stage: test
-  script:
-    - apk add make docker-compose
-    - make init-env
-    - make init-frontend
-    - docker load -i frontent_image.tar
-    - make test-frontent-unit
-
-test-broadcasting-service-unit:
-  stage: test
-  script:
-    - apk add make docker-compose
-    - make init-env
-    - docker load -i broadcasting-service_image.tar
-    - make test-broadcasting-service-unit
-
-test-backend-init-general:
-  stage: test
-  script:
-    - apk add make docker-compose
-    - make init
-    - docker load -i broadcasting-service_image.tar
-    - docker load -i frontent_image.tar
-    - docker load -i backend_image.tar
-    - make test-backend-init-general
-
-.secret-analyzer:
-  stage: check
-
+#   artifacts:
+#     paths:
+#       - backend_image.tar
+#       - frontend_image.tar
+#       - broadcasting-service_image.tar
+#     expire_in: 10 minutes
+#
+# test-backend-dredd:
+#   stage: test
+#   script:
+#     - apk add make docker-compose
+#     - make init
+#     - docker load -i backend_image.tar
+#     - make test-backend-dredd
+#
+# test-backend-unit:
+#   stage: test
+#   script:
+#     - apk add make docker-compose
+#     - make init-env
+#     - make composer-install
+#     - make download-simple-player
+#     - docker load -i backend_image.tar
+#     - make test-backend-unit
+#
+# test-frontent-unit:
+#   stage: test
+#   script:
+#     - apk add make docker-compose
+#     - make init-env
+#     - make init-frontend
+#     - docker load -i frontent_image.tar
+#     - make test-frontent-unit
+#
+# test-broadcasting-service-unit:
+#   stage: test
+#   script:
+#     - apk add make docker-compose
+#     - make init-env
+#     - docker load -i broadcasting-service_image.tar
+#     - make test-broadcasting-service-unit
+#
+# test-backend-init-general:
+#   stage: test
+#   script:
+#     - apk add make docker-compose
+#     - make init
+#     - docker load -i broadcasting-service_image.tar
+#     - docker load -i frontent_image.tar
+#     - docker load -i backend_image.tar
+#     - make test-backend-init-general
+#
+# .secret-analyzer:
+#   stage: check
