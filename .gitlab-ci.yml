@@ -21,6 +21,7 @@ build:
     - shell-docker
   script:
     - docker info
+    - apt-get install make -f
 #    - apk add make docker-compose
 #    - make init
 #    - make build
