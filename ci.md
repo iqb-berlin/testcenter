@@ -16,21 +16,19 @@
   * BE init-tests
   * BS unit
   * linting xyz
-  * docs generieren
 * Push on Master
-* Build
-  * FE unit test
-  * FE e2e test (cypress gegen mock)
-  * BE unit
-  * BE dredd
-  * BE init-tests
-  * BS unit
-  * linting xyz
+  * alles testen (?)
   * docs generieren
 
+----------------------------------------------------------------
 
-* Tag + Release
-* Tag (Beta)
+* Tag
+  * (keine tests noch mal)
+  * kreiert produktive docker images
+  * deployment auf test-server
+  * (macht ein release?)
+
+- Rc-Tag (rc1, rc2, rc3) -> nur ein spezieller Tag  
 
 ## Schritte
 * Build
@@ -47,7 +45,7 @@
 
 
 
-==================================================
+============================================================
 
 Entwickeln mit Docker. Ja.
 

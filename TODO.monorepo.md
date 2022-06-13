@@ -1,106 +1,63 @@
 # TODO
-[x] merge repos
-[x] eslint/IDE
-[x] eslint/js
-[x] eslint/html
-[x] eslint/cli
-[x] fe/build prod
-[x] single source of version !
-[x] xdebug/local
-[x] be/unit-test
-[x] fe/unit-test
-[x] bs/unit-test
-[x] be/coverage
-[x] fe/coverage
-[x] bs/coverage
-[x] compodoc
-[ ] fe/breakpoints
-
-[x] be/docker
-    [x]  Cannot GET /version
-[x] fe/docker
-[x] bs/docker
-    [x] --watch !
-    [x] logger
-[x] docker/prod
-[x] docker/gulp
-[ ] docker/lint + deps outside for IDE
-[x] docker/xdebug
-[x] docker/db
-    [x] weniger verbose
-
-[!] BACKEND: Repair - [PUT] http://localhost/testcenter/backend/test does not work, because there is a folder "test"
-[!] init test for new patch
-[!] Cypress global types https://github.com/cypress-io/cypress/issues/1319#issuecomment-517489190
-
-[ ] $SUPERUSER_NAME don't have to be env
-
-[ ] ports loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
-[ ] .lock-files
-
+CI
+[ ] CI einrichten (siehe CI.md)
+[ ] Browserstack -> huaning
 [ ] CI: benutzt anscheinend eine alte docker-compose version
-
-[x] docker/be/dredd-test
-[x] docker/be/unit-test
-[x] docker/fe/unit-test
-[x] docker/bs/unit-test
-[ ] docker/be/coverage
-[ ] docker/fe/coverage
-[ ] docker/bs/coverage
-
-[x] shared interfaces 
-[ ] fe/doc-scripts (FE #302, FE #148)
-    [ ] booklet-config -> XML -> md / json; json in ts
-        [x] json -> ts
-        [ ] xsd -> ts
-    [x] super-states
-    [x] custom-texts
-        [x] json -> ts
-        [ ] xsd -> ts
-    [x] test-mode
-[ ] fe/cyprus -> huaning branch (https://github.com/iqb-berlin/testcenter-frontend/tree/e2e/cypress)
-[x] be/dredd-test
-[x] be/init-test
-
-[ ] new_version_scripts
-[ ] installer / deployment
-
-[ ] be/dredd-test Beschleunigung
-
-[ ] integration-test
-[ ] CORS?
-[x] PSR warning
-
-[ ] makefiles
-[ ] gitlab-ci
-
-[ ] docker/watch tests
-
-[ ] doku
-
-[ ] fe css-warnings (flex)
-
-[ ] BE container shall stop when initialize fails
+[ ] CI: mehrere Artefakte gleichzeitig funktionieren nicht
 
 
+install script
+[ ] Ports auswählen (setup #22)
+[ ] mit neuen releases klarkommen
+
+
+Docker
+[ ] docker-compose in eigenes Verzeichnis
+[ ] docker kram in den Unterprojekten ebenfalls
+[ ] port 80 loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
+
+
+Misc
+[ ] SimplePlayer beilegen, statt runterladen
+[ ] Besseren namen für dredd finden und einsetzen
+[ ] XML dokumentationen erzeugen
 [ ] hardcode BROADCAST_SERVICE_URI_SUBSCRIBE
+[ ] $SUPERUSER_NAME don't have to be env
 [ ] do something with dredd-report
+[ ] Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
 
-[ ] port 80 loswerden
 
-[ ] PHP 8.1 -> extra branch im alten repo
+Cypress
+[ ] Letzten Stand besorgen
+[ ] Gegen Testdaten testen (nicht auf Ursprungszustand verlassen)
+[ ] CSS-Selektoren überarbeiten
+[ ] Ordner- und Dateinamen
+
+
+Frontend
+[ ] FileSaver selber schreiben - in Typescript (includes Ordner weg)
+[ ] angular 14
+[ ] enable "strictNullChecks": true, is tsconfig
+[ ] node 16
+[ ] fe css-warnings (flex)
+[ ] fe/cyprus -> huaning branch (https://github.com/iqb-berlin/testcenter-frontend/tree/e2e/cypress)
+[ ] fe/breakpoints
+[ ] watch e2e-tests also with docker
+
+
+Broadcasting_Service
+[ ] enable "strictNullChecks": true, is tsconfig
 [ ] node 16
 [ ] nest updated
-[ ] angular 14
-
-[ ] CI
 
 
+Database
+[ ] sqlite Datei in Testordner überführen
+
+
+Backend
 [ ] salt konfigurierbar
-[ ] XML dokumentationen erzeugen
-[ ] enable "strictNullChecks": true, is tsconfig
-
-[ ] install script
-    [ ] Ports auswählen (setup #22)
-
-[ ] Browserstack -> huaning
+[ ] Config-Folder persistieren?
+[ ] PHP 8.1 -> im extra branch
+[ ] CORS?
+[ ] BE container shall stop when initialize fails
