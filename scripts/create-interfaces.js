@@ -1,4 +1,9 @@
 /* eslint-disable no-console,import/no-extraneous-dependencies */
+
+/**
+ * Some interfaces (in the frontend) are auto-generated
+ */
+
 const fs = require('fs');
 const gulp = require('gulp');
 const cliPrint = require('./helper/cli-print');
@@ -6,6 +11,15 @@ const cliPrint = require('./helper/cli-print');
 const commonDir = fs.realpathSync(`${__dirname}'/../common`);
 const definitionsDir = fs.realpathSync(`${__dirname}'/../definitions`);
 
+/**
+ * Creates class for booklet-configurations. `frontend/src/app/shared/classes/booklet-config.class.ts`
+ *
+ * Read more about booklet-configurations in user's manual (german):
+ * https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/Booklet%E2%80%90Xml#Konfiguration
+ *
+ * Primary Source is `definitions/booklet-config.json`.
+ * TODO make the primary source be `definitions/vo_booklet.xsd`.
+ */
 exports.bookletConfigData = done => {
   cliPrint.headline('BookletConfig: Writing interface');
 
@@ -33,6 +47,16 @@ exports.bookletConfigData = done => {
   done();
 };
 
+/**
+ * Creates class for test-modes. `frontend/src/app/shared/classes/test-mode.class.ts`
+ *
+ * Read more in user's manual (german):
+ * https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/Login:-Modi-der-Testdurchf%C3%BChrung
+ *
+ * Primary Source of test-modes are `definitions/test-mode.json` and `definitions/test-mode.json`.
+ * This is also used to generate the docs.
+ * TODO make the primary source be `definitions/vo_testtakers.xsd`.
+ */
 exports.testModeData = done => {
   cliPrint.headline('TestMode: Writing interface');
 

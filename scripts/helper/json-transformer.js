@@ -1,4 +1,10 @@
 /* eslint-disable no-console */
+
+/**
+ * Can transform highly complex json-objects by a set of rules. It's used to create Version of the API-Specs for ReDoc
+ * and for Dredd.
+ */
+
 module.exports = function jsonTransformer(json, rules, verbose = false) {
   const isType = (type, val) => ((val === null)
     ? (type === 'null')

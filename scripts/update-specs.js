@@ -1,4 +1,12 @@
 /* eslint-disable no-console,import/no-extraneous-dependencies */
+
+/**
+ * Creates the documentation of the Backend-API. It's a Package called Redoc, which takes the API-sepcs in OpenApi3
+ * format and makes HTML out of it.
+ *
+ * See more documentation at the bottom of this file.
+ */
+
 const fs = require('fs');
 const gulp = require('gulp');
 const yamlMerge = require('gulp-yaml-merge');
@@ -12,6 +20,7 @@ const tmpDir = fs.realpathSync(`${__dirname}'/../tmp`);
 const docsDir = fs.realpathSync(`${__dirname}'/../docs`);
 const sampledataDir = fs.realpathSync(`${__dirname}'/../sampledata`);
 
+// TODO make private task
 exports.mergeSpecFiles = () => {
   cliPrint.headline('compile spec files to one');
   return gulp.src(`${docsDir}/src/api/*.spec.yml`)
@@ -32,6 +41,7 @@ exports.prepareDocsDestinationFolder = done => {
   done();
 };
 
+// TODO make private task
 exports.updateDocs = done => {
   cliPrint.headline('write compiled spec to docs folder');
 
@@ -65,10 +75,12 @@ exports.updateDocs = done => {
   done();
 };
 
+// TODO can this be deleted? Is there a replacement for it in tag.js?
 exports.updateSampleFiles = done => {
   cliPrint.headline('Update sample files');
 
   const regex = /xsi:noNamespaceSchemaLocation="[^"]+\/definitions\/v?o?_?(\S*).xsd"/gm;
+  // eslint-disable-next-line max-len
   const reference = `xsi:noNamespaceSchemaLocation="${packageJson.iqb.defintionsUrl}/${packageJson.version}/definitions/vo_$1.xsd"`;
 
   fs.readdirSync(sampledataDir).forEach(file => {
@@ -83,6 +95,7 @@ exports.updateSampleFiles = done => {
   done();
 };
 
+// TODO make private task
 exports.clearTmpDir = done => {
   cliPrint.headline('clear tmp dir');
 
@@ -90,10 +103,16 @@ exports.clearTmpDir = done => {
   done();
 };
 
+/**
+ * To be more manageable the specs are distributed over several files in `docs/src/api`.
+ * This takes the files and merges them together as needed by ReDoc. Also OpenApi3 is not OpenApi3.
+ * While the specs are written in Standard OpenApi3, on both use-cases, Dredd and ReDoc,
+ * some special treatment is needed.
+ * This places the API-Page and the compiled, Re-Docs-compatible specs into the docs folder.
+ */
 exports.updateSpecs = gulp.series(
   exports.clearTmpDir,
   exports.prepareDocsDestinationFolder,
   exports.mergeSpecFiles,
   exports.updateDocs
-  // exports.updateSampleFiles
 );
