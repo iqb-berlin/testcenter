@@ -155,19 +155,6 @@ composer-update:
 init-frontend:
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
 
-#
-
-## Running setup must be stopped because a special env file needs to used
-#test-e2e:
-#	cp testcenter-frontend/src/environments/environment.ts testcenter-frontend/src/environments/environment.ts.bu
-#	cp e2etest/environment.ts testcenter-frontend/src/environments/environment.ts
-#	make run-detached
-#	docker build -f e2etest/Dockerfile --tag e2etest .
-#	sleep 8
-#	docker run --network "testcenter-setup_default" e2etest
-#	make down
-#	mv testcenter-frontend/src/environments/environment.ts.bu testcenter-frontend/src/environments/environment.ts
-#
 
 --test-and-update:
 	make build
