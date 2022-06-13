@@ -1,9 +1,34 @@
 # CI
 
 ## Events
-* Push on Branch
+* Push on Feature-Branch
+  * Build
+  * FE unit test
+  * BS unit
+  * BE unit
+  * linting xyz
 * Pull Request
+  * Build
+  * FE unit test
+  * FE e2e test (cypress gegen mock)
+  * BE unit
+  * BE dredd
+  * BE init-tests
+  * BS unit
+  * linting xyz
+  * docs generieren
 * Push on Master
+* Build
+  * FE unit test
+  * FE e2e test (cypress gegen mock)
+  * BE unit
+  * BE dredd
+  * BE init-tests
+  * BS unit
+  * linting xyz
+  * docs generieren
+
+
 * Tag + Release
 * Tag (Beta)
 
@@ -18,9 +43,13 @@
 * linting xyz
 * docs generieren
 
+
+
+
+
 ==================================================
 
-Entwickeln mit Docker
+Entwickeln mit Docker. Ja.
 
 [PRO]
 - keine lokalen Abhängigkeiten (außer docker, docker-compose, bash)
