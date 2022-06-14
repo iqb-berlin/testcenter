@@ -6,24 +6,25 @@ CI
 [ ] CI: mehrere Artefakte gleichzeitig funktionieren nicht
 
 
-install script
+Install Script
 [ ] Ports auswählen (setup #22)
-[ ] mit neuen releases klarkommen
+[ ] update.sh mit neuen releases klarkommen
+[ ] Soll das install script generisch bleiben oder zum Projekt ziehen?
 
 
 Docker
 [ ] docker-compose in eigenes Verzeichnis
-[ ] docker kram in den Unterprojekten ebenfalls
+[ ] docker Kram in den Unterprojekten ebenfalls
 [ ] port 80 loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
 
 
 Misc
 [ ] SimplePlayer beilegen, statt runterladen
-[ ] Besseren namen für dredd finden und einsetzen
+[ ] Besseren namen für dredd-tests finden und einsetzen
 [ ] XML dokumentationen erzeugen
-[ ] hardcode BROADCAST_SERVICE_URI_SUBSCRIBE
+[ ] Hardcode BROADCAST_SERVICE_URI_SUBSCRIBE
 [ ] $SUPERUSER_NAME don't have to be env
-[ ] do something with dredd-report
+[ ] Do something with dredd-report
 [ ] Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
 
 
@@ -58,6 +59,6 @@ Database
 Backend
 [ ] salt konfigurierbar
 [ ] Config-Folder persistieren?
-[ ] PHP 8.1 -> im extra branch
+[ ] PHP 8.1 -> im extra branch; lieber erst NACH dem resync mit dem alten Repo reinziehen?
 [ ] CORS?
 [ ] BE container shall stop when initialize fails
