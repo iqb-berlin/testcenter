@@ -1,40 +1,36 @@
 # include:
   # - template: Security/Secret-Detection.gitlab-ci.yml
 
-# image: docker:20.10.5
-#
-# variables:
-#   DOCKER_TLS_CERTDIR: ""
+ image: docker:20.10.5
+
+ variables:
+   DOCKER_TLS_CERTDIR: ""
 #   GIT_SUBMODULE_STRATEGY: normal
-#
-# services:
-#   - docker:20.10.5-dind
+
+ services:
+   - docker:20.10.5-dind
 
 stages:
   - build
-  # - test
+   - test
   # - check
 
 build:
   stage: build
-  tags:
-    - shell-docker
   script:
-    - docker info
-    - apt-get install make -f
-#    - apk add make docker-compose
-#    - make init
-#    - make build
-#    - docker save iqbberlin/testcenter-backend > backend_image.tar
-#    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
-#    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
-#   artifacts:
-#     paths:
-#       - backend_image.tar
-#       - frontend_image.tar
-#       - broadcasting-service_image.tar
-#     expire_in: 10 minutes
-#
+    - apk add make docker-compose
+    - make init
+    - make build
+    - docker save iqbberlin/testcenter-backend > backend_image.tar
+    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
+    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
+   artifacts:
+     paths:
+       - backend_image.tar
+       - frontend_image.tar
+       - broadcasting-service_image.tar
+     expire_in: 10 minutes
+
 # test-backend-dredd:
 #   stage: test
 #   script:
@@ -42,16 +38,16 @@ build:
 #     - make init
 #     - docker load -i backend_image.tar
 #     - make test-backend-dredd
-#
-# test-backend-unit:
-#   stage: test
-#   script:
-#     - apk add make docker-compose
-#     - make init-env
-#     - make composer-install
-#     - make download-simple-player
-#     - docker load -i backend_image.tar
-#     - make test-backend-unit
+
+test-backend-unit:
+ stage: test
+ script:
+   - apk add make docker-compose
+   - make init-env
+#   - make composer-install
+   - make download-simple-player
+   - docker load -i backend_image.tar
+   - make test-backend-unit
 #
 # test-frontent-unit:
 #   stage: test
