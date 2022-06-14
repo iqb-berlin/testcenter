@@ -4,7 +4,7 @@ CI
 [ ] Browserstack -> huaning
 [ ] CI: benutzt anscheinend eine alte docker-compose version
 [ ] CI: mehrere Artefakte gleichzeitig funktionieren nicht
-
+[ ] eigenen Runner für Projekt
 
 Install Script
 [ ] Ports auswählen (setup #22)
@@ -16,6 +16,7 @@ Docker
 [ ] docker-compose in eigenes Verzeichnis
 [ ] docker Kram in den Unterprojekten ebenfalls
 [ ] port 80 loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
+[ ] docker repository ist nicht von außen erreichbar -> reagieren?
 
 
 Misc
