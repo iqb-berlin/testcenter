@@ -3,8 +3,9 @@
 * [User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)
 
 * [Overview about super-states of running sessions and their icons](https://iqb-berlin.github.io/testcenter/dist/test-session-super-states.html)
-* [List of modes of Test-execution](https://iqb-berlin.github.io/testcenter/dist/test-mode.md)
-* [Parameters of Booklet-Configuration](https://iqb-berlin.github.io/testcenter/dist/booklet-config.md)
+* [List of modes of test-execution](https://iqb-berlin.github.io/testcenter/dist/test-mode)
+* [Parameters of booklet-configuration](https://iqb-berlin.github.io/testcenter/dist/booklet-config)
+* [Customizable Labels in the UI](https://iqb-berlin.github.io/testcenter/dist/custom-texts)
 
 ## Documentation for Developers
 
@@ -12,7 +13,7 @@
 ### API Documentation
 
 * [HTTP API Backend](https://iqb-berlin.github.io/testcenter/dist/api/index.html)
-* [Verona Player](https://verona-interfaces.github.io/player/)
+* [Verona Player API](https://verona-interfaces.github.io/player/)
 
 ### Compodoc Documentation of Modules, Classes etc
 
