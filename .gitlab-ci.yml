@@ -1,18 +1,18 @@
 # include:
   # - template: Security/Secret-Detection.gitlab-ci.yml
 
- image: docker:20.10.5
+image: docker:20.10.5
 
- variables:
-   DOCKER_TLS_CERTDIR: ""
+variables:
+ DOCKER_TLS_CERTDIR: ""
 #   GIT_SUBMODULE_STRATEGY: normal
 
- services:
-   - docker:20.10.5-dind
+services:
+ - docker:20.10.5-dind
 
 stages:
   - build
-   - test
+  - test
   # - check
 
 build:
