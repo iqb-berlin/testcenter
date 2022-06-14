@@ -9,7 +9,6 @@ RUN npm install --only=dev
 
 COPY broadcasting-service /app/broadcasting-service
 COPY definitions /app/definitions
-COPY dist /app/dist
 COPY dist-src /app/dist-src
 COPY docs /app/docs
 COPY frontend /app/frontend
