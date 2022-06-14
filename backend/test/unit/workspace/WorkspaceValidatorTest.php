@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 class WorkspaceValidatorTest extends TestCase{
 
     private WorkspaceValidator $validator;
-    private WorkspaceDAO  $workspaceDaoMock;
+    private WorkspaceDAO $workspaceDaoMock;
 
     public static function setUpBeforeClass(): void {
 
@@ -50,6 +50,7 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/workspace/WorkspaceValidator.class.php";
 
         require_once "test/unit/mock-classes/PasswordMock.php";
+        require_once "test/unit/mock-classes/ExternalFileMock.php";
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([

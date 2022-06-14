@@ -29,6 +29,8 @@ class XMLFileSysCheckTest extends TestCase {
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileSysCheck.class.php";
 
+        require_once "test/unit/mock-classes/ExternalFileMock.php";
+
         VfsForTest::setUp();
     }
 
