@@ -86,6 +86,7 @@ services:
       - ./.git:/app/.git
       - ./.gitignore:/app/.gitignore
       - ./CHANGELOG.md:/app/CHANGELOG.md
+      - ./README.md:/app/README.md
       - ./broadcasting-service:/app/broadcasting-service
       - ./definitions:/app/definitions
       - ./dist-src:/app/dist-src

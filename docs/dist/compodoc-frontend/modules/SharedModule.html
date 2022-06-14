@@ -302,15 +302,10 @@ import { MatInputModule } from &#x27;@angular/material/input&#x27;;
 import { MatExpansionModule } from &#x27;@angular/material/expansion&#x27;;
 import { HttpClientModule } from &#x27;@angular/common/http&#x27;;
 import { ConfirmDialogComponent } from &#x27;./components/confirm-dialog/confirm-dialog.component&#x27;;
-import { ConfirmDialogData } from &#x27;./interfaces/confirm-dialog.interfaces&#x27;;
 import { MessageDialogComponent } from &#x27;./components/message-dialog/message-dialog.component&#x27;;
-import { MessageDialogData, MessageType } from &#x27;./interfaces/message-dialog.interfaces&#x27;;
 import { BytesPipe } from &#x27;./pipes/bytes/bytes.pipe&#x27;;
 import { CustomtextPipe } from &#x27;./pipes/customtext/customtext.pipe&#x27;;
-import { CustomtextService } from &#x27;./services/customtext/customtext.service&#x27;;
 import { AlertComponent } from &#x27;./components/alert/alert.component&#x27;;
-import { WebsocketBackendService } from &#x27;./services/websocket-backend/websocket-backend.service&#x27;;
-import { MainDataService } from &#x27;./services/maindata/maindata.service&#x27;;
 
 @NgModule({
   imports: [
@@ -355,10 +350,11 @@ export { CustomtextPipe } from &#x27;./pipes/customtext/customtext.pipe&#x27;;
 export { ConnectionStatus } from &#x27;./interfaces/websocket-backend.interfaces&#x27;;
 export { MainDataService } from &#x27;./services/maindata/maindata.service&#x27;;
 export { SysConfig, AppSettings } from &#x27;./interfaces/app-config.interfaces&#x27;;
+export { BookletConfig } from &#x27;./classes/booklet-config.class&#x27;;
+export { TestMode } from &#x27;./classes/test-mode.class&#x27;;
 </code></pre>
     </div>
 </div>
-
 
 
 

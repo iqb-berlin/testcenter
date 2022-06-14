@@ -7,6 +7,7 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install --only=dev
 
+COPY README.md /app/README.md
 COPY broadcasting-service /app/broadcasting-service
 COPY definitions /app/definitions
 COPY dist-src /app/dist-src

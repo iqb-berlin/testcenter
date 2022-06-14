@@ -9,8 +9,9 @@ const fs = require('fs');
 const gulp = require('gulp');
 const cliPrint = require('./helper/cli-print');
 
-const docsDir = fs.realpathSync(`${__dirname}'/../docs`);
-const definitionsDir = fs.realpathSync(`${__dirname}'/../definitions`);
+const rootPath = fs.realpathSync(`${__dirname}'/..`);
+const docsDir = `${rootPath}/docs`;
+const definitionsDir = `${rootPath}/definitions`;
 
 /**
  * Creates documentation about super-states. To make the abundance of possible state-combinations of a running test
@@ -156,7 +157,14 @@ exports.customTexts = done => {
   done();
 };
 
+const copyPages = async () => gulp.src(`${docsDir}/src/pages/*`)
+  .pipe(gulp.dest(`${docsDir}/dist`));
+
+const copyReadme = done => fs.copyFile(`${rootPath}/README.md`, `${docsDir}/index.md`, done);
+
 exports.createDocs = gulp.series(
+  copyReadme,
+  copyPages,
   exports.testSessionSuperStates,
   exports.bookletConfig,
   exports.testMode,

@@ -63,3 +63,7 @@ Backend
 [ ] PHP 8.1 -> im extra branch; lieber erst NACH dem resync mit dem alten Repo reinziehen?
 [ ] CORS?
 [ ] BE container shall stop when initialize fails
+
+
+Docs
+[ ] Installation local
