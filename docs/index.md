@@ -1,51 +1,55 @@
-## Documentation for Users
+**This is the next-generation repository of Testcenter which is not in charge right now. Until it's ready please 
+refer to https://github.com/iqb-berlin/testcenter-setup.**
 
-* [User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)
+---
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![(CI Status)](https://scm.cms.hu-berlin.de/iqb/testcenter-setup/badges/master/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/testcenter)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/iqb-berlin/testcenter)
+
+# IQB-Testcenter
+
+Following the instructions below, you will install the web-application "IQB-Testcenter" on your server. 
+You will get handy commands to start and stop the services.
+
+## For Users
+
+* **[User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)**
+* [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
+
+### Special docs 
 * [Overview about super-states of running sessions and their icons](https://iqb-berlin.github.io/testcenter/dist/test-session-super-states.html)
 * [List of modes of test-execution](https://iqb-berlin.github.io/testcenter/dist/test-mode)
 * [Parameters of booklet-configuration](https://iqb-berlin.github.io/testcenter/dist/booklet-config)
 * [Customizable Labels in the UI](https://iqb-berlin.github.io/testcenter/dist/custom-texts)
 
-## Documentation for Developers
+## For Hosters
 
+* **[Installation and Update](https://iqb-berlin.github.io/testcenter/dist/installation-prod)**
+* [Server Configuration](https://iqb-berlin.github.io/testcenter/dist/server-setup)
+* [Trouble Shooting](https://iqb-berlin.github.io/testcenter/dist/trouble-shooting)
+
+## For Developers
+
+* **[Installation for Development](https://iqb-berlin.github.io/testcenter/dist/installation-dev)**
+* **[Developer's Guide](https://iqb-berlin.github.io/testcenter/dist/developer-guide)**
 
 ### API Documentation
 
 * [HTTP API Backend](https://iqb-berlin.github.io/testcenter/dist/api/index.html)
 * [Verona Player API](https://verona-interfaces.github.io/player/)
 
-### Compodoc Documentation of Modules, Classes etc
+### Compodoc Documentation
 
 * [Frontend](https://iqb-berlin.github.io/testcenter/dist/compodoc-frontend/index.html)
 * [Broadcasting-Service](https://iqb-berlin.github.io/testcenter/dist/compodoc-broadcasting-service/index.html)
 
 ### Test Coverage
 
-* [of Backend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-backend-unit/report/index.html)
-* [of Frontend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-unit/report/index.html)
-* [of Broadcasting-Service by Unit-Tets](https://iqb-berlin.github.io/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/index.html)
+* [Backend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-backend-unit/report/index.html)
+* [Frontend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-unit/report/index.html)
+* [Broadcasting-Service by Unit-Tets](https://iqb-berlin.github.io/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/index.html)
 
+### Misc
+* [Install and run without docker](https://iqb-berlin.github.io/testcenter/dist/installation-local)
 
-
-[comment]: <> (# IQB testcenter-frontend)
-
-[comment]: <> (Some generated Docs:)
-
-[comment]: <> (* [CustomTexts]&#40;./custom-texts&#41;)
-
-[comment]: <> (* [Group-Monitor Superstate-Icons]&#40;./super-states&#41;)
-
-[comment]: <> (* [Test-Modes]&#40;./test-mode&#41;)
-
-[comment]: <> (* [Booklet Conifg Parameter]&#40;./booklet-config&#41;)
-
-[comment]: <> (# IQB Testcenter Backend)
-
-[comment]: <> (* [Readme]&#40;../README.md&#41;)
-
-[comment]: <> (* [API]&#40;./api&#41;)
-
-[comment]: <> (* [Upgrade Information]&#40;./UPGRADE.md&#41;)
-
-[comment]: <> (* [Manual Installation]&#40;./manual_installation.md&#41;)
