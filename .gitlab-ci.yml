@@ -41,10 +41,14 @@ build-backend:
     paths:
       - backend_image.tar
     expire_in: 10 minutes
+  rules:
+    - when: never
 
 test-backend-unit:
   stage: test
   dependencies:
+    - build-backend
+  needs:
     - build-backend
   script:
     - apk add make docker-compose
