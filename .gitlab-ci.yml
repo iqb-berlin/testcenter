@@ -25,25 +25,6 @@ stages:
     - changes:
       - broadcasting-service/*
 
-
-#build:
-#  stage: build
-#  script:
-##    - apk add make curl
-##    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-##    - chmod +x /usr/local/bin/docker-compose
-##    - make init
-##    - make build
-##    - docker save iqbberlin/testcenter-backend > backend_image.tar
-##    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
-##    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
-#  artifacts:
-#    paths:
-##      - backend_image.tar
-##      - frontend_image.tar
-##      - broadcasting-service_image.tar
-#    expire_in: 10 minutes
-
 build-backend:
   stage: build
   script:
@@ -76,6 +57,22 @@ build-frontend:
   rules:
     - !reference [.frontend-change, rules]
 
+build-broadcasting-service:
+  stage: build
+  script:
+    - apk add make curl
+    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+    - chmod +x /usr/local/bin/docker-compose
+    - make init
+    - make build service=testcenter-broadcasting-service
+    - docker save iqbberlin/testcenter-broadcasting-service > bs_image.tar
+  artifacts:
+    paths:
+      - bs_image.tar
+    expire_in: 10 minutes
+  rules:
+    - !reference [.bs-change, rules]
+
 
 test-backend-unit:
   stage: test
@@ -106,3 +103,17 @@ test-frontent-unit:
     - make init-frontend
     - docker load -i frontent_image.tar
     - make test-frontent-unit
+
+test-broadcasting-service-unit:
+  stage: test
+  rules:
+    - !reference [.bs-change, rules]
+  dependencies:
+    - build-broadcasting-service
+  needs:
+    - build-broadcasting-service
+  script:
+    - apk add make docker-compose
+    - make init-env
+    - docker load -i bs_image.tar
+    - make test-broadcasting-service-unit
