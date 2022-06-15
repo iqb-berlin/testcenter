@@ -12,17 +12,17 @@ stages:
 
 .backend-change:
   rules:
-    - changes:
+    changes:
       - backend/*
 
 .frontend-change:
   rules:
-    - changes:
+    changes:
       - frontend/*
 
 .bs-change:
   rules:
-    - changes:
+    changes:
       - broadcasting-service/*
 
 
@@ -94,6 +94,8 @@ test-backend-unit:
 
 test-frontent-unit:
   stage: test
+  rules:
+    - !reference[.frontend-change, rules]
   dependencies:
     - build-frontend
   needs:
