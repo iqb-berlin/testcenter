@@ -76,7 +76,9 @@ class WorkspaceTest extends TestCase {
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([
-            'getGlobalIds' => VfsForTest::globalIds
+            'getGlobalIds' => VfsForTest::globalIds,
+            'updateLoginSource' => [10, 10],
+            'storeFileMeta' => null
         ]);
         $this->vfs = VfsForTest::setUp();
         $this->workspace = new Workspace(1);

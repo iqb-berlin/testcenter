@@ -50,7 +50,7 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/workspace/WorkspaceValidator.class.php";
 
         require_once "test/unit/mock-classes/PasswordMock.php";
-        require_once "test/unit/mock-classes/ExternalFileMock.php";
+        require_once "unit-tests/mock-classes/ZIPMock.php";
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([
