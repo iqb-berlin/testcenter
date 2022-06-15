@@ -80,7 +80,7 @@ build-frontend:
 test-backend-unit:
   stage: test
   rules:
-    - !reference[.backend-change, rules]
+    - !reference [.backend-change, rules]
   dependencies:
     - build-backend
   needs:
