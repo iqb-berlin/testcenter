@@ -10,33 +10,45 @@ stages:
   - build
   - test
 
-build:
+#build:
+#  stage: build
+#  script:
+##    - apk add make curl
+##    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+##    - chmod +x /usr/local/bin/docker-compose
+##    - make init
+##    - make build
+##    - docker save iqbberlin/testcenter-backend > backend_image.tar
+##    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
+##    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
+#  artifacts:
+#    paths:
+##      - backend_image.tar
+##      - frontend_image.tar
+##      - broadcasting-service_image.tar
+#    expire_in: 10 minutes
+
+build-backend:
   stage: build
   script:
-#    - apk add make curl
-#    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-#    - chmod +x /usr/local/bin/docker-compose
-#    - make init
-#    - make build
-#    - docker save iqbberlin/testcenter-backend > backend_image.tar
-#    - docker save iqbberlin/testcenter-frontend > frontend_image.tar
-#    - docker save iqbberlin/testcenter-broadcasting-service > broadcasting-service_image.tar
-    - touch testfile1
-    - touch testfile2
+    - apk add make curl
+    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+    - chmod +x /usr/local/bin/docker-compose
+    - make init
+    - make build service=testcenter-backend
+    - docker save iqbberlin/testcenter-backend > backend_image.tar
   artifacts:
     paths:
-      - testfile1
-      - testfile2
-#      - backend_image.tar
-#      - frontend_image.tar
-#      - broadcasting-service_image.tar
+      - backend_image.tar
     expire_in: 10 minutes
 
-#test-backend-unit:
-#  stage: test
-#  script:
-#    - apk add make docker-compose
-#    - make init-env
-#    - make download-simple-player
-#    - docker load -i backend_image.tar
-#    - make test-backend-unit
+test-backend-unit:
+  stage: test
+  dependencies:
+    - build-backend
+  script:
+    - apk add make docker-compose
+    - make init-env
+    - make download-simple-player
+    - docker load -i backend_image.tar
+    - make test-backend-unit
