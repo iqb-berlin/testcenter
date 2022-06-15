@@ -12,17 +12,17 @@ stages:
 
 .backend-change:
   rules:
-    changes:
+    - changes:
       - backend/*
 
 .frontend-change:
   rules:
-    changes:
+    - changes:
       - frontend/*
 
 .bs-change:
   rules:
-    changes:
+    - changes:
       - broadcasting-service/*
 
 
@@ -58,7 +58,7 @@ build-backend:
       - backend_image.tar
     expire_in: 10 minutes
   rules:
-    - !reference[.backend-change, rules]
+    - !reference [.backend-change, rules]
 
 build-frontend:
   stage: build
@@ -74,7 +74,7 @@ build-frontend:
       - frontend_image.tar
     expire_in: 10 minutes
   rules:
-    - !reference[.frontend-change, rules]
+    - !reference [.frontend-change, rules]
 
 
 test-backend-unit:
@@ -95,7 +95,7 @@ test-backend-unit:
 test-frontent-unit:
   stage: test
   rules:
-    - !reference[.frontend-change, rules]
+    - !reference [.frontend-change, rules]
   dependencies:
     - build-frontend
   needs:
