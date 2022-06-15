@@ -45,7 +45,8 @@ Frontend
 [ ] fe/cyprus -> huaning branch (https://github.com/iqb-berlin/testcenter-frontend/tree/e2e/cypress)
 [ ] fe/breakpoints
 [ ] watch e2e-tests also with docker
-
+[ ] warum zwei ua-parser dependencies
+[ ] polyfill raus aus NPM
 
 Broadcasting_Service
 [ ] enable "strictNullChecks": true, is tsconfig
