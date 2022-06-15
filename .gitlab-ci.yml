@@ -42,10 +42,15 @@ build-backend:
       - backend_image.tar
     expire_in: 10 minutes
   rules:
-    - when: never
+    - changes:
+        - backend/*
+
 
 test-backend-unit:
   stage: test
+  rules:
+    - changes:
+      - backend/*
   dependencies:
     - build-backend
   needs:
