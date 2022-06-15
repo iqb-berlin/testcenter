@@ -9,13 +9,14 @@ refer to https://github.com/iqb-berlin/testcenter-setup.**
 
 # IQB-Testcenter
 
-Following the instructions below, you will install the web-application "IQB-Testcenter" on your server. 
-You will get handy commands to start and stop the services.
+The IQB-Testcenter is a web application for technology based accessed and surveys. It is developed by 
+[the Institute for Educational Quality Improvement (IQB)](https://www.iqb.hu-berlin.de/) in Berlin, Germany.
 
 ## For Users
 
-* **[User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)**
+* **[User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)** (in german)
 * [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
+* [Changelog](https://github.com/iqb-berlin/testcenter-frontend/blob/master/CHANGELOG.md)
 
 ### Special docs 
 * [Overview about super-states of running sessions and their icons](https://iqb-berlin.github.io/testcenter/dist/test-session-super-states.html)
