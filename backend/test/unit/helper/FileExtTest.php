@@ -11,7 +11,7 @@ class FileExtTest extends TestCase {
 
     public function setUp(): void {
 
-        require_once "backend/src/helper/FileExt.class.php";
+        require_once "src/helper/FileExt.class.php";
     }
 
     function test_get() {
