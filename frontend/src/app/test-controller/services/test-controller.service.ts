@@ -13,7 +13,7 @@ import {
   MaxTimerDataType, StateReportEntry,
   TestControllerState, TestStateKey,
   UnitNavigationTarget,
-  UnitStateData, UnitStateKey, WindowFocusState
+  UnitDataParts, UnitStateKey, WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { BookletConfig, TestMode } from '../../shared/shared.module';
@@ -87,32 +87,32 @@ export class TestControllerService {
   private unitDefinitionTypes: { [sequenceId: number]: string } = {};
   private unitStateDataTypes: { [sequenceId: number]: string } = {};
 
-  private unitStateDataToSave$ = new Subject<UnitStateData>();
-  private unitStateDataToSaveSubscription: Subscription;
+  private unitDataPartsToSave$ = new Subject<UnitDataParts>();
+  private unitDataPartsToSaveSubscription: Subscription;
 
   constructor(
     private router: Router,
     private bs: BackendService
   ) {
-    this.setupUnitStateBuffer();
+    this.setupUnitDataPartsBuffer();
   }
 
-  setupUnitStateBuffer(): void {
-    this.destroyUnitStateBuffer(); // important when called from unit-test with fakeAsync
+  setupUnitDataPartsBuffer(): void {
+    this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
     // the last buffer when test gets terminated is lost. Seems not to be important, but noteworthy
-    this.unitStateDataToSaveSubscription = this.unitStateDataToSave$
+    this.unitDataPartsToSaveSubscription = this.unitDataPartsToSave$
       .pipe(
         bufferTime(TestControllerService.unitDataBufferMs),
-        filter(stateDataBuffer => !!stateDataBuffer.length),
-        concatMap(stateDataBuffer => {
-          const sortedByUnit = stateDataBuffer
+        filter(dataPartsBuffer => !!dataPartsBuffer.length),
+        concatMap(dataPartsBuffer => {
+          const sortedByUnit = dataPartsBuffer
             .reduce(
-              (agg, unitStateData) => {
-                if (!agg[unitStateData.unitDbKey]) agg[unitStateData.unitDbKey] = [];
-                agg[unitStateData.unitDbKey].push(unitStateData);
+              (agg, dataParts) => {
+                if (!agg[dataParts.unitDbKey]) agg[dataParts.unitDbKey] = [];
+                agg[dataParts.unitDbKey].push(dataParts);
                 return agg;
               },
-              <{ [unitId: string]: UnitStateData[] }>{}
+              <{ [unitId: string]: UnitDataParts[] }>{}
             );
           return Object.keys(sortedByUnit)
             .map(unitId => ({
@@ -123,12 +123,12 @@ export class TestControllerService {
             }));
         })
       )
-      .subscribe(changedStates => {
+      .subscribe(changedDataParts => {
         this.bs.updateDataParts(
           this.testId,
-          changedStates.unitDbKey,
-          changedStates.dataParts,
-          changedStates.unitStateDataType
+          changedDataParts.unitDbKey,
+          changedDataParts.dataParts,
+          changedDataParts.unitStateDataType
         ).subscribe(ok => {
           if (!ok) {
             console.warn('storing unitData failed');
@@ -137,8 +137,8 @@ export class TestControllerService {
       });
   }
 
-  destroyUnitStateBuffer(): void {
-    if (this.unitStateDataToSaveSubscription) this.unitStateDataToSaveSubscription.unsubscribe();
+  destroyUnitDataPartsBuffer(): void {
+    if (this.unitDataPartsToSaveSubscription) this.unitDataPartsToSaveSubscription.unsubscribe();
   }
 
   resetDataStore(): void {
@@ -189,7 +189,7 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length && this.testMode.saveResponses) {
-      this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+      this.unitDataPartsToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
     }
   }
 
