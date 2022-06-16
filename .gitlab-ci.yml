@@ -29,6 +29,10 @@ stages:
       - broadcasting-service/*
       - common/*
 
+.merge-request:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
 build-backend:
   stage: build
   script:
@@ -124,22 +128,22 @@ test-broadcasting-service-unit:
 
 test-frontend-e2e:
   stage: test
-  only:
-    - merge_requests
+  rules:
+    - !reference [.merge-request, rules]
   script:
     - make test-frontend-e2e
 
 test-backend-dredd:
   stage: test
-  only:
-    - merge_requests
+  rules:
+    - !reference [.merge-request, rules]
   script:
     - make test-backend-dredd
 
 test-backend-initialization:
   stage: test
-  only:
-    - merge_requests
+  rules:
+    - !reference [.merge-request, rules]
   script:
     - make test-backend-initialization-general
 
