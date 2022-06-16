@@ -128,7 +128,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
       case 'vopStateChangedNotification':
         if (msgPlayerId === this.itemplayerSessionId) {
-          console.log('vopStateChangedNotification', msgData);
           if (msgData.playerState) {
             const { playerState } = msgData;
 
