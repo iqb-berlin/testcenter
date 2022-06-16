@@ -1,6 +1,4 @@
-ARG NODE_VERSION=14.15.0
-
-FROM node:${NODE_VERSION}
+FROM node:14.19-buster-slim
 
 WORKDIR /app
 COPY package.json .

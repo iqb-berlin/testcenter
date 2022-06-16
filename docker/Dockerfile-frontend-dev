@@ -1,0 +1,3 @@
+FROM node:16.15-buster-slim
+
+RUN apt update && apt install -y chromium python3 make g++ git
