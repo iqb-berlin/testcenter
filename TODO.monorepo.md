@@ -27,7 +27,8 @@ Misc
 [ ] $SUPERUSER_NAME don't have to be env
 [ ] Do something with dredd-report
 [ ] Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
-
+[ ] node_modules / npm workspaces struktur evaluieren (evtl. ua-paarser hack raus FE docker)
+[ ] package-lock.json?
 
 Cypress
 [ ] Letzten Stand besorgen
