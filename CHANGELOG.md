@@ -51,7 +51,10 @@ Set a maximum for filenames in workspace of 120 characters.
 ## Backend 12.2.2
 * massive performance improvement by caching file information in the DB.
 
-## 12.1.4
+## Frontend 2.1.6
+* (#382) When "Finish Test" gets hit, NavigationRestrictions will be checked.
+
+## Frontend 12.1.4
 * Fix Navigation Bug from 12.1.3: When a testlet had a locking code, but was unlocked, the unit didn't get tested
   for force_presentation_complete/force_response_complete when leaving.
 
