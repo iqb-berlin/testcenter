@@ -14,16 +14,20 @@ stages:
   rules:
     - changes:
       - backend/*
+      - database/*
+      - definitions/*
 
 .frontend-change:
   rules:
     - changes:
       - frontend/*
+      - common/*
 
 .bs-change:
   rules:
     - changes:
       - broadcasting-service/*
+      - common/*
 
 build-backend:
   stage: build
