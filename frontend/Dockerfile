@@ -23,15 +23,10 @@ RUN npx ng build --configuration production --output-path=dist
 EXPOSE 4200
 CMD npx ng serve --configuration dev --disable-host-check --host 0.0.0.0
 
-FROM nginx:1.19.1-alpine as prod
+FROM nginx:1.22.0-alpine as prod
 
 COPY --from=dev /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
-
-
-#RUN npm i --prefix=./node_modules/protractor --save webdriver-manager@latest
-#RUN npx webdriver-manager clean
-#RUN npx webdriver-manager update --versions.chrome=`google-chrome --product-version`
