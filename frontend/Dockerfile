@@ -18,7 +18,7 @@ RUN cp -r /app/node_modules/ua-parser-js /node_modules/ua-parser-js
 RUN ls -l /node_modules
 
 # build prod
-RUN npx ng build --configuration production --output-path=dist
+RUN npx ng build --configuration production --output-path=dist --output-hashing all
 
 EXPOSE 4200
 CMD npx ng serve --configuration dev --disable-host-check --host 0.0.0.0

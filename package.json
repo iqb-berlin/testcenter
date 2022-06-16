@@ -24,7 +24,7 @@
     "broadcasting-service:update-compodoc": "npx compodoc -p broadcasting-service/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service",
     "frontend:unit-test": "npx -w frontend ng test --watch=false",
     "frontend:code-coverage": "npx -w frontend ng test --watch=false --code-coverage",
-    "frontend:build": "npx -w frontend ng build",
+    "frontend:build": "npx -w frontend ng build --output-hashing all",
     "frontend:start": "npx -w frontend ng serve",
     "broadcasting-service:build": "npx -w broadcasting-service nest build",
     "broadcasting-service:start": "npx -w broadcasting-service nest start --watch",
