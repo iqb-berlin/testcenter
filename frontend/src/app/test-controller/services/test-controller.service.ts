@@ -420,6 +420,7 @@ export class TestControllerService {
   }
 
   setUnitNavigationRequest(navString: string, force = false): void {
+    const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
     if (!this.rootTestlet) {
       this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     } else {
@@ -451,9 +452,16 @@ export class TestControllerService {
           break;
 
         default:
-          this.router.navigate([`/t/${this.testId}/u/${navString}`], { state: { force } })
+          this.router.navigate(
+            [`/t/${this.testId}/u/${navString}`],
+            {
+              state: { force },
+              // eslint-disable-next-line no-bitwise
+              queryParams: targetIsCurrent ? { t: Date.now() >> 11 } : {}
+            }
+          )
             .then(navOk => {
-              if (!navOk) {
+              if (!navOk && !targetIsCurrent) {
                 console.log(`navigation failed ("${navString}")`);
               }
             });

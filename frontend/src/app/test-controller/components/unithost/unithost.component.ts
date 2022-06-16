@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
-import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
+import {
+  BehaviorSubject, combineLatest, merge, Subscription
+} from 'rxjs';
 import {
   Component, HostListener, OnInit, OnDestroy
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   TestStateKey,
@@ -68,8 +70,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.subscriptions.postMessage = this.mds.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
-      this.subscriptions.routing = this.route.params
-        .subscribe(params => this.open(Number(params.u)));
+      this.subscriptions.routing = merge(this.route.queryParamMap, this.route.params)
+        .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
       this.subscriptions.navigationDenial = this.tcs.navigationDenial
         .subscribe(navigationDenial => this.handleNavigationDenial(navigationDenial));
     });
@@ -335,6 +337,13 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private adjustIframeSize(): void {
     this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+  }
+
+  private reload(): void {
+    if (!this.currentUnitSequenceId || !this.currentUnit) {
+      return;
+    }
+    this.open(this.currentUnitSequenceId);
   }
 
   @HostListener('window:resize')
