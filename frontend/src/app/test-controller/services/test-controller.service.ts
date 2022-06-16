@@ -416,7 +416,7 @@ export class TestControllerService {
 
   setUnitNavigationRequest(navString: string, force = false): void {
     if (!this.rootTestlet) {
-      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true });
+      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     } else {
       switch (navString) {
         case UnitNavigationTarget.ERROR:
