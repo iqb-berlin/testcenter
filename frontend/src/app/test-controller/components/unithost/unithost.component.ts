@@ -276,8 +276,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private runUnit(): void {
-    this.codeRequiringTestlets = this.currentUnit.codeRequiringTestlets
-      .filter(testlet => !this.tcs.clearCodeTestlets.includes(testlet.id));
+    this.codeRequiringTestlets = this.tcs.getUnclearedTestlets(this.currentUnit);
 
     if (this.codeRequiringTestlets.length) {
       return;

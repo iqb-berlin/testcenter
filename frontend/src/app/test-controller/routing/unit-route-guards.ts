@@ -175,7 +175,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
 
     const currentUnit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
-    if (currentUnit && currentUnit.codeRequiringTestlets.length) {
+    if (currentUnit && this.tcs.getUnclearedTestlets(currentUnit).length) {
       return true;
     }
 

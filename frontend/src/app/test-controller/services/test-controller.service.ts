@@ -7,7 +7,7 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MaxTimerData, Testlet } from '../classes/test-controller.classes';
+import { MaxTimerData, Testlet, UnitControllerData } from '../classes/test-controller.classes';
 import {
   KeyValuePairNumber, KeyValuePairString, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
@@ -291,6 +291,11 @@ export class TestControllerService {
         );
       }
     }
+  }
+
+  getUnclearedTestlets(unit: UnitControllerData): Testlet[] {
+    return unit.codeRequiringTestlets
+      .filter(testlet => !this.clearCodeTestlets.includes(testlet.id));
   }
 
   updateUnitStatePresentationProgress(unitDbKey: string, unitSeqId: number, presentationProgress: string): void {
