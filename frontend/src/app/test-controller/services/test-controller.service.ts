@@ -310,11 +310,11 @@ export class TestControllerService {
   }
 
   newUnitStateResponseProgress(unitDbKey: string, unitSeqId: number, responseProgress: string): void {
-    if (this.testMode.saveResponses) {
-      if (
-        !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !== responseProgress
-      ) {
-        this.unitResponseProgressStates[unitSeqId] = responseProgress;
+    if (
+      !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !== responseProgress
+    ) {
+      this.unitResponseProgressStates[unitSeqId] = responseProgress;
+      if (this.testMode.saveResponses) {
         this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
           key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
         }]);
