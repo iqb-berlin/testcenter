@@ -26,6 +26,7 @@ CMD npx ng serve --configuration dev --disable-host-check --host 0.0.0.0
 FROM nginx:1.22.0-alpine as prod
 
 COPY --from=dev /app/dist /usr/share/nginx/html
+COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
