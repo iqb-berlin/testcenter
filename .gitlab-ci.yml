@@ -93,7 +93,7 @@ test-backend-unit:
     - docker load -i backend_image.tar
     - make test-backend-unit
 
-test-frontent-unit:
+test-frontend-unit:
   stage: test
   rules:
     - !reference [.frontend-change, rules]
@@ -105,8 +105,8 @@ test-frontent-unit:
     - apk add make docker-compose
     - make init-env
     - make init-frontend
-    - docker load -i frontent_image.tar
-    - make test-frontent-unit
+    - docker load -i frontend_image.tar
+    - make test-frontend-unit
 
 test-broadcasting-service-unit:
   stage: test
