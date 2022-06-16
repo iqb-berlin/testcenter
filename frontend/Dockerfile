@@ -10,7 +10,7 @@ COPY frontend/package.json .
 COPY frontend/src /app/src
 COPY frontend/tsconfig.json .
 
-RUN npm ci
+RUN npm install
 
 # emulate top-level node-moduls for this script
 RUN mkdir /node_modules
