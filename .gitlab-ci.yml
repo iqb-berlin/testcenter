@@ -142,3 +142,9 @@ test-backend-initialization:
     - merge_requests
   script:
     - make test-backend-initialization-general
+
+update-docs:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+  script:
+    - make update-docs
