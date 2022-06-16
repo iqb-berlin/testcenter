@@ -48,6 +48,18 @@ aware of it:
 ## Backend 12.2.1
 Set a maximum for filenames in workspace of 120 characters.
 
+## Backend 12.2.2
+* massive performance improvement by caching file information in the DB.
+
+## Frontend 12.1.3
+* Various Bugfixes:
+* (#361) clock and messages in  demo-mode are broken
+* (#373, #359, #376, #358, #374) could not leave unit behind codeword when navigationRestrictions
+* (#379, #372) testee was required to enter codeword even when forced into block by monitor
+
+## Frontend 12.1.2
+* Fix Login on Safari
+
 ## Frontend 12.1.1
 * Fix critical bug in debouncing responses between frontend and backend which led to dataloss in case of very fast
   navigation between units
@@ -55,8 +67,9 @@ Set a maximum for filenames in workspace of 120 characters.
 ## Frontend 12.1.0
 * There are different login-button for admin-users and for testees now.
 
-## Backend 12.2.2
-* massive performance improvement by caching file information in the DB.
+## Frontend 12.0.3
+Various Bugfixes:
+* (#341) When you visited a test in demo-mode as a monitor, and terminated it, you returned to the starter but didn't see the monitor-monitor button again. That got fixed.
 
 ## Backend 12.0.2
 Fixes data-migration from versions before 12.0.0. With the update to version 12.0.0 the way, response-data is stored
