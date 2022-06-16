@@ -29,6 +29,10 @@ stages:
       - broadcasting-service/*
       - common/*
 
+.pull-request:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event
+
 build-backend:
   stage: build
   script:
@@ -41,7 +45,7 @@ build-backend:
   artifacts:
     paths:
       - backend_image.tar
-    expire_in: 10 minutes
+    expire_in: 30 minutes
   rules:
     - !reference [.backend-change, rules]
 
@@ -57,7 +61,7 @@ build-frontend:
   artifacts:
     paths:
       - frontend_image.tar
-    expire_in: 10 minutes
+    expire_in: 30 minutes
   rules:
     - !reference [.frontend-change, rules]
 
@@ -73,7 +77,7 @@ build-broadcasting-service:
   artifacts:
     paths:
       - bs_image.tar
-    expire_in: 10 minutes
+    expire_in: 30 minutes
   rules:
     - !reference [.bs-change, rules]
 
@@ -121,3 +125,24 @@ test-broadcasting-service-unit:
     - make init-env
     - docker load -i bs_image.tar
     - make test-broadcasting-service-unit
+
+test-frontend-e2e:
+  stage: test
+  rules:
+    - !reference [.pull-request, rules]
+  script:
+    - make test-frontend-e2e
+
+test-backend-dredd:
+  stage: test
+  rules:
+    - !reference [.pull-request, rules]
+  script:
+    - make test-backend-dredd
+
+test-backend-initialization:
+  stage: test
+  rules:
+    - !reference [.pull-request, rules]
+  script:
+    - make test-backend-initialization-general
