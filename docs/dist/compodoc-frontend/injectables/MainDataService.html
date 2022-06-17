@@ -916,7 +916,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@angular/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
 import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from &#x27;rxjs&#x27;;
@@ -970,15 +970,15 @@ export class MainDataService {
   }
 
   static getTestConfig(): KeyValuePairs {
-    const storageEntry &#x3D; localStorage.getItem(localStorageTestConfigKey);
+    const storageEntry &#x3D; localStorage.getItem(localStorageTestConfigKey); // TODO why at all?
     if (!storageEntry) {
-      return null;
+      return {};
     }
     try {
       return JSON.parse(storageEntry as string);
     } catch (e) {
       console.warn(&#x27;corrupt localStorage testConfig entry&#x27;);
-      return null;
+      return {};
     }
   }
 
@@ -1028,7 +1028,6 @@ export class MainDataService {
     </div>
 
 </div>
-
 
 
 

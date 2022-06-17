@@ -26,4 +26,16 @@ class Server {
 
         return $protocol . '://' . $host . $prefix . $folder;
     }
+
+
+    static function getProjectPath(array $senv = null): string {
+
+        $senv = $senv ?? $_SERVER;
+
+        // dirname is quite a strange function
+        $returnPath = substr($senv['PHP_SELF'], -1, 1) === '/' ? $senv['PHP_SELF'] : dirname($senv['PHP_SELF']);
+        $returnPath = substr($returnPath, -1, 1) === '/' ? substr($returnPath, 0, -1) : $returnPath;
+        $returnPath = $returnPath === '.' ? '' : $returnPath;
+        return $returnPath;
+    }
 }

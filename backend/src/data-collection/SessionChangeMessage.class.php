@@ -59,9 +59,9 @@ class SessionChangeMessage implements JsonSerializable {
     public function setSession(PersonSession $session): void {
 
         $login = $session->getLoginSession()->getLogin();
-        $code = $session->getPerson()->getCode();
+        $suffix = $session->getPerson()->getNameSuffix();
 
-        $this->personLabel = $login->getName() . ($code ? '/' . $code : '');
+        $this->personLabel = $login->getName() . ($suffix ? '/' . $suffix : '');
 
         $this->mode = $login->getMode();
         $this->groupName = $login->getGroupName();

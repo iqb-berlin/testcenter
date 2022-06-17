@@ -7,15 +7,9 @@ class Password {
 
     static function encrypt(string $password, string $pepper, bool $insecure = false): string {
 
-        // for faster e2e-testsQ
-        if ($insecure === true) {
-
-            return sha1($pepper . $password);
-        }
-
         // dont' use raw output of hash_hmac inside of password_hash
         // https://blog.ircmaxell.com/2015/03/security-issue-combining-bcrypt-with.html
-        $hash = password_hash(hash_hmac('sha256', $password, $pepper),  PASSWORD_BCRYPT);
+        $hash = password_hash(hash_hmac('sha256', $password, $pepper),  PASSWORD_BCRYPT, ['cost' => $insecure ? 4 : 10]);
 
         if (!$hash) {
 
@@ -49,10 +43,8 @@ class Password {
 
     static function verify(string $password, string $hash, string $saltOrPepper): bool {
 
+        // for legacy passwords.
         if (strlen($hash) == 40) {
-
-            // for legacy passwords. can only be used for timing attack hen actually sha1-password
-            // is available, because == comparisons only takes place when legacy passwords present
 
             $legacyHash = sha1($saltOrPepper . $password);
 

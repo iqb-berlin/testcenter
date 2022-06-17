@@ -93,6 +93,10 @@ class Workspace {
 
             foreach ($filePaths as $filePath) {
 
+                if (!is_file($filePath)) {
+                    continue;
+                }
+
                 $files[] = new File($filePath, $type);
             }
         }
@@ -127,10 +131,15 @@ class Workspace {
             // file does not exist in validator means it must be something not validatable like sysCheck-Reports
             $validatedFile = $allFiles[$fileToDeletePath] ?? null;
 
-            if (!$this->isUnusedFileAndCanBeDeleted($validatedFile, $filesToDelete)) {
+            if ($validatedFile and !$this->isUnusedFileAndCanBeDeleted($validatedFile, $filesToDelete)) {
 
                 $report['was_used'][] = $fileToDelete;
                 continue;
+            }
+
+            if ($validatedFile and $this->postProcessFileDeletion($validatedFile)) {
+
+                $report['error'][] = $fileToDelete;
             }
 
             if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
@@ -147,12 +156,31 @@ class Workspace {
     }
 
 
-    private function isUnusedFileAndCanBeDeleted(?File $file, array $allFilesToDelete): bool {
+    private function postProcessFileDeletion(?File $file): bool {
 
-        if ($file === null) {
+        try {
 
-            return true;
+            if ($file->getType() == 'Testtakers') {
+
+                $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file->getName());
+            }
+
+            if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+
+                $file->uninstallPackage();
+            }
+
+            $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file->getName());
+
+        } catch (Exception $e) {
+
+            return false;
         }
+        return true;
+    }
+
+
+    private function isUnusedFileAndCanBeDeleted(File $file, array $allFilesToDelete): bool {
 
         if (!$file->isUsed()) {
 
@@ -175,7 +203,7 @@ class Workspace {
     // takes a file from the workspace-dir toplevel and puts it to the correct subdir if valid
     public function importUnsortedFile(string $fileName): array {
 
-        if (strtoupper(substr($fileName, -4)) == '.ZIP') {
+        if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
 
             $relativeFilePaths = $this->unpackUnsortedZipArchive($fileName);
             $toDelete = [$fileName, $this->getExtractionDirName($fileName)];
@@ -204,6 +232,8 @@ class Workspace {
 
                 $this->sortUnsortedFile($localFilePath, $file);
             }
+
+            $this->storeFileMeta($file);
 
             $filesAfterSorting[$localFilePath] = $file;
         }
@@ -282,6 +312,12 @@ class Workspace {
         $extractionFolder = $this->getExtractionDirName($fileName);
         $extractionPath = "$this->workspacePath/$extractionFolder";
 
+        // sometimes in error cases there are remains from previous attempts
+        if (file_exists($extractionPath) and is_dir($extractionPath)) {
+            Folder::deleteContentsRecursive($extractionPath);
+            rmdir($extractionPath);
+        }
+
         if (!mkdir($extractionPath)) {
             throw new Exception("Could not create directory for extracted files: `$extractionPath`");
         }
@@ -314,11 +350,29 @@ class Workspace {
     }
 
 
+    public function getResource(string $findId, bool $allowSimilarVersion = false): File {
+
+        $dirToSearch = $this->getOrCreateSubFolderPath('Resource');
+
+        if (file_exists("$dirToSearch/$findId")) {
+
+            return File::get("$dirToSearch/$findId", 'Resource');
+        }
+        return $this->findFileById('Resource', $findId, $allowSimilarVersion);
+    }
+
+
+    // TODO fetch from DB instead of searching
     public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
         $dirToSearch = $this->getOrCreateSubFolderPath($type);
         $bestMatch = null;
         $version = Version::guessFromFileName($findId)['full'];
+
+        if (file_exists("$dirToSearch/$findId")) {
+
+            File::get("$dirToSearch/$findId", $type);
+        }
 
         foreach (Folder::glob($dirToSearch, "*.*", true) as $fullFilePath) {
 
@@ -395,19 +449,17 @@ class Workspace {
 
             $file->crossValidate($validator);
 
-            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
-                /* @var $file XMLFileTesttakers */
-                list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
-                $loginStats['deleted'] += $deleted;
-                $loginStats['added'] += $added;
+            if (!$file->isValid()) {
+
+                $invalidCount++;
+                continue;
             }
 
-            if ($file->isValid()) {
-                $this->workspaceDAO->storeFileMeta($this->getId(), $file);
-                $typeStats[$file->getType()] += 1;
-            } else {
-                $invalidCount++;
-            }
+            $stats = $this->storeFileMeta($file);
+            $loginStats['deleted'] += $stats['logins_deleted'];
+            $loginStats['added'] += $stats['logins_added'];
+
+            $typeStats[$file->getType()] += 1;
         }
 
         return [
@@ -415,5 +467,45 @@ class Workspace {
             'invalid' => $invalidCount,
             'logins' => $loginStats
         ];
+    }
+
+
+    public function storeFileMeta(File $file): ?array {
+
+        $stats = [
+            'logins_deleted' => 0,
+            'logins_added' => 0
+        ];
+
+        if (!$file->isValid()) {
+
+            return null;
+        }
+
+        if ($file->getType() == 'Testtakers') {
+
+            /* @var $file XMLFileTesttakers */
+            list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
+            $stats['logins_deleted'] = $deleted;
+            $stats['logins_added'] = $added;
+        }
+
+        if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+
+            $file->installPackage();
+        }
+
+        $this->workspaceDAO->storeFileMeta($this->getId(), $file);
+
+        return $stats;
+    }
+
+    public function getPackageFilePath($packageName, $resourceName): string {
+
+        $path = $this->getWorkspacePath() . "/Resource/$packageName/$resourceName";
+        if (!file_exists($path)) {
+            throw new HttpError("File of package `$packageName` not found: `$resourceName` ($path)");
+        }
+        return $path;
     }
 }

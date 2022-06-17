@@ -114,7 +114,7 @@
               <xs:annotation>
                 <xs:documentation>
                   Login-/Person-Token of this group are valid until the specified date and can not be created after.
-                  Provide the date in the format `dd\mm\yyyy hh:mm`.
+                  Provide the date in the format `dd/mm/yyyy hh:mm`.
                   If omitted, they are valid forever or, if provided, until `validFor` is reached.
                 </xs:documentation>
               </xs:annotation>
@@ -128,7 +128,7 @@
               <xs:annotation>
                 <xs:documentation>
                   If provided, Login-/Person-Token are only valid and can only be created *after* this date.
-                  Provide the date in the format `dd\mm\yyyy hh:mm`.
+                  Provide the date in the format `dd/mm/yyyy hh:mm`.
                 </xs:documentation>
               </xs:annotation>
               <xs:simpleType>

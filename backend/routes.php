@@ -2,8 +2,11 @@
 declare(strict_types=1);
 
 use Slim\Routing\RouteCollectorProxy;
-
+use Slim\Http\ServerRequest as Request;
+use Slim\Http\Response;
 global $app;
+
+
 
 $app->get('/', [SystemController::class, 'get']);
 
@@ -202,3 +205,5 @@ $app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
     ->add(new RequireToken('admin'));
 
 $app->get('/{auth_token}/resource/{resource_name}', [TestController::class, 'getResource']);
+
+$app->get('/{auth_token}/resource/{package_name}/[{path:.*}]', [TestController::class, 'getResourceFromPackage']);

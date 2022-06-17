@@ -71,7 +71,7 @@ class BroadcastService {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => $verb,
             CURLOPT_POSTFIELDS => $message,
-            CURLOPT_FAILONERROR, false, // allows to read body on error
+            CURLOPT_FAILONERROR => false, // allows to read body on error
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json"
             ],

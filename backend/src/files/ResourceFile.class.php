@@ -22,16 +22,23 @@ class ResourceFile extends File {
         if ($this->isPlayer()) {
             $this->validatePlayer();
         }
+
+        if ($this->isPackage()) {
+            $this->validatePackage();
+        }
     }
 
 
+    // TODO don't detect by extension, detect by metadata
     public function isPlayer(): bool {
 
-        $pathInfo = pathinfo($this->getPath());
-        if (!isset($pathInfo['extension'])) {
-            return false;
-        }
-        return in_array(strtoupper($pathInfo['extension']), ['HTML']);
+        return FileExt::has($this->getPath(), 'HTML');
+    }
+
+
+    public function isPackage(): bool {
+
+        return FileExt::has($this->getPath(), 'ITCR.ZIP');
     }
 
 
@@ -213,6 +220,73 @@ class ResourceFile extends File {
                 )
             ) {
                 $this->report('warning', "Non-Standard-Filename: `{$this->meta->playerId}-{$this->meta->version}.html` expected.");
+            }
+        }
+    }
+
+
+    public function validatePackage(): void {
+
+        try {
+
+            $meta = ZIP::readMeta($this->getPath());
+
+            $this->meta->description = $meta['comment'] ?? '';
+            $this->description = $meta['comment'] ?? '';
+
+            $this->report('info', "Contains {$meta['count']} files.");
+
+        } catch (Exception $e) {
+
+            $this->report('error', "Could not read archive: {$e->getMessage()}");
+        }
+    }
+
+
+    private function getPackageContentPath(): string {
+
+        return dirname($this->getPath()) . '/' . basename($this->getName(), '.itcr.zip');
+    }
+
+
+    public function getPackageName(): string {
+
+        return basename($this->getName(), '.itcr.zip');
+    }
+
+    public function installPackage(): void {
+
+        $contentsDirName = $this->getPackageContentPath();
+
+        try {
+            $this->uninstallPackage();
+
+        } catch(Exception $e) {
+
+            $this->report('error', "Could not delete package files: {$e->getMessage()}");
+            return;
+        }
+
+        try {
+            ZIP::extract($this->getPath(), $contentsDirName);
+
+        } catch(Exception $e) {
+
+            $this->report('error', "Could not extract package: {$e->getMessage()}");
+            return;
+        }
+    }
+
+
+    public function uninstallPackage(): void {
+
+        $contentsDirName = $this->getPackageContentPath();
+        if (file_exists($contentsDirName)) {
+            if (is_dir($contentsDirName)) {
+                Folder::deleteContentsRecursive($contentsDirName);
+                rmdir($contentsDirName);
+            } else {
+                unlink($contentsDirName);
             }
         }
     }

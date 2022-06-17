@@ -264,6 +264,15 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/file_list'
               example: # TODO add schema
                 Resource:
+                  - name: sample_resource_package.itcr.zip
+                    size: 412
+                    modificationTime: 1627545600
+                    type: Resource
+                    id: SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP
+                    report:
+                      error:
+                        - "Could not read archive: Could not extract archive"
+                    info: []
                   - name: SAMPLE_UNITCONTENTS.HTM
                     size: 13392
                     modificationTime: 1615970109

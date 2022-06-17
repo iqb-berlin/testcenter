@@ -44,20 +44,6 @@ try {
         DB::connect();
     }
 
-//    $container = new Container();
-
-
-
-
-//    $container['errorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
-//        return new ErrorHandler();
-//    };
-//    $container['phpErrorHandler'] = function(/** @noinspection PhpUnusedParameterInspection */ $c) {
-//        return new ErrorHandler();
-//    };
-//    $container['settings']['displayErrorDetails'] = true;
-//    $container['settings']['addContentLengthHeader'] = true;
-
     $container = new Container();
     AppFactory::setContainer($container);
     $app = AppFactory::create();
@@ -66,10 +52,10 @@ try {
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);
     $errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
 
-//    $app = new App($container);
-
-
-    $app->setBasePath('/testcenter/backend'); // TODO use Server::getUrl() or what to get the correct path
+    $projectPath = Server::getProjectPath();
+    if ($projectPath) {
+        $app->setBasePath($projectPath);
+    }
 
     include_once 'routes.php';
 

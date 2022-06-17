@@ -96,11 +96,26 @@ class TestController extends Controller {
         // TODO each part could have a different type
         $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
 
+        $dependencies = [
+            [
+                'name' => $unitFile->getPlayerId(),
+                'type' => 'player'
+            ]
+        ];
+
+        foreach ($unitFile->getDependencies() as $dep) {
+            $dependencies[] = [
+                'name' => $dep,
+                'type' => 'package'
+            ];
+        }
+
         $unit = [
             'state' => (object) self::testDAO()->getUnitState($testId, $unitAlias),
             'dataParts' => (object) $unitData['dataParts'],
             'unitStateDataType' => $unitData['dataType'],
             'playerId' => $unitFile->getPlayerId(),
+            'dependencies' => $dependencies
         ];
 
         $definitionRef = $unitFile->getDefinitionRef();
@@ -128,17 +143,39 @@ class TestController extends Controller {
             $authToken = self::sessionDAO()->getToken($tokenString, ['person']);
         }
 
-
         $resourceName = $request->getAttribute('resource_name');
-        $skipSubVersions = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
+        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $resourceFile = $workspaceController->findFileById('Resource', $resourceName, $skipSubVersions);
+        $resourceFile = $workspaceController->getResource($resourceName, $allowSimilarVersion);
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
-            ->withHeader('Content-type', 'application/octet-stream') // TODO find out why it only works with pdf or octet-stream
+            ->withHeader('Content-type', 'application/octet-stream') // use octet-stream to make progress trackable
             ->withHeader('Content-length', $resourceFile->getSize());
+    }
+
+
+    public static function getResourceFromPackage(Request $request, Response $response, $args): Response {
+
+        /* @var $authToken AuthToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        if (!$authToken) {
+            $tokenString = $request->getAttribute('auth_token');
+            $authToken = self::sessionDAO()->getToken($tokenString, ['person']);
+        }
+
+        $packageName = $request->getAttribute('package_name');
+        $resourceName = $args['path'];
+
+        $workspaceController = new Workspace($authToken->getWorkspaceId());
+        $resourceFile = $workspaceController->getPackageFilePath($packageName, $resourceName);
+
+        return $response
+            ->withBody(new Stream(fopen($resourceFile, 'rb')))
+            ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
+            ->withHeader('Content-length', filesize($resourceFile));
     }
 
 

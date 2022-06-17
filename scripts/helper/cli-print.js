@@ -1,4 +1,9 @@
 /* eslint-disable no-console */
+
+/**
+ * prints stuff colored on the console
+ */
+
 const styles = {
   headline: text => `\x1b[37m\x1b[44m${text}\x1b[0m`,
   error: text => `\x1B[31m${text}\x1B[34m`,

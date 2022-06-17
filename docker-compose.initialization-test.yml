@@ -14,8 +14,9 @@ services:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
       MYSQL_INITDB_SKIP_TZINFO: 'true'
+    user: root
     volumes:
-      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     command:
       - --log_error_verbosity=1
     ports:

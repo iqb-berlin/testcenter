@@ -87,7 +87,7 @@ class SessionDAO extends DAO {
             return null;
         }
 
-        if (!$loginSession->getToken() or Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+        if (!$loginSession->getToken()) {
 
             $loginSession = $this->createLoginSession($loginSession->getLogin());
         }
@@ -299,14 +299,41 @@ class SessionDAO extends DAO {
      */
     public function getOrCreatePersonSession(LoginSession $loginSession, string $code): PersonSession {
 
+        if (Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+
+            $personNr = $this->countPersonSessionsOfLogin($loginSession, $code) + 1;
+            return $this->createPersonSession($loginSession, $code, $personNr);
+        }
+
         $personSession = $this->getPersonSession($loginSession, $code);
 
         if ($personSession == null) {
 
-            return $this->createPersonSession($loginSession, $code);
+            return $this->createPersonSession($loginSession, $code, 0);
         }
 
         return $personSession;
+    }
+
+
+    private function countPersonSessionsOfLogin(LoginSession $loginSession, string $code): int {
+
+        $persons = $this->_(
+            'SELECT 
+                    person_sessions.id
+                FROM logins
+                    left join login_sessions on (logins.name = login_sessions.name)
+                    left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
+                WHERE
+                      person_sessions.login_sessions_id=:id
+                  and person_sessions.code=:code',
+            [
+                ':id' => $loginSession->getId(),
+                ':code' => $code
+            ],
+            true
+        );
+        return count($persons);
     }
 
 
@@ -317,7 +344,8 @@ class SessionDAO extends DAO {
                     person_sessions.id,
                     person_sessions.token,
                     person_sessions.code,
-                    person_sessions.valid_until
+                    person_sessions.valid_until,
+                    person_sessions.name_suffix
                 FROM logins
                     left join login_sessions on (logins.name = login_sessions.name)
                     left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
@@ -341,13 +369,14 @@ class SessionDAO extends DAO {
                 (int) $person['id'],
                 $person['token'],
                 $person['code'],
+                $person['name_suffix'] ?? '',
                 TimeStamp::fromSQLFormat($person['valid_until'])
             )
         );
     }
 
 
-    public function createPersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): PersonSession {
+    public function createPersonSession(LoginSession $loginSession, string $code, int $personNr, bool $allowExpired = false): PersonSession {
 
         $login = $loginSession->getLogin();
 
@@ -359,16 +388,26 @@ class SessionDAO extends DAO {
             TimeStamp::checkExpiration($login->getValidFrom(), $login->getValidTo());
         }
 
-        $newPersonToken = $this->randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$code");
+        $nameSuffix = [];
+        if ($code) {
+            $nameSuffix[] = $code;
+        }
+        if ($personNr) {
+            $nameSuffix[] = $personNr;
+        }
+        $nameSuffix = implode('/', $nameSuffix);
+
+        $newPersonToken = $this->randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$nameSuffix");
         $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
         $this->_(
-            'INSERT INTO person_sessions (token, code, login_sessions_id, valid_until)
-            VALUES(:token, :code, :login_id, :valid_until)',
+            'INSERT INTO person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
+            VALUES(:token, :code, :login_id, :valid_until, :name_suffix)',
             [
                 ':token' => $newPersonToken,
                 ':code' => $code,
                 ':login_id' => $loginSession->getId(),
+                ':name_suffix' => $nameSuffix,
                 ':valid_until' => TimeStamp::toSQLFormat($validUntil)
             ]
         );
@@ -379,6 +418,7 @@ class SessionDAO extends DAO {
                 (int) $this->pdoDBhandle->lastInsertId(),
                 $newPersonToken,
                 $code,
+                $nameSuffix,
                 $validUntil
             )
         );
@@ -404,7 +444,8 @@ class SessionDAO extends DAO {
                 logins.valid_for,
                 person_sessions.id as "person_id",
                 person_sessions.code,
-                person_sessions.valid_until
+                person_sessions.valid_until,
+                person_sessions.name_suffix
             FROM person_sessions
                 INNER JOIN login_sessions ON login_sessions.id = person_sessions.login_sessions_id
                 INNER JOIN logins ON logins.name = login_sessions.name
@@ -444,6 +485,7 @@ class SessionDAO extends DAO {
                 (int) $personSession['person_id'],
                 $personToken,
                 $personSession['code'] ?? '',
+                $personSession['name_suffix'] ?? '',
                 TimeStamp::fromSQLFormat($personSession['valid_until'])
             )
         );
@@ -525,7 +567,7 @@ class SessionDAO extends DAO {
     public function renewPersonToken(PersonSession $personSession): PersonSession {
 
         $loginSession = $personSession->getLoginSession();
-        $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_{$personSession->getPerson()->getCode()}";
+        $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_{$personSession->getPerson()->getNameSuffix()}";
         $newToken = $this->randomToken('person', $tokenName);
         $this->_(
             "UPDATE person_sessions SET token = :token WHERE id = :id",

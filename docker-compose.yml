@@ -48,7 +48,7 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     volumes:
       - dbdata:/var/lib/mysql
-      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     networks:
       testcenter:
 

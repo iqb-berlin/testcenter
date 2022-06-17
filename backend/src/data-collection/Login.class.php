@@ -1,12 +1,11 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
-
+declare(strict_types=1);
 
 class Login extends DataCollectionTypeSafe {
 
     protected $name = "";
-    protected $password = "";
+    protected $_password = "";
     protected $mode = "";
     protected $groupName = "";
     protected $groupLabel = "";
@@ -35,7 +34,7 @@ class Login extends DataCollectionTypeSafe {
     ) {
 
         $this->name = $name;
-        $this->password = $password;
+        $this->_password = $password;
         $this->mode = $mode;
         $this->groupName = $groupName;
         $this->groupLabel = $groupLabel;
@@ -56,7 +55,7 @@ class Login extends DataCollectionTypeSafe {
 
     public function getPassword(): string {
 
-        return $this->password;
+        return $this->_password;
     }
 
 

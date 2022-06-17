@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 class WorkspaceValidatorTest extends TestCase{
 
     private WorkspaceValidator $validator;
-    private WorkspaceDAO  $workspaceDaoMock;
+    private WorkspaceDAO $workspaceDaoMock;
 
     public static function setUpBeforeClass(): void {
 
@@ -38,6 +38,7 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/helper/FileTime.class.php";
+        require_once "src/helper/FileExt.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileSysCheck.class.php";
@@ -50,6 +51,7 @@ class WorkspaceValidatorTest extends TestCase{
 
         require_once "test/unit/mock-classes/ExternalFileMock.php";
         require_once "test/unit/mock-classes/PasswordMock.php";
+        require_once "test/unit/mock-classes/ZIPMock.php";
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([
@@ -107,8 +109,8 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Unit/unit-unused-and-missing-ref.xml' => [
                 new ValidationReportEntry('warning', 'Unit is never used'),
-                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead."),
-                new ValidationReportEntry('error', 'definitionRef `not-existing.voud` not found')
+                new ValidationReportEntry('error', 'Resource `not-existing.voud` not found'),
+                new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
             'Resource/resource-unused.voud' => [
                 new ValidationReportEntry('warning', 'Resource is never used'),
@@ -128,6 +130,9 @@ class WorkspaceValidatorTest extends TestCase{
             ],
             'Resource/verona-player-simple-4.0.0.html' => [
                 new ValidationReportEntry('info', 'Verona-Version: 4.0')
+            ],
+            'Resource/sample_resource_package.itcr.zip' => [
+                new ValidationReportEntry('info', 'Contains 0 files.')
             ]
         ];
 

@@ -1,4 +1,10 @@
 /* eslint-disable no-console,import/no-extraneous-dependencies,implicit-arrow-linebreak */
+
+/**
+ * Contains all tasks round teh process of creating a new tag/release.
+ * See more documentation at the bottom of this file.
+ */
+
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const gulp = require('gulp');
@@ -193,6 +199,17 @@ const createRelease = gulp.series(
   createReleasePackage
 );
 
+/**
+ * Prepares the repository to be ready for a new tag.
+ * Which ind of tag depends on the last parameter provided.
+ *
+ * `bash -c 'npx gulp --gulpfile=./scripts/tag.js tagPrepare --options {tag-type}`
+ *
+ * {tag-type} can be `major`, `minor`, `patch`. You can also add a label after a hyphen: `major-rc1`, `minor-beta`.
+ * If you want to release the same version again with another label use `-beta` for example.
+ *
+ * After this step, every test should be run.
+ */
 exports.tagPrepare = gulp.series(
   updateVersion,
   checkPrerequisites,
@@ -200,15 +217,26 @@ exports.tagPrepare = gulp.series(
   updateVersionInFiles
 );
 
+/**
+ * this does essentially `git reset --hard` - in case something failed while creating the tag
+ */
 exports.tagRevoke = gulp.series(
   revokeTag
 );
 
+/**
+ * When tag is prepared and all tests where still successful do this.
+ * Creates a release and adds all changed files to staging.
+ */
 exports.tagCommitRelease = gulp.series(
   createRelease,
   createCommit
 );
 
+/**
+ * Pushes the new tag
+ * TODO can not be done by runner, right? so remove it from here and put in into the Makefile.
+ */
 exports.tagPush = gulp.series(
   pushCommit
 );

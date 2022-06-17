@@ -40,17 +40,17 @@ values ('future_user', 1, 'sample_group', 'future_token');
 insert into login_sessions (name, workspace_id, group_name, token)
 values ('session_of_deleted_login', 1, 'sample_group', 'deleted_login_token');
 
-insert into person_sessions(code, login_sessions_id, valid_until, token)
-values ('xxx', 4, '2030-01-02 10:00:00', 'person-token');
+insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
+values ('xxx', 4, '2030-01-02 10:00:00', 'person-token', 'xxx');
 
-insert into person_sessions(code, login_sessions_id, valid_until, token)
-values ('xxx', 4, '2010-01-02 10:00:00', 'expired-person-token');
+insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
+values ('xxx', 4, '2010-01-02 10:00:00', 'expired-person-token', 'xxx');
 
-insert into person_sessions(code, login_sessions_id, valid_until, token)
-values ('', 2, '2000-01-02 10:00:00', 'person-of-expired-login-token');
+insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
+values ('', 2, '2000-01-02 10:00:00', 'person-of-expired-login-token', '');
 
-insert into person_sessions(code, login_sessions_id, valid_until, token)
-values ('', 5, '2040-01-02 10:00:00', 'person-of-future-login-token');
+insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
+values ('', 5, '2040-01-02 10:00:00', 'person-of-future-login-token', '');
 
 insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
 values ('first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label', 1, 1643014459);
