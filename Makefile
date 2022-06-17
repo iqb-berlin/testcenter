@@ -1,6 +1,7 @@
 init:
 	make init-env
 	make init-frontend
+	make init-ensure-file-rights
 	make download-simple-player
 	make composer-install
 
@@ -154,6 +155,9 @@ composer-update:
 
 init-frontend:
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
+
+init-ensure-file-rights:
+	chmod -R 0444 database/my.cnf # mysql does not accept it otherwise
 
 
 --test-and-update:
