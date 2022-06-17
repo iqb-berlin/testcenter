@@ -57,7 +57,7 @@ describe('TestControllerService', () => {
 
   it('Incoming dataParts should be forwarded to backend buffered and filtered for changed parts', fakeAsync(() => {
     service.setUnitStateDataParts(1, {}); // redo subscription inside of fakeAsync
-    service.testMode = new TestMode('hot');
+    service.testMode = new TestMode('run-hot-return');
     service.testId = '111';
     service.setupUnitDataPartsBuffer();
     const u = TestControllerService.unitDataBufferMs;

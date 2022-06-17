@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">21.59% </span>
+                <span class="strong">20.78% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>38/176</span>
+                <span class='fraction'>37/178</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">1.04% </span>
+                <span class="strong">1.02% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/96</span>
+                <span class='fraction'>1/98</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.52% </span>
+                <span class="strong">22.85% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/34</span>
+                <span class='fraction'>8/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">21.26% </span>
+                <span class="strong">20.45% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>37/174</span>
+                <span class='fraction'>36/176</span>
             </div>
         
             
@@ -492,7 +492,13 @@
 <a name='L427'></a><a href='#L427'>427</a>
 <a name='L428'></a><a href='#L428'>428</a>
 <a name='L429'></a><a href='#L429'>429</a>
-<a name='L430'></a><a href='#L430'>430</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a>
+<a name='L433'></a><a href='#L433'>433</a>
+<a name='L434'></a><a href='#L434'>434</a>
+<a name='L435'></a><a href='#L435'>435</a>
+<a name='L436'></a><a href='#L436'>436</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -541,8 +547,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -772,6 +776,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -799,7 +812,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -968,8 +980,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     maxTimer: null,
     connectionStatus: null
   };
-&nbsp;
-  private timerRunning = false;
 &nbsp;
   timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
@@ -1201,6 +1211,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 <span class="cstat-no" title="statement not covered" >        if (gotoTarget &amp;&amp; gotoTarget !== '0') {</span>
 <span class="cstat-no" title="statement not covered" >          this.tcs.resumeTargetUnitSequenceId = 0;</span>
 <span class="cstat-no" title="statement not covered" >          this.tcs.interruptMaxTimer();</span>
+&nbsp;
+          const targetUnit = <span class="cstat-no" title="statement not covered" >this.tcs.rootTestlet.getUnitAt(parseInt(gotoTarget, 10));</span>
+<span class="cstat-no" title="statement not covered" >          if (targetUnit) {</span>
+<span class="cstat-no" title="statement not covered" >            targetUnit.codeRequiringTestlets</span>
+              .forEach(<span class="fstat-no" title="function not covered" >testlet </span>=&gt; {
+<span class="cstat-no" title="statement not covered" >                this.tcs.addClearedCodeTestlet(testlet.id);</span>
+              });
+          }
+&nbsp;
 <span class="cstat-no" title="statement not covered" >          this.tcs.setUnitNavigationRequest(gotoTarget, true);</span>
         }
 <span class="cstat-no" title="statement not covered" >        break;</span>
@@ -1228,7 +1247,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }]
           );
         }
-<span class="cstat-no" title="statement not covered" >        this.timerRunning = false;</span>
 <span class="cstat-no" title="statement not covered" >        this.timerValue = null;</span>
 <span class="cstat-no" title="statement not covered" >        if (this.tcs.testMode.forceTimeRestrictions) {</span>
 <span class="cstat-no" title="statement not covered" >          this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);</span>
@@ -1357,7 +1375,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Wed Apr 20 2022 10:52:13 GMT+0200 (Mitteleuropäische Sommerzeit)
+                at Fri Jun 17 2022 07:40:59 GMT+0000 (Coordinated Universal Time)
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>
