@@ -86,7 +86,7 @@ try  {
 
     } else {
 
-        $config = SystemConfig::fromFile(ROOT_DIR . '/config/system.json');
+        $config = SystemConfig::fromFile(ROOT_DIR . '/backend/config/system.json');
         BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
         CLI::p("Config file present.");
     }
