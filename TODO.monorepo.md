@@ -48,7 +48,7 @@ Frontend
 [ ] fe/breakpoints
 [ ] watch e2e-tests also with docker
 [ ] warum zwei ua-parser dependencies
-[ ] polyfill raus aus NPM
+[ ] polyfill raus (auch aus NPM)
 
 Broadcasting_Service
 [ ] enable "strictNullChecks": true, is tsconfig
@@ -63,7 +63,7 @@ Database
 Backend
 [ ] salt konfigurierbar
 [ ] Config-Folder persistieren?
-[ ] PHP 8.1 -> im extra branch; lieber erst NACH dem resync mit dem alten Repo reinziehen?
+[x] PHP 8.1 -> im extra branch; lieber erst NACH dem resync mit dem alten Repo reinziehen?
 [ ] CORS?
 [ ] BE container shall stop when initialize fails
 
