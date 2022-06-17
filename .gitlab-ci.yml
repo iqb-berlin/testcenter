@@ -128,22 +128,28 @@ test-broadcasting-service-unit:
 
 test-frontend-e2e:
   stage: test
-  rules:
-    - !reference [.merge-request, rules]
+  #  rules:
+  #    - !reference [.merge-request, rules]
+  only:
+    - external_pull_requests
   script:
     - make test-frontend-e2e
 
 test-backend-dredd:
   stage: test
-  rules:
-    - !reference [.merge-request, rules]
+  #  rules:
+  #    - !reference [.merge-request, rules]
+  only:
+    - external_pull_requests
   script:
     - make test-backend-dredd
 
 test-backend-initialization:
   stage: test
-  rules:
-    - !reference [.merge-request, rules]
+#  rules:
+#    - !reference [.merge-request, rules]
+  only:
+    - external_pull_requests
   script:
     - make test-backend-initialization-general
 
