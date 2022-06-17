@@ -29,6 +29,7 @@ Misc
 [ ] Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
 [ ] node_modules / npm workspaces struktur evaluieren (evtl. ua-paarser hack raus FE docker)
 [ ] package-lock.json?
+[ ] funktoniert das Rollback überhaupt bei den SQl-patches?
 
 Cypress
 [ ] Letzten Stand besorgen

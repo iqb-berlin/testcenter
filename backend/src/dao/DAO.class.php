@@ -100,8 +100,10 @@ class DAO {
             $this->pdoDBhandle->exec(file_get_contents($path));
             $this->pdoDBhandle->commit();
         } catch (PDOException $e) {
-            $this->pdoDBhandle->rollBack();
-            throw $e;
+            if ($this->pdoDBhandle->inTransaction()) {
+                $this->pdoDBhandle->rollBack();
+                throw $e;
+            }
         }
     }
 
