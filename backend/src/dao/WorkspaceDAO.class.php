@@ -111,7 +111,7 @@ class WorkspaceDAO extends DAO {
                 $login->getGroupName(),
                 $login->getGroupLabel(),
                 json_encode($login->getCustomTexts()),
-                $login->getPassword(),
+                Password::encrypt($login->getPassword(), 't', true),
                 $source,
                 TimeStamp::toSQLFormat($login->getValidFrom()),
                 TimeStamp::toSQLFormat($login->getValidTo()),
@@ -181,5 +181,4 @@ class WorkspaceDAO extends DAO {
 
         $this->_("delete from files where workspace_id = ? and name = ?", [$workspaceId, $name]);
     }
-
 }

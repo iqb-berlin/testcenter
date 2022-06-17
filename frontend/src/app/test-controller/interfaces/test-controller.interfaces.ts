@@ -85,7 +85,7 @@ export interface StateReportEntry {
   content: string;
 }
 
-export interface UnitStateData {
+export interface UnitDataParts {
   unitDbKey: string;
   dataParts: KeyValuePairString;
   unitStateDataType: string;

@@ -1,13 +1,13 @@
 <?php
-
 /** @noinspection PhpUnhandledExceptionInspection */
-
+declare(strict_types=1);
 
 class Person extends DataCollectionTypeSafe {
 
-    protected $id = 0;
-    protected $token = "";
-    protected $code = "";
+    protected int $id = 0;
+    protected string $token = "";
+    protected string $code = "";
+    protected string $nameSuffix = "";
 
     protected $validTo = 0;
 
@@ -15,12 +15,14 @@ class Person extends DataCollectionTypeSafe {
         int $id,
         string $token,
         string $code,
+        string $nameSuffix,
         int $validTo = 0
     ) {
 
         $this->id = $id;
         $this->token  = $token;
         $this->code = $code;
+        $this->nameSuffix = $nameSuffix;
         $this->validTo = $validTo;
     }
 
@@ -43,6 +45,13 @@ class Person extends DataCollectionTypeSafe {
     }
 
 
+    public function getNameSuffix(): string {
+
+        return $this->nameSuffix;
+    }
+
+
+
     public function getValidTo(): int {
 
         return $this->validTo;
@@ -55,6 +64,7 @@ class Person extends DataCollectionTypeSafe {
             $this->id,
             $token,
             $this->code,
+            $this->nameSuffix,
             $this->validTo
         );
     }

@@ -145,20 +145,17 @@ class WorkspaceController extends Controller {
         }
 
         $reports = [];
+        $loginsAffected = false;
         $containsErrors = false;
         foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
-            if ($file->isValid() and ($file->getType() == 'Testtakers')) {
-                /* @var $file XMLFileTesttakers */
-                list($deleted, $added) = self::workspaceDAO()->updateLoginSource($workspaceId, $localPath, $file->getAllLogins());
-                $file->report('info', "Logins Updated (-$deleted, +$added)");
-            }
-
-            if ($file->isValid()) {
-                self::workspaceDAO()->storeFileMeta($workspaceId, $file);
-            }
             $reports[$localPath] = $file->getValidationReportSorted();
             $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
+            $loginsAffected = ($loginsAffected or ($file->isValid() and ($file->getType() == 'Testtakers')));
+        }
+
+        if ($loginsAffected) {
+            BroadcastService::send('system/clean');
         }
 
         return $response->withJson($reports)->withStatus($containsErrors ? 207 : 201);
@@ -201,11 +198,11 @@ class WorkspaceController extends Controller {
 
         foreach ($deletionReport['deleted'] as $deletedFile) {
 
-            list($type, $name) = explode('/', $deletedFile);
-            if ($type === 'Testtakers') {
-                self::workspaceDAO()->deleteLoginSource($workspaceId, $name);
+            list($type) = explode('/', $deletedFile);
+            if ($type == 'Testtakers') {
+                BroadcastService::send('system/clean');
+                break;
             }
-            self::workspaceDAO()->deleteFileMeta($workspaceId, $name);
         }
 
         return $response->withJson($deletionReport)->withStatus(207);

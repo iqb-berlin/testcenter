@@ -8,12 +8,14 @@
 class ZIP {
 
     static array $mockArchive = [];
+    static string $mockArchiveComment = "";
 
     static function extract(string $filePath, string $extractionPath): void {
 
         file_put_contents($filePath, 'xx');
         self::extractFile(self::$mockArchive, $extractionPath);
     }
+
 
     static private function extractFile($mockArchiveFolder, $extractionPath) {
 
@@ -30,5 +32,14 @@ class ZIP {
 
             }
         }
+    }
+
+
+    static function readMeta(string $zipPath): array {
+
+        return [
+            'count' => count(self::$mockArchive),
+            'comment' => self::$mockArchiveComment
+        ];
     }
 }

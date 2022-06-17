@@ -146,6 +146,11 @@ class WorkspaceValidator {
 
         $this->allFiles[$type][$file->getId()] = $file;
 
+        if ($file->getType() == 'Resource') {
+
+            $this->versionMap[FileName::normalize($file->getId(), true)] = $file->getId();
+        }
+
         return "$type/{$file->getId()}";
     }
 
@@ -197,7 +202,7 @@ class WorkspaceValidator {
 
     private function crossValidate(): void {
 
-        foreach ($this->allFiles as $fileList) { // correct order is ensured by the order of readFiles
+        foreach ($this->allFiles as $fileList) {
 
             foreach ($fileList as /* @var */ $file) {
 

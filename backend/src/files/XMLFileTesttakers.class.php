@@ -188,28 +188,6 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-//    public function getLogin(string $name, string $password, int $workspaceId): ?PotentialLogin {
-//
-//        if (!$this->isValid()) {
-//            return null;
-//        }
-//
-//        foreach($this->xml->xpath('Group') as $groupElement) {
-//
-//            foreach($groupElement->xpath("Login[@name='$name']") as $loginElement) {
-//                $pw = (string) $loginElement['pw'];
-//                if (!$pw or ($password === $pw)) {
-//                    return $this->getPotentialLogin($groupElement, $loginElement, $workspaceId);
-//                } else {
-//                    return null;
-//                }
-//            }
-//        }
-//
-//        return null;
-//    }
-
-
     public function getLoginsInSameGroup(string $loginName, int $workspaceId): ?LoginArray {
 
         if (!$this->isValid()) {
@@ -220,7 +198,7 @@ class XMLFileTesttakers extends XMLFile {
 
             $groupMembers = new LoginArray();
 
-            foreach ($groupElement->xpath('Login[@name][Booklet]') as $memberElement) {
+            foreach ($groupElement->xpath("Login[@name!='$loginName'][Booklet]") as $memberElement) {
 
                 $groupMembers->add($this->getLogin($groupElement, $memberElement, $workspaceId));
             }
@@ -243,7 +221,7 @@ class XMLFileTesttakers extends XMLFile {
 
         return new Login(
             $name,
-            Password::encrypt((string) $loginElement['pw'], 't'), // TODO configurable pepper
+            (string) $loginElement['pw'],
             (string) $loginElement['mode'] ?? 'run-demo',
             (string) $groupElement['id'],
             (string) $groupElement['label'] ?? (string) $groupElement['id'],

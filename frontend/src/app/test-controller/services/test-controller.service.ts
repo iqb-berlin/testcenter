@@ -7,13 +7,13 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MaxTimerData, Testlet } from '../classes/test-controller.classes';
+import { MaxTimerData, Testlet, UnitControllerData } from '../classes/test-controller.classes';
 import {
   KeyValuePairNumber, KeyValuePairString, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
   TestControllerState, TestStateKey,
   UnitNavigationTarget,
-  UnitStateData, UnitStateKey, WindowFocusState
+  UnitDataParts, UnitStateKey, WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { BookletConfig, TestMode } from '../../shared/shared.module';
@@ -87,32 +87,32 @@ export class TestControllerService {
   private unitDefinitionTypes: { [sequenceId: number]: string } = {};
   private unitStateDataTypes: { [sequenceId: number]: string } = {};
 
-  private unitStateDataToSave$ = new Subject<UnitStateData>();
-  private unitStateDataToSaveSubscription: Subscription;
+  private unitDataPartsToSave$ = new Subject<UnitDataParts>();
+  private unitDataPartsToSaveSubscription: Subscription;
 
   constructor(
     private router: Router,
     private bs: BackendService
   ) {
-    this.setupUnitStateBuffer();
+    this.setupUnitDataPartsBuffer();
   }
 
-  setupUnitStateBuffer(): void {
-    this.destroyUnitStateBuffer(); // important when called from unit-test with fakeAsync
+  setupUnitDataPartsBuffer(): void {
+    this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
     // the last buffer when test gets terminated is lost. Seems not to be important, but noteworthy
-    this.unitStateDataToSaveSubscription = this.unitStateDataToSave$
+    this.unitDataPartsToSaveSubscription = this.unitDataPartsToSave$
       .pipe(
         bufferTime(TestControllerService.unitDataBufferMs),
-        filter(stateDataBuffer => !!stateDataBuffer.length),
-        concatMap(stateDataBuffer => {
-          const sortedByUnit = stateDataBuffer
+        filter(dataPartsBuffer => !!dataPartsBuffer.length),
+        concatMap(dataPartsBuffer => {
+          const sortedByUnit = dataPartsBuffer
             .reduce(
-              (agg, unitStateData) => {
-                if (!agg[unitStateData.unitDbKey]) agg[unitStateData.unitDbKey] = [];
-                agg[unitStateData.unitDbKey].push(unitStateData);
+              (agg, dataParts) => {
+                if (!agg[dataParts.unitDbKey]) agg[dataParts.unitDbKey] = [];
+                agg[dataParts.unitDbKey].push(dataParts);
                 return agg;
               },
-              <{ [unitId: string]: UnitStateData[] }>{}
+              <{ [unitId: string]: UnitDataParts[] }>{}
             );
           return Object.keys(sortedByUnit)
             .map(unitId => ({
@@ -123,12 +123,12 @@ export class TestControllerService {
             }));
         })
       )
-      .subscribe(changedStates => {
+      .subscribe(changedDataParts => {
         this.bs.updateDataParts(
           this.testId,
-          changedStates.unitDbKey,
-          changedStates.dataParts,
-          changedStates.unitStateDataType
+          changedDataParts.unitDbKey,
+          changedDataParts.dataParts,
+          changedDataParts.unitStateDataType
         ).subscribe(ok => {
           if (!ok) {
             console.warn('storing unitData failed');
@@ -137,8 +137,8 @@ export class TestControllerService {
       });
   }
 
-  destroyUnitStateBuffer(): void {
-    if (this.unitStateDataToSaveSubscription) this.unitStateDataToSaveSubscription.unsubscribe();
+  destroyUnitDataPartsBuffer(): void {
+    if (this.unitDataPartsToSaveSubscription) this.unitDataPartsToSaveSubscription.unsubscribe();
   }
 
   resetDataStore(): void {
@@ -189,7 +189,7 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length && this.testMode.saveResponses) {
-      this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+      this.unitDataPartsToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
     }
   }
 
@@ -293,6 +293,11 @@ export class TestControllerService {
     }
   }
 
+  getUnclearedTestlets(unit: UnitControllerData): Testlet[] {
+    return unit.codeRequiringTestlets
+      .filter(testlet => !this.clearCodeTestlets.includes(testlet.id));
+  }
+
   updateUnitStatePresentationProgress(unitDbKey: string, unitSeqId: number, presentationProgress: string): void {
     let stateChanged = false;
     if (!this.unitPresentationProgressStates[unitSeqId] || this.unitPresentationProgressStates[unitSeqId] === 'none') {
@@ -310,11 +315,11 @@ export class TestControllerService {
   }
 
   newUnitStateResponseProgress(unitDbKey: string, unitSeqId: number, responseProgress: string): void {
-    if (this.testMode.saveResponses) {
-      if (
-        !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !== responseProgress
-      ) {
-        this.unitResponseProgressStates[unitSeqId] = responseProgress;
+    if (
+      !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !== responseProgress
+    ) {
+      this.unitResponseProgressStates[unitSeqId] = responseProgress;
+      if (this.testMode.saveResponses) {
         this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
           key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
         }]);
@@ -415,8 +420,9 @@ export class TestControllerService {
   }
 
   setUnitNavigationRequest(navString: string, force = false): void {
+    const targetIsCurrent = this.currentUnitSequenceId.toString(10) === navString;
     if (!this.rootTestlet) {
-      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true });
+      this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
     } else {
       switch (navString) {
         case UnitNavigationTarget.ERROR:
@@ -446,9 +452,16 @@ export class TestControllerService {
           break;
 
         default:
-          this.router.navigate([`/t/${this.testId}/u/${navString}`], { state: { force } })
+          this.router.navigate(
+            [`/t/${this.testId}/u/${navString}`],
+            {
+              state: { force },
+              // eslint-disable-next-line no-bitwise
+              queryParams: targetIsCurrent ? { t: Date.now() >> 11 } : {}
+            }
+          )
             .then(navOk => {
-              if (!navOk) {
+              if (!navOk && !targetIsCurrent) {
                 console.log(`navigation failed ("${navString}")`);
               }
             });

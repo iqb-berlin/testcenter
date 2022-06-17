@@ -46,8 +46,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     connectionStatus: null
   };
 
-  private timerRunning = false;
-
   timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
   unitNavigationList: UnitNaviButtonData[] = [];
@@ -278,6 +276,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
           this.tcs.interruptMaxTimer();
+
+          const targetUnit = this.tcs.rootTestlet.getUnitAt(parseInt(gotoTarget, 10));
+          if (targetUnit) {
+            targetUnit.codeRequiringTestlets
+              .forEach(testlet => {
+                this.tcs.addClearedCodeTestlet(testlet.id);
+              });
+          }
+
           this.tcs.setUnitNavigationRequest(gotoTarget, true);
         }
         break;
@@ -305,7 +312,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             }]
           );
         }
-        this.timerRunning = false;
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
           this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);

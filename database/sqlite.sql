@@ -25,7 +25,7 @@ CREATE TABLE "logins"
     "mode"              varchar(20)  NOT NULL,
     "workspace_id"      bigint(20)   NOT NULL,
     "codes_to_booklets" text              DEFAULT NULL,
-    "source"            varchar(30)       DEFAULT NULL,
+    "source"            varchar(120)       DEFAULT NULL,
     "valid_from"        timestamp    NULL DEFAULT NULL,
     "valid_to"          timestamp    NULL DEFAULT NULL,
     "valid_for"         int(11)           DEFAULT NULL,
@@ -47,6 +47,7 @@ CREATE TABLE "person_sessions"
     "login_sessions_id" bigint(20)  NOT NULL,
     "valid_until"       timestamp   NULL DEFAULT NULL,
     "token"             varchar(50) NOT NULL,
+    "name_suffix"       varchar(100) NOT NULL,
     CONSTRAINT "fk_person_login" FOREIGN KEY ("login_sessions_id") REFERENCES "login_sessions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE TABLE "test_commands"
@@ -151,7 +152,7 @@ CREATE TABLE "workspaces"
 create table files
 (
     "workspace_id"       integer                                                                        not null,
-    "name"               varchar(40)                                                                    not null,
+    "name"               varchar(120)                                                                    not null,
     "id"                 varchar(40)                                                                        null,
     "version_mayor"      integer                                                                            null,
     "version_minor"      integer                                                                            null,

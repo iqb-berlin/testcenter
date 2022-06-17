@@ -52,6 +52,7 @@ class WorkspaceTest extends TestCase {
         require_once "src/helper/Folder.class.php";
         require_once "src/helper/FileName.class.php";
         require_once "src/helper/FileTime.class.php";
+        require_once "src/helper/FileExt.class.php";
         require_once "src/helper/Version.class.php";
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/JSON.class.php";
@@ -75,7 +76,9 @@ class WorkspaceTest extends TestCase {
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
         $this->workspaceDaoMock->allows([
-            'getGlobalIds' => VfsForTest::globalIds
+            'getGlobalIds' => VfsForTest::globalIds,
+            'updateLoginSource' => [10, 10],
+            'storeFileMeta' => null
         ]);
         $this->vfs = VfsForTest::setUp();
         $this->workspace = new Workspace(1);
@@ -114,6 +117,7 @@ class WorkspaceTest extends TestCase {
 
         $expectation = [
             'SAMPLE_UNITCONTENTS.HTM',
+            'sample_resource_package.itcr.zip',
             'verona-player-simple-4.0.0.html',
             'SAMPLE_UNIT.XML',
             'SAMPLE_UNIT2.XML',
@@ -160,6 +164,7 @@ class WorkspaceTest extends TestCase {
             '.',
             '..',
             'SAMPLE_UNITCONTENTS.HTM',
+            'sample_resource_package.itcr.zip',
             'verona-player-simple-4.0.0.html'
         ];
         $this->assertEquals($resourcesLeftExpected, $resourcesLeft);
@@ -210,7 +215,7 @@ class WorkspaceTest extends TestCase {
             "SysCheck" => 1,
             "Booklet" => 4,
             "Unit" => 2,
-            "Resource" => 2
+            "Resource" => 3
         ];
 
         $result = $this->workspace->countFilesOfAllSubFolders();

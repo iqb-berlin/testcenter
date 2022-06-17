@@ -15,8 +15,9 @@ class WorkspaceInitializer {
       "sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",
       "sampledata/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
       "sampledata/Unit2.xml" => "Unit/SAMPLE_UNIT2.XML",
-      "sampledata/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html",
-      "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON"
+      "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON",
+      "sampledata/sample_resource_package.itcr.zip" => "Resource/sample_resource_package.itcr.zip",
+      "sampledata/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html"
     ];
 
 

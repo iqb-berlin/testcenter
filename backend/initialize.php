@@ -86,6 +86,8 @@ try  {
 
     } else {
 
+        $config = SystemConfig::fromFile(ROOT_DIR . '/config/system.json');
+        BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
         CLI::p("Config file present.");
     }
 
@@ -273,7 +275,13 @@ try  {
     }
 
 
-    CLI::h3("Ready.");
+    $bsStatus = BroadcastService::getStatus();
+    if ($bsStatus['status'] == 'online') {
+        CLI::h2("Flashing Broadcasting-Service");
+        BroadcastService::send('system/clean');
+    }
+
+    CLI::h1("Ready.");
 
 } catch (Exception $e) {
 

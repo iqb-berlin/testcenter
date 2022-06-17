@@ -60,12 +60,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
-    if (!this.tcs.testMode.forceTimeRestrictions) {
-      return of(true);
-    }
     if (newUnit && newUnit.maxTimerRequiringTestlet && // staying in the same timed block
       (newUnit.maxTimerRequiringTestlet.id === this.tcs.currentMaxTimerTestletId)
     ) {
+      return of(true);
+    }
+    if (!this.tcs.testMode.forceTimeRestrictions) {
+      this.tcs.interruptMaxTimer();
       return of(true);
     }
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
@@ -93,7 +94,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 
   private checkAndSolveCompleteness(newUnit: UnitControllerData): Observable<boolean> {
-    const direction = (newUnit && this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
+    const direction = (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
     const reasons = this.checkCompleteness(direction);
     if (!reasons.length) {
       return of(true);
@@ -165,11 +166,18 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
                 currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean> | boolean {
+    console.log(nextState);
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
       return true;
     }
 
-    if (nextState.url === '/r/route-dispatcher') { // clicking on the IQB-Logo
+    const target = nextState.url.split('/').pop();
+    if (['route-dispatcher', 'status'].indexOf(target) > -1) { // clicking on the IQB-Logo
+      return true;
+    }
+
+    const currentUnit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    if (currentUnit && this.tcs.getUnclearedTestlets(currentUnit).length) {
       return true;
     }
 
@@ -180,6 +188,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
 
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
+
     if (forceNavigation) {
       this.tcs.interruptMaxTimer();
       return of(true);

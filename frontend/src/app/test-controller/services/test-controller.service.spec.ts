@@ -4,10 +4,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
-import { KeyValuePairString, UnitStateData } from '../interfaces/test-controller.interfaces';
+import { KeyValuePairString, UnitDataParts } from '../interfaces/test-controller.interfaces';
 import { TestMode } from '../../shared/shared.module';
 
-const uploadedData: UnitStateData[] = [];
+const uploadedData: UnitDataParts[] = [];
 
 class MockBackendService {
   // eslint-disable-next-line class-methods-use-this
@@ -59,10 +59,10 @@ describe('TestControllerService', () => {
     service.setUnitStateDataParts(1, {}); // redo subscription inside of fakeAsync
     service.testMode = new TestMode('run-hot-return');
     service.testId = '111';
-    service.setupUnitStateBuffer();
+    service.setupUnitDataPartsBuffer();
     const u = TestControllerService.unitDataBufferMs;
 
-    const expectedUploadedData: UnitStateData[] = [];
+    const expectedUploadedData: UnitDataParts[] = [];
 
     service.updateUnitStateDataParts('unit1', 1, { a: 'initial A', b: 'initial B' }, 'aType');
     tick(u * 0.1);
@@ -110,6 +110,6 @@ describe('TestControllerService', () => {
       .withContext('when unitId changes debounce timer should be killed')
       .toEqual(expectedUploadedData);
 
-    service.destroyUnitStateBuffer();
+    service.destroyUnitDataPartsBuffer();
   }));
 });

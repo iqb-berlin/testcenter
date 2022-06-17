@@ -42,6 +42,8 @@ class SystemController extends Controller {
             $workspace->delete();
         }
 
+        BroadcastService::send('system/clean');
+
         return $response;
     }
 

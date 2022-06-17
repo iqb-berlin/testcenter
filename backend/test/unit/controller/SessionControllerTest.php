@@ -216,13 +216,14 @@ final class SessionControllerTest extends TestCase {
                 'Sample Group',
                 [ '' => ['THE_BOOKLET']],
                 1
-            ));
+            )
+        );
 
         $this->mockSessionDAO([
             'getOrCreateLoginSession' => $loginSession,
             'getOrCreatePersonSession' => new PersonSession(
                 $loginSession,
-                new Person(1, 'person_token', '')
+                new Person(1, 'person_token', '', '')
             ),
             'renewPersonToken' => function(PersonSession $personSession): PersonSession {
                 return $personSession->withNewToken('new_token');
@@ -237,7 +238,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"new_token","displayName":"Sample Group\/sample_user\/","customTexts":{},"flags":[],"access":{"test":["THE_BOOKLET"]}}',
+            '{"token":"new_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":[],"access":{"test":["THE_BOOKLET"]}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -294,7 +295,7 @@ final class SessionControllerTest extends TestCase {
                 'getOrCreatePersonSession' => function(LoginSession $loginSession, string $code): PersonSession {
                     return new PersonSession(
                         $loginSession,
-                        new Person(-1, 'person_token', $code)
+                        new Person(-1, 'person_token', $code, $code)
                     );
                 },
                 'getLoginsByGroup' => [
@@ -329,7 +330,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"new_token","displayName":"Sample Group\/test-monitor\/","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
+            '{"token":"new_token","displayName":"Sample Group\/test-monitor","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -391,6 +392,7 @@ final class SessionControllerTest extends TestCase {
             new Person(
                 1,
                 'person_token',
+                'xxx',
                 'xxx'
             )
         );
@@ -434,6 +436,7 @@ final class SessionControllerTest extends TestCase {
             new Person(
                 2,
                 'monitor_token',
+                '',
                 ''
             )
         );
@@ -452,7 +455,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor\/","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
+            '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
             $response->getBody()->getContents()
         );
     }

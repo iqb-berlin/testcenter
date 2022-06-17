@@ -202,3 +202,5 @@ $app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
     ->add(new RequireToken('admin'));
 
 $app->get('/{auth_token}/resource/{resource_name}', [TestController::class, 'getResource']);
+
+$app->get('/{auth_token}/resource/{package_name}/[{path:.*}]', [TestController::class, 'getResourceFromPackage']);

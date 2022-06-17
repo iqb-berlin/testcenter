@@ -69,7 +69,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $login = $this->createLoginSession($login, true);
-        $this->createPersonSession($login, 'xxx', true);
+        $this->createPersonSession($login, 'xxx', 0,true);
 
         $superAdminDAO->createUser("expired_user", "whatever", true);
         $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
@@ -91,7 +91,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $loginSession = $this->createLoginSession($login);
-        $personsSessions['test-group-monitor'] = $this->createPersonSession($loginSession, '');
+        $personsSessions['test-group-monitor'] = $this->createPersonSession($loginSession, '', 0);
 
         $login = new Login(
             'expired-group-monitor',
@@ -104,7 +104,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $loginSession = $this->createLoginSession($login, true);
-        $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', true);
+        $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', 0,true);
 
         return $personsSessions;
     }

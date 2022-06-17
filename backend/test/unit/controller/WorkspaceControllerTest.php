@@ -38,13 +38,13 @@ final class WorkspaceControllerTest extends TestCase {
     private Report $reportMock;
     private AdminDAO $adminDaoMock;
     private SysChecksFolder $sysChecksFolderMock;
+    private BroadcastService $broadcastingServiceMock;
 
     private string $requestMethod = 'GET';
     private int $workspaceId = 1;
     private string $dataIds = 'id1,id2';
 
     private Workspace $workspaceMock;
-    private WorkspaceDAO $workspaceDaoMock;
     private UploadedFilesHandler $uploadedFilesHandler;
 
     function setUp(): void {
@@ -84,7 +84,7 @@ final class WorkspaceControllerTest extends TestCase {
         $this->sysChecksFolderMock = Mockery::mock(SysChecksFolder::class);
 
         $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
-        $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
+        $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
 
         $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
 
@@ -427,15 +427,9 @@ final class WorkspaceControllerTest extends TestCase {
             ->andReturn($deletionReport)
             ->once();
 
-        $this->workspaceDaoMock
-            ->expects('deleteLoginSource')
-            ->with(1, 'local_path.file')
-            ->once()
-            ->andReturn(2);
-
-        $this->workspaceDaoMock
-            ->expects('deleteFileMeta')
-            ->times(2) // two valid files
+        $this->broadcastingServiceMock
+            ->expects('send')
+            ->times(1)
             ->andReturn();
 
         $response = WorkspaceController::deleteFiles(
@@ -486,14 +480,9 @@ final class WorkspaceControllerTest extends TestCase {
             ->once()
             ->andReturn(array_values($files));
 
-        $this->workspaceDaoMock
-            ->expects('updateLoginSource')
-            ->once()
-            ->andReturn([0, 3]);
-
-        $this->workspaceDaoMock
-            ->expects('storeFileMeta')
-            ->times(2) // two valid files
+        $this->broadcastingServiceMock
+            ->expects('send')
+            ->times(1)
             ->andReturn();
 
         $response = WorkspaceController::postFile(
@@ -510,7 +499,7 @@ final class WorkspaceControllerTest extends TestCase {
 
         $this->assertEquals(207, $response->getStatusCode());
         $this->assertEquals(
-            '{"Booklet.xml":[],"Unit2.xml":{"error":["Invalid File"]},"Testtakers.xml":{"info":["Logins Updated (-0, +3)"]}}',
+            '{"Booklet.xml":[],"Unit2.xml":{"error":["Invalid File"]},"Testtakers.xml":[]}',
             $response->getBody()->getContents()
         );
     }
