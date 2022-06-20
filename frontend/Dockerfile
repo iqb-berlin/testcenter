@@ -2,6 +2,9 @@ FROM iqbberlin/testcenter-frontend-dev-base:latest as dev
 
 WORKDIR /app
 
+COPY frontend/package.json .
+RUN npm install
+
 COPY common /common
 COPY definitions /definitions
 COPY frontend/.browserslistrc .
@@ -9,10 +12,6 @@ COPY frontend/angular.json .
 COPY frontend/package.json .
 COPY frontend/src /app/src
 COPY frontend/tsconfig.json .
-
-RUN npm install
-RUN npm cache clean --force
-RUN node_modules/cypress/bin/cypress cache clear
 
 # emulate top-level node-modules for this script
 RUN mkdir /node_modules
