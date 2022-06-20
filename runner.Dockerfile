@@ -1,5 +1,7 @@
 FROM node:14.19-buster-slim
 
+RUN apt-get update && apt-get install -y python3
+
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
@@ -18,5 +20,5 @@ COPY test /app/test
 
 RUN mkdir /app/tmp
 
-# will be overwritten by makefile
+# will be overwritten by makefile TODO weg?
 CMD ["sleep", "infinity"]
