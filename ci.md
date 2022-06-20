@@ -71,5 +71,43 @@ Entwickeln mit Docker. Ja.
 
 
 
+=================================================================
 
+Workflow
+
+A
+- Versionsnummer + Docs werden im PR bereits hochgezogen
+- Nachteil:
+  -- Ein angenommener PR macht alle anderen direkt konfliktend
+  -- Im PR sind 10000 docs Dateien immer mit drin
+
+B
+- Policy: Nach PR soll einmal das Tag-Script ausgeführt werden und VN hochgezogen etc.
+- Nachteil:
+  -- Wenn es nicht der Reviewer macht, weiß man evetl. gar nicht, welcher Typ (minor, patch etc.) das jetzt ist
+  -- Extra-Commit immer nach dem merge
+
+C
+- Durch einen Marker in der CM wird klar, welcher Versionstyp folgen muss. Die CI commited die neue VN und Docs nach Merge von selber
+- Nachteil:
+  -- Fehleranfällig wegen dem Marker
+  -- Extra-Commit immer nach dem merge
+  -- wo soll der Marker hin?
+
+
+
+Oder Tags? Geht das?
+
+Sideshow-Branch
+- Tag: "minor"
+
+Pull-Request angenommen
+
+==> Tag "minor" -> Master
+
+[CI] Tag
+-> wenn "minor"
+--> ziehe VN hoch, generiere docs
+--- delete tag "minor"
+--- make tag neue VN
 

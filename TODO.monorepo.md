@@ -26,7 +26,7 @@ Misc
 [ ] Hardcode BROADCAST_SERVICE_URI_SUBSCRIBE
 [ ] $SUPERUSER_NAME don't have to be env
 [ ] Do something with dredd-report
-[ ] Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
+[ ] Ordnerstruktur / Docker/compose files überdenken: Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
 [ ] node_modules / npm workspaces struktur evaluieren (evtl. ua-paarser hack raus FE docker)
 [ ] package-lock.json?
 [ ] funktoniert das Rollback überhaupt bei den SQl-patches?
@@ -35,7 +35,7 @@ Cypress
 [ ] Letzten Stand besorgen
 [ ] Gegen Testdaten testen (nicht auf Ursprungszustand verlassen)
 [ ] CSS-Selektoren überarbeiten
-[ ] Ordner- und Dateinamen
+[ ] Ordner- und Dateinamen 
 
 
 Frontend
@@ -49,6 +49,7 @@ Frontend
 [ ] watch e2e-tests also with docker
 [ ] warum zwei ua-parser dependencies
 [ ] polyfill raus (auch aus NPM)
+[ ] apache statt nginx!
 
 Broadcasting_Service
 [ ] enable "strictNullChecks": true, is tsconfig
