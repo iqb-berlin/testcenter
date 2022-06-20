@@ -1,7 +1,7 @@
 /* eslint-disable no-console,import/no-extraneous-dependencies,implicit-arrow-linebreak */
 
 /**
- * Contains all tasks round teh process of creating a new tag/release.
+ * Contains all tasks round teh process of updating the version-number
  * See more documentation at the bottom of this file.
  */
 
@@ -18,7 +18,6 @@ const cliPrint = require('./helper/cli-print');
 const rootPath = fs.realpathSync(`${__dirname}'/..`);
 
 const packageJson = require('../package.json');
-const { exec } = require('./helper/exec');
 
 // see https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 // eslint-disable-next-line max-len
@@ -53,32 +52,6 @@ const updateVersion = async done => {
 const checkPrerequisites = async done => {
   cliPrint.headline('Check Prerequisites');
 
-  // on master?
-  const branch = exec('git rev-parse --abbrev-ref HEAD');
-  if (branch !== 'master') {
-    done(new Error(cliPrint.get.error(`ERROR: Not on master branch! (but on: ${branch})`)));
-  }
-  cliPrint.success('[x] on master-branch');
-
-  // pulled?
-  const pulled = exec('git fetch origin --dry-run');
-  if (pulled !== '') {
-    done(new Error(cliPrint.get.error('ERROR: Not up to date with remote branch!')));
-  }
-  cliPrint.success('[x] Up to date with remote branch.');
-
-  // tag exists
-  let tagExists = true;
-  try {
-    exec(`git show-ref --tags "${version.full}" --quiet`);
-  } catch (e) {
-    tagExists = false;
-  }
-  if (tagExists) {
-    done(new Error(cliPrint.get.error(`GitTag ${version.full} already exists!`)));
-  }
-  cliPrint.success(`[x] Git-tag ${version.full} unused.`);
-
   // changelog updated?
   const changelog = fs.readFileSync(`${rootPath}/CHANGELOG.md`).toString();
   if (!changelog.match(`## (\\[next]|${version.full})`)) {
@@ -86,19 +59,14 @@ const checkPrerequisites = async done => {
     done(new Error(cliPrint.get.error(msg)));
   }
 
-  // everything committed?
-  const committed = exec('git status --porcelain');
-  console.log(committed);
-  if (committed !== '') {
-    done(new Error(cliPrint.get.error('Workspace not clean. Commit or stash your changes.')));
-  }
-  cliPrint.success('[x] Workspace clean.');
+  // TODO check sql patch
 
   done();
 };
 
 const savePackageJson = async done => {
-  fs.writeFileSync('../package.json', JSON.stringify(packageJson, null, 2));
+  packageJson.version = version.full;
+  fs.writeFileSync(`${rootPath}/package.json`, JSON.stringify(packageJson, null, 2));
   cliPrint.success(`[x] /package.json updated with ${version.full}`);
   done();
 };
@@ -129,17 +97,6 @@ const updateVersionInFiles = gulp.parallel(
   )
 );
 
-const revokeTag = async done => {
-  cliPrint.headline('Revoke to previous state after failure');
-  try {
-    exec('git reset --hard');
-  } catch (error) {
-    done(new Error(cliPrint.get.error(`ERROR: Could not revoke state:${error}`)));
-  }
-  cliPrint.success('[x] Automatically changed files revoked');
-  done();
-};
-
 const getUpdateSh = () =>
   download('https://raw.githubusercontent.com/iqb-berlin/iqb-scripts/master/update.sh')
     .pipe(gulp.dest(`${rootPath}/dist-src`));
@@ -151,92 +108,28 @@ const createReleasePackage = async () =>
   merge([
     gulp.src(`${rootPath}/dist-src/*`),
     gulp.src(`${rootPath}/docker-compose.yml`),
-    gulp.src(`${rootPath}/.env-default`),
     gulp.src(`${rootPath}/CHANGELOG.md`)
   ])
     .pipe(archiver(`${version.full}@${version.full}+${version.full}.tar`))
     .pipe(gulp.dest(`${rootPath}/dist`));
 
-const execCommands = (headline, commands) =>
-  async done => {
-    cliPrint.headline(headline.replace('$VERSION', version.full));
-    let returner;
-    commands
-      .every(command => {
-        try {
-          exec(command.replace('$VERSION', version.full));
-        } catch (e) {
-          returner = cliPrint.get.error(`Git command '${command}' failed with: ${e}`);
-          return false;
-        }
-        return true;
-      });
-    done(returner);
-  };
-
-const createCommit = execCommands(
-  'Create commit tag version $VERSION',
-  [
-    'git add -A',
-    'git ls-files --deleted | xargs git add',
-    'git commit -m "Update version to $VERSION"',
-    'git tag $VERSION'
-  ]
-);
-
-// when using the task runner, this should be done by the host, since the task-runner don't have the credentials
-const pushCommit = execCommands(
-  'Push to master and to $VERSION',
-  [
-    'git push origin master',
-    'git push origin $VERSION'
-  ]
-);
-
-const createRelease = gulp.series(
-  getUpdateSh,
-  clearDistDir,
-  createReleasePackage
-);
-
 /**
- * Prepares the repository to be ready for a new tag.
- * Which ind of tag depends on the last parameter provided.
+ * Creates a new version number
+ * Which type depends on the last parameter provided.
  *
- * `bash -c 'npx gulp --gulpfile=./scripts/tag.js tagPrepare --options {tag-type}`
+ * `bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options {tag-type}`
  *
  * {tag-type} can be `major`, `minor`, `patch`. You can also add a label after a hyphen: `major-rc1`, `minor-beta`.
  * If you want to release the same version again with another label use `-beta` for example.
  *
  * After this step, every test should be run.
  */
-exports.tagPrepare = gulp.series(
+exports.newVersion = gulp.series(
   updateVersion,
   checkPrerequisites,
-  savePackageJson,
-  updateVersionInFiles
-);
-
-/**
- * this does essentially `git reset --hard` - in case something failed while creating the tag
- */
-exports.tagRevoke = gulp.series(
-  revokeTag
-);
-
-/**
- * When tag is prepared and all tests where still successful do this.
- * Creates a release and adds all changed files to staging.
- */
-exports.tagCommitRelease = gulp.series(
-  createRelease,
-  createCommit
-);
-
-/**
- * Pushes the new tag
- * TODO can not be done by runner, right? so remove it from here and put in into the Makefile.
- */
-exports.tagPush = gulp.series(
-  pushCommit
+  savePackageJson, // TODO how about package-lock?
+  updateVersionInFiles,
+  getUpdateSh,
+  clearDistDir,
+  createReleasePackage
 );

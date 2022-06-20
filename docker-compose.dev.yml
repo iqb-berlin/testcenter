@@ -83,8 +83,6 @@ services:
     environment:
       TC_API_URL: http://testcenter-backend/
     volumes:
-      - ./.git:/app/.git
-      - ./.gitignore:/app/.gitignore
       - ./CHANGELOG.md:/app/CHANGELOG.md
       - ./README.md:/app/README.md
       - ./broadcasting-service:/app/broadcasting-service
@@ -98,6 +96,5 @@ services:
       - ./sampledata:/app/sampledata
       - ./scripts:/app/scripts
       - ./test:/app/test
-      - ~/.gitconfig:/etc/gitconfig
     networks:
       - testcenter

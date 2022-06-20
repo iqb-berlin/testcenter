@@ -32,11 +32,7 @@
     "broadcasting-service:coverage": "npx -w broadcasting-service jest --coverage",
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
     "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
-    "tag-prepare": "bash -c 'npx gulp --gulpfile=./scripts/tag.js tagPrepare --options $0'",
-    "tag-prepare-patch": "npx gulp --gulpfile=./scripts/tag.js tagPrepare --option patch",
-    "tag-prepare-test": "npx gulp --gulpfile=./scripts/tag.js tagPrepare --option patch",
-    "tag-revoke": "npx gulp --gulpfile=./scripts/tag.js tagRevoke",
-    "tag-release": "npx gulp --gulpfile=./scripts/tag.js tagCommitRelease"
+    "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"
   },
   "workspaces": [
     "frontend",

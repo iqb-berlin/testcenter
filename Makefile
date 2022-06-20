@@ -129,7 +129,7 @@ create-interfaces:
 
 
 init-env:
-	cp .env-default .env
+	cp dist-src/.env .env
 
 download-simple-player:
 	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/verona-player-simple-4.0.0.html -O sampledata/verona-player-simple-4.0.0.html
@@ -159,30 +159,7 @@ init-frontend:
 init-ensure-file-rights:
 	chmod -R 0444 database/my.cnf # mysql does not accept it otherwise
 
+new-version:
+	make run-task-runner task="new-version $(version)"
 
---test-and-update:
-	make build
-#	make create-interfaces
-#	make test-backend-unit
-#	make test-backend-dredd
-#	make test-backend-initialization-general
-#	make test-broadcasting-service-unit
-#	make test-frontend-e2e
-#	make test-frontend-integration
-#	make update-docs
-	echo "test-and-update"
-	make run-task-runner task="tag-release"
-	git push origin master
-	git push origin `git tag -l --sort=-creatordate | head -n 1`
-
-
-
-tag:
-	make build service=testcenter-task-runner
-	make run-task-runner task="tag-prepare $(version)"
-	if make --test-and-update; then \
-  		echo "[SUCCESS]"; \
-  	else \
-		make run-task-runner task="tag-revoke"; \
-	fi
 
