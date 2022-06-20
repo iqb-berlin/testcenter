@@ -1,6 +1,6 @@
 FROM node:14.19-buster-slim
 
-RUN apt-get update && apt-get install -y python3
+RUN apt-get update && apt-get install -y python3 make
 
 WORKDIR /app
 COPY package.json .
