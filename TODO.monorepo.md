@@ -30,6 +30,7 @@ Misc
 [ ] node_modules / npm workspaces struktur evaluieren (evtl. ua-paarser hack raus FE docker)
 [ ] package-lock.json?
 [ ] funktoniert das Rollback überhaupt bei den SQl-patches?
+[ ] next.sql als anonyme neue version (wenn die neue versionsnummer noch nicht feststeht) 
 
 Cypress
 [ ] Letzten Stand besorgen
