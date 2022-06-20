@@ -9,23 +9,18 @@ build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
 
 run:
-#	make build container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(service)
 
 run-detached:
-	make build container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(service)
 
-build-prod:
+# use locally built prod images
+build-prod-local:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(service)
 
-run-prod:
-	build-prod container=$(service)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(service)
-
-run-prod-detached:
-	build-prod container=$(service)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(service)
+run-prod-local:
+	make build-prod-local container=$(service)
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up $(service)
 
 stop:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(service)
@@ -48,10 +43,12 @@ test-backend-unit:
 		--coverage-html /docs/dist/test-coverage-backend-unit \
 		test/unit/.
 
-# TODO backend and db must be running
+# run against in memory DB
 test-backend-dredd:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d testcenter-db testcenter-backend
 	make run-task-runner task=backend:dredd-test
 
+# run against mysql; takes a long time -> only run manually
 test-backend-dredd-mysql:
 	docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql build
 	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
@@ -71,7 +68,7 @@ test-backend-initialization-general:
 	make test-backend-initialization test=general/install-db-patches
 
 test-broadcasting-service-unit:
-	make build service=testcenter-broadcasting-service
+	#make build service=testcenter-broadcasting-service
 	docker run \
 		-v $(CURDIR)/docs/dist:/docs/dist \
 		--entrypoint npx \
@@ -161,5 +158,3 @@ init-ensure-file-rights:
 
 new-version:
 	make run-task-runner task="new-version $(version)"
-
-
