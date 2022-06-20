@@ -126,7 +126,7 @@ create-interfaces:
 
 
 init-env:
-	cp dist-src/.env .env
+	cp .env-default .env
 
 download-simple-player:
 	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/verona-player-simple-4.0.0.html -O sampledata/verona-player-simple-4.0.0.html
