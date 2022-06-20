@@ -1,6 +1,6 @@
 FROM node:14.19-buster-slim
 
-RUN apt-get update && apt-get install -y python3 make
+RUN apt-get update && apt-get install -y python3 make g++
 
 WORKDIR /app
 COPY package.json .
