@@ -56,11 +56,13 @@
       <path value="$PROJECT_DIR$/backend/vendor/ralouphie/getallheaders" />
       <path value="$PROJECT_DIR$/backend/vendor/slim/psr7" />
       <path value="$PROJECT_DIR$/backend/vendor/slim/http" />
+      <path value="$PROJECT_DIR$/backend/vendor/pimple/pimple" />
+      <path value="$PROJECT_DIR$/backend/vendor/symfony/polyfill-ctype" />
     </include_path>
   </component>
   <component name="PhpProjectServersManager">
     <servers>
-      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" use_path_mappings="true">
+      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$/backend" remote-root="/var/www/backend" />
         </path_mappings>

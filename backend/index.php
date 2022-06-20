@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-//use Slim\App;
-//use Slim\Container;
 use DI\Container;
 use Slim\Factory\AppFactory;
-use Slim\Psr7\Request;
-use Slim\Psr7\Response;
+use Slim\Http\ServerRequest as Request;
+use Slim\Http\Response;
 
 
 try {
@@ -56,6 +54,10 @@ try {
     if ($projectPath) {
         $app->setBasePath($projectPath);
     }
+
+    $app->options('/{routes:.+}', function(Request $request, Response $response) {
+        return $response;
+    });
 
     include_once 'routes.php';
 
