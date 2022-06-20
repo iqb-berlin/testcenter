@@ -153,9 +153,3 @@ test-backend-initialization:
   script:
     - apk add make
     - make test-backend-initialization-general
-
-update-docs:
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-  script:
-    - make update-docs
