@@ -1,4 +1,4 @@
-ARG NODE_VERSION=14.15.0
+ARG NODE_VERSION=14.19-buster-slim
 
 FROM node:${NODE_VERSION} as dev
 

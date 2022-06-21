@@ -1,6 +1,6 @@
-ARG NODE_VERSION=14.15.0
+FROM node:14.19-buster-slim
 
-FROM node:${NODE_VERSION}
+RUN apt-get update && apt-get install -y python3 make g++
 
 WORKDIR /app
 COPY package.json .
