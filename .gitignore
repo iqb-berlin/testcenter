@@ -53,4 +53,4 @@
 /dist-src/update.sh
 
 # env
-.env
+/.env
