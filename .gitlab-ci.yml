@@ -88,8 +88,7 @@ test-backend-unit:
     - build-backend
   script:
     - apk add make docker-compose
-    - make init-env
-    - make download-simple-player
+    - make init
     - docker load -i backend_image.tar
     - make test-backend-unit
 

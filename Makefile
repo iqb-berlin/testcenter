@@ -2,7 +2,6 @@ init:
 	make init-env
 	make init-frontend
 	make init-ensure-file-rights
-	make download-simple-player
 	make composer-install
 
 build:
@@ -109,7 +108,6 @@ docs-user:
 create-interfaces:
 	make run-task-runner task=create-interfaces
 
-
 #copy-packages:
 #	mkdir -p node_modules
 #	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
@@ -120,14 +118,8 @@ create-interfaces:
 #install-packages:
 #	docker exec testcenter-frontend-dev npm install $(packages)
 
-
-
 init-env:
 	cp dist-src/.env .env
-
-download-simple-player:
-	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/verona-player-simple-4.0.0.html -O sampledata/verona-player-simple-4.0.0.html
-	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/sample-data/introduction-unit.htm -O sampledata/introduction-unit.htm
 
 composer-install: # TODO 13 - is this necessary? or automatically done with building the container
 	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .

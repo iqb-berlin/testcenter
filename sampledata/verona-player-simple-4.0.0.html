@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Verona Player 4</title>
+
+  <!-- experimental new meta-data-format -->
+  <script type="application/ld+json">
+    {
+      "$schema": "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json",
+      "type": "player",
+      "id": "verona-player-simple",
+      "name": [
+        {
+          "value": "Simple HTML Player",
+          "lang": "en"
+        }
+      ],
+      "version": "4.0.0",
+      "specVersion": "4.0",
+      "description": [
+        {
+          "value": "This is a simple, dependency-less, vanilla-js-written, but full-featured unit player, mainly as showcase for developers and for software-testing. It does implement the Verona 4.0.0-Standard and can be used for units containing simple any content in HTML-format. Unit Description ist the <code>form</code>-content as HTML. Just give some names to the form element, and the player does the rest. Use some special Ids for some special buttons.",
+          "lang": "en"
+        }
+      ],
+      "maintainer": {
+        "name": [
+          {
+            "value": "IQB - Institute for Educational Quality Improvement",
+            "lang": "en"
+          }
+        ],
+        "email": "iqb-tbadev@hu-berlin.de",
+        "url": "https://www.iqb.hu-berlin.de"
+      },
+      "code": {
+        "repositoryUrl": "https://github.com/iqb-berlin/verona-player-simple",
+        "repositoryType": "git",
+        "licenseType": "MIT",
+        "licenseUrl": "https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/LICENSE"
+      },
+      "notSupportedFeatures": []
+    }
+  </script>
+
+  <style>
+      html, body {
+          height: 100vh;
+          overflow: hidden;
+          font-family: sans-serif;
+          margin: 0;
+      }
+
+      /* TODO Use prefixed custom elements / classes for all player elements to avoid confusion with unit code */
+      #shield {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          z-index: 51000
+      }
+
+      #unit {
+          overflow: auto;
+          height: 100vh;
+          margin: 0 9em;
+      }
+
+      #unit.paged.separate {
+          overflow-y: auto;
+          height: 100vh;
+      }
+
+      #unit.paged fieldset:first-of-type {
+          display: block
+      }
+
+      #unit.paged.separate fieldset {
+          overflow-y: auto;
+          height: calc(100% - 100px);
+          padding: 50px 20px;
+          border: 0;
+      }
+
+      /* add some whitespace in scollmode, to make it possible to get last pages on the top even if they are small */
+      #unit.paged.concat-scroll:after,
+      #unit.paged.concat-scroll-snap:after {
+          height: 100%;
+          display: block;
+          content: " ";
+      }
+
+      #unit.concat-scroll-snap {
+          scroll-snap-type: y proximity;
+      }
+
+      #unit.concat-scroll-snap fieldset {
+          scroll-snap-align: start;
+      }
+
+      .page-bottom-anchor {
+          display: block;
+          height: 50px;
+      }
+
+      .vsp-navigation-tier {
+          position: fixed;
+      }
+
+      .vsp-navigation-tier button {
+          padding: 2px 6px;
+          cursor: pointer;
+      }
+
+      .vsp-navigation-tier button,
+      vsp-message {
+          border: none;
+          border-radius: 2px;
+          box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.75);
+          background: rgba(0, 0, 0, 0.75);
+          color: white;
+          font-size: small;
+      }
+
+      vsp-message {
+          position: fixed;
+          display: none;
+          max-height: 300px;
+          right: 20px;
+          top: 20px;
+          padding: 10px;
+          width: 300px;
+          filter: blur(4px);
+          opacity: 0;
+          transform: scale(2);
+          transform-origin: center;
+          animation: flyin 0.5s ease forwards;
+      }
+
+      vsp-message [onclick] {
+          cursor: pointer;
+      }
+
+      vsp-message [onclick]:hover {
+          text-decoration: underline;
+          color: grey;
+      }
+
+      vsp-pointer {
+          position: absolute;
+          height: 30px;
+          width: 30px;
+      }
+
+      vsp-pointer:after {
+          position: relative;
+          line-height: 25px;
+          text-shadow: 0 0 5px rgba(0,0,0,0.75);
+          display: inline-block;
+          filter: blur(4px);
+          opacity: 0;
+          transform: scale(2);
+          transform-origin: center;
+          animation: flyin 0.5s ease forwards;
+          font-size: 30px;
+          content: "►";
+      }
+
+      vsp-message-close {
+          position: absolute;
+          right: 5px;
+          top: 2px;
+          cursor: pointer;
+      }
+
+      .vsp-navigation-tier button:hover,
+      vsp-message-close:hover {
+          color: grey
+      }
+
+      .vsp-navigation-tier button:disabled {
+          box-shadow: 0 0 5px 0 rgba(100, 100, 100, 0.75);
+          background: rgba(0, 0, 0, 0.75);
+          color: gray;
+          cursor: auto;
+      }
+
+      #vsp-meta dl dd {
+          display: inline;
+          margin: 0;
+      }
+
+      #vsp-meta dl dd:after {
+          display: block;
+          content: '';
+      }
+
+      #vsp-meta dl dt {
+          display: inline-block;
+          min-width: 250px;
+      }
+
+      @keyframes flyin {
+          to {
+              filter: blur(0);
+              transform: scale(1);
+              opacity: 1;
+          }
+      }
+  </style>
+</head>
+<body>
+
+<div id="shield"></div>
+
+<div class="vsp-navigation-tier" style="width: 100%; text-align: center; top: 1em;">
+  <button id="prev-page" title="Previous Page" type="button" class="btn btn-outline-primary">↑</button>
+</div>
+
+<div class="vsp-navigation-tier" style="text-align: center; bottom: 1em; left: 9em; right: 9em; ">
+  <button id="next-page" title="Next Page" type="button" class="btn btn-outline-primary">↓</button>
+</div>
+
+<div class="vsp-navigation-tier" style="top: 50%; left: 1em;">
+  <button id="first-unit" title="First Unit" type="submit" class="btn btn-primary" value="first" name="target">⇤</button>
+  <button id="prev-unit" title="Previous Unit" type="submit" class="btn btn-primary" value="previous" name="target">←</button>
+</div>
+
+<div class="vsp-navigation-tier" style="top: 50%; right: 1em;">
+  <button id="next-unit" title="Next Unit" type="submit" class="btn btn-primary" value="next" name="target">→</button>
+  <button id="last-unit" title="Last Unit" type="submit" class="btn btn-primary" value="last" name="target">⇥</button>
+  <button id="end-unit" title="Finish" type="submit" class="btn btn-primary" value="end" name="target">▪</button>
+</div>
+
+<vsp-message>
+  <vsp-message-content></vsp-message-content>
+  <vsp-message-close>✖</vsp-message-close>
+</vsp-message>
+
+<form>
+  <div id="unit"><!-- will be filled automatically --></div>
+</form>
+
+<script>
+
+  const unitStateDataType = "iqb-simple-player@2.0.0";
+  const unitDefinitionType = "verona-player-simple-4.0.0";
+
+  // some polyfills
+  (function polyfillReactionToProgrammaticallyChangedInputValue() {
+    const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+    const originalSet = descriptor.set;
+
+    descriptor.set = function(val) {
+      if (this.value !== val) {
+        originalSet.apply(this, arguments);
+        const event = new CustomEvent(
+          'programmaticallyChange',
+          {
+            bubbles: true,
+            detail: {
+              from: this.value,
+              to: val
+            }
+          }
+        );
+        this.dispatchEvent(event);
+      }
+    }
+
+    Object.defineProperty(HTMLInputElement.prototype, "value", descriptor);
+  }());
+
+  // some settings, that might be overridden for testing per query-params in URL
+  const playerSettings = Object.assign(
+    {
+      debounceStateMessages: 1000,
+      debounceKeyboardEvents: 100,
+      delayReadyNotification: 0
+    },
+    location.search
+      .substr(1)
+      .split("&")
+      .reduce((carry, item) => {const tmp = item.split("="); carry[tmp[0]] = tmp[1]; return carry;}, {})
+  );
+
+  const playerMetaData = JSON.parse(document.querySelector('script[type="application/ld+json"]').innerText)
+
+  let playerConfig = {
+    logPolicy: 'eager', // "disabled" | "lean" | "rich" | "debug"
+    unitNumber: 0,
+    unitTitle: 'Unit',
+    unitId: 'unit',
+    enabledNavigationTargets: [], // can contain  "next" "previous" "first" "last" "end"
+    stateReportPolicy: "eager", // none" | "eager" | "on-demand"
+    pagingMode: "separate", // "separate" | "concat-scroll" | "concat-scroll-snap",
+    startPage: null,
+    directDownloadUrl: null
+  }
+
+  let sessionId = "";
+
+  const isDefined = v => (typeof v !== "undefined");
+  const isEmpty = object => {
+    // noinspection LoopStatementThatDoesntLoopJS
+    for(let property in object) return false;
+    return true;
+  }
+
+  const Time = new class {
+    throttle = (callback, limit) => {
+      let waiting = false;
+      return function() {
+        if (waiting) return;
+        callback.apply(this, arguments);
+        waiting = true;
+        setTimeout(() => {
+          waiting = false;
+        }, limit);
+      }
+    }
+
+    debounce = (callback, limit, debounceCallback) => {
+      let handle = null;
+      return function() {
+        if (typeof debounceCallback === "function") {
+          debounceCallback.apply(this, arguments);
+        }
+        clearTimeout(handle);
+        handle = setTimeout(() => {
+          callback.apply(this, arguments);
+        }, limit);
+      }
+    }
+  }
+
+  const Message = new class {
+    send = new class {
+      _lastStates = {
+        playerState: null,
+        unitState: null
+      };
+
+      vopStateChangedNotification = (isRequested = false) => {
+        if (playerConfig.stateReportPolicy === "eager") {
+          this._sendVopStateChangedNotification();
+        } else if (isRequested === true) {
+          this._send(this._createStateMsg(true));
+        }
+      };
+
+      _sendVopStateChangedNotification = Time.debounce(
+        () => {
+          const message = this._createStateMsg();
+          if (message.playerState || message.unitState || message.log) {
+            this._send(message);
+          }
+        },
+        parseInt(playerSettings.debounceStateMessages, 10),
+        () => {
+          document.dispatchEvent(new CustomEvent('queued:vopStateChangedNotification', {}))
+        }
+      );
+
+      vopReadyNotification = () => {
+        setTimeout(
+          () => this._send({
+            type: 'vopReadyNotification',
+            metadata: playerMetaData
+          }),
+          playerSettings.delayReadyNotification
+        )
+      };
+
+      vopUnitNavigationRequestedNotification = target => {
+        this._send({
+          type: 'vopUnitNavigationRequestedNotification',
+          sessionId: sessionId,
+          target: target,
+        });
+      };
+
+      vopWindowFocusChangedNotification = hasFocus => {
+        this._send({
+          type: 'vopWindowFocusChangedNotification',
+          sessionId: sessionId,
+          hasFocus: hasFocus
+        });
+      }
+
+      _send = msg => {
+        console.log(msg);
+        window.parent.postMessage(msg, '*');
+        document.dispatchEvent(new CustomEvent('sent:' + msg.type, {detail: msg}));
+      }
+
+      _createStateMsg = (complete = false) => {
+        const message = {
+          type: 'vopStateChangedNotification',
+          sessionId: sessionId,
+          timeStamp: Date.now(),
+        }
+
+        const playerState = this._getPlayerState();
+        if (complete || (JSON.stringify(playerState) !== JSON.stringify(this._lastStates.playerState))) {
+          this._lastStates.playerState = playerState;
+          if (!isEmpty(playerState)) {
+            message.playerState = playerState;
+          }
+        }
+
+        const unitState = this._getUnitState();
+        if (complete || (JSON.stringify(unitState) !== JSON.stringify(this._lastStates.unitState))) {
+          message.unitState = unitState;
+          this._lastStates.unitState = unitState;
+        }
+
+        if (Log.hasNew()) {
+          message.log = Log.next();
+        }
+
+        return message;
+      }
+
+      _getPlayerState = () => {
+        const playerState = {};
+        if (Pages.hasPages) {
+          playerState.validPages = Pages.validPages;
+          playerState.currentPage = Pages.currentPage.toString()
+        }
+        return playerState;
+      }
+
+      _getUnitState = () => ({
+        dataParts: Unit.getData(),
+        presentationProgress: Unit.getPresentationProgress(),
+        responseProgress: Unit.getResponseProgress(),
+        unitStateDataType
+      });
+    }
+
+    receive = (type, data) => {
+      if (sessionId && (data.sessionId !== sessionId)) {
+        throw new Error("Wrong sessionId " + type);
+      }
+      if (type === "vopStartCommand") {
+        Unit.start(data);
+      }
+      document.dispatchEvent(new CustomEvent(type, {detail: data}));
+    };
+  }
+
+  const Unit = new class {
+
+    dataPartsCollectors = {
+      answers: () => Answers.get()
+    }
+
+    presentationProgressFactors = {
+      pages: {
+        complete: () => Object.values(Pages.seenPages).filter(p => p.enter && p.bottom).length === Pages.pageCount,
+        some: () => Object.values(Pages.seenPages).filter(p => p.enter || p.bottom).length > 0
+      }
+    }
+
+    start = data => {
+      sessionId = data.sessionId || new Error("session ID missing");
+
+      if (data.unitDefinitionType && (data.unitDefinitionType !== unitDefinitionType)) {
+        Log.debug(`Unit definition type does not match: ${data.unitDefinitionType} and ${unitDefinitionType}`);
+      }
+      if (
+        data.unitState && data.unitState.unitStateDataType &&
+        (data.unitState.unitStateDataType !== unitStateDataType)
+      ) {
+        Log.debug(`Unit state type does not match: ${data.unitState.unitStateDataType} & ${unitStateDataType}`);
+      }
+
+      this._setUnit(data.unitDefinition || new Error("unitDefinition missing"));
+      this._setPlayerConfig(data.playerConfig || {});
+      this._setUnitData(data.unitState || {});
+
+      PlayerUI.toggleUnitNavButtons();
+      PlayerUI.togglePageNavButtons();
+    }
+
+    getData = () =>
+      Object.keys(this.dataPartsCollectors)
+        .reduce((carry, key) => {
+          const dataPart = this.dataPartsCollectors[key]();
+          carry[key] = (typeof dataPart !== 'string') ? JSON.stringify(dataPart) : dataPart;
+          return carry;
+        }, {});
+
+    getPresentationProgress = () =>
+      Object.keys(this.presentationProgressFactors)
+        .reduce((carry, key) => {
+          if ((carry === 'complete') && this.presentationProgressFactors[key].complete()) {
+            return 'complete';
+          } else if ((carry !== 'none') || this.presentationProgressFactors[key].some()) {
+            return 'some';
+          } else {
+            return 'none'
+          }
+        }, 'complete');
+
+    // TODO make extensible like PresentationProgress
+    getResponseProgress = () => {
+      const elements =  [...document.querySelectorAll(PlayerUI.itemElements)];
+      const allCount = elements.length;
+      let validCount = 0;
+
+      elements.forEach(item => {
+        if (!item.isContentEditable) {
+          validCount += (!isDefined(item.validity) || item.validity.valid) ? 1 : 0;
+        } else {
+          validCount += (Unit.elementIsRequired(item) && !item.innerText.trim()) ? 0 : 1;
+        }
+      });
+
+      if (allCount === validCount) {
+        return 'complete'
+      } else if (validCount) {
+        return 'some'
+      } else {
+        // Verona3 wants invalid answers to be ignored. Since semantic validity in the simple player is equivalent
+        // to validity in the HTML-sense, empty text-items count always as valid. As a side effect, the responseProgress
+        // of 'none' is impossible as long the unit have non-required text-items.
+        return 'none';
+      }
+    }
+
+    selectDataPartFromUnitState = (unitState, partName) => {
+      if (!unitState.dataParts) {
+        return {};
+      }
+      let part = unitState.dataParts[partName] || '{}';
+      try {
+        return JSON.parse(part);
+      } catch (e) {
+        console.warn('Could not parse unitState', e);
+        return {};
+      }
+    }
+
+    elementIsRequired = element => element.getAttribute('required') != null &&
+      (["", "true"].indexOf(element.getAttribute('required').toLowerCase()) > -1);
+
+    _setUnitData = unitState => {
+      Answers.set(this.selectDataPartFromUnitState(unitState, 'answers'));
+    }
+
+    _setUnit = unitDef => {
+      document.querySelector('#unit').append(document.createRange().createContextualFragment(unitDef));
+      Pages.get();
+    }
+
+    _setPlayerConfig = newPlayerConfig => {
+      playerConfig = Object.assign(playerConfig, newPlayerConfig);
+      Pages.applyPagingMode();
+      Pages.goto(playerConfig.startPage || 1);
+    }
+  }
+
+  const Answers = new class {
+    get = () => ({...this._getAnswersFromForm(), ...this._getAnswersFromEditableElements()});
+
+    set = answers => {
+      Object.keys(answers).forEach(key => {this._setAnswer(key, answers[key]);});
+    }
+
+    _getAnswersFromForm = () => [...new FormData(document.querySelector("form"))]
+      .reduce((carry, entry) => {
+        if (isDefined(carry[entry[0]])) {
+          carry[entry[0]] = Array.isArray(carry[entry[0]]) ? [...carry[entry[0]], entry[1]] : [carry[entry[0]], entry[1]];
+        } else {
+          carry[entry[0]] = entry[1];
+        }
+        return carry;
+      }, {});
+
+    _getAnswersFromEditableElements = () => ([...document.querySelectorAll('form [contenteditable]')] || [])
+      .reduce((carry, element) => {
+        const name = element.getAttribute("name") || '';
+        if (isDefined(carry[name])) {
+          carry[name] = Array.isArray(carry[name])
+            ? [...carry[name], element.innerText.trim()]
+            : [carry[name], element.innerText.trim()];
+        } else {
+          carry[name] = element.innerText.trim();
+        }
+        return carry;
+      }, {});
+
+    _setAnswer = (name, value, index = 0) => {
+      // TODO use PlayerUI.itemElements
+      const elements = document.querySelectorAll(name
+        ? `form [name="${name}"]`
+        : "form select:not([name]), form textarea:not([name]), form input:not([name]), form [contenteditable]:not([name])"
+      );
+
+      if (elements.length === 0) {
+        Log.debug(`form field missing: "${name}"`);
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        value.forEach((valueEntry, i) => this._setAnswer(name, valueEntry, i));
+        return;
+      }
+
+      const element = elements[index] || elements[0];
+
+      element.dataset.touched = "true";
+
+      switch (element.tagName) {
+        case "INPUT":
+          switch (element.type) {
+            case 'radio':
+              elements.forEach(radioElem => {
+                if (radioElem.value === value) {
+                  radioElem.setAttribute('checked', 'checked');
+                } else {
+                  radioElem.removeAttribute('checked')
+                }
+              });
+              break;
+            case 'checkbox':
+              if (value === "on") {
+                element.setAttribute('checked', 'checked');
+              } else {
+                element.removeAttribute('checked');
+              }
+              break;
+            default:
+              element.setAttribute('value', value);
+          }
+          break;
+        case "SELECT":
+          element.querySelector(`option[value="${value}"]`)?.setAttribute('selected', 'on');
+          break;
+        default:
+          element.innerText = value;
+      }
+    }
+  }
+
+  const Pages = new class {
+    _currentPage = 0;
+    pageCount = 0;
+    hasPages = false;
+    validPages = {};
+    seenPages = {};
+    visiblePages = {};
+
+    get = () => {
+      const pageElements = document.querySelectorAll("fieldset");
+      this.pageCount = Math.max(1, pageElements.length);
+      this.hasPages = !!pageElements.length;
+      this.validPages = [...pageElements].reduce((carry, pageElement) => {
+        const pageNr = 1 + Object.keys(carry).length;
+        const legendElem = pageElement.querySelector('legend');
+        carry[pageNr.toString()] = (legendElem) ? legendElem.innerText : 'Page-' + pageNr;
+        return carry
+      }, {});
+      this._initPageStates();
+    }
+
+    get currentPage() {
+      if (playerConfig.pagingMode !== "separate") {
+        const currentPage = Math.min(...Object.keys(this.visiblePages).filter(i => this.visiblePages[i]));
+        if (currentPage === Infinity) {
+          return 0;
+        } else {
+          this._currentPage = currentPage;
+        }
+      }
+      return this._currentPage;
+    }
+
+    goto = target => {
+      if (!this.hasPages) {
+        return;
+      }
+
+      if (target === '#next') {
+        this._currentPage++;
+      } else if (target === '#previous') {
+        this._currentPage -= 1;
+      } else if (target === '#first') {
+        this._currentPage = 1;
+      } else if (target === '#last') {
+        this._currentPage = this.pageCount - 1;
+      } else {
+        this._currentPage = parseInt(target);
+      }
+
+      const pageElem = document.querySelector(`fieldset:nth-of-type(${this._currentPage})`);
+
+      if (playerConfig.pagingMode === "separate") {
+        this._openPage(pageElem);
+        PlayerUI.togglePageNavButtons();
+        PlayerUI.removeAllPointers();
+        this.seenPages[this._currentPage].enter = true;
+        Message.send.vopStateChangedNotification();
+      } else {
+        pageElem.scrollIntoView({block: 'start', behavior: 'smooth'});
+      }
+    }
+
+    applyPagingMode = () => {
+      document.querySelector('#unit').classList.add(playerConfig.pagingMode);
+      this._setScrollObserver();
+    }
+
+    _openPage = pageElem => {
+      document.querySelectorAll("fieldset")
+        .forEach(fieldsetElement => {fieldsetElement.style.display = 'none'});
+      pageElem.style.display = 'block';
+    }
+
+    _initPageStates = () => {
+      const pageElemType = this.hasPages ? 'fieldset' : '#unit';
+      document.querySelectorAll(pageElemType).forEach((pageElem, index) => {
+        pageElem.dataset.pagenr = (index + 1).toString(10);
+        this.seenPages[pageElem.dataset.pagenr] = {
+          enter: !this.hasPages,
+          bottom: false
+        }
+        this.visiblePages[pageElem.dataset.pagenr] = false;
+      });
+    }
+
+    _setScrollObserver = () => {
+      const pageElemType = this.hasPages ? 'fieldset' : '#unit';
+      document.querySelectorAll(pageElemType).forEach(pageElem => {
+        if (this.hasPages) {
+          this._newObserver(this._pageIntersection, pageElem);
+        }
+        const pageBottomAnchor = document.createElement('div');
+        pageElem.appendChild(pageBottomAnchor);
+        pageBottomAnchor.classList.add('page-bottom-anchor');
+        this._newObserver(this._pageBottomIntersection, pageBottomAnchor);
+      });
+    }
+
+    _newObserver = (callback, elem) => {
+      new IntersectionObserver(
+        entries => entries.forEach(callback),
+        {
+          root: document.querySelector('#unit'),
+          threshold: 0.01,
+          rootMargin: '0%'
+        }
+      ).observe(elem);
+    }
+
+    _pageIntersection = intersectionEntry => {
+      const pageId = parseInt(intersectionEntry.target.dataset.pagenr, 10);
+      if (playerConfig.pagingMode !== "separate") {
+        this.visiblePages[pageId] = intersectionEntry.isIntersecting;
+      }
+      this.seenPages[pageId].enter = this.seenPages[pageId].enter || intersectionEntry.isIntersecting;
+      Message.send.vopStateChangedNotification();
+    }
+
+    _pageBottomIntersection = intersectionEntry => {
+      if (!intersectionEntry.isIntersecting) {
+        return;
+      }
+      const pageId = parseInt(intersectionEntry.target.parentElement.dataset.pagenr, 10);
+      this.seenPages[pageId].bottom = true;
+      Message.send.vopStateChangedNotification();
+    }
+  }
+
+
+  const Log = new class {
+
+    _logStash = {
+      sent: [],
+      new: []
+    }; // log-items get stashed in case stateReportPolicy === 'on-demand'
+
+    debug = message => {
+      console.warn(message);
+      if (playerConfig.logPolicy === "debug") {
+        this._log('debug', message);
+      }
+    }
+
+    rich = (type, message) => {
+      if (["debug", "rich"].indexOf(playerConfig.logPolicy) > -1) {
+        this._log(type, message);
+      }
+    }
+
+    lean = (type, message) => {
+      if (["debug", "rich", "lean"].indexOf(playerConfig.logPolicy) > -1) {
+        this._log(type, message);
+      }
+    }
+
+    getAll = () => [...this._logStash.sent.map(msg => {msg.sent = true; return msg}), ...this._logStash.new];
+
+    next = () => {
+      const toSent = [...this._logStash.new];
+      this._logStash.sent.push(...toSent);
+      this._logStash.new.length = 0
+      return toSent;
+    }
+
+    hasNew = () => (this._logStash.new.length > 0);
+
+    _log = (type, message) => {
+      this._logStash.new.push({
+        timeStamp: Date.now(),
+        key: type,
+        content: message
+      });
+      Message.send.vopStateChangedNotification();
+      document.dispatchEvent(new CustomEvent('updateLog'));
+    }
+  };
+
+  const PlayerUI = new class {
+
+    itemElements = "form select:enabled, form textarea:enabled, form input:enabled, form [contenteditable]";
+    presentationReportFactors = {
+      pages: () => this._createPresentationReportForPages()
+    }
+
+    togglePlayerRunning = (running = false) => {
+      document.querySelector('#shield').style.display = running ? 'none' : 'block';
+    }
+
+    toggleButton = (buttonId, enabled, visible = true) => {
+      const button = document.querySelector(`#${buttonId}`);
+      if (button) {
+        if (enabled) {
+          button.removeAttribute("disabled");
+        } else {
+          button.setAttribute("disabled", "true");
+        }
+        button.style.display = visible ? 'inline-block' : 'none';
+      }
+    }
+
+    togglePageNavButtons = () => {
+      document.querySelector('#unit').classList[Pages.hasPages ? 'add' : 'remove']('paged');
+      this.toggleButton('next-page',
+        Pages.pageCount > 1 && Pages.currentPage < Pages.pageCount,
+        Pages.pageCount > 1 && playerConfig.pagingMode === 'separate'
+      );
+      this.toggleButton('prev-page',
+        Pages.pageCount > 1 && Pages.currentPage > 1,
+        Pages.pageCount > 1 && playerConfig.pagingMode === 'separate'
+      );
+    }
+
+    toggleUnitNavButtons = () => {
+      this.toggleButton('first-unit', playerConfig.enabledNavigationTargets.indexOf('first') > -1);
+      this.toggleButton('prev-unit', playerConfig.enabledNavigationTargets.indexOf('previous') > -1);
+      this.toggleButton('next-unit', playerConfig.enabledNavigationTargets.indexOf('next') > -1);
+      this.toggleButton('last-unit', playerConfig.enabledNavigationTargets.indexOf('last') > -1);
+      this.toggleButton('end-unit', playerConfig.enabledNavigationTargets.indexOf('end') > -1);
+    }
+
+    getPlayerInfoHTML = () => {
+      const infoBoxElem = document.createElement('div');
+      infoBoxElem.id = 'vsp-meta';
+      infoBoxElem.innerHTML = `
+        <h1>${playerMetaData.name[0].value} ${playerMetaData.version}</h1>
+        <p>${playerMetaData.description[0].value}</p>
+        <dl>
+          <dt>Maintainer</dt>
+          <dd>
+            <a href="${playerMetaData.maintainer.url}" target="_blank">${playerMetaData.maintainer.name[0].value}</a>
+            <a href="mailto:${playerMetaData.maintainer.email}">Email</a>
+          </dd>
+          <dt>Verona-Version</dt>
+          <dd>${playerMetaData.specVersion}</dd>
+          <dt>Not-Supported-Features</dt>
+          <dd>${playerMetaData.notSupportedFeatures.join()}</dd>
+          <dt>Repository</dt>
+          <dd><a href="${playerMetaData.code.repositoryUrl}">${playerMetaData.code.repositoryType}</a></dd>
+          <dt>License</dt>
+          <dd><a href="${playerMetaData.code.licenseUrl}">${playerMetaData.code.licenseType}</a></dd>
+        </dl>
+      `;
+      return infoBoxElem;
+    }
+
+    preventFromImplicitSubmission = event => {
+      const keyCode = event.charCode || event.keyCode || 0;
+      if (keyCode === 13) {
+        event.preventDefault();
+      }
+    }
+
+    navigationDeniedMessage = reasons => {
+      let message = '<div><b>Navigation denied</b></div>';
+      if (reasons.indexOf('responsesIncomplete') !== -1) {
+        message += this._createValidationReport();
+      }
+      if (reasons.indexOf('presentationIncomplete') !== -1) {
+        message += this._createPresentationReport();
+      }
+      PlayerUI.toggleMessage(message);
+    }
+
+    _createValidationReport = () =>
+      [...document.querySelectorAll(PlayerUI.itemElements)]
+        .filter(element => element.checkValidity || element.isContentEditable)
+        .map(element => {
+          if (element.checkValidity) {
+            element.checkValidity();
+            return {
+              label: element.labels.length ? element.labels[0].innerText : element.name,
+              name: element.name,
+              message: element.validationMessage
+            }
+          }
+          if (element.isContentEditable && Unit.elementIsRequired(element) && !element.innerText.trim()) {
+            return {
+              label: element.getAttribute('name') ?? "Editable Element",
+              name: element.getAttribute('name') ?? '',
+              message: "Has no content"
+            }
+          }
+          return false;
+        })
+        .filter(entry => entry.message)
+        .map(e =>
+          `<div onclick="PlayerUI.highlightElements('${e.name}')">${e.label}: ${e.message}</div>`
+        )
+        .join('');
+
+    highlightElements = name => {
+      // TODO nameless elements can not be highlighted
+      this.removeAllPointers();
+      this.gotoElement(`[name='${name}']`);
+      setTimeout(() => this.addPointers(`[name='${name}']`), 15);
+    }
+
+    gotoElement = selector => {
+      const element = document.querySelector(selector);
+      if (!element) {
+        return;
+      }
+      const page = element.closest('fieldset').dataset.pagenr;
+      if (page) {
+        Pages.goto(page);
+      }
+      element.scrollIntoView();
+    }
+
+    addPointers = selector => {
+      const body = document.querySelector('body');
+      document.querySelectorAll(selector)
+        .forEach(element => {
+          const rect = element.getBoundingClientRect();
+          const x = Math.round(rect.left - 30);
+          const y = Math.round(rect.top + (rect.height / 2) - 15);
+          const vspPointer = document.createElement('vsp-pointer');
+          vspPointer.style = `left:${x}px; top:${y}px`;
+          body.appendChild(vspPointer);
+        });
+      document.querySelector('#unit').addEventListener('scroll', PlayerUI.removeAllPointers);
+    }
+
+    removeAllPointers = () => {
+      document.querySelectorAll(`vsp-pointer`)
+        .forEach(element => element.parentElement.removeChild(element));
+      document.querySelector('#unit').removeEventListener('scroll', PlayerUI.removeAllPointers);
+    }
+
+    _createPresentationReport = () =>
+      Object.values(this.presentationReportFactors)
+        .flatMap(reportFunction => reportFunction())
+        .filter(row => row)
+        .join('');
+
+    _createPresentationReportForPages = () =>
+      Object.keys(Pages.seenPages)
+        .map(pageNr => {
+          const msg = `<div onclick="Pages.goto('${pageNr}')">${Pages.validPages[pageNr]}: `;
+          if (Pages.seenPages[pageNr].enter && !Pages.seenPages[pageNr].bottom) {
+            return msg + `Scroll down to see everything</div>`;
+          }
+          if (!Pages.seenPages[pageNr].enter) {
+            return msg + `Page was not entered</div>`;
+          }
+          return "";
+        });
+
+    addEventListener = (eventName, selector, listener) => {
+      document.querySelector('body').addEventListener(eventName, event => {
+        if (event.target.matches(selector)) {
+          listener(event);
+        }
+      });
+    }
+
+    toggleMessage = content => {
+      const dialog = document.querySelector('vsp-message');
+      const dialogContent = document.querySelector('vsp-message-content');
+      if (!content) {
+        dialog.style.display = 'none';
+        this.removeAllPointers();
+      } else {
+        dialogContent.innerHTML = content;
+        dialog.style.display = 'block';
+      }
+    }
+  }
+
+  window.addEventListener('message', event => {Message.receive(event.data.type, event.data)}, false);
+
+  document.addEventListener("DOMContentLoaded", Message.send.vopReadyNotification);
+
+  document.addEventListener("vopPageNavigationCommand", event => Pages.goto(event.detail.target));
+  document.addEventListener("vopGetStateRequest", event => {
+    if (event.detail.stop) {
+      PlayerUI.togglePlayerRunning(false);
+    }
+    Message.send.vopStateChangedNotification(true);
+  }); // not implemented in IQB-testcenter 7.3.1
+  document.addEventListener("vopStopCommand", () => PlayerUI.togglePlayerRunning(false)); // not implemented in IQB-testcenter 7.3.1
+  document.addEventListener("vopContinueCommand", () => PlayerUI.togglePlayerRunning(true)); // not implemented in IQB-testcenter 7.3.1
+  document.addEventListener("vopNavigationDeniedNotification", event => PlayerUI.navigationDeniedMessage(event.detail.reason));
+
+  window.addEventListener('blur', () => {
+    Message.send.vopWindowFocusChangedNotification(document.hasFocus());
+  });
+
+  window.addEventListener('focus', () => {
+    Message.send.vopWindowFocusChangedNotification(document.hasFocus());
+  });
+
+  PlayerUI.addEventListener('keypress', PlayerUI.itemElements, PlayerUI.preventFromImplicitSubmission);
+
+  PlayerUI.addEventListener('change', PlayerUI.itemElements, Message.send.vopStateChangedNotification);
+  PlayerUI.addEventListener('programmaticallyChange', PlayerUI.itemElements, Message.send.vopStateChangedNotification);
+  PlayerUI.addEventListener('keyup', PlayerUI.itemElements,
+    Time.debounce(Message.send.vopStateChangedNotification, parseInt(playerSettings.debounceKeyboardEvents), 10)
+  );
+
+  PlayerUI.addEventListener('click', '#next-page', () => Pages.goto('#next'));
+  PlayerUI.addEventListener('click', '#prev-page', () => Pages.goto('#previous'));
+
+  PlayerUI.addEventListener('click', '#prev-unit', () => {
+    Message.send.vopUnitNavigationRequestedNotification("previous");
+  });
+  PlayerUI.addEventListener('click', '#next-unit', () => {
+    Message.send.vopUnitNavigationRequestedNotification("next");
+  });
+  PlayerUI.addEventListener('click', '#first-unit', () => {
+    Message.send.vopUnitNavigationRequestedNotification("first");
+  });
+  PlayerUI.addEventListener('click', '#last-unit', () => {
+    Message.send.vopUnitNavigationRequestedNotification("last");
+  });
+  PlayerUI.addEventListener('click', '#end-unit', () => {
+    Message.send.vopUnitNavigationRequestedNotification("end");
+  });
+  PlayerUI.addEventListener('click', 'vsp-message-close', () => {
+    PlayerUI.toggleMessage();
+  });
+</script>
+
+</body>
+</html>
