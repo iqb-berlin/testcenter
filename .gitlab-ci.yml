@@ -43,9 +43,7 @@ test-backend-unit:
   stage: test
   script:
     - apk add make docker-compose
-    - make init-env
-    - make composer-install
-    - make download-simple-player
+    - make init
     - docker load -i backend_image.tar
     - make test-backend-unit
 
@@ -78,4 +76,3 @@ test-backend-init-general:
 
 .secret-analyzer:
   stage: check
-
