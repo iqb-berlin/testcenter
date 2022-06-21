@@ -9,23 +9,18 @@ build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
 
 run:
-#	make build container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(service)
 
 run-detached:
-	make build container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(service)
 
-build-prod:
+# use locally built prod images
+build-prod-local:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(service)
 
-run-prod:
-	build-prod container=$(service)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(service)
-
-run-prod-detached:
-	build-prod container=$(service)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(service)
+run-prod-local:
+	make build-prod-local container=$(service)
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up $(service)
 
 stop:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(service)
@@ -48,11 +43,13 @@ test-backend-unit:
 		--coverage-html /docs/dist/test-coverage-backend-unit \
 		test/unit/.
 
-# TODO backend and db must be running
-test-backend-dredd:
+# run against in memory DB
+test-backend-api:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d testcenter-db testcenter-backend
 	make run-task-runner task=backend:dredd-test
 
-test-backend-dredd-mysql:
+# run against mysql; takes a long time -> only run manually
+test-backend-api-mysql:
 	docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql build
 	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
 		docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
@@ -64,14 +61,12 @@ test-backend-initialization:
 
 test-backend-initialization-general:
 	make stop
-	docker-compose -f docker-compose.initialization-test.yml build
 	make test-backend-initialization test=general/db-versions
 	make test-backend-initialization test=general/vanilla-installation
 	make test-backend-initialization test=general/no-db-but-files
 	make test-backend-initialization test=general/install-db-patches
 
 test-broadcasting-service-unit:
-	make build service=testcenter-broadcasting-service
 	docker run \
 		-v $(CURDIR)/docs/dist:/docs/dist \
 		--entrypoint npx \
@@ -79,7 +74,6 @@ test-broadcasting-service-unit:
 		jest --coverage
 
 test-frontend-unit:
-	make build service=testcenter-frontend
 	docker run \
 		-v $(CURDIR)/docs/dist:/docs/dist \
 		--entrypoint npx \
@@ -161,5 +155,3 @@ init-ensure-file-rights:
 
 new-version:
 	make run-task-runner task="new-version $(version)"
-
-
