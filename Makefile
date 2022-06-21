@@ -86,11 +86,14 @@ test-frontend-unit:
 		iqbberlin/testcenter-frontend:current \
 		ng test --watch=false --code-coverage
 
-test-frontend-e2e:
+test-frontend-integration:
 #TODO
 
-test-integration:
-#TODO
+test-system:
+	make down
+	TESTMODE_REAL_DATA=yes \
+		docker-compose -f docker-compose.system-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
+	npm run frontend:integration-test # TODO do in container
 
 update-docs:
 #TODO
