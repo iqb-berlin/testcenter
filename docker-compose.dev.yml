@@ -81,7 +81,7 @@ services:
       dockerfile: runner.Dockerfile
     container_name: testcenter-runner
     environment:
-      TC_API_URL: http://testcenter-backend/
+      TC_API_URL: http://testcenter-backend
     volumes:
       - ./CHANGELOG.md:/app/CHANGELOG.md
       - ./README.md:/app/README.md
