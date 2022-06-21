@@ -4,7 +4,7 @@ export const deleteDownloadsFolder = () => {
 };
 
 export const visitLoginPage = () => {
-  cy.visit("http://localhost:4200/#/login/");
+  cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
 }
 
 export const login = (username, password) => {
@@ -19,31 +19,31 @@ export const logout = () => {
   visitLoginPage();
   cy.contains('Neu anmelden')
     .click();
-  cy.url().should('eq', 'http://localhost:4200/#/r/login/')
+  cy.url().should('eq', `Cypress.env('TC_URL')/#/r/login/`)
 }
 
 export const loginAdmin = () => {
-  cy.visit("http://localhost:4200/#/login/");
+  cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
   login('super', 'user123');
   cy.contains("Weiter als Admin").click();
-  cy.url().should('eq', 'http://localhost:4200/#/r/admin-starter');
+  cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
   cy.get('.mat-primary > span:nth-child(1)').click();
-  cy.url('eq', 'http://localhost:4200/#/admin/1/files');
+  cy.url('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
 };
 
 export const loginSuperAdmin = () => {
-  cy.visit('http://localhost:4200/#/login/')
+  cy.visit(`${Cypress.env('TC_URL')}/#/login/`)
   login('super', 'user123')
   cy.contains('Weiter als Admin')
     .click()
-  cy.url().should('eq', 'http://localhost:4200/#/r/admin-starter');
+  cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
   cy.contains('System-Admin')
     .click()
-  cy.url().should('eq', 'http://localhost:4200/#/superadmin/users')
+  cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/users`)
 }
 
 export const createUserAnswers = () => {
-  cy.visit('http://localhost:4200/#/login/');
+  cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
   login('test', 'user123')
   cy.contains('Weiter')
     .click()

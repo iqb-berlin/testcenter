@@ -3,7 +3,7 @@ import { login } from "./utils";
 describe('Test User functionalities', () => {
 
   it('Should start a sample booklet and click through the unit tabs', () => {
-    cy.visit('http://localhost:4200/#/login/');
+    cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
     login('test', 'user123')
     cy.contains('Weiter')
       .click()
@@ -32,7 +32,7 @@ describe('Test User functionalities', () => {
   })
 
   it('Should navigate inside the iframe using the arrow buttons', () => {
-    cy.visit('http://localhost:4200/#/login/')
+    cy.visit(`${Cypress.env('TC_URL')}/#/login/`)
     login('test', 'user123')
     cy.contains('Weiter')
       .click()
@@ -65,11 +65,11 @@ describe('Test User functionalities', () => {
     cy.iframe('.unitHost').find('#end-unit')
       .click()
       .wait(500);
-    cy.url().should('eq', 'http://localhost:4200/#/r/test-starter');
+    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
   })
 
   it('Should navigate inside a unit using the navigation buttons', () => {
-    cy.visit('http://localhost:4200/#/login/')
+    cy.visit(`${Cypress.env('TC_URL')}/#/login/`)
     login('test', 'user123')
     cy.contains('Weiter')
       .click()
@@ -107,11 +107,11 @@ describe('Test User functionalities', () => {
     cy.iframe('.unitHost').find('#end-unit')
       .click()
       .wait(500);
-    cy.url().should('eq', 'http://localhost:4200/#/r/test-starter');
+    cy.url().should('eq',`${Cypress.env('TC_URL')}/#/r/test-starter`);
   })
 
   // it('Should unlock a locked unit', () => {
-  //   cy.visit('http://localhost:4200/#/login/')
+  //   cy.visit(`${Cypress.env('TC_URL')}/#/login/`)
   //   cy.get('mat-form-field.mat-form-field:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input')
   //     .clear()
   //     .type('test')
@@ -144,7 +144,7 @@ describe('Test User functionalities', () => {
   //   cy.get('button.mat-raised-button:nth-child(1) > span:nth-child(1)')
   //     .click()
   //   cy.location().should((loc) => {
-  //     expect(loc.href).to.eq('http://localhost:4200/#/t/1/u/3');
+  //     expect(loc.href).to.eq(`Cypress.env('TC_URL')/#/t/1/u/3');
   //   });
   //   cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
   //     .click();
@@ -153,7 +153,7 @@ describe('Test User functionalities', () => {
   //   cy.get('a.mat-tooltip-trigger:nth-child(1)')
   //     .click();
   //   cy.location().should((loc) => {
-  //     expect(loc.href).to.eq('http://localhost:4200/#/t/1/u/1');
+  //     expect(loc.href).to.eq(`Cypress.env('TC_URL')/#/t/1/u/1');
   //   });
   //   cy.get('.mat-tooltip-trigger').eq(0)
   //     .click();

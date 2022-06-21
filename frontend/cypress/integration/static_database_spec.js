@@ -1,5 +1,3 @@
-import { login, visitLoginPage } from './utils'
-
 describe('Test for the static database', () => {
 
   it('should test', () => {
@@ -9,9 +7,9 @@ describe('Test for the static database', () => {
           req.headers['TestMode'] = true;
       }).as('headers')
 
-      //cy.url().should('eq', 'http://localhost:4200/#/r/code-input');
+      //cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/code-input');
       cy.visit({
-        url: 'http://localhost:4200/#/r/admin-starter',
+        url: `${Cypress.env('TC_URL')}/#/r/admin-starter`,
         method: 'GET',
         headers: {
           TestMode: true,
