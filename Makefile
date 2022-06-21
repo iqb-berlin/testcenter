@@ -61,14 +61,12 @@ test-backend-initialization:
 
 test-backend-initialization-general:
 	make stop
-	docker-compose -f docker-compose.initialization-test.yml build
 	make test-backend-initialization test=general/db-versions
 	make test-backend-initialization test=general/vanilla-installation
 	make test-backend-initialization test=general/no-db-but-files
 	make test-backend-initialization test=general/install-db-patches
 
 test-broadcasting-service-unit:
-	#make build service=testcenter-broadcasting-service
 	docker run \
 		-v $(CURDIR)/docs/dist:/docs/dist \
 		--entrypoint npx \
@@ -76,7 +74,6 @@ test-broadcasting-service-unit:
 		jest --coverage
 
 test-frontend-unit:
-	make build service=testcenter-frontend
 	docker run \
 		-v $(CURDIR)/docs/dist:/docs/dist \
 		--entrypoint npx \
@@ -126,7 +123,7 @@ create-interfaces:
 
 
 init-env:
-	cp .env-default .env
+	cp dist-src/.env .env
 
 download-simple-player:
 	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/verona-player-simple-4.0.0.html -O sampledata/verona-player-simple-4.0.0.html

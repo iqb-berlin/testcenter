@@ -140,6 +140,7 @@ test-backend-dredd:
     - build-backend
   script:
     - apk add make
+    - make init
     - make test-backend-dredd
 
 test-backend-initialization:
@@ -152,4 +153,5 @@ test-backend-initialization:
     - build-backend
   script:
     - apk add make
+    - make init
     - make test-backend-initialization-general
