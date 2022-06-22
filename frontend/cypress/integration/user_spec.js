@@ -17,7 +17,7 @@ describe('Test User functionalities', () => {
     cy.url().should('include', '/u/1')
     cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
       .click();
-    cy.reload()
+    cy.reload();
     cy.url().should('include', '/u/2')
     cy.get('div.unit-nav-item:nth-child(3) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
       .click();
@@ -106,56 +106,48 @@ describe('Test User functionalities', () => {
     cy.url().should('eq',`${Cypress.env('TC_URL')}/#/r/test-starter`);
   });
 
-  // it('Should unlock a locked unit', () => {
-  //   cy.visit(`${Cypress.env('TC_URL')}/#/login/`)
-  //   cy.get('mat-form-field.mat-form-field:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input')
-  //     .clear()
-  //     .type('test')
-  //     .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
-  //     .type('user123');
-  //   cy.contains('Weiter')
-  //     .click()
-  //     .wait(500);
-  //   cy.get('.mat-form-field-infix > input')
-  //     .type('xxx')
-  //     .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
-  //     .click();
-  //   cy.get('a.mat-primary:nth-child(1) > span:nth-child(1) > div:nth-child(1)')
-  //     .click();
-  //   cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
-  //     .click();
-  //   cy.contains('Aufgabenblock ist noch gesperrt')
-  //     .should('exist');
-  //   cy.get('.mat-form-field-infix > input')
-  //     .type('SAMPLE');
-  //   cy.contains('OK')
-  //     .click();
-  //   cy.frameLoaded('.unitHost');
-  //   cy.iframe('.unitHost')
-  //     .contains('Sample Unit calling external File')
-  //     .should('exist');
-  //   cy.iframe('.unitHost')
-  //     .find('#next-unit')
-  //     .click();
-  //   cy.get('button.mat-raised-button:nth-child(1) > span:nth-child(1)')
-  //     .click()
-  //   cy.location().should((loc) => {
-  //     expect(loc.href).to.eq(`Cypress.env('TC_URL')/#/t/1/u/3');
-  //   });
-  //   cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
-  //     .click();
-  //   cy.contains('Aufgabenzeit ist abgelaufen')
-  //     .should('exist');
-  //   cy.get('a.mat-tooltip-trigger:nth-child(1)')
-  //     .click();
-  //   cy.location().should((loc) => {
-  //     expect(loc.href).to.eq(`Cypress.env('TC_URL')/#/t/1/u/1');
-  //   });
-  //   cy.get('.mat-tooltip-trigger').eq(0)
-  //     .click();
-  //   cy.get('button.mat-focus-indicator:nth-child(1) > span:nth-child(1)')
-  //     .click();
-  //   cy.contains('Neu anmelden')
-  //     .click();
-  // })
+  it('Should unlock a locked unit', () => {
+    cy.contains('Weiter')
+      .click()
+      .wait(500);
+    cy.get('.mat-form-field-infix > input')
+      .type('xxx')
+      .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
+      .click();
+    cy.get('a.mat-primary:nth-child(1) > span:nth-child(1) > div:nth-child(1)')
+      .click();
+    cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
+      .click();
+    cy.contains('Aufgabenblock ist noch gesperrt')
+      .should('exist');
+    cy.get('.mat-form-field-infix > input')
+      .type('SAMPLE');
+    cy.contains('OK')
+      .click();
+    cy.frameLoaded('.unitHost');
+    cy.iframe('.unitHost')
+      .contains('Sample Unit calling external File')
+      .should('exist');
+    cy.iframe('.unitHost')
+      .find('#next-unit')
+      .click();
+    cy.get('button.mat-raised-button:nth-child(1) > span:nth-child(1)')
+      .click()
+    cy.location().should((loc) => {
+      expect(loc.href).to.eq(`${Cypress.env('TC_URL')}/#/t/1/u/3`);
+    });
+    cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
+      .click();
+    cy.contains('Aufgabenzeit ist abgelaufen')
+      .should('exist');
+    cy.get('a.mat-tooltip-trigger:nth-child(1)')
+      .click();
+    cy.location().should((loc) => {
+      expect(loc.href).to.eq(`${Cypress.env('TC_URL')}/#/t/1/u/1`);
+    });
+    cy.get('.mat-tooltip-trigger').eq(0)
+      .click();
+    cy.get('button.mat-focus-indicator:nth-child(1) > span:nth-child(1)')
+      .click();
+  })
 })
