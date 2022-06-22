@@ -3,11 +3,18 @@ export const deleteDownloadsFolder = () => {
   cy.task("deleteFolder", downloadsFolder);
 };
 
-export const visitLoginPage = () => {
+const visitLoginPage = () => {
   cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
 }
 
+const resetBackendData = () => cy.request({
+  url: `${Cypress.env('TC_URL')}/api/system/config`,
+  headers: { TestMode: 'True' }
+}); // this works because in system-test TESTMODE_REAL_DATA is true
+
 export const login = (username, password) => {
+  resetBackendData();
+  visitLoginPage();
   cy.get('mat-form-field input').eq(0)
     .clear()
     .type(username)
@@ -19,7 +26,7 @@ export const logout = () => {
   visitLoginPage();
   cy.contains('Neu anmelden')
     .click();
-  cy.url().should('eq', `Cypress.env('TC_URL')/#/r/login/`)
+  cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/login/`)
 }
 
 export const loginAdmin = () => {
