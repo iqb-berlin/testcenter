@@ -50,6 +50,14 @@ services:
       MYSQL_HOST: testcenter-system-test-db
       MYSQL_PORT: 3306
       TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
+      SUPERUSER_NAME: super
+      SUPERUSER_PASSWORD: user123
+      WORKSPACE_NAME: example_workspace
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
+      - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
     volumes:
       - ./backend/.htaccess:/var/www/backend/.htaccess
       - ./backend/autoload.php:/var/www/backend/autoload.php
@@ -75,6 +83,9 @@ services:
       dockerfile: frontend/Dockerfile
       target: dev
     container_name: testcenter-system-test-frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
     volumes:
       - ./common:/common
       - ./definitions:/definitions
@@ -92,6 +103,11 @@ services:
       dockerfile: broadcasting-service/Dockerfile
       target: dev
     container_name: testcenter-system-test-broadcasting-service
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
     volumes:
       - ./broadcasting-service/nest-cli.docker.json:/app/nest-cli.json
       - ./broadcasting-service/package.json:/app/package.json
