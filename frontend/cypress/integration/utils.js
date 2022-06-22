@@ -3,14 +3,27 @@ export const deleteDownloadsFolder = () => {
   cy.task("deleteFolder", downloadsFolder);
 };
 
-const visitLoginPage = () => {
+export const visitLoginPage = () => {
   cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
 }
 
-const resetBackendData = () => cy.request({
-  url: `${Cypress.env('TC_URL')}/api/system/config`,
+export const resetBackendData = () => cy.request({
+  url: `${Cypress.env('TC_URL')}/api/version`,
   headers: { TestMode: 'True' }
-}); // this works because in system-test TESTMODE_REAL_DATA is true
+})
+  .its('status').should('eq', 200);
+// this works because in system-test TESTMODE_REAL_DATA is true
+
+export const insertCredentials = (username, password = '') => {
+  cy.get('mat-form-field input').eq(0)
+    .clear()
+    .type(username);
+  if (password) {
+    cy.get('mat-form-field input').eq(1)
+      .type(password);
+    }
+  }
+
 
 export const login = (username, password) => {
   resetBackendData();
@@ -24,7 +37,9 @@ export const login = (username, password) => {
 
 export const logout = () => {
   visitLoginPage();
+  cy.wait(100);
   cy.contains('Neu anmelden')
+    .should('be.visible')
     .click();
   cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/login/`)
 }
@@ -39,14 +54,15 @@ export const loginAdmin = () => {
 };
 
 export const loginSuperAdmin = () => {
-  cy.visit(`${Cypress.env('TC_URL')}/#/login/`)
-  login('super', 'user123')
+  resetBackendData();
+  cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
+  insertCredentials('super', 'user123');
   cy.contains('Weiter als Admin')
-    .click()
+    .click();
   cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
-  cy.contains('System-Admin')
-    .click()
-  cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/users`)
+  cy.contains('Systemverwaltung')
+    .click();
+  cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/users`);
 }
 
 export const createUserAnswers = () => {

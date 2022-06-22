@@ -2,10 +2,10 @@ import { login, loginSuperAdmin, logout } from './utils'
 
 describe('Superadmin Tests', () => {
 
-  afterEach(logout)
+  beforeEach(loginSuperAdmin);
 
   it('Should create a new admin with read-only privileges', () => {
-    loginSuperAdmin()
+
     cy.get('button.mat-focus-indicator:nth-child(1)')
       .click()
       .get('.mat-dialog-content > p:nth-child(1) > mat-form-field')
@@ -13,38 +13,37 @@ describe('Superadmin Tests', () => {
       .get('.mat-dialog-content > p:nth-child(3) > mat-form-field')
       .type('user123')
       .get('button.mat-primary > span:nth-child(1)')
-      .click()
+      .click();
     cy.contains('newTest')
       .click()
-      .wait(1000)
+      .wait(1000);
     cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)').eq(3)
       .click()
       .get('div.ng-star-inserted:nth-child(1) > button:nth-child(2)')
       .click()
       .get('.mat-tooltip-trigger').eq(0)
-      .click()
-    logout()
+      .click();
+    logout();
     cy.get('mat-form-field.mat-form-field:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input')
       .clear()
       .type('newTest')
       .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
       .type('user123')
     cy.contains('Weiter als Admin')
-      .click()
+      .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
     cy.contains('Status: Angemeldet als "newTest"')
-      .should('exist')
+      .should('exist');
     cy.contains('ws 1')
-      .click()
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`)
+      .click();
+    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
     cy.get('button.mat-focus-indicator:nth-child(2)')
       .should('be.disabled')
       .get('button.mat-tooltip-trigger:nth-child(1)')
-      .should('be.disabled')
-  })
+      .should('be.disabled');
+  });
 
   it('Should change the password of a existing user', () => {
-    loginSuperAdmin()
     cy.contains('newTest')
       .click()
       .get('button.mat-focus-indicator:nth-child(3)')
@@ -65,39 +64,37 @@ describe('Superadmin Tests', () => {
       .click()
     cy.contains('Status: Angemeldet als "newTest"')
       .should('exist')
-  })
+  });
 
   it('Should change privileges of existing admin to read-write', () => {
-    loginSuperAdmin()
     cy.contains('newTest')
       .click()
-      .wait(500)
+      .wait(500);
     cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)').eq(4)
       .click()
       .get('div.ng-star-inserted:nth-child(1) > button:nth-child(2)')
       .click()
       .get('.mat-tooltip-trigger').eq(0)
-      .click()
+      .click();
     logout()
     login('newTest', '123user')
     cy.contains('Weiter als Admin')
-      .click()
+      .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
     cy.contains('Status: Angemeldet als "newTest"')
       .should('exist')
     cy.contains('ws 1')
-      .click()
+      .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`)
     cy.get('button.mat-focus-indicator:nth-child(2)')
       .should('be.enabled')
       .get('button.mat-tooltip-trigger:nth-child(1)')
       .should('be.enabled')
       .get('.mat-tooltip-trigger').eq(0)
-      .click()
-  })
+      .click();
+  });
 
   it('Should delete an admin by clicking on the name', () => {
-    loginSuperAdmin()
     cy.contains('newTest')
       .click()
       .get('button.mat-focus-indicator:nth-child(2)').eq(0)
@@ -108,10 +105,9 @@ describe('Superadmin Tests', () => {
       .should('not.exist')
       .get('.mat-tooltip-trigger').eq(0)
       .click()
-  })
+  });
 
   it('Should create new super admin', () => {
-    loginSuperAdmin()
     cy.get('button.mat-focus-indicator:nth-child(1)')
       .click()
       .get('.mat-dialog-content > p:nth-child(1) > mat-form-field')
@@ -146,10 +142,9 @@ describe('Superadmin Tests', () => {
       .should('exist')
     cy.contains('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen')
       .should('exist')
-  })
+  });
 
   it('Should not change super admin status without correct password', () => {
-    loginSuperAdmin()
     cy.contains('newSuper *')
       .click()
       .get('button.mat-focus-indicator:nth-child(4)')
@@ -168,10 +163,9 @@ describe('Superadmin Tests', () => {
       .click()
     cy.get('.mat-tooltip-trigger').eq(0)
       .click()
-  })
+  });
 
   it('Should change super admin status with correct password', () => {
-    loginSuperAdmin()
     cy.contains('newSuper *')
       .click()
       .get('button.mat-focus-indicator:nth-child(4)')
@@ -199,10 +193,9 @@ describe('Superadmin Tests', () => {
       .should('exist')
     cy.contains('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen')
       .should('not.exist')
-  })
+  });
 
   it('Should add a new workspace', () => {
-    loginSuperAdmin()
     cy.get('a.mat-tab-link:nth-child(2)')
       .click()
     cy.location().should((loc) => {
@@ -218,10 +211,9 @@ describe('Superadmin Tests', () => {
       .should('exist')
     cy.get('.mat-tooltip-trigger').eq(0)
       .click()
-  })
+  });
 
   it('Should change users access rights on workspace tab', () => {
-    loginSuperAdmin()
     cy.get('a.mat-tab-link:nth-child(2)')
       .click()
     cy.contains('ws 2')
@@ -241,10 +233,9 @@ describe('Superadmin Tests', () => {
       .should('be.checked')
     cy.get('.mat-tooltip-trigger').eq(0)
       .click()
-  })
+  });
 
-  it('Should delete a user with checkbox', () => {
-    loginSuperAdmin()
+  it.only('Should delete a user with checkbox', () => {
     cy.contains('newSuper')
       .should('exist')
     cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)').eq(1)
@@ -259,10 +250,9 @@ describe('Superadmin Tests', () => {
       .should('not.exist')
       .get('.mat-tooltip-trigger').eq(0)
       .click()
-  })
+  });
 
   it('Should delete a workspace', () => {
-    loginSuperAdmin()
     cy.get('a.mat-tab-link:nth-child(2)')
       .click()
     cy.contains('ws 2')
@@ -275,10 +265,9 @@ describe('Superadmin Tests', () => {
       .should('not.exist')
     cy.get('.mat-tooltip-trigger').eq(0)
       .click()
-  })
+  });
 
   it('Should go to System-Admin (management window)', () => {
-    loginSuperAdmin()
     cy.get('a.mat-tab-link:nth-child(2)')
       .click()
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/workspaces`)
@@ -290,7 +279,7 @@ describe('Superadmin Tests', () => {
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/users`)
     cy.get('.mat-tooltip-trigger').eq(0)
       .click()
-  })
+  });
 
   it('Should open workspace', () => {
     cy.visit(`${Cypress.env('TC_URL')}/#/login/`)
@@ -309,5 +298,5 @@ describe('Superadmin Tests', () => {
     cy.get('a.mat-tab-link:nth-child(1)')
       .click()
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`)
-  })
-})
+  });
+});

@@ -1,8 +1,11 @@
-import { login, logout, visitLoginPage } from './utils'
+import {insertCredentials, login, logout, resetBackendData, visitLoginPage} from './utils'
 
 describe('Login page tests', () => {
 
-  beforeEach(visitLoginPage);
+  beforeEach(() => {
+    resetBackendData();
+    visitLoginPage();
+  });
 
   it('Visits the homepage', () => {
     cy.contains('IQB-Testcenter')
@@ -12,7 +15,7 @@ describe('Login page tests', () => {
   });
 
   it('Signs in a user with login code and logout', () => {
-    login('test', 'user123');
+    insertCredentials('test', 'user123');
     cy.get('#login')
       .click()
       .wait(5);
@@ -21,11 +24,12 @@ describe('Login page tests', () => {
       .type('yyy')
       .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
       .click();
+    // TODo wait until all booklet datas are fetched
     logout();
   });
 
   it('Signs in a user with wrong login code and logout', () => {
-    login('test', 'user123')
+    insertCredentials('test', 'user123')
     cy.get('#login')
       .click()
       .wait(5);
@@ -40,7 +44,7 @@ describe('Login page tests', () => {
   });
 
   it('Signs in a user and logout', () => {
-    login('test-demo', 'user123')
+    insertCredentials('test-demo', 'user123')
     cy.get('#login')
       .click()
       .wait(5);
@@ -49,7 +53,7 @@ describe('Login page tests', () => {
   });
 
   it('Signs in an admin and logout', () => {
-    login('super', 'user123')
+    insertCredentials('super', 'user123')
     cy.contains('Weiter als Admin')
       .click()
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
@@ -57,8 +61,7 @@ describe('Login page tests', () => {
   });
 
   it('Signs in a user without password', () => {
-    cy.get('mat-form-field input').eq(0)
-      .type('test-no-pw')
+    insertCredentials('test-no-pw');
     cy.contains('Weiter')
       .click()
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
@@ -66,7 +69,7 @@ describe('Login page tests', () => {
   });
 
   it('Try to sign in with wrong credentials', () => {
-    login('test', 'wrongpassword')
+    insertCredentials('test', 'wrongpassword');
     cy.get('#login')
       .click()
     cy.contains('Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!')
@@ -74,8 +77,7 @@ describe('Login page tests', () => {
   });
 
   it('Try to sign in with expired credentials', () => {
-    cy.get('mat-form-field input').eq(0)
-      .type('test-expired')
+    insertCredentials('test-expired');
     cy.contains('Weiter')
       .click()
     cy.contains('Anmeldedaten sind abgelaufen')
@@ -84,8 +86,7 @@ describe('Login page tests', () => {
   });
 
   it('Try to sign in with not activated login credentials', () => {
-    cy.get('mat-form-field input').eq(0)
-      .type('test-future')
+    insertCredentials('test-future');
     cy.contains('Weiter')
       .click()
     cy.contains('Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.')
