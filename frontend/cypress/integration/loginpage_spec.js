@@ -2,7 +2,8 @@ import { login, logout, visitLoginPage } from './utils'
 
 describe('Login page tests', () => {
 
-  beforeEach(visitLoginPage)
+  beforeEach(visitLoginPage);
+
   it('Visits the homepage', () => {
     cy.contains('IQB-Testcenter')
       .should('exist');
