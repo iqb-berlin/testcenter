@@ -125,6 +125,7 @@ test-frontend-e2e:
   stage: test
   only:
     - external_pull_requests
+    - web
   script:
     - apk add make
     - make test-frontend-e2e
@@ -133,6 +134,7 @@ test-backend-api:
   stage: test
   only:
     - external_pull_requests
+    - web
   dependencies:
     - build-backend
   needs:
@@ -146,6 +148,7 @@ test-backend-initialization:
   stage: test
   only:
     - external_pull_requests
+    - web
   dependencies:
     - build-backend
   needs:
