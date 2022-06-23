@@ -41,6 +41,7 @@ class InitDAO extends SessionDAO {
 
         $personSession = $sessionDAO->getOrCreatePersonSession($loginSession, 'xxx');
         $test = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
+        $testDAO->setTestRunning((int) $test['id']);
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
         $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
         $testDAO->addUnitLog((int) $test['id'], 'UNIT.SAMPLE', "sample unit log", $timestamp);
@@ -50,6 +51,7 @@ class InitDAO extends SessionDAO {
         $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
         $test2 = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-2', "a locked test");
         $testDAO->lockTest((int) $test2['id']);
+        $testDAO->setTestRunning((int) $test2['id']);
     }
 
 

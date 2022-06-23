@@ -54,3 +54,8 @@
 
 # env
 /.env
+
+# cypress
+/frontend/cypress/videos
+/frontend/cypress/screenshots
+/frontend/cypress/downloads
