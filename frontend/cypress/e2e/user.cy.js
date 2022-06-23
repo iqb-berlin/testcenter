@@ -1,4 +1,4 @@
-import {login, visitLoginPage} from "./utils";
+import {login, visitLoginPage} from "./utils.cy";
 
 describe('Test User functionalities', () => {
 
@@ -34,13 +34,13 @@ describe('Test User functionalities', () => {
   it('Should navigate inside the iframe using the arrow buttons', () => {
     cy.contains('Weiter')
       .click()
-      .wait(2000)
+      .wait(2000);
     cy.get('.mat-form-field-infix')
       .type('xxx')
       .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
-      .click()
+      .click();
     cy.get('a.mat-focus-indicator:nth-child(2) > span:nth-child(1) > div:nth-child(1)')
-      .click()
+      .click();
     cy.url().should('include', '/u/1')
     cy.frameLoaded('.unitHost');
     cy.wait(1000);
@@ -149,5 +149,5 @@ describe('Test User functionalities', () => {
       .click();
     cy.get('button.mat-focus-indicator:nth-child(1) > span:nth-child(1)')
       .click();
-  })
-})
+  });
+});

@@ -1,4 +1,4 @@
-import {insertCredentials, login, logout, resetBackendData, visitLoginPage} from './utils'
+import {insertCredentials, login, logout, resetBackendData, visitLoginPage} from './utils.cy'
 
 describe('Login page tests', () => {
 

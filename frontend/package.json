@@ -23,12 +23,6 @@
     "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
   },
   "private": true,
-  "eslintConfig": {
-    "extends": "@iqb/eslint-config",
-    "parserOptions": {
-      "project": "./tsconfig.json"
-    }
-  },
   "dependencies": {
     "@angular/animations": "~12.1.0",
     "@angular/cdk": "^12.1.0",
@@ -65,6 +59,7 @@
     "@compodoc/compodoc": "^1.1.11",
     "@iqb/eslint-config": "1.0.2",
     "@types/jasminewd2": "~2.0.8",
+    "cypress": "~10.2.0",
     "cypress-downloadfile": "^1.2.1",
     "cypress-file-upload": "^5.0.8",
     "cypress-iframe": "^1.0.1",

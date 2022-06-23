@@ -1,4 +1,4 @@
-import { deleteDownloadsFolder, loginAdmin, createUserAnswers , logout} from './utils'
+import { deleteDownloadsFolder, loginAdmin, createUserAnswers , logout} from './utils.cy'
 
 
 describe('Normal admin functionality test', () => {
