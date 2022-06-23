@@ -1,7 +1,6 @@
-import {login, visitLoginPage} from "./utils.cy";
+import { login } from './utils.cy';
 
 describe('Test User functionalities', () => {
-
   beforeEach(() => login('test', 'user123'));
 
   it('Should start a sample booklet and click through the unit tabs', () => {
@@ -14,17 +13,17 @@ describe('Test User functionalities', () => {
       .click();
     cy.get('a.mat-primary:nth-child(1) > span:nth-child(1) > div:nth-child(1)')
       .click();
-    cy.url().should('include', '/u/1')
+    cy.url().should('include', '/u/1');
     cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
       .click();
     cy.reload();
-    cy.url().should('include', '/u/2')
+    cy.url().should('include', '/u/2');
     cy.get('div.unit-nav-item:nth-child(3) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
       .click();
-    cy.url().should('include', '/u/3')
+    cy.url().should('include', '/u/3');
     cy.get('div.unit-nav-item:nth-child(1) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
       .click();
-    cy.url().should('include', '/u/1')
+    cy.url().should('include', '/u/1');
     cy.get('.mat-tooltip-trigger').eq(0)
       .click();
     cy.get('button.mat-focus-indicator:nth-child(1) > span:nth-child(1)')
@@ -41,25 +40,25 @@ describe('Test User functionalities', () => {
       .click();
     cy.get('a.mat-focus-indicator:nth-child(2) > span:nth-child(1) > div:nth-child(1)')
       .click();
-    cy.url().should('include', '/u/1')
+    cy.url().should('include', '/u/1');
     cy.frameLoaded('.unitHost');
     cy.wait(1000);
     cy.iframe('.unitHost').find('#next-unit')
       .click()
       .wait(500);
-    cy.url().should('include', '/u/2')
+    cy.url().should('include', '/u/2');
     cy.iframe('.unitHost').find('#last-unit')
       .click()
       .wait(500);
-    cy.url().should('include', '/u/3')
+    cy.url().should('include', '/u/3');
     cy.iframe('.unitHost').find('#prev-unit')
       .click()
       .wait(500);
-    cy.url().should('include', '/u/2')
+    cy.url().should('include', '/u/2');
     cy.iframe('.unitHost').find('#first-unit')
       .click()
       .wait(500);
-    cy.url().should('include', '/u/1')
+    cy.url().should('include', '/u/1');
     cy.iframe('.unitHost').find('#end-unit')
       .click()
       .wait(500);
@@ -88,7 +87,7 @@ describe('Test User functionalities', () => {
       .scrollIntoView()
       .should('be.inViewport');
     cy.get('#page-navigation > div button span').eq(3)
-      .click()
+      .click();
     cy.iframe('.unitHost')
       .find('#unit > fieldset:nth-child(5) > legend:nth-child(1)')
       .scrollIntoView()
@@ -103,7 +102,7 @@ describe('Test User functionalities', () => {
     cy.iframe('.unitHost').find('#end-unit')
       .click()
       .wait(500);
-    cy.url().should('eq',`${Cypress.env('TC_URL')}/#/r/test-starter`);
+    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
   });
 
   it('Should unlock a locked unit', () => {
@@ -132,8 +131,8 @@ describe('Test User functionalities', () => {
       .find('#next-unit')
       .click();
     cy.get('button.mat-raised-button:nth-child(1) > span:nth-child(1)')
-      .click()
-    cy.location().should((loc) => {
+      .click();
+    cy.location().should(loc => {
       expect(loc.href).to.eq(`${Cypress.env('TC_URL')}/#/t/1/u/3`);
     });
     cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
@@ -142,7 +141,7 @@ describe('Test User functionalities', () => {
       .should('exist');
     cy.get('a.mat-tooltip-trigger:nth-child(1)')
       .click();
-    cy.location().should((loc) => {
+    cy.location().should(loc => {
       expect(loc.href).to.eq(`${Cypress.env('TC_URL')}/#/t/1/u/1`);
     });
     cy.get('.mat-tooltip-trigger').eq(0)

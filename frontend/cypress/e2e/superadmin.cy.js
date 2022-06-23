@@ -13,8 +13,7 @@ describe('Superadmin Tests', () => {
       .get('button.mat-primary > span:nth-child(1)')
       .click();
     cy.contains('newTest')
-      .click()
-      .wait(1000);
+      .should('exist');
     cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)')
       .eq(3)
       .click()

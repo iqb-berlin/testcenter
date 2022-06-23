@@ -1,4 +1,3 @@
-
 describe('Perform a system check', () => {
   it('should exist', () => {
     cy.visit(`${Cypress.env('TC_URL')}/#/r/check-starter`);
@@ -6,7 +5,7 @@ describe('Perform a system check', () => {
       .should('exist');
     cy.contains('An example SysCheck definition')
       .should('exist');
-  })
+  });
 
   it('Run through the whole system-check', () => {
     cy.visit(`${Cypress.env('TC_URL')}/#/r/check-starter`);
@@ -18,6 +17,8 @@ describe('Perform a system check', () => {
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/check/1/SYSCHECK.SAMPLE/n`);
     cy.contains('Netzwerk')
       .should('exist');
+    cy.get('#syscheck-previous-step')
+      .should('be.visible');
     cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 20000 });
     cy.get('button.mat-focus-indicator:nth-child(3)')
       .click();
@@ -33,7 +34,7 @@ describe('Perform a system check', () => {
       .get('#mat-option-0 > span:nth-child(1)')
       .click();
     cy.get('#\\34')
-      .type('Test-Input2')
+      .type('Test-Input2');
     cy.get('.mat-checkbox-inner-container')
       .click();
     cy.get('#mat-radio-3 > label:nth-child(1) > span:nth-child(1)')
@@ -49,6 +50,5 @@ describe('Perform a system check', () => {
     cy.contains('System-Check Abbrechen')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/check-starter`);
-  })
-})
-
+  });
+});

@@ -56,17 +56,17 @@ describe('Normal admin functionality test', () => {
   });
 
   // TODO uplaod test
-  it.skip('should upload SysCheck.xml', () => {
-    const filepath = 'sampledata/SysCheck.xml';
-    cy.get('button.mat-focus-indicator:nth-child(2)')
-      .click();
-    cy.get('.sidebar > input:nth-child(2)').attachFile(filepath);
-    cy.wait(1500);
-    cy.reload(true);
-    cy.get('mat-table >mat-row button >span')
-      .contains('SysCheck.xml')
-      .should('exist');
-  });
+  // it.skip('should upload SysCheck.xml', () => {
+  //   const filepath = 'sampledata/SysCheck.xml';
+  //   cy.get('button.mat-focus-indicator:nth-child(2)')
+  //     .click();
+  //   cy.get('.sidebar > input:nth-child(2)').attachFile(filepath);
+  //   cy.wait(1500);
+  //   cy.reload(true);
+  //   cy.get('mat-table >mat-row button >span')
+  //     .contains('SysCheck.xml')
+  //     .should('exist');
+  // });
 
   it('should download a systemcheck summary (csv)', () => {
     cy.get('a.mat-tab-link:nth-child(2)')
@@ -78,7 +78,6 @@ describe('Normal admin functionality test', () => {
     cy.readFile('cypress/downloads/iqb-testcenter-syscheckreports.csv');
   });
 
-  // TODO add some responses to test environment
   it('should download the responses of a group', () => {
     cy.get('a.mat-tab-link:nth-child(3)')
       .click();
@@ -89,7 +88,6 @@ describe('Normal admin functionality test', () => {
     cy.readFile('cypress/downloads/iqb-testcenter-responses.csv');
   });
 
-  // TODO add some responses to test environment
   it('should download the logs of a group', () => {
     cy.get('a.mat-tab-link:nth-child(3)')
       .click();
@@ -100,7 +98,6 @@ describe('Normal admin functionality test', () => {
     cy.readFile('cypress/downloads/iqb-testcenter-logs.csv');
   });
 
-  // TODO add some responses to test environment
   it('should delete the results of a group', () => {
     cy.get('a.mat-tab-link:nth-child(3)')
       .click();
