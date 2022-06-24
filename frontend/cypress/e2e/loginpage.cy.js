@@ -1,7 +1,8 @@
-import {insertCredentials, login, logout, resetBackendData, visitLoginPage} from './utils.cy'
+import {
+  insertCredentials, logout, resetBackendData, visitLoginPage
+} from './utils.cy';
 
 describe('Login page tests', () => {
-
   beforeEach(() => {
     resetBackendData();
     visitLoginPage();
@@ -16,7 +17,7 @@ describe('Login page tests', () => {
 
   it('Signs in a user with login code and logout', () => {
     insertCredentials('test', 'user123');
-    cy.get('#login')
+    cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/code-input`);
@@ -29,8 +30,8 @@ describe('Login page tests', () => {
   });
 
   it('Signs in a user with wrong login code and logout', () => {
-    insertCredentials('test', 'user123')
-    cy.get('#login')
+    insertCredentials('test', 'user123');
+    cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/code-input`);
@@ -44,8 +45,8 @@ describe('Login page tests', () => {
   });
 
   it('Signs in a user and logout', () => {
-    insertCredentials('test-demo', 'user123')
-    cy.get('#login')
+    insertCredentials('test-demo', 'user123');
+    cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
@@ -53,44 +54,43 @@ describe('Login page tests', () => {
   });
 
   it('Signs in an admin and logout', () => {
-    insertCredentials('super', 'user123')
+    insertCredentials('super', 'user123');
     cy.contains('Weiter als Admin')
-      .click()
+      .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
-    logout()
+    logout();
   });
 
   it('Signs in a user without password', () => {
     insertCredentials('test-no-pw');
     cy.contains('Weiter')
-      .click()
+      .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
-    logout()
+    logout();
   });
 
   it('Try to sign in with wrong credentials', () => {
     insertCredentials('test', 'wrongpassword');
-    cy.get('#login')
-      .click()
+    cy.get('[data-cy="login-user"]')
+      .click();
     cy.contains('Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!')
-      .should('exist')
+      .should('exist');
   });
 
   it('Try to sign in with expired credentials', () => {
     insertCredentials('test-expired');
     cy.contains('Weiter')
-      .click()
+      .click();
     cy.contains('Anmeldedaten sind abgelaufen')
-      .should('exist')
-
+      .should('exist');
   });
 
   it('Try to sign in with not activated login credentials', () => {
     insertCredentials('test-future');
     cy.contains('Weiter')
-      .click()
+      .click();
     cy.contains('Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.')
-      .should('exist')
+      .should('exist');
   });
 
   it('Should get to legal disclosure and return to login page', () => {
@@ -109,7 +109,7 @@ describe('Login page tests', () => {
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/check-starter`);
     cy.contains('zurück zur Startseite')
-      .click()
+      .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/login/`);
   });
-})
+});

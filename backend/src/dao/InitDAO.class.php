@@ -57,9 +57,6 @@ class InitDAO extends SessionDAO {
 
     public function createSampleExpiredSessions(): void {
 
-        $superAdminDAO = new SuperAdminDAO();
-        $adminDAO = new AdminDAO();
-
         $login = new Login(
             'test-expired',
             '',
@@ -72,9 +69,15 @@ class InitDAO extends SessionDAO {
         );
         $login = $this->createLoginSession($login, true);
         $this->createPersonSession($login, 'xxx', 0,true);
+    }
 
-        $superAdminDAO->createUser("expired_user", "whatever", true);
-        $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
+
+    public function createSampleWorkspaceAdmin(): void {
+
+        $superAdminDAO = new SuperAdminDAO();
+        $adminDAO = new AdminDAO();
+        $superAdminDAO->createUser("workspace_admin", "anotherPassword", false);
+        $adminDAO->createAdminToken("workspace_admin", "anotherPassword", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
     }
 
 

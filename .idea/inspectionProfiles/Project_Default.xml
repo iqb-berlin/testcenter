@@ -3,6 +3,51 @@
     <option name="myName" value="Project Default" />
     <inspection_tool class="ComposeUnknownKeys" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="11">
+            <item index="0" class="java.lang.String" itemvalue="fxlayout" />
+            <item index="1" class="java.lang.String" itemvalue="mat-raised-button" />
+            <item index="2" class="java.lang.String" itemvalue="mattooltip" />
+            <item index="3" class="java.lang.String" itemvalue="fxlayoutalign" />
+            <item index="4" class="java.lang.String" itemvalue="fxflex" />
+            <item index="5" class="java.lang.String" itemvalue="mattooltipposition" />
+            <item index="6" class="java.lang.String" itemvalue="matcolumndef" />
+            <item index="7" class="java.lang.String" itemvalue="mat-dialog-title" />
+            <item index="8" class="java.lang.String" itemvalue="matinput" />
+            <item index="9" class="java.lang.String" itemvalue="formcontrolname" />
+            <item index="10" class="java.lang.String" itemvalue="color" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="16">
+            <item index="0" class="java.lang.String" itemvalue="nobr" />
+            <item index="1" class="java.lang.String" itemvalue="noembed" />
+            <item index="2" class="java.lang.String" itemvalue="comment" />
+            <item index="3" class="java.lang.String" itemvalue="noscript" />
+            <item index="4" class="java.lang.String" itemvalue="embed" />
+            <item index="5" class="java.lang.String" itemvalue="script" />
+            <item index="6" class="java.lang.String" itemvalue="mat-icon" />
+            <item index="7" class="java.lang.String" itemvalue="mat-header-cell" />
+            <item index="8" class="java.lang.String" itemvalue="mat-checkbox" />
+            <item index="9" class="java.lang.String" itemvalue="mat-cell" />
+            <item index="10" class="java.lang.String" itemvalue="mat-table" />
+            <item index="11" class="java.lang.String" itemvalue="mat-header-row" />
+            <item index="12" class="java.lang.String" itemvalue="mat-row" />
+            <item index="13" class="java.lang.String" itemvalue="mat-dialog-content" />
+            <item index="14" class="java.lang.String" itemvalue="mat-form-field" />
+            <item index="15" class="java.lang.String" itemvalue="mat-dialog-actions" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
     <inspection_tool class="PhpIllegalPsrClassPathInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PhpMultipleClassDeclarationsInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   </profile>

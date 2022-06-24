@@ -233,6 +233,7 @@ export class UsersComponent implements OnInit {
     }
     if (selectedRows.length === 0) {
       this.messsageDialog.open(MessageDialogComponent, {
+
         width: '400px',
         data: <MessageDialogData>{
           title: 'Löschen von Nutzern',

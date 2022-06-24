@@ -89,10 +89,24 @@
   <div class="sidebar">
 
     <div class="buttons">
-      <button mat-raised-button (click)="deleteFiles()" matTooltip="Markierte Dateien löschen" matTooltipPosition="above" [disabled]="wds.wsRole !== 'RW'">
+      <button
+        mat-raised-button
+        (click)="deleteFiles()"
+        matTooltip="Markierte Dateien löschen"
+        matTooltipPosition="above"
+        [disabled]="wds.wsRole !== 'RW'"
+        data-cy="delete-files"
+      >
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-raised-button (click)="hiddenfileinput.click()" matTooltip="Dateien hochladen/aktualisieren" matTooltipPosition="above" [disabled]="wds.wsRole !== 'RW'">
+      <button
+        mat-raised-button
+        (click)="hiddenfileinput.click()"
+        matTooltip="Dateien hochladen/aktualisieren"
+        matTooltipPosition="above"
+        [disabled]="wds.wsRole !== 'RW'"
+        data-cy="upload-files"
+      >
         <mat-icon>cloud_upload</mat-icon>
       </button>
     </div>

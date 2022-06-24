@@ -119,6 +119,7 @@ class TestEnvironment {
 
         $initDAO->createSampleLoginsReviewsLogs();
         $initDAO->createSampleExpiredSessions();
+        $initDAO->createSampleWorkspaceAdmin();
         $initDAO->createSampleMetaData();
         $personSessions = $initDAO->createSampleMonitorSessions();
         $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */

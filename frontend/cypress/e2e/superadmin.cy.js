@@ -1,110 +1,94 @@
-import { login, loginSuperAdmin, logout } from './utils.cy';
+import {
+  insertCredentials, login, loginSuperAdmin, logout
+} from './utils.cy';
 
 describe('Superadmin Tests', () => {
   beforeEach(loginSuperAdmin);
 
   it('Should create a new admin with read-only privileges', () => {
-    cy.get('button.mat-focus-indicator:nth-child(1)')
+    cy.get('[data-cy="add-user"]')
       .click()
-      .get('.mat-dialog-content > p:nth-child(1) > mat-form-field')
+      .get('[formControlName="name"]')
       .type('newTest')
-      .get('.mat-dialog-content > p:nth-child(3) > mat-form-field')
+      .get('[formControlName="pw"]')
       .type('user123')
-      .get('button.mat-primary > span:nth-child(1)')
+      .get('[type="submit"]')
       .click();
     cy.contains('newTest')
-      .should('exist');
-    cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)')
-      .eq(3)
+      .should('exist')
       .click()
-      .get('div.ng-star-inserted:nth-child(1) > button:nth-child(2)')
+      .get('[data-cy="workspace-role-ro"]')
+      .should('exist')
       .click()
-      .get('.mat-tooltip-trigger')
-      .eq(0)
+      .get('[data-cy="save"]')
       .click();
     logout();
-    cy.get('mat-form-field.mat-form-field:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input')
-      .clear()
-      .type('newTest')
-      .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
-      .type('user123');
-    cy.contains('Weiter als Admin')
+    insertCredentials('newTest', 'user123');
+    cy.get('[data-cy="login-admin"]')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
     cy.contains('Status: Angemeldet als "newTest"')
       .should('exist');
-    cy.contains('ws 1')
+    cy.contains('sample_workspace')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
-    cy.get('button.mat-focus-indicator:nth-child(2)')
+    cy.get('[data-cy="upload-files"]')
       .should('be.disabled')
-      .get('button.mat-tooltip-trigger:nth-child(1)')
+      .get('[data-cy="delete-files"]')
       .should('be.disabled');
   });
 
   it('Should change the password of a existing user', () => {
-    cy.contains('newTest')
+    cy.contains('workspace_admin')
       .click()
-      .get('button.mat-focus-indicator:nth-child(3)')
+      .get('[data-cy="change-password"]')
       .click()
-      .get('.mat-dialog-content > p:nth-child(3) > mat-form-field')
-      .type('123user')
-      .get('button.mat-primary > span:nth-child(1)')
-      .click()
-      .get('.mat-tooltip-trigger')
-      .eq(0)
+      .get('[formControlName="pw"]')
+      .type('newPassword')
+      .get('[type="submit"]')
       .click();
     logout();
-    cy.get('mat-form-field.mat-form-field:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input')
-      .clear()
-      .type('newTest')
-      .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
-      .type('123user');
-    cy.contains('Weiter als Admin')
+    insertCredentials('workspace_admin', 'newPassword');
+    cy.get('[data-cy="login-admin"]')
       .click();
-    cy.contains('Status: Angemeldet als "newTest"')
+    cy.contains('Status: Angemeldet als "workspace_admin"')
       .should('exist');
   });
 
   it('Should change privileges of existing admin to read-write', () => {
-    cy.contains('newTest')
+    cy.contains('workspace_admin')
+      .should('exist')
       .click()
-      .wait(500);
-    cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)').eq(4)
+      .get('[data-cy="workspace-role-ro"]')
+      .should('exist')
       .click()
-      .get('div.ng-star-inserted:nth-child(1) > button:nth-child(2)')
-      .click()
-      .get('.mat-tooltip-trigger')
-      .eq(0)
+      .get('[data-cy="save"]')
       .click();
     logout();
-    login('newTest', '123user');
-    cy.contains('Weiter als Admin')
+    insertCredentials('workspace_admin', 'anotherPassword');
+    cy.get('[data-cy="login-admin"]')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
-    cy.contains('Status: Angemeldet als "newTest"')
+    cy.contains('Status: Angemeldet als "workspace_admin"')
       .should('exist');
-    cy.contains('ws 1')
+    cy.contains('sample_workspace')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
-    cy.get('button.mat-focus-indicator:nth-child(2)')
+    cy.get('[data-cy="upload-files"]')
       .should('be.enabled')
-      .get('button.mat-tooltip-trigger:nth-child(1)')
-      .should('be.enabled')
-      .get('.mat-tooltip-trigger')
-      .eq(0)
-      .click();
+      .get('[data-cy="delete-files"]')
+      .should('be.enabled');
   });
 
   it('Should delete an admin by clicking on the name', () => {
-    cy.contains('newTest')
+    cy.contains('workspace_admin')
       .click()
-      .get('button.mat-focus-indicator:nth-child(2)')
-      .eq(0)
-      .click()
-      .get('button.mat-primary > span:nth-child(1)')
+      .get('[data-cy="delete-user"]')
       .click();
-    cy.contains('newTest')
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .click();
+    cy.contains('workspace_admin')
       .should('not.exist')
       .get('.mat-tooltip-trigger')
       .eq(0)
@@ -135,7 +119,7 @@ describe('Superadmin Tests', () => {
     cy.get('.mat-tooltip-trigger').eq(0)
       .click();
     logout();
-    cy.get('mat-form-field.mat-form-field:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input')
+    cy.get('[formcontrolname="name"]')
       .clear()
       .type('newSuper')
       .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
@@ -149,7 +133,7 @@ describe('Superadmin Tests', () => {
   });
 
   it('Should not change super admin status without correct password', () => {
-    cy.contains('newSuper *')
+    cy.contains('super *')
       .click()
       .get('button.mat-focus-indicator:nth-child(4)')
       .click()
@@ -170,7 +154,7 @@ describe('Superadmin Tests', () => {
   });
 
   it('Should change super admin status with correct password', () => {
-    cy.contains('newSuper *')
+    cy.contains('super *')
       .click()
       .get('button.mat-focus-indicator:nth-child(4)')
       .click();
@@ -186,9 +170,9 @@ describe('Superadmin Tests', () => {
     cy.get('.mat-tooltip-trigger').eq(0)
       .click();
     logout();
-    cy.get('mat-form-field.mat-form-field:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > input')
+    cy.get('[formcontrolname="name"]')
       .clear()
-      .type('newSuper')
+      .type('super')
       .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
       .type('user123');
     cy.contains('Weiter als Admin')
@@ -239,18 +223,18 @@ describe('Superadmin Tests', () => {
       .click();
   });
 
-  it.only('Should delete a user with checkbox', () => {
-    cy.contains('newSuper')
+  it('Should delete a user with checkbox', () => {
+    cy.contains('workspace_admin')
       .should('exist');
-    cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)').eq(1)
+    cy.get('#mat-checkbox-3 > label:nth-child(1) > span:nth-child(1)').eq(0)
       .click();
-    cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1) > input').eq(1)
+    cy.get('#mat-checkbox-3 > label:nth-child(1) > span:nth-child(1) input').eq(0)
       .should('be.checked');
     cy.get('button.mat-focus-indicator:nth-child(2)').eq(0)
       .click()
       .get('button.mat-primary > span:nth-child(1)')
       .click();
-    cy.contains('newSuper')
+    cy.contains('workspace_admin')
       .should('not.exist')
       .get('.mat-tooltip-trigger').eq(0)
       .click();
