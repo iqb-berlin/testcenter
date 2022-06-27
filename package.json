@@ -34,10 +34,6 @@
     "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
     "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"
   },
-  "workspaces": [
-    "frontend",
-    "broadcasting-service"
-  ],
   "eslintConfig": {
     "overrides": [
       {

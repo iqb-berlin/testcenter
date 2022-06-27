@@ -5,9 +5,6 @@ version: '3.7'
 x-env-php: &env-php
   PHP_VERSION: 8.1.6
 
-x-env-node: &env-node
-  NODE_VERSION: 14.15.0
-
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -89,9 +86,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
     image: iqbberlin/testcenter-frontend:current
-    build:
-      args:
-        <<: *env-node
     networks:
       testcenter:
 
@@ -106,9 +100,6 @@ services:
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
     image: iqbberlin/testcenter-broadcasting-service:current
-    build:
-      args:
-        <<: *env-node
     networks:
       testcenter:
 
