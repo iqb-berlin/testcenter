@@ -6,7 +6,7 @@
 
 <div id="shield" *ngIf="showError"></div>
 
-<mat-card *ngIf="showError" class="main-alert" (click)="closeErrorBox()">
+<mat-card *ngIf="showError" class="main-alert" (click)="closeErrorBox()" attr.data-cy="main-alert:{{errorData?.category}}">
   <mat-card-title>
     <alert *ngIf="errorData?.category === 'ERROR'" text="Fehler: {{ errorData?.label }}" level="error"></alert>
     <alert *ngIf="errorData?.category === 'WARNING'" text="Warnung: {{ errorData?.label }}" level="warning"></alert>

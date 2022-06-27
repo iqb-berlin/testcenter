@@ -6,11 +6,14 @@
   <div class="adminbackground">
 
     <nav mat-tab-nav-bar>
-      <a mat-tab-link
+      <a #rla="routerLinkActive"
+         mat-tab-link
          *ngFor="let link of navLinks"
          [routerLink]="link.path"
-         routerLinkActive #rla="routerLinkActive"
-         [active]="rla.isActive">
+         routerLinkActive
+         [active]="rla.isActive"
+         [attr.data-cy]="'superadmin-tabs:' + link.path"
+      >
         {{link.label}}
       </a>
     </nav>

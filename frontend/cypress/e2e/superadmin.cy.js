@@ -1,11 +1,11 @@
 import {
-  insertCredentials, login, loginSuperAdmin, logout
+  insertCredentials, loginSuperAdmin, logout, visitLoginPage
 } from './utils.cy';
 
 describe('Superadmin Tests', () => {
   beforeEach(loginSuperAdmin);
 
-  it('Should create a new admin with read-only privileges', () => {
+  it('Should create a new admin with read-only privileges', () => { // f
     cy.get('[data-cy="add-user"]')
       .click()
       .get('[formControlName="name"]')
@@ -26,7 +26,6 @@ describe('Superadmin Tests', () => {
     insertCredentials('newTest', 'user123');
     cy.get('[data-cy="login-admin"]')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
     cy.contains('Status: Angemeldet als "newTest"')
       .should('exist');
     cy.contains('sample_workspace')
@@ -38,7 +37,7 @@ describe('Superadmin Tests', () => {
       .should('be.disabled');
   });
 
-  it('Should change the password of a existing user', () => {
+  it('Should change the password of a existing user', () => { // f
     cy.contains('workspace_admin')
       .click()
       .get('[data-cy="change-password"]')
@@ -55,7 +54,7 @@ describe('Superadmin Tests', () => {
       .should('exist');
   });
 
-  it('Should change privileges of existing admin to read-write', () => {
+  it('Should change privileges of existing admin to read-write', () => { // f
     cy.contains('workspace_admin')
       .should('exist')
       .click()
@@ -132,50 +131,44 @@ describe('Superadmin Tests', () => {
       .should('exist');
   });
 
-  it('Should not change super admin status without correct password', () => {
+  it('Should not change super admin status without correct password', () => { // f
     cy.contains('super *')
-      .click()
-      .get('button.mat-focus-indicator:nth-child(4)')
-      .click()
-      .wait(1000);
-    cy.get('button.mat-primary > span:nth-child(1)')
-      .click()
-      .wait(1000);
-    cy.get('.mat-dialog-content > p:nth-child(2) > mat-form-field')
+      .click();
+    cy.get('[data-cy="change-superadmin"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .click();
+    cy.get('[formControlName="pw"]')
+      .should('exist')
       .type('wrongPassword')
-      .get('button.mat-primary > span:nth-child(1)')
+      .get('[data-cy="confirm-password-form"] [type="submit"]')
       .click();
-    cy.contains('Fehler: Für diese Funktion haben Sie keine Berechtigung.')
+    cy.get('[data-cy="main-alert:WARNING"]')
       .should('exist');
-    cy.contains('Fehler: Für diese Funktion haben Sie keine Berechtigung.')
-      .click();
-    cy.get('.mat-tooltip-trigger').eq(0)
-      .click();
   });
 
-  it('Should change super admin status with correct password', () => {
+  it('Should change super admin status with correct password', () => { // f
     cy.contains('super *')
-      .click()
-      .get('button.mat-focus-indicator:nth-child(4)')
       .click();
-    cy.get('button.mat-primary > span:nth-child(1)')
-      .click()
-      .wait(1000);
-    cy.get('.mat-dialog-content > p:nth-child(2) > mat-form-field')
+    cy.get('[data-cy="change-superadmin"]')
+      .click();
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
+      .click();
+    cy.get('[formControlName="pw"]')
+      .should('exist')
       .type('user123')
-      .get('button.mat-primary > span:nth-child(1)')
-      .click();
-    cy.contains('newSuper')
-      .should('exist');
-    cy.get('.mat-tooltip-trigger').eq(0)
+      .get('[data-cy="confirm-password-form"] [type="submit"]')
       .click();
     logout();
+    insertCredentials('super', 'user123');
     cy.get('[formcontrolname="name"]')
       .clear()
       .type('super')
       .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
       .type('user123');
-    cy.contains('Weiter als Admin')
+    cy.get('[data-cy="login-admin"]')
       .click();
     cy.contains('Verwaltung von Testinhalten')
       .should('exist');
@@ -183,44 +176,64 @@ describe('Superadmin Tests', () => {
       .should('not.exist');
   });
 
-  it('Should add a new workspace', () => {
-    cy.get('a.mat-tab-link:nth-child(2)')
+  it('Should add a new workspace', () => { // f
+    cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
-    cy.location().should(loc => {
-      expect(loc.href).to.eq(`${Cypress.env('TC_URL')}/#/superadmin/workspaces`);
-    });
-    cy.get('button.mat-focus-indicator:nth-child(1)')
+    cy.get('[data-cy="add-workspace"]')
+      .should('exist')
       .click();
-    cy.get('.mat-dialog-content > p:nth-child(1) >mat-form-field')
+    cy.get('[formControlName="name"]')
+      .should('exist')
       .type('ws 2')
-      .get('button.mat-primary > span:nth-child(1)')
+      .get('type="submit"')
       .click();
     cy.contains('ws 2')
       .should('exist');
-    cy.get('.mat-tooltip-trigger').eq(0)
-      .click();
   });
 
-  it('Should change users access rights on workspace tab', () => {
-    cy.get('a.mat-tab-link:nth-child(2)')
+  it('Should change users access rights on workspace tab', () => { // f
+    cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
-    cy.contains('ws 2')
+    cy.contains('sample_workspace')
+      .click();
+    cy.get('[data-cy="workspace-role-ro"]')
+      .eq(1)
+      .should('exist')
       .click()
-      .wait(500);
-    cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)').eq(6)
+      .get('[data-cy="save"]')
       .click();
-    cy.get('mat-checkbox > label:nth-child(1) > span:nth-child(1)').eq(3)
+    logout();
+    insertCredentials('workspace_admin', 'anotherPassword');
+    cy.contains('sample_workspace')
+      .should('exist')
       .click();
-    cy.get('div.ng-star-inserted:nth-child(1) > button:nth-child(2)')
+    cy.get('[data-cy="upload-files"]')
+      .should('be.disabled')
+      .get('[data-cy="delete-files"]')
+      .should('be.disabled');
+    logout();
+    insertCredentials('super', 'user123');
+    cy.get('data-cy="goto-superadmin"')
       .click();
-    cy.contains('ws 1')
+    cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
-    cy.contains('ws 2')
+    cy.contains('sample_workspace')
+      .click();
+    cy.get('[data-cy="workspace-role-rw"]')
+      .eq(1)
+      .should('exist')
       .click()
-      .get('mat-checkbox > label:nth-child(1) > span:nth-child(1) > input').eq(3)
-      .should('be.checked');
-    cy.get('.mat-tooltip-trigger').eq(0)
+      .get('[data-cy="save"]')
       .click();
+    logout();
+    insertCredentials('workspace_admin', 'anotherPassword');
+    cy.contains('sample_workspace')
+      .should('exist')
+      .click();
+    cy.get('[data-cy="upload-files"]')
+      .should('be.enabled')
+      .get('[data-cy="delete-files"]')
+      .should('be.enabled');
   });
 
   it('Should delete a user with checkbox', () => {
@@ -241,18 +254,22 @@ describe('Superadmin Tests', () => {
   });
 
   it('Should delete a workspace', () => {
-    cy.get('a.mat-tab-link:nth-child(2)')
+    cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
-    cy.contains('ws 2')
+    cy.contains('sample_workspace')
+      .should('exist')
       .click();
-    cy.get('button.mat-focus-indicator:nth-child(2)').eq(0)
+    cy.get('[data-cy="delete-workspace"]')
       .click();
-    cy.get('button.mat-primary > span:nth-child(1)')
+    cy.get('[data-cy="dialog-confirm"]')
+      .should('exist')
       .click();
-    cy.contains('ws 2')
+    cy.contains('sample_workspace')
       .should('not.exist');
-    cy.get('.mat-tooltip-trigger').eq(0)
-      .click();
+    logout();
+    insertCredentials('super', 'user123');
+    cy.contains('sample_workspace')
+      .should('not.exist');
   });
 
   it('Should go to System-Admin (management window)', () => {
@@ -270,11 +287,8 @@ describe('Superadmin Tests', () => {
   });
 
   it('Should open workspace', () => {
-    cy.visit(`${Cypress.env('TC_URL')}/#/login/`);
-    login('super', 'user123');
-    cy.contains('Weiter als Admin')
-      .click();
-    cy.contains('ws 1')
+    visitLoginPage();
+    cy.contains('sample_workspace')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
     cy.get('a.mat-tab-link:nth-child(2)')

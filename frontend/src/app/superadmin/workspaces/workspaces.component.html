@@ -1,16 +1,33 @@
 <div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">
   <div class="objectlist" fxLayout="column" fxFlex="50">
     <div fxLayout="row">
-        <button mat-raised-button (click)="addObject()" matTooltip="Arbeitsbereich hinzufügen" matTooltipPosition="above">
-            <mat-icon>add</mat-icon>
-          </button>
-        <button mat-raised-button (click)="deleteObject()"
-                matTooltip="Markierte/n Arbeitsbereich/e löschen" matTooltipPosition="above">
-          <mat-icon>delete</mat-icon>
-        </button>
-        <button mat-raised-button (click)="changeObject()" matTooltip="Arbeitsbereich umbenennen" matTooltipPosition="above">
-          <mat-icon>edit</mat-icon>
-        </button>
+      <button
+        mat-raised-button
+        (click)="addObject()"
+        matTooltip="Arbeitsbereich hinzufügen"
+        matTooltipPosition="above"
+        data-cy="add-workspace"
+        >
+          <mat-icon>add</mat-icon>
+      </button>
+      <button
+        mat-raised-button
+        (click)="deleteObject()"
+        matTooltip="Markierte/n Arbeitsbereich/e löschen"
+        matTooltipPosition="above"
+        data-cy="delete-workspace"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button
+        mat-raised-button
+        (click)="changeObject()"
+        matTooltip="Arbeitsbereich umbenennen"
+        matTooltipPosition="above"
+        data-cy="rename-workspace"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
     </div>
 
     <mat-table [dataSource]="objectsDatasource" matSort>
@@ -51,7 +68,7 @@
     <div *ngIf="selectedWorkspaceId > 0" fxLayout="row" fxLayoutAlign="space-between center">
       <div>Zugriffsrechte für "{{ selectedWorkspaceName }}":</div>
         <button mat-raised-button (click)="saveUsers()" matTooltip="Speichern"
-            matTooltipPosition="above" [disabled]="!pendingUserChanges">
+            matTooltipPosition="above" [disabled]="!pendingUserChanges" data-cy="save">
           <mat-icon>save</mat-icon>
         </button>
     </div>
@@ -60,9 +77,9 @@
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW</mat-header-cell>
         <mat-cell *matCellDef="let row" fxFlex="100px">
-          <mat-checkbox (change)="selectUser(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO">
+          <mat-checkbox (change)="selectUser(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO" data-cy="workspace-role-ro">
           </mat-checkbox>
-          <mat-checkbox (change)="selectUser(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW">
+          <mat-checkbox (change)="selectUser(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW" data-cy="workspace-role-rw">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
