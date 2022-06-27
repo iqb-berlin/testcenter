@@ -9,6 +9,7 @@ services:
 stages:
   - build
   - test
+  - deploy
 
 .backend-change:
   rules:
