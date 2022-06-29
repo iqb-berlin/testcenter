@@ -9,44 +9,45 @@ class SessionDAO extends DAO {
 
         $tokenInfo = $this->_(
             'select
-                    *
-                from (
-                    select
-                        admin_sessions.token,
-                        users.id,
-                        \'admin\' as "type",
-                        -1 as "workspaceId",
-                        case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
-                        valid_until as "validTo",
-                        \'[admins]\' as "group"
-                    from admin_sessions
-                        inner join users on (users.id = admin_sessions.user_id)
-                    union
-                    select
-                        token,
-                        login_sessions.id as "id",
-                        \'login\' as "type",
-                        logins.workspace_id as "workspaceId",
-                        logins.mode,
-                        logins.valid_to as "validTo",
-                        logins.group_name as "group"
-                    FROM login_sessions
-                        inner join logins on (logins.name = login_sessions.name)
-                    union
-                    select
-                        person_sessions.token,
-                        person_sessions.id as "id",
-                        \'person\' as "type",
-                        logins.workspace_id as "workspaceId",
-                        logins.mode,
-                        person_sessions.valid_until as "validTo",
-                        logins.group_name as "group"
-                    from person_sessions
-                        inner join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
-                        inner join logins on (logins.name = login_sessions.name)
-                ) as allTokenTables
-            where 
-                token = :token',
+                    admin_sessions.token,
+                    users.id,
+                    \'admin\' as "type",
+                    -1 as "workspaceId",
+                    case when (users.is_superadmin) then \'super-admin\' else \'admin\' end as "mode",
+                    valid_until as "validTo",
+                    \'[admins]\' as "group"
+                from admin_sessions
+                     left join users on (users.id = admin_sessions.user_id)
+                where
+                    admin_sessions.token = :token
+            union
+                select
+                    token,
+                    login_sessions.id as "id",
+                    \'login\' as "type",
+                    logins.workspace_id as "workspaceId",
+                    logins.mode,
+                    logins.valid_to as "validTo",
+                    logins.group_name as "group"
+                FROM login_sessions
+                     left join logins on (logins.name = login_sessions.name)
+                where
+                    login_sessions.token = :token
+            union
+                select
+                    person_sessions.token,
+                    person_sessions.id as "id",
+                    \'person\' as "type",
+                    logins.workspace_id as "workspaceId",
+                    logins.mode,
+                    person_sessions.valid_until as "validTo",
+                    logins.group_name as "group"
+                from person_sessions
+                     left join login_sessions on (person_sessions.login_sessions_id = login_sessions.id)
+                     left join logins on (logins.name = login_sessions.name)
+                where
+                    person_sessions.token = :token
+            limit 1',
             [':token' => $tokenString]
         );
 
