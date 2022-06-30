@@ -22,19 +22,6 @@ class SessionDAO extends DAO {
                     admin_sessions.token = :token
             union
                 select
-                    token,
-                    login_sessions.id as "id",
-                    \'login\' as "type",
-                    logins.workspace_id as "workspaceId",
-                    logins.mode,
-                    logins.valid_to as "validTo",
-                    logins.group_name as "group"
-                FROM login_sessions
-                     left join logins on (logins.name = login_sessions.name)
-                where
-                    login_sessions.token = :token
-            union
-                select
                     person_sessions.token,
                     person_sessions.id as "id",
                     \'person\' as "type",
@@ -47,6 +34,19 @@ class SessionDAO extends DAO {
                      left join logins on (logins.name = login_sessions.name)
                 where
                     person_sessions.token = :token
+            union
+                select
+                    token,
+                    login_sessions.id as "id",
+                    \'login\' as "type",
+                    logins.workspace_id as "workspaceId",
+                    logins.mode,
+                    logins.valid_to as "validTo",
+                    logins.group_name as "group"
+                FROM login_sessions
+                     left join logins on (logins.name = login_sessions.name)
+                where
+                    login_sessions.token = :token
             limit 1',
             [':token' => $tokenString]
         );
