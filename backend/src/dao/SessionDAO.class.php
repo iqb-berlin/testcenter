@@ -56,6 +56,11 @@ class SessionDAO extends DAO {
             throw new HttpError("Invalid token: `$tokenString`", 403);
         }
 
+        if ($tokenInfo['workspaceId'] == null) {
+
+            throw new HttpError("Login removed: `$tokenString`", 410);
+        }
+
         if (!in_array($tokenInfo["type"], $requiredTypes)) {
 
             throw new HttpError("Token `$tokenString` of "
