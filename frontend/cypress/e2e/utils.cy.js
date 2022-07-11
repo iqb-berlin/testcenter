@@ -52,7 +52,8 @@ export const loginAdmin = () => {
     .click();
   cy.url()
     .should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
-  cy.get('[data-cy="goto-superadmin"]')
+  cy.get('[data-cy="workspace-1"]')
+    .should('exist')
     .click();
   cy.url()
     .should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);

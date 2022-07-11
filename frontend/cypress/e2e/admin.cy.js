@@ -2,11 +2,11 @@ import {
   deleteDownloadsFolder, loginAdmin
 } from './utils.cy';
 
-describe('Normal admin functionality test', () => {
+describe('Admin functionality test', () => {
   beforeEach(deleteDownloadsFolder);
   beforeEach(loginAdmin);
 
-  // TODO instaad of testing the download of different filetypes, test of the popups are correct
+  // TODO instead of testing the download of different filetypes, test of the popups are correct
 
   it('should download a testtakers.xml', () => {
     cy.get('mat-table >mat-row button >span')
