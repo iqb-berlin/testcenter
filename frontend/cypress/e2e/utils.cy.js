@@ -16,6 +16,7 @@ export const resetBackendData = () => {
     headers: { TestMode: 'True' }
   })
     .its('status').should('eq', 200);
+  cy.wait(500);
 };
 
 export const insertCredentials = (username, password = '') => {
@@ -36,7 +37,7 @@ export const login = (username, password) => {
   insertCredentials(username, password);
 };
 
-export const logout = () => {
+export const logoutAdmin = () => {
   cy.visit(`${Cypress.env('TC_URL')}/#/r/admin-starter`);
   cy.get('[data-cy="workspace-1"]')
     .should('exist');

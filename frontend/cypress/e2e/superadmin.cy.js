@@ -1,5 +1,5 @@
 import {
-  clickSuperadmin, insertCredentials, loginAsAdmin, logout, resetBackendData, visitLoginPage
+  clickSuperadmin, insertCredentials, loginAsAdmin, logoutAdmin, resetBackendData, visitLoginPage
 } from './utils.cy';
 
 describe('Superadmin Tests', () => {
@@ -24,7 +24,7 @@ describe('Superadmin Tests', () => {
       .click()
       .get('[data-cy="save"]')
       .click();
-    logout();
+    logoutAdmin();
     insertCredentials('newTest', 'user123');
     cy.get('[data-cy="login-admin"]')
       .click();
@@ -48,7 +48,7 @@ describe('Superadmin Tests', () => {
       .type('newPassword')
       .get('[type="submit"]')
       .click();
-    logout();
+    logoutAdmin();
     insertCredentials('workspace_admin', 'newPassword');
     cy.get('[data-cy="login-admin"]')
       .click();
@@ -65,7 +65,7 @@ describe('Superadmin Tests', () => {
       .click()
       .get('[data-cy="save"]')
       .click();
-    logout();
+    logoutAdmin();
     insertCredentials('workspace_admin', 'anotherPassword');
     cy.get('[data-cy="login-admin"]')
       .click();
@@ -118,7 +118,7 @@ describe('Superadmin Tests', () => {
     cy.contains('newSuper *');
     cy.get('.mat-tooltip-trigger').eq(0)
       .click();
-    logout();
+    logoutAdmin();
     cy.get('[formcontrolname="name"]')
       .clear()
       .type('newSuper')
@@ -162,7 +162,7 @@ describe('Superadmin Tests', () => {
       .type('user123')
       .get('[data-cy="confirm-password-form"] [type="submit"]')
       .click();
-    logout();
+    logoutAdmin();
     insertCredentials('workspace_admin', 'anotherPassword');
     cy.get('[data-cy="login-admin"]')
       .click();
@@ -198,7 +198,7 @@ describe('Superadmin Tests', () => {
       .click()
       .get('[data-cy="save"]')
       .click();
-    logout();
+    logoutAdmin();
     loginAsAdmin('workspace_admin', 'anotherPassword');
     cy.contains('sample_workspace')
       .should('exist')
@@ -207,7 +207,7 @@ describe('Superadmin Tests', () => {
       .should('be.disabled')
       .get('[data-cy="delete-files"]')
       .should('be.disabled');
-    logout();
+    logoutAdmin();
     loginAsAdmin('super', 'user123');
     clickSuperadmin();
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
@@ -220,7 +220,7 @@ describe('Superadmin Tests', () => {
       .click()
       .get('[data-cy="save"]')
       .click();
-    logout();
+    logoutAdmin();
     loginAsAdmin('workspace_admin', 'anotherPassword');
     cy.contains('sample_workspace')
       .should('exist')

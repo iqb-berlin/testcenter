@@ -1,12 +1,11 @@
 import {
-  insertCredentials, logout, resetBackendData, visitLoginPage
+  insertCredentials, resetBackendData, visitLoginPage
 } from './utils.cy';
 
 describe('Login page tests', () => {
-  beforeEach(() => {
-    resetBackendData();
-    visitLoginPage();
-  });
+  beforeEach(cy.clearLocalStorage);
+  beforeEach(resetBackendData);
+  beforeEach(visitLoginPage);
 
   it('Visits the homepage', () => {
     cy.contains('IQB-Testcenter')
@@ -15,7 +14,7 @@ describe('Login page tests', () => {
       .should('exist');
   });
 
-  it('Signs in a user with login code and logout', () => {
+  it('Signs in a user with login code', () => {
     insertCredentials('test', 'user123');
     cy.get('[data-cy="login-user"]')
       .click()
@@ -25,11 +24,9 @@ describe('Login page tests', () => {
       .type('yyy')
       .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
       .click();
-    // TODo wait until all booklet datas are fetched
-    logout();
   });
 
-  it('Signs in a user with wrong login code and logout', () => {
+  it('Signs in a user with wrong login code', () => {
     insertCredentials('test', 'user123');
     cy.get('[data-cy="login-user"]')
       .click()
@@ -41,24 +38,21 @@ describe('Login page tests', () => {
       .click();
     cy.contains('Der Code ist leider nicht gültig. Bitte noch einmal versuchen')
       .should('exist');
-    logout();
   });
 
-  it('Signs in a user and logout', () => {
+  it('Signs in a user', () => {
     insertCredentials('test-demo', 'user123');
     cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
-    logout();
   });
 
-  it('Signs in an admin and logout', () => {
+  it('Signs in an admin', () => {
     insertCredentials('super', 'user123');
     cy.contains('Weiter als Admin')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
-    logout();
   });
 
   it('Signs in a user without password', () => {
@@ -66,7 +60,6 @@ describe('Login page tests', () => {
     cy.contains('Weiter')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
-    logout();
   });
 
   it('Try to sign in with wrong credentials', () => {
