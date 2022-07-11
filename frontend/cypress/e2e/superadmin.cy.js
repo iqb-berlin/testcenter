@@ -7,7 +7,7 @@ describe('Superadmin Tests', () => {
   beforeEach(loginAsAdmin);
   beforeEach(clickSuperadmin);
 
-  it('Should create a new admin with read-only privileges', () => { // f
+  it('Should create a new admin with read-only privileges', () => {
     cy.get('[data-cy="add-user"]')
       .click()
       .get('[formControlName="name"]')
@@ -39,7 +39,7 @@ describe('Superadmin Tests', () => {
       .should('be.disabled');
   });
 
-  it('Should change the password of a existing user', () => { // f
+  it('Should change the password of a existing user', () => {
     cy.contains('workspace_admin')
       .click()
       .get('[data-cy="change-password"]')
@@ -56,7 +56,7 @@ describe('Superadmin Tests', () => {
       .should('exist');
   });
 
-  it('Should change privileges of existing admin to read-write', () => { // f
+  it('Should change privileges of existing admin to read-write', () => {
     cy.contains('workspace_admin')
       .should('exist')
       .click()
@@ -110,8 +110,7 @@ describe('Superadmin Tests', () => {
     cy.get('button.mat-focus-indicator:nth-child(4)')
       .click()
       .get('button.mat-primary > span:nth-child(1)')
-      .click()
-      .wait(1000);
+      .click();
     cy.get('.mat-dialog-content > p:nth-child(2) > mat-form-field')
       .type('user123')
       .get('button.mat-primary > span:nth-child(1)')
@@ -133,8 +132,8 @@ describe('Superadmin Tests', () => {
       .should('exist');
   });
 
-  it('Should not change super admin status without correct password', () => { // f
-    cy.contains('super *')
+  it('Should not change super admin status without correct password', () => {
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-superadmin"]')
       .click();
@@ -150,8 +149,8 @@ describe('Superadmin Tests', () => {
       .should('exist');
   });
 
-  it('Should change super admin status with correct password', () => { // f
-    cy.contains('super *')
+  it('Should change super admin status with correct password', () => {
+    cy.contains('workspace_admin')
       .click();
     cy.get('[data-cy="change-superadmin"]')
       .click();
@@ -164,21 +163,16 @@ describe('Superadmin Tests', () => {
       .get('[data-cy="confirm-password-form"] [type="submit"]')
       .click();
     logout();
-    insertCredentials('super', 'user123');
-    cy.get('[formcontrolname="name"]')
-      .clear()
-      .type('super')
-      .get('mat-form-field.mat-form-field:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1)')
-      .type('user123');
+    insertCredentials('workspace_admin', 'anotherPassword');
     cy.get('[data-cy="login-admin"]')
       .click();
     cy.contains('Verwaltung von Testinhalten')
       .should('exist');
     cy.contains('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen')
-      .should('not.exist');
+      .should('exist');
   });
 
-  it('Should add a new workspace', () => { // f
+  it('Should add a new workspace', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.get('[data-cy="add-workspace"]')
@@ -187,13 +181,13 @@ describe('Superadmin Tests', () => {
     cy.get('[formControlName="name"]')
       .should('exist')
       .type('ws 2')
-      .get('type="submit"')
+      .get('[type="submit"]')
       .click();
     cy.contains('ws 2')
       .should('exist');
   });
 
-  it.only('Should change users access rights on workspace tab', () => { // f
+  it('Should change users access rights on workspace tab', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -267,7 +261,13 @@ describe('Superadmin Tests', () => {
       .click();
     cy.contains('sample_workspace')
       .should('not.exist');
-    logout();
+    cy.visit(`${Cypress.env('TC_URL')}/#/r/admin-starter`);
+    cy.get('[data-cy="workspace-1"]')
+      .should('not.exist');
+    cy.get('[data-cy="logout"]')
+      .click();
+    cy.url()
+      .should('eq', `${Cypress.env('TC_URL')}/#/r/login/`);
     insertCredentials('super', 'user123');
     cy.contains('sample_workspace')
       .should('not.exist');
