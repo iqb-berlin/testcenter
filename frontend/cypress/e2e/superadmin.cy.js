@@ -1,9 +1,11 @@
 import {
-  insertCredentials, loginSuperAdmin, logout, visitLoginPage
+  clickSuperadmin, insertCredentials, loginAsAdmin, logout, resetBackendData, visitLoginPage
 } from './utils.cy';
 
 describe('Superadmin Tests', () => {
-  beforeEach(loginSuperAdmin);
+  beforeEach(resetBackendData);
+  beforeEach(loginAsAdmin);
+  beforeEach(clickSuperadmin);
 
   it('Should create a new admin with read-only privileges', () => { // f
     cy.get('[data-cy="add-user"]')
@@ -191,7 +193,7 @@ describe('Superadmin Tests', () => {
       .should('exist');
   });
 
-  it('Should change users access rights on workspace tab', () => { // f
+  it.only('Should change users access rights on workspace tab', () => { // f
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -203,7 +205,7 @@ describe('Superadmin Tests', () => {
       .get('[data-cy="save"]')
       .click();
     logout();
-    insertCredentials('workspace_admin', 'anotherPassword');
+    loginAsAdmin('workspace_admin', 'anotherPassword');
     cy.contains('sample_workspace')
       .should('exist')
       .click();
@@ -212,9 +214,8 @@ describe('Superadmin Tests', () => {
       .get('[data-cy="delete-files"]')
       .should('be.disabled');
     logout();
-    insertCredentials('super', 'user123');
-    cy.get('data-cy="goto-superadmin"')
-      .click();
+    loginAsAdmin('super', 'user123');
+    clickSuperadmin();
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -226,7 +227,7 @@ describe('Superadmin Tests', () => {
       .get('[data-cy="save"]')
       .click();
     logout();
-    insertCredentials('workspace_admin', 'anotherPassword');
+    loginAsAdmin('workspace_admin', 'anotherPassword');
     cy.contains('sample_workspace')
       .should('exist')
       .click();

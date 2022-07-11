@@ -11,6 +11,7 @@
           mat-raised-button
           color="primary"
           (click)="buttonGotoWorkspaceAdmin(ws)"
+          [attr.data-cy]="'workspace-' + ws.id"
           *ngFor="let ws of workspaces"
         >
           {{ws.name}}
