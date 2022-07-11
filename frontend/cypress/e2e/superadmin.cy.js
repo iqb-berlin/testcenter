@@ -1,8 +1,10 @@
+// TODO better selectors
+
 import {
   clickSuperadmin, insertCredentials, loginAsAdmin, logoutAdmin, resetBackendData, visitLoginPage
 } from './utils.cy';
 
-describe('Superadmin Tests', () => {
+describe('Superadmin', () => {
   beforeEach(resetBackendData);
   beforeEach(loginAsAdmin);
   beforeEach(clickSuperadmin);

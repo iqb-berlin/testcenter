@@ -1,8 +1,10 @@
+// TODO better selectors
+
 import {
   deleteDownloadsFolder, loginAdmin
 } from './utils.cy';
 
-describe('Admin functionality test', () => {
+describe('Workspace-Admin', () => {
   beforeEach(deleteDownloadsFolder);
   beforeEach(loginAdmin);
 

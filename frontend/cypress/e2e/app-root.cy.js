@@ -1,8 +1,10 @@
+// TODO better selectors
+
 import {
   insertCredentials, resetBackendData, visitLoginPage
 } from './utils.cy';
 
-describe('Login page tests', () => {
+describe('App-Root\'s login page', () => {
   beforeEach(cy.clearLocalStorage);
   beforeEach(resetBackendData);
   beforeEach(visitLoginPage);

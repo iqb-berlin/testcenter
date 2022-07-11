@@ -1,4 +1,9 @@
-describe('Perform a system check', () => {
+// TODO better selectors
+// TODO test different network-measurements
+// TODO smock backend responses for networktest to speed up things
+// TODO test sending of a report
+
+describe('Sys-Check', () => {
   it('should exist', () => {
     cy.visit(`${Cypress.env('TC_URL')}/#/r/check-starter`);
     cy.contains('System-Check Auswahl')
@@ -19,7 +24,7 @@ describe('Perform a system check', () => {
       .should('exist');
     cy.get('#syscheck-previous-step')
       .should('be.visible');
-    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 20000 });
+    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 30000 });
     cy.get('button.mat-focus-indicator:nth-child(3)')
       .click();
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/check/1/SYSCHECK.SAMPLE/u`);

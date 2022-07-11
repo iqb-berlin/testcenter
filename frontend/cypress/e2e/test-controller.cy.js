@@ -1,6 +1,8 @@
+// TODO better selectors
+
 import { login } from './utils.cy';
 
-describe('Test User functionalities', () => {
+describe('Test-Controller', () => {
   beforeEach(() => login('test', 'user123'));
 
   it('Should start a sample booklet and click through the unit tabs', () => {
