@@ -82,6 +82,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       target: dev
+    image: iqbberlin/testcenter-frontend
     container_name: testcenter-system-test-frontend
     labels:
       - "traefik.enable=true"
@@ -91,11 +92,13 @@ services:
       - ./definitions:/definitions
       - ./frontend/.browserslistrc:/app/.browserslistrc
       - ./frontend/angular.json:/app/angular.json
+      - ./frontend/cypress:/app/cypress
       - ./frontend/package.json:/app/package.json
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
     networks:
       - testcenter-system-test
+    command: "npx ng run testcenter-frontend:serve-coverage"
 
   testcenter-system-test-broadcasting-service:
     build:

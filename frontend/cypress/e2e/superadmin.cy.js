@@ -250,7 +250,7 @@ describe('Superadmin', () => {
       .click();
   });
 
-  it('Should delete a workspace', () => {
+  it.only('Should delete a workspace', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')

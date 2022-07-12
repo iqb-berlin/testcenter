@@ -66,29 +66,40 @@
                   "with": "src/environments/environment.dev.ts"
                 }
               ]
-            },
-            "e2e": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.e2e.ts"
-                }
-              ],
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": false,
-              "extractLicenses": true,
-              "vendorChunk": false
             }
           },
-          "defaultConfiguration": ""
+          "defaultConfiguration": "dev"
+        },
+        "build-coverage": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "outputPath": "dist/testcenter-frontend",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.app.json",
+            "assets": [
+              "src/assets"
+            ],
+            "styles": [
+              "src/iqb-theme1.scss",
+              "src/styles.css",
+              "src/assets/fonts/material-design-icons-3.0.2/material-icons.css",
+              "src/assets/fonts/roboto-v29/roboto.css"
+            ],
+            "scripts": [
+              "../node_modules/ua-parser-js/dist/ua-parser.min.js"
+            ],
+            "buildOptimizer": false,
+            "optimization": false,
+            "extractLicenses": false,
+            "sourceMap": true,
+            "namedChunks": true,
+            "vendorChunk": true,
+            "customWebpackConfig": {
+              "path": "./cypress/coverage.webpack.ts"
+            }
+          }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -101,9 +112,6 @@
             },
             "dev": {
               "browserTarget": "testcenter-frontend:build:dev"
-            },
-            "e2e": {
-              "browserTarget": "testcenter-frontend:build:e2e"
             }
           }
         },
@@ -123,26 +131,58 @@
               "src/assets"
             ]
           }
-        }
-      }
-    },
-    "testcenter-frontend-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
+        },
+        "serve-coverage": {
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
+            "browserTarget": "testcenter-frontend:build-coverage",
+            "port": 4200,
+            "host": "0.0.0.0"
+          }
+        },
+        "e2e": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "testcenter-frontend:serve-coverage",
+            "watch": true,
+            "headless": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "testcenter-frontend:serve-coverage:production"
+            }
+          }
+        },
+        "e2e-ci": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "browser": "chrome",
+            "devServerTarget": "testcenter-frontend:serve-coverage",
+            "headless": true,
+            "watch": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "testcenter-frontend:serve-coverage:production"
+            }
+          }
+        },
+        "cypress-run": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
             "devServerTarget": "testcenter-frontend:serve"
           },
           "configurations": {
             "production": {
               "devServerTarget": "testcenter-frontend:serve:production"
-            },
-            "e2e": {
-              "devServerTarget": "testcenter-frontend:serve:e2e"
             }
+          }
+        },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true,
+            "headless": false
           }
         }
       }

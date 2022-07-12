@@ -18,9 +18,11 @@
     "build": "ng build",
     "test": "ng test  --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s -d ./docs/compodoc",
-    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
+    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc",
+    "e2e": "ng e2e",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "private": true,
   "dependencies": {
@@ -52,18 +54,20 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "12.1.3",
     "@angular-devkit/build-angular": "~12.1.0",
     "@angular/cli": "^12.1.4",
     "@angular/compiler-cli": "~12.1.0",
     "@angular/language-service": "~12.1.0",
     "@compodoc/compodoc": "^1.1.11",
+    "@cypress/code-coverage": "~3.10.0",
+    "@cypress/schematic": "^2.0.0",
     "@iqb/eslint-config": "1.0.2",
     "@types/jasminewd2": "~2.0.8",
     "cypress": "~10.2.0",
     "cypress-downloadfile": "^1.2.1",
     "cypress-file-upload": "^5.0.8",
     "cypress-iframe": "^1.0.1",
-    "@cypress/code-coverage": "~3.10.0",
     "jasmine-core": "~3.8.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.3.14",
@@ -71,7 +75,6 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.6.0",
-    "protractor": "~7.0.0",
     "ts-node": "~8.6.2",
     "typescript": "~4.3.4"
   },

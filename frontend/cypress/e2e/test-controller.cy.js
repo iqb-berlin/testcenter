@@ -67,7 +67,7 @@ describe('Test-Controller', () => {
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
   });
 
-  it('Should navigate inside a unit using the navigation buttons', () => {
+  it.only('Should navigate inside a unit using the navigation buttons', () => {
     cy.contains('Weiter')
       .click()
       .wait(1000);
@@ -107,7 +107,7 @@ describe('Test-Controller', () => {
     cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
   });
 
-  it('Should unlock a locked unit', () => {
+  it.only('Should unlock a locked unit', () => {
     cy.contains('Weiter')
       .click()
       .wait(500);

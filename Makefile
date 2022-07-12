@@ -31,7 +31,7 @@ stop:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(service)
 
 down:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down $(service)
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down --remove-orphans $(service)
 
 run-task-runner:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
@@ -93,7 +93,8 @@ test-system:
 	make down
 	TESTMODE_REAL_DATA=yes \
 		docker-compose -f docker-compose.system-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
-	npm run frontend:integration-test # TODO do in container
+	npm run integration-test # TODO do in container
+	#npm npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headless
 
 update-docs:
 #TODO

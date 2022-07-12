@@ -4,7 +4,7 @@
 php /var/www/backend/initialize.php \
 --user_name=$SUPERUSER_NAME \
 --user_password=$SUPERUSER_PASSWORD \
---workspace=$WORKSPACE_NAME \
+--workspace=example_workspace \
 --host=$MYSQL_HOST \
 --port=$MYSQL_PORT \
 --dbname=$MYSQL_DATABASE \

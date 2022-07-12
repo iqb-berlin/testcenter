@@ -20,6 +20,9 @@ RUN ls -l /node_modules
 # build prod
 RUN npx ng build --configuration production --output-path=dist --output-hashing all
 
+# TODO move into the base container
+RUN apt-get install -y xvfb # cypress needs this
+
 EXPOSE 4200
 CMD npx ng serve --configuration dev --disable-host-check --host 0.0.0.0
 

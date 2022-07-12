@@ -22,10 +22,14 @@
     "frontend:update-compodoc": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
     "broadcasting-service:compodoc": "npx compodoc -p broadcasting-service/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
     "broadcasting-service:update-compodoc": "npx compodoc -p broadcasting-service/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service",
+
+
+    "integration-test": "npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headed",
+    "integration-test-headless": "npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headless",
+    "integration-test:coverage": "npx nyc report --reporter=lcov --reporter=text-summary",
+
     "frontend:unit-test": "npx -w frontend ng test --watch=false",
-    "frontend:integration-test": "npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headed",
-    "frontend:integration-test-headless": "npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headless",
-    "frontend:code-coverage": "npx -w frontend ng test --watch=false --code-coverage",
+    "frontend:unit-test:code-coverage": "npx -w frontend ng test --watch=false --code-coverage",
     "frontend:build": "npx -w frontend ng build --output-hashing all",
     "frontend:start": "npx -w frontend ng serve",
     "broadcasting-service:build": "npx -w broadcasting-service nest build",
