@@ -13,9 +13,6 @@ x-env-mysql: &env-mysql
 x-env-initdata: &env-initdata
   SUPERUSER_NAME: ${SUPERUSER_NAME}
   SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
-  WORKSPACE_NAME: ${WORKSPACE_NAME}
-  TEST_LOGIN_NAME: ${TEST_LOGIN_NAME}
-  TEST_LOGIN_PASSWORD: ${TEST_LOGIN_PASSWORD}
 
 x-env-logging-conf: &env-logging-conf
   max-size: "200m"
