@@ -21,7 +21,7 @@ describe('App-Root\'s login page', () => {
     cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/code-input`);
+    cy.url().should('eq', '/#/r/code-input');
     cy.get('.mat-form-field-infix')
       .type('yyy')
       .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
@@ -33,7 +33,7 @@ describe('App-Root\'s login page', () => {
     cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/code-input`);
+    cy.url().should('eq', '/#/r/code-input');
     cy.get('.mat-form-field-infix')
       .type('ttt')
       .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
@@ -47,21 +47,21 @@ describe('App-Root\'s login page', () => {
     cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
+    cy.url().should('eq', '/#/r/test-starter');
   });
 
   it('Signs in an admin', () => {
     insertCredentials('super', 'user123');
     cy.contains('Weiter als Admin')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
+    cy.url().should('eq', '/#/r/admin-starter');
   });
 
   it('Signs in a user without password', () => {
     insertCredentials('test-no-pw');
     cy.contains('Weiter')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
+    cy.url().should('eq', '/#/r/test-starter');
   });
 
   it('Try to sign in with wrong credentials', () => {
@@ -92,19 +92,19 @@ describe('App-Root\'s login page', () => {
     cy.visit(Cypress.env('TC_URL'));
     cy.contains('Impressum/Datenschutz')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/legal-notice`);
+    cy.url().should('eq', '/#/legal-notice');
     cy.contains('zurück zur Startseite')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/login/`);
+    cy.url().should('eq', '/#/r/login/');
   });
 
   it('Should get to System Check and return to login page', () => {
     cy.visit(Cypress.env('TC_URL'));
     cy.contains('System-Check')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/check-starter`);
+    cy.url().should('eq', '/#/r/check-starter');
     cy.contains('zurück zur Startseite')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/login/`);
+    cy.url().should('eq', '/#/r/login/');
   });
 });

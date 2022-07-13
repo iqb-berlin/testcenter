@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const fs = require('fs');
 
-exports.deleteFolder = folderName => {
+module.exports = function deleteFolder(folderName) {
   console.log('deleting folder %s', folderName);
   if (!fs.existsSync(folderName)) {
     return null;

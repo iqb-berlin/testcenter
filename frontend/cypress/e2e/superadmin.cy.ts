@@ -34,7 +34,7 @@ describe('Superadmin', () => {
       .should('exist');
     cy.contains('sample_workspace')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
+    cy.url().should('eq', `/#/admin/1/files`);
     cy.get('[data-cy="upload-files"]')
       .should('be.disabled')
       .get('[data-cy="delete-files"]')
@@ -71,12 +71,12 @@ describe('Superadmin', () => {
     insertCredentials('workspace_admin', 'anotherPassword');
     cy.get('[data-cy="login-admin"]')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/admin-starter`);
+    cy.url().should('eq', `/#/r/admin-starter`);
     cy.contains('Status: Angemeldet als "workspace_admin"')
       .should('exist');
     cy.contains('sample_workspace')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
+    cy.url().should('eq', `/#/admin/1/files`);
     cy.get('[data-cy="upload-files"]')
       .should('be.enabled')
       .get('[data-cy="delete-files"]')
@@ -263,13 +263,13 @@ describe('Superadmin', () => {
       .click();
     cy.contains('sample_workspace')
       .should('not.exist');
-    cy.visit(`${Cypress.env('TC_URL')}/#/r/admin-starter`);
+    cy.visit('/#/r/admin-starter');
     cy.get('[data-cy="workspace-1"]')
       .should('not.exist');
     cy.get('[data-cy="logout"]')
       .click();
     cy.url()
-      .should('eq', `${Cypress.env('TC_URL')}/#/r/login/`);
+      .should('eq', `/#/r/login/`);
     insertCredentials('super', 'user123');
     cy.contains('sample_workspace')
       .should('not.exist');
@@ -278,13 +278,13 @@ describe('Superadmin', () => {
   it('Should go to System-Admin (management window)', () => {
     cy.get('a.mat-tab-link:nth-child(2)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/workspaces`);
+    cy.url().should('eq', `/#/superadmin/workspaces`);
     cy.get('a.mat-tab-link:nth-child(3)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/settings`);
+    cy.url().should('eq', `/#/superadmin/settings`);
     cy.get('a.mat-tab-link:nth-child(1)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/superadmin/users`);
+    cy.url().should('eq', `/#/superadmin/users`);
     cy.get('.mat-tooltip-trigger').eq(0)
       .click();
   });
@@ -293,15 +293,15 @@ describe('Superadmin', () => {
     visitLoginPage();
     cy.contains('sample_workspace')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
+    cy.url().should('eq', `/#/admin/1/files`);
     cy.get('a.mat-tab-link:nth-child(2)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/syscheck`);
+    cy.url().should('eq', `/#/admin/1/syscheck`);
     cy.get('a.mat-tab-link:nth-child(3)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/results`);
+    cy.url().should('eq', `/#/admin/1/results`);
     cy.get('a.mat-tab-link:nth-child(1)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/admin/1/files`);
+    cy.url().should('eq', `/#/admin/1/files`);
   });
 });

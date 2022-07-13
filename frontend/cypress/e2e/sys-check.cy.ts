@@ -5,7 +5,7 @@
 
 describe('Sys-Check', () => {
   it('should exist', () => {
-    cy.visit(`${Cypress.env('TC_URL')}/#/r/check-starter`);
+    cy.visit('/#/r/check-starter');
     cy.contains('System-Check Auswahl')
       .should('exist');
     cy.contains('An example SysCheck definition')
@@ -13,13 +13,13 @@ describe('Sys-Check', () => {
   });
 
   it('Run through the whole system-check', () => {
-    cy.visit(`${Cypress.env('TC_URL')}/#/r/check-starter`);
+    cy.visit('/#/r/check-starter');
     cy.contains('An example SysCheck definition')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/check/1/SYSCHECK.SAMPLE/w`);
+    cy.url().should('eq', '/#/check/1/SYSCHECK.SAMPLE/w');
     cy.get('button.mat-focus-indicator:nth-child(3)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/check/1/SYSCHECK.SAMPLE/n`);
+    cy.url().should('eq', '/#/check/1/SYSCHECK.SAMPLE/n');
     cy.contains('Netzwerk')
       .should('exist');
     cy.get('#syscheck-previous-step')
@@ -27,11 +27,11 @@ describe('Sys-Check', () => {
     cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 30000 });
     cy.get('button.mat-focus-indicator:nth-child(3)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/check/1/SYSCHECK.SAMPLE/u`);
+    cy.url().should('eq', '/#/check/1/SYSCHECK.SAMPLE/u');
     cy.contains('Bitte prüfen Sie die folgenden Aufgaben-Elemente');
     cy.get('button.mat-focus-indicator:nth-child(3)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/check/1/SYSCHECK.SAMPLE/q`);
+    cy.url().should('eq', '/#/check/1/SYSCHECK.SAMPLE/q');
     cy.get('#\\32')
       .type('Test-Input1');
     cy.get('.mat-select-arrow')
@@ -46,7 +46,7 @@ describe('Sys-Check', () => {
       .click();
     cy.get('button.mat-focus-indicator:nth-child(3)')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/check/1/SYSCHECK.SAMPLE/r`);
+    cy.url().should('eq', '/#/check/1/SYSCHECK.SAMPLE/r');
     cy.contains(' Name: Test-Input1 ');
     cy.contains(' Who am I?: Harvy Dent ');
     cy.contains(' Why so serious?: Test-Input2 ');
@@ -54,6 +54,6 @@ describe('Sys-Check', () => {
     cy.contains(' All we here is: Radio Gugu ');
     cy.contains('System-Check Abbrechen')
       .click();
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/check-starter`);
+    cy.url().should('eq', '/#/r/check-starter');
   });
 });

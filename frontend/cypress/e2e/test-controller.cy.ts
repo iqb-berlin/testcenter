@@ -64,7 +64,7 @@ describe('Test-Controller', () => {
     cy.iframe('.unitHost').find('#end-unit')
       .click()
       .wait(500);
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
+    cy.url().should('eq', `/#/r/test-starter`);
   });
 
   it.only('Should navigate inside a unit using the navigation buttons', () => {
@@ -104,7 +104,7 @@ describe('Test-Controller', () => {
     cy.iframe('.unitHost').find('#end-unit')
       .click()
       .wait(500);
-    cy.url().should('eq', `${Cypress.env('TC_URL')}/#/r/test-starter`);
+    cy.url().should('eq', `/#/r/test-starter`);
   });
 
   it.only('Should unlock a locked unit', () => {
@@ -118,7 +118,7 @@ describe('Test-Controller', () => {
     cy.get('a.mat-primary:nth-child(1) > span:nth-child(1) > div:nth-child(1)')
       .click();
     cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
-      .click();
+      .click();übertragen
     cy.contains('Aufgabenblock ist noch gesperrt')
       .should('exist');
     cy.get('.mat-form-field-infix > input')
@@ -135,7 +135,7 @@ describe('Test-Controller', () => {
     cy.get('button.mat-raised-button:nth-child(1) > span:nth-child(1)')
       .click();
     cy.location().should(loc => {
-      expect(loc.href).to.eq(`${Cypress.env('TC_URL')}/#/t/1/u/3`);
+      expect(loc.href).to.eq('/#/t/1/u/3');
     });
     cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
       .click();
@@ -144,7 +144,7 @@ describe('Test-Controller', () => {
     cy.get('a.mat-tooltip-trigger:nth-child(1)')
       .click();
     cy.location().should(loc => {
-      expect(loc.href).to.eq(`${Cypress.env('TC_URL')}/#/t/1/u/1`);
+      expect(loc.href).to.eq('/#/t/1/u/1');
     });
     cy.get('.mat-tooltip-trigger').eq(0)
       .click();

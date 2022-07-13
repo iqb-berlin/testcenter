@@ -93,33 +93,39 @@ services:
       - ./frontend/.browserslistrc:/app/.browserslistrc
       - ./frontend/angular.json:/app/angular.json
       - ./frontend/cypress:/app/cypress
+      - ./frontend/cypress.config.js:/app/cypress.config.js
       - ./frontend/package.json:/app/package.json
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
+      - /tmp/.X11-unix:/tmp/.X11-unix
     networks:
       - testcenter-system-test
-    command: "npx ng run testcenter-frontend:serve-coverage"
+    depends_on:
+      - testcenter-system-test-backend
+      - testcenter-system-test-db
+    command: "npx ng run testcenter-frontend:e2e "
+#    command: ["/bin/sh", "-c", "echo $${DISPLAY}"]
 
-  testcenter-system-test-broadcasting-service:
-    build:
-      context: .
-      dockerfile: broadcasting-service/Dockerfile
-      target: dev
-    container_name: testcenter-system-test-broadcasting-service
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
-      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
-      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
-    volumes:
-      - ./broadcasting-service/nest-cli.docker.json:/app/nest-cli.json
-      - ./broadcasting-service/package.json:/app/package.json
-      - ./broadcasting-service/src:/app/src
-      - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
-      - ./broadcasting-service/tsconfig.json:/app/tsconfig.json
-      - ./common:/common
-    networks:
-      - testcenter-system-test
+#  testcenter-system-test-broadcasting-service:
+#    build:
+#      context: .
+#      dockerfile: broadcasting-service/Dockerfile
+#      target: dev
+#    container_name: testcenter-system-test-broadcasting-service
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
+#      - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
+#      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
+#    volumes:
+#      - ./broadcasting-service/nest-cli.docker.json:/app/nest-cli.json
+#      - ./broadcasting-service/package.json:/app/package.json
+#      - ./broadcasting-service/src:/app/src
+#      - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
+#      - ./broadcasting-service/tsconfig.json:/app/tsconfig.json
+#      - ./common:/common
+#    networks:
+#      - testcenter-system-test
 
 networks:
   testcenter-system-test:

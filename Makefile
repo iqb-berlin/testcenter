@@ -89,12 +89,21 @@ test-frontend-unit:
 test-frontend-integration:
 #TODO
 
+
 test-system:
-	make down
 	TESTMODE_REAL_DATA=yes \
-		docker-compose -f docker-compose.system-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
-	npm run integration-test # TODO do in container
-	#npm npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headless
+	DISPLAY=$(shell hostname -I | awk '{print $$1}'):0 \
+		docker-compose -f docker-compose.system-test.yml up --abort-on-container-exit # --force-recreate --renew-anon-volumes
+
+run-browser:
+	docker run -ti --rm -e \
+		DISPLAY=$(shell hostname -I | awk '{print $$1}'):0 \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-container \
+		google-chrome --no-sandbox
+
+#npm run integration-test # TODO do in container
+#npm npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headless
 
 update-docs:
 #TODO
