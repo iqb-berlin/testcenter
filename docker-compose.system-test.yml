@@ -98,13 +98,21 @@ services:
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
       - /tmp/.X11-unix:/tmp/.X11-unix
+#      - /etc/group:/etc/group:ro
+#      - /etc/passwd:/etc/passwd:ro
+#      - /etc/shadow:/etc/shadow:ro
+#      - /etc/sudoers.d:/etc/sudoers.d:ro
     networks:
       - testcenter-system-test
     depends_on:
       - testcenter-system-test-backend
       - testcenter-system-test-db
-    command: "npx ng run testcenter-frontend:e2e "
-#    command: ["/bin/sh", "-c", "echo $${DISPLAY}"]
+    command: "npx ng run testcenter-frontend:e2e"
+    environment:
+      - TESTMODE_REAL_DATA=yes
+      - DISPLAY
+      - HOME=/root
+    user: ${CURRENT_UID}
 
 #  testcenter-system-test-broadcasting-service:
 #    build:

@@ -91,16 +91,27 @@ test-frontend-integration:
 
 
 test-system:
-	TESTMODE_REAL_DATA=yes \
-	DISPLAY=$(shell hostname -I | awk '{print $$1}'):0 \
+	CURRENT_UID=$(shell id -u):$(shell id -g) \
 		docker-compose -f docker-compose.system-test.yml up --abort-on-container-exit # --force-recreate --renew-anon-volumes
 
+test-system-headless:
+
 run-browser:
-	docker run -ti --rm -e \
-		DISPLAY=$(shell hostname -I | awk '{print $$1}'):0 \
-		-v /tmp/.X11-unix:/tmp/.X11-unix \
+	docker run \
+      --user=`id -u ${USER}` \
+      --env="DISPLAY=$(shell hostname -I | awk '{print $$1}'):0" \
 		scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-container \
 		google-chrome --no-sandbox
+
+#			  --network=host \
+#      -v /dev:/dev \
+#      -p 8080:80 \
+#      -v `echo ~`:/home/${USER} \
+#      --volume="/etc/group:/etc/group:ro" \
+#      --volume="/etc/passwd:/etc/passwd:ro" \
+#      --volume="/etc/shadow:/etc/shadow:ro" \
+#      --volume="/etc/sudoers.d:/etc/sudoers.d:ro" \
+#      --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
 
 #npm run integration-test # TODO do in container
 #npm npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headless

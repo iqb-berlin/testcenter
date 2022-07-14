@@ -21,7 +21,9 @@ RUN ls -l /node_modules
 RUN npx ng build --configuration production --output-path=dist --output-hashing all
 
 # TODO move into the base container
-RUN apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb # cypress needs this
+RUN apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb sudo # cypress needs this
+
+RUN chmod -R 777 /root/.cache/Cypress
 
 EXPOSE 4200
 CMD npx ng serve --configuration dev --disable-host-check --host 0.0.0.0
