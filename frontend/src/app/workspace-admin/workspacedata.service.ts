@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { saveAs } from 'file-saver';
 import { MainDataService } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { ReportType } from './workspace.interfaces';
+import { FileService } from '../shared/services/file.service';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +37,8 @@ export class WorkspaceDataService {
         this.snackBar.open(errorMessage, errorType, { duration: errorDisplayDuration });
       } else {
         const reportData = response as Blob;
-
         if (reportData.size > 0) {
-          saveAs(reportData, filename);
+          FileService.saveBlobToFile(reportData, filename);
         } else {
           this.snackBar.open(errorMessage, errorType, { duration: errorDisplayDuration });
         }
