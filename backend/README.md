@@ -4,7 +4,7 @@
 
 
 
-# Testcenter Backend
+# Testcenter Backendddd
 
 This is the backend of the Testcenter application.  
 
@@ -47,21 +47,21 @@ Find Changelog [here](https://iqb-berlin.github.io/testcenter-backend/UPGRADE.ht
 ## Development
 
 ### Using Composer for dependency management
-For local development you can install and update dependencies via Composer (https://getcomposer.org/, 
+For local development you can install and update dependencies via Composer (https://getcomposer.org/,
 https://hub.docker.com/_/composer/).
 
-To read the composer.json file from the project base directory, resolve the dependencies, and install them into vendor 
+To read the composer.json file from the project base directory, resolve the dependencies, and install them into vendor
 directory (https://getcomposer.org/doc/03-cli.md#install-i), use the following command:
 ```
 make composer-install
 ```
 
-To get the latest versions of the dependencies and to update the composer.lock file 
+To get the latest versions of the dependencies and to update the composer.lock file
 (https://getcomposer.org/doc/03-cli.md#update-u), you should use*:
 ```
 make composer-update
 ```
-**For this to work you have to provide your github-oauth token in an 'auth.json' file at project base directory 
+**For this to work you have to provide your github-oauth token in an 'auth.json' file at project base directory
 (https://getcomposer.org/doc/articles/authentication-for-private-packages.md#github-oauth)*
 
 ### Running the tests
