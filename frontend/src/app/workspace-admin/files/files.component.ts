@@ -5,8 +5,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-
-import { saveAs } from 'file-saver';
 import { map } from 'rxjs/operators';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
@@ -19,6 +17,7 @@ import {
 import { BackendService } from '../backend.service';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { FileDeletionReport } from './files.interfaces';
+import { FileService } from '../../shared/services/file.service';
 
 interface FileStats {
   invalid: {
@@ -231,7 +230,7 @@ export class FilesComponent implements OnInit {
         (fileData: Blob | boolean) => {
           this.mds.stopLoadingAnimation();
           if (fileData !== false) {
-            saveAs(fileData as Blob, file.name);
+            FileService.saveBlobToFile(fileData as Blob, file.name);
           }
         }
       );
