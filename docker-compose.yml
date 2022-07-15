@@ -68,9 +68,6 @@ services:
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
     image: iqbberlin/testcenter-backend:current
-    build:
-      args:
-        <<: *env-php
     networks:
       testcenter:
 
