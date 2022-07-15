@@ -153,5 +153,4 @@ new-version:
 	make run-task-runner task="new-version $(version)"
 
 fix-docker-user:
-	$(shell sed -i 's/user_id_placeholder/$(shell id -u)/g' .env)
-	$(shell sed -i 's/user_group_placeholder/$(shell id -g)/g' .env)
+	printf "\nUID=$(shell id -u):$(shell id -g)" >> .env
