@@ -83,10 +83,9 @@ test-backend-unit:
   stage: test
   rules:
     - !reference [.backend-change, rules]
-  dependencies:
-    - build-backend
   needs:
-    - build-backend
+    - job: build-backend
+      artifacts: true
   script:
     - apk add make docker-compose
     - make init
@@ -97,10 +96,9 @@ test-frontend-unit:
   stage: test
   rules:
     - !reference [.frontend-change, rules]
-  dependencies:
-    - build-frontend
   needs:
-    - build-frontend
+    - job: build-frontend
+      artifacts: true
   script:
     - apk add make docker-compose
     - make init-env
@@ -112,10 +110,9 @@ test-broadcasting-service-unit:
   stage: test
   rules:
     - !reference [.bs-change, rules]
-  dependencies:
-    - build-broadcasting-service
   needs:
-    - build-broadcasting-service
+    - job: build-broadcasting-service
+      artifacts: true
   script:
     - apk add make docker-compose
     - make init-env
@@ -124,22 +121,22 @@ test-broadcasting-service-unit:
 
 test-frontend-e2e:
   stage: test
-  only:
-    - external_pull_requests
-    - web
+  rules:
+    - if: CI_PIPELINE_SOURCE == "external_pull_request_event" || CI_PIPELINE_SOURCE == "web"
+  needs:
+    - job: build-frontend
+      artifacts: true
   script:
     - apk add make
     - make test-frontend-e2e
 
 test-backend-api:
   stage: test
-  only:
-    - external_pull_requests
-    - web
-  dependencies:
-    - build-backend
+  rules:
+    - if: CI_PIPELINE_SOURCE == "external_pull_request_event" || CI_PIPELINE_SOURCE == "web"
   needs:
-    - build-backend
+    - job: build-backend
+      artifacts: true
   script:
     - apk add make
     - make init
@@ -147,13 +144,11 @@ test-backend-api:
 
 test-backend-initialization:
   stage: test
-  only:
-    - external_pull_requests
-    - web
-  dependencies:
-    - build-backend
+  rules:
+    - if: CI_PIPELINE_SOURCE == "external_pull_request_event" || CI_PIPELINE_SOURCE == "web"
   needs:
-    - build-backend
+    - job: build-backend
+      artifacts: true
   script:
     - apk add make
     - make init
