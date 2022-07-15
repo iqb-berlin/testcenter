@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="sample_resource_package.itcr">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/sampledata/sample_resource_package.itcr.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

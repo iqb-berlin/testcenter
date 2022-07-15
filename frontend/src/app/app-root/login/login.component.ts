@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.mds.setSpinnerOff();
+    this.mds.stopLoadingAnimation();
     this.mds.appSubTitle$.next('Bitte anmelden');
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
@@ -51,10 +51,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   login(loginType: 'admin' | 'login' = 'login'): void {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name;
-    this.mds.setSpinnerOn();
+    this.mds.showLoadingAnimation();
     this.bs.login(loginType, loginData.name, loginData.pw).subscribe(
       authData => {
-        this.mds.setSpinnerOff();
+        this.mds.stopLoadingAnimation();
         this.problemText = '';
         if (typeof authData === 'number') {
           const errCode = authData as number;

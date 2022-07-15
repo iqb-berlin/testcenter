@@ -64,7 +64,7 @@ export class UsersComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.updateObjectList();
     });
   }
@@ -77,7 +77,7 @@ export class UsersComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          this.mds.setSpinnerOn();
+          this.mds.showLoadingAnimation();
           this.bs.addUser(
             (<FormGroup>result).get('name').value,
             (<FormGroup>result).get('pw').value
@@ -95,7 +95,7 @@ export class UsersComponent implements OnInit {
                   this.snackBar.open('Nutzer hinzugefügt', '', { duration: 1000 });
                   this.updateObjectList();
                 } else {
-                  this.mds.setSpinnerOff();
+                  this.mds.stopLoadingAnimation();
                 }
               }
             );
@@ -141,7 +141,7 @@ export class UsersComponent implements OnInit {
           passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
             if (typeof afterClosedResult !== 'undefined') {
               if (afterClosedResult !== false) {
-                this.mds.setSpinnerOn();
+                this.mds.showLoadingAnimation();
                 this.bs.setSuperUserStatus(
                   selectedRows[0].id,
                   !userObject.isSuperadmin,
@@ -153,14 +153,14 @@ export class UsersComponent implements OnInit {
                         this.snackBar.open('Status geändert', '', { duration: 1000 });
                         this.updateObjectList();
                       } else if (respCode === 403) {
-                        this.mds.setSpinnerOff();
+                        this.mds.stopLoadingAnimation();
                         this.snackBar.open(
                           'Konnte Status nicht ändern (falsches Kennwort?)',
                           'Fehler',
                           { duration: 5000 }
                         );
                       } else {
-                        this.mds.setSpinnerOff();
+                        this.mds.stopLoadingAnimation();
                         this.snackBar.open(
                           `Konnte Status nicht ändern (Fehlercode ${respCode})`,
                           'Fehler',
@@ -200,7 +200,7 @@ export class UsersComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            this.mds.setSpinnerOn();
+            this.mds.showLoadingAnimation();
             this.bs.changePassword(
               selectedRows[0].id,
               (<FormGroup>result).get('pw').value
@@ -214,7 +214,7 @@ export class UsersComponent implements OnInit {
                 return of(false);
               })).subscribe(
                 respOk => {
-                  this.mds.setSpinnerOff();
+                  this.mds.stopLoadingAnimation();
                   if (respOk !== false) {
                     this.snackBar.open('Kennwort geändert', '', { duration: 1000 });
                   }
@@ -261,14 +261,14 @@ export class UsersComponent implements OnInit {
         if (result !== false) {
           const usersToDelete = [];
           selectedRows.forEach((r: UserData) => usersToDelete.push(r.id));
-          this.mds.setSpinnerOn();
+          this.mds.showLoadingAnimation();
           this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
                 this.snackBar.open('Nutzer gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
-                this.mds.setSpinnerOff();
+                this.mds.stopLoadingAnimation();
                 this.snackBar.open('Konnte Nutzer nicht löschen', 'Fehler', { duration: 2000 });
               }
             }
@@ -281,10 +281,10 @@ export class UsersComponent implements OnInit {
   updateWorkspaceList(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.bs.getWorkspacesByUser(this.selectedUser).subscribe(dataresponse => {
         this.WorkspacelistDatasource = new MatTableDataSource(dataresponse);
-        this.mds.setSpinnerOff();
+        this.mds.stopLoadingAnimation();
       });
     } else {
       this.WorkspacelistDatasource = null;
@@ -303,10 +303,10 @@ export class UsersComponent implements OnInit {
   saveWorkspaces(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.bs.setWorkspacesByUser(this.selectedUser, this.WorkspacelistDatasource.data).subscribe(
         respOk => {
-          this.mds.setSpinnerOff();
+          this.mds.stopLoadingAnimation();
           if (respOk !== false) {
             this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
@@ -325,7 +325,7 @@ export class UsersComponent implements OnInit {
     this.bs.getUsers().subscribe(dataresponse => {
       this.objectsDatasource = new MatTableDataSource(dataresponse);
       this.objectsDatasource.sort = this.sort;
-      this.mds.setSpinnerOff();
+      this.mds.stopLoadingAnimation();
     });
   }
 

@@ -78,7 +78,7 @@ export class FilesComponent implements OnInit {
   ngOnInit(): void {
     // this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
     setTimeout(() => {
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.updateFileList();
     });
   }
@@ -119,7 +119,7 @@ export class FilesComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          this.mds.setSpinnerOn();
+          this.mds.showLoadingAnimation();
           this.bs.deleteFiles(this.wds.wsId, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {
@@ -152,7 +152,7 @@ export class FilesComponent implements OnInit {
   updateFileList(empty = false): void {
     if (empty) {
       this.files = {};
-      this.mds.setSpinnerOff();
+      this.mds.stopLoadingAnimation();
     } else {
       this.bs.getFiles(this.wds.wsId)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
@@ -164,7 +164,7 @@ export class FilesComponent implements OnInit {
             });
           this.fileStats = FilesComponent.getStats(fileList);
           this.setTableSorting(this.lastSort);
-          this.mds.setSpinnerOff();
+          this.mds.stopLoadingAnimation();
         });
     }
   }
@@ -225,11 +225,11 @@ export class FilesComponent implements OnInit {
   }
 
   download(file: IQBFile): void {
-    this.mds.setSpinnerOn();
+    this.mds.showLoadingAnimation();
     this.bs.downloadFile(this.wds.wsId, file.type, file.name)
       .subscribe(
         (fileData: Blob | boolean) => {
-          this.mds.setSpinnerOff();
+          this.mds.stopLoadingAnimation();
           if (fileData !== false) {
             saveAs(fileData as Blob, file.name);
           }

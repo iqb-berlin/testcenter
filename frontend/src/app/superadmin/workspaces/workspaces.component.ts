@@ -31,15 +31,13 @@ export class WorkspacesComponent implements OnInit {
 
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(
-    private bs: BackendService,
-    private mds: MainDataService,
-    private newworkspaceDialog: MatDialog,
-    private editworkspaceDialog: MatDialog,
-    private deleteConfirmDialog: MatDialog,
-    private messsageDialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {
+  constructor(private backendService: BackendService,
+              private mainDataService: MainDataService,
+              private newworkspaceDialog: MatDialog,
+              private editworkspaceDialog: MatDialog,
+              private deleteConfirmDialog: MatDialog,
+              private messsageDialog: MatDialog,
+              private snackBar: MatSnackBar) {
     this.tableselectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
@@ -56,7 +54,7 @@ export class WorkspacesComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.setSpinnerOn();
+      this.mainDataService.showLoadingAnimation();
       this.updateObjectList();
     });
   }
@@ -70,21 +68,19 @@ export class WorkspacesComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (typeof result !== 'undefined') {
-        if (result !== false) {
-          this.mds.setSpinnerOn();
-          this.bs.addWorkspace((<FormGroup>result).get('name').value).subscribe(
-            respOk => {
-              if (respOk !== false) {
-                this.snackBar.open('Arbeitsbereich hinzugefügt', '', { duration: 1000 });
-                this.updateObjectList();
-              } else {
-                this.mds.setSpinnerOff();
-                this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 1000 });
-              }
+      if (typeof result !== 'undefined' && result !== false) {
+        this.mainDataService.showLoadingAnimation();
+        this.backendService.addWorkspace((<FormGroup>result).get('name').value).subscribe(
+          respOk => {
+            if (respOk !== false) {
+              this.snackBar.open('Arbeitsbereich hinzugefügt', '', { duration: 1000 });
+              this.updateObjectList();
+            } else {
+              this.mainDataService.stopLoadingAnimation();
+              this.snackBar.open('Konnte Arbeitsbereich nicht hinzufügen', 'Fehler', { duration: 1000 });
             }
-          );
-        }
+          }
+        );
       }
     });
   }
@@ -112,8 +108,8 @@ export class WorkspacesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (typeof result !== 'undefined') {
           if (result !== false) {
-            this.mds.setSpinnerOn();
-            this.bs.renameWorkspace(
+            this.mainDataService.showLoadingAnimation();
+            this.backendService.renameWorkspace(
               selectedRows[0].id,
               (<FormGroup>result).get('name').value
             )
@@ -123,7 +119,7 @@ export class WorkspacesComponent implements OnInit {
                     this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
                     this.updateObjectList();
                   } else {
-                    this.mds.setSpinnerOff();
+                    this.mainDataService.stopLoadingAnimation();
                     this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', { duration: 2000 });
                   }
                 }
@@ -169,14 +165,14 @@ export class WorkspacesComponent implements OnInit {
         if (result !== false) {
           const workspacesToDelete = [];
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
-          this.mds.setSpinnerOn();
-          this.bs.deleteWorkspaces(workspacesToDelete).subscribe(
+          this.mainDataService.showLoadingAnimation();
+          this.backendService.deleteWorkspaces(workspacesToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
                 this.snackBar.open('Arbeitsbereich/e gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
-                this.mds.setSpinnerOff();
+                this.mainDataService.stopLoadingAnimation();
                 this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', { duration: 1000 });
               }
             }
@@ -189,10 +185,10 @@ export class WorkspacesComponent implements OnInit {
   updateUserList(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.mds.setSpinnerOn();
-      this.bs.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(dataresponse => {
+      this.mainDataService.showLoadingAnimation();
+      this.backendService.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(dataresponse => {
         this.UserlistDatasource = new MatTableDataSource(dataresponse);
-        this.mds.setSpinnerOff();
+        this.mainDataService.stopLoadingAnimation();
       });
     } else {
       this.UserlistDatasource = null;
@@ -211,10 +207,10 @@ export class WorkspacesComponent implements OnInit {
   saveUsers():void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.mds.setSpinnerOn();
-      this.bs.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
+      this.mainDataService.showLoadingAnimation();
+      this.backendService.setUsersByWorkspace(this.selectedWorkspaceId, this.UserlistDatasource.data).subscribe(
         respOk => {
-          this.mds.setSpinnerOff();
+          this.mainDataService.stopLoadingAnimation();
           if (respOk !== false) {
             this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
           } else {
@@ -228,12 +224,12 @@ export class WorkspacesComponent implements OnInit {
   }
 
   updateObjectList(): void {
-    this.bs.getWorkspaces().subscribe(dataresponse => {
+    this.backendService.getWorkspaces().subscribe(dataresponse => {
       this.objectsDatasource = new MatTableDataSource(dataresponse);
       this.objectsDatasource.sort = this.sort;
       this.tableselectionCheckbox.clear();
       this.tableselectionRow.clear();
-      this.mds.setSpinnerOff();
+      this.mainDataService.stopLoadingAnimation();
     });
   }
 
@@ -251,7 +247,7 @@ export class WorkspacesComponent implements OnInit {
     }
   }
 
-  selectRow(row): void {
+  selectRow(row: IdAndName): void {
     this.tableselectionRow.select(row);
   }
 }

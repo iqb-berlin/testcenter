@@ -27,7 +27,7 @@ export class SysCheckComponent implements OnInit {
       const sysCheckId = params.get('sys-check-name');
       const workspaceId = parseInt(params.get('workspace-id'), 10);
       setTimeout(() => {
-        this.mds.setSpinnerOn();
+        this.mds.showLoadingAnimation();
         this.bs.getCheckConfigData(workspaceId, sysCheckId).subscribe(checkConfig => {
           this.ds.checkConfig = checkConfig;
           if (checkConfig) {
@@ -66,7 +66,7 @@ export class SysCheckComponent implements OnInit {
   }
 
   private completeConfig() {
-    this.mds.setSpinnerOff();
+    this.mds.stopLoadingAnimation();
     this.ds.loadConfigComplete = true;
     this.ds.setSteps();
     this.ds.setNewCurrentStep('w');

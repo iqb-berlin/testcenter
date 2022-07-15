@@ -25,27 +25,27 @@ export class ResultsComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
-    private bs: BackendService,
+    private backendService: BackendService,
     private deleteConfirmDialog: MatDialog,
-    private mds: MainDataService,
-    public wds: WorkspaceDataService,
+    private mainDataService: MainDataService,
+    public workspaceDataService: WorkspaceDataService,
     public snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.setSpinnerOn();
+      this.mainDataService.showLoadingAnimation();
       this.updateTable();
     });
   }
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    this.bs.getResultData(this.wds.wsId).subscribe(
+    this.backendService.getResultData(this.workspaceDataService.wsId).subscribe(
       (resultData: ResultData[]) => {
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
         this.resultDataSource.sort = this.sort;
-        this.mds.setSpinnerOff();
+        this.mainDataService.stopLoadingAnimation();
       }
     );
   }
@@ -82,7 +82,7 @@ export class ResultsComponent implements OnInit {
         dataIds.push(element.groupName);
       });
 
-      this.wds.downloadReport(dataIds, reportType, filename);
+      this.workspaceDataService.downloadReport(dataIds, reportType, filename);
 
       this.tableselectionCheckbox.clear();
     }
@@ -114,8 +114,8 @@ export class ResultsComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          this.mds.setSpinnerOn();
-          this.bs.deleteData(this.wds.wsId, selectedGroups).subscribe((ok: boolean) => {
+          this.mainDataService.showLoadingAnimation();
+          this.backendService.deleteData(this.workspaceDataService.wsId, selectedGroups).subscribe((ok: boolean) => {
             if (ok) {
               this.snackBar.open('Löschen erfolgreich.', 'Ok.', { duration: 3000 });
             } else {

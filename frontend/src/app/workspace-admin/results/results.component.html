@@ -12,7 +12,7 @@
         matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above">
       <mat-icon>cloud_download</mat-icon>Kommentare
     </button>
-    <button mat-raised-button (click)="deleteData()" [disabled]="!tableselectionCheckbox.hasValue() || (wds.wsRole !== 'RW')"
+    <button mat-raised-button (click)="deleteData()" [disabled]="!tableselectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"
         matTooltip="Löschen Ergebnisdaten aus der Datenbank für markierte Gruppen" matTooltipPosition="above">
       <mat-icon>delete</mat-icon>
     </button>
