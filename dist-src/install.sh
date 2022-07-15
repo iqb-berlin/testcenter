@@ -93,20 +93,12 @@ set_tls() {
   if [[ $TLS =~ ^[yY]$ ]]; then
     echo "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml."
     sed -i 's/ws:/wss:/' .env
-    printf "run:\n" > Makefile
-    printf "\tdocker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml up -d\n\n" >> Makefile
-    printf "stop:\n" >> Makefile
-    printf "\tdocker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml stop\n\n" >> Makefile
-    printf "logs:\n" >> Makefile
-    printf "\tdocker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml logs\n" >> Makefile
+    mv Makefile Makefile.bu
+    mv Makefile-TLS Makefile
   else
     sed -i 's/wss:/ws:/' .env
-    printf "run:\n" > Makefile
-    printf "\tdocker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d\n\n" >> Makefile
-    printf "stop:\n" >> Makefile
-    printf "\tdocker-compose -f docker-compose.yml -f docker-compose.prod.yml stop\n\n" >> Makefile
-    printf "logs:\n" >> Makefile
-    printf "\tdocker-compose -f docker-compose.yml -f docker-compose.prod.yml logs\n" >> Makefile
+    mv Makefile Makefile-TLS
+    mv Makefile.bu Makefile
   fi
 }
 
@@ -130,3 +122,9 @@ cd $TARGET_DIR
 
 customize_settings
 set_tls
+
+read  -p 'Run application now? [y/N]: ' -r -n 1 -e run_app
+if [[ $run_app =~ ^[yY]$ ]]; then
+  cd $TARGET_DIR
+  make run
+fi
