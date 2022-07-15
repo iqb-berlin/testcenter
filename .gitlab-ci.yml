@@ -122,7 +122,7 @@ test-broadcasting-service-unit:
 test-frontend-e2e:
   stage: test
   rules:
-    - if: CI_PIPELINE_SOURCE == "external_pull_request_event" || CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
   needs:
     - job: build-frontend
       artifacts: true
@@ -133,7 +133,7 @@ test-frontend-e2e:
 test-backend-api:
   stage: test
   rules:
-    - if: CI_PIPELINE_SOURCE == "external_pull_request_event" || CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
   needs:
     - job: build-backend
       artifacts: true
@@ -145,7 +145,7 @@ test-backend-api:
 test-backend-initialization:
   stage: test
   rules:
-    - if: CI_PIPELINE_SOURCE == "external_pull_request_event" || CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
   needs:
     - job: build-backend
       artifacts: true
