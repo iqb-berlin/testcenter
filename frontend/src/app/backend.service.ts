@@ -81,6 +81,8 @@ export class BackendService {
   }
 
   getSessionData(): Observable<AuthData | number> {
+    console.log(window.location);
+    console.trace();
     return this.http
       .get<AuthData>(`${this.serverUrl}session`)
       .pipe(

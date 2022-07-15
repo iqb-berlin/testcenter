@@ -82,7 +82,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       target: dev
-    image: iqbberlin/testcenter-frontend
+    image: iqbberlin/testcenter-frontend:current
     container_name: testcenter-system-test-frontend
     labels:
       - "traefik.enable=true"
@@ -98,20 +98,16 @@ services:
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
       - /tmp/.X11-unix:/tmp/.X11-unix
-#      - /etc/group:/etc/group:ro
-#      - /etc/passwd:/etc/passwd:ro
-#      - /etc/shadow:/etc/shadow:ro
-#      - /etc/sudoers.d:/etc/sudoers.d:ro
     networks:
       - testcenter-system-test
     depends_on:
       - testcenter-system-test-backend
       - testcenter-system-test-db
-    command: "npx ng run testcenter-frontend:e2e"
+    entrypoint: "npx ng run testcenter-frontend:system-test"
     environment:
       - TESTMODE_REAL_DATA=yes
       - DISPLAY
-      - HOME=/root
+      - CYPRESS_CACHE_FOLDER=/opt/cypress/cache
     user: ${CURRENT_UID}
 
 #  testcenter-system-test-broadcasting-service:

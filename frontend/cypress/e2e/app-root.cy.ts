@@ -16,24 +16,25 @@ describe('App-Root\'s login page', () => {
       .should('exist');
   });
 
-  it('Signs in a user with login code', () => {
-    insertCredentials('test', 'user123');
-    cy.get('[data-cy="login-user"]')
-      .click()
-      .wait(5);
-    cy.url().should('eq', '/#/r/code-input');
-    cy.get('.mat-form-field-infix')
-      .type('yyy')
-      .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
-      .click();
-  });
+  // it('Signs in a user with login code', () => {
+  //   insertCredentials('test', 'user123');
+  //   cy.get('[data-cy="login-user"]')
+  //     .click()
+  //     .wait(5);
+  //   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
+  //   cy.get('.mat-form-field-infix')
+  //     .type('yyy')
+  //     .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
+  //     .click();
+  // });
+  // TODO add assertion
 
   it('Signs in a user with wrong login code', () => {
     insertCredentials('test', 'user123');
     cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
-    cy.url().should('eq', '/#/r/code-input');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
     cy.get('.mat-form-field-infix')
       .type('ttt')
       .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
@@ -47,21 +48,21 @@ describe('App-Root\'s login page', () => {
     cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
-    cy.url().should('eq', '/#/r/test-starter');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
   });
 
   it('Signs in an admin', () => {
     insertCredentials('super', 'user123');
     cy.contains('Weiter als Admin')
       .click();
-    cy.url().should('eq', '/#/r/admin-starter');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
   });
 
   it('Signs in a user without password', () => {
     insertCredentials('test-no-pw');
     cy.contains('Weiter')
       .click();
-    cy.url().should('eq', '/#/r/test-starter');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
   });
 
   it('Try to sign in with wrong credentials', () => {
@@ -89,22 +90,22 @@ describe('App-Root\'s login page', () => {
   });
 
   it('Should get to legal disclosure and return to login page', () => {
-    cy.visit(Cypress.env('TC_URL'));
+    cy.visit(Cypress.config().baseUrl);
     cy.contains('Impressum/Datenschutz')
       .click();
-    cy.url().should('eq', '/#/legal-notice');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/legal-notice`);
     cy.contains('zurück zur Startseite')
       .click();
-    cy.url().should('eq', '/#/r/login/');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
 
   it('Should get to System Check and return to login page', () => {
-    cy.visit(Cypress.env('TC_URL'));
+    cy.visit(Cypress.config().baseUrl);
     cy.contains('System-Check')
       .click();
-    cy.url().should('eq', '/#/r/check-starter');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/check-starter`);
     cy.contains('zurück zur Startseite')
       .click();
-    cy.url().should('eq', '/#/r/login/');
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
 });

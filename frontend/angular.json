@@ -99,6 +99,16 @@
             "customWebpackConfig": {
               "path": "./cypress/coverage.webpack.ts"
             }
+          },
+          "configurations": {
+            "system-test": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.system-test.ts"
+                }
+              ]
+            }
           }
         },
         "serve": {
@@ -135,54 +145,26 @@
         "serve-coverage": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "testcenter-frontend:build-coverage",
+            "browserTarget": "testcenter-frontend:build-coverage:system-test",
             "port": 4200,
             "host": "0.0.0.0"
           }
         },
-        "e2e": {
+        "system-test": {
           "builder": "@cypress/schematic:cypress",
           "options": {
             "devServerTarget": "testcenter-frontend:serve-coverage",
             "watch": true,
             "headless": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "testcenter-frontend:serve-coverage:production"
-            }
           }
         },
-        "e2e-ci": {
+        "system-test-ci": {
           "builder": "@cypress/schematic:cypress",
           "options": {
             "browser": "chrome",
             "devServerTarget": "testcenter-frontend:serve-coverage",
             "headless": true,
             "watch": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "testcenter-frontend:serve-coverage:production"
-            }
-          }
-        },
-        "cypress-run": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "testcenter-frontend:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "testcenter-frontend:serve:production"
-            }
-          }
-        },
-        "cypress-open": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "watch": true,
-            "headless": false
           }
         }
       }

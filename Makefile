@@ -92,17 +92,23 @@ test-frontend-integration:
 
 test-system:
 	CURRENT_UID=$(shell id -u):$(shell id -g) \
-		docker-compose -f docker-compose.system-test.yml up --abort-on-container-exit # --force-recreate --renew-anon-volumes
+		docker-compose -f docker-compose.system-test.yml up --abort-on-container-exit
+
+
+# --force-recreate --renew-anon-volumes
+
 
 test-system-headless:
 
 run-browser:
 	docker run \
+	  --network=host \
       --user=`id -u ${USER}` \
-      --env="DISPLAY=$(shell hostname -I | awk '{print $$1}'):0" \
+      -e DISPLAY=${DISPLAY} \
 		scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-container \
 		google-chrome --no-sandbox
 
+# =$(shell hostname -I | awk '{print $$1}'):0
 #			  --network=host \
 #      -v /dev:/dev \
 #      -p 8080:80 \
