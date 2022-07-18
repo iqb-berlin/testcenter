@@ -19,10 +19,7 @@
     "test": "ng test  --watch=false",
     "lint": "ng lint",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s -d ./docs/compodoc",
-    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc",
-    "e2e": "ng e2e",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
   },
   "private": true,
   "dependencies": {
@@ -63,6 +60,7 @@
     "@cypress/code-coverage": "~3.10.0",
     "@cypress/schematic": "^2.0.0",
     "@iqb/eslint-config": "1.0.2",
+    "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/jasminewd2": "~2.0.8",
     "cypress": "~10.2.0",
     "cypress-downloadfile": "^1.2.1",
@@ -76,9 +74,26 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.6.0",
     "ts-node": "~8.6.2",
-    "typescript": "~4.3.4"
+    "typescript": "~4.3.4",
+    "istanbul-instrumenter-loader":  "3.0.1",
+    "nyc": "15.1.0"
   },
   "resolutions": {
     "tree-kill": "1.2.2"
+  },
+  "nyc":{
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": true,
+    "exclude": ["**/*.spec.ts"],
+    "include": ["src"],
+    "extension": [".ts", ".js"],
+    "reporter": [
+      "text-summary",
+      "json",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "exclude-after-remap": false
   }
 }

@@ -73,7 +73,7 @@
         "build-coverage": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist/testcenter-frontend",
+            "outputPath": "dist/testcenter-frontend-coverage",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -145,9 +145,7 @@
         "serve-coverage": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "testcenter-frontend:build-coverage:system-test",
-            "port": 4200,
-            "host": "0.0.0.0"
+            "browserTarget": "testcenter-frontend:build-coverage:system-test"
           }
         },
         "system-test": {

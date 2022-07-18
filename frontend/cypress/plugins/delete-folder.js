@@ -6,6 +6,6 @@ module.exports = function deleteFolder(folderName) {
   if (!fs.existsSync(folderName)) {
     return null;
   }
-  fs.rmdirSync(folderName, { maxRetries: 10, recursive: true });
+  fs.rmdirSync(folderName, {maxRetries: 10, recursive: true});
   return null;
 };

@@ -92,11 +92,13 @@ services:
       - ./definitions:/definitions
       - ./frontend/.browserslistrc:/app/.browserslistrc
       - ./frontend/angular.json:/app/angular.json
-      - ./frontend/cypress:/app/cypress
       - ./frontend/cypress.config.js:/app/cypress.config.js
+      - ./frontend/cypress:/app/cypress
       - ./frontend/package.json:/app/package.json
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/.coverage:/app/.coverage:rw
+      - ./docs/dist:/docs/dist
     networks:
       - testcenter-system-test
     depends_on:
@@ -104,6 +106,7 @@ services:
       - testcenter-system-test-db
     entrypoint: "npx ng run testcenter-frontend:system-test-headless"
     environment:
+      - TERM=xterm
       - TESTMODE_REAL_DATA=yes
       - CYPRESS_CACHE_FOLDER=/opt/cypress/cache
 

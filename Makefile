@@ -89,7 +89,6 @@ test-frontend-unit:
 test-frontend-integration:
 #TODO run the system test, but against a backend mocked by prism
 
-
 test-system:
 	CURRENT_UID=$(shell id -u):$(shell id -g) \
 		docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
@@ -103,30 +102,7 @@ test-system-headless:
 		--force-recreate \
 		--renew-anon-volumes
 
-#run-browser:
-#	docker run \
-#	  --network=host \
-#      --user=`id -u ${USER}` \
-#      -e DISPLAY=${DISPLAY} \
-#		scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-container \
-#		google-chrome --no-sandbox
-
-# =$(shell hostname -I | awk '{print $$1}'):0
-#			  --network=host \
-#      -v /dev:/dev \
-#      -p 8080:80 \
-#      -v `echo ~`:/home/${USER} \
-#      --volume="/etc/group:/etc/group:ro" \
-#      --volume="/etc/passwd:/etc/passwd:ro" \
-#      --volume="/etc/shadow:/etc/shadow:ro" \
-#      --volume="/etc/sudoers.d:/etc/sudoers.d:ro" \
-#      --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-
-#npm run integration-test # TODO do in container
-#npm npx --workspace=frontend cypress run --env=TC_URL=http://localhost --browser firefox --headless
-
 update-docs:
-#TODO
 	make docs-frontend-compodoc
 	make docs-broadcasting-service-compodoc
 	make docs-frontend-compodoc

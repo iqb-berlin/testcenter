@@ -2,7 +2,8 @@
 const { defineConfig } = require('cypress');
 const downloadFile = require('cypress-downloadfile/lib/addPlugin');
 const registerCodeCoverageTasks = require('@cypress/code-coverage/task');
-const deleteFolder = require('./cypress/plugins/deleteFolder');
+const deleteFolder = require('./cypress/plugins/delete-folder');
+const createCodeCoverageReport = require('./cypress/plugins/create-coverage-report');
 
 module.exports = defineConfig({
   e2e: {
@@ -13,7 +14,9 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       on('task', { downloadFile });
       on('task', { deleteFolder });
-      return registerCodeCoverageTasks(on, config);
+      on('after:run', createCodeCoverageReport);
+      registerCodeCoverageTasks(on, config);
+      return config;
     },
     env: {
       TC_API_URL: 'http://testcenter-system-test-backend'

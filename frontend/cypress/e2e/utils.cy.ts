@@ -16,7 +16,7 @@ export const resetBackendData = (): void => {
     headers: { TestMode: 'True' }
   })
     .its('status').should('eq', 200);
-  cy.wait(500);
+  cy.wait(500); // TODO replace this by a meaningful assertion.
 };
 
 export const insertCredentials = (username: string, password = ''): void => {

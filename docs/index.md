@@ -46,8 +46,9 @@ You will get handy commands to start and stop the services.
 
 ### Test Coverage
 
-* [Backend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-backend-unit/report/index.html)
+* [Backend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-backend-unit/index.html)
 * [Frontend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-unit/report/index.html)
+* [Frontend by System-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-system/report/index.html)
 * [Broadcasting-Service by Unit-Tets](https://iqb-berlin.github.io/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/index.html)
 
 ### Misc
