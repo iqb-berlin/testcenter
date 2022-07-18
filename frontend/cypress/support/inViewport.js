@@ -1,3 +1,4 @@
+// from https://www.webtips.dev/webtips/cypress/check-if-element-is-in-viewport
 export default _chai => {
   function assertIsInViewport() {
     const subject = this._obj;

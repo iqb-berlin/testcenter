@@ -2,8 +2,11 @@
 // TODO get rid of sleeps
 
 import { login } from './utils.cy';
+import 'cypress-iframe';
+import inViewport from '../support/inViewport';
 
 describe('Test-Controller', () => {
+  before(() => { chai.use(inViewport); });
   beforeEach(() => login('test', 'user123'));
 
   it('Should start a sample booklet and click through the unit tabs', () => {
