@@ -1,0 +1,15 @@
+# Compose file for local development and testing. Images are built from
+# local directories which need to be cloned from the repository.
+version: '3.7'
+
+
+
+services:
+  testcenter-system-test-frontend:
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    entrypoint: "npx ng run testcenter-frontend:system-test"
+    environment:
+      - DISPLAY
+    user: ${CURRENT_UID}
+

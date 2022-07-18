@@ -158,7 +158,7 @@
             "headless": false
           }
         },
-        "system-test-ci": {
+        "system-test-headless": {
           "builder": "@cypress/schematic:cypress",
           "options": {
             "browser": "chrome",

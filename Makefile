@@ -87,26 +87,29 @@ test-frontend-unit:
 		ng test --watch=false --code-coverage
 
 test-frontend-integration:
-#TODO
+#TODO run the system test, but against a backend mocked by prism
 
 
 test-system:
 	CURRENT_UID=$(shell id -u):$(shell id -g) \
-		docker-compose -f docker-compose.system-test.yml up --abort-on-container-exit
-
-
-# --force-recreate --renew-anon-volumes
-
+		docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
+			--abort-on-container-exit \
+			--force-recreate \
+			--renew-anon-volumes
 
 test-system-headless:
+	docker-compose -f docker-compose.system-test.yml up \
+		--abort-on-container-exit \
+		--force-recreate \
+		--renew-anon-volumes
 
-run-browser:
-	docker run \
-	  --network=host \
-      --user=`id -u ${USER}` \
-      -e DISPLAY=${DISPLAY} \
-		scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-container \
-		google-chrome --no-sandbox
+#run-browser:
+#	docker run \
+#	  --network=host \
+#      --user=`id -u ${USER}` \
+#      -e DISPLAY=${DISPLAY} \
+#		scm.cms.hu-berlin.de:4567/iqb/iqb-browsertest-container/iqb-browsertest-container \
+#		google-chrome --no-sandbox
 
 # =$(shell hostname -I | awk '{print $$1}'):0
 #			  --network=host \
