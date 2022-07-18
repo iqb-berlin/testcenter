@@ -5,7 +5,7 @@ export const deleteDownloadsFolder = (): void => {
 
 export const visitLoginPage = (): void => {
   cy.intercept({ url: `${Cypress.env('TC_API_URL')}/*` }).as('waitForConfig');
-  cy.visit('/#/r/login/');
+  cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
   cy.wait('@waitForConfig');
 };
 
@@ -38,13 +38,13 @@ export const login = (username: string, password: string): void => {
 };
 
 export const logoutAdmin = (): void => {
-  cy.visit('/#/r/admin-starter');
+  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`);
   cy.get('[data-cy="workspace-1"]')
     .should('exist');
   cy.get('[data-cy="logout"]')
     .click();
   cy.url()
-    .should('eq', '/#/r/login/');
+    .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
 };
 
 export const loginAdmin = (): void => {
@@ -52,12 +52,12 @@ export const loginAdmin = (): void => {
   cy.get('[data-cy="login-admin"]')
     .click();
   cy.url()
-    .should('eq', '/#/r/admin-starter');
+    .should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
   cy.get('[data-cy="workspace-1"]')
     .should('exist')
     .click();
   cy.url()
-    .should('eq', '/#/admin/1/files');
+    .should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
 };
 
 export const loginAsAdmin = (username = 'super', password = 'user123'): void => {
@@ -72,5 +72,5 @@ export const loginAsAdmin = (username = 'super', password = 'user123'): void => 
 export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
     .click();
-  cy.url().should('eq', '/#/superadmin/users');
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/superadmin/users`);
 };

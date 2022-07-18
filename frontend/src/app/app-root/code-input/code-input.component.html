@@ -10,7 +10,7 @@
         <p style="color: chocolate"><b>{{ problemText }}</b></p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary">Weiter</button>
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary" data-cy="continue">Weiter</button>
         <div fxFlex></div>
         <button mat-raised-button color="foreground" (click)="resetLogin()" style="margin-right: 0">Neu anmelden</button>
       </mat-card-actions>
