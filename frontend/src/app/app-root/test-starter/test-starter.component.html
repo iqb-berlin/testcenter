@@ -9,8 +9,14 @@
             customtext="login_noBookletsAvailable"
             text="Für diese Anmeldung wurde kein Test gefunden."
         ></alert>
-        <a mat-raised-button color="primary" (click)="startTest(b)" [attr.aria-label]="'Starte Testheft ' + b.label"
-                [disabled]="b.locked" *ngFor="let b of booklets">
+        <a
+          mat-raised-button
+          color="primary"
+          (click)="startTest(b)"
+          [attr.aria-label]="'Starte Testheft ' + b.label"
+          [attr.data-cy]="'booklet-' + b.id"
+          [disabled]="b.locked" *ngFor="let b of booklets"
+        >
           <div class="booklet_title">{{b.label}}</div>
           <div class="booklet_status">{{b.locked ? 'gesperrt' : (b.running ? 'Fortsetzen' : 'Starten')}}</div>
         </a>

@@ -16,18 +16,19 @@ describe('App-Root\'s login page', () => {
       .should('exist');
   });
 
-  // it('Signs in a user with login code', () => {
-  //   insertCredentials('test', 'user123');
-  //   cy.get('[data-cy="login-user"]')
-  //     .click()
-  //     .wait(5);
-  //   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
-  //   cy.get('.mat-form-field-infix')
-  //     .type('yyy')
-  //     .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
-  //     .click();
-  // });
-  // TODO add assertion
+  it('Signs in a user with login code', () => {
+    insertCredentials('test', 'user123');
+    cy.get('[data-cy="login-user"]')
+      .click()
+      .wait(5);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
+    cy.get('.mat-form-field-infix')
+      .type('yyy')
+      .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
+      .click();
+    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-1"]')
+      .should('exist');
+  });
 
   it('Signs in a user with wrong login code', () => {
     insertCredentials('test', 'user123');
@@ -48,21 +49,24 @@ describe('App-Root\'s login page', () => {
     cy.get('[data-cy="login-user"]')
       .click()
       .wait(5);
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-1"]')
+      .should('exist');
   });
 
   it('Signs in an admin', () => {
     insertCredentials('super', 'user123');
     cy.contains('Weiter als Admin')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+    cy.get('[data-cy="workspace-1"]')
+      .should('exist');
   });
 
   it('Signs in a user without password', () => {
     insertCredentials('test-no-pw');
     cy.contains('Weiter')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-1"]')
+      .should('exist');
   });
 
   it('Try to sign in with wrong credentials', () => {
