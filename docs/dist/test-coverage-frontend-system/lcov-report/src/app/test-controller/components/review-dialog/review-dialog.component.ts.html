@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">10% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>2/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">10% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>2/20</span>
             </div>
         
             
@@ -124,6 +124,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -133,40 +135,38 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { FormGroup, Validators, FormControl } from '@angular/forms';
@@ -177,8 +177,8 @@ import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 @Component({
   templateUrl: './review-dialog.component.html'
 })
-export class ReviewDialogComponent implements OnInit {
-  reviewform = new FormGroup({
+export class <span class="fstat-no" title="function not covered" >ReviewDialogComponent </span>implements OnInit {
+<span class="cstat-no" title="statement not covered" >  reviewform = new FormGroup({</span>
     target: new FormControl('u', Validators.required),
     priority: new FormControl(''),
     tech: new FormControl(''),
@@ -190,36 +190,36 @@ export class ReviewDialogComponent implements OnInit {
 &nbsp;
   static oldName = '';
 &nbsp;
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: ReviewDialogData,
-    private element: ElementRef
+<span class="fstat-no" title="function not covered" >  constructor(</span>
+    @Inject(MAT_DIALOG_DATA) public <span class="cstat-no" title="statement not covered" >data: ReviewDialogData,</span>
+    private <span class="cstat-no" title="statement not covered" >element: ElementRef</span>
   ) { }
 &nbsp;
-  ngOnInit(): void {
-    const firstInputElement = this.element.nativeElement.querySelector('input');
-    if (firstInputElement) {
-      firstInputElement.focus();
+<span class="fstat-no" title="function not covered" >  ngOnInit(</span>): void {
+    const firstInputElement = <span class="cstat-no" title="statement not covered" >this.element.nativeElement.querySelector('input');</span>
+<span class="cstat-no" title="statement not covered" >    if (firstInputElement) {</span>
+<span class="cstat-no" title="statement not covered" >      firstInputElement.focus();</span>
     }
   }
 &nbsp;
-  getCategories(): string {
-    let myreturn = '';
-    if (this.reviewform.get('tech').value === true) {
-      myreturn = 'tech';
+<span class="fstat-no" title="function not covered" >  getCategories(</span>): string {
+    let myreturn = <span class="cstat-no" title="statement not covered" >'';</span>
+<span class="cstat-no" title="statement not covered" >    if (this.reviewform.get('tech').value === true) {</span>
+<span class="cstat-no" title="statement not covered" >      myreturn = 'tech';</span>
     }
-    if (this.reviewform.get('design').value === true) {
-      if (myreturn.length &gt; 0) {
-        myreturn += ' ';
+<span class="cstat-no" title="statement not covered" >    if (this.reviewform.get('design').value === true) {</span>
+<span class="cstat-no" title="statement not covered" >      if (myreturn.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >        myreturn += ' ';</span>
       }
-      myreturn += 'design';
+<span class="cstat-no" title="statement not covered" >      myreturn += 'design';</span>
     }
-    if (this.reviewform.get('content').value === true) {
-      if (myreturn.length &gt; 0) {
-        myreturn += ' ';
+<span class="cstat-no" title="statement not covered" >    if (this.reviewform.get('content').value === true) {</span>
+<span class="cstat-no" title="statement not covered" >      if (myreturn.length &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >        myreturn += ' ';</span>
       }
-      myreturn += 'content';
+<span class="cstat-no" title="statement not covered" >      myreturn += 'content';</span>
     }
-    return myreturn;
+<span class="cstat-no" title="statement not covered" >    return myreturn;</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -229,7 +229,7 @@ export class ReviewDialogComponent implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-07-18T12:36:52.355Z
+                at 2022-07-19T10:59:48.396Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

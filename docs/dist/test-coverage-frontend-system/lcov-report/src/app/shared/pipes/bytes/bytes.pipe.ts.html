@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>6/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -84,37 +84,37 @@
 <a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">227x</span>
+<span class="cline-any cline-yes">129x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">129x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">129x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">129x</span>
+<span class="cline-any cline-yes">129x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Pipe, PipeTransform } from '@angular/core';
 &nbsp;
-<span class="fstat-no" title="function not covered" >@Pipe({ name: 'bytes' })</span>
-export class <span class="fstat-no" title="function not covered" >BytesPipe </span>implements PipeTransform {
-  private <span class="cstat-no" title="statement not covered" >units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];</span>
+@Pipe({ name: 'bytes' })
+export class BytesPipe implements PipeTransform {
+  private units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 &nbsp;
-<span class="fstat-no" title="function not covered" >  transform(</span>bytes: number): string {
-<span class="cstat-no" title="statement not covered" >    if (Number.isNaN(parseFloat(`${bytes}`)) || !Number.isFinite(bytes)) {</span>
+  transform(bytes: number): string {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (Number.isNaN(parseFloat(`${bytes}`)) || !Number.isFinite(bytes)) {
 <span class="cstat-no" title="statement not covered" >      return '-';</span>
     }
-<span class="cstat-no" title="statement not covered" >    if (bytes &lt;= 0) {</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (bytes &lt;= 0) {
 <span class="cstat-no" title="statement not covered" >      return '0';</span>
     }
 &nbsp;
-    const i = <span class="cstat-no" title="statement not covered" >Math.floor(Math.log(bytes) / Math.log(1024));</span>
-<span class="cstat-no" title="statement not covered" >    return `${(bytes / 1024 ** Math.floor(i)).toFixed(1)} ${this.units[i]}`;</span>
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / 1024 ** Math.floor(i)).toFixed(1)} ${this.units[i]}`;
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -124,7 +124,7 @@ export class <span class="fstat-no" title="function not covered" >BytesPipe </sp
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-07-18T12:36:52.355Z
+                at 2022-07-19T10:59:48.396Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

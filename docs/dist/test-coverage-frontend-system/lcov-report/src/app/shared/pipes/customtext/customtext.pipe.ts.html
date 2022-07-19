@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>7/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>5/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>6/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>7/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -98,21 +98,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">171x</span>
+<span class="cline-any cline-yes">85x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">85x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">85x</span>
+<span class="cline-any cline-yes">85x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">85x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">85x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -125,21 +125,21 @@ import { CustomtextService } from '../../services/customtext/customtext.service'
 @Pipe({
   name: 'customtext'
 })
-export class <span class="fstat-no" title="function not covered" >CustomtextPipe </span>implements PipeTransform {
-<span class="fstat-no" title="function not covered" >  constructor(private <span class="cstat-no" title="statement not covered" >c</span>ts: CustomtextService)</span> {}
+export class CustomtextPipe implements PipeTransform {
+  constructor(private cts: CustomtextService) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" >  transform(</span>defaultValue: string, key: string, ...replacements: string[]): Observable&lt;string&gt; {
-<span class="cstat-no" title="statement not covered" >    return of('...')</span>
+  transform(defaultValue: string, key: string, ...replacements: string[]): Observable&lt;string&gt; {
+    return of('...')
       .pipe(
-        switchMap(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.cts.getCustomText$(key))</span>,
-        map(<span class="fstat-no" title="function not covered" >customText </span>=&gt; (<span class="cstat-no" title="statement not covered" >!customText ? (defaultValue || key) : customText)</span>),
-        map(<span class="fstat-no" title="function not covered" >customText </span>=&gt; {
-<span class="cstat-no" title="statement not covered" >          replacements</span>
+        switchMap(() =&gt; this.cts.getCustomText$(key)),
+        map(customText =&gt; (!customText ? (defaultValue || <span class="branch-1 cbranch-no" title="branch not covered" >key)</span> : customText)),
+        map(customText =&gt; {
+          replacements
             .forEach(<span class="fstat-no" title="function not covered" >replacement </span>=&gt; {
               // eslint-disable-next-line no-param-reassign
 <span class="cstat-no" title="statement not covered" >              customText = customText.replace('%s', replacement);</span>
             });
-<span class="cstat-no" title="statement not covered" >          return customText;</span>
+          return customText;
         })
       );
   }
@@ -151,7 +151,7 @@ export class <span class="fstat-no" title="function not covered" >CustomtextPipe
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-07-18T12:36:52.355Z
+                at 2022-07-19T10:59:48.396Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

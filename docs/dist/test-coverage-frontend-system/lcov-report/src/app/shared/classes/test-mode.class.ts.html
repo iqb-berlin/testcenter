@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">81.82% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>9/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>4/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">81.82% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/11</span>
+                <span class='fraction'>9/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -90,48 +90,48 @@
 <a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">108x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { TestModeData } from 'testcenter-common/classes/test-mode-data.class';
 &nbsp;
 export class TestMode extends TestModeData {
-<span class="cstat-no" title="statement not covered" >  modeId: keyof typeof TestModeData.modes = 'RUN-DEMO';</span>
-<span class="cstat-no" title="statement not covered" >  modeLabel: string = 'Demo';</span>
+  modeId: keyof typeof TestModeData.modes = 'RUN-DEMO';
+  modeLabel: string = 'Demo';
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor(l</span>oginMode: string = <span class="branch-0 cbranch-no" title="branch not covered" >'RUN-DEMO')</span> {
-<span class="cstat-no" title="statement not covered" >    super();</span>
-    const mode = &lt;keyof typeof TestModeData.modes&gt;<span class="cstat-no" title="statement not covered" >loginMode.toUpperCase();</span>
+  constructor(loginMode: string = 'RUN-DEMO') {
+    super();
+    const mode = &lt;keyof typeof TestModeData.modes&gt;loginMode.toUpperCase();
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if (!mode || !TestModeData.modes[mode]) {</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!mode || !TestModeData.modes[mode]) {
 <span class="cstat-no" title="statement not covered" >      console.warn(`TestConfig: invalid loginMode ${mode} - take DEMO`);</span>
 <span class="cstat-no" title="statement not covered" >      return;</span>
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    this.modeId = mode;</span>
-<span class="cstat-no" title="statement not covered" >    this.modeLabel = TestModeData.labels[mode];</span>
+    this.modeId = mode;
+    this.modeLabel = TestModeData.labels[mode];
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    Object.keys(TestModeData.modes[mode])</span>
-      .forEach(<span class="fstat-no" title="function not covered" >key </span>=&gt; {
-<span class="cstat-no" title="statement not covered" >        this[key] = TestModeData.modes[mode][key];</span>
+    Object.keys(TestModeData.modes[mode])
+      .forEach(key =&gt; {
+        this[key] = TestModeData.modes[mode][key];
       });
   }
 }
@@ -142,7 +142,7 @@ export class TestMode extends TestModeData {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-07-18T12:36:52.355Z
+                at 2022-07-19T10:59:48.396Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

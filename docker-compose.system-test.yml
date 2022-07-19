@@ -110,6 +110,7 @@ services:
       - TERM=xterm
       - TESTMODE_REAL_DATA=yes
       - CYPRESS_CACHE_FOLDER=/opt/cypress/cache
+      - CYPRESS_TC_TESTMODE=cli # cypress has to know this before setupNodeEvents
 
   testcenter-system-test-broadcasting-service:
     build:

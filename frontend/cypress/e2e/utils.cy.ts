@@ -10,13 +10,15 @@ export const visitLoginPage = (): void => {
 };
 
 export const resetBackendData = (): void => {
-  // this works because in system-test TESTMODE_REAL_DATA is true
+  // this resets the DB because in system-test TESTMODE_REAL_DATA is true
   cy.request({
     url: `${Cypress.env('TC_API_URL')}/version`,
-    headers: { TestMode: 'True' }
+    headers: { TestMode: 'True' },
   })
     .its('status').should('eq', 200);
-  cy.wait(500); // TODO replace this by a meaningful assertion.
+  // sometimes DB isn't ready even after the endpoint returned 200
+  // TODO replace this by something more meaningful
+  cy.wait(500);
 };
 
 export const insertCredentials = (username: string, password = ''): void => {

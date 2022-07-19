@@ -11,5 +11,6 @@ services:
     entrypoint: "npx ng run testcenter-frontend:system-test"
     environment:
       - DISPLAY
+      - CYPRESS_TC_TESTMODE=gui # cypress has to know this before setupNodeEvents
     user: ${CURRENT_UID}
 

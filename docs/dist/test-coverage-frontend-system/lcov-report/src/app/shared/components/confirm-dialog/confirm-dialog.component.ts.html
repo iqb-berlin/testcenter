@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">66.67% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/9</span>
+                <span class='fraction'>6/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>9/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.11% </span>
+                <span class="strong">66.67% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/9</span>
+                <span class='fraction'>6/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -101,22 +101,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">54x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -130,22 +130,22 @@ import { ConfirmDialogData } from '../../interfaces/confirm-dialog.interfaces';
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.css']
 })
-export class <span class="fstat-no" title="function not covered" >ConfirmDialogComponent </span>implements OnInit {
-<span class="cstat-no" title="statement not covered" >  showcancel = true;</span>
+export class ConfirmDialogComponent implements OnInit {
+  showcancel = true;
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor(@Inject(M</span>AT_DIALOG_DATA) public <span class="cstat-no" title="statement not covered" >confirmdata: ConfirmDialogData)</span> {}
+  constructor(@Inject(MAT_DIALOG_DATA) public confirmdata: ConfirmDialogData) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" >  ngOnInit(</span>): void {
-<span class="cstat-no" title="statement not covered" >    if ((typeof this.confirmdata.title === 'undefined') || (this.confirmdata.title.length === 0)) {</span>
+  ngOnInit(): void {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if ((typeof this.confirmdata.title === 'undefined') || (this.confirmdata.title.length === 0)) {
 <span class="cstat-no" title="statement not covered" >      this.confirmdata.title = 'Bitte bestätigen!';</span>
     }
-<span class="cstat-no" title="statement not covered" >    if (</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (
       (typeof this.confirmdata.confirmbuttonlabel === 'undefined') ||
       (this.confirmdata.confirmbuttonlabel.length === 0)
     ) {
 <span class="cstat-no" title="statement not covered" >      this.confirmdata.confirmbuttonlabel = 'Bestätigen';</span>
     }
-<span class="cstat-no" title="statement not covered" >    if (!this.confirmdata.showcancel) {</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.confirmdata.showcancel) {
 <span class="cstat-no" title="statement not covered" >      this.showcancel = false;</span>
     }
   }
@@ -157,7 +157,7 @@ export class <span class="fstat-no" title="function not covered" >ConfirmDialogC
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-07-18T12:36:52.355Z
+                at 2022-07-19T10:59:48.396Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

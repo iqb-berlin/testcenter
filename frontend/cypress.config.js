@@ -3,7 +3,10 @@ const { defineConfig } = require('cypress');
 const downloadFile = require('cypress-downloadfile/lib/addPlugin');
 const registerCodeCoverageTasks = require('@cypress/code-coverage/task');
 const deleteFolder = require('./cypress/plugins/delete-folder');
+const waitForBackend = require('./cypress/plugins/wait-for-backend');
 const createCodeCoverageReport = require('./cypress/plugins/create-coverage-report');
+
+const tcApiURL = 'http://testcenter-system-test-backend';
 
 module.exports = defineConfig({
   e2e: {
@@ -14,14 +17,15 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       on('task', { downloadFile });
       on('task', { deleteFolder });
-      if (!config.isInteractive) {
+      if (config.env.TC_TESTMODE === 'cli') {
         on('after:run', createCodeCoverageReport);
         registerCodeCoverageTasks(on, config);
       }
+      on('before:run', () => waitForBackend(tcApiURL));
       return config;
     },
     env: {
-      TC_API_URL: 'http://testcenter-system-test-backend'
+      TC_API_URL: tcApiURL
     }
   }
 });
