@@ -58,10 +58,15 @@ test-backend-dredd-mysql:
 		docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
 		--force-recreate --renew-anon-volumes --abort-on-container-exit
 
+# Performs a tests suite from the initialization tests.
+# Example `make test-backend-initialization test=general/db-versions`
+# All files in backend/test/initialization/tests for are available tests.
 test-backend-initialization:
 	TEST_NAME=$(test) \
 		docker-compose -f docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
 
+
+# Performs some tests around the initialization script like upgrading the db-schema.
 test-backend-initialization-general:
 	make stop
 	docker-compose -f docker-compose.initialization-test.yml build
@@ -70,6 +75,8 @@ test-backend-initialization-general:
 	make test-backend-initialization test=general/no-db-but-files
 	make test-backend-initialization test=general/install-db-patches
 
+
+# Performs unit tests with Jest for the backend. Creates a code-coverage report.
 test-broadcasting-service-unit:
 	make build service=testcenter-broadcasting-service
 	docker run \
@@ -78,6 +85,8 @@ test-broadcasting-service-unit:
 		iqbberlin/testcenter-broadcasting-service:current \
 		jest --coverage
 
+
+# Performs unit tests with Karma for the frontend. Creates a code-coverage report.
 test-frontend-unit:
 	make build service=testcenter-frontend
 	docker run \
@@ -86,9 +95,12 @@ test-frontend-unit:
 		iqbberlin/testcenter-frontend:current \
 		ng test --watch=false --code-coverage
 
-test-frontend-integration:
-#TODO run the system test, but against a backend mocked by prism
 
+# Performs some integration tests with CyPress against mocked backend with Prism
+test-frontend-integration:
+# TODO implement integration tests with CyPress against mocked backend with Prism
+
+# Performs some integration tests with CyPress against real MySql-DB and real backend in interactive mode.
 test-system:
 	CURRENT_UID=$(shell id -u):$(shell id -g) \
 		docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
@@ -96,6 +108,7 @@ test-system:
 			--force-recreate \
 			--renew-anon-volumes
 
+# Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI. Creates a code coverage report for the frontend
 test-system-headless:
 	docker-compose -f docker-compose.system-test.yml up \
 		--abort-on-container-exit \

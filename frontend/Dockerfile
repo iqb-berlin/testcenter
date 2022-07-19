@@ -24,11 +24,8 @@ RUN ls -l /node_modules
 # build prod
 RUN npx ng build --configuration production --output-path=dist --output-hashing all
 
-# TODO move into the base container
+# prepare cypress TODO move into the base container
 RUN apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-     # cypress needs this
-     #x11vnc
-
 RUN chmod -R 777 /opt/cypress/cache
 
 EXPOSE 4200

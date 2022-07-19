@@ -14,8 +14,10 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       on('task', { downloadFile });
       on('task', { deleteFolder });
-      on('after:run', createCodeCoverageReport);
-      registerCodeCoverageTasks(on, config);
+      if (!config.isInteractive) {
+        on('after:run', createCodeCoverageReport);
+        registerCodeCoverageTasks(on, config);
+      }
       return config;
     },
     env: {

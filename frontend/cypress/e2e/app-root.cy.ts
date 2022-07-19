@@ -9,7 +9,7 @@ describe('App-Root\'s login page', () => {
   beforeEach(resetBackendData);
   beforeEach(visitLoginPage);
 
-  it.only('Visits the homepage', () => {
+  it('Visits the homepage', () => {
     cy.contains('IQB-Testcenter')
       .should('exist');
     cy.contains('Anmeldename')
