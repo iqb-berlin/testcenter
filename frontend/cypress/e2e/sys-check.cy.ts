@@ -3,7 +3,7 @@
 // TODO mock backend responses for networktest to speed up things
 // TODO test sending of a report
 
-import { resetBackendData } from './utils.cy';
+import { resetBackendData } from './utils';
 
 describe('Sys-Check', () => {
   beforeEach(resetBackendData);

@@ -2,7 +2,7 @@
 
 import {
   clickSuperadmin, insertCredentials, loginAsAdmin, logoutAdmin, resetBackendData, visitLoginPage
-} from './utils.cy';
+} from './utils';
 
 describe('Superadmin', () => {
   beforeEach(resetBackendData);

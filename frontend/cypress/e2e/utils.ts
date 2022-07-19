@@ -13,7 +13,7 @@ export const resetBackendData = (): void => {
   // this resets the DB because in system-test TESTMODE_REAL_DATA is true
   cy.request({
     url: `${Cypress.env('TC_API_URL')}/version`,
-    headers: { TestMode: 'True' },
+    headers: { TestMode: 'True' }
   })
     .its('status').should('eq', 200);
   // sometimes DB isn't ready even after the endpoint returned 200

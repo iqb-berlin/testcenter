@@ -2,7 +2,7 @@
 
 import {
   insertCredentials, resetBackendData, visitLoginPage
-} from './utils.cy';
+} from './utils';
 
 describe('App-Root\'s login page', () => {
   beforeEach(cy.clearLocalStorage);

@@ -1,7 +1,7 @@
 // TODO better selectors
 // TODO get rid of sleeps
 
-import { login } from './utils.cy';
+import { login } from './utils';
 import 'cypress-iframe';
 import inViewport from '../support/inViewport';
 

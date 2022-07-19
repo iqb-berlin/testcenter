@@ -2,7 +2,7 @@
 
 import {
   deleteDownloadsFolder, loginAdmin
-} from './utils.cy';
+} from './utils';
 
 describe('Workspace-Admin', () => {
   beforeEach(deleteDownloadsFolder);
