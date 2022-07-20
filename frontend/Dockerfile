@@ -45,7 +45,7 @@ RUN npx ng build --configuration production --output-path=dist --output-hashing 
 
 FROM nginx:1.22.0-alpine as prod
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app-temp/dist /usr/share/nginx/html
 COPY ./frontend/docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
