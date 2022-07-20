@@ -34,8 +34,9 @@ RUN npx nest build -p tsconfig.build.json
 
 FROM node:${NODE_VERSION} as prod
 
+COPY --from=builder /app-temp/node_modules /app/node_modules
 COPY --from=builder /app/dist /app
 
-EXPOSE 80
+EXPOSE 3000
 
 CMD ["node", "/app/main.js"]
