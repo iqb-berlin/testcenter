@@ -12,6 +12,7 @@ build:
 
 # Starts the application.
 # Hint: Stop local webserver before, to free port 80
+# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 run:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(service)
 
@@ -22,6 +23,7 @@ build-prod-local:
 
 # Starts the application with locally build prod-images.
 # Hint: Stop local webserver before, to free port 80
+# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 run-prod-local:
 	make build-prod-local container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up $(service)
@@ -154,16 +156,6 @@ docs-user:
 create-interfaces:
 	make run-task-runner task=create-interfaces
 
-#copy-packages:
-#	mkdir -p node_modules
-#	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
-
-# Use parameter packages=<package-name> to install new package
-# Otherwise it installs the packages defined in package.json
-# Example: make install-package packages="leftpad babel"
-#install-packages:
-#	docker exec testcenter-frontend-dev npm install $(packages)
-
 init-env:
 	cp dist-src/.env .env
 
@@ -197,3 +189,7 @@ new-version:
 fix-docker-user:
 	$(shell sed -i 's/user_id_placeholder/$(shell id -u)/g' .env)
 	$(shell sed -i 's/user_group_placeholder/$(shell id -g)/g' .env)
+
+# Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
+re-init-backend:
+	docker exec -it testcenter-backend php /var/www/html/inititailze.php

@@ -47,9 +47,10 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 
 ### Test Coverage
 
-* [Backend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-backend-unit/report/index.html)
+* [Backend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-backend-unit/index.html)
 * [Frontend by Unit-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-unit/report/index.html)
 * [Broadcasting-Service by Unit-Tets](https://iqb-berlin.github.io/testcenter/dist/test-coverage-broadcasting-service-unit/lcov-report/index.html)
+* [Frontend by System-Tests](https://iqb-berlin.github.io/testcenter/dist/test-coverage-frontend-system/report/index.html)
 
 ### Misc
 * [Install and run without docker](https://iqb-berlin.github.io/testcenter/dist/installation-local)

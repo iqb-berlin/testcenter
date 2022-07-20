@@ -1,0 +1,2 @@
+Small service for the so called supervising monitor of the IQB-testcenter. It's purpose is
+to allow websocket connections between the backend and the clients.
