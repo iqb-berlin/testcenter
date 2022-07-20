@@ -14,9 +14,9 @@ COPY broadcasting-service/package-lock.json .
 RUN npm install
 
 COPY broadcasting-service/src /app/src
-COPY broadcasting-service/nest-cli.docker.json /app/nest-cli.json
-COPY broadcasting-service/tsconfig.json .
-COPY broadcasting-service/tsconfig.build.json .
+COPY broadcasting-service/docker/nest-cli.json /app/nest-cli.json
+COPY broadcasting-service/tsconfig.json /app/tsconfig.json
+COPY broadcasting-service/tsconfig.build.json /app/tsconfig.build.json
 COPY common /common
 
 RUN npx nest build
@@ -26,9 +26,15 @@ EXPOSE 3000
 COPY broadcasting-service/docker/entrypoint.sh /entrypoint.sh
 ENTRYPOINT /entrypoint.sh
 
+FROM dev as builder
+RUN ln -s /app-temp/node_modules /app/node_modules
+
+WORKDIR /app
+RUN npx nest build -p tsconfig.build.json
+
 FROM node:${NODE_VERSION} as prod
 
-COPY --from=dev /app/dist /app
+COPY --from=builder /app/dist /app
 
 EXPOSE 80
 
