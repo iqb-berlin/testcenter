@@ -12,14 +12,14 @@ The source code and therefore the application is separated in three submodules:
 
 ## Coding Standards
 
-### Typescript
-We are using ESLint with the base or [airbnb](https://www.npmjs.com/package/eslint-config-airbnb)
+### Typescript & Javascript
+We are using ESLint with the base or [AirBnB](https://www.npmjs.com/package/eslint-config-airbnb)
 with our [own rules](https://www.npmjs.com/package/@iqb/eslint-config) on top.
 
-#### PHP
+### PHP
 Following mostly [PSR-12](https://www.php-fig.org/psr/psr-12/)
 
-Most important:
+### Most important rules:
 * Class names MUST be declared in StudlyCaps ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 * Method names MUST be declared in camelCase ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 * Class constants MUST be declared in all upper case with underscore separators.
@@ -28,12 +28,14 @@ Most important:
 * Files SHOULD either declare symbols (classes, functions, constants, etc.) or cause side-effects
   (e.g. generate output, change .ini settings, etc.) but SHOULD NOT do both. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 
-### Various Rules and hints
+#### Various Rules and hints
 * Always put a white line below function signature and two above!
-* Use typed function signature as of php 7.1, arrays can be used as type, but will be replaced by typed array classes
-  once 7.4 is default.
-* Never `require` or `include` anywhere, program uses autoload for all classes from the `classes`-dir.
-  Exception: Unit-tests, where we want to define dependencies explicit in the test-file itself (and nowhere else).
-* Always throw exceptions in case of error. They will be globally caught by ErrorHandler.
+* Types:
+  * **Use native type hinting of modern PHP.**
+  * Use PhpDoc *only* if PHP's  
+  * Don't use both!
+  * There are still no typed arrays in PHP. We use collection-classes to circumvent this.
+* **Never `require` or `include` anywhere**, program uses autoload for all classes from the `classes`-dir.  **Exception**: Unit-tests, where we want to define dependencies explicit in the test-file itself (and nowhere else).
+* **Always throw exceptions in case of error.** They will be globally caught by ErrorHandler.
   When you are in the situation of catching an exception anywhere else it's 99% better not to throw the exception
-  (since it's not an exception case most likely) but return false or null ot the like.
+  (since it's not an exception case most likely) but return false or null or the like.
