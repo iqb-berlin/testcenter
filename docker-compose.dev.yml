@@ -71,7 +71,7 @@ services:
         HOST_UID: ${UID}
     volumes:
       - ./common:/common
-      - ./broadcasting-service/nest-cli.docker.json:/app/nest-cli.json
+      - ./broadcasting-service/docker/nest-cli.json:/app/nest-cli.json
       - ./broadcasting-service/src:/app/src
       - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
       - ./broadcasting-service/tsconfig.json:/app/tsconfig.json
