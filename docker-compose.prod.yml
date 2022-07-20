@@ -9,12 +9,20 @@ services:
 
   testcenter-backend:
     build:
+      context: .
+      dockerfile: backend/Dockerfile
       target: prod
+    volumes:
+      - ./data:/var/www/data
 
   testcenter-frontend:
     build:
+      context: .
+      dockerfile: frontend/Dockerfile
       target: prod
 
   testcenter-broadcasting-service:
     build:
+      context: .
+      dockerfile: broadcasting-service/Dockerfile
       target: prod
