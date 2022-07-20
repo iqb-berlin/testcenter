@@ -5,34 +5,46 @@ init:
 	make composer-install
 	make fix-docker-user
 
+# Build all images of the project or a specified one as dev-images.
+# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
 
+# Starts the application.
+# Hint: Stop local webserver before, to free port 80
 run:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(service)
 
-run-detached:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(service)
-
-# use locally built prod images
+# Build all images of the project or a specified one as prod-images.
+# Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 build-prod-local:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(service)
 
+# Starts the application with locally build prod-images.
+# Hint: Stop local webserver before, to free port 80
 run-prod-local:
 	make build-prod-local container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up $(service)
 
+# Stops the application.
 stop:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(service)
 
+
+# Stops the application. Deletes all containers.
 down:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down --remove-orphans $(service)
 
+
+# Performs a single task on the whole project using the task-runner
+# Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 run-task-runner:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
 		--rm --no-deps \
 		testcenter-task-runner npm run $(task)
 
+
+# Performs unit tests of the backend (with PHPUnit) and creates code-coverage-report
 test-backend-unit:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
 		--rm --no-deps --entrypoint "" \
@@ -59,8 +71,8 @@ test-backend-api-mysql:
 
 
 # Performs a tests suite from the initialization tests.
-# Example `make test-backend-initialization test=general/db-versions`
-# All files in backend/test/initialization/tests for are available tests.
+# Param test - (All files in backend/test/initialization/tests for are available tests.)
+# Example: `make test-backend-initialization test=general/db-versions`
 test-backend-initialization:
 	TEST_NAME=$(test) \
 		docker-compose -f docker-compose.initialization-test.yml up --force-recreate --renew-anon-volumes --abort-on-container-exit
@@ -97,6 +109,7 @@ test-frontend-unit:
 test-frontend-integration:
 # TODO implement integration tests with CyPress against mocked backend with Prism
 
+
 # Performs some integration tests with CyPress against real MySql-DB and real backend in interactive mode.
 test-system:
 	CURRENT_UID=$(shell id -u):$(shell id -g) \
@@ -105,13 +118,15 @@ test-system:
 			--force-recreate \
 			--renew-anon-volumes
 
-# Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI. Creates a code coverage report for the frontend
+
+# Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI. Creates a code coverage report for the frontend.
 test-system-headless:
 	docker-compose -f docker-compose.system-test.yml up \
 		--abort-on-container-exit \
 		--force-recreate \
 		--renew-anon-volumes
 
+# Updates all automatic generated documentation files.
 update-docs:
 	make docs-frontend-compodoc
 	make docs-broadcasting-service-compodoc
@@ -119,18 +134,23 @@ update-docs:
 	make docs-api-specs
 	make docs-user
 
+# Creates code documentation (with Compodoc) of the frontend.
 docs-frontend-compodoc:
 	make run-task-runner task=frontend:update-compodoc
 
+# Creates code documentation (with Compodoc) of the broadcasting-service.
 docs-broadcasting-service-compodoc:
 	make run-task-runner task=broadcasting-service:update-compodoc
 
+# Creates a documentation (with ReDoc) of the the API between frontend and backend
 docs-api-specs:
 	make run-task-runner task=backend:update-specs
 
+# Creates some documentation-files about custom-texts, booklet-configurations and other out of the definitions.
 docs-user:
 	make run-task-runner task=create-docs
 
+# Creates some interfaces for booklets and test-modes out of the definitions.
 create-interfaces:
 	make run-task-runner task=create-interfaces
 
