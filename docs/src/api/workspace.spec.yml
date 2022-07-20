@@ -130,29 +130,29 @@ paths:
                 items:
                   type: object
                   properties:
-                    groupname:
+                    groupName:
                       type: string
                     bookletsStarted:
                       type: integer
-                    num_units_min:
-                      type: string
-                    num_units_max:
-                      type: string
-                    num_units_total:
-                      type: string
-                    lastchange:
-                      type: string
-                      description: timestamp
-                    num_units_mean:
+                    numUnitsMin:
                       type: integer
+                    numUnitsMax:
+                      type: integer
+                    numUnitsTotal:
+                      type: integer
+                    numUnitsAvg:
+                      type: integer
+                    lastChange:
+                      type: integer
+                      description: timestamp
               example:
-                - groupname: sample_group
-                  bookletsStarted: 1
-                  num_units_min: '1'
-                  num_units_max: '1'
-                  num_units_total: '1'
-                  lastchange: '1567776853037'
-                  num_units_mean: 1
+                - groupName: sample_group
+                  bookletsStarted: 2
+                  numUnitsMin: 0
+                  numUnitsMax: 1
+                  numUnitsTotal: 1
+                  numUnitsAvg: 0.5
+                  lastChange: 2021
         "401":
           description: Not authenticated
         "403":
