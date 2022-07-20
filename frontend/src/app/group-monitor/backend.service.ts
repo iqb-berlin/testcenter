@@ -10,7 +10,7 @@ import { ApiError } from '../app.interfaces';
 
 @Injectable()
 export class BackendService extends WebsocketBackendService<TestSessionData[]> {
-  pollingEndpoint = '/monitor/test-sessions';
+  pollingEndpoint = 'monitor/test-sessions';
   pollingInterval = 5000;
   wsChannelName = 'test-sessions';
   initialData: TestSessionData[] = [];
