@@ -61,6 +61,7 @@ services:
       - ./frontend/node_modules:/app/node_modules
     networks:
       - testcenter
+    command: "npx ng serve --configuration dev --disable-host-check --host 0.0.0.0"
 
   testcenter-broadcasting-service:
     build:

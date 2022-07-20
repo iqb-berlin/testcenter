@@ -1,3 +1,4 @@
+# Initialized the Application. Run this right after checking out the Repo.
 init:
 	make init-env
 	make init-frontend
@@ -66,7 +67,6 @@ test-backend-api:
 
 # Performs Api-Tests against MySql (takes a long time, run manually when needed)
 test-backend-api-mysql:
-	docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql build
 	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
 		docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
 		--force-recreate --renew-anon-volumes --abort-on-container-exit

@@ -6,4 +6,6 @@ rsync -arvq /app-temp/node_modules/ /app/node_modules
 
 cd /app
 chown -R $HOST_UID *
-npx ng serve --configuration dev --disable-host-check --host 0.0.0.0
+
+# Execute passed command
+$@

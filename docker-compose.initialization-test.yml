@@ -43,7 +43,7 @@ services:
       - ./backend/index.php:/var/www/backend/index.php
       - ./backend/initialize.php:/var/www/backend/initialize.php
       - ./backend/routes.php:/var/www/backend/routes.php
-      - ./backend/src:/var/www/backend/src
+      - ./backend/src:/var/www/backend/srcmake test
       - ./backend/test:/var/www/backend/test
       - ./definitions:/var/www/definitions
       - ./package.json:/var/www/package.original.json
@@ -54,18 +54,22 @@ services:
       testcenter-initialization-test:
 
   testcenter-initialization-test-runner:
+    image: iqbberlin/testcenter-task-runner
     profiles:
       - dredd_test_against_mysql
     build:
       context: .
       dockerfile: runner.Dockerfile
-    entrypoint: ["npm", "run", "backend:dredd-test"]
+    command: "npm run backend:dredd-test"
     container_name: testcenter-initialization-test-runner
     environment:
       TC_API_URL: http://testcenter-initialization-test-backend
     volumes:
-      - ./sampledata /app/sampledata
-      - ./test /app/test
+      - ./sampledata:/app/sampledata
+      - ./test:/app/test
+      - ./scripts:/app/scripts
+      - ./docs:/app/docs
+      - ./package.json:/app-temp/package.json
     depends_on:
       - testcenter-initialization-test-db
       - testcenter-initialization-test-backend

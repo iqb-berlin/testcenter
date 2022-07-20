@@ -8,7 +8,7 @@ services:
   testcenter-system-test-frontend:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-    entrypoint: "npx ng run testcenter-frontend:system-test"
+    command: "npx ng run testcenter-frontend:system-test"
     environment:
       - DISPLAY
       - CYPRESS_TC_TESTMODE=gui # cypress has to know this before setupNodeEvents

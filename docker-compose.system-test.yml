@@ -44,6 +44,8 @@ services:
       context: .
       dockerfile: backend/Dockerfile
       target: dev
+      args:
+        HOST_UID: ${UID}
     container_name: testcenter-system-test-backend
     image: iqbberlin/testcenter-backend:current
 
@@ -84,6 +86,8 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       target: dev
+      args:
+        HOST_UID: ${UID}
     image: iqbberlin/testcenter-frontend:current
     container_name: testcenter-system-test-frontend
     labels:
@@ -105,7 +109,7 @@ services:
     depends_on:
       - testcenter-system-test-backend
       - testcenter-system-test-db
-    entrypoint: "npx ng run testcenter-frontend:system-test-headless"
+    command: "npx ng run testcenter-frontend:system-test-headless"
     environment:
       - TERM=xterm
       - TESTMODE_REAL_DATA=yes
@@ -117,6 +121,8 @@ services:
       context: .
       dockerfile: broadcasting-service/Dockerfile
       target: dev
+      args:
+        HOST_UID: ${UID}
     image: iqbberlin/testcenter-broadcasting-service:current
     container_name: testcenter-system-test-broadcasting-service
     labels:
@@ -125,7 +131,7 @@ services:
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
     volumes:
-      - ./broadcasting-service/nest-cli.docker.json:/app/nest-cli.json
+      - ./broadcasting-service/docker/nest-cli.json:/app/nest-cli.json
       - ./broadcasting-service/package.json:/app/package.json
       - ./broadcasting-service/src:/app/src
       - ./broadcasting-service/tsconfig.build.json:/app/tsconfig.build.json
