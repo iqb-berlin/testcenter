@@ -1,24 +1,17 @@
-ARG NODE_VERSION=14.15.0
+FROM iqbberlin/testcenter-frontend-dev-base:latest
 
-FROM node:${NODE_VERSION}
+ARG NODE_ENV=development
+ARG HOST_UID
+ENV HOST_UID=$HOST_UID
 
-WORKDIR /app
+RUN mkdir /app-temp
+WORKDIR /app-temp
+
 COPY package.json .
 COPY package-lock.json .
 RUN npm install --only=dev
 
-COPY README.md /app/README.md
-COPY broadcasting-service /app/broadcasting-service
-COPY definitions /app/definitions
-COPY docker-compose.yml /app/docker-compose.yml
-COPY dist-src /app/dist-src
-COPY docs /app/docs
-COPY frontend /app/frontend
-COPY sampledata /app/sampledata
-COPY scripts /app/scripts
-COPY test /app/test
+RUN mkdir -p /app/tmp
 
-RUN mkdir /app/tmp
-
-# will be overwritten by makefile
-CMD ["sleep", "infinity"]
+COPY docker/runner-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

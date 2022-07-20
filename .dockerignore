@@ -2,7 +2,6 @@
 #.gitignore
 #.idea
 data
-node_modules
 tmp
 config
 #dist

@@ -106,11 +106,14 @@ const clearDistDir = () =>
 
 const createReleasePackage = async () =>
   merge([
-    gulp.src(`${rootPath}/dist-src/*`),
+    gulp.src(`${rootPath}/dist-src/docker-compose*`),
+    gulp.src(`${rootPath}/dist-src/manage.sh`),
+    gulp.src(`${rootPath}/dist-src/config/cert_config.yml`, { base: `${rootPath}/dist-src` }),
+    gulp.src(`${rootPath}/dist-src/.env`),
     gulp.src(`${rootPath}/docker-compose.yml`),
     gulp.src(`${rootPath}/CHANGELOG.md`)
   ])
-    .pipe(archiver(`${version.full}@${version.full}+${version.full}.tar`))
+    .pipe(archiver(`testcenter-${version.full}.tar`))
     .pipe(gulp.dest(`${rootPath}/dist`));
 
 /**

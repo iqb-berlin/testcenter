@@ -2,30 +2,25 @@ init:
 	make init-env
 	make init-frontend
 	make init-ensure-file-rights
-	make download-simple-player
 	make composer-install
+	make fix-docker-user
 
 build:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml build $(service)
 
 run:
-#	make build container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up $(service)
 
 run-detached:
-	make build container=$(service)
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d $(service)
 
-build-prod:
+# use locally built prod images
+build-prod-local:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml build $(service)
 
-run-prod:
-	build-prod container=$(service)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up $(service)
-
-run-prod-detached:
-	build-prod container=$(service)
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.prod.yml up -d $(service)
+run-prod-local:
+	make build-prod-local container=$(service)
+	docker-compose -f docker-compose.yml -f docker-compose.prod.yml up $(service)
 
 stop:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml stop $(service)
@@ -48,15 +43,20 @@ test-backend-unit:
 		--coverage-html /docs/dist/test-coverage-backend-unit \
 		test/unit/.
 
-# TODO backend and db must be running
-test-backend-dredd:
+
+# Performs Api-Tests against in-memory DB (sqlite, for performance)
+test-backend-api:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d testcenter-db testcenter-backend
 	make run-task-runner task=backend:dredd-test
 
-test-backend-dredd-mysql:
+
+# Performs Api-Tests against MySql (takes a long time, run manually when needed)
+test-backend-api-mysql:
 	docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql build
 	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
 		docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
 		--force-recreate --renew-anon-volumes --abort-on-container-exit
+
 
 # Performs a tests suite from the initialization tests.
 # Example `make test-backend-initialization test=general/db-versions`
@@ -69,7 +69,6 @@ test-backend-initialization:
 # Performs some tests around the initialization script like upgrading the db-schema.
 test-backend-initialization-general:
 	make stop
-	docker-compose -f docker-compose.initialization-test.yml build
 	make test-backend-initialization test=general/db-versions
 	make test-backend-initialization test=general/vanilla-installation
 	make test-backend-initialization test=general/no-db-but-files
@@ -78,7 +77,6 @@ test-backend-initialization-general:
 
 # Performs unit tests with Jest for the backend. Creates a code-coverage report.
 test-broadcasting-service-unit:
-	make build service=testcenter-broadcasting-service
 	docker run \
 		-v $(CURDIR)/docs/dist:/docs/dist \
 		--entrypoint npx \
@@ -88,7 +86,6 @@ test-broadcasting-service-unit:
 
 # Performs unit tests with Karma for the frontend. Creates a code-coverage report.
 test-frontend-unit:
-	make build service=testcenter-frontend
 	docker run \
 		-v $(CURDIR)/docs/dist:/docs/dist \
 		--entrypoint npx \
@@ -137,7 +134,6 @@ docs-user:
 create-interfaces:
 	make run-task-runner task=create-interfaces
 
-
 #copy-packages:
 #	mkdir -p node_modules
 #	docker cp testcenter-frontend-dev:/app/node_modules/. node_modules
@@ -148,14 +144,8 @@ create-interfaces:
 #install-packages:
 #	docker exec testcenter-frontend-dev npm install $(packages)
 
-
-
 init-env:
 	cp dist-src/.env .env
-
-download-simple-player:
-	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/verona-player-simple-4.0.0.html -O sampledata/verona-player-simple-4.0.0.html
-	wget https://raw.githubusercontent.com/iqb-berlin/verona-player-simple/main/sample-data/introduction-unit.htm -O sampledata/introduction-unit.htm
 
 composer-install: # TODO 13 - is this necessary? or automatically done with building the container
 	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
@@ -184,4 +174,6 @@ init-ensure-file-rights:
 new-version:
 	make run-task-runner task="new-version $(version)"
 
-
+fix-docker-user:
+	$(shell sed -i 's/user_id_placeholder/$(shell id -u)/g' .env)
+	$(shell sed -i 's/user_group_placeholder/$(shell id -g)/g' .env)
