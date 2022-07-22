@@ -3,7 +3,7 @@ init:
 	make init-env
 	make init-frontend
 	make init-ensure-file-rights
-	make composer-install
+	#make composer-install
 	make fix-docker-user
 
 # Build all images of the project or a specified one as dev-images.
@@ -158,7 +158,7 @@ create-interfaces:
 	make run-task-runner task=create-interfaces
 
 init-env:
-	cp dist-src/.env .env
+	cp .env-default .env
 
 composer-install: # TODO 13 - is this necessary? or automatically done with building the container
 	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
