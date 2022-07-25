@@ -17,6 +17,7 @@ Ordner Struktur -> Beide zusammen
 [B] docker Kram in den Unterprojekten ebenfalls
 [B] Ordnerstruktur / Docker/compose files überdenken: Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
 [B] sqlite Datei in Testordner überführen
+[B] Api nach definitions
 
 Docker
 [-] port 80 loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
