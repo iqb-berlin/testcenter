@@ -16,9 +16,10 @@ Ordner Struktur
 [ ] docker-compose in eigenes Verzeichnis
 [ ] docker Kram in den Unterprojekten ebenfalls
 [ ] Ordnerstruktur / Docker/compose files überdenken: Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
+[ ] sqlite Datei in Testordner überführen
 
 Docker
-[R] port 80 loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
+[-] port 80 loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
 [x] docker repository ist nicht von außen erreichbar -> reagieren? -> Dockerfile beilegen
 
 
@@ -30,21 +31,22 @@ Misc
 [x] $TESTUSER_NAME don't have to be env
 [-] Do something with dredd-report
 [x] node_modules / npm workspaces struktur evaluieren 
-[ ] ua-parser hack raus FE docker
+[P] ua-parser hack raus FE docker
 [x] package-lock.json?
 [P] funktoniert das Rollback überhaupt bei den SQl-patches?
-[x] next.sql als anonyme neue version (wenn die neue versionsnummer noch nicht feststeht) 
+[x] next.sql als anonyme neue version (wenn die neue versionsnummer noch nicht feststeht)
+[ ] Tickets zusammenführen
 
 Cypress
 [x] Letzten Stand besorgen
-[ ] Gegen Testdaten testen (nicht auf Ursprungszustand verlassen)
-[ ] CSS-Selektoren überarbeiten
-[ ] Ordner- und Dateinamen
-[ ] watch e2e-tests also with docker
+[x] Gegen Testdaten testen (nicht auf Ursprungszustand verlassen)
+[x] CSS-Selektoren überarbeiten
+[x] Ordner- und Dateinamen
+[x] watch e2e-tests also with docker
 
 Frontend
 [R] FileSaver selber schreiben - in Typescript (includes Ordner weg)
-[ ] dependencies entschlacken
+[P] dependencies entschlacken
 [ ] angular 14
 [ ] enable "strictNullChecks": true, is tsconfig
 [ ] node 16
@@ -57,12 +59,8 @@ Frontend
 
 Broadcasting_Service
 [ ] enable "strictNullChecks": true, is tsconfig
-[ ] node 16
-[ ] nest update
-
-
-Database
-[ ] sqlite Datei in Testordner überführen
+[R] node 16
+[R] nest update
 
 
 Backend
@@ -75,3 +73,5 @@ Backend
 
 Docs
 [ ] Installation local
+
+
