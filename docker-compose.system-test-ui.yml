@@ -9,3 +9,4 @@ services:
       DISPLAY:
       CYPRESS_TC_TESTMODE: "gui" # cypress has to know this before setupNodeEvents
       TC_FRONTEND_RUN_COMMAND: "npx ng run testcenter-frontend:system-test"
+    user: ${UID}:${GID}
