@@ -12,11 +12,11 @@ Install Script
 [x] Soll das install script generisch bleiben oder zum Projekt ziehen?
 
 
-Ordner Struktur
-[ ] docker-compose in eigenes Verzeichnis
-[ ] docker Kram in den Unterprojekten ebenfalls
-[ ] Ordnerstruktur / Docker/compose files überdenken: Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
-[ ] sqlite Datei in Testordner überführen
+Ordner Struktur -> Beide zusammen
+[B] docker-compose in eigenes Verzeichnis
+[B] docker Kram in den Unterprojekten ebenfalls
+[B] Ordnerstruktur / Docker/compose files überdenken: Ordner test & script zusammenfassen? (weil sie beide den runner verwenden)
+[B] sqlite Datei in Testordner überführen
 
 Docker
 [-] port 80 loswerden (https://madewithlove.com/blog/software-engineering/get-rid-of-ports-in-your-docker-development-setup-with-traefik/)
@@ -35,7 +35,7 @@ Misc
 [x] package-lock.json?
 [P] funktoniert das Rollback überhaupt bei den SQl-patches?
 [x] next.sql als anonyme neue version (wenn die neue versionsnummer noch nicht feststeht)
-[ ] Tickets zusammenführen
+[B] Tickets zusammenführen
 
 Cypress
 [x] Letzten Stand besorgen
@@ -45,7 +45,7 @@ Cypress
 [x] watch e2e-tests also with docker
 
 Frontend
-[R] FileSaver selber schreiben - in Typescript (includes Ordner weg)
+[R] FileSaver selber schreiben - in Typescript (includes Ordner weg) -> Pull request
 [P] dependencies entschlacken
 [ ] angular 14
 [ ] enable "strictNullChecks": true, is tsconfig
