@@ -67,6 +67,7 @@ test-backend-api:
 
 # Performs Api-Tests against MySql (takes a long time, run manually when needed)
 test-backend-api-mysql:
+	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
 	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
 		docker-compose -f docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
 		--force-recreate --renew-anon-volumes --abort-on-container-exit
@@ -82,7 +83,7 @@ test-backend-initialization:
 
 # Performs some tests around the initialization script like upgrading the db-schema.
 test-backend-initialization-general:
-	make stop
+	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
 	make test-backend-initialization test=general/db-versions
 	make test-backend-initialization test=general/vanilla-installation
 	make test-backend-initialization test=general/no-db-but-files
@@ -114,6 +115,7 @@ test-frontend-integration:
 
 # Performs some integration tests with CyPress against real MySql-DB and real backend in interactive mode.
 test-system:
+	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
 	docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
 		--abort-on-container-exit \
 		--force-recreate \
@@ -122,6 +124,7 @@ test-system:
 
 # Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI. Creates a code coverage report for the frontend.
 test-system-headless:
+	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
 	docker-compose -f docker-compose.system-test.yml up \
 		--abort-on-container-exit \
 		--force-recreate \
@@ -135,6 +138,7 @@ update-docs:
 	make docs-frontend-compodoc
 	make docs-api-specs
 	make docs-user
+
 
 # Creates code documentation (with Compodoc) of the frontend.
 docs-frontend-compodoc:
