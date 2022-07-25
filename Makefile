@@ -114,11 +114,10 @@ test-frontend-integration:
 
 # Performs some integration tests with CyPress against real MySql-DB and real backend in interactive mode.
 test-system:
-	CURRENT_UID=$(shell id -u):$(shell id -g) \
-		docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
-			--abort-on-container-exit \
-			--force-recreate \
-			--renew-anon-volumes
+	docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
+		--abort-on-container-exit \
+		--force-recreate \
+		--renew-anon-volumes
 
 
 # Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI. Creates a code coverage report for the frontend.

@@ -1,16 +1,11 @@
-# Compose file for local development and testing. Images are built from
-# local directories which need to be cloned from the repository.
+# Compose file for development of cypress-tests. Can use x-forwarding to run cypress in UI mode on your (Linus-) machine!
 version: '3.7'
-
-
 
 services:
   testcenter-system-test-frontend:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-    command: "npx ng run testcenter-frontend:system-test"
     environment:
-      - DISPLAY
-      - CYPRESS_TC_TESTMODE=gui # cypress has to know this before setupNodeEvents
-    user: ${CURRENT_UID}
-
+      DISPLAY:
+      CYPRESS_TC_TESTMODE: "gui" # cypress has to know this before setupNodeEvents
+      TC_FRONTEND_RUN_COMMAND: "npx ng run testcenter-frontend:system-test"

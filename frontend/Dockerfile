@@ -3,6 +3,8 @@ FROM iqbberlin/testcenter-frontend-dev-base:latest as dev
 ARG NODE_ENV=development
 ARG HOST_UID
 ENV HOST_UID=$HOST_UID
+
+# TODO move into the base container
 ENV CYPRESS_CACHE_FOLDER=/opt/cypress/cache
 RUN mkdir /opt/cypress
 RUN mkdir /opt/cypress/cache
@@ -37,6 +39,7 @@ RUN chmod -R 777 /opt/cypress/cache
 EXPOSE 4200
 
 COPY frontend/docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT /entrypoint.sh
 
 FROM dev as builder

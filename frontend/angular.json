@@ -159,7 +159,7 @@
         "system-test-headless": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "browser": "chrome",
+            "browser": "chromium",
             "devServerTarget": "testcenter-frontend:serve-coverage",
             "headless": true,
             "watch": false

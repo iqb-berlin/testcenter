@@ -7,5 +7,4 @@ rsync -arvq /app-temp/node_modules/ /app/node_modules
 cd /app
 chown -R $HOST_UID *
 
-# Execute passed command
-$@
+$TC_FRONTEND_RUN_COMMAND

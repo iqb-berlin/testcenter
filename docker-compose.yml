@@ -2,9 +2,6 @@
 # For concrete images check the environment specific override files.
 version: '3.7'
 
-x-env-php: &env-php
-  PHP_VERSION: 8.1.6
-
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
@@ -68,9 +65,6 @@ services:
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
     image: iqbberlin/testcenter-backend:current
-    build:
-      args:
-        <<: *env-php
     networks:
       testcenter:
 

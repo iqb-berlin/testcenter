@@ -1,5 +1,9 @@
-# Compose file for local development and testing. Images are built from
-# local directories which need to be cloned from the repository.
+# Compose-file for system-test
+# Unfortunately we cannot inherit from the base compose file, because docker compose merges arrays such as volumes and networks
+# a) it has to run in a different network
+# b) we definitely don't want to include the anonymous volumes for data and db from dev here
+# TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
+
 version: '3.7'
 
 x-env-mysql: &env-mysql
@@ -40,15 +44,7 @@ services:
       - testcenter-system-test
 
   testcenter-system-test-backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-      target: dev
-      args:
-        HOST_UID: ${UID}
     container_name: testcenter-system-test-backend
-    image: iqbberlin/testcenter-backend:current
-
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
@@ -57,11 +53,7 @@ services:
       SUPERUSER_NAME: super
       SUPERUSER_PASSWORD: user123
       WORKSPACE_NAME: example_workspace
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
-      - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
+    image: iqbberlin/testcenter-backend:current
     volumes:
       - ./backend/.htaccess:/var/www/backend/.htaccess
       - ./backend/autoload.php:/var/www/backend/autoload.php
@@ -70,7 +62,6 @@ services:
       - ./backend/routes.php:/var/www/backend/routes.php
       - ./backend/src:/var/www/backend/src
       - ./backend/test:/var/www/backend/test
-      - ./data:/var/www/data
       - ./database:/var/www/database
       - ./definitions:/var/www/definitions
       - ./docs/dist:/docs/dist
@@ -80,51 +71,58 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - testcenter-system-test
+    depends_on:
+      - testcenter-system-test-db
 
   testcenter-system-test-frontend:
+    container_name: testcenter-system-test-frontend
     build:
       context: .
       dockerfile: frontend/Dockerfile
       target: dev
       args:
         HOST_UID: ${UID}
+    environment:
+      TERM: xterm
+      TESTMODE_REAL_DATA: "yes" # TODO isn't this for backend only?
+      CYPRESS_CACHE_FOLDER: /opt/cypress/cache
+      CYPRESS_TC_TESTMODE: cli # cypress has to know this before setupNodeEvents
+      TC_FRONTEND_RUN_COMMAND: "npx ng run testcenter-frontend:system-test-headless"
     image: iqbberlin/testcenter-frontend:current
-    container_name: testcenter-system-test-frontend
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
+      - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
+      - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
     volumes:
       - ./common:/common
       - ./definitions:/definitions
+      - ./docs/dist:/docs/dist
       - ./frontend/.browserslistrc:/app/.browserslistrc
       - ./frontend/angular.json:/app/angular.json
       - ./frontend/cypress.config.js:/app/cypress.config.js
       - ./frontend/cypress:/app/cypress
+      - ./frontend/docker/entrypoint.sh:/entrypoint.sh
+      - ./frontend/node_modules:/app/node_modules
+      - ./frontend/package-lock.json:/app/package-lock.json
       - ./frontend/package.json:/app/package.json
       - ./frontend/src:/app/src
       - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./docs/dist:/docs/dist
     networks:
       - testcenter-system-test
     depends_on:
       - testcenter-system-test-backend
       - testcenter-system-test-db
-    command: "npx ng run testcenter-frontend:system-test-headless"
-    environment:
-      - TERM=xterm
-      - TESTMODE_REAL_DATA=yes
-      - CYPRESS_CACHE_FOLDER=/opt/cypress/cache
-      - CYPRESS_TC_TESTMODE=cli # cypress has to know this before setupNodeEvents
 
   testcenter-system-test-broadcasting-service:
+    container_name: testcenter-system-test-broadcasting-service
     build:
       context: .
-      dockerfile: broadcasting-service/Dockerfile
+      dockerfile: frontend/Dockerfile
       target: dev
       args:
         HOST_UID: ${UID}
     image: iqbberlin/testcenter-broadcasting-service:current
-    container_name: testcenter-system-test-broadcasting-service
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
