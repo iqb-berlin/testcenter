@@ -18,6 +18,6 @@ export interface TestSessionChange {
   timestamp: number;
 }
 
-export function isSessionChange(arg): arg is TestSessionChange {
+export function isSessionChange(arg: any): arg is TestSessionChange {
   return (arg.personId !== undefined) && (arg.timestamp !== undefined) && (arg.groupName !== undefined);
 }

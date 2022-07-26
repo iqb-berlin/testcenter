@@ -5,38 +5,38 @@ import {
   WebSocketServer,
   WsResponse
 } from '@nestjs/websockets';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Server, Client } from 'ws';
+import { Server, WebSocket } from 'ws';
 import { IncomingMessage } from 'http';
 import { Logger } from '@nestjs/common';
 import { BroadcastingEvent } from './interfaces';
-
-function getLastUrlPart(url: string) {
-  const arr = url.split('/').filter(e => e);
-  return arr[arr.length - 1];
-}
 
 @WebSocketGateway()
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(WebsocketGateway.name);
 
   @WebSocketServer()
-  private server: Server;
+  private server!: Server; // magically injected
 
-  private clients: { [token: string] : Client } = {};
+  private clients: { [token: string] : WebSocket } = {};
   private clientsCount$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  private clientLost$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  private clientLost$: Subject<string> = new Subject<string>();
 
-  handleConnection(client: Client, message: IncomingMessage): void {
-    const token = getLastUrlPart(message.url);
+  handleConnection(client: WebSocket, message: IncomingMessage): void {
+    const token = WebsocketGateway.getLastUrlPart(message.url as string);
 
     this.clients[token] = client;
     this.clientsCount$.next(Object.values(this.clients).length);
     this.logger.log(`client connected: ${token}`);
   }
 
-  handleDisconnect(client: Client): void {
+  static getLastUrlPart(url: string): string {
+    const arr = url.split('/').filter(e => e); // filter removes empty string tokens
+    return arr[arr.length - 1];
+  }
+
+  handleDisconnect(client: WebSocket): void {
     let disconnectedToken = '';
     Object.keys(this.clients).forEach((token: string) => {
       if (this.clients[token] === client) {
