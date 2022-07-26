@@ -31,27 +31,101 @@
                <div class="content getting-started">
                    <div class="content-data">
 
-<p>#Changelog</p>
-<h2 id="next">[next]</h2>
-<p>sdh</p>
-<h2 id="13011">13.0.11</h2>
-<p>big thing</p>
-<h2 id="1223">12.2.3</h2>
+<h1 id="changelog--upgrade-information">Changelog &amp; Upgrade Information</h1>
+<h2 id="1301">13.0.1</h2>
+<p>test</p>
+<h2 id="backend-1242">Backend 12.4.2</h2>
 <ul>
-<li>Fix critical bug which made the group monitor defunct in live-Mode!</li>
+<li>radically speed up initialization and tests and fix workspace loading issues</li>
+</ul>
+<h2 id="backend-1241">Backend 12.4.1</h2>
+<ul>
+<li>Update PHP from 7.4.22 to 7.4.29 (patch) and Apache to 2.4.53</li>
+</ul>
+<h2 id="backend-1240">Backend 12.4.0</h2>
+<h3 id="new-feature-so-called-resource-packages">New Feature: so-called resource-packages.</h3>
+<p>Uploaded zip files with the extension .itcr.zip - resource-packages - now get a special treatment:</p>
+<ol>
+<li>All files they contain are regarded as resources (Testtakers.xml and such would be handled as resources to).</li>
+<li>These files do NOT appear in the file list, not do the get validated</li>
+<li>Deleting the package causes all those files to be deleted.
+This can be used for special resources which shall be loaded by the player via <em>directDowlaodURL</em>. But pay attention:
+Those get neither preloaded like the rest of the booklet nor do they count into the size of the calculation of the test!
+Example applications: GeoeGebra (needs to fetch 70+ files), or large videos which shall be streamed.</li>
+</ol>
+<p>You can declare now dependencies of Units to some resource-files or -packages in the unit.xml to make the validator
+aware of it:</p>
+<div><pre class="line-numbers"><code class="language-none">  &lt;Dependencies&gt;
+    &lt;File&gt;sample_resource_package.itcr.zip&lt;/File&gt;
+  &lt;/Dependencies&gt;</code></pre></div><h3 id="bugfixes">Bugfixes</h3>
+<ul>
+<li>(#241) Fix a bug which occurred, when a Booklet was assigned to a Login with mode=&#39;monitor-group&#39;.</li>
+<li>(#388) Fix various bugs in the context of the Zip-File Upload.</li>
+</ul>
+<h2 id="1233">12.3.3</h2>
+<h3 id="bugfixes-1">Bugfixes</h3>
+<ul>
+<li>(#239, #238) Fix file reading issues in initialization</li>
+</ul>
+<h2 id="1230">12.3.0</h2>
+<h3 id="bugfixes-2">Bugfixes</h3>
+<ul>
+<li>(#366) Fix: In live-mode the group-monitor didn&#39;t update when Testtakers.XMLs get updated or deleted.</li>
+</ul>
+<h3 id="result-data--group-monitor">Result-Data / Group-Monitor</h3>
+<ul>
+<li>(#231) Logins of the same name (created with <code>hot-run-restart</code>-mode) get now a number into there display-name to be 
+ distinguishable. In result/log-data export, this number is stored in the field <code>code</code>.</li>
+</ul>
+<h2 id="backend-1223">Backend 12.2.3</h2>
+<h3 id="bugfixes-3">Bugfixes</h3>
+<ul>
+<li>Fix critical bug in communication between broadcasting-service and backend</li>
+</ul>
+<h2 id="backend-1221">Backend 12.2.1</h2>
+<p>Set a maximum for filenames in workspace of 120 characters.</p>
+<h2 id="backend-1222">Backend 12.2.2</h2>
+<ul>
+<li>massive performance improvement by caching file information in the DB.</li>
+</ul>
+<h2 id="frontend-1217">Frontend 12.1.7</h2>
+<ul>
+<li>(#385) Fix Bug: If testee is on the please-enter-code-screen and group-monitor moves him to the same block,
+it should become unlocked (but didn&#39;t).</li>
+</ul>
+<h2 id="frontend-216">Frontend 2.1.6</h2>
+<ul>
+<li>(#382) When &quot;Finish Test&quot; gets hit, NavigationRestrictions will be checked.</li>
+</ul>
+<h2 id="frontend-1214">Frontend 12.1.4</h2>
+<ul>
+<li>Fix Navigation Bug from 12.1.3: When a testlet had a locking code, but was unlocked, the unit didn&#39;t get tested
+for force_presentation_complete/force_response_complete when leaving.</li>
+</ul>
+<h2 id="frontend-1213">Frontend 12.1.3</h2>
+<ul>
+<li>Various Bugfixes:</li>
+<li>(#361) clock and messages in  demo-mode are broken</li>
+<li>(#373, #359, #376, #358, #374) could not leave unit behind codeword when navigationRestrictions</li>
+<li>(#379, #372) testee was required to enter codeword even when forced into block by monitor</li>
+</ul>
+<h2 id="frontend-1212">Frontend 12.1.2</h2>
+<ul>
+<li>Fix Login on Safari</li>
 </ul>
 <h2 id="frontend-1211">Frontend 12.1.1</h2>
 <ul>
-<li>Fix critical bug in debouncing responses between frontend and backend which led to dataloss in case of very fast 
- navigation between units</li>
+<li>Fix critical bug in debouncing responses between frontend and backend which led to dataloss in case of very fast
+navigation between units</li>
 </ul>
 <h2 id="frontend-1210">Frontend 12.1.0</h2>
 <ul>
 <li>There are different login-button for admin-users and for testees now.</li>
 </ul>
-<h2 id="backend-1222">Backend 12.2.2</h2>
+<h2 id="frontend-1203">Frontend 12.0.3</h2>
+<p>Various Bugfixes:</p>
 <ul>
-<li>massive performance improvement by caching file information in the DB.</li>
+<li>(#341) When you visited a test in demo-mode as a monitor, and terminated it, you returned to the starter but didn&#39;t see the monitor-monitor button again. That got fixed.</li>
 </ul>
 <h2 id="backend-1202">Backend 12.0.2</h2>
 <p>Fixes data-migration from versions before 12.0.0. With the update to version 12.0.0 the way, response-data is stored
@@ -74,22 +148,20 @@ changed. Data from existing units should be migrated, but that might fail in som
 <ul>
 <li>Timeout for admin sessions was extended to 10h (from 30min)</li>
 </ul>
-<h3 id="bugfixes">Bugfixes:</h3>
+<h3 id="bugfixes-4">Bugfixes:</h3>
 <ul>
 <li>Wrong numbers in Results overview</li>
 <li>Handle bogus Player-Metadata</li>
 </ul>
-<h2 id="frontend-1201">Frontend 12.0.1</h2>
-<p>Fix critical bug in login</p>
-<h2 id="backend-1200">Backend 12.0.0</h2>
-<p>This update makes the Teststudio Verona3- and 4 compatible.</p>
+<h2 id="1200">12.0.0</h2>
+<p>This update makes the Tescenter Verona3- and 4 compatible.</p>
 <h3 id="endpoints">Endpoints</h3>
 <ul>
-<li>the responses-output from <code>/workspace/{ws_id}/responses</code> and <code>/workspace/{ws_id}/report/response</code>
+<li>the responses-output from <code>/workspace/{ws_id}/responses</code> and <code>/workspace/{ws_id}/report/response</code> 
 now contains the chunk names. eg: <code>{&quot;all&quot;:&quot;{\&quot;key\&quot;: \&quot;value\&quot;}&quot;</code> instead of <code>{\&quot;key\&quot;: \&quot;value\&quot;}</code></li>
 <li>new Endpoint <code>/{auth_token}/resource/{resource_name}</code> is an alternative way for fetching resources. It can be used as
 <code>directDownloadUrl</code>-parameter (see <a href="https://verona-interfaces.github.io/player/#operation-publish-vopStartCommand">here</a>)
-in Verona4-players.</li>
+in Verona4-players. </li>
 <li>Those deprecated endpoints are removed<ul>
 <li><code>[GET] /workspace/{ws_id}/logs</code></li>
 <li><code>[GET] /workspace/{ws_id}/reviews</code></li>
@@ -100,7 +172,7 @@ in Verona4-players.</li>
 </ul>
 <h3 id="xsd">XSD</h3>
 <ul>
-<li>in the <code>Booklet.xml</code>-format a new restriction is allowed: <code>&lt;DenyNavigationOnIncomplete&gt;</code>. It forbids the leaving of<br>units of a testlet under certain circumstances: if the unit was not presented oder responded completely. The attributes
+<li>in the <code>Booklet.xml</code>-format a new restriction is allowed: <code>&lt;DenyNavigationOnIncomplete&gt;</code>. It forbids the leaving of<br>units of a testlet under certain circumstances: if the unit was not presented oder responded completely. The attributes 
 <code>presentation</code> and <code>response</code> may have the values <code>OFF</code>, <code>ON</code> and <code>ALWAYS</code>. Always tells the testcenter, to check
 the completeness and response-progress everytime the unit shall be left regardless of teh direction. <code>ON</code> only checks
 if the testee want to proceed forwards.</li>
@@ -109,53 +181,18 @@ alias must be unique.</li>
 </ul>
 <h3 id="database">Database</h3>
 <ul>
-<li>The unit-data now gets stored in an additional table <code>test_data</code>, not in <code>tests</code> anymore to allow chunkwise updates.
-There will be a data-migration, but depending on the specific format of the player it can be possible, that
-previously edited units will not be restored correctly.</li>
+<li>The unit-data now gets stored in an additional table <code>test_data</code>, not in <code>tests</code> anymore to allow chunkwise updates. 
+There will be a data-migration, but depending on the specific format of the player it can be possible, that 
+previously edited units will not be restored correctly. </li>
 <li>See <code>scripts/sql-schema/patches.mysql.d/12.0.0</code>.</li>
 </ul>
-<h2 id="frontend-1200">Frontend 12.0.0</h2>
-<p>This Version implements Verona 3 and Verona 4 specs.</p>
-<h3 id="version-number">Version-Number</h3>
-<p>We synchronize version-numbers of front- and backend to 12 because there will be only one version-number in the future anyway.</p>
-<h3 id="fixes">Fixes</h3>
-<ul>
-<li>(Almost) all <a href="https://iqb-berlin.github.io/testcenter-frontend/booklet-config">defined booklet-parameters</a> should work now.</li>
-<li>Redesign of the Unit- and Page-Navigation.</li>
-<li>Improved error-handling (especially while loading tests).</li>
-<li>Improved behaviour while loading, make progress bar actually show progress.</li>
-<li>The sandboxing of the player&#39;s iframe is improved to maintain security and also allow links into new tabs.</li>
-</ul>
-<h3 id="new-features">New Features</h3>
-<ul>
-<li><a href="https://github.com/verona-interfaces/player">Verona 3 and Verona 4</a> compatible!</li>
-<li>New Navigation-paradigm:<ul>
-<li>Instead of hindering the user to enter a unit which is locked (by timer, by code oder because it&#39;s not loaded yet), it can now regardless
-be entered but will not be displayed. This allows the testee to go back or do whatever she wants when entering a locked unit instead of landing in
-a navigational limbo with no escape.</li>
-<li>Units, that have no timer get never locked now, and the testee is <strong>always</strong> allowed to return to them - even if (and this is new) there is a locked block
-between ths current and the target unit.</li>
-</ul>
-</li>
-<li>You can now restrict your units to can only be left when everything was seen and/or edited. For this there are
-booklet-parameter <code>force_presentation_complete</code> and <code>force_response_complete</code> as well as new Restriction-Element called <code>&lt;DenyNavigationOnIncomplete&gt;</code>.</li>
-<li>new useful booklet-parameters <code>restore_current_page_on_return</code>, <code>show_end_button_in_player</code>, <code>allow_player_to_terminate_test</code>, <code>lock_test_on_termination</code>.</li>
-</ul>
-<h3 id="known-issues">Known Issues</h3>
-<ul>
-<li>This version of the Testcenter is compatible with all known players that use the Verona2, Verona3 oder Verona4 interface. A noteworthy exception is the simple player 2.
-Because the dataParts where implemented wrongly (not stringified), it will not be able to restore previously entered unit data after relaod/re-login anymore
-(but apart from that work correctly).</li>
-<li>In Verona 2+ there is mode for <code>stateReportPolicy</code> called <code>on-demand</code>- This can be set in the
-booklet is still <em>not</em> supported by the testcenter. (It will fall back to <code>eager</code>). <a href="https://github.com/iqb-berlin/testcenter-frontend/issues/324">#324</a></li>
-</ul>
-<h2 id="backend-1160">Backend 11.6.0</h2>
-<p>This update refactors the CSV-output for various data: logs, reviews, test-results and sys-check-reports.
-The CSVs can now all be generated in the backend and retrieved via analogous endpoints. The data is also available
-as JSON. All CSVs contain BOMs now.</p>
+<h2 id="1160">11.6.0</h2>
+<p>This update refactors the CSV-output for various data: logs, reviews, test-results and sys-check-reports. 
+The CSVs can now all be generated in the backend and retrieved via analogous endpoints. The data is also available 
+as JSON. All CSVs contain BOMs now. </p>
 <h3 id="endpoints-1">Endpoints</h3>
 <ul>
-<li>The four new endpoints for retrieving reports:<ul>
+<li>The four new endpoints for retrieving reports: <ul>
 <li><code>[GET] /workspace/{ws_id}/report/log</code></li>
 <li><code>[GET] /workspace/{ws_id}/report/review</code></li>
 <li><code>[GET] /workspace/{ws_id}/report/response</code></li>
@@ -170,24 +207,26 @@ as JSON. All CSVs contain BOMs now.</p>
 </ul>
 </li>
 </ul>
-<h2 id="backend-150">Backend 1.5.0</h2>
+<h2 id="1150">11.5.0</h2>
 <p>Fixes some issues in the file-management.</p>
-<h2 id="backend-1120">Backend 11.2.0</h2>
+<h2 id="1120">11.2.0</h2>
 <p>Adds the missing second endpoint for the customization-module.</p>
 <h3 id="endpoints-2">Endpoints</h3>
 <ul>
 <li>contains the new endpoint <code>[PATCH] /system/config/custom-texts</code>, which updates the key-value-store for the frontend analogous to customTexts.</li>
 </ul>
-<h2 id="backend-1110">Backend 11.1.0</h2>
-<p>This update provides the API for the customziation-module.</p>
+<h2 id="1110">11.1.0</h2>
+<p>This update provides the API for the customziation-module.   </p>
 <h3 id="endpoints-3">Endpoints</h3>
 <ul>
 <li>contains the new endpoint <code>[PATCH] /system/config/app</code>, which updates the key-value-store for the frontend analogous to customTexts.</li>
-<li><code>[GET] /system/config</code> provides the key-value store &#39;app-config&#39; as well.<h3 id="database-1">Database</h3>
-</li>
+<li><code>[GET] /system/config</code> provides the key-value store &#39;app-config&#39; as well.</li>
+</ul>
+<h3 id="database-1">Database</h3>
+<ul>
 <li>See <code>scripts/sql-schema/patches.mysql.d/11.1.0</code></li>
 </ul>
-<h2 id="backend-1100">Backend 11.0.0</h2>
+<h2 id="1100">11.0.0</h2>
 <p>This update contains various changes around the improved Group-Monitor.</p>
 <h3 id="endpoints-4">Endpoints</h3>
 <ul>
@@ -195,28 +234,30 @@ as JSON. All CSVs contain BOMs now.</p>
 <li>A new endpoint where added: <code>/monitor/group/{group_name}/tests/unlock</code></li>
 <li>A new endpoint was added: <code>[POST] /test/{test_id}/connection-lost</code>. It can be triggered by a closing browser as well
 as from the broadcasting-service to notify a lost connection to the testController. Note: This endpoint does not
-need any credentials.<h3 id="database-2">Database</h3>
-</li>
+need any credentials.</li>
+</ul>
+<h3 id="database-2">Database</h3>
+<ul>
 <li>See <code>scripts/sql-schema/patches.mysql.d/11.0.0</code></li>
 </ul>
-<h2 id="backend-1000">Backend 10.0.0</h2>
+<h2 id="1000">10.0.0</h2>
 <p>This update does not contain new functionality. It&#39;s about the init/install script, which can do database-migration from
 older to newer versions by itself now. The version 10 indicates the beginning of an era with versioned database-schemas.
 There is no manual patching necessary anymore after an update. So changes in the DB does not force a new major-version
 anymore.</p>
-<h2 id="backend-920">Backend 9.2.0</h2>
+<h2 id="920">9.2.0</h2>
 <h3 id="xsd-1">XSD</h3>
 <ul>
 <li>Additional elements and attributes needed by teststudio-lite where added. They have no affect for the testcenter at
 the moment.</li>
 </ul>
-<h2 id="backend-910">Backend 9.1.0</h2>
+<h2 id="910">9.1.0</h2>
 <h3 id="endpoints-5">Endpoints</h3>
 <ul>
 <li>You can now insert an optional parameter <code>/alias/{alias}</code> in the end to obtain data if unit is defined with
 an alias in the booklet. This is an HotFix for <a href="https://github.com/iqb-berlin/testcenter-frontend/issues/261">https://github.com/iqb-berlin/testcenter-frontend/issues/261</a>.</li>
 </ul>
-<h2 id="backend-900">Backend 9.0.0</h2>
+<h2 id="900">9.0.0</h2>
 <p>The main content of this update is a complete refactoring of the (XML-)File-classes,
 Workspace validation and XML-File-Handling. The main goal was to keep validity and
 consistency of the workspaces. The refactoring shall also allow more and deeper validation
@@ -224,45 +265,49 @@ checks, update scripts and more in the future. The whole part of the software is
 with unit-tests galore.</p>
 <h3 id="requirements">Requirements</h3>
 <ul>
-<li><strong>PHP 7.4 is now required</strong><h3 id="endpoints-6">Endpoints</h3>
-</li>
+<li><strong>PHP 7.4 is now required</strong></li>
+</ul>
+<h3 id="endpoints-6">Endpoints</h3>
+<ul>
 <li>The <code>[GET] /workspace/{id}/validation</code> endpoint <strong>was removed completely</strong>.
 Validation takes now place on file upload and on <code>[GET] /workspace/{id}/files</code>.</li>
 <li>Return-Values and Status-Codes of <code>[POST] /workspace/{id}/file</code>
 and <code>[GET] /workspace/{id}/files</code> where changed <strong>significantly</strong> to contain the
-file&#39;s validation information as well as some metadata to display in the frontend.<h3 id="xml">XML</h3>
-</li>
-<li>XML-files without a reference to a XSD-Schema generate a warning now. Currently,
-the reference can only be done with the <code>noNamespaceSchemaLocation</code>-tag!</li>
+file&#39;s validation information as well as some metadata to display in the frontend.</li>
+</ul>
+<h3 id="xml">XML</h3>
+<ul>
+<li>XML-files without a reference to a XSD-Schema generate a warning now. Currently, 
+the reference can only be done with the <code>noNamespaceSchemaLocation</code>-tag! </li>
 <li>Player-Metadata as defined in <a href="https://github.com/verona-interfaces/player/blob/master/api/playermetadata.md">verona2</a>
-is supported now.<h3 id="config">Config</h3>
-</li>
-<li><code>config/system.json</code> contains a new (optional) value: <code>allowExternalXMLSchema</code>
+is supported now.</li>
+</ul>
+<h3 id="config">Config</h3>
+<ul>
+<li><code>config/system.json</code> contains a new (optional) value: <code>allowExternalXMLSchema</code> 
 (boolean, defaults to true) . It defines wether the program is allowed to fetch
 XSD schemas from external URLs.</li>
 </ul>
-<h2 id="frontend-900">Frontend 9.0.0</h2>
-<ul>
-<li>Update Angular version from 9 to 12</li>
-</ul>
-<h2 id="backend-800">Backend 8.0.0</h2>
+<h2 id="800">8.0.0</h2>
 <p>The role <code>monitor-study</code> / <code>workspaceMonitor</code> was removed completely and all functions and endpoints depending on it.</p>
 <h3 id="xml-1">XML</h3>
 <ul>
-<li>Mode <code>monitor-study</code> was removed from the <code>mode</code>-attribute<h3 id="endpoints-7">Endpoints</h3>
-</li>
+<li>Mode <code>monitor-study</code> was removed from the <code>mode</code>-attribute</li>
+</ul>
+<h3 id="endpoints-7">Endpoints</h3>
+<ul>
 <li>The following endpoints where removed</li>
 <li><code>[PATCH] /{ws_id}/tests/unlock</code></li>
 <li><code>[PATCH] /{ws_id}/tests/lock</code></li>
 <li><code>[GET] /{ws_id}/status</code></li>
 <li><code>[GET] /{ws_id}/booklets/started</code></li>
 </ul>
-<h2 id="backend-740">Backend 7.4.0</h2>
+<h2 id="740">7.4.0</h2>
 <h3 id="xml-2">XML</h3>
 <ul>
 <li>A new mode for logins is allowed now: <code>run-demo</code></li>
 </ul>
-<h2 id="backend-700">Backend 7.0.0</h2>
+<h2 id="700">7.0.0</h2>
 <h3 id="endpoints-8">Endpoints</h3>
 <ul>
 <li>Log- and State-Endpoints<ul>
@@ -270,44 +315,48 @@ XSD schemas from external URLs.</li>
 <li><code>[put] \test\{test_id}\log</code></li>
 <li><code>[patch] \test\{test_id}\unit\{unit_name}\state</code></li>
 <li><code>[put] \test\{test_id}\unit\{unit_name}\log</code><br>were changed:</li>
-<li>They all take items in the form<div><pre class="line-numbers"><code class="language-none">[
+<li>They all take items in the form</li>
+</ul>
+<div><pre class="line-numbers"><code class="language-none">[
   {
- &quot;key&quot;: __my_key__,
- &quot;content&quot;: __my_content__,
- &quot;timeStamp&quot;: 1234567891
+     &quot;key&quot;: __my_key__,
+     &quot;content&quot;: __my_content__,
+     &quot;timeStamp&quot;: 1234567891
   }
-]</code></pre></div></li>
+]</code></pre></div><ul>
 <li>A state change automatically whites a log now.</li>
 </ul>
 </li>
 <li><code>Timestamp</code> parameter in various endpoints is now <code>timeStamp</code> to resemble the Verona 2 Standard</li>
 </ul>
-<h2 id="backend-610">Backend 6.1.0</h2>
+<h2 id="610">6.1.0</h2>
 <h3 id="database-3">Database</h3>
 <ul>
 <li>You have to apply database structure changes,
 see <code>scripts/sql-schema/patches.mysql.sql</code></li>
 </ul>
-<h2 id="backend-600">Backend 6.0.0</h2>
+<h2 id="600">6.0.0</h2>
 <ul>
 <li>Hint: Sample Data/Player is still not supporting Verona 2.0 Interface,
 although compatible frontend version expect them!</li>
 </ul>
-<h2 id="backend-503">Backend 5.0.3</h2>
+<h2 id="503">5.0.3</h2>
 <h3 id="config-1">Config</h3>
 <ul>
 <li>You have to manipulate the contents of <code>config/system.json</code>: You need now two parameters
 <code>broadcastServiceUriPush</code> and <code>broadcastServiceUriSubscribe</code> instead of just <code>broadcastServiceUri</code>.</li>
 </ul>
-<h2 id="backend-400">Backend 4.0.0</h2>
+<h2 id="400">4.0.0</h2>
 <p>Introduced the group-monitor for the frist time.</p>
 <h3 id="xml-3">XML</h3>
 <h4 id="testtakers">Testtakers</h4>
 <ul>
 <li><code>name</code>-attribute of <code>&lt;group&gt;</code>-element is now called <code>&lt;id&gt;</code></li>
 <li>introduced optional attribute <code>label</code> for <code>&lt;group&gt;</code>-element</li>
-<li>in <code>&lt;Metadata&gt;</code>-element, only the optional <code>&lt;Description&gt;</code> field remains<h4 id="booklet">Booklet</h4>
-</li>
+<li>in <code>&lt;Metadata&gt;</code>-element, only the optional <code>&lt;Description&gt;</code> field remains</li>
+</ul>
+<h4 id="booklet">Booklet</h4>
+<ul>
 <li>changed defintion of <code>&lt;Testlet&gt;</code>-element to get rid of a warning,
 that <code>&lt;Unit&gt;</code> was not allowed in some legal constellations</li>
 <li><code>id</code>-attribute is now mandatory for testlets</li>
@@ -318,14 +367,19 @@ visible anywhere anyway), and first <code>&lt;Restrictions&gt;</code> can not co
 now renamed to <code>minutes</code> in context of <code>&lt;TimeMax&gt;</code> and to <code>code</code> for
 <code>&lt;CodeToEnter&gt;</code>-element.</li>
 <li>in <code>&lt;Metadata&gt;</code>-element, the elements <code>&lt;ID&gt;</code> and <code>&lt;Label&gt;</code> are mandatory,
-and <code>&lt;Description&gt;</code> is optional, the rest does not exist anymore.<h4 id="syscheck">SysCheck</h4>
-</li>
-<li>in <code>&lt;Metadata&gt;</code>-element, the elements <code>&lt;ID&gt;</code> and <code>&lt;Label&gt;</code> are mandatory,
-and <code>&lt;Description&gt;</code> is optional, the rest does not exist anymore.<h4 id="unit">Unit</h4>
-</li>
+and <code>&lt;Description&gt;</code> is optional, the rest does not exist anymore.</li>
+</ul>
+<h4 id="syscheck">SysCheck</h4>
+<ul>
 <li>in <code>&lt;Metadata&gt;</code>-element, the elements <code>&lt;ID&gt;</code> and <code>&lt;Label&gt;</code> are mandatory,
 and <code>&lt;Description&gt;</code> is optional, the rest does not exist anymore.</li>
 </ul>
+<h4 id="unit">Unit</h4>
+<ul>
+<li>in <code>&lt;Metadata&gt;</code>-element, the elements <code>&lt;ID&gt;</code> and <code>&lt;Label&gt;</code> are mandatory,
+and <code>&lt;Description&gt;</code> is optional, the rest does not exist anymore.</li>
+</ul>
+
 
 
 
