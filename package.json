@@ -78,7 +78,7 @@
   "devDependencies": {
     "@bytestream/gulp-archiver": "~2.1.0",
     "@compodoc/compodoc": "^1.1.11",
-    "@iqb/eslint-config": "1.0.2",
+    "@iqb/eslint-config": "^2.1.0",
     "@types/jest": "~27.4.1",
     "dredd": "^14.0.0",
     "eslint-plugin-html": "~6.2.0",
