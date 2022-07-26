@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
     title: ""
     description: 'This a spec for the (REST-) API of the IQB-Testcenter Application. It will be used to make backend''s e2e-test and a mock-server for frontend''s e2e-tests. It''s the basis for our vision of continuous integration.'
-    version: 13.0.10
+    version: 13.0.0
 paths:
     '/booklet/{booklet_name}':
         get:
@@ -536,7 +536,7 @@ paths:
                                     - broadcastingService
                                     - appConfig
                             example:
-                                version: 13.0.10
+                                version: 13.0.0
                                 customTexts: {}
                                 appConfig: {}
                                 broadcastingService: on
@@ -619,7 +619,7 @@ paths:
                     content:
                         application/json:
                             example:
-                                version: 13.0.10
+                                version: 13.0.0
     /workspaces:
         get:
             summary: 'get a list of workspaces'
@@ -1832,16 +1832,16 @@ paths:
                                 type: array
                                 items:
                                     type: object
-                                    properties: {groupname: {type: string}, bookletsStarted: {type: integer}, num_units_min: {type: string}, num_units_max: {type: string}, num_units_total: {type: string}, lastchange: {type: string, description: timestamp}, num_units_mean: {type: integer}}
+                                    properties: {groupName: {type: string}, bookletsStarted: {type: integer}, numUnitsMin: {type: integer}, numUnitsMax: {type: integer}, numUnitsTotal: {type: integer}, numUnitsAvg: {type: integer}, lastChange: {type: integer, description: timestamp}}
                             example:
                                 -
-                                    groupname: sample_group
-                                    bookletsStarted: 1
-                                    num_units_min: '1'
-                                    num_units_max: '1'
-                                    num_units_total: '1'
-                                    lastchange: '1567776853037'
-                                    num_units_mean: 1
+                                    groupName: sample_group
+                                    bookletsStarted: 2
+                                    numUnitsMin: 0
+                                    numUnitsMax: 1
+                                    numUnitsTotal: 1
+                                    numUnitsAvg: 0.5
+                                    lastChange: 2021
                 '401':
                     description: 'Not authenticated'
                 '403':
@@ -1942,6 +1942,7 @@ paths:
                                 $ref: '#/components/schemas/file_list'
                             example:
                                 Resource:
+                                    - {name: sample_resource_package.itcr.zip, size: 412, modificationTime: 1627545600, type: Resource, id: SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP, report: {info: ['Contains 1 files.']}, info: []}
                                     - {name: SAMPLE_UNITCONTENTS.HTM, size: 13392, modificationTime: 1615970109, type: Resource, id: SAMPLE_UNITCONTENTS.HTM, report: [], info: []}
                                     - {name: verona-player-simple-4.0.0.html, size: 29960, modificationTime: 1615970109, type: Resource, id: VERONA-PLAYER-SIMPLE-4.0.0.HTML, report: {info: ['Verona-Version: 3.0.0']}, info: {veronaVersion: '4.0', playerId: verona-player-simple, description: 'This is a simple, dependency-less, vanilla-js-written, but full-featured unit player, mainly as showcase for developers and for software-testing. It does implement the Verona 4.0.0-Standard and can be used for units containing simple any content in HTML-format. Unit Description ist the <code>form-content as HTML. Just give some names to the form element, and the player does the rest. Use some special Ids for some special buttons.', label: 'Simple HTML Player'}}
                                 Unit:
