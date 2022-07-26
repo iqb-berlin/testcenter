@@ -90,22 +90,16 @@ test-backend-initialization-general:
 	make test-backend-initialization test=general/install-db-patches
 
 
-# Performs unit tests with Jest for the backend. Creates a code-coverage report.
+# Performs unit tests with Jest for the Broadcasting-Service. Creates a code-coverage report.
 test-broadcasting-service-unit:
-	docker run \
-		-v $(CURDIR)/docs/dist:/docs/dist \
-		--entrypoint npx \
-		iqbberlin/testcenter-broadcasting-service:current \
-		jest --coverage
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.unit-test.yml \
+		run testcenter-broadcasting-service
 
 
 # Performs unit tests with Karma for the frontend. Creates a code-coverage report.
 test-frontend-unit:
-	docker run \
-		-v $(CURDIR)/docs/dist:/docs/dist \
-		--entrypoint npx \
-		iqbberlin/testcenter-frontend:current \
-		ng test --watch=false --code-coverage
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.unit-test.yml \
+		run testcenter-frontend
 
 
 # Performs some integration tests with CyPress against mocked backend with Prism

@@ -54,7 +54,6 @@ services:
     volumes:
       - ./common:/common
       - ./definitions:/definitions
-#      - ./docs/dist:/docs/dist TODO don't we need this for karma test coverage?
       - ./frontend/.browserslistrc:/app/.browserslistrc
       - ./frontend/angular.json:/app/angular.json
       - ./frontend/docker/entrypoint.sh:/entrypoint.sh
@@ -74,6 +73,8 @@ services:
       target: dev
       args:
         HOST_UID: ${UID}
+    environment:
+      TC_BROADCASTING_SERVICE_RUN_COMMAND: "DEV_MODE=true npx nest start --watch --preserveWatchOutput"
     volumes:
       - ./common:/common
       - ./broadcasting-service/docker/nest-cli.json:/app/nest-cli.json
