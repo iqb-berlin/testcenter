@@ -32,7 +32,7 @@ export class SyscheckComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.updateTable();
     });
   }
@@ -43,7 +43,7 @@ export class SyscheckComponent implements OnInit {
       (resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
-        this.mds.setSpinnerOff();
+        this.mds.stopLoadingAnimation();
       }
     );
   }
@@ -99,7 +99,7 @@ export class SyscheckComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          this.mds.setSpinnerOn();
+          this.mds.showLoadingAnimation();
           this.bs.deleteSysCheckReports(this.wds.wsId, selectedReports).subscribe(fileDeletionReport => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {

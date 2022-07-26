@@ -27,16 +27,16 @@ export class TestStarterComponent implements OnInit, OnDestroy {
 
   private reloadTestList(): void {
     this.mds.appSubTitle$.next('Testauswahl');
-    this.mds.setSpinnerOn();
+    this.mds.showLoadingAnimation();
     this.bs.getSessionData().subscribe(authDataUntyped => {
       if (typeof authDataUntyped === 'number') {
-        this.mds.setSpinnerOff();
+        this.mds.stopLoadingAnimation();
         return;
       }
       const authData = authDataUntyped as AuthData;
       if (!authData || !authData.token) {
         this.mds.setAuthData();
-        this.mds.setSpinnerOff();
+        this.mds.stopLoadingAnimation();
       }
       if (authData.access[AuthAccessKeyType.TEST]) {
         this.booklets = [];
@@ -54,7 +54,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
               }
             },
             complete: () => {
-              this.mds.setSpinnerOff();
+              this.mds.stopLoadingAnimation();
             }
           });
       }

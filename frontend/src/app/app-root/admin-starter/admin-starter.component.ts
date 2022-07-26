@@ -28,7 +28,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (this.getWorkspaceDataSubscription !== null) {
           this.getWorkspaceDataSubscription.unsubscribe();
@@ -48,23 +48,23 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
                     concatMap(workspaceId => this.bs.getWorkspaceData(workspaceId))
                   ).subscribe(
                     wsData => this.workspaces.push(wsData),
-                    () => this.mds.setSpinnerOff(),
-                    () => this.mds.setSpinnerOff()
+                    () => this.mds.stopLoadingAnimation(),
+                    () => this.mds.stopLoadingAnimation()
                   );
               } else {
-                this.mds.setSpinnerOff();
+                this.mds.stopLoadingAnimation();
               }
               this.mds.setAuthData(authData);
             } else {
               this.mds.setAuthData();
-              this.mds.setSpinnerOff();
+              this.mds.stopLoadingAnimation();
             }
           } else {
             this.mds.setAuthData();
-            this.mds.setSpinnerOff();
+            this.mds.stopLoadingAnimation();
           }
         } else {
-          this.mds.setSpinnerOff();
+          this.mds.stopLoadingAnimation();
         }
       });
     });

@@ -22,7 +22,7 @@ export class SysCheckStarterComponent implements OnInit {
     setTimeout(() => {
       this.mds.appSubTitle$.next('System-Check Auswahl');
       this.loading = true;
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.bs.getSysCheckInfo().subscribe(myConfigs => {
         if (myConfigs) {
           this.checkConfigList = myConfigs;
@@ -30,7 +30,7 @@ export class SysCheckStarterComponent implements OnInit {
           this.checkConfigList = [];
         }
         this.loading = false;
-        this.mds.setSpinnerOff();
+        this.mds.stopLoadingAnimation();
       });
     });
   }

@@ -17,21 +17,21 @@ export class WorkspaceDataService {
   wsName = '';
 
   constructor(
-    private bs: BackendService,
+    private backendService: BackendService,
     private deleteConfirmDialog: MatDialog,
-    private mds: MainDataService,
+    private mainDataService: MainDataService,
     public snackBar: MatSnackBar
   ) { }
 
   downloadReport(dataIds: string[], reportType: ReportType, filename: string): void {
-    this.mds.setSpinnerOn();
+    this.mainDataService.showLoadingAnimation();
 
-    this.bs.getReport(this.wsId, reportType, dataIds).subscribe(response => {
+    this.backendService.getReport(this.wsId, reportType, dataIds).subscribe(response => {
       const errorMessage: string = 'Keine Daten verfügbar.';
       const errorType: string = 'Fehler';
       const errorDisplayDuration: number = 3000;
 
-      this.mds.setSpinnerOff();
+      this.mainDataService.stopLoadingAnimation();
 
       if (response === false) {
         this.snackBar.open(errorMessage, errorType, { duration: errorDisplayDuration });

@@ -69,11 +69,11 @@ export class MainDataService {
   ) {
   }
 
-  setSpinnerOn(): void {
+  showLoadingAnimation(): void {
     this.isSpinnerOn$.next(true);
   }
 
-  setSpinnerOff(): void {
+  stopLoadingAnimation(): void {
     this.isSpinnerOn$.next(false);
   }
 

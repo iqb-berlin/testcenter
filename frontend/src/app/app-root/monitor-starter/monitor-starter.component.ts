@@ -28,16 +28,16 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped === 'number') {
-          this.mds.setSpinnerOff();
+          this.mds.stopLoadingAnimation();
           return;
         }
         const authData = authDataUntyped as AuthData;
         if (!authData || !authData.token) {
           this.mds.setAuthData();
-          this.mds.setSpinnerOff();
+          this.mds.stopLoadingAnimation();
           return;
         }
         this.accessObjects = {};
@@ -76,8 +76,8 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
                   this.accessObjects[scopeIdList[wsData.id].type].push(wsData);
                 }
               },
-              () => this.mds.setSpinnerOff(),
-              () => this.mds.setSpinnerOff()
+              () => this.mds.stopLoadingAnimation(),
+              () => this.mds.stopLoadingAnimation()
             );
 
         this.mds.setAuthData(authData);

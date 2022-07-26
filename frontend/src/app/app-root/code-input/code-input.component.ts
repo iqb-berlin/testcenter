@@ -57,10 +57,10 @@ export class CodeInputComponent implements OnInit {
         }
       });
     } else {
-      this.mds.setSpinnerOn();
+      this.mds.showLoadingAnimation();
       this.bs.codeLogin(codeData.code).subscribe(
         authData => {
-          this.mds.setSpinnerOff();
+          this.mds.stopLoadingAnimation();
           this.problemText = '';
           if (typeof authData === 'number') {
             const errCode = authData as number;
