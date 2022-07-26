@@ -529,8 +529,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="332"
-                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:332</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="333"
+                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:333</a></div>
                 </td>
             </tr>
 
@@ -566,8 +566,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="338"
-                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:338</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="339"
+                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:339</a></div>
                 </td>
             </tr>
 
@@ -640,8 +640,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="303"
-                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:303</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="304"
+                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:304</a></div>
                 </td>
             </tr>
 
@@ -677,8 +677,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="345"
-                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:345</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="346"
+                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:346</a></div>
                 </td>
             </tr>
 
@@ -742,8 +742,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="294"
-                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:294</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="295"
+                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:295</a></div>
                 </td>
             </tr>
 
@@ -823,8 +823,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="322"
-                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:322</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="323"
+                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:323</a></div>
                 </td>
             </tr>
 
@@ -860,8 +860,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="281"
-                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:281</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="282"
+                            class="link-to-prism">frontend/src/app/superadmin/users/users.component.ts:282</a></div>
                 </td>
             </tr>
 
@@ -1404,6 +1404,7 @@ export class UsersComponent implements OnInit {
     }
     if (selectedRows.length &#x3D;&#x3D;&#x3D; 0) {
       this.messsageDialog.open(MessageDialogComponent, {
+
         width: &#x27;400px&#x27;,
         data: &lt;MessageDialogData&gt;{
           title: &#x27;Löschen von Nutzern&#x27;,
@@ -1522,35 +1523,35 @@ export class UsersComponent implements OnInit {
 
     <div class="tab-pane fade " id="c-templateData">
         <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;columnhost&quot; fxLayout&#x3D;&quot;row&quot; fxLayoutAlign&#x3D;&quot;space-between start&quot;&gt;
-  &lt;!-- &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; --&gt;
+
   &lt;div class&#x3D;&quot;objectlist&quot; fxLayout&#x3D;&quot;column&quot; fxFlex&#x3D;&quot;50&quot;&gt;
     &lt;div fxLayout&#x3D;&quot;row&quot;&gt;
-      &lt;button mat-raised-button (click)&#x3D;&quot;addObject()&quot; matTooltip&#x3D;&quot;Nutzer hinzufügen&quot; matTooltipPosition&#x3D;&quot;above&quot;&gt;
-          &lt;mat-icon&gt;add&lt;/mat-icon&gt;
-        &lt;/button&gt;
+      &lt;button mat-raised-button (click)&#x3D;&quot;addObject()&quot; matTooltip&#x3D;&quot;Nutzer hinzufügen&quot; matTooltipPosition&#x3D;&quot;above&quot; data-cy&#x3D;&quot;add-user&quot;&gt;
+        &lt;mat-icon&gt;add&lt;/mat-icon&gt;
+      &lt;/button&gt;
       &lt;button mat-raised-button (click)&#x3D;&quot;deleteObject()&quot;
-              matTooltip&#x3D;&quot;Markierte Nutzer löschen&quot; matTooltipPosition&#x3D;&quot;above&quot;&gt;
+              matTooltip&#x3D;&quot;Markierte Nutzer löschen&quot; matTooltipPosition&#x3D;&quot;above&quot; data-cy&#x3D;&quot;delete-user&quot;&gt;
         &lt;mat-icon&gt;delete&lt;/mat-icon&gt;
       &lt;/button&gt;
       &lt;button mat-raised-button (click)&#x3D;&quot;changePassword()&quot;
-              matTooltip&#x3D;&quot;Kennwort ändern&quot; matTooltipPosition&#x3D;&quot;above&quot;&gt;
+              matTooltip&#x3D;&quot;Kennwort ändern&quot; matTooltipPosition&#x3D;&quot;above&quot; data-cy&#x3D;&quot;change-password&quot;&gt;
         &lt;mat-icon&gt;edit&lt;/mat-icon&gt;
       &lt;/button&gt;
       &lt;button mat-raised-button (click)&#x3D;&quot;changeSuperadminStatus()&quot;
-              matTooltip&#x3D;&quot;Superadmin-Status ändern&quot; matTooltipPosition&#x3D;&quot;above&quot;&gt;
+              matTooltip&#x3D;&quot;Superadmin-Status ändern&quot; matTooltipPosition&#x3D;&quot;above&quot; data-cy&#x3D;&quot;change-superadmin&quot;&gt;
         &lt;mat-icon&gt;edit&lt;/mat-icon&gt;
       &lt;/button&gt;
     &lt;/div&gt;
 
     &lt;mat-table [dataSource]&#x3D;&quot;objectsDatasource&quot; matSort&gt;
       &lt;ng-container matColumnDef&#x3D;&quot;selectCheckbox&quot;&gt;
-        &lt;mat-header-cell *matHeaderCellDef fxFlex&#x3D;&quot;70px&quot;&gt;
+        &lt;mat-header-cell *matHeaderCellDef fxFlex&#x3D;&quot;70px&quot; data-cy&#x3D;&quot;check-all&quot;&gt;
           &lt;mat-checkbox (change)&#x3D;&quot;$event ? masterToggle() : null&quot;
                         [checked]&#x3D;&quot;tableselectionCheckbox.hasValue() &amp;&amp; isAllSelected()&quot;
                         [indeterminate]&#x3D;&quot;tableselectionCheckbox.hasValue() &amp;&amp; !isAllSelected()&quot;&gt;
           &lt;/mat-checkbox&gt;
         &lt;/mat-header-cell&gt;
-        &lt;mat-cell *matCellDef&#x3D;&quot;let row&quot; fxFlex&#x3D;&quot;70px&quot;&gt;
+        &lt;mat-cell *matCellDef&#x3D;&quot;let row&quot; fxFlex&#x3D;&quot;70px&quot; data-cy&#x3D;&quot;check-user&quot;&gt;
           &lt;mat-checkbox (click)&#x3D;&quot;$event.stopPropagation()&quot;
                         (change)&#x3D;&quot;$event ? tableselectionCheckbox.toggle(row) : null&quot;
                         [checked]&#x3D;&quot;tableselectionCheckbox.isSelected(row)&quot;&gt;
@@ -1559,17 +1560,17 @@ export class UsersComponent implements OnInit {
       &lt;/ng-container&gt;
 
       &lt;ng-container matColumnDef&#x3D;&quot;name&quot;&gt;
-        &lt;mat-header-cell *matHeaderCellDef mat-sort-header&gt; Name &lt;/mat-header-cell&gt;
+        &lt;mat-header-cell *matHeaderCellDef mat-sort-header&gt; Name&lt;/mat-header-cell&gt;
         &lt;mat-cell *matCellDef&#x3D;&quot;let element&quot;&gt; {{element.name}} {{element.isSuperadmin ? &#x27;*&#x27; : &#x27;&#x27;}}&lt;/mat-cell&gt;
       &lt;/ng-container&gt;
 
       &lt;mat-header-row *matHeaderRowDef&#x3D;&quot;displayedColumns&quot;&gt;&lt;/mat-header-row&gt;
       &lt;mat-row *matRowDef&#x3D;&quot;let row; columns: displayedColumns;&quot; (click)&#x3D;&quot;selectRow(row)&quot;
-        [style.background]&#x3D;&quot;tableselectionRow.isSelected(row) ? &#x27;lightblue&#x27; : &#x27;&#x27;&quot;&gt;&lt;/mat-row&gt;
+               [style.background]&#x3D;&quot;tableselectionRow.isSelected(row) ? &#x27;lightblue&#x27; : &#x27;&#x27;&quot;&gt;&lt;/mat-row&gt;
     &lt;/mat-table&gt;
   &lt;/div&gt;
 
-  &lt;!-- &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; --&gt;
+
   &lt;div fxLayout&#x3D;&quot;column&quot; fxFlex&#x3D;&quot;40&quot;&gt;
 
     &lt;div *ngIf&#x3D;&quot;selectedUser &lt; 0&quot;&gt;
@@ -1579,25 +1580,25 @@ export class UsersComponent implements OnInit {
 
     &lt;div *ngIf&#x3D;&quot;selectedUser &gt; 0&quot; fxLayout&#x3D;&quot;row&quot; fxLayoutAlign&#x3D;&quot;space-between center&quot;&gt;
       &lt;div&gt;Zugriffsrechte für {{ selectedUserName }}:&lt;/div&gt;
-        &lt;button mat-raised-button (click)&#x3D;&quot;saveWorkspaces()&quot; matTooltip&#x3D;&quot;Speichern&quot;
-            matTooltipPosition&#x3D;&quot;above&quot; [disabled]&#x3D;&quot;!pendingWorkspaceChanges&quot;&gt;
-          &lt;mat-icon&gt;save&lt;/mat-icon&gt;
-        &lt;/button&gt;
+      &lt;button mat-raised-button (click)&#x3D;&quot;saveWorkspaces()&quot; matTooltip&#x3D;&quot;Speichern&quot;
+              matTooltipPosition&#x3D;&quot;above&quot; [disabled]&#x3D;&quot;!pendingWorkspaceChanges&quot; data-cy&#x3D;&quot;save&quot;&gt;
+        &lt;mat-icon&gt;save&lt;/mat-icon&gt;
+      &lt;/button&gt;
     &lt;/div&gt;
 
     &lt;mat-table [dataSource]&#x3D;&quot;WorkspacelistDatasource&quot; matSort&gt;
       &lt;ng-container matColumnDef&#x3D;&quot;selectCheckbox&quot;&gt;
         &lt;mat-header-cell *matHeaderCellDef mat-sort-header&gt;RO | RW&lt;/mat-header-cell&gt;
         &lt;mat-cell *matCellDef&#x3D;&quot;let row&quot; fxFlex&#x3D;&quot;100px&quot;&gt;
-          &lt;mat-checkbox (change)&#x3D;&quot;selectWorkspace(row, &#x27;RO&#x27;)&quot; [checked]&#x3D;&quot;row.role &#x3D;&#x3D;&#x3D; &#x27;RO&#x27;&quot; matTooltip&#x3D;&quot;RO&quot;&gt;
+          &lt;mat-checkbox (change)&#x3D;&quot;selectWorkspace(row, &#x27;RO&#x27;)&quot; [checked]&#x3D;&quot;row.role &#x3D;&#x3D;&#x3D; &#x27;RO&#x27;&quot; matTooltip&#x3D;&quot;RO&quot; data-cy&#x3D;&quot;workspace-role-ro&quot;&gt;
           &lt;/mat-checkbox&gt;
-          &lt;mat-checkbox (change)&#x3D;&quot;selectWorkspace(row, &#x27;RW&#x27;)&quot; [checked]&#x3D;&quot;row.role &#x3D;&#x3D;&#x3D; &#x27;RW&#x27;&quot; matTooltip&#x3D;&quot;RW&quot;&gt;
+          &lt;mat-checkbox (change)&#x3D;&quot;selectWorkspace(row, &#x27;RW&#x27;)&quot; [checked]&#x3D;&quot;row.role &#x3D;&#x3D;&#x3D; &#x27;RW&#x27;&quot; matTooltip&#x3D;&quot;RW&quot; data-cy&#x3D;&quot;workspace-role-rw&quot;&gt;
           &lt;/mat-checkbox&gt;
         &lt;/mat-cell&gt;
       &lt;/ng-container&gt;
 
       &lt;ng-container matColumnDef&#x3D;&quot;label&quot;&gt;
-        &lt;mat-header-cell *matHeaderCellDef mat-sort-header&gt; Arbeitsbereich &lt;/mat-header-cell&gt;
+        &lt;mat-header-cell *matHeaderCellDef mat-sort-header&gt; Arbeitsbereich&lt;/mat-header-cell&gt;
         &lt;mat-cell *matCellDef&#x3D;&quot;let row&quot;&gt; {{row.name}} &lt;/mat-cell&gt;
       &lt;/ng-container&gt;
 
@@ -1648,12 +1649,13 @@ export class UsersComponent implements OnInit {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">  <!-- ============================================= -->  <div class="objectlist" fxLayout="column" fxFlex="50">    <div fxLayout="row">      <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="above">          <mat-icon>add</mat-icon>        </button>      <button mat-raised-button (click)="deleteObject()"              matTooltip="Markierte Nutzer löschen" matTooltipPosition="above">        <mat-icon>delete</mat-icon>      </button>      <button mat-raised-button (click)="changePassword()"              matTooltip="Kennwort ändern" matTooltipPosition="above">        <mat-icon>edit</mat-icon>      </button>      <button mat-raised-button (click)="changeSuperadminStatus()"              matTooltip="Superadmin-Status ändern" matTooltipPosition="above">        <mat-icon>edit</mat-icon>      </button>    </div>    <mat-table [dataSource]="objectsDatasource" matSort>      <ng-container matColumnDef="selectCheckbox">        <mat-header-cell *matHeaderCellDef fxFlex="70px">          <mat-checkbox (change)="$event ? masterToggle() : null"                        [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"                        [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">          </mat-checkbox>        </mat-header-cell>        <mat-cell *matCellDef="let row" fxFlex="70px">          <mat-checkbox (click)="$event.stopPropagation()"                        (change)="$event ? tableselectionCheckbox.toggle(row) : null"                        [checked]="tableselectionCheckbox.isSelected(row)">          </mat-checkbox>        </mat-cell>      </ng-container>      <ng-container matColumnDef="name">        <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>        <mat-cell *matCellDef="let element"> {{element.name}} {{element.isSuperadmin ? \'*\' : \'\'}}</mat-cell>      </ng-container>      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>      <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"        [style.background]="tableselectionRow.isSelected(row) ? \'lightblue\' : \'\'"></mat-row>    </mat-table>  </div>  <!-- ============================================= -->  <div fxLayout="column" fxFlex="40">    <div *ngIf="selectedUser < 0">      <div>Zugriffsrechte für Arbeitsbereich(e):</div>      <div>Bitte links einen Nutzer wählen</div>    </div>    <div *ngIf="selectedUser > 0" fxLayout="row" fxLayoutAlign="space-between center">      <div>Zugriffsrechte für {{ selectedUserName }}:</div>        <button mat-raised-button (click)="saveWorkspaces()" matTooltip="Speichern"            matTooltipPosition="above" [disabled]="!pendingWorkspaceChanges">          <mat-icon>save</mat-icon>        </button>    </div>    <mat-table [dataSource]="WorkspacelistDatasource" matSort>      <ng-container matColumnDef="selectCheckbox">        <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW</mat-header-cell>        <mat-cell *matCellDef="let row" fxFlex="100px">          <mat-checkbox (change)="selectWorkspace(row, \'RO\')" [checked]="row.role === \'RO\'" matTooltip="RO">          </mat-checkbox>          <mat-checkbox (change)="selectWorkspace(row, \'RW\')" [checked]="row.role === \'RW\'" matTooltip="RW">          </mat-checkbox>        </mat-cell>      </ng-container>      <ng-container matColumnDef="label">        <mat-header-cell *matHeaderCellDef mat-sort-header> Arbeitsbereich </mat-header-cell>        <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>      </ng-container>      <mat-header-row *matHeaderRowDef="displayedWorkspaceColumns"></mat-header-row>      <mat-row *matRowDef="let row; columns: displayedWorkspaceColumns;"></mat-row>    </mat-table>  </div></div></div>'
+        var COMPONENT_TEMPLATE = '<div><div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">  <div class="objectlist" fxLayout="column" fxFlex="50">    <div fxLayout="row">      <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="above" data-cy="add-user">        <mat-icon>add</mat-icon>      </button>      <button mat-raised-button (click)="deleteObject()"              matTooltip="Markierte Nutzer löschen" matTooltipPosition="above" data-cy="delete-user">        <mat-icon>delete</mat-icon>      </button>      <button mat-raised-button (click)="changePassword()"              matTooltip="Kennwort ändern" matTooltipPosition="above" data-cy="change-password">        <mat-icon>edit</mat-icon>      </button>      <button mat-raised-button (click)="changeSuperadminStatus()"              matTooltip="Superadmin-Status ändern" matTooltipPosition="above" data-cy="change-superadmin">        <mat-icon>edit</mat-icon>      </button>    </div>    <mat-table [dataSource]="objectsDatasource" matSort>      <ng-container matColumnDef="selectCheckbox">        <mat-header-cell *matHeaderCellDef fxFlex="70px" data-cy="check-all">          <mat-checkbox (change)="$event ? masterToggle() : null"                        [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"                        [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">          </mat-checkbox>        </mat-header-cell>        <mat-cell *matCellDef="let row" fxFlex="70px" data-cy="check-user">          <mat-checkbox (click)="$event.stopPropagation()"                        (change)="$event ? tableselectionCheckbox.toggle(row) : null"                        [checked]="tableselectionCheckbox.isSelected(row)">          </mat-checkbox>        </mat-cell>      </ng-container>      <ng-container matColumnDef="name">        <mat-header-cell *matHeaderCellDef mat-sort-header> Name</mat-header-cell>        <mat-cell *matCellDef="let element"> {{element.name}} {{element.isSuperadmin ? \'*\' : \'\'}}</mat-cell>      </ng-container>      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>      <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"               [style.background]="tableselectionRow.isSelected(row) ? \'lightblue\' : \'\'"></mat-row>    </mat-table>  </div>  <div fxLayout="column" fxFlex="40">    <div *ngIf="selectedUser < 0">      <div>Zugriffsrechte für Arbeitsbereich(e):</div>      <div>Bitte links einen Nutzer wählen</div>    </div>    <div *ngIf="selectedUser > 0" fxLayout="row" fxLayoutAlign="space-between center">      <div>Zugriffsrechte für {{ selectedUserName }}:</div>      <button mat-raised-button (click)="saveWorkspaces()" matTooltip="Speichern"              matTooltipPosition="above" [disabled]="!pendingWorkspaceChanges" data-cy="save">        <mat-icon>save</mat-icon>      </button>    </div>    <mat-table [dataSource]="WorkspacelistDatasource" matSort>      <ng-container matColumnDef="selectCheckbox">        <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW</mat-header-cell>        <mat-cell *matCellDef="let row" fxFlex="100px">          <mat-checkbox (change)="selectWorkspace(row, \'RO\')" [checked]="row.role === \'RO\'" matTooltip="RO" data-cy="workspace-role-ro">          </mat-checkbox>          <mat-checkbox (change)="selectWorkspace(row, \'RW\')" [checked]="row.role === \'RW\'" matTooltip="RW" data-cy="workspace-role-rw">          </mat-checkbox>        </mat-cell>      </ng-container>      <ng-container matColumnDef="label">        <mat-header-cell *matHeaderCellDef mat-sort-header> Arbeitsbereich</mat-header-cell>        <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>      </ng-container>      <mat-header-row *matHeaderRowDef="displayedWorkspaceColumns"></mat-header-row>      <mat-row *matRowDef="let row; columns: displayedWorkspaceColumns;"></mat-row>    </mat-table>  </div></div></div>'
     var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'ConfirmDialogComponent', 'selector': 'tc-confirm-dialog'},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MessageDialogComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
     var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
     var ACTUAL_COMPONENT = {'name': 'UsersComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

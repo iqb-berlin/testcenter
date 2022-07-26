@@ -366,11 +366,14 @@ export class SuperadminComponent implements OnInit {
   &lt;div class&#x3D;&quot;adminbackground&quot;&gt;
 
     &lt;nav mat-tab-nav-bar&gt;
-      &lt;a mat-tab-link
+      &lt;a #rla&#x3D;&quot;routerLinkActive&quot;
+         mat-tab-link
          *ngFor&#x3D;&quot;let link of navLinks&quot;
          [routerLink]&#x3D;&quot;link.path&quot;
-         routerLinkActive #rla&#x3D;&quot;routerLinkActive&quot;
-         [active]&#x3D;&quot;rla.isActive&quot;&gt;
+         routerLinkActive
+         [active]&#x3D;&quot;rla.isActive&quot;
+         [attr.data-cy]&#x3D;&quot;&#x27;superadmin-tabs:&#x27; + link.path&quot;
+      &gt;
         {{link.label}}
       &lt;/a&gt;
     &lt;/nav&gt;
@@ -448,12 +451,13 @@ mat-toolbar {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div class="page-header">  <p>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}}</p></div><div class="page-body">  <div class="adminbackground">    <nav mat-tab-nav-bar>      <a mat-tab-link         *ngFor="let link of navLinks"         [routerLink]="link.path"         routerLinkActive #rla="routerLinkActive"         [active]="rla.isActive">        {{link.label}}      </a>    </nav>    <router-outlet></router-outlet>  </div></div></div>'
+        var COMPONENT_TEMPLATE = '<div><div class="page-header">  <p>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}}</p></div><div class="page-body">  <div class="adminbackground">    <nav mat-tab-nav-bar>      <a #rla="routerLinkActive"         mat-tab-link         *ngFor="let link of navLinks"         [routerLink]="link.path"         routerLinkActive         [active]="rla.isActive"         [attr.data-cy]="\'superadmin-tabs:\' + link.path"      >        {{link.label}}      </a>    </nav>    <router-outlet></router-outlet>  </div></div></div>'
     var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'ConfirmDialogComponent', 'selector': 'tc-confirm-dialog'},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MessageDialogComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
     var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
     var ACTUAL_COMPONENT = {'name': 'SuperadminComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

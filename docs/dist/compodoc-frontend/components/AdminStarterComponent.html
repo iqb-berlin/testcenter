@@ -669,15 +669,28 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
         &lt;p *ngIf&#x3D;&quot;workspaces.length &#x3D;&#x3D;&#x3D; 0&quot;&gt;
           Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
         &lt;/p&gt;
-        &lt;button mat-raised-button color&#x3D;&quot;primary&quot; (click)&#x3D;&quot;buttonGotoWorkspaceAdmin(ws)&quot;
-                *ngFor&#x3D;&quot;let ws of workspaces&quot;&gt;
+        &lt;button
+          mat-raised-button
+          color&#x3D;&quot;primary&quot;
+          (click)&#x3D;&quot;buttonGotoWorkspaceAdmin(ws)&quot;
+          [attr.data-cy]&#x3D;&quot;&#x27;workspace-&#x27; + ws.id&quot;
+          *ngFor&#x3D;&quot;let ws of workspaces&quot;
+        &gt;
           {{ws.name}}
         &lt;/button&gt;
       &lt;/div&gt;
     &lt;/mat-card-content&gt;
     &lt;mat-card-actions&gt;
-      &lt;button mat-raised-button color&#x3D;&quot;foreground&quot; *ngIf&#x3D;&quot;isSuperAdmin&quot; [routerLink]&#x3D;&quot;[&#x27;/superadmin&#x27;]&quot;&gt;System-Admin&lt;/button&gt;
-      &lt;button mat-raised-button color&#x3D;&quot;foreground&quot; (click)&#x3D;&quot;resetLogin()&quot;&gt;Neu anmelden&lt;/button&gt;
+      &lt;button
+        mat-raised-button
+        color&#x3D;&quot;foreground&quot;
+        *ngIf&#x3D;&quot;isSuperAdmin&quot;
+        [routerLink]&#x3D;&quot;[&#x27;/superadmin&#x27;]&quot;
+        data-cy&#x3D;&#x27;goto-superadmin&#x27;
+      &gt;
+        Systemverwaltung
+      &lt;/button&gt;
+      &lt;button mat-raised-button color&#x3D;&quot;foreground&quot; (click)&#x3D;&quot;resetLogin()&quot; data-cy&#x3D;&#x27;logout&#x27;&gt;Neu anmelden&lt;/button&gt;
     &lt;/mat-card-actions&gt;
   &lt;/mat-card&gt;
 
@@ -723,12 +736,13 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div fxLayout="row wrap" fxLayoutAlign="center stretch">  <mat-card fxFlex="0 0 400px" fxLayout="column">    <mat-card-title>Verwaltung</mat-card-title>    <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>    <mat-card-content>      <div fxLayoutGap="10px" fxLayout="column">        <p *ngIf="workspaces.length === 0">          Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.        </p>        <button mat-raised-button color="primary" (click)="buttonGotoWorkspaceAdmin(ws)"                *ngFor="let ws of workspaces">          {{ws.name}}        </button>      </div>    </mat-card-content>    <mat-card-actions>      <button mat-raised-button color="foreground" *ngIf="isSuperAdmin" [routerLink]="[\'/superadmin\']">System-Admin</button>      <button mat-raised-button color="foreground" (click)="resetLogin()">Neu anmelden</button>    </mat-card-actions>  </mat-card>  <mat-card fxFlex="0 0 400px" class="mat-card-box">    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>    <mat-card-content>      <status-card></status-card>    </mat-card-content>  </mat-card></div></div>'
+        var COMPONENT_TEMPLATE = '<div><div fxLayout="row wrap" fxLayoutAlign="center stretch">  <mat-card fxFlex="0 0 400px" fxLayout="column">    <mat-card-title>Verwaltung</mat-card-title>    <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>    <mat-card-content>      <div fxLayoutGap="10px" fxLayout="column">        <p *ngIf="workspaces.length === 0">          Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.        </p>        <button          mat-raised-button          color="primary"          (click)="buttonGotoWorkspaceAdmin(ws)"          [attr.data-cy]="\'workspace-\' + ws.id"          *ngFor="let ws of workspaces"        >          {{ws.name}}        </button>      </div>    </mat-card-content>    <mat-card-actions>      <button        mat-raised-button        color="foreground"        *ngIf="isSuperAdmin"        [routerLink]="[\'/superadmin\']"        data-cy=\'goto-superadmin\'      >        Systemverwaltung      </button>      <button mat-raised-button color="foreground" (click)="resetLogin()" data-cy=\'logout\'>Neu anmelden</button>    </mat-card-actions>  </mat-card>  <mat-card fxFlex="0 0 400px" class="mat-card-box">    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>    <mat-card-content>      <status-card></status-card>    </mat-card-content>  </mat-card></div></div>'
     var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'ConfirmDialogComponent', 'selector': 'tc-confirm-dialog'},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MessageDialogComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
     var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
     var ACTUAL_COMPONENT = {'name': 'AdminStarterComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

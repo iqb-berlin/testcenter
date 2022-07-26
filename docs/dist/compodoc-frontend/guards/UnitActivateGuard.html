@@ -308,12 +308,13 @@ export class UnitDeactivateGuard implements CanDeactivate&lt;UnithostComponent&g
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
-    if (!this.tcs.testMode.forceTimeRestrictions) {
-      return of(true);
-    }
     if (newUnit &amp;&amp; newUnit.maxTimerRequiringTestlet &amp;&amp; // staying in the same timed block
       (newUnit.maxTimerRequiringTestlet.id &#x3D;&#x3D;&#x3D; this.tcs.currentMaxTimerTestletId)
     ) {
+      return of(true);
+    }
+    if (!this.tcs.testMode.forceTimeRestrictions) {
+      this.tcs.interruptMaxTimer();
       return of(true);
     }
     const dialogCDRef &#x3D; this.confirmDialog.open(ConfirmDialogComponent, {
@@ -341,7 +342,7 @@ export class UnitDeactivateGuard implements CanDeactivate&lt;UnithostComponent&g
   }
 
   private checkAndSolveCompleteness(newUnit: UnitControllerData): Observable&lt;boolean&gt; {
-    const direction &#x3D; (newUnit &amp;&amp; this.tcs.currentUnitSequenceId &lt; newUnit.unitDef.sequenceId) ? &#x27;Next&#x27; : &#x27;Prev&#x27;;
+    const direction &#x3D; (!newUnit || this.tcs.currentUnitSequenceId &lt; newUnit.unitDef.sequenceId) ? &#x27;Next&#x27; : &#x27;Prev&#x27;;
     const reasons &#x3D; this.checkCompleteness(direction);
     if (!reasons.length) {
       return of(true);
@@ -413,11 +414,18 @@ export class UnitDeactivateGuard implements CanDeactivate&lt;UnithostComponent&g
 
   canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
                 currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable&lt;boolean&gt; | boolean {
+    console.log(nextState);
     if (this.tcs.testStatus$.getValue() &#x3D;&#x3D;&#x3D; TestControllerState.ERROR) {
       return true;
     }
 
-    if (nextState.url &#x3D;&#x3D;&#x3D; &#x27;/r/route-dispatcher&#x27;) { // clicking on the IQB-Logo
+    const target &#x3D; nextState.url.split(&#x27;/&#x27;).pop();
+    if ([&#x27;route-dispatcher&#x27;, &#x27;status&#x27;].indexOf(target) &gt; -1) { // clicking on the IQB-Logo
+      return true;
+    }
+
+    const currentUnit &#x3D; this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    if (currentUnit &amp;&amp; this.tcs.getUnclearedTestlets(currentUnit).length) {
       return true;
     }
 
@@ -428,6 +436,7 @@ export class UnitDeactivateGuard implements CanDeactivate&lt;UnithostComponent&g
     }
 
     const forceNavigation &#x3D; this.router.getCurrentNavigation().extras?.state?.force ?? false;
+
     if (forceNavigation) {
       this.tcs.interruptMaxTimer();
       return of(true);
@@ -444,6 +453,7 @@ export const unitRouteGuards &#x3D; [UnitActivateGuard, UnitDeactivateGuard];
 </code></pre>
         </div>
 </div>
+
 
 
 

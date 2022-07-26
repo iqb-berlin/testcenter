@@ -377,8 +377,8 @@ export class ConfirmDialogComponent implements OnInit {
 &lt;/mat-dialog-content&gt;
 
 &lt;mat-dialog-actions&gt;
-  &lt;button mat-raised-button color&#x3D;&quot;primary&quot; [mat-dialog-close]&#x3D;&quot;true&quot;&gt;{{ confirmdata.confirmbuttonlabel }}&lt;/button&gt;
-  &lt;button mat-raised-button *ngIf&#x3D;&quot;showcancel&quot; [mat-dialog-close]&#x3D;&quot;false&quot;&gt;Abbrechen&lt;/button&gt;
+  &lt;button mat-raised-button color&#x3D;&quot;primary&quot; [mat-dialog-close]&#x3D;&quot;true&quot; data-cy&#x3D;&quot;dialog-confirm&quot;&gt;{{ confirmdata.confirmbuttonlabel }}&lt;/button&gt;
+  &lt;button mat-raised-button *ngIf&#x3D;&quot;showcancel&quot; [mat-dialog-close]&#x3D;&quot;false&quot; data-cy&#x3D;&quot;dialog-cancel&quot;&gt;Abbrechen&lt;/button&gt;
 &lt;/mat-dialog-actions&gt;
 </code></pre>
     </div>
@@ -415,12 +415,13 @@ export class ConfirmDialogComponent implements OnInit {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><h1 mat-dialog-title>{{ confirmdata.title }}</h1><mat-dialog-content>  <p>    {{ confirmdata.content }}  </p></mat-dialog-content><mat-dialog-actions>  <button mat-raised-button color="primary" [mat-dialog-close]="true">{{ confirmdata.confirmbuttonlabel }}</button>  <button mat-raised-button *ngIf="showcancel" [mat-dialog-close]="false">Abbrechen</button></mat-dialog-actions></div>'
+        var COMPONENT_TEMPLATE = '<div><h1 mat-dialog-title>{{ confirmdata.title }}</h1><mat-dialog-content>  <p>    {{ confirmdata.content }}  </p></mat-dialog-content><mat-dialog-actions>  <button mat-raised-button color="primary" [mat-dialog-close]="true" data-cy="dialog-confirm">{{ confirmdata.confirmbuttonlabel }}</button>  <button mat-raised-button *ngIf="showcancel" [mat-dialog-close]="false" data-cy="dialog-cancel">Abbrechen</button></mat-dialog-actions></div>'
     var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'ConfirmDialogComponent', 'selector': 'tc-confirm-dialog'},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MessageDialogComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
     var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
     var ACTUAL_COMPONENT = {'name': 'ConfirmDialogComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

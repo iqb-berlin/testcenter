@@ -1281,7 +1281,7 @@
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>&#x27;/monitor/test-sessions&#x27;</code>
+                        <i>Default value : </i><code>&#x27;monitor/test-sessions&#x27;</code>
                     </td>
                 </tr>
                         <tr>
@@ -1754,7 +1754,7 @@ import { ApiError } from &#x27;../app.interfaces&#x27;;
 
 @Injectable()
 export class BackendService extends WebsocketBackendService&lt;TestSessionData[]&gt; {
-  pollingEndpoint &#x3D; &#x27;/monitor/test-sessions&#x27;;
+  pollingEndpoint &#x3D; &#x27;monitor/test-sessions&#x27;;
   pollingInterval &#x3D; 5000;
   wsChannelName &#x3D; &#x27;test-sessions&#x27;;
   initialData: TestSessionData[] &#x3D; [];
@@ -1831,6 +1831,7 @@ export class BackendService extends WebsocketBackendService&lt;TestSessionData[]
     </div>
 
 </div>
+
 
 
 

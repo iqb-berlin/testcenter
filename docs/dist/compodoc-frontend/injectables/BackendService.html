@@ -278,8 +278,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="91"
-                            class="link-to-prism">frontend/src/app/backend.service.ts:91</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">frontend/src/app/backend.service.ts:93</a></div>
                 </td>
             </tr>
 
@@ -453,8 +453,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="125"
-                            class="link-to-prism">frontend/src/app/backend.service.ts:125</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="127"
+                            class="link-to-prism">frontend/src/app/backend.service.ts:127</a></div>
                 </td>
             </tr>
 
@@ -490,8 +490,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="117"
-                            class="link-to-prism">frontend/src/app/backend.service.ts:117</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="119"
+                            class="link-to-prism">frontend/src/app/backend.service.ts:119</a></div>
                 </td>
             </tr>
 
@@ -835,8 +835,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="108"
-                            class="link-to-prism">frontend/src/app/backend.service.ts:108</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="110"
+                            class="link-to-prism">frontend/src/app/backend.service.ts:110</a></div>
                 </td>
             </tr>
 
@@ -972,6 +972,8 @@ export class BackendService {
   }
 
   getSessionData(): Observable&lt;AuthData | number&gt; {
+    console.log(window.location);
+    console.trace();
     return this.http
       .get&lt;AuthData&gt;(&#x60;${this.serverUrl}session&#x60;)
       .pipe(
@@ -1025,6 +1027,7 @@ export class BackendService {
     </div>
 
 </div>
+
 
 
 

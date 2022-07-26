@@ -499,11 +499,14 @@ export class SysCheckComponent implements OnInit {
     <div class="tab-pane fade " id="c-templateData">
         <pre class="line-numbers"><code class="language-html">&lt;div id&#x3D;&quot;header&quot; fxLayout&#x3D;&quot;row&quot; fxLayoutAlign&#x3D;&quot;center center&quot;&gt;
   &lt;p&gt;System-Check: {{checkLabel}}&lt;/p&gt;
-  &lt;button mat-fab [disabled]&#x3D;&quot;!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done&quot; color&#x3D;&quot;accent&quot;
+  &lt;button id&#x3D;&quot;syscheck-previous-step&quot; mat-fab
+          [disabled]&#x3D;&quot;!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done&quot; color&#x3D;&quot;accent&quot;
           [routerLink]&#x3D;&quot;[ds.prevStep]&quot; matTooltip&#x3D;&quot;Zurück&quot; fxFlex&#x3D;&quot;none&quot;&gt;
     &lt;i class&#x3D;&quot;material-icons&quot;&gt;chevron_left&lt;/i&gt;
   &lt;/button&gt;
-  &lt;button mat-fab [disabled]&#x3D;&quot;!ds.nextStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done || !ds.timeCheckDone&quot; color&#x3D;&quot;accent&quot;
+  &lt;button id&#x3D;&quot;syscheck-next-step&quot; mat-fab
+          [disabled]&#x3D;&quot;!ds.nextStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done || !ds.timeCheckDone&quot;
+          color&#x3D;&quot;accent&quot;
           [routerLink]&#x3D;&quot;[ds.nextStep]&quot; matTooltip&#x3D;&quot;Weiter&quot; fxFlex&#x3D;&quot;none&quot;&gt;
     &lt;i class&#x3D;&quot;material-icons&quot;&gt;chevron_right&lt;/i&gt;
   &lt;/button&gt;
@@ -573,12 +576,13 @@ button {
 <script src="../js/libs/htmlparser.js"></script>
 <script src="../js/libs/deep-iterator.js"></script>
 <script>
-        var COMPONENT_TEMPLATE = '<div><div id="header" fxLayout="row" fxLayoutAlign="center center">  <p>System-Check: {{checkLabel}}</p>  <button mat-fab [disabled]="!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done" color="accent"          [routerLink]="[ds.prevStep]" matTooltip="Zurück" fxFlex="none">    <i class="material-icons">chevron_left</i>  </button>  <button mat-fab [disabled]="!ds.nextStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done || !ds.timeCheckDone" color="accent"          [routerLink]="[ds.nextStep]" matTooltip="Weiter" fxFlex="none">    <i class="material-icons">chevron_right</i>  </button></div><div class="page-body">  <router-outlet></router-outlet></div></div>'
+        var COMPONENT_TEMPLATE = '<div><div id="header" fxLayout="row" fxLayoutAlign="center center">  <p>System-Check: {{checkLabel}}</p>  <button id="syscheck-previous-step" mat-fab          [disabled]="!ds.prevStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done" color="accent"          [routerLink]="[ds.prevStep]" matTooltip="Zurück" fxFlex="none">    <i class="material-icons">chevron_left</i>  </button>  <button id="syscheck-next-step" mat-fab          [disabled]="!ds.nextStep || !ds.loadConfigComplete || !ds.networkCheckStatus.done || !ds.timeCheckDone"          color="accent"          [routerLink]="[ds.nextStep]" matTooltip="Weiter" fxFlex="none">    <i class="material-icons">chevron_right</i>  </button></div><div class="page-body">  <router-outlet></router-outlet></div></div>'
     var COMPONENTS = [{'name': 'AdminStarterComponent', 'selector': ''},{'name': 'AlertComponent', 'selector': 'alert'},{'name': 'AppComponent', 'selector': 'tc-root'},{'name': 'AppConfigComponent', 'selector': 'app-app-config'},{'name': 'AppRootComponent', 'selector': ''},{'name': 'CodeInputComponent', 'selector': ''},{'name': 'ConfirmDialogComponent', 'selector': 'tc-confirm-dialog'},{'name': 'EditCustomTextComponent', 'selector': 'app-custom-text'},{'name': 'EditCustomTextsComponent', 'selector': 'app-custom-texts'},{'name': 'EditworkspaceComponent', 'selector': ''},{'name': 'FilesComponent', 'selector': ''},{'name': 'GroupMonitorComponent', 'selector': 'app-group-monitor'},{'name': 'IqbFilesUploadComponent', 'selector': 'iqb-files-upload'},{'name': 'IqbFilesUploadQueueComponent', 'selector': 'iqb-files-upload-queue'},{'name': 'LegalNoticeComponent', 'selector': ''},{'name': 'LoginComponent', 'selector': ''},{'name': 'MessageDialogComponent', 'selector': ''},{'name': 'MonitorStarterComponent', 'selector': ''},{'name': 'NetworkCheckComponent', 'selector': ''},{'name': 'NewpasswordComponent', 'selector': ''},{'name': 'NewuserComponent', 'selector': ''},{'name': 'NewworkspaceComponent', 'selector': ''},{'name': 'QuestionnaireComponent', 'selector': ''},{'name': 'ReportComponent', 'selector': ''},{'name': 'ResultsComponent', 'selector': ''},{'name': 'ReviewDialogComponent', 'selector': ''},{'name': 'RouteDispatcherComponent', 'selector': ''},{'name': 'SaveReportComponent', 'selector': 'app-save-report'},{'name': 'SettingsComponent', 'selector': ''},{'name': 'StatusCardComponent', 'selector': 'status-card'},{'name': 'SuperadminComponent', 'selector': ''},{'name': 'SuperadminPasswordRequestComponent', 'selector': ''},{'name': 'SysCheckComponent', 'selector': ''},{'name': 'SyscheckComponent', 'selector': ''},{'name': 'SysCheckStarterComponent', 'selector': ''},{'name': 'TcSpeedChartComponent', 'selector': 'tc-speed-chart'},{'name': 'TestControllerComponent', 'selector': ''},{'name': 'TestSessionComponent', 'selector': 'tc-test-session'},{'name': 'TestStarterComponent', 'selector': ''},{'name': 'TestStatusComponent', 'selector': ''},{'name': 'UnitCheckComponent', 'selector': 'iqb-unit-check'},{'name': 'UnithostComponent', 'selector': ''},{'name': 'UnitMenuComponent', 'selector': 'unit-menu'},{'name': 'UsersComponent', 'selector': ''},{'name': 'WelcomeComponent', 'selector': ''},{'name': 'WorkspaceComponent', 'selector': ''},{'name': 'WorkspacesComponent', 'selector': ''}];
     var DIRECTIVES = [{'name': 'IqbFilesUploadInputForDirective', 'selector': 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'}];
     var ACTUAL_COMPONENT = {'name': 'SysCheckComponent'};
 </script>
 <script src="../js/tree.js"></script>
+
 
 
 

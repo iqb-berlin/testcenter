@@ -288,7 +288,7 @@ export class RouteDispatcherActivateGuard implements CanActivate {
         } else if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
           this.router.navigate([&#x27;/r/monitor-starter&#x27;]);
         } else if (authData.access[AuthAccessKeyType.TEST]) {
-          this.router.navigate([&#x27;/r/test-starter&#x27;]);
+          this.router.navigate([&#x27;/r/test-starter&#x27;], this.router.getCurrentNavigation().extras);
         } else {
           this.router.navigate([&#x27;/r/login&#x27;, &#x27;&#x27;]);
         }
@@ -478,6 +478,7 @@ export class GroupMonitorActivateGuard implements CanActivate {
 </code></pre>
         </div>
 </div>
+
 
 
 

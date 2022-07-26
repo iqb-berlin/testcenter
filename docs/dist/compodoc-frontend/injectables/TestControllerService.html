@@ -149,6 +149,14 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#unitDataPartsToSave$" >unitDataPartsToSave$</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#unitDataPartsToSaveSubscription" >unitDataPartsToSaveSubscription</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#unitDefinitions" >unitDefinitions</a>
                             </li>
                             <li>
@@ -170,14 +178,6 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#unitStateDataParts" >unitStateDataParts</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#unitStateDataToSave$" >unitStateDataToSave$</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#unitStateDataToSaveSubscription" >unitStateDataToSaveSubscription</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -208,7 +208,7 @@
                                 <a href="#cancelMaxTimer" >cancelMaxTimer</a>
                             </li>
                             <li>
-                                <a href="#destroyUnitStateBuffer" >destroyUnitStateBuffer</a>
+                                <a href="#destroyUnitDataPartsBuffer" >destroyUnitDataPartsBuffer</a>
                             </li>
                             <li>
                                 <a href="#errorOut" >errorOut</a>
@@ -219,6 +219,9 @@
                             </li>
                             <li>
                                 <a href="#getPlayer" >getPlayer</a>
+                            </li>
+                            <li>
+                                <a href="#getUnclearedTestlets" >getUnclearedTestlets</a>
                             </li>
                             <li>
                                 <a href="#getUnitDefinition" >getUnitDefinition</a>
@@ -306,7 +309,7 @@
                                 <a href="#setUnitStateDataType" >setUnitStateDataType</a>
                             </li>
                             <li>
-                                <a href="#setupUnitStateBuffer" >setupUnitStateBuffer</a>
+                                <a href="#setupUnitDataPartsBuffer" >setupUnitDataPartsBuffer</a>
                             </li>
                             <li>
                                 <a href="#startMaxTimer" >startMaxTimer</a>
@@ -588,8 +591,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="362"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:362</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="367"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:367</a></div>
                 </td>
             </tr>
 
@@ -609,16 +612,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="destroyUnitStateBuffer"></a>
+                    <a name="destroyUnitDataPartsBuffer"></a>
                     <span class="name">
-                        <span ><b>destroyUnitStateBuffer</b></span>
-                        <a href="#destroyUnitStateBuffer"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>destroyUnitDataPartsBuffer</b></span>
+                        <a href="#destroyUnitDataPartsBuffer"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>destroyUnitStateBuffer()</code>
+<code>destroyUnitDataPartsBuffer()</code>
                 </td>
             </tr>
 
@@ -662,8 +665,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="460"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:460</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="473"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:473</a></div>
                 </td>
             </tr>
 
@@ -701,8 +704,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="406"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:406</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="411"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:411</a></div>
                 </td>
             </tr>
 
@@ -828,6 +831,75 @@
                     </div>
                     <div class="io-description">
                         <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUnclearedTestlets"></a>
+                    <span class="name">
+                        <span ><b>getUnclearedTestlets</b></span>
+                        <a href="#getUnclearedTestlets"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getUnclearedTestlets(unit: <a href="../interfaces/Unit.html" target="_self">UnitControllerData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="296"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:296</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>unit</td>
+                                    <td>
+                                                <code><a href="../interfaces/Unit.html" target="_self" >UnitControllerData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/Testlet.html" target="_self" >Testlet[]</a></code>
 
                     </div>
                     <div class="io-description">
@@ -1616,8 +1688,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="371"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:371</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="376"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:376</a></div>
                 </td>
             </tr>
 
@@ -1653,8 +1725,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="472"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:472</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="485"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:485</a></div>
                 </td>
             </tr>
 
@@ -1722,8 +1794,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="325"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:325</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="330"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:330</a></div>
                 </td>
             </tr>
 
@@ -1839,8 +1911,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="312"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:312</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="317"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:317</a></div>
                 </td>
             </tr>
 
@@ -2021,8 +2093,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="380"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:380</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="385"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:385</a></div>
                 </td>
             </tr>
 
@@ -2102,8 +2174,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="466"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:466</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="479"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:479</a></div>
                 </td>
             </tr>
 
@@ -2500,8 +2572,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="417"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:417</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="422"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:422</a></div>
                 </td>
             </tr>
 
@@ -2894,16 +2966,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="setupUnitStateBuffer"></a>
+                    <a name="setupUnitDataPartsBuffer"></a>
                     <span class="name">
-                        <span ><b>setupUnitStateBuffer</b></span>
-                        <a href="#setupUnitStateBuffer"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>setupUnitDataPartsBuffer</b></span>
+                        <a href="#setupUnitDataPartsBuffer"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>setupUnitStateBuffer()</code>
+<code>setupUnitDataPartsBuffer()</code>
                 </td>
             </tr>
 
@@ -2947,8 +3019,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="338"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:338</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="343"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:343</a></div>
                 </td>
             </tr>
 
@@ -3028,8 +3100,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="384"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:384</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="389"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:389</a></div>
                 </td>
             </tr>
 
@@ -3234,8 +3306,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="296"
-                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:296</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="301"
+                            class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:301</a></div>
                 </td>
             </tr>
 
@@ -3950,6 +4022,59 @@ TODO simplify data structure</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="unitDataPartsToSave$"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>unitDataPartsToSave$</b></span>
+                        <a href="#unitDataPartsToSave$"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Subject&lt;UnitDataParts&gt;()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="unitDataPartsToSaveSubscription"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>unitDataPartsToSaveSubscription</b></span>
+                        <a href="#unitDataPartsToSaveSubscription"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="unitDefinitions"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -4132,59 +4257,6 @@ TODO simplify data structure</p>
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="82" class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:82</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="unitStateDataToSave$"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>unitStateDataToSave$</b></span>
-                        <a href="#unitStateDataToSave$"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>new Subject&lt;UnitStateData&gt;()</code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:90</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="unitStateDataToSaveSubscription"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>unitStateDataToSaveSubscription</b></span>
-                        <a href="#unitStateDataToSaveSubscription"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>Subscription</code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">frontend/src/app/test-controller/services/test-controller.service.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -4380,13 +4452,13 @@ import {
 } from &#x27;rxjs&#x27;;
 import { Injectable } from &#x27;@angular/core&#x27;;
 import { Router } from &#x27;@angular/router&#x27;;
-import { MaxTimerData, Testlet } from &#x27;../classes/test-controller.classes&#x27;;
+import { MaxTimerData, Testlet, UnitControllerData } from &#x27;../classes/test-controller.classes&#x27;;
 import {
   KeyValuePairNumber, KeyValuePairString, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
   TestControllerState, TestStateKey,
   UnitNavigationTarget,
-  UnitStateData, UnitStateKey, WindowFocusState
+  UnitDataParts, UnitStateKey, WindowFocusState
 } from &#x27;../interfaces/test-controller.interfaces&#x27;;
 import { BackendService } from &#x27;./backend.service&#x27;;
 import { BookletConfig, TestMode } from &#x27;../../shared/shared.module&#x27;;
@@ -4460,32 +4532,32 @@ export class TestControllerService {
   private unitDefinitionTypes: { [sequenceId: number]: string } &#x3D; {};
   private unitStateDataTypes: { [sequenceId: number]: string } &#x3D; {};
 
-  private unitStateDataToSave$ &#x3D; new Subject&lt;UnitStateData&gt;();
-  private unitStateDataToSaveSubscription: Subscription;
+  private unitDataPartsToSave$ &#x3D; new Subject&lt;UnitDataParts&gt;();
+  private unitDataPartsToSaveSubscription: Subscription;
 
   constructor(
     private router: Router,
     private bs: BackendService
   ) {
-    this.setupUnitStateBuffer();
+    this.setupUnitDataPartsBuffer();
   }
 
-  setupUnitStateBuffer(): void {
-    this.destroyUnitStateBuffer(); // important when called from unit-test with fakeAsync
+  setupUnitDataPartsBuffer(): void {
+    this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
     // the last buffer when test gets terminated is lost. Seems not to be important, but noteworthy
-    this.unitStateDataToSaveSubscription &#x3D; this.unitStateDataToSave$
+    this.unitDataPartsToSaveSubscription &#x3D; this.unitDataPartsToSave$
       .pipe(
         bufferTime(TestControllerService.unitDataBufferMs),
-        filter(stateDataBuffer &#x3D;&gt; !!stateDataBuffer.length),
-        concatMap(stateDataBuffer &#x3D;&gt; {
-          const sortedByUnit &#x3D; stateDataBuffer
+        filter(dataPartsBuffer &#x3D;&gt; !!dataPartsBuffer.length),
+        concatMap(dataPartsBuffer &#x3D;&gt; {
+          const sortedByUnit &#x3D; dataPartsBuffer
             .reduce(
-              (agg, unitStateData) &#x3D;&gt; {
-                if (!agg[unitStateData.unitDbKey]) agg[unitStateData.unitDbKey] &#x3D; [];
-                agg[unitStateData.unitDbKey].push(unitStateData);
+              (agg, dataParts) &#x3D;&gt; {
+                if (!agg[dataParts.unitDbKey]) agg[dataParts.unitDbKey] &#x3D; [];
+                agg[dataParts.unitDbKey].push(dataParts);
                 return agg;
               },
-              &lt;{ [unitId: string]: UnitStateData[] }&gt;{}
+              &lt;{ [unitId: string]: UnitDataParts[] }&gt;{}
             );
           return Object.keys(sortedByUnit)
             .map(unitId &#x3D;&gt; ({
@@ -4496,12 +4568,12 @@ export class TestControllerService {
             }));
         })
       )
-      .subscribe(changedStates &#x3D;&gt; {
+      .subscribe(changedDataParts &#x3D;&gt; {
         this.bs.updateDataParts(
           this.testId,
-          changedStates.unitDbKey,
-          changedStates.dataParts,
-          changedStates.unitStateDataType
+          changedDataParts.unitDbKey,
+          changedDataParts.dataParts,
+          changedDataParts.unitStateDataType
         ).subscribe(ok &#x3D;&gt; {
           if (!ok) {
             console.warn(&#x27;storing unitData failed&#x27;);
@@ -4510,8 +4582,8 @@ export class TestControllerService {
       });
   }
 
-  destroyUnitStateBuffer(): void {
-    if (this.unitStateDataToSaveSubscription) this.unitStateDataToSaveSubscription.unsubscribe();
+  destroyUnitDataPartsBuffer(): void {
+    if (this.unitDataPartsToSaveSubscription) this.unitDataPartsToSaveSubscription.unsubscribe();
   }
 
   resetDataStore(): void {
@@ -4562,7 +4634,7 @@ export class TestControllerService {
         }
       });
     if (Object.keys(changedParts).length &amp;&amp; this.testMode.saveResponses) {
-      this.unitStateDataToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+      this.unitDataPartsToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
     }
   }
 
@@ -4666,6 +4738,11 @@ export class TestControllerService {
     }
   }
 
+  getUnclearedTestlets(unit: UnitControllerData): Testlet[] {
+    return unit.codeRequiringTestlets
+      .filter(testlet &#x3D;&gt; !this.clearCodeTestlets.includes(testlet.id));
+  }
+
   updateUnitStatePresentationProgress(unitDbKey: string, unitSeqId: number, presentationProgress: string): void {
     let stateChanged &#x3D; false;
     if (!this.unitPresentationProgressStates[unitSeqId] || this.unitPresentationProgressStates[unitSeqId] &#x3D;&#x3D;&#x3D; &#x27;none&#x27;) {
@@ -4683,11 +4760,11 @@ export class TestControllerService {
   }
 
   newUnitStateResponseProgress(unitDbKey: string, unitSeqId: number, responseProgress: string): void {
-    if (this.testMode.saveResponses) {
-      if (
-        !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !&#x3D;&#x3D; responseProgress
-      ) {
-        this.unitResponseProgressStates[unitSeqId] &#x3D; responseProgress;
+    if (
+      !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !&#x3D;&#x3D; responseProgress
+    ) {
+      this.unitResponseProgressStates[unitSeqId] &#x3D; responseProgress;
+      if (this.testMode.saveResponses) {
         this.bs.updateUnitState(this.testId, unitDbKey, [&lt;StateReportEntry&gt;{
           key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
         }]);
@@ -4788,8 +4865,9 @@ export class TestControllerService {
   }
 
   setUnitNavigationRequest(navString: string, force &#x3D; false): void {
+    const targetIsCurrent &#x3D; this.currentUnitSequenceId.toString(10) &#x3D;&#x3D;&#x3D; navString;
     if (!this.rootTestlet) {
-      this.router.navigate([&#x60;/t/${this.testId}/status&#x60;], { skipLocationChange: true });
+      this.router.navigate([&#x60;/t/${this.testId}/status&#x60;], { skipLocationChange: true, state: { force } });
     } else {
       switch (navString) {
         case UnitNavigationTarget.ERROR:
@@ -4819,9 +4897,16 @@ export class TestControllerService {
           break;
 
         default:
-          this.router.navigate([&#x60;/t/${this.testId}/u/${navString}&#x60;], { state: { force } })
+          this.router.navigate(
+            [&#x60;/t/${this.testId}/u/${navString}&#x60;],
+            {
+              state: { force },
+              // eslint-disable-next-line no-bitwise
+              queryParams: targetIsCurrent ? { t: Date.now() &gt;&gt; 11 } : {}
+            }
+          )
             .then(navOk &#x3D;&gt; {
-              if (!navOk) {
+              if (!navOk &amp;&amp; !targetIsCurrent) {
                 console.log(&#x60;navigation failed (&quot;${navString}&quot;)&#x60;);
               }
             });
@@ -4850,6 +4935,7 @@ export class TestControllerService {
     </div>
 
 </div>
+
 
 
 

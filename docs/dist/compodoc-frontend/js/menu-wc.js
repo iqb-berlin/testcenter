@@ -38,6 +38,11 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <span class="icon ion-ios-paper"></span>CHANGELOG
                             </a>
                         </li>
+                                <li class="link">
+                                    <a href="properties.html" data-type="chapter-link">
+                                        <span class="icon ion-ios-apps"></span>Properties
+                                    </a>
+                                </li>
                     </ul>
                 </li>
                     <li class="chapter modules">
@@ -795,6 +800,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/UnitContext.html" data-type="entity-link" >UnitContext</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/UnitDataParts.html" data-type="entity-link" >UnitDataParts</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/UnitLogData.html" data-type="entity-link" >UnitLogData</a>
                             </li>
                             <li class="link">
@@ -802,9 +810,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UnitResponse.html" data-type="entity-link" >UnitResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/UnitStateData.html" data-type="entity-link" >UnitStateData</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UploadReport.html" data-type="entity-link" >UploadReport</a>
