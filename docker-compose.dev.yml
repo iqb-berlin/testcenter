@@ -21,7 +21,7 @@ services:
   testcenter-backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: backend/docker/Dockerfile
       target: dev
     volumes:
       - ./backend/.htaccess:/var/www/backend/.htaccess
@@ -45,7 +45,7 @@ services:
   testcenter-frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend/docker/Dockerfile
       target: dev
       args:
         HOST_UID: ${UID}
@@ -69,7 +69,7 @@ services:
   testcenter-broadcasting-service:
     build:
       context: .
-      dockerfile: broadcasting-service/Dockerfile
+      dockerfile: broadcasting-service/docker/Dockerfile
       target: dev
       args:
         HOST_UID: ${UID}
