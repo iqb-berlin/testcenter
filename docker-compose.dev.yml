@@ -74,7 +74,8 @@ services:
       args:
         HOST_UID: ${UID}
     environment:
-      TC_BROADCASTING_SERVICE_RUN_COMMAND: "DEV_MODE=true npx nest start --watch --preserveWatchOutput"
+      DEV_MODE: "true" # for nest
+      TC_BROADCASTING_SERVICE_RUN_COMMAND: "npx nest start --watch --preserveWatchOutput"
     volumes:
       - ./common:/common
       - ./broadcasting-service/docker/nest-cli.json:/app/nest-cli.json

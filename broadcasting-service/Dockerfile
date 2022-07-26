@@ -19,7 +19,7 @@ COPY broadcasting-service/tsconfig.json /app/tsconfig.json
 COPY broadcasting-service/tsconfig.build.json /app/tsconfig.build.json
 COPY common /common
 
-RUN npx nest build
+RUN npx nest build # TODO can this be omitted?
 
 EXPOSE 3000
 
