@@ -53,6 +53,7 @@ services:
       - ./backend/src:/var/www/backend/srcmake test
       - ./backend/test:/var/www/backend/test
       - ./definitions:/var/www/definitions
+      - ./docs:/docs
       - ./package.json:/var/www/package.original.json
       - ./sampledata:/var/www/sampledata
     depends_on:

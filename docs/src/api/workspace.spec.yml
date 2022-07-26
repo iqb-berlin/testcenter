@@ -270,8 +270,8 @@ paths:
                     type: Resource
                     id: SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP
                     report:
-                      error:
-                        - "Could not read archive: Could not extract archive"
+                      info:
+                        - "Contains 1 files."
                     info: []
                   - name: SAMPLE_UNITCONTENTS.HTM
                     size: 13392
