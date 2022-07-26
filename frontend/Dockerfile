@@ -4,10 +4,9 @@ ARG NODE_ENV=development
 ARG HOST_UID
 ENV HOST_UID=$HOST_UID
 
-# TODO move into the base container
+# prepare CyPress Cache-Folder (we do it here, not in base image because of the different UID)
 ENV CYPRESS_CACHE_FOLDER=/opt/cypress/cache
-RUN mkdir /opt/cypress
-RUN mkdir /opt/cypress/cache
+RUN mkdir /opt/cypress && mkdir /opt/cypress/cache
 
 WORKDIR /app
 
@@ -17,6 +16,9 @@ WORKDIR /app-temp
 COPY frontend/package.json .
 COPY frontend/package-lock.json .
 RUN npm install
+
+# has to be done after npm install, because host user shall be allowed to use it
+RUN chmod -R 777 /opt/cypress/cache
 
 # emulate top-level node-modules for this script TODO
 RUN mkdir /node_modules
@@ -31,10 +33,6 @@ COPY definitions /definitions
 
 # ng build needs to run once here, otherwise the Angular compiler Ivy bugs out
 RUN npx ng build
-
-# prepare cypress TODO move into the base container
-RUN apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-RUN chmod -R 777 /opt/cypress/cache
 
 EXPOSE 4200
 
