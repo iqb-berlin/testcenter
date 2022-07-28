@@ -46,6 +46,10 @@ run-task-runner:
 		--rm --no-deps \
 		testcenter-task-runner npm run $(task)
 
+sync-npm-files:
+	docker cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
+	docker cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
+	docker cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
 
 # Performs unit tests of the backend (with PHPUnit) and creates code-coverage-report
 test-backend-unit:

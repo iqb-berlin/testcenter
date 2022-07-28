@@ -1,4 +1,8 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "broadcasting-service/src"
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "tsconfig.json"
+  }
 }

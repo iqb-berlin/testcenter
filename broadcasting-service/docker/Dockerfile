@@ -1,41 +1,36 @@
-ARG NODE_VERSION=14.19-buster-slim
+ARG NODE_VERSION=16.16-bullseye-slim
 
 FROM node:${NODE_VERSION} as dev
 
 ARG NODE_ENV=development
-ARG HOST_UID
-ENV HOST_UID=$HOST_UID
+ENV DEV_MODE="true"
 
-RUN mkdir /app-temp
-WORKDIR /app-temp
+RUN apt-get update && apt-get -y install procps # needed for webpack not to crash on file change
 
-COPY broadcasting-service/package.json .
-COPY broadcasting-service/package-lock.json .
+WORKDIR /app
+
+COPY broadcasting-service/package*.json .
 RUN npm install
 
 COPY broadcasting-service/src /app/src
-COPY broadcasting-service/docker/nest-cli.json /app/nest-cli.json
-COPY broadcasting-service/tsconfig.json /app/tsconfig.json
-COPY broadcasting-service/tsconfig.build.json /app/tsconfig.build.json
 COPY common /common
-
-RUN npx nest build # TODO can this be omitted?
+COPY broadcasting-service/nest-cli.json /app/nest-cli.json
+COPY broadcasting-service/tsconfig.json /app/tsconfig.json
+COPY broadcasting-service/tsconfig.spec.json /app/tsconfig.spec.json
 
 EXPOSE 3000
 
-COPY broadcasting-service/docker/entrypoint.sh /entrypoint.sh
-ENTRYPOINT /entrypoint.sh
+CMD ["npx", "nest", "start", "--watch", "--preserveWatchOutput"]
 
-FROM dev as builder
-RUN ln -s /app-temp/node_modules /app/node_modules
+#=============
+FROM dev as build
 
-WORKDIR /app
-RUN npx nest build -p tsconfig.build.json
+RUN npx nest build
 
+#=============
 FROM node:${NODE_VERSION} as prod
 
-COPY --from=builder /app-temp/node_modules /app/node_modules
-COPY --from=builder /app/dist /app
+COPY --from=build /app/dist /app
 
 EXPOSE 3000
 
