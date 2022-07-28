@@ -6,5 +6,4 @@ cp -R /app-temp/node_modules/ /app
 
 cd /app
 chown -R $HOST_UID *
-
-$TC_BROADCASTING_SERVICE_RUN_COMMAND
+DEV_MODE=true npx nest start --watch --preserveWatchOutput

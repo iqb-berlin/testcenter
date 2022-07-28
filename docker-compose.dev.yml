@@ -54,6 +54,7 @@ services:
     volumes:
       - ./common:/common
       - ./definitions:/definitions
+#      - ./docs/dist:/docs/dist TODO don't we need this for karma test coverage?
       - ./frontend/.browserslistrc:/app/.browserslistrc
       - ./frontend/angular.json:/app/angular.json
       - ./frontend/docker/entrypoint.sh:/entrypoint.sh
