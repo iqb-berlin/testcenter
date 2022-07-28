@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpService } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Subject } from 'rxjs';
 import { Testee } from './testee.interface';
 import { WebsocketGateway } from '../common/websocket.gateway';

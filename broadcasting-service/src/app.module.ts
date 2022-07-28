@@ -1,5 +1,6 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
+import { HttpModule } from '@nestjs/axios';
 import { TestSessionController } from './test-session/test-session.controller';
 import { MonitorController } from './monitor/monitor.controller';
 import { WebsocketGateway } from './common/websocket.gateway';
