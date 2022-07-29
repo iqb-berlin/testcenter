@@ -14,7 +14,7 @@ import { BackendService } from '../../backend.service';
   styles: [
     'mat-card {margin: 10px;}',
     '.mat-card-box {background-color: var(--tc-box-background)}',
-    '.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}',
+    '.mat-card {display: flex; justify-content: flex-start; flex-direction: column; flex-wrap: wrap}',
     '.mat-card-content {flex-grow: 1; overflow: auto}'
   ]
 })

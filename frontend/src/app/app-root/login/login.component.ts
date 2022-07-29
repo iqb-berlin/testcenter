@@ -13,7 +13,7 @@ import { BackendService } from '../../backend.service';
     '.mat-card-box {background: var(--tc-box-background)}',
     '#toggle-show-password {cursor: pointer}',
     '.mat-form-field {display: block}',
-    '.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}',
+    '.mat-card {display: flex; justify-content: flex-start; flex-direction: column; flex-wrap: wrap}',
     '.mat-card-content {flex-grow: 1; overflow: auto}',
     '#admin {margin-right: 0}',
     '#version-number {' +
