@@ -1,47 +1,47 @@
-<form [formGroup]="reviewform">
+<form [formGroup]="reviewForm">
   <p mat-dialog-title>Kommentar geben</p>
 
   <mat-dialog-content fxLayout="column">
-    <div fxLayout="row">
-      <div fxLayout="column" fxFlex="0 0 55%">
-        <div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="20px">
-          <div fxFlex>
-            <p>Sie sind angemeldet als "{{data.loginname}}". Bitte geben Sie Ihren Namen ein, damit eine Zuordnung möglich ist.</p>
-          </div>
-          <div fxFlex>
-            <mat-form-field>
-              <input matInput formControlName="sender" placeholder="Mein Name">
-            </mat-form-field>
-          </div>
-        </div>
-        <p>Der Kommentar wird gegeben für:</p>
+    <div fxLayout="row" fxLayoutGap="60px">
+      <div fxLayout="column" fxLayoutGap="10px">
+        <p>
+          Sie sind angemeldet als <b>"{{data.loginname}}"</b>.
+          Bitte geben Sie Ihren Namen ein, damit eine Zuordnung möglich ist.
+        </p>
+        <mat-form-field fxLayout="row">
+          <input matInput formControlName="sender" placeholder="Mein Name">
+        </mat-form-field>
+
         <mat-radio-group formControlName="target" fxLayout="column" fxLayoutGap="4px">
-          <p><mat-radio-button value="b" [matTooltip]="data.bookletname"></mat-radio-button>aktuelles Testheft "{{ data.bookletname }}"<br/>
-          <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey"></mat-radio-button>aktuelle Aufgabe/Seite "{{ data.unitTitle }}"</p>
+          <label><h4 style="margin-bottom: 5px">Der Kommentar wird gegeben für:</h4></label>
+          <mat-radio-button value="b" [matTooltip]="data.bookletname">
+            aktuelles Testheft "{{ data.bookletname }}"
+          </mat-radio-button>
+          <mat-radio-button value="u" [disabled]="data.unitDbKey.length === 0" [matTooltip]="data.unitDbKey">
+            aktuelle Aufgabe/Seite "{{ data.unitTitle }}"
+          </mat-radio-button>
         </mat-radio-group>
-        <mat-divider></mat-divider>
-        <div fxLayout="row" fxLayoutGap="20px">
-          <div fxLayout="column" fxFlex="0 0 45%">
-            <p>Priorität</p>
-            <mat-radio-group formControlName="priority">
-              <p><mat-radio-button value="1">dringend/kritisch</mat-radio-button><br/>
-              <mat-radio-button value="2">mittelfristig</mat-radio-button><br/>
-              <mat-radio-button value="3">optional</mat-radio-button></p>
-            </mat-radio-group>
-          </div>
-          <div fxLayout="column" fxFlex="0 0 45%">
-            <p>Kategorie</p>
-            <p><mat-checkbox formControlName="tech">Technisches</mat-checkbox><br/>
-            <mat-checkbox formControlName="content">Inhaltliches</mat-checkbox><br/>
-            <mat-checkbox formControlName="design">Gestaltung</mat-checkbox></p>
-          </div>
+        <div fxLayout="column">
+          <label><h4 style="margin-bottom: 5px">Priorität</h4></label>
+          <mat-radio-group formControlName="priority" fxLayout="column" fxLayoutGap="5px">
+            <mat-radio-button value="1">dringend/kritisch</mat-radio-button>
+            <mat-radio-button value="2">mittelfristig</mat-radio-button>
+            <mat-radio-button value="3">optional</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div fxLayout="column">
+          <label><h4 style="margin-bottom: 5px">Kategorie</h4></label>
+          <mat-checkbox formControlName="tech">Technisches</mat-checkbox>
+          <mat-checkbox formControlName="content">Inhaltliches</mat-checkbox>
+          <mat-checkbox formControlName="design">Gestaltung</mat-checkbox>
         </div>
       </div>
+
       <div fxFlex="0 0 45%" fxLayout="column">
-        <mat-form-field fxFlex>
+        <mat-form-field fxFlex appearance="fill">
+          <mat-label>Kommentar</mat-label>
           <textarea matInput fxFlex formControlName="entry"
-                    placeholder="Kommentar"
-                    style="resize: none;border: grey solid 1px"
+                    style="resize: none;"
                     rows="28"></textarea>
         </mat-form-field>
       </div>
@@ -49,7 +49,12 @@
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="reviewform.value" [disabled]="reviewform.invalid">Speichern</button>
-    <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
+    <button mat-raised-button color="primary" type="submit"
+            [mat-dialog-close]="reviewForm.value" [disabled]="reviewForm.invalid">
+      Speichern
+    </button>
+    <button mat-raised-button [mat-dialog-close]="false">
+      Abbrechen
+    </button>
   </mat-dialog-actions>
 </form>
