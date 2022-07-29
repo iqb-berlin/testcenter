@@ -47,12 +47,12 @@ export class Watcher {
   }
 
   watchProperty<T>(objectName: string, object: T, propertyName: keyof T): Observable<unknown> {
-    const watcherName = `${objectName}.${propertyName}`;
+    const watcherName = `${String(objectName)}.${String(propertyName)}`.toString();
     this.registerWatcher(watcherName);
     const watch$ = new Subject();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    const propertyShadow = `__________${propertyName}`;
+    const propertyShadow = `__________${String(propertyName)}`;
     object[propertyShadow] = object[propertyName];
     Object.defineProperty(object, propertyName, {
       set(value) {
@@ -67,16 +67,15 @@ export class Watcher {
     return watch$;
   }
 
-  watchMethod<T>(
-    objectName: string, object: T, methodName: keyof T,
-    argumentsMapForLogger: { [argNr: number]: null | ((unknown) => unknown) } = {}
+  watchMethod<T>(objectName: string, object: T, methodName: keyof T,
+                 argumentsMapForLogger: { [argNr: number]: null | ((unknown) => unknown) } = {}
   ): Observable<unknown> {
-    const watcherName = `${objectName}.${methodName}`;
+    const watcherName = `${String(objectName)}.${String(methodName)}`;
     this.registerWatcher(watcherName);
     const watch$ = new Subject();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    const methodShadow = `__________${methodName}`;
+    const methodShadow = `__________${String(methodName)}`;
     object[methodShadow] = object[methodName];
     Object.defineProperty(object, methodName, {
       get() {
