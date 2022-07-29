@@ -28,7 +28,7 @@ export class CustomtextService {
   }
 
   // this function gets called the first time when Observable is not available, so we just return a Subscribable
-  getCustomText$(key: string): Subscribable<string> {
+  getCustomText$(key: string): BehaviorSubject<string> { // TODO quick and dirty type fix. what is this method anyway?!
     if (typeof this.customTexts[key] === 'undefined') {
       this.customTexts[key] = new BehaviorSubject<string>(null);
     }

@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   closeErrorBox(): void {
     this.showError = false;
-    this.mds.appError$.next();
+    // this.mds.appError$.next(); // TODO quick and dirty fix; why is this a replaysubject anyway?
   }
 
   ngOnInit(): void {
