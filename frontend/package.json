@@ -39,7 +39,7 @@
     "core-js": "^3.24.0",
     "fibers": "^5.0.2",
     "file-saver": "^2.0.5",
-    "html-webpack-plugin": "^4.5.2",
+    "html-webpack-plugin": "^5.5.0",
     "material-design-icons": "~3.0.1",
     "rxjs": "^7.5.6",
     "sass-loader": "^10.3.1",
@@ -74,15 +74,14 @@
     "karma-coverage-istanbul-reporter": "~3.0.3",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "^2.0.0",
+    "nyc": "15.1.0",
     "ts-node": "~10.9.1",
-    "typescript": "~4.7.4",
-    "istanbul-instrumenter-loader": "3.0.1",
-    "nyc": "15.1.0"
+    "typescript": "~4.7.4"
   },
   "resolutions": {
     "tree-kill": "1.2.2"
   },
-  "nyc":{
+  "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": true,
     "exclude": ["**/*.spec.ts"],

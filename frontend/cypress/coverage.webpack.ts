@@ -20,3 +20,31 @@ export default {
     ]
   }
 };
+
+// TODO this is an alternative approach without very old istanbul-instrumenter-loader
+// from https://github.com/skylock/cypress-angular-coverage-example/issues/6
+// module.exports = {
+//   module: {
+//     rules: [
+//       {
+//         test: /\.(js|ts)$/,
+//         use: {
+//           loader: 'babel-loader',
+//           options: {
+//             // presets: ['@babel/preset-env'],
+//             plugins: ['babel-plugin-istanbul']
+//           }
+//         },
+//         enforce: 'post',
+//         include: [
+//           require('path').join(__dirname, '..', "beheer", 'src', 'app'),
+//         ],
+//         exclude: [
+//           /\.(e2e|spec)\.ts$/,
+//           /node_modules/,
+//           /(ngfactory|ngstyle)\.js/
+//         ]
+//       }
+//     ]
+//   }
+// };
