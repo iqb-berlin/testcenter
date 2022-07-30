@@ -25,11 +25,11 @@ import { Subscription } from 'rxjs';
 })
 
 export class EditCustomTextComponent implements OnInit, OnDestroy {
-  @Input() parentForm: FormGroup;
-  @Input() ctKey: string;
-  @Input() ctLabel: string;
-  @Input() ctDefaultValue: string;
-  @Input() ctInitialValue: string;
+  @Input() parentForm!: FormGroup;
+  @Input() ctKey!: string;
+  @Input() ctLabel!: string;
+  @Input() ctDefaultValue!: string;
+  @Input() ctInitialValue!: string;
   @Output() valueChange = new EventEmitter<EditCustomTextComponent>();
   inputControl = new FormControl();
   valueChanged = false;

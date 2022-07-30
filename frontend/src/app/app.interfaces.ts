@@ -53,9 +53,8 @@ export interface AppError {
   category: 'WARNING' | 'ERROR';
 }
 
-export class ApiError {
+export class ApiError { // TODO was hat die Klasse hier bei den Interfaces zu suchen?
   code: number;
-
   info: string;
 
   constructor(code: number, info = '') {

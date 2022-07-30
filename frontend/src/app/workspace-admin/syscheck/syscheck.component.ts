@@ -39,7 +39,7 @@ export class SyscheckComponent implements OnInit {
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    this.bs.getSysCheckReportList(this.wds.wsId).subscribe(
+    this.bs.getSysCheckReportList(this.wds.workspaceID).subscribe(
       (resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
@@ -100,7 +100,7 @@ export class SyscheckComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mds.showLoadingAnimation();
-          this.bs.deleteSysCheckReports(this.wds.wsId, selectedReports).subscribe(fileDeletionReport => {
+          this.bs.deleteSysCheckReports(this.wds.workspaceID, selectedReports).subscribe(fileDeletionReport => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {
               message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);

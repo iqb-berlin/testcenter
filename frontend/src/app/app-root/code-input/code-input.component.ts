@@ -26,15 +26,12 @@ export class CodeInputComponent implements OnInit {
     code: new FormControl('', [Validators.required, Validators.minLength(2)])
   });
 
-  constructor(
-    private router: Router,
-    public messageDialog: MatDialog,
-    public cts: CustomtextService,
-    public bs: BackendService,
-    public mds: MainDataService
-  ) { }
+  constructor(private router: Router,
+              public messageDialog: MatDialog,
+              public cts: CustomtextService,
+              public bs: BackendService,
+              public mds: MainDataService) { }
 
-  // eslint-disable-next-line class-methods-use-this
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.appSubTitle$.next('Bitte Code eingeben');

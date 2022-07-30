@@ -10,12 +10,10 @@ export class StatusCardComponent implements OnInit {
   loginName = '';
   loginAuthority: string[] = [];
 
-  constructor(
-    public mds: MainDataService
-  ) { }
+  constructor(public mainDataService: MainDataService) { }
 
   ngOnInit(): void {
-    this.mds.authData$.subscribe((authData: AuthData) => {
+    this.mainDataService.authData$.subscribe((authData: AuthData) => {
       this.loginAuthority = [];
       this.loginName = '';
       if (!authData) {

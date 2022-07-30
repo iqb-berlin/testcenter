@@ -1,8 +1,12 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
   <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
   <mat-card fxFlex="0 0 400px">
-      <mat-card-title>{{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}</mat-card-title>
-      <mat-card-subtitle>{{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt' | async }}</mat-card-subtitle>
+      <mat-card-title>
+        {{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt' | async }}
+      </mat-card-subtitle>
       <mat-card-content>
         <mat-form-field>
           <input matInput formControlName="code"> <!-- no placeholder! -->
@@ -10,9 +14,14 @@
         <p style="color: chocolate"><b>{{ problemText }}</b></p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid" color="primary" data-cy="continue">Weiter</button>
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"
+                color="primary" data-cy="continue">
+          Weiter
+        </button>
         <div fxFlex></div>
-        <button mat-raised-button color="foreground" (click)="resetLogin()" style="margin-right: 0">Neu anmelden</button>
+        <button mat-raised-button color="foreground" (click)="resetLogin()" style="margin-right: 0">
+          Neu anmelden
+        </button>
       </mat-card-actions>
     </mat-card>
   </form>

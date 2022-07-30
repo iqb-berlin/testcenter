@@ -13,7 +13,7 @@ import { AuthAccessKeyType, AuthData, BookletData } from '../../app.interfaces';
 export class TestStarterComponent implements OnInit, OnDestroy {
   booklets: BookletData[] = [];
   bookletCount = 0;
-  private getBookletDataSubscription: Subscription = null;
+  private getBookletDataSubscription: Subscription | null = null;
 
   constructor(
     private router: Router,

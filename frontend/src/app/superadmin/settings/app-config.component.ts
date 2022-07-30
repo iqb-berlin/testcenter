@@ -16,7 +16,7 @@ import { AppSettings, standardLogo } from '../../shared/interfaces/app-config.in
 export class AppConfigComponent implements OnInit, OnDestroy {
   configForm: FormGroup;
   dataChanged = false;
-  private configDataChangedSubscription: Subscription = null;
+  private configDataChangedSubscription: Subscription | null = null;
   warningIsExpired = false;
   imageError: string;
   logoImageBase64 = '';
@@ -47,27 +47,25 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     23: '23:00 Uhr'
   };
 
-  constructor(
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar,
-    private mds: MainDataService,
-    private bs: BackendService
-  ) {
-    this.configForm = this.fb.group({
-      appTitle: this.fb.control(''),
-      introHtml: this.fb.control(''),
-      legalNoticeHtml: this.fb.control(''),
-      globalWarningText: this.fb.control(''),
-      globalWarningExpiredDay: this.fb.control(''),
-      globalWarningExpiredHour: this.fb.control(''),
-      backgroundBody: this.fb.control(''),
-      backgroundBox: this.fb.control('')
+  constructor(private formBuilder: FormBuilder,
+              private snackBar: MatSnackBar,
+              private mainDataService: MainDataService,
+              private backendService: BackendService) {
+    this.configForm = this.formBuilder.group({
+      appTitle: this.formBuilder.control(''),
+      introHtml: this.formBuilder.control(''),
+      legalNoticeHtml: this.formBuilder.control(''),
+      globalWarningText: this.formBuilder.control(''),
+      globalWarningExpiredDay: this.formBuilder.control(''),
+      globalWarningExpiredHour: this.formBuilder.control(''),
+      backgroundBody: this.formBuilder.control(''),
+      backgroundBox: this.formBuilder.control('')
     });
   }
 
   ngOnInit(): void {
     setTimeout(() => {
-      const appConfig = this.mds.appConfig.getAppConfig();
+      const appConfig = this.mainDataService.appConfig.getAppConfig();
       this.configForm.setValue({
         appTitle: appConfig.appTitle,
         introHtml: appConfig.introHtml,
@@ -105,16 +103,16 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       backgroundBox: this.configForm.get('backgroundBox').value,
       mainLogo: this.logoImageBase64
     };
-    this.bs.setAppConfig(appConfig).subscribe(isOk => {
+    this.backendService.setAppConfig(appConfig).subscribe(isOk => {
       if (isOk !== false) {
         this.snackBar.open(
           'Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 }
         );
         this.dataChanged = false;
-        this.mds.appConfig.setAppConfig(appConfig);
-        this.mds.appConfig.applyBackgroundColors();
-        this.mds.appTitle$.next(appConfig.appTitle);
-        this.mds.globalWarning = this.mds.appConfig.warningMessage;
+        this.mainDataService.appConfig.setAppConfig(appConfig);
+        this.mainDataService.appConfig.applyBackgroundColors();
+        this.mainDataService.appTitle$.next(appConfig.appTitle);
+        this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
       } else {
         this.snackBar.open('Konnte Konfigurationsdaten der Anwendung nicht speichern', 'Fehler', { duration: 3000 });
       }
@@ -139,8 +137,8 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       }
 
       if (allowedTypes.indexOf(fileInput.target.files[0].type) < 0) {
-        const allowedImageTypesTruncated = [];
-        allowedTypes.forEach(imgType => {
+        const allowedImageTypesTruncated: string[] = [];
+        allowedTypes.forEach((imgType: string) => {
           allowedImageTypesTruncated.push(imgType.substr(5));
         });
         this.imageError = `Zulässige Datei-Typen: (${allowedImageTypesTruncated.join(', ')})`;

@@ -45,10 +45,12 @@
   <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
     <img class="logo-img" [src]="logoImageBase64" />
     <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
-    <button mat-raised-button (click)="hiddenimgfileinput.click()" matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above">
+    <button mat-raised-button (click)="hiddenimgfileinput.click()"
+            matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above">
       <mat-icon>cloud_upload</mat-icon>
     </button>
-    <button mat-raised-button (click)="removeLogoImg()" matTooltip="Logo auf Standard setzen" matTooltipPosition="above">
+    <button mat-raised-button (click)="removeLogoImg()"
+            matTooltip="Logo auf Standard setzen" matTooltipPosition="above">
       <mat-icon>delete</mat-icon>
     </button>
     <alert *ngIf="imageError" level="error" [text]="imageError"></alert>

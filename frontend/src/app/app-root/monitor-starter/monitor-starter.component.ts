@@ -14,7 +14,7 @@ import {
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
   accessObjects: { [accessType: string]: (AccessObject | BookletData)[] } = {};
-  private getMonitorDataSubscription: Subscription = null;
+  private getMonitorDataSubscription: Subscription | null = null;
   AuthAccessKeyType = AuthAccessKeyType;
   problemText: string;
 

@@ -119,7 +119,7 @@ export class FilesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mds.showLoadingAnimation();
-          this.bs.deleteFiles(this.wds.wsId, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
+          this.bs.deleteFiles(this.wds.workspaceID, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {
               message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
@@ -153,7 +153,7 @@ export class FilesComponent implements OnInit {
       this.files = {};
       this.mds.stopLoadingAnimation();
     } else {
-      this.bs.getFiles(this.wds.wsId)
+      this.bs.getFiles(this.wds.workspaceID)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
         .subscribe(fileList => {
           this.files = {};
@@ -225,7 +225,7 @@ export class FilesComponent implements OnInit {
 
   download(file: IQBFile): void {
     this.mds.showLoadingAnimation();
-    this.bs.downloadFile(this.wds.wsId, file.type, file.name)
+    this.bs.downloadFile(this.wds.workspaceID, file.type, file.name)
       .subscribe(
         (fileData: Blob | boolean) => {
           this.mds.stopLoadingAnimation();

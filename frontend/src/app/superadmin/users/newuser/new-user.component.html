@@ -1,4 +1,4 @@
-<form [formGroup]="newuserform">
+<form [formGroup]="newUserForm">
   <h1 mat-dialog-title>Neue/r Nutzer/in</h1>
 
   <mat-dialog-content>
@@ -20,7 +20,10 @@
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="newuserform" [disabled]="newuserform.invalid">Speichern</button>
+    <button mat-raised-button color="primary" type="submit"
+            [mat-dialog-close]="newUserForm" [disabled]="newUserForm.invalid">
+      Speichern
+    </button>
     <button mat-raised-button [mat-dialog-close]="false">Abbrechen</button>
   </mat-dialog-actions>
 

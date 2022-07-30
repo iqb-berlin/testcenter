@@ -41,7 +41,7 @@ export class ResultsComponent implements OnInit {
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    this.backendService.getResultData(this.workspaceDataService.wsId).subscribe(
+    this.backendService.getResultData(this.workspaceDataService.workspaceID).subscribe(
       (resultData: ResultData[]) => {
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
         this.resultDataSource.sort = this.sort;
@@ -115,7 +115,7 @@ export class ResultsComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mainDataService.showLoadingAnimation();
-          this.backendService.deleteData(this.workspaceDataService.wsId, selectedGroups).subscribe((ok: boolean) => {
+          this.backendService.deleteData(this.workspaceDataService.workspaceID, selectedGroups).subscribe((ok: boolean) => {
             if (ok) {
               this.snackBar.open('Löschen erfolgreich.', 'Ok.', { duration: 3000 });
             } else {

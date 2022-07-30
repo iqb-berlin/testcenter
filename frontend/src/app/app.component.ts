@@ -14,19 +14,17 @@ import { AppConfig } from './shared/classes/app.config';
 })
 
 export class AppComponent implements OnInit, OnDestroy {
-  private appErrorSubscription: Subscription = null;
-  private appTitleSubscription: Subscription = null;
+  private appErrorSubscription: Subscription | null = null;
+  private appTitleSubscription: Subscription | null = null;
 
   showError = false;
-  errorData: AppError;
+  errorData: AppError | undefined;
 
-  constructor(
-    public mds: MainDataService,
-    private bs: BackendService,
-    private cts: CustomtextService,
-    private titleService: Title,
-    private sanitizer: DomSanitizer
-  ) { }
+  constructor(public mainDataService: MainDataService,
+              private backendService: BackendService,
+              private customtextService: CustomtextService,
+              private titleService: Title,
+              private sanitizer: DomSanitizer) { }
 
   closeErrorBox(): void {
     this.showError = false;
@@ -35,13 +33,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.appErrorSubscription = this.mds.appError$.subscribe(err => {
+      this.appErrorSubscription = this.mainDataService.appError$.subscribe(err => {
         if (err) {
           this.errorData = err;
           this.showError = true;
         }
       });
-      this.appTitleSubscription = combineLatest([this.mds.appTitle$, this.mds.appSubTitle$, this.mds.isSpinnerOn$])
+      this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$, this.mainDataService.isSpinnerOn$])
         .subscribe(titles => {
           if (titles[2]) {
             this.titleService.setTitle(`${titles[0]} | Bitte warten}`);
@@ -57,71 +55,74 @@ export class AppComponent implements OnInit, OnDestroy {
         const msgType = msgData.type;
         if ((msgType !== undefined) && (msgType !== null)) {
           if ((msgType.substr(0, 2) === 'vo')) {
-            this.mds.postMessage$.next(event);
+            this.mainDataService.postMessage$.next(event);
           }
         }
       });
 
       this.setupFocusListeners();
 
-      this.bs.getSysConfig().subscribe(sysConfig => {
+      this.backendService.getSysConfig().subscribe(sysConfig => {
         if (!sysConfig) {
-          this.mds.appError$.next({
+          this.mainDataService.appError$.next({
             label: 'Server-Problem: Konnte Konfiguration nicht laden',
             description: 'getSysConfig ist fehlgeschlagen',
             category: 'ERROR'
           });
           return;
         }
-        this.mds.appConfig = new AppConfig(sysConfig, this.cts, this.sanitizer);
-        this.mds.appTitle$.next(this.mds.appConfig.appTitle);
-        this.mds.appConfig.applyBackgroundColors();
-        this.mds.globalWarning = this.mds.appConfig.warningMessage;
+        this.mainDataService.appConfig = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
+        this.mainDataService.appTitle$.next(this.mainDataService.appConfig.appTitle);
+        this.mainDataService.appConfig.applyBackgroundColors();
+        this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
 
         const authData = MainDataService.getAuthData();
         if (authData) {
-          this.cts.addCustomTexts(authData.customTexts);
+          this.customtextService.addCustomTexts(authData.customTexts);
         }
       });
 
-      this.bs.getSysCheckInfo().subscribe(sysCheckConfigs => {
-        this.mds.sysCheckAvailable = !!sysCheckConfigs;
+      this.backendService.getSysCheckInfo().subscribe(sysCheckConfigs => {
+        this.mainDataService.sysCheckAvailable = !!sysCheckConfigs;
       });
     });
   }
 
   private setupFocusListeners() {
-    let hidden = '';
-    let visibilityChange = '';
+    // let hidden = '';
+    // let visibilityChange = '';
     if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
-      hidden = 'hidden';
-      visibilityChange = 'visibilitychange';
-      // eslint-disable-next-line @typescript-eslint/dot-notation
-    } else if (typeof document['msHidden'] !== 'undefined') {
-      hidden = 'msHidden';
-      visibilityChange = 'msvisibilitychange';
-      // eslint-disable-next-line @typescript-eslint/dot-notation
-    } else if (typeof document['mozHidden'] !== 'undefined') {
-      hidden = 'mozHidden';
-      visibilityChange = 'mozHidden';
-      // eslint-disable-next-line @typescript-eslint/dot-notation
-    } else if (typeof document['webkitHidden'] !== 'undefined') {
-      hidden = 'webkitHidden';
-      visibilityChange = 'webkitvisibilitychange';
-    }
-    if (hidden && visibilityChange) {
-      document.addEventListener(visibilityChange, () => {
-        this.mds.appWindowHasFocus$.next(!document[hidden]);
+      document.addEventListener('visibilitychange', () => {
+        this.mainDataService.appWindowHasFocus$.next(!document.hidden);
       }, false);
+      // hidden = 'hidden';
+      // visibilityChange = 'visibilitychange';
+      // TODO can this be removed? seems like compat stuff for old browsers. commented out for now
+    // } else if (typeof document['msHidden'] !== 'undefined') {
+    //   hidden = 'msHidden';
+    //   visibilityChange = 'msvisibilitychange';
+    //   // eslint-disable-next-line @typescript-eslint/dot-notation
+    // } else if (typeof document['mozHidden'] !== 'undefined') {
+    //   hidden = 'mozHidden';
+    //   visibilityChange = 'mozHidden';
+    //   // eslint-disable-next-line @typescript-eslint/dot-notation
+    // } else if (typeof document['webkitHidden'] !== 'undefined') {
+    //   hidden = 'webkitHidden';
+    //   visibilityChange = 'webkitvisibilitychange';
     }
+    // if (hidden && visibilityChange) {
+    //   document.addEventListener(visibilityChange, () => {
+    //     this.mainDataService.appWindowHasFocus$.next(!document[hidden]);
+    //   }, false);
+    // }
     window.addEventListener('blur', () => {
-      this.mds.appWindowHasFocus$.next(document.hasFocus());
+      this.mainDataService.appWindowHasFocus$.next(document.hasFocus());
     });
     window.addEventListener('focus', () => {
-      this.mds.appWindowHasFocus$.next(document.hasFocus());
+      this.mainDataService.appWindowHasFocus$.next(document.hasFocus());
     });
     window.addEventListener('unload', () => {
-      this.mds.appWindowHasFocus$.next(!document[hidden]);
+      this.mainDataService.appWindowHasFocus$.next(!document.hidden);
     });
   }
 

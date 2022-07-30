@@ -12,25 +12,19 @@ export class SysCheckStarterComponent implements OnInit {
   checkConfigList: SysCheckInfo[] = [];
   loading = false;
 
-  constructor(
-    public mds: MainDataService,
-    private bs: BackendService,
-    private router: Router
-  ) { }
+  constructor(public mainDataService: MainDataService,
+              private bs: BackendService,
+              private router: Router) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.appSubTitle$.next('System-Check Auswahl');
+      this.mainDataService.appSubTitle$.next('System-Check Auswahl');
       this.loading = true;
-      this.mds.showLoadingAnimation();
+      this.mainDataService.showLoadingAnimation();
       this.bs.getSysCheckInfo().subscribe(myConfigs => {
-        if (myConfigs) {
-          this.checkConfigList = myConfigs;
-        } else {
-          this.checkConfigList = [];
-        }
+        this.checkConfigList = myConfigs || [];
         this.loading = false;
-        this.mds.stopLoadingAnimation();
+        this.mainDataService.stopLoadingAnimation();
       });
     });
   }

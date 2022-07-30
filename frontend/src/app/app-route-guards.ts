@@ -11,10 +11,7 @@ import { BackendService } from './backend.service';
 
 @Injectable()
 export class RouteDispatcherActivateGuard implements CanActivate {
-  constructor(
-    private router: Router
-  ) {
-  }
+  constructor(private router: Router) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = MainDataService.getAuthData();

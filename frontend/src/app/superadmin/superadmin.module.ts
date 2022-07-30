@@ -26,8 +26,8 @@ import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
 import { SuperadminRoutingModule } from './superadmin-routing.module';
 import { BackendService } from './backend.service';
-import { NewpasswordComponent } from './users/newpassword/newpassword.component';
-import { NewuserComponent } from './users/newuser/newuser.component';
+import { NewPasswordComponent } from './users/newpassword/new-password.component';
+import { NewUserComponent } from './users/newuser/new-user.component';
 import { NewworkspaceComponent } from './workspaces/newworkspace/newworkspace.component';
 import { EditworkspaceComponent } from './workspaces/editworkspace/editworkspace.component';
 import {
@@ -42,8 +42,8 @@ import { EditCustomTextComponent } from './settings/edit-custom-text.component';
   declarations: [
     SuperadminComponent,
     UsersComponent,
-    NewpasswordComponent,
-    NewuserComponent,
+    NewPasswordComponent,
+    NewUserComponent,
     NewworkspaceComponent,
     EditworkspaceComponent,
     WorkspacesComponent,
@@ -84,8 +84,8 @@ import { EditCustomTextComponent } from './settings/edit-custom-text.component';
     SuperadminComponent
   ],
   entryComponents: [
-    NewpasswordComponent,
-    NewuserComponent,
+    NewPasswordComponent,
+    NewUserComponent,
     NewworkspaceComponent,
     EditworkspaceComponent
   ],
