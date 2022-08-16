@@ -1,0 +1,70 @@
+<h1 mat-dialog-title>{{'Anhang hinzufügen' | customtext:'gm_add_attachment_title' | async}}</h1>
+
+<mat-dialog-content>
+  <div
+    id="video-container"
+    [class.show]="state === 'capture'"
+  >
+    <video
+      #video
+      id="video"
+      height="500"
+      autoplay
+    ></video>
+    <div id="shape-container">
+      <div id="shape-page" #shapePage>
+        <div id="shape-code"></div>
+      </div>
+    </div>
+  </div>
+
+  <canvas
+    [class.show]="state === 'confirm'"
+    #canvas
+    id="canvas"
+    height="500"
+  ></canvas>
+
+  <div id="error" [class.show]="state === 'error'">
+    <pre>{{error}}</pre>
+  </div>
+
+  <div class="snap-container">
+
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="capture()"
+    *ngIf="state === 'capture'"
+  >
+    Take Foto
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    [mat-dialog-close]="true"
+    data-cy="dialog-confirm"
+    *ngIf="state === 'confirm'"
+  >
+    Upload
+  </button>
+  <button
+    mat-raised-button
+    data-cy="new-capture"
+    (click)="newCapture()"
+    *ngIf="state === 'confirm'"
+  >
+    Neue Aufnahme
+  </button>
+  <button
+    mat-raised-button
+    [mat-dialog-close]="false"
+    data-cy="dialog-cancel"
+  >
+    Abbrechen
+  </button>
+</mat-dialog-actions>

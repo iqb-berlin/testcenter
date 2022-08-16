@@ -1,0 +1,55 @@
+#video-container,
+#error,
+#canvas {
+    display: none;
+}
+
+#video-container.show,
+#error.show,
+#canvas.show {
+    display: block;
+}
+
+#video-container {
+    position: relative;
+    height: 500px;
+}
+
+#video-container video {
+    position: absolute;
+    border: 1px solid silver;
+    background: silver;
+}
+
+#shape-container {
+    height: 100%;
+    width: 100%;
+}
+
+#shape-page,
+#shape-code {
+    border: 4px dotted red;
+    box-sizing: border-box;
+}
+
+#shape-page {
+    position: absolute;
+    aspect-ratio: 210 / 297;
+    height: 500px;
+    top: 0;
+    left: 0;
+}
+
+#shape-code {
+    background: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20%;
+    aspect-ratio: 1;
+}
+
+#canvas {
+    height: 500px;
+    aspect-ratio: 210 / 297;
+}

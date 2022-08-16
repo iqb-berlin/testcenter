@@ -21,6 +21,7 @@ import {
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
+import { AddAttachmentDialogComponent } from './add-attachment-dialog/add-attachment-dialog.component';
 
 @Component({
   selector: 'app-group-monitor',
@@ -63,7 +64,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     public tsm: TestSessionManager,
     private router: Router,
     private cts: CustomtextService,
-    public mds: MainDataService
+    public mds: MainDataService,
+    private addAttachmentDialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -89,6 +91,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
     this.connectionStatus$ = this.bs.connectionStatus$;
     this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
+
+    this.addAttachment();
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
@@ -280,5 +284,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     } else {
       this.tsm.checkNone();
     }
+  }
+
+  addAttachment(): void {
+    const dialogRef = this.addAttachmentDialog.open(AddAttachmentDialogComponent, {
+      width: '100%',
+      height: '100%'
+    });
+
+    console.log('OK');
   }
 }
