@@ -1,0 +1,31 @@
+{
+  "compileOnSave" : false,
+  "compilerOptions" : {
+    "allowSyntheticDefaultImports" : true,
+    "baseUrl" : "./",
+    "declaration" : false,
+    "downlevelIteration" : true,
+    "experimentalDecorators" : true,
+    "importHelpers" : true,
+    "module" : "es2020",
+    "moduleResolution" : "node",
+    "outDir" : "./dist/out-tsc",
+    "resolveJsonModule" : true,
+    "sourceMap" : false,
+    "target" : "es2015",
+    "typeRoots" : [
+      "node_modules/@types"
+    ],
+    "types" : [
+      "cypress",
+      "node"
+    ],
+    "lib" : [
+      "es2017",
+      "dom"
+    ]
+  },
+  "include" : [
+    "**/*.ts"
+  ]
+}

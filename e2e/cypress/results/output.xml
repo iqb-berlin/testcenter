@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="45.7960" tests="10" failures="0">
+  <testsuite name="Root Suite" timestamp="2022-08-17T14:45:00" tests="0" file="cypress/e2e/workspace-admin.cy.ts" time="0.0000" failures="0">
+  </testsuite>
+  <testsuite name="Workspace-Admin" timestamp="2022-08-17T14:45:00" tests="10" time="45.7960" failures="0">
+    <testcase name="Workspace-Admin should download a testtakers.xml" time="5.1680" classname="should download a testtakers.xml">
+    </testcase>
+    <testcase name="Workspace-Admin should download a booklet.xml" time="3.9750" classname="should download a booklet.xml">
+    </testcase>
+    <testcase name="Workspace-Admin should download a syscheck.xml" time="4.1340" classname="should download a syscheck.xml">
+    </testcase>
+    <testcase name="Workspace-Admin should download a resource" time="4.0320" classname="should download a resource">
+    </testcase>
+    <testcase name="Workspace-Admin should download a unit" time="4.0430" classname="should download a unit">
+    </testcase>
+    <testcase name="Workspace-Admin should delete syscheck.xml" time="4.7310" classname="should delete syscheck.xml">
+    </testcase>
+    <testcase name="Workspace-Admin should download a systemcheck summary (csv)" time="5.2850" classname="should download a systemcheck summary (csv)">
+    </testcase>
+    <testcase name="Workspace-Admin should download the responses of a group" time="5.3640" classname="should download the responses of a group">
+    </testcase>
+    <testcase name="Workspace-Admin should download the logs of a group" time="4.5320" classname="should download the logs of a group">
+    </testcase>
+    <testcase name="Workspace-Admin should delete the results of a group" time="4.5320" classname="should delete the results of a group">
+    </testcase>
+  </testsuite>
+</testsuites>
