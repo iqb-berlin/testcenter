@@ -1,41 +1,44 @@
-#video-container,
-#error,
-#canvas {
+.hidden {
     display: none;
 }
 
-#video-container.show,
-#error.show,
-#canvas.show {
+.hidden.show {
     display: block;
 }
 
 #video-container {
     position: relative;
     height: 500px;
+    overflow: hidden;
 }
 
 #video-container video {
-    position: absolute;
     border: 1px solid silver;
     background: silver;
+    height: 500px;
 }
 
-#shape-container {
-    height: 100%;
-    width: 100%;
+
+.scan-region-highlight {
+    border-radius: 3px;
+    outline: rgba(0, 0, 0, .15) solid 75vmax;
+}
+
+.scan-region-highlight-svg {
+    display: none;
 }
 
 #shape-page,
 #shape-code {
-    border: 4px dotted red;
+    /*border: 4px dotted red;*/
     box-sizing: border-box;
+    outline: rgba(0, 0, 0, .5) solid 75vmax;
 }
 
 #shape-page {
     position: absolute;
     aspect-ratio: 210 / 297;
-    height: 500px;
+    height: 100%;
     top: 0;
     left: 0;
 }
@@ -43,10 +46,10 @@
 #shape-code {
     background: rgba(255, 255, 255, 0.5);
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 20%;
-    aspect-ratio: 1;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
 }
 
 #canvas {

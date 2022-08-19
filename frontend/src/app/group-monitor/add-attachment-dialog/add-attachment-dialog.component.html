@@ -1,48 +1,39 @@
 <h1 mat-dialog-title>{{'Anhang hinzufügen' | customtext:'gm_add_attachment_title' | async}}</h1>
 
-<mat-dialog-content>
-  <div
-    id="video-container"
-    [class.show]="state === 'capture'"
-  >
-    <video
-      #video
-      id="video"
-      height="500"
-      autoplay
-    ></video>
-    <div id="shape-container">
-      <div id="shape-page" #shapePage>
-        <div id="shape-code"></div>
-      </div>
-    </div>
+<mat-dialog-content class="hidden" [class.show]="state === 'capture'">
+  <div id="video-container" >
+    <video #video id="video" autoplay></video>
+    <div id="shape-page" #shapePage></div>
   </div>
+  <p>{{'Halten Sie die Seite so in die Kamera, dass der aufgedruckte QR-Code in der oberen rechten Ecke liegt' | customtext:'gm_add_attachment_text' | async}}</p>
+  <div>
+    Optionen:
+    <mat-form-field appearance="fill">
+      <mat-label>{{'Verfügbare Cameras' | customtext:'gm_available_cameras' | async}}</mat-label>
+      <mat-select>
+        <mat-option *ngFor="let camera of cameras | keyvalue" [value]="camera.key">
+          {{camera.value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-checkbox class="example-margin" [disabled]="!hasFlash" [(ngModel)]="flashOn">
+      {{'Blitz' | customtext:'gm_flash' | async}}
+    </mat-checkbox>
+  </div>
+</mat-dialog-content>
 
-  <canvas
-    [class.show]="state === 'confirm'"
-    #canvas
-    id="canvas"
-    height="500"
-  ></canvas>
+<mat-dialog-content class="hidden" [class.show]="state === 'confirm'">
+  <canvas #canvas id="canvas" height="500"></canvas>
+  <div>Identified: {{code}}</div>
+</mat-dialog-content>
 
-  <div id="error" [class.show]="state === 'error'">
+<mat-dialog-content class="hidden" [class.show]="state === 'error'">
+  <div id="error">
     <pre>{{error}}</pre>
-  </div>
-
-  <div class="snap-container">
-
   </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="capture()"
-    *ngIf="state === 'capture'"
-  >
-    Take Foto
-  </button>
   <button
     mat-raised-button
     color="primary"

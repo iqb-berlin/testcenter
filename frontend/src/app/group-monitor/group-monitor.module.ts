@@ -17,6 +17,7 @@ import { CdkTableModule } from '@angular/cdk/table';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
 import { SharedModule } from '../shared/shared.module';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
@@ -46,6 +47,7 @@ import { AddAttachmentDialogComponent } from './add-attachment-dialog/add-attach
     MatMenuModule,
     MatButtonModule,
     MatRadioModule,
+    MatSelectModule,
     FormsModule,
     MatSidenavModule,
     MatCheckboxModule,

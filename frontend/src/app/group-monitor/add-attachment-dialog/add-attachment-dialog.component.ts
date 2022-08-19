@@ -1,13 +1,17 @@
 import {
-  AfterViewInit, ElementRef, ViewChild, Component
+  OnDestroy, AfterViewInit, ElementRef, ViewChild, Component, ViewEncapsulation
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import QrScanner from 'qr-scanner';
 
 @Component({
   templateUrl: './add-attachment-dialog.component.html',
-  styleUrls: ['./add-attachment-dialog.component.css']
+  styleUrls: [
+    './add-attachment-dialog.component.css'
+  ],
+  encapsulation: ViewEncapsulation.None
 })
-export class AddAttachmentDialogComponent implements AfterViewInit {
+export class AddAttachmentDialogComponent implements AfterViewInit, OnDestroy {
+
   width = 210;
   height = 297;
 
@@ -17,66 +21,131 @@ export class AddAttachmentDialogComponent implements AfterViewInit {
 
   capturedImage: string = '';
   error: any;
+  code: string = '';
+  qrScanner: QrScanner;
+
+  cameras: { [id: string]: string } = {};
 
   state: 'capture' | 'confirm' | 'error' | 'init' = 'capture';
+  hasFlash: boolean = false;
+  flashOn: boolean = false;
 
   async ngAfterViewInit() {
-    await this.setupDevices();
+    setTimeout(async () => { await this.setupDevices(); });
+  }
+
+  ngOnDestroy(): void {
+    this.qrScanner.stop();
+    this.qrScanner.destroy();
   }
 
   async setupDevices() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true // { facingMode: 'environment' }
-        });
-        // stream.
-        // let g = stream.getVideoTracks();
-        // g.forEach(gg => {
-        //   console.log([
-        //     gg.label,
-        //     gg.id,
-        //     gg.kind,
-        //     gg.getConstraints(),
-        //     gg.getSettings()
-        //   ]);
-        // });
-        if (stream) {
-          this.video.nativeElement.srcObject = stream;
-          this.video.nativeElement.play();
-          this.error = null;
-          this.state = 'capture';
-          console.log('go');
-        } else {
-          this.error = 'You have no output video device';
-          this.state = 'error';
-        }
-      } catch (e) {
-        this.state = 'error';
-        this.error = e;
+    // this.video.nativeElement
+    //   .onplaying = () => {
+    //     var width = this.video.nativeElement.videoWidth;
+    //     var height = this.video.nativeElement.videoHeight;
+    //     console.log(`video dimens loaded w=${width} h=${height}`);
+    //   };
+
+    this.qrScanner = new QrScanner(
+      this.video.nativeElement,
+      result => {
+        this.capture(result.data);
+      },
+      {
+        calculateScanRegion: videoElem => {
+          const qrMarginLeft = 18;
+          const qrMarginTop = 18;
+          const qrSize = 44;
+
+          const videoScaledSize = this.video.nativeElement.getClientRects()[0];
+
+          if (!videoScaledSize) { // when video-elem is not loaded yet. this will be retried anyway
+            return {};
+          }
+
+          const pageScaledWidth = (videoScaledSize.height * this.width) / this.height;
+          const pageScaledHeight = 500;
+
+          const pageRealWidth = (videoElem.videoWidth / videoScaledSize.width) * pageScaledWidth;
+          const pageRealHeight = videoElem.videoHeight;
+          const cropX = (qrMarginLeft * pageRealWidth) / this.width;
+          const cropY = (qrMarginTop * pageRealHeight) / this.height;
+          const cropWidth = (qrSize * pageRealWidth) / this.width;
+          const cropHeight = (qrSize * pageRealHeight) / this.height;
+
+          return {
+            x: videoElem.videoWidth + cropX - pageRealWidth, // (0|0) is top-right in this context
+            y: cropY,
+            width: cropWidth,
+            height: cropHeight
+          };
+        },
+        highlightScanRegion: true,
+        highlightCodeOutline: false,
+        returnDetailedScanResult: true,
+        onDecodeError: console.log
       }
-    }
+    );
+    this.qrScanner.start()
+      .then(() => {
+        this.listCameras();
+        this.updateFlashAvailability();
+      });
   }
 
-  capture(): void {
-    this.drawImageToCanvas(this.video.nativeElement);
+  listCameras(): void {
+    QrScanner.listCameras(true)
+      .then(cameras => cameras.forEach(camera => { this.cameras[camera.id] = camera.label; }));
+  }
+
+  selectCamera(camId: string): void {
+    this.qrScanner.setCamera(camId).then(() => this.updateFlashAvailability());
+  }
+
+  updateFlashAvailability(): void {
+    this.qrScanner.hasFlash().then(hasFlash => {
+      this.hasFlash = hasFlash;
+    });
+  }
+
+  capture(code: string): void {
+    this.qrScanner.stop();
+    this.code = code;
+    this.drawImageToCanvas();
     this.capturedImage = this.canvas.nativeElement.toDataURL('image/png');
     this.state = 'confirm';
   }
 
-  private drawImageToCanvas(image: any) {
-    const clientRects = this.shapePage.nativeElement.getClientRects()[0];
+  private drawImageToCanvas() {
+    const videoElem: HTMLVideoElement = this.video.nativeElement;
+    const videoScaledSize = this.video.nativeElement.getClientRects()[0];
 
-    console.log(clientRects);
+    const pageScaledWidth = (videoScaledSize.height * this.width) / this.height;
 
-    this.canvas.nativeElement.width = clientRects.width;
-    this.canvas.nativeElement
-      .getContext('2d')
-      .drawImage(image, 0, 0);
+    const pageRealWidth = (videoElem.videoWidth / videoScaledSize.width) * pageScaledWidth;
+    const pageRealHeight = videoElem.videoHeight;
+
+    this.canvas.nativeElement.width = pageRealWidth;
+    this.canvas.nativeElement.height = pageRealHeight;
+    const ctx: CanvasRenderingContext2D = this.canvas.nativeElement.getContext('2d');
+    ctx.scale(-1, 1);
+    ctx.drawImage(
+      videoElem,
+      videoElem.videoWidth - pageRealWidth,
+      0,
+      pageRealWidth,
+      pageRealHeight,
+      0,
+      0,
+      -pageRealWidth,
+      pageRealHeight
+    );
   }
 
-  newCapture() {
+  async newCapture() {
     this.capturedImage = '';
     this.state = 'capture';
+    await this.setupDevices();
   }
 }
