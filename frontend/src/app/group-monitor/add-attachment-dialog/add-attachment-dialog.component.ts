@@ -99,9 +99,7 @@ export class AddAttachmentDialogComponent implements AfterViewInit, OnDestroy {
       .then(cameras => cameras.forEach(camera => { this.cameras[camera.id] = camera.label; }));
   }
 
-  selectCamera(camId: string): void {
-    this.qrScanner.setCamera(camId).then(() => this.updateFlashAvailability());
-  }
+
 
   updateFlashAvailability(): void {
     this.qrScanner.hasFlash().then(hasFlash => {
@@ -147,5 +145,10 @@ export class AddAttachmentDialogComponent implements AfterViewInit, OnDestroy {
     this.capturedImage = '';
     this.state = 'capture';
     await this.setupDevices();
+  }
+
+  selectCamera(camId: string): void {
+    console.log('select', camId);
+    this.qrScanner.setCamera(camId).then(() => this.updateFlashAvailability());
   }
 }
