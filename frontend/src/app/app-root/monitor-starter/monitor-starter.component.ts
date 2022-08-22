@@ -104,6 +104,10 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(`/gm/${accessObject.id.toString()}`);
   }
 
+  buttonGotoAttachmentManager(accessObject) {
+    this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
+  }
+
   resetLogin(): void {
     this.mds.setAuthData();
     this.router.navigate(['/']);

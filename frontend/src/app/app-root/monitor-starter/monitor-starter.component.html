@@ -16,6 +16,12 @@
           <span class="booklet_status">Überwachung starten</span>
         </button>
 
+        <button mat-raised-button color="secondary" (click)="buttonGotoAttachmentManager(accessObject)"
+                *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]">
+          <span class="booklet_title">{{accessObject.name}}</span>
+          <span class="booklet_status">Anhänge Verwalten</span>
+        </button>
+
         <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
 
         <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="b.locked"

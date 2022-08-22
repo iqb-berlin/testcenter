@@ -3,16 +3,16 @@ import {
 } from '@angular/core';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import QrScanner from 'qr-scanner';
-import { VideoRegion } from './attachment.interfaces';
+import { VideoRegion } from '../../interfaces/video.interfaces';
 
 @Component({
-  templateUrl: './add-attachment-dialog.component.html',
+  templateUrl: './capture-image.component.html',
   styleUrls: [
-    './add-attachment-dialog.component.css'
+    './capture-image.component.css'
   ],
   encapsulation: ViewEncapsulation.None
 })
-export class AddAttachmentDialogComponent implements AfterViewInit, OnDestroy {
+export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('video') video: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
   // @ViewChild('shapePage') shapePage: ElementRef;

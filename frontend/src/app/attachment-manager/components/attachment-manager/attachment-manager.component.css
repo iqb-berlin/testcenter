@@ -1,0 +1,54 @@
+.page-body {
+    overflow-x: hidden;
+}
+
+.adminbackground {
+    box-shadow: 5px 10px 20px black;
+    background-color: white;
+    margin: 0 0 0 15px;
+    padding: 0 25px 25px 25px;
+    height: 100%;
+    overflow: auto;
+    scroll-behavior: smooth;
+}
+
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.page-header > p:last-child {
+    margin-right: 15px;
+}
+
+.page-header > div {
+    text-align: right;
+    vertical-align: middle;
+}
+
+.page-header .fill-remaining-space {
+    flex: 1 1 auto;
+}
+
+mat-sidenav {
+    width: 350px;
+}
+
+.mat-drawer-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 25px;
+    overflow: initial;
+    height: initial;
+}
+
+.mat-drawer-container {
+    position: initial;
+    background: none;
+}
+
+.mat-drawer {
+    margin: 15px 0 0 0;
+}

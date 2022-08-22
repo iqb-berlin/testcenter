@@ -17,22 +17,21 @@ import { CdkTableModule } from '@angular/cdk/table';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
 import { SharedModule } from '../shared/shared.module';
-import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
-import { GroupMonitorComponent } from './group-monitor.component';
-import { BackendService } from './backend.service';
-import { BookletService } from './booklet/booklet.service';
-import { TestSessionComponent } from './test-session/test-session.component';
-import { TestSessionManager } from './test-session-manager/test-session-manager.service';
+import { AttachmentManagerRoutingModule } from './attachment-manager-routing.module';
+import { AttachmentManagerComponent } from './components/attachment-manager/attachment-manager.component';
+import { CaptureImageComponent } from './components/capture-image/capture-image.component';
+import { BackendService } from './services/backend/backend.service';
 
 @NgModule({
   declarations: [
-    GroupMonitorComponent,
-    TestSessionComponent
+    AttachmentManagerComponent,
+    CaptureImageComponent
   ],
   imports: [
     CommonModule,
-    GroupMonitorRoutingModule,
+    AttachmentManagerRoutingModule,
     MatTableModule,
     MatTooltipModule,
     CdkTableModule,
@@ -44,6 +43,7 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
     MatMenuModule,
     MatButtonModule,
     MatRadioModule,
+    MatSelectModule,
     FormsModule,
     MatSidenavModule,
     MatCheckboxModule,
@@ -52,10 +52,8 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
     MatDialogModule
   ],
   providers: [
-    BackendService,
-    BookletService,
-    TestSessionManager
+    BackendService
   ]
 })
-export class GroupMonitorModule {
+export class AttachmentManagerModule {
 }

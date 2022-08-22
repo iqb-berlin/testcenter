@@ -1,0 +1,22 @@
+<div class="page-header">
+  <p>
+    {{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} -
+    <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
+  </p>
+  <span class="fill-remaining-space"></span>
+  <p>
+  <div class="page-body">
+
+    <mat-sidenav-container>
+      <mat-sidenav #sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
+        <h2>{{'Anhänge verwalten' | customtext:'am_controls' | async}}</h2>
+      </mat-sidenav>
+
+      <mat-sidenav-content>
+        <div class="adminbackground">
+          WARUM
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+</div>
