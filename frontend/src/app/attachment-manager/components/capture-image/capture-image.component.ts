@@ -8,9 +8,9 @@ import { VideoRegion } from '../../interfaces/video.interfaces';
 @Component({
   templateUrl: './capture-image.component.html',
   styleUrls: [
+    '../../../../monitor-layout.css',
     './capture-image.component.css'
-  ],
-  encapsulation: ViewEncapsulation.None
+  ]
 })
 export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('video') video: ElementRef;

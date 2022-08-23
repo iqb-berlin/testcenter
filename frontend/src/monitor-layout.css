@@ -6,7 +6,7 @@
     box-shadow: 5px 10px 20px black;
     background-color: white;
     margin: 0 0 0 15px;
-    padding: 0 25px 25px 25px;
+    padding: 15px 15px 10px 15px;
     height: 100%;
     overflow: auto;
     scroll-behavior: smooth;
@@ -35,13 +35,13 @@ mat-sidenav {
 }
 
 .mat-drawer-content {
-    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 25px;
     overflow: initial;
     height: initial;
+    position: absolute;
 }
 
 .mat-drawer-container {
@@ -51,4 +51,38 @@ mat-sidenav {
 
 .mat-drawer {
     margin: 15px 0 0 0;
+}
+
+.toolbar {
+    padding: 15px;
+}
+
+.toolbar h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+}
+
+.toolbar .mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+}
+
+.toolbar-section {
+    margin-bottom: 1em
+}
+
+.toolbar button {
+    text-transform: uppercase;
+}
+
+.toolbar .control ~ .control {
+    margin-left: 15px;
+}
+
+.min-height-section {
+    min-height: 3em;
+}
+
+.toolbar-section-bottom {
+    position: absolute;
+    bottom: 0;
 }

@@ -6,6 +6,10 @@
     display: block;
 }
 
+.adminbackground {
+    padding: 15px 15px 10px 15px;
+}
+
 #video-container {
     position: relative;
     height: 500px;

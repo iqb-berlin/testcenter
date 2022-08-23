@@ -10,7 +10,7 @@ import { GroupData } from '../../../group-monitor/group-monitor.interfaces';
 @Component({
   selector: 'app-attachment-manager',
   templateUrl: './attachment-manager.component.html',
-  styleUrls: ['./attachment-manager.component.css']
+  styleUrls: ['../../../../monitor-layout.css']
 })
 export class AttachmentManagerComponent implements OnInit, OnDestroy {
   ownGroup$: Observable<GroupData>;

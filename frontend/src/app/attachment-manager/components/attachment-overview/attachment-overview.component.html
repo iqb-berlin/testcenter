@@ -1,0 +1,19 @@
+<mat-sidenav-container>
+  <mat-sidenav #sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
+    <h2>
+      {{'Übersicht Anhänge ' | customtext:'am_attachment_overview' | async}}
+    </h2>
+
+    <div class="toolbar-section">
+      <a mat-raised-button color="primary" [routerLink]="'../capture-image'">
+        {{'Seite aufnehemen' | customtext:'am_capture_image' | async}}
+      </a>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="adminbackground">
+      [TODO]
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
