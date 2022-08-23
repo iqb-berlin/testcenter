@@ -107,10 +107,19 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 })
     ->add(new RequireToken('person'));
 
+$app->group('/test', function(RouteCollectorProxy $group) {
+
+});
+
+
 $app->group('/test', function(RouteCollectorProxy $group) { // TODO Spec
 
-    $group->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
-});
+    $group->put('/{test_id}/unit/{unit_name}/attachment', [TestController::class, 'putUnitAttachment']);
+
+    $group->get('/attachment-target/{hash}', [TestController::class, 'getAttachmentTarget']);
+})
+    ->add(new MayModifyAttachments('person'))
+    ->add(new RequireToken('person'));
 
 $app->group('/workspace', function(RouteCollectorProxy $group) {
 

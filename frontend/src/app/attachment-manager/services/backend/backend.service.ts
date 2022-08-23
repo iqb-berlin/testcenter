@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { GroupData } from '../../interfaces/users.interfaces';
+import { catchError, map } from 'rxjs/operators';
+import { AttachmentTarget, GroupData } from '../../interfaces/users.interfaces';
 
 @Injectable()
 export class BackendService {
@@ -21,5 +21,33 @@ export class BackendService {
         name: 'error',
         label: 'error'
       })));
+  }
+
+  addAttachment(target: AttachmentTarget, file: File): Observable<boolean> {
+    console.log('addAttachment', target);
+    const formData = new FormData();
+    formData.append('mimeType', file.type);
+    formData.append('attachment', file, file.name);
+    formData.append('timeStamp', Date.now().toString());
+    return this.http
+      .put(
+        `${this.serverUrl}test/${target.testId}/attachment}`,
+        formData,
+        { observe: 'response' }
+      )
+      .pipe(
+        map((res: HttpResponse<unknown>) => (res.status === 201)),
+        catchError(() => of(false))
+      );
+  }
+
+  getAttachmentTarget(codeContent: string): Observable<AttachmentTarget> {
+    console.log('getAttachmentTarget', codeContent);
+    // TODO implement
+    return of({
+      label: 'Booklet XYZ of user abc',
+      testId: '',
+      unitId: ''
+    });
   }
 }

@@ -359,8 +359,7 @@ class TestController extends Controller {
         $testId = (int) $request->getAttribute('test_id');
 
         $lockEvent = RequestBodyParser::getElements($request, [
-            'timeStamp' => null,
-            'message' => '',
+            'timeStamp' => null
         ]);
 
         self::testDAO()->lockTest($testId);
@@ -444,6 +443,45 @@ class TestController extends Controller {
         self::updateTestState($testId, $testSession, 'CONNECTION', 'LOST');
 
         return $response->withStatus(200);
+    }
+
+
+    public static function putUnitAttachment(Request $request, Response $response): Response {
+
+        $testId = (int) $request->getAttribute('test_id');
+        $unitName = $request->getAttribute('unit_name');
+        $otherFields = RequestBodyParser::getElements($request, ['timeStamp' => null]);
+
+        // TODO check if allowed
+
+        /* @var AuthToken $authToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $workspace = new Workspace($authToken->getWorkspaceId());
+        $workspacePath = $workspace->getWorkspacePath();
+        $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'attachment', $workspacePath);
+
+        $finalFileNames = [];
+        foreach ($uploadedFiles as $originalFileName) {
+
+            $dst = $workspace->getOrCreateSubFolderPath("UnitAttachments/$testId/$unitName");
+            $attachmentNumber = count(Folder::getContentsFlat($dst)) + 1;
+            $extension = FileExt::get($originalFileName);
+            $fileName = "{$testId}_{$unitName}_{$attachmentNumber}.$extension";
+            copy("$workspacePath/$originalFileName", "$dst/$fileName");
+            $finalFileNames[] = $fileName;
+            unlink("$workspacePath/$originalFileName");
+        }
+
+        self::testDAO()->updateDataParts(
+            $testId,
+            $unitName,
+            $finalFileNames,
+            'itc-attachment-id',
+            $otherFields['timeStamp']
+        );
+
+        return $response->withStatus(201);
     }
 
 

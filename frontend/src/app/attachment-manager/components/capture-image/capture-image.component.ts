@@ -4,6 +4,8 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import QrScanner from 'qr-scanner';
 import { VideoRegion } from '../../interfaces/video.interfaces';
+import { BackendService } from '../../services/backend/backend.service';
+import { AttachmentTarget } from '../../interfaces/users.interfaces';
 
 @Component({
   templateUrl: './capture-image.component.html',
@@ -37,7 +39,6 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   };
 
   private capturedImage: string = '';
-  code: string = '';
   private qrScanner: QrScanner;
 
   state: 'capture' | 'confirm' | 'error' = 'capture';
@@ -47,6 +48,15 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   cameras: { [id: string]: string } = {};
   flashOn: boolean = false;
   hasFlash: boolean = false;
+  attachmentTarget: AttachmentTarget = {
+    label: 'unknown',
+    testId: undefined,
+    unitId: undefined
+  };
+
+  constructor(
+    private bs: BackendService
+  ) {}
 
   async ngAfterViewInit() {
     setTimeout(() => { this.setupDevices(); });
@@ -145,10 +155,13 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
 
   capture(code: string): void {
     this.qrScanner.stop();
-    this.code = code;
     this.drawImageToCanvas();
     this.capturedImage = this.canvas.nativeElement.toDataURL('image/png');
-    this.state = 'confirm';
+    this.bs.getAttachmentTarget(code)
+      .subscribe(target => {
+        this.attachmentTarget = target;
+        this.state = 'confirm';
+      });
   }
 
   private drawImageToCanvas() {
@@ -171,6 +184,11 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   }
 
   async newCapture() {
+    this.attachmentTarget = {
+      label: 'unknown',
+      testId: undefined,
+      unitId: undefined
+    };
     this.capturedImage = '';
     this.state = 'capture';
     await this.setupDevices();
@@ -183,5 +201,41 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
         this.calculateSizes();
       }
     );
+  }
+
+  uploadImage(): void {
+    this.bs.addAttachment(this.attachmentTarget, CaptureImageComponent.dataURItoFile(this.capturedImage));
+  }
+
+  private static dataURItoFile(dataURI: string): File {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+
+    let fileName = 'file';
+    const blob = new File(
+      [ab],
+      fileName,
+      {
+        type: mimeString
+      }
+    );
+
+    // eslint-disable-next-line default-case
+    switch (blob.type) {
+      case 'image/jpeg':
+        fileName += '.jpg';
+        break;
+      case 'image/png':
+        fileName += '.png';
+        break;
+    }
+
+    return blob;
   }
 }
