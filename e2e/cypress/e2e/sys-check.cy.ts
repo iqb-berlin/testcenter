@@ -20,7 +20,7 @@ describe('Sys-Check', () => {
     cy.contains('An example SysCheck definition')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/w`);
-    cy.get('button.mat-focus-indicator:nth-child(3)')
+    cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/n`);
     cy.contains('Netzwerk')
@@ -28,26 +28,26 @@ describe('Sys-Check', () => {
     cy.get('#syscheck-previous-step')
       .should('be.visible');
     cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 30000 });
-    cy.get('button.mat-focus-indicator:nth-child(3)')
+    cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/u`);
     cy.contains('Bitte prüfen Sie die folgenden Aufgaben-Elemente');
-    cy.get('button.mat-focus-indicator:nth-child(3)')
+    cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/q`);
-    cy.get('#\\32')
+    cy.get('[data-cy="input-name"]')
       .type('Test-Input1');
-    cy.get('.mat-select-arrow')
+    cy.get('[data-cy="selectfield"]')
       .click()
-      .get('#mat-option-0 > span:nth-child(1)')
+      .get('[data-cy="Harvy Dent"]')
       .click();
-    cy.get('#\\34')
+    cy.get('[data-cy="textarea"]')
       .type('Test-Input2');
-    cy.get('.mat-checkbox-inner-container')
+    cy.get('[data-cy="checkbox"]')
       .click();
-    cy.get('#mat-radio-3 > label:nth-child(1) > span:nth-child(1)')
+    cy.get('[data-cy="Radio Gugu"]')
       .click();
-    cy.get('button.mat-focus-indicator:nth-child(3)')
+    cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/r`);
     cy.contains(' Name: Test-Input1 ');

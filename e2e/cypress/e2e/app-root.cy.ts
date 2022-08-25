@@ -22,9 +22,9 @@ describe('App-Root\'s login page', () => {
       .click()
       .wait(5);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
-    cy.get('.mat-form-field-infix')
+    cy.get('[formControlName="code"]')
       .type('yyy')
-      .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
+      .get('[data-cy="continue"]')
       .click();
     cy.get('[data-cy="booklet-BOOKLET.SAMPLE-1"]')
       .should('exist');
@@ -36,9 +36,9 @@ describe('App-Root\'s login page', () => {
       .click()
       .wait(5);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
-    cy.get('.mat-form-field-infix')
+    cy.get('[formControlName="code"]')
       .type('ttt')
-      .get('mat-card.mat-card:nth-child(1) > mat-card-actions:nth-child(4) > button:nth-child(1)')
+      .get('[data-cy="continue"]')
       .click();
     cy.contains('Der Code ist leider nicht gültig. Bitte noch einmal versuchen')
       .should('exist');

@@ -4,13 +4,13 @@
   <mat-dialog-content>
     <p>
       <mat-form-field class="full-width">
-        <input matInput formControlName="name" placeholder="Name" autocomplete="off">
+        <input data-cy="new-user-name" matInput formControlName="name" placeholder="Name" autocomplete="off">
       </mat-form-field>
     </p>
     <p>Achtung: Mindestlänge für Kennwort 7 Zeichen</p>
     <p>
       <mat-form-field class="full-width">
-        <input matInput type="password" formControlName="pw" placeholder="Kennwort" autocomplete="off">
+        <input data-cy="new-user-password" matInput type="password" formControlName="pw" placeholder="Kennwort" autocomplete="off">
       </mat-form-field>
     </p>
     <div class="infobox">
@@ -20,7 +20,7 @@
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" type="submit"
+    <button mat-raised-button data-cy="new-user-submit" color="primary" type="submit"
             [mat-dialog-close]="newUserForm" [disabled]="newUserForm.invalid">
       Speichern
     </button>
