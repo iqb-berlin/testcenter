@@ -440,4 +440,30 @@ class TestDAO extends DAO {
 
         return true;
     }
+
+
+    // todo unit-test
+    public function getTestLabel(int $testId): string {
+
+        $labels = $this->_(
+            'select
+                    label as testLabel,
+                    group_label as groupLabel,
+                    login_sessions.name as loginLabel,
+                    name_suffix as nameSuffix
+                from
+                    tests
+                    left join person_sessions on tests.person_id = person_sessions.id
+                    left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+                    left join logins on login_sessions.workspace_id = logins.workspace_id
+                where tests.id = :test_id',
+            [
+                ':test_id' => $testId
+            ]
+        );
+
+        $displayName = AccessSet::getDisplayName($labels['groupLabel'], $labels['loginLabel'], $labels['nameSuffix']);
+
+        return "$displayName: {$labels['testLabel']}";
+    }
 }

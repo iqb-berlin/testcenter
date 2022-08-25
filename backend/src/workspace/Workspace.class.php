@@ -56,7 +56,7 @@ class Workspace {
 
         $subFolderPath = $this->workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
-            throw new Exception("Invalid type $type!");
+            throw new Exception("Invalid type `$type`!");
         }
         if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
             throw new Exception("Workspace dir `$subFolderPath` seems not to be a proper directory!");

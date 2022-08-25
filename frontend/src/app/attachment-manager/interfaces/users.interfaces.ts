@@ -3,8 +3,6 @@ export interface GroupData {
   label: string;
 }
 
-export interface AttachmentTarget {
+export interface AttachmentTargetLabel {
   label: string;
-  unitId: string;
-  testId: string;
 }

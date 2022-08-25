@@ -2,6 +2,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 // TODO unit test
+// TODO throw other Exceptions, so we don't get a 500 on malformed json
 
 class JSON {
 

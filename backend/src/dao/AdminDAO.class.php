@@ -606,4 +606,36 @@ class AdminDAO extends DAO {
         );
         return ($group == null) ? null : new Group($group['group_name'], $group['group_label']);
     }
+
+
+    // TODO unit-test
+    public function getAttachments(int $workspaceId, array $groups): array {
+
+        $groupSelector = false;
+        if (count($groups)) {
+
+            $groupSelector = "'" . implode("', '", $groups) . "'";
+        }
+
+        return $this->_(
+        "select
+                unit_data.content as attachmentId
+            from
+                unit_data
+                left join units on unit_id = units.id
+                left join tests on units.booklet_id = tests.id
+                left join person_sessions on tests.person_id = person_sessions.id
+                left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+                left join logins on logins.name = login_sessions.name
+            where
+                unit_data.response_type = 'itc-attachment-id'
+                and logins.group_name in $groupSelector
+                and logins.workspace_id = :workspace_id"
+        ,
+        [
+            ':workspace_id' => $workspaceId
+        ],
+        true
+        );
+    }
 }

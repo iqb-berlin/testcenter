@@ -1,11 +1,12 @@
 import {
-  OnDestroy, AfterViewInit, ElementRef, ViewChild, Component, ViewEncapsulation
+  OnDestroy, ElementRef, ViewChild, Component, OnInit, NgZone
 } from '@angular/core';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import QrScanner from 'qr-scanner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { VideoRegion } from '../../interfaces/video.interfaces';
 import { BackendService } from '../../services/backend/backend.service';
-import { AttachmentTarget } from '../../interfaces/users.interfaces';
+import { AttachmentTargetLabel } from '../../interfaces/users.interfaces';
 
 @Component({
   templateUrl: './capture-image.component.html',
@@ -14,10 +15,9 @@ import { AttachmentTarget } from '../../interfaces/users.interfaces';
     './capture-image.component.css'
   ]
 })
-export class CaptureImageComponent implements AfterViewInit, OnDestroy {
+export class CaptureImageComponent implements OnInit, OnDestroy {
   @ViewChild('video') video: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
-  // @ViewChild('shapePage') shapePage: ElementRef;
 
   pageDesign = {
     width: 210, // mm
@@ -41,25 +41,24 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   private capturedImage: string = '';
   private qrScanner: QrScanner;
 
-  state: 'capture' | 'confirm' | 'error' = 'capture';
+  state: 'capture' | 'confirm' | 'error' | 'wait' = 'capture';
 
   error: any;
 
   cameras: { [id: string]: string } = {};
   flashOn: boolean = false;
   hasFlash: boolean = false;
-  attachmentTarget: AttachmentTarget = {
-    label: 'unknown',
-    testId: undefined,
-    unitId: undefined
-  };
+  attachmentTargetLabel: AttachmentTargetLabel | null = null;
+  attachmentTargetHash: string;
 
   constructor(
-    private bs: BackendService
+    private bs: BackendService,
+    private ngZone: NgZone,
+    public snackBar: MatSnackBar
   ) {}
 
-  async ngAfterViewInit() {
-    setTimeout(() => { this.setupDevices(); });
+  async ngOnInit() {
+    setTimeout(() => { this.runCamera(); });
   }
 
   ngOnDestroy(): void {
@@ -67,17 +66,18 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
     this.qrScanner.destroy();
   }
 
-  setupDevices() {
+  private runCamera() {
     this.qrScanner = new QrScanner(
       this.video.nativeElement,
       result => {
-        this.capture(result.data);
+        this.ngZone.run(() => {
+          this.capture(result.data);
+        });
       },
       {
         calculateScanRegion: videoElem => {
           this.calculateSizes();
           if (!this.videoSize) {
-            console.log('SKIP');
             return {};
           }
           const { page } = this.videoSize;
@@ -85,7 +85,6 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
           const scanRegionY = (this.pageDesign.qrCode.top * 0.9 * page.full.height) / this.pageDesign.height;
           const scanRegionWidth = (this.pageDesign.qrCode.size * 1.1 * page.full.width) / this.pageDesign.width;
           const scanRegionHeight = (this.pageDesign.qrCode.size * 1.1 * page.full.height) / this.pageDesign.height;
-          console.log({ page });
           return {
             x: videoElem.videoWidth + scanRegionX - page.full.width, // (0|0) is top-right in this context
             y: scanRegionY,
@@ -95,15 +94,20 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
         },
         highlightScanRegion: true,
         highlightCodeOutline: false,
-        returnDetailedScanResult: true,
-        onDecodeError: console.log
+        returnDetailedScanResult: true
       }
     );
     this.qrScanner.start()
-      .then(() => {
-        this.listCameras();
-        this.updateFlashAvailability();
-      });
+      .then(
+        () => {
+          this.listCameras();
+          this.updateFlashAvailability();
+        },
+        err => {
+          this.state = 'error';
+          this.error = err;
+        }
+      );
   }
 
   private calculateSizes(): void {
@@ -154,13 +158,16 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   }
 
   capture(code: string): void {
+    this.state = 'wait';
     this.qrScanner.stop();
     this.drawImageToCanvas();
     this.capturedImage = this.canvas.nativeElement.toDataURL('image/png');
-    this.bs.getAttachmentTarget(code)
+
+    this.state = 'confirm';
+    this.bs.getAttachmentTargetLabel(code)
       .subscribe(target => {
-        this.attachmentTarget = target;
-        this.state = 'confirm';
+        this.attachmentTargetHash = code;
+        this.attachmentTargetLabel = target;
       });
   }
 
@@ -183,15 +190,12 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
     );
   }
 
-  async newCapture() {
-    this.attachmentTarget = {
-      label: 'unknown',
-      testId: undefined,
-      unitId: undefined
-    };
+  async reset() {
+    this.attachmentTargetLabel = null;
+    this.attachmentTargetHash = null;
     this.capturedImage = '';
     this.state = 'capture';
-    await this.setupDevices();
+    await this.runCamera();
   }
 
   selectCamera(camId: string): void {
@@ -204,7 +208,14 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
   }
 
   uploadImage(): void {
-    this.bs.addAttachment(this.attachmentTarget, CaptureImageComponent.dataURItoFile(this.capturedImage));
+    this.bs.postAttachment(this.attachmentTargetHash, CaptureImageComponent.dataURItoFile(this.capturedImage))
+      .subscribe(ok => {
+        if (!ok) {
+          return;
+        }
+        this.snackBar.open('Anhang erfolgreich Hochgeladen!', 'Info', { duration: 3000 });
+        this.reset();
+      });
   }
 
   private static dataURItoFile(dataURI: string): File {
@@ -218,16 +229,8 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
     }
 
     let fileName = 'file';
-    const blob = new File(
-      [ab],
-      fileName,
-      {
-        type: mimeString
-      }
-    );
-
     // eslint-disable-next-line default-case
-    switch (blob.type) {
+    switch (mimeString) {
       case 'image/jpeg':
         fileName += '.jpg';
         break;
@@ -236,6 +239,12 @@ export class CaptureImageComponent implements AfterViewInit, OnDestroy {
         break;
     }
 
-    return blob;
+    return new File(
+      [ab],
+      fileName,
+      {
+        type: mimeString
+      }
+    );
   }
 }
