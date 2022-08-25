@@ -1,14 +1,14 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, SkipSelf } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { AttachmentTarget, GroupData } from '../../interfaces/users.interfaces';
+import { AttachmentTargetLabel, GroupData } from '../../interfaces/users.interfaces';
 
 @Injectable()
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') protected serverUrl: string,
-    private http: HttpClient
+    @Inject('SERVER_URL') private readonly serverUrl: string,
+    @SkipSelf() private http: HttpClient
   ) {
   }
 
@@ -23,31 +23,21 @@ export class BackendService {
       })));
   }
 
-  addAttachment(target: AttachmentTarget, file: File): Observable<boolean> {
-    console.log('addAttachment', target);
+  putAttachment(attachmentTargetCode: string, file: File): Observable<boolean> {
     const formData = new FormData();
     formData.append('mimeType', file.type);
     formData.append('attachment', file, file.name);
     formData.append('timeStamp', Date.now().toString());
     return this.http
-      .put(
-        `${this.serverUrl}test/${target.testId}/attachment}`,
-        formData,
-        { observe: 'response' }
-      )
+      .put<boolean>(`${this.serverUrl}attachment/${attachmentTargetCode}`, formData, { observe: 'response' })
       .pipe(
         map((res: HttpResponse<unknown>) => (res.status === 201)),
         catchError(() => of(false))
       );
   }
 
-  getAttachmentTarget(codeContent: string): Observable<AttachmentTarget> {
-    console.log('getAttachmentTarget', codeContent);
-    // TODO implement
-    return of({
-      label: 'Booklet XYZ of user abc',
-      testId: '',
-      unitId: ''
-    });
+  getAttachmentTargetLabel(attachmentTargetCode: string): Observable<AttachmentTargetLabel> {
+    return this.http
+      .get<AttachmentTargetLabel>(`${this.serverUrl}attachment/${attachmentTargetCode}/target-label`);
   }
 }

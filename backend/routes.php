@@ -112,14 +112,22 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 });
 
 
-$app->group('/test', function(RouteCollectorProxy $group) { // TODO Spec
+$app->group('/attachment', function(RouteCollectorProxy $group) { // TODO Specs
 
-    $group->put('/{test_id}/unit/{unit_name}/attachment', [TestController::class, 'putUnitAttachment']);
+    $group->put('/{target}', [AttachmentController::class, 'put']);
 
-    $group->get('/attachment-target/{hash}', [TestController::class, 'getAttachmentTarget']);
+    $group->get('/{target}/target-label', [AttachmentController::class, 'getTargetLabel']);
 })
-    ->add(new MayModifyAttachments('person'))
+    ->add(new MayModifyAttachments())
     ->add(new RequireToken('person'));
+
+
+$app->group('/attachments', function(RouteCollectorProxy $group) { // TODO Specs
+
+    $group->get('/list', [AttachmentController::class, 'getList']);
+})
+    ->add(new MayModifyAttachments())
+    ->add(new RequireToken('person', 'admin'));
 
 $app->group('/workspace', function(RouteCollectorProxy $group) {
 
