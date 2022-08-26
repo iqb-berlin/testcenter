@@ -4,5 +4,15 @@ export interface GroupData {
 }
 
 export interface AttachmentTargetLabel {
-  label: string;
+  personLabel: string;
+  testLabel: string;
+}
+
+export interface AttachmentData extends AttachmentTargetLabel {
+  personLabel: string;
+  testLabel: string;
+  unitLabel: string;
+  type: 'image';
+  lastModified: number;
+  fileName: string;
 }

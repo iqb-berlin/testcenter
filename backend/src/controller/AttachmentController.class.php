@@ -5,15 +5,13 @@ declare(strict_types=1);
 
 use JetBrains\PhpStorm\ArrayShape;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpForbiddenException;
-use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
 
 class AttachmentController extends Controller {
 
-    public static function getList(Request $request, Response $response): Response {
+    public static function getData(Request $request, Response $response): Response {
 
         /* @var AuthToken $authToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -52,6 +50,8 @@ class AttachmentController extends Controller {
         }
         $target = AttachmentController::decodeTarget($targetCode);
         $timeStamp = (int) $request->getParam('timeStamp');
+        $mimeType = $request->getParam('mimeType');
+        $type = explode('/', $mimeType)[0];
 
         // TODO check if allowed
 
@@ -62,23 +62,24 @@ class AttachmentController extends Controller {
         $workspacePath = $workspace->getWorkspacePath();
         $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'attachment', $workspacePath);
 
-        $finalFileNames = [];
+        $dataParts = [];
         foreach ($uploadedFiles as $originalFileName) {
 
-            $dst = "$workspacePath/UnitAttachments/{$target['testId']}/{$target['unitName']}";
+            $dstSubPath = "test_{$target['testId']}/{$target['unitName']}/$type";
+            $dst = "$workspacePath/UnitAttachments/$dstSubPath";
             Folder::createPath($dst);
-            $attachmentNumber = count(Folder::getContentsFlat($dst)) + 1;
+            $attachmentCode = AttachmentController::randomString();
             $extension = FileExt::get($originalFileName);
-            $fileName = "{$target['testId']}_{$target['unitName']}_{$attachmentNumber}.$extension";
+            $fileName = "$attachmentCode.$extension";
             copy("$workspacePath/$originalFileName", "$dst/$fileName");
-            $finalFileNames[] = $fileName;
+            $dataParts["$type:$attachmentCode.$extension"] = "$dstSubPath/$fileName"; // TODO implement format
             unlink("$workspacePath/$originalFileName");
         }
 
         self::testDAO()->updateDataParts(
             $target['testId'],
             $target['unitName'],
-            $finalFileNames,
+            $dataParts,
             'itc-attachment-id',
             $timeStamp
         );
@@ -95,5 +96,15 @@ class AttachmentController extends Controller {
             'unitName' => 'UNIT.SAMPLE',
             'testId' => 4
         ];
+    }
+
+
+    private static function randomString(int $size = 32): string {
+        $fileName = '';
+        $allowedChars = "ABCDEFGHIJKLOMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz0123456789_-";
+        while ($size-- > 1) {
+            $fileName .= substr($allowedChars, rand(0, strlen($allowedChars) - 1), 1);
+        }
+        return $fileName;
     }
 }

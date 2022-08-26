@@ -2,7 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable, SkipSelf } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { AttachmentTargetLabel, GroupData } from '../../interfaces/users.interfaces';
+import { AttachmentData, AttachmentTargetLabel, GroupData } from '../../interfaces/users.interfaces';
 
 @Injectable()
 export class BackendService {
@@ -39,5 +39,10 @@ export class BackendService {
   getAttachmentTargetLabel(attachmentTargetCode: string): Observable<AttachmentTargetLabel> {
     return this.http
       .get<AttachmentTargetLabel>(`${this.serverUrl}attachment/${attachmentTargetCode}/target-label`);
+  }
+
+  getAttachmentsData(groups: string[]): Observable<AttachmentData[]> {
+    return this.http
+      .get<AttachmentData[]>(`${this.serverUrl}attachments/data`, { params: { groups: groups.join(',') } });
   }
 }

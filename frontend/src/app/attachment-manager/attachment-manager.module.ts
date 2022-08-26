@@ -10,6 +10,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
 import { SharedModule } from '../shared/shared.module';
 import { AttachmentManagerRoutingModule } from './routing/attachment-manager-routing.module';
 import { AttachmentManagerComponent } from './components/attachment-manager/attachment-manager.component';
@@ -33,6 +34,7 @@ import { AttachmentOverviewComponent } from './components/attachment-overview/at
     MatSelectModule,
     MatSidenavModule,
     MatSnackBarModule,
+    MatTableModule,
     MatCheckboxModule,
     MatCardModule,
     MatSlideToggleModule,
