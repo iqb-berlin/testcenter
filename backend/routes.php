@@ -112,6 +112,8 @@ $app->group('/attachment', function(RouteCollectorProxy $group) { // TODO Specs
 
     $group->get('/{attachmentId}', [AttachmentController::class, 'get']);
 
+    $group->get('/{target}/page', [AttachmentController::class, 'getTargetPage']);
+
     $group->delete('/{attachmentId}', [AttachmentController::class, 'delete']);
 
     $group->post('/{target}', [AttachmentController::class, 'post']);

@@ -656,8 +656,10 @@ class AdminDAO extends DAO {
                                 group_label as groupLabel,
                                 logins.name as loginName,
                                 name_suffix as nameSuffix,
-                                tests.label as testLabel,   
-                                units.name as unitLabel,
+                                tests.label as testLabel, 
+                                tests.id as testId,
+                                units.name as unitLabel, -- TODO get real label
+                                units.name as unitName, 
                                 unit_data.part_id as attachmentKey,
                                 unit_data.content as attachmentPath,
                                 unit_data.ts as lastModified
@@ -688,10 +690,12 @@ class AdminDAO extends DAO {
                     $attachment['nameSuffix']
                 ),
                 "testLabel" => $attachment['testLabel'],
-                "type" => $type,
+                "dataType" => $type,
                 "attachmentId" => $attachment['attachmentKey'],
                 "unitLabel" => $attachment['unitLabel'],
-                "lastModified" => $attachment['lastModified']
+                "lastModified" => $attachment['lastModified'],
+                "attachmentType" => 'capture-image', // TODO how
+                "attachmentTargetCode" => "{$attachment['unitName']}@{$attachment['testId']}"
             ];
         }
         return $attachmentData;

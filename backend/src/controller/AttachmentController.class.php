@@ -87,6 +87,49 @@ class AttachmentController extends Controller {
     }
 
 
+    public static function getTargetPage(Request $request, Response $response): Response {
+
+        /* @var AuthToken $authToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $targetCode = (string) $request->getAttribute('target');
+        if (!$targetCode ){
+
+            throw new HttpBadRequestException($request);
+        }
+
+        // TODO check if $targetCode is valid target
+
+        $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf->SetCreator('IQB-Testcenter');
+        $pdf->SetTitle('Attachment-Page');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $pdf->AddPage();
+
+        $style = array(
+            'border' => 0,
+            'vpadding' => 0,
+            'hpadding' => 0,
+            'fgcolor' => array(0,0,0),
+            'bgcolor' => false, //array(255,255,255)
+            'module_width' => 1, // width of a single module in points
+            'module_height' => 1 // height of a single module in points
+        );
+
+        $pdf->write2DBarcode($targetCode, 'QRCODE,L', 20, 20, 40, 40, $style, 'N');
+
+        $doc = $pdf->Output('/* ignored */', 'S');
+
+        $response->write($doc);
+        return $response
+            ->withHeader('Content-Type', "application/pdf");
+
+
+        // TODO check if allowed
+    }
+
+
     // TODO unit-test
     // TODO api-spec
     public static function post(Request $request, Response $response): Response {
@@ -138,11 +181,18 @@ class AttachmentController extends Controller {
     #[ArrayShape(['unitName' => "string", 'testId' => "int"])]
     private static function decodeTarget(string $target): array {
 
-        // TODO! replace harcoded stuff
+        list($uniName, $testId) = explode('@', $target);
+
         return [
-            'unitName' => 'UNIT.SAMPLE',
-            'testId' => 4
+            'unitName' => $uniName,
+            'testId' => $testId
         ];
+    }
+
+
+    private static function encodeTarget(int $testId, string $unitName): string {
+
+        return "$unitName@$testId";
     }
 
 

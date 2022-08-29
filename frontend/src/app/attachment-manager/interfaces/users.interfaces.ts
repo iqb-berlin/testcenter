@@ -12,7 +12,9 @@ export interface AttachmentData extends AttachmentTargetLabel {
   personLabel: string;
   testLabel: string;
   unitLabel: string;
-  type: 'image';
+  dataType: 'image';
   lastModified: number;
   attachmentId: string;
+  attachmentType: 'capture-image',
+  attachmentTargetCode: string;
 }

@@ -15,14 +15,12 @@ import { AttachmentData } from '../../interfaces/users.interfaces';
   ]
 })
 export class AttachmentOverviewComponent implements OnInit {
-
   @ViewChild(MatSort) sort: MatSort;
 
-  attachmentData: AttachmentData[];
   seletedAttachment: AttachmentData = null;
   selectedAttachmentImage: ArrayBuffer | string = '';
 
-  displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'type', 'lastModified'];
+  displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'dataType', 'lastModified', 'actions'];
   dataSource: MatTableDataSource<AttachmentData>;
 
   constructor(
@@ -32,14 +30,14 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.dataSource = new MatTableDataSource<AttachmentData>([]);
     this.loadAttachmentList();
   }
 
   private loadAttachmentList(): void {
     this.bs.getAttachmentsData([])
       .subscribe(attachmentData => {
-        this.attachmentData = attachmentData;
-        this.dataSource = new MatTableDataSource(this.attachmentData);
+        this.dataSource.data = attachmentData;
         this.dataSource.sort = this.sort;
       });
   }
@@ -54,13 +52,13 @@ export class AttachmentOverviewComponent implements OnInit {
 
     this.bs.getAttachment(element.attachmentId)
       .subscribe(data => {
-        if (element.type === 'image') {
+        if (element.dataType === 'image') {
           this.createImageFromBlob(data);
         }
       });
   }
 
-  private createImageFromBlob(image: Blob) {
+  private createImageFromBlob(image: Blob): void {
     const reader = new FileReader();
     reader.addEventListener(
       'load',
@@ -85,5 +83,9 @@ export class AttachmentOverviewComponent implements OnInit {
           this.snackBar.open('Konnte Anhang nicht löschen!', 'Fehler.', { duration: 3000 });
         }
       });
+  }
+
+  printPage(attachmentData: AttachmentData) {
+    this.bs.getAttachmentPage(attachmentData.attachmentTargetCode);
   }
 }

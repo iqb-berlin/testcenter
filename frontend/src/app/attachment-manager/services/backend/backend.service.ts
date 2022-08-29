@@ -59,4 +59,19 @@ export class BackendService {
         catchError(() => of(false))
       );
   }
+
+  getAttachmentPage(attachmentTargetCode: string): void {
+    this.http.get(
+      `${this.serverUrl}attachment/${attachmentTargetCode}/page`,
+      {
+        observe: 'response',
+        responseType: 'blob'
+      }
+    )
+      .subscribe((response: HttpResponse<Blob>) => {
+        const blob = new Blob([response.body], { type: response.headers['Content-Type'] });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);
+      });
+  }
 }
