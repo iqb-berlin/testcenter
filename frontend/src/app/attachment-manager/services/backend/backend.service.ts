@@ -45,4 +45,9 @@ export class BackendService {
     return this.http
       .get<AttachmentData[]>(`${this.serverUrl}attachments/data`, { params: { groups: groups.join(',') } });
   }
+
+  getAttachment(attachmentId: string): Observable<Blob> {
+    return this.http
+      .get(`${this.serverUrl}attachment/${attachmentId}`, { responseType: 'blob' });
+  }
 }

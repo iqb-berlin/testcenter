@@ -5,11 +5,36 @@ declare(strict_types=1);
 
 use JetBrains\PhpStorm\ArrayShape;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
+use Slim\Psr7\Stream;
 
 
 class AttachmentController extends Controller {
+
+
+    public static function get(Request $request, Response $response): Response {
+
+        /* @var AuthToken $authToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $attachmentId = (string) $request->getAttribute('attachmentId');
+        $attachment = AttachmentController::adminDAO()->getAttachmentById($attachmentId);
+
+        if (!$attachment) {
+            throw new HttpNotFoundException($request, "Attachment not found: $attachmentId");
+        }
+
+        $fullFilename = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/{$attachment['filePath']}";
+        if (!file_exists($fullFilename)) {
+            throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
+        }
+
+        $response->write(file_get_contents($fullFilename));
+        return $response->withHeader('Content-Type', FileExt::getMimeType($fullFilename));
+    }
+
 
     public static function getData(Request $request, Response $response): Response {
 

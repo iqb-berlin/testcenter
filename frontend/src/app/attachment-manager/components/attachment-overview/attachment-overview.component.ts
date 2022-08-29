@@ -16,6 +16,9 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   attachmentData: AttachmentData[];
+  seletedAttachment: AttachmentData = null;
+  selectedAttachmentImage: ArrayBuffer | string = '';
+
   displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'type', 'lastModified'];
 
   ngOnInit(): void {
@@ -24,5 +27,36 @@ export class AttachmentOverviewComponent implements OnInit {
         console.log(attachmentData);
         this.attachmentData = attachmentData;
       });
+  }
+
+  selectAttachment(element: AttachmentData): void {
+    if (this.seletedAttachment?.fileName === element.fileName) {
+      this.seletedAttachment = null;
+    }
+    this.seletedAttachment = element;
+
+    this.bs.getAttachment(`${element.type}:${element.fileName}`)
+      .subscribe(data => {
+        if (element.type === 'image') {
+          this.createImageFromBlob(data);
+        }
+      });
+  }
+
+  private createImageFromBlob(image: Blob) {
+    const reader = new FileReader();
+    reader.addEventListener(
+      'load',
+      () => { this.selectedAttachmentImage = reader.result; },
+      false
+    );
+
+    if (image) {
+      reader.readAsDataURL(image);
+    }
+  }
+
+  deleteAttachment(): void {
+    console.log('DELETE');
   }
 }

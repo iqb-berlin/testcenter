@@ -114,6 +114,8 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 
 $app->group('/attachment', function(RouteCollectorProxy $group) { // TODO Specs
 
+    $group->get('/{attachmentId}', [AttachmentController::class, 'get']);
+
     $group->post('/{target}', [AttachmentController::class, 'post']);
 
     $group->get('/{target}/target-label', [AttachmentController::class, 'getTargetLabel']);
@@ -124,7 +126,7 @@ $app->group('/attachment', function(RouteCollectorProxy $group) { // TODO Specs
 
 $app->group('/attachments', function(RouteCollectorProxy $group) { // TODO Specs
 
-    $group->get('/list', [AttachmentController::class, 'getList']);
+    $group->get('/data', [AttachmentController::class, 'getData']);
 })
     ->add(new MayModifyAttachments())
     ->add(new RequireToken('person', 'admin'));

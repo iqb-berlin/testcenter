@@ -15,3 +15,12 @@
     padding-top: 15px;
     margin-right: 1em;
 }
+
+.attachment-table tr.selected td {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+#previewImage {
+    width: 100%;
+    background: #b2b2b2;
+}

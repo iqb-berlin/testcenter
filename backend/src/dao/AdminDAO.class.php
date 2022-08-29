@@ -609,6 +609,29 @@ class AdminDAO extends DAO {
 
 
     // TODO unit-test
+    public function getAttachmentById(string $attachmentId): ?array {
+
+        return $this->_(
+            'SELECT
+                    unit_data.part_id as partId,
+                    unit_data.content as filePath,
+                    unit_data.response_type as responseType,
+                    unit_data.ts,
+                    unit_data.unit_id as unitId
+                FROM
+                    unit_data
+                    left join units on units.id = unit_data.unit_id
+                WHERE
+                    part_id = :partId
+                ',
+            [
+                ':partId' => $attachmentId
+            ]
+        );
+    }
+
+
+    // TODO unit-test
     // TODO use proper data-class for response
     public function getAttachments(int $workspaceId, array $groups): array {
 
