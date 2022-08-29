@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component, OnInit, ViewChild
+} from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 import { BackendService } from '../../services/backend/backend.service';
 import { AttachmentData } from '../../interfaces/users.interfaces';
 
@@ -11,17 +15,21 @@ import { AttachmentData } from '../../interfaces/users.interfaces';
   ]
 })
 export class AttachmentOverviewComponent implements OnInit {
-  constructor(
-    private bs: BackendService,
-    public snackBar: MatSnackBar
-  ) {
-  }
+
+  @ViewChild(MatSort) sort: MatSort;
 
   attachmentData: AttachmentData[];
   seletedAttachment: AttachmentData = null;
   selectedAttachmentImage: ArrayBuffer | string = '';
 
   displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'type', 'lastModified'];
+  dataSource: MatTableDataSource<AttachmentData>;
+
+  constructor(
+    private bs: BackendService,
+    public snackBar: MatSnackBar
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadAttachmentList();
@@ -31,12 +39,16 @@ export class AttachmentOverviewComponent implements OnInit {
     this.bs.getAttachmentsData([])
       .subscribe(attachmentData => {
         this.attachmentData = attachmentData;
+        this.dataSource = new MatTableDataSource(this.attachmentData);
+        this.dataSource.sort = this.sort;
       });
   }
 
   selectAttachment(element: AttachmentData): void {
     if (this.seletedAttachment?.attachmentId === element.attachmentId) {
       this.seletedAttachment = null;
+      this.selectedAttachmentImage = '';
+      return;
     }
     this.seletedAttachment = element;
 
@@ -66,6 +78,8 @@ export class AttachmentOverviewComponent implements OnInit {
       .subscribe(ok => {
         if (ok) {
           this.snackBar.open('Anhang gelöscht!', 'Ok.', { duration: 3000 });
+          this.seletedAttachment = null;
+          this.selectedAttachmentImage = '';
           this.loadAttachmentList();
         } else {
           this.snackBar.open('Konnte Anhang nicht löschen!', 'Fehler.', { duration: 3000 });

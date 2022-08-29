@@ -118,7 +118,7 @@ class AttachmentController extends Controller {
             $attachmentCode = AttachmentController::randomString();
             $extension = FileExt::get($originalFileName);
             $attachmentId = "$type:$attachmentCode.$extension";
-            copy("$workspacePath/$originalFileName", "$dst/$attachmentId");
+            copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
             $dataParts[$attachmentId] = $attachmentId; // TODO implement format
             unlink("$workspacePath/$originalFileName");
         }

@@ -16,6 +16,10 @@
     margin-right: 1em;
 }
 
+.attachment-table tr {
+    cursor: pointer;
+}
+
 .attachment-table tr.selected td {
     background: rgba(0, 0, 0, 0.3);
 }
