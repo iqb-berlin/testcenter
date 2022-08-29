@@ -60,7 +60,7 @@
         <tr mat-row
             *matRowDef="let row; columns: displayedColumns;"
             (click)="selectAttachment(row)"
-            [class]="{ selected: (row.fileName === seletedAttachment?.fileName) }"
+            [class]="{ selected: (row.attachmentId === seletedAttachment?.attachmentId) }"
         ></tr>
       </table>
     </div>

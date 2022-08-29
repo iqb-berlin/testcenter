@@ -50,4 +50,13 @@ export class BackendService {
     return this.http
       .get(`${this.serverUrl}attachment/${attachmentId}`, { responseType: 'blob' });
   }
+
+  deleteAttachment(attachmentId: string): Observable<boolean> {
+    return this.http
+      .delete<boolean>(`${this.serverUrl}attachment/${attachmentId}`)
+      .pipe(
+        map(() => true),
+        catchError(() => of(false))
+      );
+  }
 }

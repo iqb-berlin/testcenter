@@ -613,8 +613,8 @@ class AdminDAO extends DAO {
 
         return $this->_(
             'SELECT
-                    unit_data.part_id as partId,
-                    unit_data.content as filePath,
+                    unit_data.part_id as attachmentId,
+                    unit_data.content as attachmentContent,
                     unit_data.response_type as responseType,
                     unit_data.ts,
                     unit_data.unit_id as unitId
@@ -627,6 +627,16 @@ class AdminDAO extends DAO {
             [
                 ':partId' => $attachmentId
             ]
+        );
+    }
+
+
+    // TODO unit-test
+    public function deleteAttachmentById(string $attachmentId): void {
+
+        $this->_(
+            'delete from unit_data where part_id = :partId and response_type = \'itc-attachment-id\'',
+            [ ':partId' => $attachmentId ]
         );
     }
 
@@ -670,7 +680,7 @@ class AdminDAO extends DAO {
                         );
         $attachmentData = [];
         foreach ($attachments as $attachment) {
-            list($type, $fileName) = explode(':', $attachment['attachmentKey']);
+            list($type) = explode(':', $attachment['attachmentKey']);
             $attachmentData[] = [
                 "personLabel" => AccessSet::getDisplayName(
                     $attachment['groupLabel'],
@@ -679,7 +689,7 @@ class AdminDAO extends DAO {
                 ),
                 "testLabel" => $attachment['testLabel'],
                 "type" => $type,
-                "fileName" => $fileName,
+                "attachmentId" => $attachment['attachmentKey'],
                 "unitLabel" => $attachment['unitLabel'],
                 "lastModified" => $attachment['lastModified']
             ];

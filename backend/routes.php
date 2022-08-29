@@ -107,14 +107,12 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 })
     ->add(new RequireToken('person'));
 
-$app->group('/test', function(RouteCollectorProxy $group) {
-
-});
-
 
 $app->group('/attachment', function(RouteCollectorProxy $group) { // TODO Specs
 
     $group->get('/{attachmentId}', [AttachmentController::class, 'get']);
+
+    $group->delete('/{attachmentId}', [AttachmentController::class, 'delete']);
 
     $group->post('/{target}', [AttachmentController::class, 'post']);
 

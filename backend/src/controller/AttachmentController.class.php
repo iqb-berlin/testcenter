@@ -18,21 +18,44 @@ class AttachmentController extends Controller {
 
         /* @var AuthToken $authToken */
         $authToken = $request->getAttribute('AuthToken');
+        // TODO check if allowed
 
         $attachmentId = (string) $request->getAttribute('attachmentId');
         $attachment = AttachmentController::adminDAO()->getAttachmentById($attachmentId);
 
         if (!$attachment) {
-            throw new HttpNotFoundException($request, "Attachment not found: $attachmentId");
+            throw new HttpNotFoundException($request, "Attachment not found: `$attachmentId`");
         }
 
-        $fullFilename = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/{$attachment['filePath']}";
+        list($type, $fileName) = explode(':', $attachment['attachmentId']);
+        $fullFilename = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
         if (!file_exists($fullFilename)) {
-            throw new HttpNotFoundException($request, "File not found:" . $fullFilename);
+            throw new HttpNotFoundException($request, "$type not found:`$fullFilename`");
         }
 
         $response->write(file_get_contents($fullFilename));
         return $response->withHeader('Content-Type', FileExt::getMimeType($fullFilename));
+    }
+
+
+    public static function delete(Request $request, Response $response): Response {
+
+        /* @var AuthToken $authToken */
+        $authToken = $request->getAttribute('AuthToken');
+        // TODO check if allowed
+
+        $attachmentId = (string)$request->getAttribute('attachmentId');
+        AttachmentController::adminDAO()->deleteAttachmentById($attachmentId);
+
+        list($type, $fileName) = explode(':', $attachmentId);
+        $fullFilename = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
+        if (!file_exists($fullFilename)) {
+            throw new HttpNotFoundException($request, "$type not found:`$fullFilename`");
+        }
+
+        unlink($fullFilename);
+
+        return $response->withStatus(200);
     }
 
 
@@ -90,14 +113,13 @@ class AttachmentController extends Controller {
         $dataParts = [];
         foreach ($uploadedFiles as $originalFileName) {
 
-            $dstSubPath = "test_{$target['testId']}/{$target['unitName']}/$type";
-            $dst = "$workspacePath/UnitAttachments/$dstSubPath";
+            $dst = "$workspacePath/UnitAttachments/";
             Folder::createPath($dst);
             $attachmentCode = AttachmentController::randomString();
             $extension = FileExt::get($originalFileName);
-            $fileName = "$attachmentCode.$extension";
-            copy("$workspacePath/$originalFileName", "$dst/$fileName");
-            $dataParts["$type:$attachmentCode.$extension"] = "$dstSubPath/$fileName"; // TODO implement format
+            $attachmentId = "$type:$attachmentCode.$extension";
+            copy("$workspacePath/$originalFileName", "$dst/$attachmentId");
+            $dataParts[$attachmentId] = $attachmentId; // TODO implement format
             unlink("$workspacePath/$originalFileName");
         }
 

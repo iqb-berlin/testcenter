@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BackendService } from '../../services/backend/backend.service';
 import { AttachmentData } from '../../interfaces/users.interfaces';
 
@@ -11,7 +12,8 @@ import { AttachmentData } from '../../interfaces/users.interfaces';
 })
 export class AttachmentOverviewComponent implements OnInit {
   constructor(
-    private bs: BackendService
+    private bs: BackendService,
+    public snackBar: MatSnackBar
   ) {
   }
 
@@ -22,20 +24,23 @@ export class AttachmentOverviewComponent implements OnInit {
   displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'type', 'lastModified'];
 
   ngOnInit(): void {
+    this.loadAttachmentList();
+  }
+
+  private loadAttachmentList(): void {
     this.bs.getAttachmentsData([])
       .subscribe(attachmentData => {
-        console.log(attachmentData);
         this.attachmentData = attachmentData;
       });
   }
 
   selectAttachment(element: AttachmentData): void {
-    if (this.seletedAttachment?.fileName === element.fileName) {
+    if (this.seletedAttachment?.attachmentId === element.attachmentId) {
       this.seletedAttachment = null;
     }
     this.seletedAttachment = element;
 
-    this.bs.getAttachment(`${element.type}:${element.fileName}`)
+    this.bs.getAttachment(element.attachmentId)
       .subscribe(data => {
         if (element.type === 'image') {
           this.createImageFromBlob(data);
@@ -57,6 +62,14 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   deleteAttachment(): void {
-    console.log('DELETE');
+    this.bs.deleteAttachment(this.seletedAttachment.attachmentId)
+      .subscribe(ok => {
+        if (ok) {
+          this.snackBar.open('Anhang gelöscht!', 'Ok.', { duration: 3000 });
+          this.loadAttachmentList();
+        } else {
+          this.snackBar.open('Konnte Anhang nicht löschen!', 'Fehler.', { duration: 3000 });
+        }
+      });
   }
 }

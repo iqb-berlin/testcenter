@@ -14,5 +14,5 @@ export interface AttachmentData extends AttachmentTargetLabel {
   unitLabel: string;
   type: 'image';
   lastModified: number;
-  fileName: string;
+  attachmentId: string;
 }
