@@ -2,9 +2,11 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 // TODO unit tests !
+// TODO api-specs
 
 use JetBrains\PhpStorm\ArrayShape;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
@@ -16,45 +18,17 @@ class AttachmentController extends Controller {
 
     public static function get(Request $request, Response $response): Response {
 
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
-        // TODO check if allowed
-
-        $attachmentId = (string) $request->getAttribute('attachmentId');
-        $attachment = AttachmentController::adminDAO()->getAttachmentById($attachmentId);
-
-        if (!$attachment) {
-            throw new HttpNotFoundException($request, "Attachment not found: `$attachmentId`");
-        }
-
-        list($type, $fileName) = explode(':', $attachment['attachmentId']);
-        $fullFilename = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
-        if (!file_exists($fullFilename)) {
-            throw new HttpNotFoundException($request, "$type not found:`$fullFilename`");
-        }
-
-        $response->write(file_get_contents($fullFilename));
-        return $response->withHeader('Content-Type', FileExt::getMimeType($fullFilename));
+        $attachment = AttachmentController::getRequestedAttachmentById($request);
+        $response->write(file_get_contents($attachment['fullFileName']));
+        return $response->withHeader('Content-Type', FileExt::getMimeType($attachment['fullFileName']));
     }
 
 
     public static function delete(Request $request, Response $response): Response {
 
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
-        // TODO check if allowed
-
-        $attachmentId = (string)$request->getAttribute('attachmentId');
-        AttachmentController::adminDAO()->deleteAttachmentById($attachmentId);
-
-        list($type, $fileName) = explode(':', $attachmentId);
-        $fullFilename = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
-        if (!file_exists($fullFilename)) {
-            throw new HttpNotFoundException($request, "$type not found:`$fullFilename`");
-        }
-
-        unlink($fullFilename);
-
+        $attachment = AttachmentController::getRequestedAttachmentById($request, false);
+        AttachmentController::adminDAO()->deleteAttachmentById($attachment['attachmentId']);
+        unlink($attachment['fullFileName']);
         return $response->withStatus(200);
     }
 
@@ -69,40 +43,22 @@ class AttachmentController extends Controller {
     }
 
 
-    // TODO api-spec
     public static function getTargetLabel(Request $request, Response $response): Response {
 
-        $targetCode = (string) $request->getAttribute('target');
-        if (!$targetCode ){
-
-            throw new HttpBadRequestException($request);
-        }
-        $target = AttachmentController::decodeTarget($targetCode);
-
-        // TODO check if allowed
-
+        $attachmentTargetInfo = AttachmentController::getRequestedAttachmentTargetInfo($request);
         return $response->withJson([
-            "label" => AttachmentController::testDAO()->getTestLabel($target['testId'])
+            "label" => $attachmentTargetInfo['targetLabel']
         ]);
     }
 
 
     public static function getTargetPage(Request $request, Response $response): Response {
 
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
-
-        $targetCode = (string) $request->getAttribute('target');
-        if (!$targetCode ){
-
-            throw new HttpBadRequestException($request);
-        }
-
-        // TODO check if $targetCode is valid target
+        $targetInfo = AttachmentController::getRequestedAttachmentTargetInfo($request);
 
         $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator('IQB-Testcenter');
-        $pdf->SetTitle('Attachment-Page');
+        $pdf->SetTitle($targetInfo['targetLabel']);
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->AddPage();
@@ -117,18 +73,87 @@ class AttachmentController extends Controller {
             'module_height' => 1 // height of a single module in points
         );
 
-        $pdf->write2DBarcode($targetCode, 'QRCODE,L', 20, 20, 40, 40, $style, 'N');
+        $pdf->write2DBarcode($targetInfo['targetCode'], 'QRCODE,L', 20, 20, 40, 40, $style, 'N');
 
         $doc = $pdf->Output('/* ignored */', 'S');
 
         $response->write($doc);
         return $response
             ->withHeader('Content-Type', "application/pdf");
-
-
-        // TODO check if allowed
     }
 
+
+    // TODO use proper data-class
+    private static function getRequestedAttachmentTargetInfo(Request $request): array {
+
+        /* @var AuthToken $authToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $targetCode = (string) $request->getAttribute('target');
+
+        if (!$targetCode ){
+            throw new HttpBadRequestException($request);
+        }
+
+        $target = AttachmentController::decodeTarget($targetCode);
+        $targetInfo = AttachmentController::testDAO()->getTestLabels($target['testId']);
+        $targetInfo['targetCode'] = $targetCode;
+
+        if (!$targetInfo) {
+            throw new HttpBadRequestException($request, "Could not Read Code: `$targetCode`");
+        }
+
+        if (!AttachmentController::isGroupAllowed($authToken, $targetInfo['groupName'])) {
+            throw new HttpForbiddenException($request, "Access to group `{$targetInfo['groupLabel']} not given.`");
+        }
+
+        $displayName = AccessSet::getDisplayName(
+            $targetInfo['groupLabel'],
+            $targetInfo['loginLabel'],
+            $targetInfo['nameSuffix']
+        );
+
+        $targetInfo['targetLabel'] = "$displayName: {$targetInfo['testLabel']}";
+
+        return $targetInfo;
+    }
+
+
+    private static function getRequestedAttachmentById(Request $request, bool $fileMustExist = true): array {
+
+        /* @var AuthToken $authToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $attachmentId = (string) $request->getAttribute('attachmentId');
+        $attachment = AttachmentController::adminDAO()->getAttachmentById($attachmentId);
+
+        if (!$attachment) {
+            throw new HttpNotFoundException($request, "Attachment not found: `$attachmentId`");
+        }
+
+        if (!AttachmentController::isGroupAllowed($authToken, $attachment['groupName'])) {
+            throw new HttpForbiddenException($request, "Access to attachment `$attachmentId` not given");
+        }
+
+        list($type, $fileName) = explode(':', $attachment['attachmentId']);
+        $attachment['fullFileName'] = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
+        if (!file_exists($attachment['fullFileName']) and $fileMustExist) {
+            throw new HttpNotFoundException($request, "$type not found:`$fileName`");
+        }
+
+        return $attachment;
+    }
+
+
+    private static function isGroupAllowed(AuthToken $authToken, string $groupName): bool {
+
+        if ($authToken->getMode() == 'monitor-group') {
+
+            return $authToken->getGroup() == $groupName;
+        }
+
+        return false;
+    }
 
     // TODO unit-test
     // TODO api-spec

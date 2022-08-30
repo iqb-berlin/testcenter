@@ -617,10 +617,14 @@ class AdminDAO extends DAO {
                     unit_data.content as attachmentContent,
                     unit_data.response_type as responseType,
                     unit_data.ts,
-                    unit_data.unit_id as unitId
+                    unit_data.unit_id as unitId,
+                    login_sessions.group_name as groupName
                 FROM
                     unit_data
                     left join units on units.id = unit_data.unit_id
+                    left join tests on tests.id = units.booklet_id
+                    left join person_sessions on tests.person_id = person_sessions.id
+                    left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
                 WHERE
                     part_id = :partId
                 ',

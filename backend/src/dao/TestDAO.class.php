@@ -443,12 +443,13 @@ class TestDAO extends DAO {
 
 
     // todo unit-test
-    public function getTestLabel(int $testId): string {
+    public function getTestLabels(int $testId): array {
 
-        $labels = $this->_(
+        return $this->_(
             'select
                     label as testLabel,
                     group_label as groupLabel,
+                    logins.group_name as groupName,
                     login_sessions.name as loginLabel,
                     name_suffix as nameSuffix
                 from
@@ -461,9 +462,5 @@ class TestDAO extends DAO {
                 ':test_id' => $testId
             ]
         );
-
-        $displayName = AccessSet::getDisplayName($labels['groupLabel'], $labels['loginLabel'], $labels['nameSuffix']);
-
-        return "$displayName: {$labels['testLabel']}";
     }
 }
