@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { BackendService } from '../../services/backend/backend.service';
-import { AttachmentData } from '../../interfaces/users.interfaces';
+import { AttachmentData, AttachmentType } from '../../interfaces/users.interfaces';
 
 @Component({
   templateUrl: './attachment-overview.component.html',
@@ -20,7 +20,7 @@ export class AttachmentOverviewComponent implements OnInit {
   seletedAttachment: AttachmentData = null;
   selectedAttachmentImage: ArrayBuffer | string = '';
 
-  displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'dataType', 'lastModified', 'actions'];
+  displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'attachmentType', 'lastModified'];
   dataSource: MatTableDataSource<AttachmentData>;
 
   constructor(

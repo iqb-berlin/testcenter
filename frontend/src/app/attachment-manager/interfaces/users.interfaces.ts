@@ -8,6 +8,8 @@ export interface AttachmentTargetLabel {
   testLabel: string;
 }
 
+export type AttachmentType = 'capture-image';
+
 export interface AttachmentData extends AttachmentTargetLabel {
   personLabel: string;
   testLabel: string;
@@ -15,6 +17,6 @@ export interface AttachmentData extends AttachmentTargetLabel {
   dataType: 'image';
   lastModified: number;
   attachmentId: string;
-  attachmentType: 'capture-image',
+  attachmentType: AttachmentType;
   attachmentTargetCode: string;
 }

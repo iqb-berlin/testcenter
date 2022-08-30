@@ -185,7 +185,7 @@ class AttachmentController extends Controller {
 
         return [
             'unitName' => $uniName,
-            'testId' => $testId
+            'testId' => (int) $testId
         ];
     }
 

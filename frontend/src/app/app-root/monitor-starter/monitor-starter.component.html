@@ -16,7 +16,8 @@
           <span class="booklet_status">Überwachung starten</span>
         </button>
 
-        <button mat-raised-button color="secondary" (click)="buttonGotoAttachmentManager(accessObject)"
+        <h4>Aufgaben-Anhänge Verwalten</h4>
+        <button mat-raised-button color="primary" (click)="buttonGotoAttachmentManager(accessObject)"
                 *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]">
           <span class="booklet_title">{{accessObject.name}}</span>
           <span class="booklet_status">Anhänge Verwalten</span>

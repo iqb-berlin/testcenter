@@ -6,8 +6,18 @@
       <br>
       <button
         mat-raised-button
+        color="primary"
+        *ngIf="seletedAttachment.attachmentType === 'capture-image'"
+        (click)="$event.stopPropagation(); printPage(seletedAttachment)"
+        matTooltip="Seite neu ausdrucken"
+      >
+        <mat-icon>description</mat-icon>
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
         (click)="deleteAttachment()"
-        mattooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
+        matTooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
       >
         <mat-icon>delete</mat-icon>
       </button>
@@ -50,10 +60,12 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="dataType">
+        <ng-container matColumnDef="attachmentType">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
           <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
-            {{element.dataType}}
+            <ng-container *ngIf="element.attachmentType === 'capture-image'">
+              {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
+            </ng-container>
           </td>
         </ng-container>
 
@@ -61,20 +73,6 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Hochgeladen</th>
           <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
             {{element.lastModified | date: 'dd.MM.yy HH:mm'}}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Aktionen</th>
-          <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
-            <button
-              mat-button
-              color="primary"
-              *ngIf="element.attachmentType === 'capture-image'"
-              (click)="$event.stopPropagation(); printPage(element)"
-            >
-              Seite ausdrucken
-            </button>
           </td>
         </ng-container>
 
