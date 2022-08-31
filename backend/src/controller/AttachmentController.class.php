@@ -96,7 +96,7 @@ class AttachmentController extends Controller {
         }
 
         $target = AttachmentController::decodeTarget($targetCode);
-        $targetInfo = AttachmentController::testDAO()->getTestLabels($target['testId']);
+        $targetInfo = AttachmentController::testDAO()->getAttachmentTargetInfo($target['testId']);
         $targetInfo['targetCode'] = $targetCode;
 
         if (!$targetInfo) {

@@ -443,7 +443,7 @@ class TestDAO extends DAO {
 
 
     // todo unit-test
-    public function getTestLabels(int $testId): array {
+    public function getAttachmentTargetInfo(int $testId): array {
 
         return $this->_(
             'select
@@ -456,7 +456,7 @@ class TestDAO extends DAO {
                     tests
                     left join person_sessions on tests.person_id = person_sessions.id
                     left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-                    left join logins on login_sessions.workspace_id = logins.workspace_id
+                    left join logins on login_sessions.name = logins.name
                 where tests.id = :test_id',
             [
                 ':test_id' => $testId
