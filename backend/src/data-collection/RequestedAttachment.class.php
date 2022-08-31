@@ -1,0 +1,22 @@
+<?php
+/** @noinspection PhpUnhandledExceptionInspection */
+declare(strict_types=1);
+
+class RequestedAttachment {
+    public readonly int $testId;
+    public readonly string $unitName;
+    public readonly string $attachmentType;
+    public readonly string $variableId;
+
+    function __construct(
+        int    $testId,
+        string $unitName,
+        string $attachmentType,
+        string $variableId
+    ) {
+        $this->testId = $testId;
+        $this->unitName = $unitName;
+        $this->attachmentType = $attachmentType;
+        $this->variableId = $variableId;
+    }
+}

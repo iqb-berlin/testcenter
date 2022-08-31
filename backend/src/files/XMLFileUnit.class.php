@@ -15,6 +15,8 @@ class XMLFileUnit extends XMLFile {
 
         parent::__construct($path, $validate, $isRawXml);
 
+        $this->checkRequestedAttachments();
+
         if ($this->isValid()) {
             $this->playerId = $this->readPlayerId();
             $this->dependencies = $this->readDependencies();
@@ -174,5 +176,36 @@ class XMLFileUnit extends XMLFile {
             function($e) { return (string) $e;},
             $this->xml->xpath('/Unit/Dependencies/Package')
         );
+    }
+
+
+    private function checkRequestedAttachments(): void {
+
+        $requestedAttachments = $this->getRequestedAttachments();
+        $requestedAttachmentsCount = count($requestedAttachments);
+        if ($requestedAttachmentsCount) {
+            $this->report('info', "`{$requestedAttachmentsCount}` attachment(s) requested.");
+        }
+    }
+
+
+    private function getRequestedAttachments(): array {
+
+        $variables = $this->xml->xpath('/Unit/BaseVariables/Variable[@type="attachment"]');
+        $requestedAttachments = [];
+        foreach ($variables as $variable) {
+
+            if (!is_a($variable, 'SimpleXMLElement')) {
+
+                continue;
+            }
+
+            $requestedAttachments[] = [
+                'variableId' => (string)$variable->id,
+                'attachmentType' => (string)$variable->format
+            ];
+        }
+
+        return $requestedAttachments;
     }
 }

@@ -37,6 +37,7 @@ export class AttachmentOverviewComponent implements OnInit {
   private loadAttachmentList(): void {
     this.bs.getAttachmentsData([])
       .subscribe(attachmentData => {
+        console.log(attachmentData);
         this.dataSource.data = attachmentData;
         this.dataSource.sort = this.sort;
       });
@@ -49,6 +50,10 @@ export class AttachmentOverviewComponent implements OnInit {
       return;
     }
     this.seletedAttachment = element;
+
+    if (element.dataType === 'missing') {
+      return;
+    }
 
     this.bs.getAttachment(element.attachmentId)
       .subscribe(data => {

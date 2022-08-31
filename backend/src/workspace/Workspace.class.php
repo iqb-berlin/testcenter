@@ -500,6 +500,7 @@ class Workspace {
         return $stats;
     }
 
+
     public function getPackageFilePath($packageName, $resourceName): string {
 
         $path = $this->getWorkspacePath() . "/Resource/$packageName/$resourceName";

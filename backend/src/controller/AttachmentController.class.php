@@ -83,6 +83,54 @@ class AttachmentController extends Controller {
     }
 
 
+    // TODO unit-test
+    // TODO api-spec
+    public static function post(Request $request, Response $response): Response {
+
+        $targetCode = (string) $request->getAttribute('target');
+        if (!$targetCode){
+
+            throw new HttpBadRequestException($request);
+        }
+        $target = AttachmentController::decodeTarget($targetCode);
+        $timeStamp = (int) $request->getParam('timeStamp');
+        $mimeType = $request->getParam('mimeType');
+        $type = explode('/', $mimeType)[0];
+
+        // TODO check if allowed
+
+        /* @var AuthToken $authToken */
+        $authToken = $request->getAttribute('AuthToken');
+
+        $workspace = new Workspace($authToken->getWorkspaceId());
+        $workspacePath = $workspace->getWorkspacePath();
+        $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'attachment', $workspacePath);
+
+        $dataParts = [];
+        foreach ($uploadedFiles as $originalFileName) {
+
+            $dst = "$workspacePath/UnitAttachments/";
+            Folder::createPath($dst);
+            $attachmentCode = AttachmentController::randomString();
+            $extension = FileExt::get($originalFileName);
+            $attachmentId = "$type:$attachmentCode";
+            copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
+            $dataParts[$attachmentId] = "$attachmentId.$extension"; // TODO implement format
+            unlink("$workspacePath/$originalFileName");
+        }
+
+        self::testDAO()->updateDataParts(
+            $target['testId'],
+            $target['unitName'],
+            $dataParts,
+            'itc-attachment-id',
+            $timeStamp
+        );
+
+        return $response->withStatus(201);
+    }
+
+
     // TODO use proper data-class
     private static function getRequestedAttachmentTargetInfo(Request $request): array {
 
@@ -135,7 +183,8 @@ class AttachmentController extends Controller {
             throw new HttpForbiddenException($request, "Access to attachment `$attachmentId` not given");
         }
 
-        list($type, $fileName) = explode(':', $attachment['attachmentId']);
+        list($type, $fileName) = explode(':', $attachment['attachmentContent']);
+        list($attachment['attachmentType']) = explode(':', $attachment['attachmentId']);
         $attachment['fullFileName'] = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
         if (!file_exists($attachment['fullFileName']) and $fileMustExist) {
             throw new HttpNotFoundException($request, "$type not found:`$fileName`");
@@ -153,53 +202,6 @@ class AttachmentController extends Controller {
         }
 
         return false;
-    }
-
-    // TODO unit-test
-    // TODO api-spec
-    public static function post(Request $request, Response $response): Response {
-
-        $targetCode = (string) $request->getAttribute('target');
-        if (!$targetCode ){
-
-            throw new HttpBadRequestException($request);
-        }
-        $target = AttachmentController::decodeTarget($targetCode);
-        $timeStamp = (int) $request->getParam('timeStamp');
-        $mimeType = $request->getParam('mimeType');
-        $type = explode('/', $mimeType)[0];
-
-        // TODO check if allowed
-
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
-
-        $workspace = new Workspace($authToken->getWorkspaceId());
-        $workspacePath = $workspace->getWorkspacePath();
-        $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'attachment', $workspacePath);
-
-        $dataParts = [];
-        foreach ($uploadedFiles as $originalFileName) {
-
-            $dst = "$workspacePath/UnitAttachments/";
-            Folder::createPath($dst);
-            $attachmentCode = AttachmentController::randomString();
-            $extension = FileExt::get($originalFileName);
-            $attachmentId = "$type:$attachmentCode.$extension";
-            copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
-            $dataParts[$attachmentId] = $attachmentId; // TODO implement format
-            unlink("$workspacePath/$originalFileName");
-        }
-
-        self::testDAO()->updateDataParts(
-            $target['testId'],
-            $target['unitName'],
-            $dataParts,
-            'itc-attachment-id',
-            $timeStamp
-        );
-
-        return $response->withStatus(201);
     }
 
 

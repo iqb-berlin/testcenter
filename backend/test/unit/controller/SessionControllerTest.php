@@ -32,7 +32,7 @@ class SessionControllerInjector extends SessionController {
 
     public static function injectBookletsFolder(BookletsFolder $bookletsFolder, int $workspaceId) {
 
-        self::$_bookletFolders[$workspaceId] = $bookletsFolder;
+        self::$_workspaces[$workspaceId] = $bookletsFolder;
     }
 }
 

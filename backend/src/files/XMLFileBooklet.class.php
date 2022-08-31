@@ -90,4 +90,10 @@ class XMLFileBooklet extends XMLFile {
         $meta->totalSize = $this->getTotalSize();
         return $meta;
     }
+
+
+    public function getRequestedAttachments(): array {
+        // TODO implement
+        return [];
+    }
 }

@@ -664,8 +664,8 @@ class AdminDAO extends DAO {
                                 tests.id as testId,
                                 units.name as unitLabel, -- TODO get real label
                                 units.name as unitName, 
-                                unit_data.part_id as attachmentKey,
-                                unit_data.content as attachmentPath,
+                                unit_data.part_id as attachmentId,
+                                unit_data.content as attachmentContent,
                                 unit_data.ts as lastModified
                             from
                                 unit_data
@@ -686,7 +686,10 @@ class AdminDAO extends DAO {
                         );
         $attachmentData = [];
         foreach ($attachments as $attachment) {
-            list($type) = explode(':', $attachment['attachmentKey']);
+            $dataType = $attachment['attachmentContent']
+                ? explode(':', $attachment['attachmentContent'])[0]
+                : 'missing';
+            list($attachmentType) = explode(':', $attachment['attachmentId']);
             $attachmentData[] = [
                 "personLabel" => AccessSet::getDisplayName(
                     $attachment['groupLabel'],
@@ -694,11 +697,11 @@ class AdminDAO extends DAO {
                     $attachment['nameSuffix']
                 ),
                 "testLabel" => $attachment['testLabel'],
-                "dataType" => $type,
-                "attachmentId" => $attachment['attachmentKey'],
+                "dataType" => $dataType,
+                "attachmentId" => $attachment['attachmentId'],
                 "unitLabel" => $attachment['unitLabel'],
                 "lastModified" => $attachment['lastModified'],
-                "attachmentType" => 'capture-image', // TODO how
+                "attachmentType" => $attachmentType,
                 "attachmentTargetCode" => "{$attachment['unitName']}@{$attachment['testId']}"
             ];
         }

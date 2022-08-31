@@ -463,4 +463,24 @@ class TestDAO extends DAO {
             ]
         );
     }
+
+
+    // todo unit-test
+    public function setRequestedAttachments(array $requestedAttachments): void {
+
+        foreach ($requestedAttachments as $requestedAttachment) {
+
+            /* @var RequestedAttachment $requestedAttachment */
+
+            $this->_('insert into test_unit_attachments(test_id, unit_name, variable_id, attachment_type)
+                VALUES(:testId, :unitName, :variableId, :attachmentType)',
+            [
+                ':testId' => $requestedAttachment->testId,
+                ':unitName' => $requestedAttachment->unitName,
+                ':variableId' => $requestedAttachment->variableId,
+                ':attachmentType' => $requestedAttachment->attachmentType
+            ]);
+        }
+    }
+
 }

@@ -16,6 +16,7 @@
       <button
         mat-raised-button
         color="primary"
+        *ngIf="seletedAttachment.dataType !== 'missing'"
         (click)="deleteAttachment()"
         matTooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
       >
@@ -66,6 +67,7 @@
             <ng-container *ngIf="element.attachmentType === 'capture-image'">
               {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
             </ng-container>
+            <div *ngIf="element.dataType == 'missing'">FEHLT!</div>
           </td>
         </ng-container>
 
