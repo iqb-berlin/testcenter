@@ -102,7 +102,11 @@ class SessionController extends Controller {
 
             foreach ($members as $member) { /* @var $member LoginSession */
 
-                if (in_array($member->getLogin()->getMode(), Mode::getByCapability('alwaysNewSession'))) {
+                if (Mode::hasCapability($member->getLogin()->getMode(), 'alwaysNewSession')) {
+                    continue;
+                }
+
+                if (!Mode::hasCapability($member->getLogin()->getMode(),'monitorable')) {
                     continue;
                 }
 
@@ -117,10 +121,13 @@ class SessionController extends Controller {
                     foreach ($booklets as $bookletId) {
 
                         if (!isset($bookletFiles[$bookletId])) {
+
                             // TODO this implies, that test can only run, when workspace is valid! TODO check this out
-                            $bookletFiles[$bookletId] = $workspace->findFileById('Booklet', $bookletId);
+                            $bookletFile = $workspace->findFileById('Booklet', $bookletId);
+                            /* @var $bookletFile XMLFileBooklet */
+                            $bookletFiles[$bookletId] = $bookletFile;
                         }
-                        /* @var $bookletFiles[$bookletId] XMLFileBooklet */
+
                         $test = self::testDAO()->getOrCreateTest(
                             $memberPersonSession->getPerson()->getId(),
                             $bookletId,
@@ -129,10 +136,6 @@ class SessionController extends Controller {
                         $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
                         $sessionMessage->setTestState([], $bookletId);
                         BroadcastService::sessionChange($sessionMessage);
-
-                        SessionController::testDAO()->setRequestedAttachments(
-                            $bookletFiles[$bookletId]->getRequestedAttachments
-                        );
                     }
                 }
             }

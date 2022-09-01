@@ -17,7 +17,7 @@ class XMLFileBooklet extends XMLFile {
         $bookletPlayers = [];
         $this->totalSize = $this->getSize();
 
-        foreach($this->getAllUnitIds() as $unitId) {
+        foreach($this->getUnitIds() as $unitId) {
 
             $unit = $validator->getUnit($unitId);
 
@@ -52,31 +52,32 @@ class XMLFileBooklet extends XMLFile {
     }
 
 
-    protected function getAllUnitIds() {
+    // TODO unit-test $useAlias
+    public function getUnitIds(bool $useAlias = false): array {
 
-        $allUnitIds = [];
-        if ($this->isValid() and ($this->xml != false) and ($this->rootTagName == 'Booklet')) {
-            $unitsNode = $this->xml->Units[0];
-            if (isset($unitsNode)) {
-                $allUnitIds = $this->getUnitIds($unitsNode);
-            }
+        if (!$this->isValid()) {
+            return [];
         }
-        return $allUnitIds;
+
+        return $this->getUnitIdFromNode($this->xml->Units[0], $useAlias);
     }
 
 
-    private function getUnitIds(SimpleXMLElement $node): array {
+    private function getUnitIdFromNode(SimpleXMLElement $node, bool $useAlias = false): array {
 
         $unitIds = [];
         foreach($node->children() as $element) {
+
             if ($element->getName() == 'Unit') {
-                $idAttr = (string) $element['id'];
-                if (isset($idAttr)) {
-                    array_push($unitIds, strtoupper($idAttr));
-                }
+
+                $id = strtoupper((string) $element['id']);
+                $alias = (string) $element['alias'];
+                $unitIds[] = ($useAlias and $alias) ? $alias : $id;
+
             } else {
-                foreach($this->getUnitIds($element) as $id) {
-                    array_push($unitIds, $id);
+
+                foreach($this->getUnitIdFromNode($element, $useAlias) as $id) {
+                    $unitIds[] = $id;
                 }
             }
         }
@@ -89,11 +90,5 @@ class XMLFileBooklet extends XMLFile {
         $meta = parent::getSpecialInfo();
         $meta->totalSize = $this->getTotalSize();
         return $meta;
-    }
-
-
-    public function getRequestedAttachments(): array {
-        // TODO implement
-        return [];
     }
 }

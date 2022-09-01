@@ -9,12 +9,10 @@ class RequestedAttachment {
     public readonly string $variableId;
 
     function __construct(
-        int    $testId,
         string $unitName,
         string $attachmentType,
         string $variableId
     ) {
-        $this->testId = $testId;
         $this->unitName = $unitName;
         $this->attachmentType = $attachmentType;
         $this->variableId = $variableId;

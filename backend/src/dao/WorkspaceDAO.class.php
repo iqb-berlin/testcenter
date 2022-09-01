@@ -181,4 +181,33 @@ class WorkspaceDAO extends DAO {
 
         $this->_("delete from files where workspace_id = ? and name = ?", [$workspaceId, $name]);
     }
+
+
+    public function updateUnitDefsAttachments(int $workspaceId, string $bookletName, array $attachments): void {
+
+        $this->_(
+            'delete from unit_defs_attachments where workspace_id = :workspace_id and booklet_name = :booklet_name;',
+            [
+                ':workspace_id' => $workspaceId,
+                ':booklet_name' => $bookletName
+            ]
+        );
+
+        foreach ($attachments as $requestedAttachment) {
+
+            /* @var RequestedAttachment $requestedAttachment */
+
+            $this->_(
+                'replace into unit_defs_attachments(workspace_id, booklet_name, unit_name, variable_id, attachment_type)
+                    values(:workspace_id, :booklet_name, :unit_name, :variable_id, :attachment_type)',
+                [
+                    ':workspace_id' => $workspaceId,
+                    ':booklet_name' => $bookletName,
+                    ':unit_name' => $requestedAttachment->unitName,
+                    ':variable_id' => $requestedAttachment->variableId,
+                    ':attachment_type' => $requestedAttachment->attachmentType
+                ]);
+        }
+    }
+
 }

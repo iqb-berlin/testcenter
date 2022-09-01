@@ -495,6 +495,13 @@ class Workspace {
             $file->installPackage();
         }
 
+        if ($file->getType() == 'Booklet') {
+
+            /* @var XMLFileBooklet $file */
+            $requestedAttachments = $this->getRequestedAttachments($file);
+            $this->workspaceDAO->updateUnitDefsAttachments($this->workspaceId, $file->getId(), $requestedAttachments);
+        }
+
         $this->workspaceDAO->storeFileMeta($this->getId(), $file);
 
         return $stats;
@@ -508,5 +515,18 @@ class Workspace {
             throw new HttpError("File of package `$packageName` not found: `$resourceName` ($path)");
         }
         return $path;
+    }
+
+
+    public function getRequestedAttachments(XMLFileBooklet $booklet): array {
+
+        $requestedAttachments = [];
+        foreach ($booklet->getUnitIds(false) as $uniId) {
+
+            $unit = $this->findFileById('Unit', $uniId);
+            /* @var $unit XMLFileUnit */
+            $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
+        }
+        return $requestedAttachments;
     }
 }

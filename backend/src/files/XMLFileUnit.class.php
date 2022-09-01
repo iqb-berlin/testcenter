@@ -189,7 +189,7 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    private function getRequestedAttachments(): array {
+    public function getRequestedAttachments(): array {
 
         $variables = $this->xml->xpath('/Unit/BaseVariables/Variable[@type="attachment"]');
         $requestedAttachments = [];
@@ -200,10 +200,11 @@ class XMLFileUnit extends XMLFile {
                 continue;
             }
 
-            $requestedAttachments[] = [
-                'variableId' => (string)$variable->id,
-                'attachmentType' => (string)$variable->format
-            ];
+            $requestedAttachments[] = new RequestedAttachment(
+                $this->getId(),
+                (string) $variable['format'],
+                (string) $variable['id']
+            );
         }
 
         return $requestedAttachments;
