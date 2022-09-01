@@ -1,5 +1,9 @@
 const { defineConfig } = require('cypress');
 const deleteFolder = require('./cypress/plugins/delete-folder');
+const waitForServer = require('./cypress/plugins/wait-for-server');
+
+const frontendURL = 'http://testcenter-system-test-frontend:4200';
+const backendURL = 'http://testcenter-system-test-backend';
 
 module.exports = defineConfig({
   reporter: 'junit',
@@ -10,14 +14,16 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // return require('./cypress/plugins/index.js')(on, config);
       on('task', { deleteFolder });
+      on('before:run', async () => {
+        await waitForServer(`${backendURL}/system/config`);
+        await waitForServer(frontendURL);
+      });
     },
-    baseUrl: 'http://localhost',
     env: {
-      TC_API_URL: 'http://localhost/api/'
+      TC_API_URL: backendURL
     }
   }
 });
-
 
 // Keeping the old configuration here for futire reference, in case something does not work as expected.
 // Also in case the coverage report is to be re-enabled.

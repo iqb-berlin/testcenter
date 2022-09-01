@@ -61,28 +61,10 @@ test-frontend-unit:
 test-frontend-integration:
 # TODO implement integration tests with CyPress against mocked backend with Prism
 
-# This replaces the old e2e setup with a new one in a separate container; old stuff kept commented out below.
+# Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI.
+# Creates a code coverage report for the frontend.
 test-system-headless:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec testcenter-frontend \
-		sed -i "s/testcenterUrl: '\/api\/'/testcenterUrl: 'http:\/\/testcenter-backend\/'/" src/environments/environment.dev.ts
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run e2e || \
-		docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec testcenter-frontend \
-			sed -i "s/testcenterUrl: 'http:\/\/testcenter-backend\/'/testcenterUrl: '\/api\/'/" src/environments/environment.dev.ts
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec testcenter-frontend \
-		sed -i "s/testcenterUrl: 'http:\/\/testcenter-backend\/'/testcenterUrl: '\/api\/'/" src/environments/environment.dev.ts
-
-## Performs some integration tests with CyPress against real MySql-DB and real backend in interactive mode.
-#test-system:
-#	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
-#	docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
-#		--abort-on-container-exit \
-#		--force-recreate \
-#		--renew-anon-volumes
-
-## Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI. Creates a code coverage report for the frontend.
-#test-system-headless:
-#	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
-#	docker-compose -f docker-compose.system-test.yml up \
-#		--abort-on-container-exit \
-#		--force-recreate \
-#		--renew-anon-volumes
+	docker-compose -f docker-compose.system-test.yml up \
+		--abort-on-container-exit \
+		--force-recreate \
+		--renew-anon-volumes

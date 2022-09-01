@@ -57,15 +57,9 @@
     "@angular/compiler-cli": "~14.1.0",
     "@angular/language-service": "~14.1.0",
     "@compodoc/compodoc": "^1.1.19",
-    "@cypress/code-coverage": "~3.10.0",
-    "@cypress/schematic": "^2.0.0",
     "@iqb/eslint-config": "2.1.0",
     "@istanbuljs/nyc-config-typescript": "1.0.2",
     "@types/jasminewd2": "~2.0.10",
-    "cypress": "~10.3.1",
-    "cypress-downloadfile": "^1.2.2",
-    "cypress-file-upload": "^5.0.8",
-    "cypress-iframe": "^1.0.1",
     "jasmine-core": "~4.3.0",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
@@ -84,9 +78,16 @@
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": true,
-    "exclude": ["**/*.spec.ts"],
-    "include": ["src"],
-    "extension": [".ts", ".js"],
+    "exclude": [
+      "**/*.spec.ts"
+    ],
+    "include": [
+      "src"
+    ],
+    "extension": [
+      ".ts",
+      ".js"
+    ],
     "reporter": [
       "text-summary",
       "json",

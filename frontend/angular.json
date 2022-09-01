@@ -66,6 +66,14 @@
                   "with": "src/environments/environment.dev.ts"
                 }
               ]
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.system-test.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "dev"
@@ -95,10 +103,7 @@
             "extractLicenses": false,
             "sourceMap": true,
             "namedChunks": true,
-            "vendorChunk": true,
-            "customWebpackConfig": {
-              "path": "./cypress/coverage.webpack.ts"
-            }
+            "vendorChunk": true
           },
           "configurations": {
             "system-test": {
@@ -122,6 +127,9 @@
             },
             "dev": {
               "browserTarget": "testcenter-frontend:build:dev"
+            },
+            "e2e": {
+              "browserTarget": "testcenter-frontend:build:e2e"
             }
           }
         },
@@ -142,29 +150,6 @@
             ]
           }
         },
-        "serve-coverage": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
-          "options": {
-            "browserTarget": "testcenter-frontend:build-coverage:system-test"
-          }
-        },
-        "system-test": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "testcenter-frontend:serve-coverage",
-            "watch": true,
-            "headless": false
-          }
-        },
-        "system-test-headless": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "browser": "chromium",
-            "devServerTarget": "testcenter-frontend:serve-coverage",
-            "headless": true,
-            "watch": false
-          }
-        }
       }
     }
   },
