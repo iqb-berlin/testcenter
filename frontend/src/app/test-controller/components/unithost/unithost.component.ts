@@ -332,7 +332,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-    srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId), { force: false });
+    if (this.iFrameItemplayer.hasAttribute('schnulli')) {
+      throw new Error('Your browser is outdated/incompatible with this application!');
+    }
+    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
+    // srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId), { force: false });
   }
 
   private adjustIframeSize(): void {
