@@ -20,5 +20,4 @@ export interface AttachmentData extends AttachmentTargetLabel {
   lastModified: number;
   attachmentId: string;
   attachmentType: AttachmentType;
-  attachmentTargetCode: string;
 }

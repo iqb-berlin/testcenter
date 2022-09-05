@@ -1,14 +1,40 @@
 <mat-sidenav-container>
   <mat-sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
-    <div class="toolbar-section" *ngIf="seletedAttachment">
-      <h3>Ausgewählt {{seletedAttachment.dataType}}</h3>
-      <img *ngIf="seletedAttachment.dataType === 'image'" id="previewImage" [src]="selectedAttachmentImage">
+    <div class="toolbar-section" *ngIf="selectedAttachment">
+      <h3>Ausgewählter Anhang:</h3>
+      <div *ngIf="selectedAttachment.dataType === 'missing'">
+        <alert level="warning" text="Dieser Anhang muss noch hinzugefügt werden." ></alert>
+      </div>
+      <table>
+        <tr>
+          <td>Testperson:</td>
+          <td>{{selectedAttachment.personLabel}}</td>
+        </tr>
+        <tr>
+          <td>Test:</td>
+          <td>{{selectedAttachment.testLabel}}</td>
+        </tr>
+        <tr>
+          <td>Aufgabe:</td>
+          <td>{{selectedAttachment.unitLabel}}</td>
+        </tr>
+        <tr>
+          <td>Typ:</td>
+          <td>
+            <ng-container *ngIf="selectedAttachment.attachmentType === 'capture-image'">
+              {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
+            </ng-container>
+          </td>
+        </tr>
+      </table>
+
+      <img *ngIf="selectedAttachment.dataType === 'image'" id="previewImage" [src]="selectedAttachmentImage">
       <br>
       <button
         mat-raised-button
         color="primary"
-        *ngIf="seletedAttachment.attachmentType === 'capture-image'"
-        (click)="$event.stopPropagation(); printPage(seletedAttachment)"
+        *ngIf="selectedAttachment.attachmentType === 'capture-image'"
+        (click)="$event.stopPropagation(); printPage(selectedAttachment)"
         matTooltip="Seite neu ausdrucken"
       >
         <mat-icon>description</mat-icon>
@@ -16,7 +42,7 @@
       <button
         mat-raised-button
         color="primary"
-        *ngIf="seletedAttachment.dataType !== 'missing'"
+        *ngIf="selectedAttachment.dataType !== 'missing'"
         (click)="deleteAttachment()"
         matTooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
       >
@@ -67,7 +93,6 @@
             <ng-container *ngIf="element.attachmentType === 'capture-image'">
               {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
             </ng-container>
-            <div *ngIf="element.dataType == 'missing'">FEHLT!</div>
           </td>
         </ng-container>
 
@@ -75,13 +100,14 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Hochgeladen</th>
           <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
             {{element.lastModified | date: 'dd.MM.yy HH:mm'}}
+            <alert *ngIf="element.dataType === 'missing'" level="warning" text="Fehlt noch!" ></alert>
           </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row
             *matRowDef="let row; columns: displayedColumns;"
-            [class]="{ selected: (row.attachmentId === seletedAttachment?.attachmentId) }"
+            [class]="{ selected: (row.attachmentId === selectedAttachment?.attachmentId) }"
         ></tr>
       </table>
     </div>

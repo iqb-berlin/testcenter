@@ -5,12 +5,12 @@ declare(strict_types=1);
 // TODO api-specs
 
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
-use Slim\Psr7\Stream;
 
 
 class AttachmentController extends Controller {
@@ -97,7 +97,7 @@ class AttachmentController extends Controller {
         $mimeType = $request->getParam('mimeType');
         $type = explode('/', $mimeType)[0];
 
-        // TODO check if allowed
+        // TODO verify target & check if allowed
 
         /* @var AuthToken $authToken */
         $authToken = $request->getAttribute('AuthToken');
@@ -115,7 +115,7 @@ class AttachmentController extends Controller {
             $extension = FileExt::get($originalFileName);
             $attachmentId = "$type:$attachmentCode";
             copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
-            $dataParts[$attachmentId] = "$attachmentId.$extension"; // TODO implement format
+            $dataParts[$targetCode] = "$attachmentId.$extension"; // TODO implement format
             unlink("$workspacePath/$originalFileName");
         }
 
@@ -194,6 +194,7 @@ class AttachmentController extends Controller {
     }
 
 
+    #[Pure]
     private static function isGroupAllowed(AuthToken $authToken, string $groupName): bool {
 
         if ($authToken->getMode() == 'monitor-group') {
@@ -205,21 +206,27 @@ class AttachmentController extends Controller {
     }
 
 
-    #[ArrayShape(['unitName' => "string", 'testId' => "int"])]
+    #[ArrayShape(['unitName' => "string", 'testId' => "int", 'variableId' => "string"])]
     private static function decodeTarget(string $target): array {
 
-        list($uniName, $testId) = explode('@', $target);
+        $targetPieces = explode(':', $target);
+
+        if (count($targetPieces) != 3) {
+
+            throw new HttpError("Invalid attachment target: `$target`", 400);
+        }
 
         return [
-            'unitName' => $uniName,
-            'testId' => (int) $testId
+            'testId' => (int) $targetPieces[0],
+            'unitName' => $targetPieces[1],
+            'variableId' => $targetPieces[2]
         ];
     }
 
 
-    private static function encodeTarget(int $testId, string $unitName): string {
+    private static function encodeTarget(int $testId, string $unitName, string $variableId): string {
 
-        return "$unitName@$testId";
+        return "$unitName:$testId:$variableId";
     }
 
 

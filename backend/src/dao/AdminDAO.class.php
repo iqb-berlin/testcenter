@@ -690,8 +690,6 @@ class AdminDAO extends DAO {
             $dataType = $attachment['attachmentContent']
                 ? explode(':', $attachment['attachmentContent'])[0]
                 : 'missing';
-
-            list($attachmentType) = explode(':', $attachment['attachmentId']);
             $attachmentData[] = [
                 "personLabel" => AccessSet::getDisplayName(
                     $attachment['groupLabel'],
@@ -703,72 +701,7 @@ class AdminDAO extends DAO {
                 "attachmentId" => $attachment['attachmentId'], // !
                 "unitLabel" => $attachment['unitLabel'], // !
                 "lastModified" => $attachment['lastModified'],
-                "attachmentType" => $attachmentType,
-                "attachmentTargetCode" => "{$attachment['unitName']}@{$attachment['testId']}"
-            ];
-        }
-        return $attachmentData;
-    }
-
-
-    // TODO unit-test
-    // TODO use proper data-class for response
-    public function getAttachments2(int $workspaceId, array $groups): array {
-
-        $groupSelector = false;
-        if (count($groups)) {
-
-            $groupSelector = "'" . implode("', '", $groups) . "'";
-        }
-
-        $attachments = $this->_(
-                        "select
-                                group_label as groupLabel,
-                                logins.name as loginName,
-                                name_suffix as nameSuffix,
-                                tests.label as testLabel, 
-                                tests.id as testId,
-                                units.name as unitLabel, -- TODO get real label
-                                units.name as unitName, 
-                                unit_data.part_id as attachmentId,
-                                unit_data.content as attachmentContent,
-                                unit_data.ts as lastModified
-                            from
-                                unit_data
-                                left join units on unit_id = units.id
-                                left join tests on units.booklet_id = tests.id
-                                left join person_sessions on tests.person_id = person_sessions.id
-                                left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-                                left join logins on logins.name = login_sessions.name
-                            where
-                                unit_data.response_type = 'itc-attachment-id'
-                                and logins.group_name in ($groupSelector)
-                                and logins.workspace_id = :workspace_id"
-                        ,
-                        [
-                            ':workspace_id' => $workspaceId
-                        ],
-                        true
-                        );
-        $attachmentData = [];
-        foreach ($attachments as $attachment) {
-            $dataType = $attachment['attachmentContent']
-                ? explode(':', $attachment['attachmentContent'])[0]
-                : 'missing';
-            list($attachmentType) = explode(':', $attachment['attachmentId']);
-            $attachmentData[] = [
-                "personLabel" => AccessSet::getDisplayName(
-                    $attachment['groupLabel'],
-                    $attachment['loginName'],
-                    $attachment['nameSuffix']
-                ),
-                "testLabel" => $attachment['testLabel'],
-                "dataType" => $dataType,
-                "attachmentId" => $attachment['attachmentId'],
-                "unitLabel" => $attachment['unitLabel'],
-                "lastModified" => $attachment['lastModified'],
-                "attachmentType" => $attachmentType,
-                "attachmentTargetCode" => "{$attachment['unitName']}@{$attachment['testId']}"
+                "attachmentType" => $attachment['attachmentType']
             ];
         }
         return $attachmentData;

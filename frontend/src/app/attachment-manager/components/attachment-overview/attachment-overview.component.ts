@@ -17,7 +17,7 @@ import { AttachmentData, AttachmentType } from '../../interfaces/users.interface
 export class AttachmentOverviewComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
-  seletedAttachment: AttachmentData = null;
+  selectedAttachment: AttachmentData = null;
   selectedAttachmentImage: ArrayBuffer | string = '';
 
   displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'attachmentType', 'lastModified'];
@@ -37,19 +37,19 @@ export class AttachmentOverviewComponent implements OnInit {
   private loadAttachmentList(): void {
     this.bs.getAttachmentsData([])
       .subscribe(attachmentData => {
-        console.log(attachmentData);
         this.dataSource.data = attachmentData;
         this.dataSource.sort = this.sort;
       });
   }
 
   selectAttachment(element: AttachmentData): void {
-    if (this.seletedAttachment?.attachmentId === element.attachmentId) {
-      this.seletedAttachment = null;
+    if (this.selectedAttachment?.attachmentId === element.attachmentId) {
+      this.selectedAttachment = null;
       this.selectedAttachmentImage = '';
       return;
     }
-    this.seletedAttachment = element;
+    console.log(element);
+    this.selectedAttachment = element;
 
     if (element.dataType === 'missing') {
       return;
@@ -77,11 +77,11 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   deleteAttachment(): void {
-    this.bs.deleteAttachment(this.seletedAttachment.attachmentId)
+    this.bs.deleteAttachment(this.selectedAttachment.attachmentId)
       .subscribe(ok => {
         if (ok) {
           this.snackBar.open('Anhang gelöscht!', 'Ok.', { duration: 3000 });
-          this.seletedAttachment = null;
+          this.selectedAttachment = null;
           this.selectedAttachmentImage = '';
           this.loadAttachmentList();
         } else {
@@ -91,6 +91,6 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   printPage(attachmentData: AttachmentData) {
-    this.bs.getAttachmentPage(attachmentData.attachmentTargetCode);
+    this.bs.getAttachmentPage(attachmentData.attachmentId);
   }
 }

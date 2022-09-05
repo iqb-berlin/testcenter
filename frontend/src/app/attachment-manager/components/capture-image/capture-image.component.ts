@@ -165,10 +165,16 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
 
     this.state = 'confirm';
     this.bs.getAttachmentTargetLabel(code)
-      .subscribe(target => {
-        this.attachmentTargetHash = code;
-        this.attachmentTargetLabel = target;
-      });
+      .subscribe(
+        target => {
+          this.attachmentTargetHash = code;
+          this.attachmentTargetLabel = target;
+        },
+        () => {
+          this.state = 'error';
+          this.error = 'QR code konnte nicht gelesen oder nicht zugeordnet werden.';
+        }
+      );
   }
 
   private drawImageToCanvas() {

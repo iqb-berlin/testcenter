@@ -60,9 +60,9 @@ export class BackendService {
       );
   }
 
-  getAttachmentPage(attachmentTargetCode: string): void {
+  getAttachmentPage(attachmentId: string): void {
     this.http.get(
-      `${this.serverUrl}attachment/${attachmentTargetCode}/page`,
+      `${this.serverUrl}attachment/${attachmentId}/page`,
       {
         observe: 'response',
         responseType: 'blob'

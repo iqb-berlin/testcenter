@@ -25,7 +25,7 @@
       </button>
     </div>
 
-    <div class="toolbar-section hidden" [class.show]="state === 'confirm'">
+    <div class="toolbar-section hidden" [class.show]="state === 'confirm' || state === 'error'">
       <button mat-raised-button data-cy="new-capture" (click)="reset()">Neue Aufnahme</button>
     </div>
 

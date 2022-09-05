@@ -12,7 +12,13 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="id" type="xs:string" use="required"/>
+      <xs:attribute name="id" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:ID" >
+            <xs:maxLength value="20" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
       <xs:attribute name="type" type="VariableTypeValue" use="required"/>
       <xs:attribute name="format" type="VariableFormatValue"/>
       <xs:attribute name="multiple" type="xs:boolean"/>
