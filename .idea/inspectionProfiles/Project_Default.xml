@@ -6,7 +6,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="15">
+          <list size="22">
             <item index="0" class="java.lang.String" itemvalue="fxlayout" />
             <item index="1" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="2" class="java.lang.String" itemvalue="mattooltip" />
@@ -22,6 +22,13 @@
             <item index="12" class="java.lang.String" itemvalue="mat-tab-nav-bar" />
             <item index="13" class="java.lang.String" itemvalue="mat-tab-link" />
             <item index="14" class="java.lang.String" itemvalue="routerlinkactive" />
+            <item index="15" class="java.lang.String" itemvalue="mat-button" />
+            <item index="16" class="java.lang.String" itemvalue="mat-table" />
+            <item index="17" class="java.lang.String" itemvalue="mat-header-cell" />
+            <item index="18" class="java.lang.String" itemvalue="mat-cell" />
+            <item index="19" class="java.lang.String" itemvalue="mat-header-row" />
+            <item index="20" class="java.lang.String" itemvalue="mat-row" />
+            <item index="21" class="java.lang.String" itemvalue="mat-sort-header" />
           </list>
         </value>
       </option>
@@ -30,7 +37,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="28">
+          <list size="35">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -59,6 +66,13 @@
             <item index="25" class="java.lang.String" itemvalue="mat-card" />
             <item index="26" class="java.lang.String" itemvalue="mat-spinner" />
             <item index="27" class="java.lang.String" itemvalue="router-outlet" />
+            <item index="28" class="java.lang.String" itemvalue="mat-select" />
+            <item index="29" class="java.lang.String" itemvalue="mat-option" />
+            <item index="30" class="java.lang.String" itemvalue="mat-label" />
+            <item index="31" class="java.lang.String" itemvalue="mat-card-actions" />
+            <item index="32" class="java.lang.String" itemvalue="mat-sidenav-container" />
+            <item index="33" class="java.lang.String" itemvalue="mat-sidenav" />
+            <item index="34" class="java.lang.String" itemvalue="mat-sidenav-content" />
           </list>
         </value>
       </option>
