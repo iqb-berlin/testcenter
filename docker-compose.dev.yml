@@ -37,7 +37,8 @@ services:
       - ./database:/var/www/database
       - ./definitions:/var/www/definitions
       - ./docs/dist:/docs/dist
-      - ./package.json:/var/www/package.json
+      - ./composer.json:/var/www/package.json
+      - ./composer.lock:/var/www/package.lock
       - ./sampledata:/var/www/sampledata
     extra_hosts:
       - "host.docker.internal:host-gateway"
