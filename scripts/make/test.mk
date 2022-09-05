@@ -61,19 +61,9 @@ test-frontend-unit:
 test-frontend-integration:
 # TODO implement integration tests with CyPress against mocked backend with Prism
 
-
-# Performs some integration tests with CyPress against real MySql-DB and real backend in interactive mode.
-test-system:
-	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
-	docker-compose -f docker-compose.system-test.yml -f docker-compose.system-test-ui.yml up \
-		--abort-on-container-exit \
-		--force-recreate \
-		--renew-anon-volumes
-
-
-# Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI. Creates a code coverage report for the frontend.
+# Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI.
+# Creates a code coverage report for the frontend.
 test-system-headless:
-	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
 	docker-compose -f docker-compose.system-test.yml up \
 		--abort-on-container-exit \
 		--force-recreate \

@@ -4,6 +4,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -22,6 +23,7 @@ import { AlertComponent } from './components/alert/alert.component';
     MatButtonModule,
     MatFormFieldModule,
     MatExpansionModule,
+    MatSnackBarModule,
     FormsModule,
     MatInputModule,
     HttpClientModule

@@ -124,20 +124,23 @@ test-broadcasting-service-unit:
     - docker load -i bs_image.tar
     - make test-broadcasting-service-unit
 
-test-frontend-e2e:
+test-e2e:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - changes:
+      - e2e/*
   needs:
     - job: build-frontend
       artifacts: true
   script:
     - apk add make
-    - make test-frontend-e2e
+    - make test-system-headless
 
 test-backend-api:
   stage: test
   rules:
+    - !reference [.backend-change, rules]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
   needs:
     - job: build-backend

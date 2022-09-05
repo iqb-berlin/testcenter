@@ -7,12 +7,6 @@ WORKDIR /app
 COPY frontend/package*.json .
 RUN npm install
 
-# prepare CyPress Cache-Folder (we do it here, not in base image because of the different UID)
-RUN mkdir -p /opt/cypress/cache
-ENV CYPRESS_CACHE_FOLDER=/opt/cypress/cache
-# has to be done after npm install, because host user shall be allowed to use it
-RUN chmod -R 777 /opt/cypress/cache
-
 # emulate top-level node-modules for this script TODO
 RUN mkdir /node_modules
 RUN cp -r /app/node_modules/ua-parser-js /node_modules/ua-parser-js

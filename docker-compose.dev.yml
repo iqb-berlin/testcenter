@@ -23,6 +23,8 @@ services:
       context: .
       dockerfile: backend/docker/Dockerfile
       target: dev
+    environment:
+      TESTMODE_REAL_DATA: false
     volumes:
       - ./backend/.htaccess:/var/www/backend/.htaccess
       - ./backend/autoload.php:/var/www/backend/autoload.php

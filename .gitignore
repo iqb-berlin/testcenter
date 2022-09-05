@@ -54,8 +54,10 @@
 /.env
 
 # cypress
-/frontend/cypress/videos
-/frontend/cypress/screenshots
-/frontend/cypress/downloads
-/frontend/.nyc_output
-/frontend/.coverage
+/e2e/cypress/videos
+/e2e/cypress/screenshots
+/e2e/cypress/downloads
+/e2e/.nyc_output
+/e2e/.coverage
+
+/frontend/.angular
