@@ -78,7 +78,7 @@ services:
     container_name: testcenter-system-test-frontend
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend/docker/Dockerfile
       target: dev
       args:
         HOST_UID: ${UID}
@@ -118,7 +118,7 @@ services:
     container_name: testcenter-system-test-broadcasting-service
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend/docker/Dockerfile
       target: dev
       args:
         HOST_UID: ${UID}

@@ -13,7 +13,7 @@ import { BackendService } from '../../backend.service';
     '.mat-card-box {background: var(--tc-box-background)}',
     '#toggle-show-password {cursor: pointer}',
     '.mat-form-field {display: block}',
-    '.mat-card {display: flex; justify-content: start; flex-direction: column; flex-wrap: wrap}',
+    '.mat-card {display: flex; justify-content: flex-start; flex-direction: column; flex-wrap: wrap}',
     '.mat-card-content {flex-grow: 1; overflow: auto}',
     '#admin {margin-right: 0}',
     '#version-number {' +
@@ -24,7 +24,7 @@ import { BackendService } from '../../backend.service';
 
 export class LoginComponent implements OnInit, OnDestroy {
   static oldLoginName = '';
-  private routingSubscription: Subscription = null;
+  private routingSubscription: Subscription | null = null;
   returnTo = '';
   problemText = '';
   showPassword = false;
@@ -34,16 +34,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     pw: new FormControl('', [Validators.required, Validators.minLength(7)])
   });
 
-  constructor(
-    public mds: MainDataService,
-    private bs: BackendService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) { }
+  constructor(public mainDataService: MainDataService,
+              private backendService: BackendService,
+              private router: Router,
+              private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.mds.stopLoadingAnimation();
-    this.mds.appSubTitle$.next('Bitte anmelden');
+    this.mainDataService.stopLoadingAnimation();
+    this.mainDataService.appSubTitle$.next('Bitte anmelden');
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
   }
@@ -51,10 +49,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   login(loginType: 'admin' | 'login' = 'login'): void {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name;
-    this.mds.showLoadingAnimation();
-    this.bs.login(loginType, loginData.name, loginData.pw).subscribe(
+    this.mainDataService.showLoadingAnimation();
+    this.backendService.login(loginType, loginData.name, loginData.pw).subscribe(
       authData => {
-        this.mds.stopLoadingAnimation();
+        this.mainDataService.stopLoadingAnimation();
         this.problemText = '';
         if (typeof authData === 'number') {
           const errCode = authData as number;
@@ -73,7 +71,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.loginForm.reset();
         } else {
           const authDataTyped = authData as AuthData;
-          this.mds.setAuthData(authDataTyped);
+          this.mainDataService.setAuthData(authDataTyped);
           if (this.returnTo) {
             this.router.navigateByUrl(this.returnTo).then(navOk => {
               if (!navOk) {

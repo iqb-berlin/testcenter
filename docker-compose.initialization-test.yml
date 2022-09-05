@@ -34,7 +34,7 @@ services:
   testcenter-initialization-test-backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: backend/docker/Dockerfile
       target: dev
     image: iqbberlin/testcenter-backend:current
     entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)"]

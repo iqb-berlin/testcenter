@@ -1,7 +1,7 @@
 <div fxLayout="row wrap" fxLayoutAlign="center stretch">
   <mat-card fxFlex="0 2 500px">
-    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
+    <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>
       <p>Hier können Sie ermitteln, ob das Computersystem, das Sie gerade benutzen, für
         die hier vorgesehenen Testungen geeignet ist.</p>
@@ -30,7 +30,9 @@
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button [routerLink]="['/']" mat-raised-button color="primary"><i class="material-icons">arrow_back</i> zurück zur Startseite</button>
+      <button [routerLink]="['/']" mat-raised-button color="primary">
+        <i class="material-icons">arrow_back</i> zurück zur Startseite
+      </button>
     </mat-card-actions>
   </mat-card>
 </div>

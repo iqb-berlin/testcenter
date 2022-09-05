@@ -17,19 +17,17 @@ import { MainDataService } from '../../shared/shared.module';
 export class AdminStarterComponent implements OnInit, OnDestroy {
   workspaces: WorkspaceData[] = [];
   isSuperAdmin = false;
-  private getWorkspaceDataSubscription: Subscription = null;
+  private getWorkspaceDataSubscription: Subscription | null = null;
 
-  constructor(
-    private router: Router,
-    private bs: BackendService,
-    public mds: MainDataService
-  ) { }
+  constructor(private router: Router,
+              private backendService: BackendService,
+              public mainDataService: MainDataService) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
-      this.mds.showLoadingAnimation();
-      this.bs.getSessionData().subscribe(authDataUntyped => {
+      this.mainDataService.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
+      this.mainDataService.showLoadingAnimation();
+      this.backendService.getSessionData().subscribe(authDataUntyped => {
         if (this.getWorkspaceDataSubscription !== null) {
           this.getWorkspaceDataSubscription.unsubscribe();
         }
@@ -45,26 +43,26 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
                 this.workspaces = [];
                 this.getWorkspaceDataSubscription = from(authData.access[AuthAccessKeyType.WORKSPACE_ADMIN])
                   .pipe(
-                    concatMap(workspaceId => this.bs.getWorkspaceData(workspaceId))
+                    concatMap(workspaceId => this.backendService.getWorkspaceData(workspaceId))
                   ).subscribe(
                     wsData => this.workspaces.push(wsData),
-                    () => this.mds.stopLoadingAnimation(),
-                    () => this.mds.stopLoadingAnimation()
+                    () => this.mainDataService.stopLoadingAnimation(),
+                    () => this.mainDataService.stopLoadingAnimation()
                   );
               } else {
-                this.mds.stopLoadingAnimation();
+                this.mainDataService.stopLoadingAnimation();
               }
-              this.mds.setAuthData(authData);
+              this.mainDataService.setAuthData(authData);
             } else {
-              this.mds.setAuthData();
-              this.mds.stopLoadingAnimation();
+              this.mainDataService.setAuthData();
+              this.mainDataService.stopLoadingAnimation();
             }
           } else {
-            this.mds.setAuthData();
-            this.mds.stopLoadingAnimation();
+            this.mainDataService.setAuthData();
+            this.mainDataService.stopLoadingAnimation();
           }
         } else {
-          this.mds.stopLoadingAnimation();
+          this.mainDataService.stopLoadingAnimation();
         }
       });
     });
@@ -75,7 +73,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   }
 
   resetLogin(): void {
-    this.mds.setAuthData();
+    this.mainDataService.setAuthData();
     this.router.navigate(['/']);
   }
 

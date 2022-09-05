@@ -11,16 +11,14 @@ import { ApiError } from './app.interfaces';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    private mds: MainDataService,
-    private router: Router
-  ) {}
+  constructor(private mainDataService: MainDataService,
+              private router: Router) {}
 
   // TODO separation of concerns: split into two interceptors,
   // one for error handling, one for auth token addition
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // if (!this.mds.appConfig) {
-    //   this.mds.appError$.next({
+    // if (!this.mainDataService.appConfig) {
+    //   this.mainDataService.appError$.next({
     //     label: 'Verbindung zum Server konnte nicht hergestellt werden!',
     //     description: 'AppConfig konnte nicht geladen werden.',
     //     category: 'ERROR'
@@ -44,94 +42,20 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(requestA).pipe(
       catchError(error => {
-        const apiError = new ApiError(999);
         if (error instanceof HttpErrorResponse) {
-          const httpError = error as HttpErrorResponse;
-          apiError.code = httpError.status;
-          apiError.info = `${httpError.message} // ${httpError.error}`;
-          if (httpError.error instanceof ErrorEvent) {
-            this.mds.appError$.next({
-              label: 'Fehler in der Netzwerkverbindung',
-              description: httpError.message,
-              category: 'ERROR'
-            });
-          } else {
-            let ignoreError = false;
-            let goToLoginPage = false;
-            let label;
-            let isError = false;
-            switch (httpError.status) {
-              case 202:
-              case 204:
-              case 207:
-              case 400:
-                ignoreError = true;
-                // apiError.info contains error = body
-                break;
-
-              case 401:
-                goToLoginPage = true;
-                label = 'Bitte für diese Aktion erst anmelden!';
-                break;
-
-              case 403:
-                label = 'Für diese Funktion haben Sie keine Berechtigung.';
-                break;
-
-              case 404:
-                label = 'Daten/Objekt nicht gefunden.';
-                break;
-
-              case 410:
-                goToLoginPage = true;
-                label = 'Anmeldung abgelaufen. Bitte erneut anmelden!';
-                break;
-
-              case 422:
-                ignoreError = true;
-                // apiError.info = ?? TODO - from request body
-                label = 'Die übermittelten Objekte sind fehlerhaft!';
-                break;
-
-              case 423:
-                label = 'Test is gesperrt!';
-                break;
-
-              case 500:
-                label = 'Allgemeines Server-Problem.';
-                isError = true;
-                break;
-
-              default:
-                label = 'Unbekanntes Verbindungsproblem';
-                isError = true;
-            }
-            if (!ignoreError) {
-              this.mds.appError$.next({
-                label,
-                description: httpError.message,
-                category: isError ? 'ERROR' : 'WARNING'
-              });
-              if (goToLoginPage) {
-                console.warn(`AuthError ${httpError.status} (${label})`);
-                this.mds.resetAuthData();
-                const state: RouterState = this.router.routerState;
-                const { snapshot } = state;
-                const snapshotUrl = (snapshot.url === '/r/login/') ? '' : snapshot.url;
-                this.router.navigate(['/r/login', snapshotUrl]);
-              }
-            }
-          }
-        } else if (error instanceof DOMException) {
+          return throwError(this.handleHttpError(error));
+        }
+        const apiError = new ApiError(999); // TODO why 999?
+        if (error instanceof DOMException) {
           apiError.info = `Fehler: ${error.name} // ${error.message}`;
-          this.mds.appError$.next({
+          this.mainDataService.appError$.next({
             label: `Fehler: ${error.name}`,
             description: error.message,
             category: 'ERROR'
           });
         } else {
           apiError.info = 'Unbekannter Fehler';
-          this.mds.appError$.next({
+          this.mainDataService.appError$.next({
             label: 'Unbekannter Fehler',
             description: '',
             category: 'ERROR'
@@ -141,5 +65,76 @@ export class AuthInterceptor implements HttpInterceptor {
         return throwError(apiError);
       })
     );
+  }
+
+  handleHttpError(httpError: HttpErrorResponse): ApiError {
+    const apiError = new ApiError(httpError.status, `${httpError.message} // ${httpError.error}`);
+    if (httpError.error instanceof ErrorEvent) {
+      this.mainDataService.appError$.next({
+        label: 'Fehler in der Netzwerkverbindung',
+        description: httpError.message,
+        category: 'ERROR'
+      });
+    } else {
+      let statusMessage: string | null = null;
+      let isError = false;
+      switch (httpError.status) {
+        case 202:
+        case 204:
+        case 207:
+        case 400:
+          // apiError.info contains error = body
+          break;
+        case 401:
+          this.handleInvalidSessionError(httpError, 'Bitte für diese Aktion erst anmelden!');
+          break;
+        case 403:
+          statusMessage = 'Für diese Funktion haben Sie keine Berechtigung.';
+          break;
+        case 404:
+          statusMessage = 'Daten/Objekt nicht gefunden.';
+          break;
+        case 410:
+          this.handleInvalidSessionError(httpError, 'Anmeldung abgelaufen. Bitte erneut anmelden!');
+          // ignoreError = true;
+          break;
+        case 422:
+          // apiError.info = ?? TODO - from request body
+          // statusMessage = 'Die übermittelten Objekte sind fehlerhaft!';
+          break;
+        case 423:
+          statusMessage = 'Test is gesperrt!';
+          break;
+        case 500:
+          statusMessage = 'Allgemeines Server-Problem.';
+          isError = true;
+          break;
+        default:
+          statusMessage = 'Unbekanntes Verbindungsproblem';
+          isError = true;
+      }
+      if (statusMessage) {
+        this.mainDataService.appError$.next({
+          label: statusMessage,
+          description: httpError.message,
+          category: isError ? 'ERROR' : 'WARNING'
+        });
+      }
+    }
+    return apiError;
+  }
+
+  handleInvalidSessionError(httpError: HttpErrorResponse, errorMessage: string): void {
+    console.warn(`AuthError ${httpError.status} (${errorMessage})`);
+    this.mainDataService.appError$.next({
+      label: errorMessage,
+      description: httpError.message,
+      category: 'WARNING'
+    });
+    this.mainDataService.resetAuthData();
+    const state: RouterState = this.router.routerState;
+    const { snapshot } = state;
+    const snapshotUrl = (snapshot.url === '/r/login/') ? '' : snapshot.url;
+    this.router.navigate(['/r/login', snapshotUrl]);
   }
 }

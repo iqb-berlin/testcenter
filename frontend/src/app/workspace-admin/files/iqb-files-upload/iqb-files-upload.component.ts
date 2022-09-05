@@ -100,7 +100,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.fileUploadSubscription = this.bs.uploadFile(this.wds.wsId, formData)
+    this.fileUploadSubscription = this.bs.uploadFile(this.wds.workspaceID, formData)
       .subscribe(res => {
         this.requestResponse = res.report;
         this.status = res.status;

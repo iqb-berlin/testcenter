@@ -71,13 +71,11 @@ export class EditCustomTextsComponent {
   changedData: KeyValuePairs = {};
   dataChanged = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar,
-    private mds: MainDataService,
-    private bs: BackendService,
-    private cts: CustomtextService
-  ) {
+  constructor(private formBuilder: FormBuilder,
+              private snackBar: MatSnackBar,
+              private mainDataService: MainDataService,
+              private backendService: BackendService,
+              private customtextService: CustomtextService) {
     this.customTextsForm = new FormGroup({});
 
     Object.keys(allCustomTexts).forEach(ctKey => {
@@ -87,7 +85,7 @@ export class EditCustomTextsComponent {
           key: ctKey,
           label: allCustomTexts[ctKey].label,
           defaultValue: allCustomTexts[ctKey].defaultvalue,
-          value: this.mds.appConfig.customTexts[ctKey]
+          value: this.mainDataService.appConfig.customTexts[ctKey]
         });
       }
     });
@@ -109,16 +107,16 @@ export class EditCustomTextsComponent {
   }
 
   saveData():void {
-    this.bs.setCustomTexts(this.changedData).subscribe(isOk => {
+    this.backendService.setCustomTexts(this.changedData).subscribe(isOk => {
       if (isOk !== false) {
         this.snackBar.open(
           'Textersetzungen gespeichert', 'Info', { duration: 3000 }
         );
         this.dataChanged = false;
         Object.keys(this.changedData).forEach(ctKey => {
-          this.mds.appConfig.customTexts[ctKey] = this.changedData[ctKey];
+          this.mainDataService.appConfig.customTexts[ctKey] = this.changedData[ctKey];
         });
-        this.cts.addCustomTexts(this.changedData);
+        this.customtextService.addCustomTexts(this.changedData);
       } else {
         this.snackBar.open('Konnte Textersetzungen nicht speichern', 'Fehler', { duration: 3000 });
       }

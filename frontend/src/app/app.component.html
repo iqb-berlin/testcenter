@@ -1,6 +1,6 @@
 <div class="logo">
   <a [routerLink]="['/']" aria-label="Gehe zur Startseite">
-    <img [src]="mds.appConfig?.mainLogo" matTooltip="Zur Startseite" alt="Logo der Anwendung"/>
+    <img [src]="mainDataService.appConfig?.mainLogo" matTooltip="Zur Startseite" alt="Logo der Anwendung"/>
   </a>
 </div>
 
@@ -17,7 +17,7 @@
   </mat-card-content>
 </mat-card>
 
-<div class="spinner" *ngIf="mds.isSpinnerOn$ | async">
+<div class="spinner" *ngIf="mainDataService.isSpinnerOn$ | async">
   <mat-spinner></mat-spinner>
 </div>
 <router-outlet></router-outlet>

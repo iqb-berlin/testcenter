@@ -6,7 +6,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="22">
+          <list size="23">
             <item index="0" class="java.lang.String" itemvalue="fxlayout" />
             <item index="1" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="2" class="java.lang.String" itemvalue="mattooltip" />
@@ -29,6 +29,7 @@
             <item index="19" class="java.lang.String" itemvalue="mat-header-row" />
             <item index="20" class="java.lang.String" itemvalue="mat-row" />
             <item index="21" class="java.lang.String" itemvalue="mat-sort-header" />
+            <item index="22" class="java.lang.String" itemvalue="fxlayoutgap" />
           </list>
         </value>
       </option>

@@ -1,4 +1,5 @@
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Testee } from './testee.interface';
 import { WebsocketGateway } from '../common/websocket.gateway';
 import { Command } from '../command/command.interface';

@@ -205,13 +205,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if (typeof result !== 'undefined') {
           if (result !== false) {
             const targetSelection = result.target;
-            ReviewDialogComponent.oldName = result.sender;
+            ReviewDialogComponent.savedName = result.sender;
             if (targetSelection === 'u') {
               this.bs.saveUnitReview(
                 this.tcs.testId,
                 this.tcs.currentUnitDbKey,
                 result.priority,
-                dialogRef.componentInstance.getCategories(),
+                dialogRef.componentInstance.getSelectedCategories(),
                 result.sender ? `${result.sender}: ${result.entry}` : result.entry
               ).subscribe(ok => {
                 if (!ok) {
@@ -224,7 +224,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
               this.bs.saveTestReview(
                 this.tcs.testId,
                 result.priority,
-                dialogRef.componentInstance.getCategories(),
+                dialogRef.componentInstance.getSelectedCategories(),
                 result.sender ? `${result.sender}: ${result.entry}` : result.entry
               ).subscribe(ok => {
                 if (!ok) {

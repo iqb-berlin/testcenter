@@ -5,8 +5,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-
-import { saveAs } from 'file-saver';
 import { map } from 'rxjs/operators';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
@@ -19,6 +17,7 @@ import {
 import { BackendService } from '../backend.service';
 import { IqbFilesUploadQueueComponent } from './iqb-files-upload-queue/iqb-files-upload-queue.component';
 import { FileDeletionReport } from './files.interfaces';
+import { FileService } from '../../shared/services/file.service';
 
 interface FileStats {
   invalid: {
@@ -120,7 +119,7 @@ export class FilesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mds.showLoadingAnimation();
-          this.bs.deleteFiles(this.wds.wsId, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
+          this.bs.deleteFiles(this.wds.workspaceID, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {
               message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
@@ -154,7 +153,7 @@ export class FilesComponent implements OnInit {
       this.files = {};
       this.mds.stopLoadingAnimation();
     } else {
-      this.bs.getFiles(this.wds.wsId)
+      this.bs.getFiles(this.wds.workspaceID)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
         .subscribe(fileList => {
           this.files = {};
@@ -226,12 +225,12 @@ export class FilesComponent implements OnInit {
 
   download(file: IQBFile): void {
     this.mds.showLoadingAnimation();
-    this.bs.downloadFile(this.wds.wsId, file.type, file.name)
+    this.bs.downloadFile(this.wds.workspaceID, file.type, file.name)
       .subscribe(
         (fileData: Blob | boolean) => {
           this.mds.stopLoadingAnimation();
           if (fileData !== false) {
-            saveAs(fileData as Blob, file.name);
+            FileService.saveBlobToFile(fileData as Blob, file.name);
           }
         }
       );

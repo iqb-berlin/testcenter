@@ -3,8 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 @Component({
-  templateUrl: './superadmin-password-request.component.html',
-  styleUrls: ['./superadmin-password-request.component.css']
+  templateUrl: './superadmin-password-request.component.html'
 })
 
 export class SuperadminPasswordRequestComponent {
@@ -12,7 +11,5 @@ export class SuperadminPasswordRequestComponent {
     pw: new FormControl('', [Validators.required, Validators.minLength(3)])
   });
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: string
-  ) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: string) { }
 }

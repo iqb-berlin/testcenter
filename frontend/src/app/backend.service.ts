@@ -15,13 +15,13 @@ import { SysConfig } from './shared/shared.module';
   providedIn: 'root'
 })
 export class BackendService {
-  constructor(
-    @Inject('SERVER_URL') private readonly serverUrl: string,
-    private http: HttpClient
-  ) {}
+  constructor(@Inject('SERVER_URL') private readonly serverUrl: string,
+              private http: HttpClient) {}
 
-  login(type: 'admin' | 'login', name: string, password: string = undefined): Observable<AuthData | number> {
-    return (type === 'admin') ? this.loginAsAdmin({ name, password }) : this.loginAsLogin({ name, password });
+  login(loginType: 'admin' | 'login', name: string, password: string | undefined = undefined):Observable<AuthData | number> {
+    return (loginType === 'admin') ?
+      this.loginAsAdmin({ name, password }) :
+      this.loginAsLogin({ name, password });
   }
 
   loginAsAdmin(credentials: { name: string, password: string }): Observable<AuthData | number> {
@@ -114,7 +114,7 @@ export class BackendService {
       );
   }
 
-  getSysConfig(): Observable<SysConfig> {
+  getSysConfig(): Observable<SysConfig | null> {
     return this.http
       .get<SysConfig>(`${this.serverUrl}system/config`)
       .pipe(

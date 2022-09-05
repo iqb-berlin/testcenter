@@ -17,8 +17,8 @@ import {
 } from '../superadmin-password-request/superadmin-password-request.component';
 import { ApiError } from '../../app.interfaces';
 import { BackendService } from '../backend.service';
-import { NewuserComponent } from './newuser/newuser.component';
-import { NewpasswordComponent } from './newpassword/newpassword.component';
+import { NewUserComponent } from './newuser/new-user.component';
+import { NewPasswordComponent } from './newpassword/new-password.component';
 
 @Component({
   templateUrl: './users.component.html',
@@ -70,7 +70,7 @@ export class UsersComponent implements OnInit {
   }
 
   addObject(): void {
-    const dialogRef = this.newuserDialog.open(NewuserComponent, {
+    const dialogRef = this.newuserDialog.open(NewUserComponent, {
       width: '600px'
     });
 
@@ -192,7 +192,7 @@ export class UsersComponent implements OnInit {
         }
       });
     } else {
-      const dialogRef = this.newpasswordDialog.open(NewpasswordComponent, {
+      const dialogRef = this.newpasswordDialog.open(NewPasswordComponent, {
         width: '600px',
         data: selectedRows[0].name
       });
