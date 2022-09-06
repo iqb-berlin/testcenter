@@ -18,7 +18,9 @@ try {
     require_once "autoload.php";
 
 
-    $isPreparedForRealDataTest = getenv('TESTMODE_REAL_DATA', true) || getenv('TESTMODE_REAL_DATA');
+    $isPreparedForRealDataTest =
+        (getenv('TESTMODE_REAL_DATA', true) == 'yes') ||
+        (getenv('TESTMODE_REAL_DATA') == 'yes');
     $isTestModeRequested = isset($_SERVER['HTTP_TESTMODE']);
 
     if ($isTestModeRequested and $isPreparedForRealDataTest) {
