@@ -62,9 +62,16 @@ test-frontend-integration:
 # TODO implement integration tests with CyPress against mocked backend with Prism
 
 # Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI.
-# Creates a code coverage report for the frontend.
 test-system-headless:
-	docker-compose -f docker-compose.system-test.yml up \
-		--abort-on-container-exit \
-		--force-recreate \
-		--renew-anon-volumes
+	TESTMODE_REAL_DATA=yes
+		docker-compose -f docker-compose.system-test-headless.yml up \
+			--abort-on-container-exit \
+			--force-recreate \
+			--renew-anon-volumes
+
+test-system:
+	TESTMODE_REAL_DATA=yes
+		docker-compose -f docker-compose.system-test-ui.yml up \
+			--abort-on-container-exit \
+			--force-recreate \
+			--renew-anon-volumes
