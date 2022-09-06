@@ -11,7 +11,6 @@ import { ReportEntry } from '../sys-check.interfaces';
   styleUrls: ['./report.component.css', '../sys-check.component.css']
 })
 export class ReportComponent implements OnInit {
-  csvReport = '';
   saved = false;
   questionnaireDataWarnings: ReportEntry[] = [];
 
@@ -70,7 +69,7 @@ export class ReportComponent implements OnInit {
           });
         } else {
           this.questionnaireDataWarnings.push({
-            id: 'tütü',
+            id: 'tütü', // TODO fix this WTF
             type: 'yoyo',
             label: 'keine Antworten registriert',
             value: 'naja',

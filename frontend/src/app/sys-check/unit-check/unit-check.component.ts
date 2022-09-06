@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   Component, OnInit, HostListener, OnDestroy
 } from '@angular/core';
@@ -5,8 +6,6 @@ import { Subscription } from 'rxjs';
 import { MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
-
-declare let srcDoc: any;
 
 @Component({
   selector: 'iqb-unit-check',
@@ -16,6 +15,7 @@ declare let srcDoc: any;
 export class UnitCheckComponent implements OnInit, OnDestroy {
   pageList: PageData[] = [];
   currentPage: number;
+  errorText = '';
   private iFrameHostElement: HTMLElement;
   private iFrameItemplayer: HTMLIFrameElement = null;
   private postMessageSubscription: Subscription = null;
@@ -32,7 +32,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  onResize(): any {
+  onResize() {
     if (this.iFrameItemplayer && this.iFrameHostElement) {
       const divHeight = this.iFrameHostElement.clientHeight;
       this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
@@ -85,12 +85,21 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
         }
         this.pendingUnitDef = this.ds.unitAndPlayerContainer.def;
+
         this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-        this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+        if (!('srcdoc' in this.iFrameItemplayer)) {
+          this.errorText =
+            'Test-Aufgabe konnte nicht angezeigt werden: Dieser Browser unterstützt das srcdoc-Attribut noch nicht.';
+          this.ds.questionnaireReport.push({
+            id: 'srcdoc', label: 'srcDoc-Attribut', type: 'error', value: this.errorText, warning: false
+          });
+          return;
+        }
+
+        this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
         this.iFrameItemplayer.setAttribute('class', 'unitHost');
-        this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight - 5));
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-        srcDoc.set(this.iFrameItemplayer, this.ds.unitAndPlayerContainer.player);
+        this.iFrameItemplayer.setAttribute('srcdoc', this.ds.unitAndPlayerContainer.player);
       }
     });
   }
