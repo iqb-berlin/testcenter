@@ -11,7 +11,7 @@
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="terminateTest()">
+        <button mat-raised-button data-cy="endTest-1" color="primary" (click)="terminateTest()">
           {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
         </button>
       </mat-card-actions>
@@ -42,7 +42,7 @@
         </div>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="terminateTest()">
+        <button mat-raised-button data-cy="endTest-2" color="primary" (click)="terminateTest()">
           {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
         </button>
         <button mat-raised-button color="none" (click)="toggleErrorDetails()">Fehlerdetails</button>

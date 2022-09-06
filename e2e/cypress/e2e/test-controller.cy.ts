@@ -17,23 +17,25 @@ describe('Test-Controller', () => {
       .type('xxx')
       .get('[data-cy="continue"]')
       .click();
-    cy.get('a.mat-primary:nth-child(1) > span:nth-child(1) > div:nth-child(1)')
+    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-1"]')
       .click();
     cy.url().should('include', '/u/1');
-    cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
+    cy.get('[data-cy="2nd Sample Unit"]')
       .click();
     cy.reload();
     cy.url().should('include', '/u/2');
-    cy.get('div.unit-nav-item:nth-child(3) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
+    cy.get('[data-cy="Sample Unit Again"]')
       .click();
     cy.url().should('include', '/u/3');
-    cy.get('div.unit-nav-item:nth-child(1) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
+    cy.get('[data-cy="Sample Unit"]')
       .click();
     cy.url().should('include', '/u/1');
-    cy.get('.mat-tooltip-trigger').eq(0)
+    cy.get('[data-cy="logo"]')
       .click();
-    cy.get('button.mat-focus-indicator:nth-child(1) > span:nth-child(1)')
+    cy.get('[data-cy="endTest-1"]')
       .click();
+    cy.get('[data-cy="logout"]')
+      .click()
   });
 
   it('Should navigate inside the iframe using the arrow buttons', () => {
@@ -44,34 +46,36 @@ describe('Test-Controller', () => {
       .type('xxx')
       .get('[data-cy="continue"]')
       .click();
-    cy.get('a.mat-focus-indicator:nth-child(2) > span:nth-child(1) > div:nth-child(1)')
+    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-3"]')
       .click();
     cy.url().should('include', '/u/1');
     cy.frameLoaded('.unitHost');
-    cy.wait(1000);
     cy.iframe('.unitHost').find('#next-unit')
       .click()
-      .wait(500);
+    cy.wait(100)
     cy.url().should('include', '/u/2');
     cy.iframe('.unitHost').find('#last-unit')
       .click()
-      .wait(500);
+    cy.wait(100)
     cy.url().should('include', '/u/3');
     cy.iframe('.unitHost').find('#prev-unit')
       .click()
-      .wait(500);
+    cy.wait(100)
     cy.url().should('include', '/u/2');
     cy.iframe('.unitHost').find('#first-unit')
       .click()
-      .wait(500);
+    cy.wait(100)
     cy.url().should('include', '/u/1');
     cy.iframe('.unitHost').find('#end-unit')
       .click()
-      .wait(500);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.get('[data-cy="logo"]')
+      .click();
+    cy.get('[data-cy="logout"]')
+      .click()
   });
 
-  it.only('Should navigate inside a unit using the navigation buttons', () => {
+  it('Should navigate inside a unit using the navigation buttons', () => {
     cy.contains('Weiter')
       .click();
     cy.get('[formControlName="code"]')
@@ -79,39 +83,41 @@ describe('Test-Controller', () => {
       .type('xxx')
       .get('[data-cy="continue"]')
       .click();
-    cy.get('a.mat-primary:nth-child(1) > span:nth-child(1) > div:nth-child(1)')
+    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-1"]')
       .click();
     cy.frameLoaded('.unitHost');
-    cy.iframe('.unitHost')
-      .find('#unit > fieldset:nth-child(3) > legend:nth-child(1)')
-      .should('be.inViewport');
-    cy.get('#page-navigation > div button').eq(2)
+    cy.get('[data-cy="page-navigation-0"]')
       .click()
-      .wait(500);
     cy.iframe('.unitHost')
-      .find('#unit > fieldset:nth-child(4) > legend:nth-child(1)')
-      .scrollIntoView()
+      .find('[data-cy="legend-about"]')
       .should('be.inViewport');
-    cy.get('#page-navigation > div button span').eq(3)
+    cy.get('[data-cy="page-navigation-1"]')
       .click();
     cy.iframe('.unitHost')
-      .find('#unit > fieldset:nth-child(5) > legend:nth-child(1)')
+      .find('[data-cy="legend-longContent"]')
       .scrollIntoView()
       .should('be.inViewport');
-    cy.get('#page-navigation > div button span').eq(4)
+    cy.get('[data-cy="page-navigation-2"]')
       .click()
-      .wait(500);
     cy.iframe('.unitHost')
-      .find('#unit > fieldset:nth-child(6) > legend:nth-child(1)')
+      .find('[data-cy="legend-extensibility"]')
+      .scrollIntoView()
+      .should('be.inViewport');
+    cy.get('[data-cy="page-navigation-3"]')
+      .click()
+    cy.iframe('.unitHost')
+      .find('[data-cy="legend-logging"]')
       .scrollIntoView()
       .should('be.inViewport');
     cy.iframe('.unitHost').find('#end-unit')
       .click()
       .wait(500);
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.get('[data-cy="logout"]')
+    .click()
   });
 
-  it.only('Should unlock a locked unit', () => {
+  it('Should unlock a locked unit', () => {
     cy.contains('Weiter')
       .click();
     cy.get('[formControlName="code"]')
@@ -119,13 +125,13 @@ describe('Test-Controller', () => {
       .type('xxx')
       .get('[data-cy="continue"]')
       .click();
-    cy.get('a.mat-primary:nth-child(1) > span:nth-child(1) > div:nth-child(1)')
+    cy.get('[data-cy="booklet-BOOKLET.SAMPLE-1"]')
       .click();
-    cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
+    cy.get('[data-cy="2nd Sample Unit"]')
       .click();
     cy.contains('Aufgabenblock ist noch gesperrt')
       .should('exist');
-    cy.get('.mat-form-field-infix > input')
+    cy.get('[data-cy="unlockUnit"]')
       .type('SAMPLE');
     cy.contains('OK')
       .click();
@@ -138,21 +144,19 @@ describe('Test-Controller', () => {
       .click();
     cy.get('button.mat-raised-button:nth-child(1) > span:nth-child(1)')
       .click();
-    cy.location().should(loc => {
-      expect(loc.href).to.eq(`${Cypress.config().baseUrl}/#/t/1/u/3`);
-    });
-    cy.get('div.unit-nav-item:nth-child(2) > mat-list-option:nth-child(1) > div:nth-child(1) > div:nth-child(2)')
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/1/u/3`);
+    cy.get('[data-cy="2nd Sample Unit"]')
       .click();
     cy.contains('Aufgabenzeit ist abgelaufen')
       .should('exist');
-    cy.get('a.mat-tooltip-trigger:nth-child(1)')
+    cy.get('[data-cy="Sample Unit"]')
       .click();
-    cy.location().should(loc => {
-      expect(loc.href).to.eq(`${Cypress.config().baseUrl}/#/t/1/u/1`);
-    });
-    cy.get('.mat-tooltip-trigger').eq(0)
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/1/u/1`);
+    cy.get('[data-cy="logo"]')
       .click();
-    cy.get('button.mat-focus-indicator:nth-child(1) > span:nth-child(1)')
+    cy.get('[data-cy="endTest-1"]')
       .click();
+    cy.get('[data-cy="logout"]')
+      .click()
   });
 });
