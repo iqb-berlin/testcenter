@@ -26,7 +26,7 @@
 </div>
 
 <div class="sidebar-bottom">
-  <a mat-raised-button color="primary" (click)="terminateTest()">
+  <a mat-raised-button data-cy="endTest" color="primary" (click)="terminateTest()">
     {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
   </a>
 </div>

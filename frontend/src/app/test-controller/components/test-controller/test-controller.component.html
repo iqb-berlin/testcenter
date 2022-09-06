@@ -66,6 +66,7 @@
             fxFlex
             role="menuitem"
             [attr.aria-label]="u.longLabel"
+            [attr.data-cy]="u.shortLabel"
           >
             {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
           </mat-list-option>

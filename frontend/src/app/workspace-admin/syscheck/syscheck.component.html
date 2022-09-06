@@ -1,7 +1,7 @@
 <div class="columnhost" fxLayout="column">
   <div fxLayout="row" fxLayoutGap="10px">
     <button mat-raised-button (click)="downloadReportsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download Berichte als CSV für Excel" matTooltipPosition="above">
+        matTooltip="Download Berichte als CSV für Excel" matTooltipPosition="above" data-cy="download-button">
       <mat-icon>cloud_download</mat-icon>Berichte
     </button>
     <button mat-raised-button (click)="deleteReports()" [disabled]="!tableselectionCheckbox.hasValue()"
@@ -21,7 +21,8 @@
       <mat-cell *matCellDef="let row" fxFlex="70px">
         <mat-checkbox (click)="$event.stopPropagation()"
                       (change)="$event ? tableselectionCheckbox.toggle(row) : null"
-                      [checked]="tableselectionCheckbox.isSelected(row)">
+                      [checked]="tableselectionCheckbox.isSelected(row)"
+                      [attr.data-cy]="'systemcheck-checkbox'">
         </mat-checkbox>
       </mat-cell>
     </ng-container>

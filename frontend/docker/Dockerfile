@@ -7,10 +7,6 @@ WORKDIR /app
 COPY frontend/package*.json .
 RUN npm install
 
-# emulate top-level node-modules for this script TODO
-RUN mkdir /node_modules
-RUN cp -r /app/node_modules/ua-parser-js /node_modules/ua-parser-js
-
 COPY frontend/angular.json .
 COPY frontend/tsconfig.json .
 COPY frontend/.browserslistrc .

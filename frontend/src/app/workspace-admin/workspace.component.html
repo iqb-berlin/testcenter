@@ -9,7 +9,9 @@
           *ngFor="let link of navLinks"
           [routerLink]="link.path"
           routerLinkActive #rla="routerLinkActive"
-          [active]="rla.isActive">
+          [active]="rla.isActive"
+          [attr.data-cy]="link.label">
+  
         {{link.label}}
       </a>
     </nav>

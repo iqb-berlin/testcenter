@@ -48,6 +48,7 @@
                 [(ngModel)]="clearCodes[testlet.id]"
                 style="text-transform:uppercase"
                 (keydown)="onKeydownInClearCodeInput($event)"
+                data-cy="unlockUnit"
               >
               <mat-hint align="start" *ngIf="testlet.codePrompt">{{testlet.codePrompt}}</mat-hint>
               <mat-hint *ngIf="!testlet.codePrompt">
@@ -140,6 +141,7 @@
           (click)="gotoPage(page.id)"
           [matTooltip]="page.label"
           [checked]="currentPageIndex === index"
+          [attr.data-cy]="'page-navigation-' + index"
         >
           {{ index + 1 }}
         </mat-button-toggle>

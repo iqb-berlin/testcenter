@@ -46,7 +46,6 @@
     "sass-loader": "^10.3.1",
     "srcdoc-polyfill": "git+https://github.com/jugglinmike/srcdoc-polyfill.git",
     "tslib": "^2.4.0",
-    "ua-parser": "^0.3.5",
     "ua-parser-js": "^0.7.23",
     "web-animations-js": "^2.3.2",
     "zone.js": "~0.11.7"
