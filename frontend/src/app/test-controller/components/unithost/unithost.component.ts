@@ -23,8 +23,6 @@ import {
 } from '../../interfaces/verona.interfaces';
 import { Testlet, UnitControllerData } from '../../classes/test-controller.classes';
 
-declare let srcDoc;
-
 @Component({
   templateUrl: './unithost.component.html',
   styleUrls: ['./unithost.component.css']
@@ -177,8 +175,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
                     unitState.dataParts[dataPartId] = JSON.stringify(unitState.dataParts[dataPartId]);
                   }
                 });
-              this.tcs.updateUnitStateDataParts(unitDbKey, this.currentUnitSequenceId,
-                unitState.dataParts, unitState.unitStateDataType);
+              this.tcs.updateUnitStateDataParts(
+                unitDbKey,
+                this.currentUnitSequenceId,
+                unitState.dataParts,
+                unitState.unitStateDataType
+              );
             }
           }
           if (msgData.log) {
@@ -326,13 +328,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
-    if (!('srcdoc' in this.iFrameItemplayer)) { // in IE11, we use a polyfill. But this can not work with sandbox
-      this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+    if (!('srcdoc' in this.iFrameItemplayer)) {
+      this.mds.appError$.next({
+        label: 'Veralteter Browser',
+        description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
+        category: 'ERROR'
+      });
+      return;
     }
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
-    srcDoc.set(this.iFrameItemplayer, this.tcs.getPlayer(this.currentUnit.unitDef.playerId), { force: false });
+    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
   }
 
   private adjustIframeSize(): void {
@@ -377,7 +385,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private static getEnabledNavigationTargets(
-    nr: number, min: number, max: number,
+    nr: number,
+    min: number,
+    max: number,
     terminationAllowed: 'ON' | 'OFF' | 'LAST_UNIT' = 'ON'
   ): VeronaNavigationTarget[] {
     const navigationTargets = [];

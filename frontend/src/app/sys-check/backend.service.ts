@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Injectable, Inject, SkipSelf } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -15,7 +16,7 @@ import { ApiError } from '../app.interfaces';
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private readonly serverUrl: string,
+    @Inject('SERVER_URL') readonly serverUrl: string,
     @SkipSelf() private http: HttpClient
   ) {}
 
@@ -42,7 +43,7 @@ export class BackendService {
       );
   }
 
-  getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer|boolean> {
+  getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer | boolean> {
     const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
       .get<UnitAndPlayerContainer>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckId}/unit-and-player`)
