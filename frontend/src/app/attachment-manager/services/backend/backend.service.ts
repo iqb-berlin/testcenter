@@ -2,7 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable, SkipSelf } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { AttachmentData, AttachmentTargetLabel, GroupData } from '../../interfaces/users.interfaces';
+import { AttachmentData, GroupData } from '../../interfaces/users.interfaces';
 
 @Injectable()
 export class BackendService {
@@ -23,37 +23,37 @@ export class BackendService {
       })));
   }
 
-  postAttachment(attachmentTargetCode: string, file: File): Observable<boolean> {
+  postAttachment(attachmentId: string, file: File): Observable<boolean> {
     const formData = new FormData();
     formData.append('mimeType', file.type);
     formData.append('attachment', file, file.name);
     formData.append('timeStamp', Date.now().toString());
     return this.http
-      .post<boolean>(`${this.serverUrl}attachment/${attachmentTargetCode}`, formData, { observe: 'response' })
+      .post<boolean>(`${this.serverUrl}attachment/${attachmentId}/file`, formData, { observe: 'response' })
       .pipe(
         map((res: HttpResponse<unknown>) => (res.status === 201)),
         catchError(() => of(false))
       );
   }
 
-  getAttachmentTargetLabel(attachmentTargetCode: string): Observable<AttachmentTargetLabel> {
+  getAttachmentData(attachmentId: string): Observable<AttachmentData> {
     return this.http
-      .get<AttachmentTargetLabel>(`${this.serverUrl}attachment/${attachmentTargetCode}/target-label`);
+      .get<AttachmentData>(`${this.serverUrl}attachment/${attachmentId}/data`);
   }
 
-  getAttachmentsData(groups: string[]): Observable<AttachmentData[]> {
+  getAttachmentsList(groups: string[]): Observable<AttachmentData[]> {
     return this.http
-      .get<AttachmentData[]>(`${this.serverUrl}attachments/data`, { params: { groups: groups.join(',') } });
+      .get<AttachmentData[]>(`${this.serverUrl}attachments/list`, { params: { groups: groups.join(',') } });
   }
 
-  getAttachment(attachmentId: string): Observable<Blob> {
+  getAttachmentFile(attachmentId: string, attachmentFileId: string): Observable<Blob> {
     return this.http
-      .get(`${this.serverUrl}attachment/${attachmentId}`, { responseType: 'blob' });
+      .get(`${this.serverUrl}attachment/${attachmentId}/file/${attachmentFileId}`, { responseType: 'blob' });
   }
 
-  deleteAttachment(attachmentId: string): Observable<boolean> {
+  deleteAttachmentFile(attachmentId: string, attachmentFileId: string): Observable<boolean> {
     return this.http
-      .delete<boolean>(`${this.serverUrl}attachment/${attachmentId}`)
+      .delete<boolean>(`${this.serverUrl}attachment/${attachmentId}/file/${attachmentFileId}`)
       .pipe(
         map(() => true),
         catchError(() => of(false))

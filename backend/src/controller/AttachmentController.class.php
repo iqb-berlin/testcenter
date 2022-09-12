@@ -16,49 +16,57 @@ use Slim\Http\Response;
 class AttachmentController extends Controller {
 
 
-    public static function get(Request $request, Response $response): Response {
+    public static function getFile(Request $request, Response $response): Response {
 
         $attachment = AttachmentController::getRequestedAttachmentById($request);
-        $response->write(file_get_contents($attachment['fullFileName']));
-        return $response->withHeader('Content-Type', FileExt::getMimeType($attachment['fullFileName']));
+        $filePath = AttachmentController::getAttachmentFilePath($request, $attachment);
+        if (!file_exists($filePath)) {
+            throw new HttpNotFoundException($request, "File not found:`$attachment->attachmentId`");
+        }
+        $response->write(file_get_contents($filePath));
+
+        return $response->withHeader('Content-Type', FileExt::getMimeType($filePath));
     }
 
 
-    public static function delete(Request $request, Response $response): Response {
+    public static function getList(Request $request, Response $response): Response {
 
-        $attachment = AttachmentController::getRequestedAttachmentById($request, false);
-        AttachmentController::adminDAO()->deleteAttachmentById($attachment['attachmentId']);
-        unlink($attachment['fullFileName']);
-        return $response->withStatus(200);
-    }
-
-
-    public static function getData(Request $request, Response $response): Response {
-
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
+        $authToken = self::authToken($request);
         $groupNames = [$authToken->getGroup()];
 
         return $response->withJson(self::adminDAO()->getAttachments($authToken->getWorkspaceId(), $groupNames));
     }
 
 
-    public static function getTargetLabel(Request $request, Response $response): Response {
+    public static function deleteFile(Request $request, Response $response): Response {
 
-        $attachmentTargetInfo = AttachmentController::getRequestedAttachmentTargetInfo($request);
-        return $response->withJson([
-            "label" => $attachmentTargetInfo['targetLabel']
-        ]);
+        $attachment = AttachmentController::getRequestedAttachmentById($request);
+        AttachmentController::adminDAO()->deleteAttachmentById($attachment->attachmentId);
+        $filePath = AttachmentController::getAttachmentFilePath($request, $attachment);
+        if (!file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        return $response->withStatus(200);
     }
 
 
-    public static function getTargetPage(Request $request, Response $response): Response {
+    public static function getData(Request $request, Response $response): Response {
 
-        $targetInfo = AttachmentController::getRequestedAttachmentTargetInfo($request);
+        $attachment = AttachmentController::getRequestedAttachmentById($request);
+        return $response->withJson($attachment);
+    }
+
+
+    public static function getAttachmentPage(Request $request, Response $response): Response {
+
+        error_log("!!!");
+
+        $attachment = AttachmentController::getRequestedAttachmentById($request);
 
         $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator('IQB-Testcenter');
-        $pdf->SetTitle($targetInfo['targetLabel']);
+        $pdf->SetTitle("$attachment->personLabel: $attachment->testLabel");
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->AddPage();
@@ -73,7 +81,7 @@ class AttachmentController extends Controller {
             'module_height' => 1 // height of a single module in points
         );
 
-        $pdf->write2DBarcode($targetInfo['targetCode'], 'QRCODE,L', 20, 20, 40, 40, $style, 'N');
+        $pdf->write2DBarcode($attachment->attachmentId, 'QRCODE,L', 20, 20, 40, 40, $style, 'N');
 
         $doc = $pdf->Output('/* ignored */', 'S');
 
@@ -85,22 +93,20 @@ class AttachmentController extends Controller {
 
     // TODO unit-test
     // TODO api-spec
-    public static function post(Request $request, Response $response): Response {
+    public static function postFile(Request $request, Response $response): Response {
 
-        $targetCode = (string) $request->getAttribute('target');
-        if (!$targetCode){
+        $attachmentId = (string) $request->getAttribute('attachmentId');
+        if (!$attachmentId){
 
-            throw new HttpBadRequestException($request);
+            throw new HttpBadRequestException($request, "AttachmentId Missing!");
         }
-        $target = AttachmentController::decodeTarget($targetCode);
+        $target = AttachmentController::decodeAttachmentId($attachmentId);
         $timeStamp = (int) $request->getParam('timeStamp');
         $mimeType = $request->getParam('mimeType');
         $type = explode('/', $mimeType)[0];
+        $authToken = self::authToken($request);
 
-        // TODO verify target & check if allowed
-
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
+        $attachment = AttachmentController::getRequestedAttachmentById($request);
 
         $workspace = new Workspace($authToken->getWorkspaceId());
         $workspacePath = $workspace->getWorkspacePath();
@@ -113,10 +119,11 @@ class AttachmentController extends Controller {
             Folder::createPath($dst);
             $attachmentCode = AttachmentController::randomString();
             $extension = FileExt::get($originalFileName);
-            $attachmentId = "$type:$attachmentCode";
+            $attachmentFileId = "$type:$attachmentCode.$extension";
             copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
-            $dataParts[$targetCode] = "$attachmentId.$extension"; // TODO implement format
             unlink("$workspacePath/$originalFileName");
+            $attachmentFileIds = [...$attachment->attachmentFileIds, $attachmentFileId];
+            $dataParts[$attachmentId] = AttachmentController::stringifyDataChunk($target['variableId'], $attachmentFileIds);
         }
 
         self::testDAO()->updateDataParts(
@@ -131,66 +138,31 @@ class AttachmentController extends Controller {
     }
 
 
-    // TODO use proper data-class
-    private static function getRequestedAttachmentTargetInfo(Request $request): array {
+    private static function getRequestedAttachmentById(Request $request): Attachment {
 
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
-
-        $targetCode = (string) $request->getAttribute('target');
-
-        if (!$targetCode ){
-            throw new HttpBadRequestException($request);
-        }
-
-        $target = AttachmentController::decodeTarget($targetCode);
-        $targetInfo = AttachmentController::testDAO()->getAttachmentTargetInfo($target['testId']);
-        $targetInfo['targetCode'] = $targetCode;
-
-        if (!$targetInfo) {
-            throw new HttpBadRequestException($request, "Could not Read Code: `$targetCode`");
-        }
-
-        if (!AttachmentController::isGroupAllowed($authToken, $targetInfo['groupName'])) {
-            throw new HttpForbiddenException($request, "Access to group `{$targetInfo['groupLabel']} not given.`");
-        }
-
-        $displayName = AccessSet::getDisplayName(
-            $targetInfo['groupLabel'],
-            $targetInfo['loginLabel'],
-            $targetInfo['nameSuffix']
-        );
-
-        $targetInfo['targetLabel'] = "$displayName: {$targetInfo['testLabel']}";
-
-        return $targetInfo;
-    }
-
-
-    private static function getRequestedAttachmentById(Request $request, bool $fileMustExist = true): array {
-
-        /* @var AuthToken $authToken */
-        $authToken = $request->getAttribute('AuthToken');
+        $authToken = self::authToken($request);
 
         $attachmentId = (string) $request->getAttribute('attachmentId');
         $attachment = AttachmentController::adminDAO()->getAttachmentById($attachmentId);
 
-        if (!$attachment) {
-            throw new HttpNotFoundException($request, "Attachment not found: `$attachmentId`");
-        }
-
-        if (!AttachmentController::isGroupAllowed($authToken, $attachment['groupName'])) {
+        if (!AttachmentController::isGroupAllowed($authToken, $attachment->groupName)) {
             throw new HttpForbiddenException($request, "Access to attachment `$attachmentId` not given");
         }
 
-        list($type, $fileName) = explode(':', $attachment['attachmentContent']);
-        list($attachment['attachmentType']) = explode(':', $attachment['attachmentId']);
-        $attachment['fullFileName'] = DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
-        if (!file_exists($attachment['fullFileName']) and $fileMustExist) {
-            throw new HttpNotFoundException($request, "$type not found:`$fileName`");
+        return $attachment;
+    }
+
+
+    private static function getAttachmentFilePath(Request $request, Attachment $attachment): string {
+
+        $authToken = self::authToken($request);
+        $attachmentFileId = (string) $request->getAttribute('fileId');
+        list($dataType, $fileName) = explode(':', $attachmentFileId);
+        if (!in_array($attachmentFileId, $attachment->attachmentFileIds)) {
+            throw new HttpNotFoundException($request,"AttachmentId `$attachmentFileId` not found in attachment `$attachment->attachmentId`");
         }
 
-        return $attachment;
+        return DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
     }
 
 
@@ -206,27 +178,22 @@ class AttachmentController extends Controller {
     }
 
 
+    // TODO move to better place
     #[ArrayShape(['unitName' => "string", 'testId' => "int", 'variableId' => "string"])]
-    private static function decodeTarget(string $target): array {
+    static function decodeAttachmentId(string $attachmentId): array {
 
-        $targetPieces = explode(':', $target);
+        $idPieces = explode(':', $attachmentId);
 
-        if (count($targetPieces) != 3) {
+        if (count($idPieces) != 3) {
 
-            throw new HttpError("Invalid attachment target: `$target`", 400);
+            throw new HttpError("Invalid attachment attachmentId: `$attachmentId`", 400);
         }
 
         return [
-            'testId' => (int) $targetPieces[0],
-            'unitName' => $targetPieces[1],
-            'variableId' => $targetPieces[2]
+            'testId' => (int) $idPieces[0],
+            'unitName' => $idPieces[1],
+            'variableId' => $idPieces[2]
         ];
-    }
-
-
-    private static function encodeTarget(int $testId, string $unitName, string $variableId): string {
-
-        return "$unitName:$testId:$variableId";
     }
 
 
@@ -237,5 +204,17 @@ class AttachmentController extends Controller {
             $fileName .= substr($allowedChars, rand(0, strlen($allowedChars) - 1), 1);
         }
         return $fileName;
+    }
+
+
+    private static function stringifyDataChunk(string $variableId, array $attachmentIds): string {
+
+        return json_encode([
+            [
+                "id" => $variableId,
+                "value" => $attachmentIds,
+                "status" => 'VALUE_CHANGED'
+            ]
+        ]);
     }
 }

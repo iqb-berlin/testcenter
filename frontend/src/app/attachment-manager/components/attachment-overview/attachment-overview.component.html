@@ -1,9 +1,9 @@
 <mat-sidenav-container>
   <mat-sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
-    <div class="toolbar-section" *ngIf="selectedAttachment">
+    <div class="toolbar-section" *ngIf="attachments.data[selectedAttachmentIndex] as selectedAttachment">
       <h3>Ausgewählter Anhang:</h3>
       <div *ngIf="selectedAttachment.dataType === 'missing'">
-        <alert level="warning" text="Dieser Anhang muss noch hinzugefügt werden." ></alert>
+        <alert level="warning" text="Dieser Anhang muss noch hinzugefügt werden."></alert>
       </div>
       <table>
         <tr>
@@ -28,14 +28,32 @@
         </tr>
       </table>
 
-      <img *ngIf="selectedAttachment.dataType === 'image'" id="previewImage" [src]="selectedAttachmentImage">
+      <div *ngIf="selectedAttachment.attachmentFileIds.length">
+        <button mat-mini-fab color="primary" aria-label="Previous instance from this image-attachment" (click)="previousAttachmentId()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        {{selectedAttachmentFileIndex + 1 }} / {{selectedAttachment.attachmentFileIds.length}}
+        <button mat-mini-fab color="primary" aria-label="Next instance from this image-attachment" (click)="nextAttachmentId()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <img
+        *ngIf="selectedAttachmentImage"
+        id="previewImage"
+        [src]="selectedAttachmentImage"
+        alt="currently selected attachment image"
+      />
+
+
+
       <br>
       <button
         mat-raised-button
         color="primary"
         *ngIf="selectedAttachment.attachmentType === 'capture-image'"
-        (click)="$event.stopPropagation(); printPage(selectedAttachment)"
-        matTooltip="Seite neu ausdrucken"
+        (click)="$event.stopPropagation(); printPage()"
+        matTooltip="Seitenvorlage neu ausdrucken"
       >
         <mat-icon>description</mat-icon>
       </button>
@@ -64,32 +82,32 @@
       <h2>
         {{'Übersicht Anhänge ' | customtext:'am_attachment_overview' | async}}
       </h2>
-      <table mat-table matSort [dataSource]="dataSource" class="attachment-table">
+      <table mat-table matSort [dataSource]="attachments" class="attachment-table">
 
         <ng-container matColumnDef="personLabel">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Person</th>
-          <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.personLabel}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="testLabel">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Test</th>
-          <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.testLabel}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="unitLabel">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Aufgabe</th>
-          <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.unitLabel}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="attachmentType">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
-          <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             <ng-container *ngIf="element.attachmentType === 'capture-image'">
               {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
             </ng-container>
@@ -97,17 +115,24 @@
         </ng-container>
 
         <ng-container matColumnDef="lastModified">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Hochgeladen</th>
-          <td mat-cell *matCellDef="let element" (click)="selectAttachment(element)">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Letzte Änderung</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.lastModified | date: 'dd.MM.yy HH:mm'}}
-            <alert *ngIf="element.dataType === 'missing'" level="warning" text="Fehlt noch!" ></alert>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            <alert *ngIf="!element.attachmentFileIds.length" level="warning" text="0" mattooltip="Fehlt noch"></alert>
+            <alert *ngIf="element.attachmentFileIds.length" level="success" text="{{element.attachmentFileIds.length}}" ></alert>
           </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row
-            *matRowDef="let row; columns: displayedColumns;"
-            [class]="{ selected: (row.attachmentId === selectedAttachment?.attachmentId) }"
+            *matRowDef="let row; columns: displayedColumns; let i = index"
+            [class]="{ selected: (i === selectedAttachmentIndex) }"
         ></tr>
       </table>
     </div>

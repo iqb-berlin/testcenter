@@ -609,33 +609,20 @@ class AdminDAO extends DAO {
 
 
     // TODO unit-test
-    public function getAttachmentById(string $attachmentId): ?array {
+    public function getAttachmentById(string $attachmentId): Attachment {
 
-        return $this->_(
-            'SELECT
-                    unit_data.part_id as attachmentId,
-                    unit_data.content as attachmentContent,
-                    unit_data.response_type as responseType,
-                    unit_data.ts,
-                    unit_data.unit_id as unitId,
-                    login_sessions.group_name as groupName
-                FROM
-                    unit_data
-                    left join units on units.id = unit_data.unit_id
-                    left join tests on tests.id = units.booklet_id
-                    left join person_sessions on tests.person_id = person_sessions.id
-                    left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-                WHERE
-                    part_id = :partId
-                ',
-            [
-                ':partId' => $attachmentId
-            ]
-        );
+        $attachments = $this->getAttachments(0, [], $attachmentId);
+
+        if (!count($attachments)) {
+            throw new HttpError("Attachment not found: `$attachmentId`", 404);
+        }
+
+        return $attachments[0];
     }
 
 
     // TODO unit-test
+    // TODO delete only one file, not all
     public function deleteAttachmentById(string $attachmentId): void {
 
         $this->_(
@@ -646,63 +633,80 @@ class AdminDAO extends DAO {
 
 
     // TODO unit-test
-    // TODO use proper data-class for response
-    public function getAttachments(int $workspaceId, array $groups): array {
+    public function getAttachments(int $workspaceId = 0, array $groups = [], string $attachmentId = ''): array {
 
-        $groupSelector = false;
+        $selectors = [];
+        $replacements = [];
+
         if (count($groups)) {
 
-            $groupSelector = "'" . implode("', '", $groups) . "'";
-            // TODO mysql_real_escape
+            $selectors[] = "logins.group_name in (" . implode(',', array_fill(0, count($groups), '? ')) . ")";
+            $replacements = $groups;
         }
 
-        $attachments = $this->_(
-                        "select
-                                group_label as groupLabel,
-                                logins.name as loginName,
-                                name_suffix as nameSuffix,
-                                tests.label as testLabel,
-                                tests.id as testId,
-                                unit_name as unitName,
-                                unit_name as unitLabel, -- TODO get real unitLabel
-                                variable_id as variableId,
-                                attachment_type as attachmentType,
-                                unit_data.content as attachmentContent,
-                                concat(tests.id, ':', unit_name, ':', variable_id) as attachmentId,
-                                unit_data.ts as lastModified
-                            from
-                                unit_defs_attachments
-                                left join tests on booklet_name = tests.name
-                                left join person_sessions on tests.person_id = person_sessions.id
-                                left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
-                                left join logins on logins.name = login_sessions.name
-                                left join unit_data on part_id = concat(tests.id, ':', unit_name, ':', variable_id)
-                            where
-                                logins.group_name in ($groupSelector)
-                                and logins.workspace_id = :workspace_id",
-                        [
-                            ':workspace_id' => $workspaceId
-                        ],
-                        true
-                        );
+        if ($workspaceId) {
+
+            $selectors[] = "logins.workspace_id = ?";
+            $replacements[] = $workspaceId;
+        }
+
+        if ($attachmentId) {
+
+            $attachmentTarget = AttachmentController::decodeAttachmentId($attachmentId);
+            $selectors[] = "tests.id = ?";
+            $selectors[] = "unit_name = ?";
+            $selectors[] = "variable_id = ?";
+            $replacements[] = $attachmentTarget['testId'];
+            $replacements[] = $attachmentTarget['unitName'];
+            $replacements[] = $attachmentTarget['variableId'];
+        }
+
+        $sql = "select
+                group_label as groupLabel,
+                logins.group_name as groupName,
+                logins.name as loginName,
+                name_suffix as nameSuffix,
+                tests.label as testLabel,
+                tests.id as testId,
+                unit_name as unitName,
+                unit_name as unitLabel, -- TODO get real unitLabel
+                variable_id as variableId,
+                attachment_type as attachmentType,
+                unit_data.content as dataPartContent,
+                concat(tests.id, ':', unit_name, ':', variable_id) as attachmentId,
+                unit_data.ts as lastModified
+            from
+                unit_defs_attachments
+                left join tests on booklet_name = tests.name
+                left join person_sessions on tests.person_id = person_sessions.id
+                left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+                left join logins on logins.name = login_sessions.name
+                left join unit_data on part_id = concat(tests.id, ':', unit_name, ':', variable_id)
+            where " . implode(' and ', $selectors);
+
+        $attachments = $this->_($sql, $replacements, true);
+
         $attachmentData = [];
         foreach ($attachments as $attachment) {
-            $dataType = $attachment['attachmentContent']
-                ? explode(':', $attachment['attachmentContent'])[0]
-                : 'missing';
-            $attachmentData[] = [
-                "personLabel" => AccessSet::getDisplayName(
+
+            $dataPart = JSON::decode($attachment['dataPartContent'], true);
+            $attachmentFileIds = $dataPart ? $dataPart[0]['value'] : [];
+
+            $attachmentData[] = new Attachment(
+                $attachment['attachmentId'],
+                AccessSet::getDisplayName(
                     $attachment['groupLabel'],
                     $attachment['loginName'],
                     $attachment['nameSuffix']
                 ),
-                "testLabel" => $attachment['testLabel'],
-                "dataType" => $dataType,
-                "attachmentId" => $attachment['attachmentId'], // !
-                "unitLabel" => $attachment['unitLabel'], // !
-                "lastModified" => $attachment['lastModified'],
-                "attachmentType" => $attachment['attachmentType']
-            ];
+                $attachment['testLabel'],
+                $attachment['dataPartContent'] ? explode(':', $attachmentFileIds[0])[0] : 'missing',
+                $attachmentFileIds,
+                $attachment['unitLabel'], // !
+                $attachment['lastModified'],
+                $attachment['attachmentType'],
+                $attachment['groupName']
+            );
         }
         return $attachmentData;
     }

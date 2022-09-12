@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 class RequestedAttachment {
-    public readonly int $testId;
     public readonly string $unitName;
     public readonly string $attachmentType;
     public readonly string $variableId;

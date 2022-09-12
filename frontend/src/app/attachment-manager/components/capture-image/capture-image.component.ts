@@ -6,7 +6,6 @@ import QrScanner from 'qr-scanner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { VideoRegion } from '../../interfaces/video.interfaces';
 import { BackendService } from '../../services/backend/backend.service';
-import { AttachmentTargetLabel } from '../../interfaces/users.interfaces';
 
 @Component({
   templateUrl: './capture-image.component.html',
@@ -48,8 +47,8 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   cameras: { [id: string]: string } = {};
   flashOn: boolean = false;
   hasFlash: boolean = false;
-  attachmentTargetLabel: AttachmentTargetLabel | null = null;
-  attachmentTargetHash: string;
+  attachmentLabel: string = '';
+  attachmentId: string;
 
   constructor(
     private bs: BackendService,
@@ -164,11 +163,11 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     this.capturedImage = this.canvas.nativeElement.toDataURL('image/png');
 
     this.state = 'confirm';
-    this.bs.getAttachmentTargetLabel(code)
+    this.bs.getAttachmentData(code)
       .subscribe(
-        target => {
-          this.attachmentTargetHash = code;
-          this.attachmentTargetLabel = target;
+        attachmentData => {
+          this.attachmentId = code;
+          this.attachmentLabel = `${attachmentData.personLabel}: ${attachmentData.testLabel}`;
         },
         () => {
           this.state = 'error';
@@ -197,8 +196,8 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   async reset() {
-    this.attachmentTargetLabel = null;
-    this.attachmentTargetHash = null;
+    this.attachmentLabel = null;
+    this.attachmentId = null;
     this.capturedImage = '';
     this.state = 'capture';
     await this.runCamera();
@@ -214,7 +213,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   uploadImage(): void {
-    this.bs.postAttachment(this.attachmentTargetHash, CaptureImageComponent.dataURItoFile(this.capturedImage))
+    this.bs.postAttachment(this.attachmentId, CaptureImageComponent.dataURItoFile(this.capturedImage))
       .subscribe(ok => {
         if (!ok) {
           return;

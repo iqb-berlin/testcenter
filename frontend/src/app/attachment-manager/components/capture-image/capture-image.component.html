@@ -18,8 +18,8 @@
       </mat-checkbox>
     </div>
 
-    <div class="toolbar-section" *ngIf="this.attachmentTargetLabel">
-      <p>Seite gehört zu: <b>{{attachmentTargetLabel.label}}</b></p>
+    <div class="toolbar-section" *ngIf="this.attachmentLabel">
+      <p>Seite gehört zu: <b>{{attachmentLabel.label}}</b></p>
       <button mat-raised-button color="primary" data-cy="dialog-confirm" (click)="uploadImage()">
         Upload
       </button>

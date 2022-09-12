@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { BackendService } from '../../services/backend/backend.service';
-import { AttachmentData, AttachmentType } from '../../interfaces/users.interfaces';
+import { AttachmentData } from '../../interfaces/users.interfaces';
 
 @Component({
   templateUrl: './attachment-overview.component.html',
@@ -17,11 +17,12 @@ import { AttachmentData, AttachmentType } from '../../interfaces/users.interface
 export class AttachmentOverviewComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
-  selectedAttachment: AttachmentData = null;
+  selectedAttachmentIndex: number = -1;
   selectedAttachmentImage: ArrayBuffer | string = '';
+  selectedAttachmentFileIndex = -1;
 
-  displayedColumns: string[] = ['personLabel', 'testLabel', 'unitLabel', 'attachmentType', 'lastModified'];
-  dataSource: MatTableDataSource<AttachmentData>;
+  displayedColumns: string[] = ['status', 'personLabel', 'testLabel', 'unitLabel', 'attachmentType', 'lastModified'];
+  attachments: MatTableDataSource<AttachmentData>;
 
   constructor(
     private bs: BackendService,
@@ -30,34 +31,44 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource<AttachmentData>([]);
+    this.attachments = new MatTableDataSource<AttachmentData>([]);
     this.loadAttachmentList();
   }
 
   private loadAttachmentList(): void {
-    this.bs.getAttachmentsData([])
+    this.bs.getAttachmentsList([])
       .subscribe(attachmentData => {
-        this.dataSource.data = attachmentData;
-        this.dataSource.sort = this.sort;
+        this.attachments.data = attachmentData;
+        this.attachments.sort = this.sort;
       });
   }
 
-  selectAttachment(element: AttachmentData): void {
-    if (this.selectedAttachment?.attachmentId === element.attachmentId) {
-      this.selectedAttachment = null;
+  selectAttachment(index: number): void {
+    if (this.selectedAttachmentIndex === index) {
+      this.selectedAttachmentIndex = -1;
       this.selectedAttachmentImage = '';
-      return;
-    }
-    console.log(element);
-    this.selectedAttachment = element;
-
-    if (element.dataType === 'missing') {
+      this.selectedAttachmentFileIndex = -1;
       return;
     }
 
-    this.bs.getAttachment(element.attachmentId)
+    this.selectedAttachmentIndex = index;
+
+    if (!this.attachments.data[index].attachmentFileIds.length) {
+      return;
+    }
+
+    this.selectedAttachmentFileIndex = 0;
+    this.loadSelectedAttachment();
+  }
+
+  private loadSelectedAttachment(): void {
+    const selectedAttachment = this.attachments.data[this.selectedAttachmentIndex];
+    this.bs.getAttachmentFile(
+      selectedAttachment.attachmentId,
+      selectedAttachment.attachmentFileIds[this.selectedAttachmentFileIndex]
+    )
       .subscribe(data => {
-        if (element.dataType === 'image') {
+        if (selectedAttachment.dataType === 'image') {
           this.createImageFromBlob(data);
         }
       });
@@ -77,11 +88,15 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   deleteAttachment(): void {
-    this.bs.deleteAttachment(this.selectedAttachment.attachmentId)
+    const selectedAttachment = this.attachments.data[this.selectedAttachmentIndex];
+    this.bs.deleteAttachmentFile(
+      selectedAttachment.attachmentId,
+      selectedAttachment.attachmentFileIds[this.selectedAttachmentFileIndex]
+    )
       .subscribe(ok => {
         if (ok) {
           this.snackBar.open('Anhang gelöscht!', 'Ok.', { duration: 3000 });
-          this.selectedAttachment = null;
+          this.selectedAttachmentIndex = null;
           this.selectedAttachmentImage = '';
           this.loadAttachmentList();
         } else {
@@ -90,7 +105,21 @@ export class AttachmentOverviewComponent implements OnInit {
       });
   }
 
-  printPage(attachmentData: AttachmentData) {
-    this.bs.getAttachmentPage(attachmentData.attachmentId);
+  printPage() {
+    this.bs.getAttachmentPage(
+      this.attachments.data[this.selectedAttachmentIndex].attachmentId
+    );
+  }
+
+  nextAttachmentId() {
+    this.selectedAttachmentFileIndex +=
+      this.selectedAttachmentFileIndex < this.attachments.data[this.selectedAttachmentIndex].attachmentFileIds.length - 1 ?
+        1 : 0;
+    this.loadSelectedAttachment();
+  }
+
+  previousAttachmentId() {
+    this.selectedAttachmentFileIndex -= this.selectedAttachmentFileIndex > 0 ? 1 : 0;
+    this.loadSelectedAttachment();
   }
 }
