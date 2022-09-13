@@ -59,7 +59,7 @@ class AttachmentController extends Controller {
                 $target['testId'],
                 $target['unitName'],
                 $dataParts,
-                'itc-attachment-id',
+                'iqb-standard@1.0',
                 TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
             );
 
@@ -153,7 +153,7 @@ class AttachmentController extends Controller {
             $target['testId'],
             $target['unitName'],
             $dataParts,
-            'itc-attachment-id',
+            'iqb-standard@1.0',
             TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
         );
 
