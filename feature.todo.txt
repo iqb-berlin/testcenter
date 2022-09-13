@@ -1,3 +1,0 @@
-* attachments löschen, wenn data gelöscht wird
-* korrekten qr code inhalt
-* Seite generieren
