@@ -27,7 +27,6 @@ export class BackendService {
     const formData = new FormData();
     formData.append('mimeType', file.type);
     formData.append('attachment', file, file.name);
-    formData.append('timeStamp', Date.now().toString());
     return this.http
       .post<boolean>(`${this.serverUrl}attachment/${attachmentId}/file`, formData, { observe: 'response' })
       .pipe(

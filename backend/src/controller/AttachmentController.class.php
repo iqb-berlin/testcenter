@@ -40,8 +40,34 @@ class AttachmentController extends Controller {
 
     public static function deleteFile(Request $request, Response $response): Response {
 
+        $attachmentFileId = (string) $request->getAttribute('fileId');
         $attachment = AttachmentController::getRequestedAttachmentById($request);
-        AttachmentController::adminDAO()->deleteAttachmentById($attachment->attachmentId);
+
+        $attachmentFileIds = $attachment->attachmentFileIds;
+        if (!in_array($attachmentFileId, $attachmentFileIds)) {
+            throw new HttpNotFoundException($request, "File `$attachmentFileId` not found in attachment `$attachment->attachmentId`.");
+        }
+        array_splice($attachmentFileIds, array_search($attachmentFileId, $attachmentFileIds), 1);
+
+        $target = AttachmentController::decodeAttachmentId($attachment->attachmentId);
+        $dataParts = [];
+        $dataParts[$attachment->attachmentId] = AttachmentController::stringifyDataChunk($target['variableId'], $attachmentFileIds);
+
+        if (count($attachmentFileIds)) {
+
+            self::testDAO()->updateDataParts(
+                $target['testId'],
+                $target['unitName'],
+                $dataParts,
+                'itc-attachment-id',
+                TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
+            );
+
+        } else {
+
+            self::testDAO()->deleteAttachmentDataPart($attachment->attachmentId);
+        }
+
         $filePath = AttachmentController::getAttachmentFilePath($request, $attachment);
         if (!file_exists($filePath)) {
             unlink($filePath);
@@ -59,8 +85,6 @@ class AttachmentController extends Controller {
 
 
     public static function getAttachmentPage(Request $request, Response $response): Response {
-
-        error_log("!!!");
 
         $attachment = AttachmentController::getRequestedAttachmentById($request);
 
@@ -101,7 +125,6 @@ class AttachmentController extends Controller {
             throw new HttpBadRequestException($request, "AttachmentId Missing!");
         }
         $target = AttachmentController::decodeAttachmentId($attachmentId);
-        $timeStamp = (int) $request->getParam('timeStamp');
         $mimeType = $request->getParam('mimeType');
         $type = explode('/', $mimeType)[0];
         $authToken = self::authToken($request);
@@ -131,7 +154,7 @@ class AttachmentController extends Controller {
             $target['unitName'],
             $dataParts,
             'itc-attachment-id',
-            $timeStamp
+            TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
         );
 
         return $response->withStatus(201);

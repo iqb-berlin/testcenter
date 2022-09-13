@@ -62,6 +62,7 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   private loadSelectedAttachment(): void {
+    this.selectedAttachmentImage = '';
     const selectedAttachment = this.attachments.data[this.selectedAttachmentIndex];
     this.bs.getAttachmentFile(
       selectedAttachment.attachmentId,

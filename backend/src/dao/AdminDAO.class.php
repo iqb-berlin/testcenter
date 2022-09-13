@@ -622,17 +622,6 @@ class AdminDAO extends DAO {
 
 
     // TODO unit-test
-    // TODO delete only one file, not all
-    public function deleteAttachmentById(string $attachmentId): void {
-
-        $this->_(
-            'delete from unit_data where part_id = :partId and response_type = \'itc-attachment-id\'',
-            [ ':partId' => $attachmentId ]
-        );
-    }
-
-
-    // TODO unit-test
     public function getAttachments(int $workspaceId = 0, array $groups = [], string $attachmentId = ''): array {
 
         $selectors = [];
