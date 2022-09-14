@@ -3,8 +3,7 @@
 set -e
 
 APP_NAME='testcenter'
-REPO_URL='https://api.github.com/repos/iqb-berlin/testcenter'
-
+REPO_URL=iqb-berlin/testcenter
 REQUIRED_PACKAGES=(docker docker-compose)
 OPTIONAL_PACKAGES=(make)
 
@@ -45,39 +44,41 @@ check_prerequisites() {
   done
 }
 
-load_install_package() {
-  if ls $APP_NAME-*.tar 1> /dev/null 2>&1
-    then
-      PACKAGE_FOUND=true
-      if [ $(ls $APP_NAME-*.tar | wc -l) -gt 1 ]
-        then
-          echo "Multiple install packages found. You must not have more then one \"$APP_NAME-*.tar\" file in this directory to continue."
-          exit 1
-      fi
-      read -p "Installation package found. Do you want to check for and download the latest release anyway? [y/N]:" -r -n 1 -e DOWNLOAD
-      DOWNLOAD=${DOWNLOAD:-n}
-    else
-      PACKAGE_FOUND=false
-      read -p "No installation package found. Do you want to download the latest release? [Y/n]:" -r -n 1 -e DOWNLOAD
-      DOWNLOAD=${DOWNLOAD:-y}
-  fi
+get_version_list_from_api() {
+  #read  -p 'Show only stable versions [Y/n]: ' -r -n 1 -e show_stable_versions
+  # so koennte man betas filtern: select(.value.prerelease == true)
+  versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
+  echo "$versions" | jq -r 'map({tag_name, name, prerelease})
+                          | to_entries
+                          | map({
+                            index: (.key + 1),
+                            tag_name: .value.tag_name,
+                            name: .value.name,
+                            prerelease: (if .value.prerelease == true then "(prerelease)" else "" end)
+                          })
+                          | .[]
+                          | [.[]]
+                          | @tsv'
 
-  if [ "$PACKAGE_FOUND" = 'false' ] && [[ ! $DOWNLOAD =~ ^[yY]$ ]]
-    then
-      echo "Cannot continue without install package."
-      exit 1
-  fi
+  number_of_versions=$(echo "$versions" | jq -r 'length')
 
-  if [[ $DOWNLOAD =~ ^[yY]$ ]]
-    then
-      echo 'Downloading latest package...'
-      rm -f $APP_NAME-*.tar;
-      curl -s $REPO_URL/releases/latest \
-      | grep "browser_download_url.*tar" \
-      | cut -d : -f 2,3 \
-      | tr -d \" \
-      | wget -qi -;
-  fi
+  chosen_version_index=0
+  while [[ "$chosen_version_index" -lt 1 || "$chosen_version_index" -gt "$number_of_versions" ]]; do
+    read  -p 'Choose version number: [1-'${number_of_versions}']' -r -n 1 -e chosen_version_index
+  done
+  chosen_version_tag=$(echo "$versions" | jq -r '.['${chosen_version_index}-1'] | .tag_name')
+}
+
+download_files() {
+  echo "Downloading files..."
+  wget -nv -O .env https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/.env
+  wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
+  wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker-compose.yml
+  wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
+  wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
+  wget -nv -O manage.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/manage.sh
+  chmod +x manage.sh
+  echo "Download done"
 }
 
 customize_settings() {
@@ -91,19 +92,25 @@ customize_settings() {
 set_tls() {
   read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
   if [[ $TLS =~ ^[yY]$ ]]; then
+    mkdir config
+    touch config/cert_config.yml
+    echo "tls:
+  certificates:
+    - certFile: /certs/certificate.cer
+      keyFile: /certs/private_key.key" > config/cert_config.yml
     echo "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml."
+    sed -i 's/TLS=off/TLS=on/' .env
     sed -i 's/ws:/wss:/' .env
-    mv Makefile Makefile.bu
-    mv Makefile-TLS Makefile
+    sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
   else
+    sed -i 's/TLS=on/TLS=off/' .env
     sed -i 's/wss:/ws:/' .env
-    mv Makefile Makefile-TLS
-    mv Makefile.bu Makefile
+    sed -i 's/docker-compose.prod.yml -f docker-compose.prod.tls.yml/docker-compose.prod.yml/' Makefile
   fi
 }
 
 check_prerequisites
-load_install_package
+get_version_list_from_api
 
 read  -p '1. Install directory: ' -e -i "`pwd`/$APP_NAME" TARGET_DIR
 
@@ -116,15 +123,16 @@ if [ $(ls -A $TARGET_DIR 2> /dev/null | wc -l) -gt 0 ]
 fi
 
 mkdir -p $TARGET_DIR
-echo "Extracting package..."
-tar -xf $APP_NAME*.tar -C $TARGET_DIR
+
 cd $TARGET_DIR
 
+download_files
+
 customize_settings
+
+# write chosen version tag to env file
+sed -i "s#VERSION.*#VERSION=$chosen_version_tag#" .env
+
 set_tls
 
-read  -p 'Run application now? [y/N]: ' -r -n 1 -e run_app
-if [[ $run_app =~ ^[yY]$ ]]; then
-  cd $TARGET_DIR
-  make run
-fi
+printf "\nInstallation done. Use 'make run' from the install directory.\n"

@@ -4,15 +4,14 @@
 version: '3.7'
 
 services:
-
   testcenter-backend:
-    image: iqbberlin/testcenter-backend:13.0.0
+    image: iqbberlin/testcenter-backend:${VERSION}
 
   testcenter-frontend:
-    image: iqbberlin/testcenter-frontend:13.0.0
+    image: iqbberlin/testcenter-frontend:${VERSION}
 
   testcenter-broadcasting-service:
-    image: iqbberlin/testcenter-broadcasting-service:13.0.0
+    image: iqbberlin/testcenter-broadcasting-service:${VERSION}
 
   testcenter-db:
     command:

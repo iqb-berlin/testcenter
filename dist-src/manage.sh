@@ -1,84 +1,78 @@
 #!/bin/bash
 
-REPO_URL='https://api.github.com/repos/iqb-berlin/testcenter'
-SOFTWARE_COMPONENTS=(iqbberlin/testcenter-frontend iqbberlin/testcenter-backend iqbberlin/testcenter-broadcasting-service)
+REPO_URL=iqb-berlin/testcenter
 
-echo "1. Update to latest version"
-echo "2. Switch TLS on/off"
-read  -p 'What do you want to do (1/2): ' -r -n 1 -e main_choice
+select_version() {
+  versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
+#  echo "$versions" | jq -r 'map({name, tag_name, prerelease}) | .[] | select(.prerelease == true)'
+  echo "$versions" | jq -r 'map({tag_name, name, prerelease})
+                          | to_entries
+                          | map({
+                            index: (.key + 1),
+                            tag_name: .value.tag_name,
+                            name: .value.name,
+                            prerelease: (if .value.prerelease == true then "(prerelease)" else "" end)
+                          })
+                          | .[]
+                          | [.[]]
+                          | @tsv'
 
-# Returns true if the first version string is greater than the second
-is_version_newer() {
-  test $(echo $1 | cut -d '.' -f 1) -eq $(echo $2 | cut -d '.' -f 1)
-  first_number_equals=$?
-  test $(echo $1 | cut -d '.' -f 2) -eq $(echo $2 | cut -d '.' -f 2)
-  second_number_equals=$?
+  number_of_versions=$(echo "$versions" | jq -r 'length')
 
-  NEWER_VERSION=false
-  if [ $(echo $1 | cut -d '.' -f 1) -gt $(echo $2 | cut -d '.' -f 1) ]
-    then
-      NEWER_VERSION=true
-  fi
-  if [ $first_number_equals = 0 ] && [ $(echo $1 | cut -d '.' -f 2) -gt $(echo $2 | cut -d '.' -f 2) ]
-    then
-      NEWER_VERSION=true
-  fi
-  if [ $first_number_equals = 0 ] && [ $second_number_equals = 0 ] && [ $(echo $1 | cut -d '.' -f 3) -gt $(echo $2 | cut -d '.' -f 3) ]
-    then
-      NEWER_VERSION=true
-  fi
-  echo "$NEWER_VERSION"
+  chosen_version_index=0
+  while [[ "$chosen_version_index" -lt 1 || "$chosen_version_index" -gt "$number_of_versions" ]]; do
+    read  -p 'Choose version number: [1-'${number_of_versions}']' -r -n 1 -e chosen_version_index
+  done
+  chosen_version_tag=$(echo "$versions" | jq -r '.['${chosen_version_index}-1'] | .tag_name')
 }
 
-update() {
-  current_version=`grep "image: iqbberlin/testcenter-backend:" docker-compose.prod.yml | cut -d : -f 3`
-  latest_version=`curl -s $REPO_URL/releases/latest \
-    | grep "tag_name" \
-    | cut -d : -f 2 \
-    | tr -d \" \
-    | tr -d , \
-    | tr -d ' '`
+update_files() {
+  wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
+  wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
+  wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
+  wget -nv -O patch.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/patch.sh || rm -f patch.sh
 
-  is_version_newer=$(is_version_newer $latest_version $current_version)
-
-  if [ $is_version_newer = 'true' ]; then
-    echo "A newer version is available: $current_version -> $latest_version"
-    read -p "Do you want to update to the latest release? [Y/n]:" -r -n 1 -e UPDATE
-    if [[ $UPDATE =~ ^[nN]$ ]]
-      then
-        echo 'Exiting...'
-        exit 0
-    fi
-    for component in "${SOFTWARE_COMPONENTS[@]}"; do
-      sed -i "s#image: $component:.*#image: $component:$latest_version#" docker-compose.prod.yml
-    done
-  else
-    echo "You are up to date."
+  . .env
+  echo "$TLS"
+  if [ "$TLS" = "on" ]; then
+    sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
   fi
+
+  if test -f "patch.sh"; then
+    echo "Patch file found."
+    patch.sh
+  fi
+
 }
 
 set_tls() {
-  read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
-  if [[ $TLS =~ ^[yY]$ ]]
-  then
-    echo "The certificates need to be put in config/certs and their name configured in config/cert_config.yml."
+  read -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
+  if [[ $TLS =~ ^[yY]$ ]]; then
+    mkdir config
+    touch config/cert_config.yml
+    echo "tls:
+  certificates:
+    - certFile: /certs/certificate.cer
+      keyFile: /certs/private_key.key" > config/cert_config.yml
+    echo "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml."
+    sed -i 's/TLS=off/TLS=on/' .env
     sed -i 's/ws:/wss:/' .env
-
-    printf "run:\n    " > Makefile2
-    printf "docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml up -d\n\n" >> Makefile2
-    printf "stop:\n    " >> Makefile2
-    printf "docker-compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.prod.tls.yml stop" >> Makefile2
+    sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
   else
-    printf "run:\n    " > Makefile2
-    printf "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d\n\n" >> Makefile2
-    printf "stop:\n    " >> Makefile2
-    printf "docker-compose -f docker-compose.yml -f docker-compose.prod.yml stop" >> Makefile2
+    sed -i 's/TLS=on/TLS=off/' .env
+    sed -i 's/wss:/ws:/' .env
+    sed -i 's/docker-compose.prod.yml -f docker-compose.prod.tls.yml/docker-compose.prod.yml/' Makefile
   fi
 }
 
+echo "1. Update version"
+echo "2. Switch TLS on/off"
+read  -p 'What do you want to do (1/2): ' -r -n 1 -e main_choice
 
 if [ $main_choice = 1 ]; then
-  update
+  select_version
+  update_files
 elif [ $main_choice = 2 ]; then
   set_tls
 fi
+
