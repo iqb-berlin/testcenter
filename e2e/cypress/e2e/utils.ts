@@ -42,8 +42,8 @@ export const login = (username: string, password: string): void => {
 export const logoutAdmin = (): void => {
   cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`);
   // I dont think it is necessary to check for workspaces here
-  // cy.get('[data-cy="workspace-1"]')
-  //   .should('exist');
+  cy.get('[data-cy="workspace-1"]')
+    .should('exist');
   cy.get('[data-cy="logout"]')
     .click();
   cy.url()
@@ -69,8 +69,8 @@ export const loginAsAdmin = (username = 'super', password = 'user123'): void => 
   cy.get('[data-cy="login-admin"]')
     .click();
     // I dont think it is necessary to check for workspaces here
-  // cy.get('[data-cy="workspace-1"]')
-  //   .should('exist');
+  cy.get('[data-cy="workspace-1"]')
+    .should('exist');
 };
 
 export const clickSuperadmin = (): void => {

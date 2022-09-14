@@ -59,21 +59,9 @@ services:
   testcenter-system-test-frontend:
     container_name: testcenter-system-test-frontend
     image: iqbberlin/testcenter-frontend:current
-    command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
     volumes:
-      - ./common:/common
-      - ./definitions:/definitions
       - ./docs/dist:/docs/dist
-      - ./frontend/.browserslistrc:/app/.browserslistrc
-      - ./frontend/angular.json:/app/angular.json
-      - ./frontend/cypress.config.js:/app/cypress.config.js
-      - ./frontend/cypress:/app/cypress
-      - ./frontend/docker/entrypoint.sh:/entrypoint.sh
-      - ./frontend/node_modules:/app/node_modules
-      - ./frontend/package-lock.json:/app/package-lock.json
-      - ./frontend/package.json:/app/package.json
-      - ./frontend/src:/app/src
-      - ./frontend/tsconfig.json:/app/tsconfig.json
+    command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
     depends_on:
       - testcenter-system-test-backend
       - testcenter-system-test-db
@@ -81,12 +69,12 @@ services:
       - testcenter-system-test
 
   e2e:
+    container_name: testcenter-cypress
     image: cypress
     build: ./e2e
-    container_name: testcenter-cypress
     environment:
       - CYPRESS_baseUrl=http://testcenter-system-test-frontend:4200
-    entrypoint: cypress run
+    entrypoint: sh -c "npx wait-on http://testcenter-system-test-frontend:4200 && cypress run"
     volumes:
       - ./e2e/cypress:/app/cypress
       - ./e2e/cypress.e2e.config.js:/app/cypress.config.js

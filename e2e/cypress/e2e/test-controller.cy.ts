@@ -5,7 +5,7 @@ import { login } from './utils';
 import 'cypress-iframe';
 import inViewport from '../support/inViewport';
 
-describe('Test-Controller', () => {
+xdescribe('Test-Controller', () => {
   before(() => { chai.use(inViewport); });
   beforeEach(() => login('test', 'user123'));
 
