@@ -1,5 +1,5 @@
-<mat-sidenav-container>
-  <mat-sidenav #sidenav opened="true" mode="side" class="toolbar" fixedInViewport="true" fixedTopGap="55">
+<mat-sidenav-container class="{{mobileView ? 'mobile' : 'desktop'}}">
+  <mat-sidenav #sidenav opened="true" [mode]="mobileView ? 'over' : 'side'" fixedInViewport="true" fixedTopGap="55" class="toolbar">
     <h2>
       {{'Seite aufnehmen' | customtext:'am_capture_image' | async}}
     </h2>
@@ -29,17 +29,22 @@
       <button mat-raised-button data-cy="new-capture" (click)="reset()">Neue Aufnahme</button>
     </div>
 
-    <div class="toolbar-section-bottom">
-      <div class="toolbar-section">
-        <a mat-button class="control" color="primary" [routerLink]="'..'">
-          {{'Übersicht Anhänge ' | customtext:'am_attachment_overview' | async}}
-        </a>
-      </div>
-    </div>
   </mat-sidenav>
 
   <mat-sidenav-content>
     <div class="adminbackground hidden" [class.show]="state === 'capture'">
+      <div class="corner-menu">
+        <button
+            id="toggle-sidebar-button"
+            class="settings-button"
+            mat-icon-button
+            [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
+            matTooltipPosition="above"
+            (click)="sidenav.toggle()"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
       <alert
         level="info"
         customtext="am_capture_image_text"
@@ -48,6 +53,12 @@
       <div id="video-container" >
         <video #video id="video" autoplay></video>
         <div id="shape-page"></div>
+      </div>
+
+      <div class="navbar-bottom">
+        <a mat-raised-button class="control" color="primary" [routerLink]="'..'">
+          {{'Abbrechen' | customtext:'am_attachment_overview' | async}}
+        </a>
       </div>
     </div>
 

@@ -6,7 +6,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="25">
+          <list size="26">
             <item index="0" class="java.lang.String" itemvalue="fxlayout" />
             <item index="1" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="2" class="java.lang.String" itemvalue="mattooltip" />
@@ -32,6 +32,7 @@
             <item index="22" class="java.lang.String" itemvalue="fxlayoutgap" />
             <item index="23" class="java.lang.String" itemvalue="mat-mini-fab" />
             <item index="24" class="java.lang.String" itemvalue="matsort" />
+            <item index="25" class="java.lang.String" itemvalue="mat-menu-item" />
           </list>
         </value>
       </option>
@@ -40,7 +41,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="35">
+          <list size="37">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -76,6 +77,8 @@
             <item index="32" class="java.lang.String" itemvalue="mat-sidenav-container" />
             <item index="33" class="java.lang.String" itemvalue="mat-sidenav" />
             <item index="34" class="java.lang.String" itemvalue="mat-sidenav-content" />
+            <item index="35" class="java.lang.String" itemvalue="mat-menu" />
+            <item index="36" class="java.lang.String" itemvalue="mat-slide-toggle" />
           </list>
         </value>
       </option>

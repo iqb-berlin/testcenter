@@ -2,6 +2,11 @@
     padding-top: 0;
 }
 
+mat-sidenav {
+    width: 350px;
+    min-width: 350px;
+}
+
 .test-session-table {
   border-collapse: collapse;
   display: table;
@@ -84,14 +89,6 @@
   }
 }
 
-.corner-menu {
-  position: fixed;
-  right: 10px;
-  top: 72px;
-  z-index: 10000;
-  border-bottom-left-radius: 10px;
-}
-
 .scroll-hint {
   position: fixed;
   right: 15px;
@@ -146,6 +143,10 @@
 
 [disabled] .emph {
   color: #821123
+}
+
+mat-sidenav {
+    width: 350px;
 }
 
 #message-panel alert:first-of-type {

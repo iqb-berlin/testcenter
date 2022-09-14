@@ -4,6 +4,8 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { MatSidenav } from '@angular/material/sidenav';
 import { BackendService } from '../../services/backend/backend.service';
 import { AttachmentData } from '../../interfaces/users.interfaces';
 
@@ -16,6 +18,7 @@ import { AttachmentData } from '../../interfaces/users.interfaces';
 })
 export class AttachmentOverviewComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
   selectedAttachmentIndex: number = -1;
   selectedAttachmentImage: ArrayBuffer | string = '';
@@ -24,15 +27,34 @@ export class AttachmentOverviewComponent implements OnInit {
   displayedColumns: string[] = ['status', 'personLabel', 'testLabel', 'unitLabel', 'attachmentType', 'lastModified'];
   attachments: MatTableDataSource<AttachmentData>;
 
+  mobileView: boolean;
+
   constructor(
     private bs: BackendService,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    private breakpointObserver: BreakpointObserver
   ) {
+
   }
 
   ngOnInit(): void {
     this.attachments = new MatTableDataSource<AttachmentData>([]);
     this.loadAttachmentList();
+    this.breakpointObserver
+      .observe([
+        Breakpoints.Medium,
+        Breakpoints.Small,
+        Breakpoints.XSmall
+      ])
+      .subscribe(result => {
+        if (result.matches) {
+          this.sidenav.close();
+          this.mobileView = true;
+        } else {
+          this.sidenav.open();
+          this.mobileView = false;
+        }
+      });
   }
 
   private loadAttachmentList(): void {
@@ -44,26 +66,20 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   selectAttachment(index: number): void {
-    if (this.selectedAttachmentIndex === index) {
-      this.selectedAttachmentIndex = -1;
-      this.selectedAttachmentImage = '';
-      this.selectedAttachmentFileIndex = -1;
-      return;
-    }
+    this.selectedAttachmentImage = '';
+    this.sidenav.open();
 
     this.selectedAttachmentIndex = index;
-
-    if (!this.attachments.data[index].attachmentFileIds.length) {
-      return;
-    }
-
     this.selectedAttachmentFileIndex = 0;
-    this.loadSelectedAttachment();
+
+    if (this.attachments.data[index].attachmentFileIds.length) {
+      this.loadSelectedAttachment();
+    }
   }
 
   private loadSelectedAttachment(): void {
-    this.selectedAttachmentImage = '';
     const selectedAttachment = this.attachments.data[this.selectedAttachmentIndex];
+
     this.bs.getAttachmentFile(
       selectedAttachment.attachmentId,
       selectedAttachment.attachmentFileIds[this.selectedAttachmentFileIndex]
@@ -106,21 +122,26 @@ export class AttachmentOverviewComponent implements OnInit {
       });
   }
 
-  printPage() {
+  printPage(): void {
     this.bs.getAttachmentPage(
       this.attachments.data[this.selectedAttachmentIndex].attachmentId
     );
   }
 
-  nextAttachmentId() {
+  nextAttachmentId(): void {
     this.selectedAttachmentFileIndex +=
       this.selectedAttachmentFileIndex < this.attachments.data[this.selectedAttachmentIndex].attachmentFileIds.length - 1 ?
         1 : 0;
     this.loadSelectedAttachment();
   }
 
-  previousAttachmentId() {
+  previousAttachmentId(): void {
     this.selectedAttachmentFileIndex -= this.selectedAttachmentFileIndex > 0 ? 1 : 0;
     this.loadSelectedAttachment();
+  }
+
+  menuClick(): void {
+    this.sidenav.toggle();
+    this.selectAttachment(-1);
   }
 }

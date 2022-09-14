@@ -4,6 +4,8 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import QrScanner from 'qr-scanner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSidenav } from '@angular/material/sidenav';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { VideoRegion } from '../../interfaces/video.interfaces';
 import { BackendService } from '../../services/backend/backend.service';
 
@@ -17,6 +19,7 @@ import { BackendService } from '../../services/backend/backend.service';
 export class CaptureImageComponent implements OnInit, OnDestroy {
   @ViewChild('video') video: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
+  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
   pageDesign = {
     width: 210, // mm
@@ -49,12 +52,30 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   hasFlash: boolean = false;
   attachmentLabel: string = '';
   attachmentId: string;
+  mobileView: boolean;
 
   constructor(
     private bs: BackendService,
     private ngZone: NgZone,
-    public snackBar: MatSnackBar
-  ) {}
+    public snackBar: MatSnackBar,
+    breakpointObserver: BreakpointObserver
+  ) {
+    breakpointObserver
+      .observe([
+        Breakpoints.Medium,
+        Breakpoints.Small,
+        Breakpoints.XSmall
+      ])
+      .subscribe(result => {
+        if (result.matches) {
+          this.sidenav.close();
+          this.mobileView = true;
+        } else {
+          this.sidenav.open();
+          this.mobileView = false;
+        }
+      });
+  }
 
   async ngOnInit() {
     setTimeout(() => { this.runCamera(); });

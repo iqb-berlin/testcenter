@@ -18,12 +18,14 @@ import { AttachmentManagerComponent } from './components/attachment-manager/atta
 import { CaptureImageComponent } from './components/capture-image/capture-image.component';
 import { BackendService } from './services/backend/backend.service';
 import { AttachmentOverviewComponent } from './components/attachment-overview/attachment-overview.component';
+import { AddAttachmentComponent } from './components/add-attachment/add-attachment.component';
 
 @NgModule({
   declarations: [
     AttachmentManagerComponent,
     CaptureImageComponent,
-    AttachmentOverviewComponent
+    AttachmentOverviewComponent,
+    AddAttachmentComponent
   ],
   imports: [
     CommonModule,

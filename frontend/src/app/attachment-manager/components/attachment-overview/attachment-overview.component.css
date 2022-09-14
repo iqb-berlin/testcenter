@@ -1,3 +1,7 @@
+.adminbackground {
+    padding-top: 0;
+}
+
 .attachment-table {
     border-collapse: collapse;
     display: table;
@@ -12,8 +16,11 @@
 }
 
 .attachment-table td {
-    padding-top: 15px;
     margin-right: 1em;
+    padding-bottom: 0.2em;
+    padding-top: 0.2em;
+    border-bottom: 1px solid silver;
+    padding-right: 2em;
 }
 
 .attachment-table tr {
@@ -26,5 +33,10 @@
 
 #previewImage {
     width: 100%;
-    background: #b2b2b2;
+    aspect-ratio: 1 / 1;
+    background-color: #b2b2b2;
+    background-size: contain;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    position: relative;
 }

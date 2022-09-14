@@ -60,3 +60,11 @@
     height: 500px;
     aspect-ratio: 210 / 297;
 }
+
+.navbar-bottom {
+    position: absolute;
+    bottom: 0;
+    background-color: greenyellow;
+    text-align: right;
+    right: 1em;
+}
