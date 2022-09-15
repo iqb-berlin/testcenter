@@ -23,9 +23,6 @@
 /backend/composer.phar
 /backend/auth.json
 
-# backend config
-/backend/config
-
 # frontend config
 /frontend/src/environments/environment.ts
 /frontend/src/environments/environment.ts.bu
