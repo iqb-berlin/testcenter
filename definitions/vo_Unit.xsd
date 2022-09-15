@@ -3,10 +3,10 @@
 
   <xs:complexType name="Variable">
       <xs:sequence>
-        <xs:element name="Values" minOccurs="0" maxOccurs="1">
+        <xs:element name="Values" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Value" minOccurs="1" maxOccurs="unbounded" />
+              <xs:element name="Value" maxOccurs="unbounded" />
             </xs:sequence>
             <xs:attribute name="complete" type="xs:boolean" />
           </xs:complexType>
@@ -37,10 +37,11 @@
 
   <xs:simpleType name="VariableFormatValue">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="textselection"/>
+      <xs:enumeration value="text-selection"/>
       <xs:enumeration value="image"/>
       <xs:enumeration value="capture-image"/>
       <xs:enumeration value="audio"/>
+      <xs:enumeration value="ggb-file"/>
       <xs:enumeration value="non-negative"/>
     </xs:restriction>
   </xs:simpleType>
@@ -50,14 +51,22 @@
    <xs:enumeration value="player"/>
    <xs:enumeration value="editor"/>
    <xs:enumeration value="schemer"/>
-   <xs:enumeration value="other"/>
+   <xs:enumeration value="coder"/>
   </xs:restriction>
  </xs:simpleType>
+
+  <xs:simpleType name="DependencyType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="service-url"/>
+      <xs:enumeration value="filename"/>
+    </xs:restriction>
+  </xs:simpleType>
 
  <xs:complexType name="Dependency">
   <xs:simpleContent>
    <xs:extension base="xs:string">
     <xs:attribute name="target" type="DependencyTarget" use="required"/>
+     <xs:attribute name="type" type="DependencyType" use="required"/>
    </xs:extension>
   </xs:simpleContent>
  </xs:complexType>
@@ -84,7 +93,6 @@
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
                     <xs:attribute name="editor" type="xs:string"/>
-                    <xs:attribute name="type" type="xs:string"/>
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>
@@ -95,7 +103,6 @@
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
                     <xs:attribute name="editor" type="xs:string"/>
-                    <xs:attribute name="type" type="xs:string"/>
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>
@@ -103,11 +110,21 @@
           </xs:choice>
         </xs:sequence>
 
+        <xs:element name="CodingSchemeRef" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="schemer" type="xs:string" use="required"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+
         <xs:element name="Dependencies" minOccurs="0">
           <xs:complexType>
-            <xs:choice maxOccurs="unbounded" minOccurs="0">
-              <xs:element type="Dependency" name="File" maxOccurs="unbounded" minOccurs="0"/>
-            </xs:choice>
+            <xs:sequence>
+              <xs:element name="Dependency" type="Dependency" maxOccurs="unbounded" minOccurs="0"/>
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
 
