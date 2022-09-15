@@ -7,7 +7,8 @@ import { MatSort } from '@angular/material/sort';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BackendService } from '../../services/backend/backend.service';
-import { AttachmentData } from '../../interfaces/users.interfaces';
+import { AttachmentData, AttachmentType } from '../../interfaces/users.interfaces';
+import { FileService } from '../../../shared/services/file.service';
 
 @Component({
   templateUrl: './attachment-overview.component.html',
@@ -26,6 +27,7 @@ export class AttachmentOverviewComponent implements OnInit {
 
   displayedColumns: string[] = ['status', 'personLabel', 'testLabel', 'unitLabel', 'attachmentType', 'lastModified'];
   attachments: MatTableDataSource<AttachmentData>;
+  attachmentTypes: AttachmentType[] = [];
 
   mobileView: boolean;
 
@@ -62,6 +64,17 @@ export class AttachmentOverviewComponent implements OnInit {
       .subscribe(attachmentData => {
         this.attachments.data = attachmentData;
         this.attachments.sort = this.sort;
+        this.attachmentTypes =
+          attachmentData
+            .reduce(
+              (agg, item) => {
+                if (!agg.includes(item.attachmentType)) {
+                  agg.push(item.attachmentType);
+                }
+                return agg;
+              },
+              <AttachmentType[]>[]
+            );
       });
   }
 
@@ -122,10 +135,11 @@ export class AttachmentOverviewComponent implements OnInit {
       });
   }
 
-  printPage(): void {
+  downloadPageTemplate(): void {
     this.bs.getAttachmentPage(
       this.attachments.data[this.selectedAttachmentIndex].attachmentId
-    );
+    )
+      .subscribe(pdf => { FileService.saveBlobToFile(pdf, 'Anhänge.pdf'); });
   }
 
   nextAttachmentId(): void {
@@ -143,5 +157,10 @@ export class AttachmentOverviewComponent implements OnInit {
   menuClick(): void {
     this.sidenav.toggle();
     this.selectAttachment(-1);
+  }
+
+  downloadAllPageTemplates(): void {
+    this.bs.getAttachmentPages()
+      .subscribe(pdf => { FileService.saveBlobToFile(pdf, 'Anhänge.pdf'); });
   }
 }

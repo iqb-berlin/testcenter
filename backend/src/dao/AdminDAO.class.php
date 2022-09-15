@@ -641,13 +641,13 @@ class AdminDAO extends DAO {
 
         if ($attachmentId) {
 
-            $attachmentTarget = AttachmentController::decodeAttachmentId($attachmentId);
+            list($testId, $unitName, $variableId) = Attachment::decodeId($attachmentId);
             $selectors[] = "tests.id = ?";
             $selectors[] = "unit_name = ?";
             $selectors[] = "variable_id = ?";
-            $replacements[] = $attachmentTarget['testId'];
-            $replacements[] = $attachmentTarget['unitName'];
-            $replacements[] = $attachmentTarget['variableId'];
+            $replacements[] = $testId;
+            $replacements[] = $unitName;
+            $replacements[] = $variableId;
         }
 
         $sql = "select
@@ -657,6 +657,7 @@ class AdminDAO extends DAO {
                 name_suffix as nameSuffix,
                 tests.label as testLabel,
                 tests.id as testId,
+                tests.name as bookletName,
                 unit_name as unitName,
                 unit_name as unitLabel, -- TODO get real unitLabel
                 variable_id as variableId,
@@ -683,18 +684,17 @@ class AdminDAO extends DAO {
 
             $attachmentData[] = new Attachment(
                 $attachment['attachmentId'],
-                AccessSet::getDisplayName(
-                    $attachment['groupLabel'],
-                    $attachment['loginName'],
-                    $attachment['nameSuffix']
-                ),
-                $attachment['testLabel'],
+                $attachment['attachmentType'],
                 $attachment['dataPartContent'] ? explode(':', $attachmentFileIds[0])[0] : 'missing',
                 $attachmentFileIds,
-                $attachment['unitLabel'], // !
                 $attachment['lastModified'],
-                $attachment['attachmentType'],
-                $attachment['groupName']
+                $attachment['groupName'],
+                $attachment['groupLabel'],
+                $attachment['loginName'],
+                $attachment['nameSuffix'],
+                $attachment['testLabel'],
+                $attachment['bookletName'],
+                $attachment['unitLabel']
             );
         }
         return $attachmentData;

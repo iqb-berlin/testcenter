@@ -1,7 +1,7 @@
 <mat-sidenav-container class="{{mobileView ? 'mobile' : 'desktop'}}">
   <mat-sidenav #sidenav opened="true" [mode]="mobileView ? 'over' : 'side'" fixedInViewport="true" fixedTopGap="55" class="toolbar">
     <h2>Verwaltung der Aufgabenanhänge</h2>
-    <ng-container *ngIf="attachments.data[selectedAttachmentIndex] as selectedAttachment; then attachmentSelected; else nothingSelected"></ng-container>
+    <ng-container *ngIf="attachments.data[selectedAttachmentIndex] as selectedAttachment; then attachmentSelected; else commonControls"></ng-container>
     <ng-template #attachmentSelected let-selectedAttachment>
       <div class="toolbar-section" *ngIf="selectedAttachment.dataType === 'missing'">
         <alert level="warning" text="Dieser Anhang muss noch hinzugefügt werden."></alert>
@@ -52,20 +52,20 @@
 
       <div class="toolbar-section">
         <button
-            mat-raised-button
-            color="primary"
-            *ngIf="selectedAttachment.attachmentType === 'capture-image'"
-            (click)="$event.stopPropagation(); printPage()"
-            matTooltip="Seitenvorlage neu ausdrucken"
+          mat-raised-button
+          color="primary"
+          *ngIf="selectedAttachment.attachmentType === 'capture-image'"
+          (click)="$event.stopPropagation(); downloadPageTemplate()"
+          matTooltip="Seitenvorlage neu ausdrucken"
         >
           <mat-icon>description</mat-icon>
         </button>
         <button
-            mat-raised-button
-            color="primary"
-            *ngIf="selectedAttachment.dataType !== 'missing'"
-            (click)="deleteAttachment()"
-            matTooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
+          mat-raised-button
+          color="primary"
+          *ngIf="selectedAttachment.dataType !== 'missing'"
+          (click)="deleteAttachment()"
+          matTooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
         >
           <mat-icon>delete</mat-icon>
         </button>
@@ -73,14 +73,19 @@
 
       <ng-template #hasNoFiles>
         <div class="toolbar-section-bottom">
-          <div class="toolbar-section">
-            <app-add-attachment></app-add-attachment>
-          </div>
+          <ng-container *ngTemplateOutlet="commonControls"></ng-container>
         </div>
       </ng-template>
     </ng-template>
 
-    <ng-template #nothingSelected>
+
+    <ng-template #commonControls>
+      <div class="toolbar-section" *ngIf="attachmentTypes.includes('capture-image')">
+        <button mat-raised-button color="primary" (click)="downloadAllPageTemplates()">
+          <mat-icon>library_books</mat-icon>
+          Alle Seitenvorlagen herunterladen
+        </button>
+      </div>
       <div class="toolbar-section">
         <app-add-attachment></app-add-attachment>
       </div>

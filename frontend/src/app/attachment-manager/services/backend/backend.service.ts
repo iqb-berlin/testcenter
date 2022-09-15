@@ -59,18 +59,31 @@ export class BackendService {
       );
   }
 
-  getAttachmentPage(attachmentId: string): void {
-    this.http.get(
+  // TODO error handling
+  getAttachmentPage(attachmentId: string): Observable<Blob> {
+    return this.http.get(
       `${this.serverUrl}attachment/${attachmentId}/page`,
       {
         observe: 'response',
         responseType: 'blob'
       }
     )
-      .subscribe((response: HttpResponse<Blob>) => {
-        const blob = new Blob([response.body], { type: response.headers['Content-Type'] });
-        const url = window.URL.createObjectURL(blob);
-        window.open(url);
-      });
+      .pipe(
+        map((response: HttpResponse<Blob>) => new Blob([response.body], { type: response.headers['Content-Type'] }))
+      );
+  }
+
+  // TODO error handling
+  getAttachmentPages(): Observable<Blob> {
+    return this.http.get(
+      `${this.serverUrl}attachments/pages`,
+      {
+        observe: 'response',
+        responseType: 'blob'
+      }
+    )
+      .pipe(
+        map((response: HttpResponse<Blob>) => new Blob([response.body], { type: response.headers['Content-Type'] }))
+      );
   }
 }

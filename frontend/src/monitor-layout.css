@@ -88,10 +88,6 @@ mat-sidenav-container.desktop #toggle-sidebar-button {
     margin-bottom: 1em
 }
 
-.toolbar button {
-    text-transform: uppercase;
-}
-
 .toolbar .control ~ .control {
     margin-left: 15px;
 }

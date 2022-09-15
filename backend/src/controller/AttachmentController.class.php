@@ -4,8 +4,6 @@ declare(strict_types=1);
 // TODO unit tests !
 // TODO api-specs
 
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
@@ -49,15 +47,14 @@ class AttachmentController extends Controller {
         }
         array_splice($attachmentFileIds, array_search($attachmentFileId, $attachmentFileIds), 1);
 
-        $target = AttachmentController::decodeAttachmentId($attachment->attachmentId);
         $dataParts = [];
-        $dataParts[$attachment->attachmentId] = AttachmentController::stringifyDataChunk($target['variableId'], $attachmentFileIds);
+        $dataParts[$attachment->attachmentId] = AttachmentController::stringifyDataChunk($attachment->variableId, $attachmentFileIds);
 
         if (count($attachmentFileIds)) {
 
             self::testDAO()->updateDataParts(
-                $target['testId'],
-                $target['unitName'],
+                $attachment->_testId,
+                $attachment->_unitName,
                 $dataParts,
                 'iqb-standard@1.0',
                 TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
@@ -87,31 +84,29 @@ class AttachmentController extends Controller {
     public static function getAttachmentPage(Request $request, Response $response): Response {
 
         $attachment = AttachmentController::getRequestedAttachmentById($request);
+        $pdfString = AttachmentTemplate::render($attachment->_label, $attachment);
 
-        $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-        $pdf->SetCreator('IQB-Testcenter');
-        $pdf->SetTitle("$attachment->personLabel: $attachment->testLabel");
-        $pdf->setPrintHeader(false);
-        $pdf->setPrintFooter(false);
-        $pdf->AddPage();
-
-        $style = array(
-            'border' => 0,
-            'vpadding' => 0,
-            'hpadding' => 0,
-            'fgcolor' => array(0,0,0),
-            'bgcolor' => false, //array(255,255,255)
-            'module_width' => 1, // width of a single module in points
-            'module_height' => 1 // height of a single module in points
-        );
-
-        $pdf->write2DBarcode($attachment->attachmentId, 'QRCODE,L', 20, 20, 40, 40, $style, 'N');
-
-        $doc = $pdf->Output('/* ignored */', 'S');
-
-        $response->write($doc);
+        $response->write($pdfString);
         return $response
-            ->withHeader('Content-Type', "application/pdf");
+            ->withHeader('Content-Type', "application/pdf")
+            ->withHeader('Content-Disposition', "attachment; filename=pages.zip")
+            ->withHeader('Content-length', strlen($pdfString));
+    }
+
+
+    public static function getAttaachmentsPages(Request $request, Response $response): Response {
+
+        $authToken = self::authToken($request);
+        $groupNames = [$authToken->getGroup()];
+
+        $attachments = self::adminDAO()->getAttachments($authToken->getWorkspaceId(), $groupNames);
+        $pdfString = AttachmentTemplate::render(implode(', ', $groupNames), ...$attachments);
+
+        $response->write($pdfString);
+        return $response
+            ->withHeader('Content-Type', "application/pdf")
+            ->withHeader('Content-Disposition', "attachment; filename=pages.pdf")
+            ->withHeader('Content-length', strlen($pdfString));
     }
 
 
@@ -124,7 +119,7 @@ class AttachmentController extends Controller {
 
             throw new HttpBadRequestException($request, "AttachmentId Missing!");
         }
-        $target = AttachmentController::decodeAttachmentId($attachmentId);
+
         $mimeType = $request->getParam('mimeType');
         $type = explode('/', $mimeType)[0];
         $authToken = self::authToken($request);
@@ -146,12 +141,12 @@ class AttachmentController extends Controller {
             copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
             unlink("$workspacePath/$originalFileName");
             $attachmentFileIds = [...$attachment->attachmentFileIds, $attachmentFileId];
-            $dataParts[$attachmentId] = AttachmentController::stringifyDataChunk($target['variableId'], $attachmentFileIds);
+            $dataParts[$attachmentId] = AttachmentController::stringifyDataChunk($attachment->variableId, $attachmentFileIds);
         }
 
         self::testDAO()->updateDataParts(
-            $target['testId'],
-            $target['unitName'],
+            $attachment->_testId,
+            $attachment->_unitName,
             $dataParts,
             'iqb-standard@1.0',
             TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
@@ -168,7 +163,7 @@ class AttachmentController extends Controller {
         $attachmentId = (string) $request->getAttribute('attachmentId');
         $attachment = AttachmentController::adminDAO()->getAttachmentById($attachmentId);
 
-        if (!AttachmentController::isGroupAllowed($authToken, $attachment->groupName)) {
+        if (!AttachmentController::isGroupAllowed($authToken, $attachment->_groupName)) {
             throw new HttpForbiddenException($request, "Access to attachment `$attachmentId` not given");
         }
 
@@ -189,7 +184,6 @@ class AttachmentController extends Controller {
     }
 
 
-    #[Pure]
     private static function isGroupAllowed(AuthToken $authToken, string $groupName): bool {
 
         if ($authToken->getMode() == 'monitor-group') {
@@ -198,25 +192,6 @@ class AttachmentController extends Controller {
         }
 
         return false;
-    }
-
-
-    // TODO move to better place
-    #[ArrayShape(['unitName' => "string", 'testId' => "int", 'variableId' => "string"])]
-    static function decodeAttachmentId(string $attachmentId): array {
-
-        $idPieces = explode(':', $attachmentId);
-
-        if (count($idPieces) != 3) {
-
-            throw new HttpError("Invalid attachment attachmentId: `$attachmentId`", 400);
-        }
-
-        return [
-            'testId' => (int) $idPieces[0],
-            'unitName' => $idPieces[1],
-            'variableId' => $idPieces[2]
-        ];
     }
 
 
