@@ -25,7 +25,10 @@ export class AttachmentOverviewComponent implements OnInit {
   selectedAttachmentImage: ArrayBuffer | string = '';
   selectedAttachmentFileIndex = -1;
 
-  displayedColumns: string[] = ['status', 'personLabel', 'testLabel', 'unitLabel', 'attachmentType', 'lastModified'];
+  displayedColumns: string[] = [
+    'status', 'personLabel', 'testLabel', 'unitLabel', 'variableId', 'attachmentType', 'lastModified'
+  ];
+
   attachments: MatTableDataSource<AttachmentData>;
   attachmentTypes: AttachmentType[] = [];
 

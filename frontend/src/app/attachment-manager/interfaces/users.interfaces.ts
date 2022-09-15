@@ -16,4 +16,5 @@ export interface AttachmentData {
   lastModified: number;
   attachmentFileIds: string[];
   attachmentType: AttachmentType;
+  variableId: string;
 }
