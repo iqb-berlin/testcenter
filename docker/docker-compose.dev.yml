@@ -20,8 +20,8 @@ services:
 
   testcenter-backend:
     build:
-      context: .
-      dockerfile: backend/docker/Dockerfile
+      context: ..
+      dockerfile: docker/backend.Dockerfile
       target: dev
     environment:
       TESTMODE_REAL_DATA: false
@@ -46,8 +46,8 @@ services:
 
   testcenter-frontend:
     build:
-      context: .
-      dockerfile: frontend/docker/Dockerfile
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
       target: dev
     volumes:
       - ./common:/common
@@ -59,8 +59,8 @@ services:
 
   testcenter-broadcasting-service:
     build:
-      context: .
-      dockerfile: broadcasting-service/docker/Dockerfile
+      context: ..
+      dockerfile: docker/braodcasting-service.Dockerfile
       target: dev
     volumes:
       - ./common:/common
@@ -69,14 +69,14 @@ services:
       - testcenter
 
   testcenter-task-runner:
+    container_name: testcenter-runner
     profiles:
       - task-runner
     build:
-      context: .
-      dockerfile: runner.Dockerfile
+      context: ..
+      dockerfile: docker/runner.Dockerfile
       args:
         HOST_UID: ${UID}
-    container_name: testcenter-runner
     environment:
       TC_API_URL: http://testcenter-backend
     volumes:

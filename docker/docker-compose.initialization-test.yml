@@ -32,13 +32,13 @@ services:
       testcenter-initialization-test:
 
   testcenter-initialization-test-backend:
+    container_name: testcenter-initialization-test-backend
+    image: iqbberlin/testcenter-backend:current
     build:
       context: .
-      dockerfile: backend/docker/Dockerfile
+      dockerfile: backend.Dockerfile
       target: dev
-    image: iqbberlin/testcenter-backend:current
     entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)"]
-    container_name: testcenter-initialization-test-backend
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
@@ -62,6 +62,7 @@ services:
       testcenter-initialization-test:
 
   testcenter-initialization-test-runner:
+    container_name: testcenter-initialization-test-runner
     image: iqbberlin/testcenter-task-runner
     profiles:
       - dredd_test_against_mysql
@@ -69,7 +70,6 @@ services:
       context: .
       dockerfile: runner.Dockerfile
     command: "npm run backend:dredd-test"
-    container_name: testcenter-initialization-test-runner
     environment:
       TC_API_URL: http://testcenter-initialization-test-backend
     volumes:

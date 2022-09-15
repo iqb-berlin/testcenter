@@ -47,11 +47,9 @@
 # tmp
 /tmp
 
-# other
-/dist-src/update.sh
-
 # env
 /.env
+/docker/.env
 
 # cypress
 /e2e/cypress/videos
