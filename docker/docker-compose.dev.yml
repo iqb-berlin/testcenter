@@ -26,19 +26,19 @@ services:
     environment:
       TESTMODE_REAL_DATA: false
     volumes:
-      - ./backend/.htaccess:/var/www/backend/.htaccess
-      - ./backend/autoload.php:/var/www/backend/autoload.php
-      - ./backend/index.php:/var/www/backend/index.php
-      - ./backend/initialize.php:/var/www/backend/initialize.php
-      - ./backend/routes.php:/var/www/backend/routes.php
-      - ./backend/src:/var/www/backend/src
-      - ./backend/test:/var/www/backend/test
-      - ./data:/var/www/data
-      - ./database:/var/www/database
-      - ./definitions:/var/www/definitions
-      - ./docs/dist:/docs/dist
-      - ./package.json:/var/www/package.json
-      - ./sampledata:/var/www/sampledata
+      - ../backend/.htaccess:/var/www/backend/.htaccess
+      - ../backend/autoload.php:/var/www/backend/autoload.php
+      - ../backend/index.php:/var/www/backend/index.php
+      - ../backend/initialize.php:/var/www/backend/initialize.php
+      - ../backend/routes.php:/var/www/backend/routes.php
+      - ../backend/src:/var/www/backend/src
+      - ../backend/test:/var/www/backend/test
+      - ../data:/var/www/data
+      - ../scripts/database:/var/www/database
+      - ../definitions:/var/www/definitions
+      - ../docs/dist:/docs/dist
+      - ../package.json:/var/www/package.json
+      - ../sampledata:/var/www/sampledata
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
@@ -50,9 +50,9 @@ services:
       dockerfile: docker/frontend.Dockerfile
       target: dev
     volumes:
-      - ./common:/common
-      - ./definitions:/definitions
-      - ./frontend/src:/app/src
+      - ../common:/common
+      - ../definitions:/definitions
+      - ../frontend/src:/app/src
 #      - ./docs/dist:/docs/dist TODO don't we need this for karma test coverage?
     networks:
       - testcenter
@@ -63,8 +63,8 @@ services:
       dockerfile: docker/braodcasting-service.Dockerfile
       target: dev
     volumes:
-      - ./common:/common
-      - ./broadcasting-service/src:/app/src
+      - ../common:/common
+      - ../broadcasting-service/src:/app/src
     networks:
       - testcenter
 
@@ -80,20 +80,20 @@ services:
     environment:
       TC_API_URL: http://testcenter-backend
     volumes:
-      - ./CHANGELOG.md:/app/CHANGELOG.md
-      - ./README.md:/app/README.md
-      - ./package.json:/app/package.json
-      - ./package-lock.json:/app/package-lock.json
-      - ./node_modules:/app/node_modules
-      - ./docker-compose.yml:/app/docker-compose.yml
-      - ./broadcasting-service:/app/broadcasting-service
-      - ./definitions:/app/definitions
-      - ./dist-src:/app/dist-src
-      - ./dist:/app/dist
-      - ./docs:/app/docs
-      - ./frontend:/app/frontend
-      - ./sampledata:/app/sampledata
-      - ./scripts:/app/scripts
-      - ./test:/app/test
+      - ../CHANGELOG.md:/app/CHANGELOG.md
+      - ../README.md:/app/README.md
+      - ../package.json:/app/package.json
+      - ../package-lock.json:/app/package-lock.json
+      - ../node_modules:/app/node_modules
+      - ../docker-compose.yml:/app/docker-compose.yml
+      - ../broadcasting-service:/app/broadcasting-service
+      - ../definitions:/app/definitions
+      - ../dist-src:/app/dist-src
+      - ../dist:/app/dist
+      - ../docs:/app/docs
+      - ../frontend:/app/frontend
+      - ../sampledata:/app/sampledata
+      - ../scripts:/app/scripts
+      - ../test:/app/test
     networks:
       - testcenter

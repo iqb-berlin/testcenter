@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
 
-COPY ../../backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
+COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
 COPY backend/composer.json .
 COPY backend/composer.lock .
