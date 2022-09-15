@@ -41,7 +41,7 @@ class BroadcastService {
         $bsToken = md5((string) rand(0, 99999999));
         $data['token'] = $bsToken;
         $response = BroadcastService::send("$channelName/register", json_encode($data));
-        $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getBsUriSubscribe()) . '/' . $bsToken;
+        $url = str_replace(['http://', 'https://'], ['ws://', 'wss://'], BroadcastService::getBsUriSubscribe()) . "/ws?token=$bsToken";
         return ($response !== null) ? $url : null;
     }
 
