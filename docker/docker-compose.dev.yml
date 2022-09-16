@@ -75,8 +75,6 @@ services:
     build:
       context: ..
       dockerfile: docker/runner.Dockerfile
-      args:
-        HOST_UID: ${UID}
     environment:
       TC_API_URL: http://testcenter-backend
     volumes:
@@ -85,7 +83,7 @@ services:
       - ../package.json:/app/package.json
       - ../package-lock.json:/app/package-lock.json
       - ../node_modules:/app/node_modules
-      - ../docker-compose.yml:/app/docker-compose.yml
+      - ../docker/docker-compose.yml:/app/docker-compose.yml
       - ../broadcasting-service:/app/broadcasting-service
       - ../definitions:/app/definitions
       - ../dist-src:/app/dist-src

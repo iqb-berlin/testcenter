@@ -1,7 +1,7 @@
 # Performs a single task on the whole project using the task-runner
 # Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 run-task-runner:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
+	docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 		--rm --no-deps \
 		testcenter-task-runner npm run $(task)
 

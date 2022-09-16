@@ -77,7 +77,8 @@ services:
       - ../test:/app/test
       - ../scripts:/app/scripts
       - ../docs:/app/docs
-      - ../package.json:/app-temp/package.json
+      - ../package.json:/app/package.json
+      - ../package-lock.json:/app/package-lock.json
     depends_on:
       - testcenter-initialization-test-db
       - testcenter-initialization-test-backend
