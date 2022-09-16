@@ -40,6 +40,7 @@ update_files() {
 
   if test -f "patch.sh"; then
     echo "Patch file found."
+    chmod +x patch.sh
     patch.sh
   fi
 
@@ -76,3 +77,11 @@ elif [ $main_choice = 2 ]; then
   set_tls
 fi
 
+read -p "Update applied. Do you want to restart the application? [Y/n]:" -r -n 1 -e RESTART
+if [[ ! $RESTART =~ [nN] ]]
+  then
+    make restart
+  else
+    echo 'Done'
+    exit 0
+fi

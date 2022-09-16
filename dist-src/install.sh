@@ -4,7 +4,7 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-REQUIRED_PACKAGES=(docker docker-compose)
+REQUIRED_PACKAGES=("docker" "docker-compose" "jq --help")
 OPTIONAL_PACKAGES=(make)
 
 declare -A ENV_VARS
@@ -73,7 +73,7 @@ download_files() {
   echo "Downloading files..."
   wget -nv -O .env https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/.env
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
-  wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker-compose.yml
+  wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O manage.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/manage.sh
