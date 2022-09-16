@@ -13,7 +13,7 @@ test-backend-unit:
 # Performs Api-Tests against in-memory DB (sqlite, for performance)
 test-backend-api:
 	docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d testcenter-db testcenter-backend
-	make run-task-runner task=backend:dredd-test
+	make run-task-runner task=backend:api-test
 
 
 # Performs Api-Tests against MySql (takes a long time, run manually when needed)

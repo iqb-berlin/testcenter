@@ -69,7 +69,7 @@ services:
     build:
       context: ..
       dockerfile: docker/runner.Dockerfile
-    command: "npm run backend:dredd-test"
+    command: "npm run backend:api-test"
     environment:
       TC_API_URL: http://testcenter-initialization-test-backend
     volumes:
