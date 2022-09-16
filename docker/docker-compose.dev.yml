@@ -60,7 +60,7 @@ services:
   testcenter-broadcasting-service:
     build:
       context: ..
-      dockerfile: docker/braodcasting-service.Dockerfile
+      dockerfile: docker/broadcasting-service.Dockerfile
       target: dev
     volumes:
       - ../common:/common

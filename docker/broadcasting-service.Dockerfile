@@ -30,7 +30,7 @@ RUN npx nest build
 #=============
 FROM node:${NODE_VERSION} as prod
 
-COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app
 
 EXPOSE 3000
