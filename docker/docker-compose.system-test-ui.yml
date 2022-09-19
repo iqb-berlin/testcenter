@@ -21,17 +21,17 @@ services:
       - testcenter-system-test
 
   testcenter-system-test-db:
-    image: mysql:5.7
     container_name: testcenter-system-test-db
+    image: mysql:5.7
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     user: root
-    volumes:
-      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     command:
       - --log_error_verbosity=1
+    volumes:
+      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     ports:
       - "9091:3306"
       - "22:22"
@@ -40,6 +40,7 @@ services:
 
   testcenter-system-test-backend:
     container_name: testcenter-system-test-backend
+    image: iqbberlin/testcenter-backend:current
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
@@ -48,7 +49,6 @@ services:
       SUPERUSER_NAME: super
       SUPERUSER_PASSWORD: user123
       WORKSPACE_NAME: example_workspace
-    image: iqbberlin/testcenter-backend:current
     volumes:
       - ./backend/.htaccess:/var/www/backend/.htaccess
       - ./backend/autoload.php:/var/www/backend/autoload.php
@@ -74,11 +74,11 @@ services:
 
   testcenter-system-test-frontend:
     container_name: testcenter-system-test-frontend
+    image: iqbberlin/testcenter-frontend:current
     build:
       context: .
       dockerfile: frontend/docker/Dockerfile
       target: dev
-    image: iqbberlin/testcenter-frontend:current
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
@@ -92,13 +92,11 @@ services:
 
   testcenter-system-test-broadcasting-service:
     container_name: testcenter-system-test-broadcasting-service
+    image: iqbberlin/testcenter-broadcasting-service:current
     build:
       context: .
       dockerfile: frontend/docker/Dockerfile
       target: dev
-      args:
-        HOST_UID: ${UID}
-    image: iqbberlin/testcenter-broadcasting-service:current
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"

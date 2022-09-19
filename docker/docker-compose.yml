@@ -39,12 +39,13 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     volumes:
       - dbdata:/var/lib/mysql
-      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     networks:
       testcenter:
 
   testcenter-backend:
     container_name: testcenter-backend
+    image: iqbberlin/testcenter-backend:current
     environment:
       <<: *env-mysql
       <<: *env-initdata
@@ -57,31 +58,31 @@ services:
     logging:
       options:
         <<: *env-logging-conf
-    volumes:
-      - testcenter_backend_data:/var/www/html/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
-    image: iqbberlin/testcenter-backend:current
+    volumes:
+      - testcenter_backend_data:/var/www/html/data
     networks:
       testcenter:
 
   testcenter-frontend:
     container_name: testcenter-frontend
+    image: iqbberlin/testcenter-frontend:current
     logging:
       options:
         <<: *env-logging-conf
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-    image: iqbberlin/testcenter-frontend:current
     networks:
       testcenter:
 
   testcenter-broadcasting-service:
     container_name: testcenter-broadcasting-service
+    image: iqbberlin/testcenter-broadcasting-service:current
     logging:
       options:
         <<: *env-logging-conf
@@ -90,7 +91,6 @@ services:
       - "traefik.http.routers.testcenter-broadcasting-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/bs/public`)"
       - "traefik.http.middlewares.testcenter-broadcasting-service-stripprefix.stripprefix.prefixes=/bs/public"
       - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix"
-    image: iqbberlin/testcenter-broadcasting-service:current
     networks:
       testcenter:
 

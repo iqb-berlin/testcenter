@@ -23,9 +23,6 @@
 /backend/composer.phar
 /backend/auth.json
 
-# backend config
-/backend/config
-
 # frontend config
 /frontend/src/environments/environment.ts
 /frontend/src/environments/environment.ts.bu
@@ -47,11 +44,9 @@
 # tmp
 /tmp
 
-# other
-/dist-src/update.sh
-
 # env
 /.env
+/docker/.env
 
 # cypress
 /e2e/cypress/videos
