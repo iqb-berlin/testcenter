@@ -35,6 +35,7 @@ build-backend:
   rules:
     - !reference [.backend-change, rules]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
     - changes:
       - e2e/**/*
   script:
@@ -54,6 +55,7 @@ build-frontend:
   rules:
     - !reference [.frontend-change, rules]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
     - changes:
       - e2e/**/*
   script:
@@ -73,6 +75,7 @@ build-broadcasting-service:
   rules:
     - !reference [.bs-change, rules]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
     - changes:
         - e2e/**/*
   script:
@@ -92,6 +95,7 @@ test-backend-unit:
   rules:
     - !reference [.backend-change, rules]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
   needs:
     - job: build-backend
       artifacts: true
@@ -106,6 +110,7 @@ test-frontend-unit:
   rules:
     - !reference [.frontend-change, rules]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
   needs:
     - job: build-frontend
       artifacts: true
@@ -120,6 +125,7 @@ test-broadcasting-service-unit:
   stage: test
   rules:
     - !reference [.bs-change, rules]
+    - if: "$CI_COMMIT_TAG"
   needs:
     - job: build-broadcasting-service
       artifacts: true
@@ -133,6 +139,7 @@ test-e2e:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
     - changes:
       - e2e/**/*
   needs:
@@ -160,18 +167,34 @@ test-backend-api:
   rules:
     - !reference [.backend-change, rules]
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
   needs:
     - job: build-backend
       artifacts: true
   script:
     - apk add make
     - make init
+    - docker load -i backend_image.tar
     - make test-backend-api
+
+test-backend-api-mysql:
+  stage: test
+  rules:
+    - if: "$CI_COMMIT_TAG"
+  needs:
+    - job: build-backend
+      artifacts: true
+  script:
+    - apk add make
+    - make init
+    - docker load -i backend_image.tar
+    - make test-backend-api-mysql
 
 test-backend-initialization:
   stage: test
   rules:
     - if: $CI_PIPELINE_SOURCE == "external_pull_request_event" || $CI_PIPELINE_SOURCE == "web"
+    - if: "$CI_COMMIT_TAG"
   needs:
     - job: build-backend
       artifacts: true
