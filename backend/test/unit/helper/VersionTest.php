@@ -194,11 +194,11 @@ class VersionTest extends TestCase {
 
         $result = Version::guessFromFileName("But-Not-1-times-this.HTML");
         $this->assertEquals([
-            'full' => "",
-            'major' => 0,
+            'full' => "1-times-this",
+            'major' => 1,
             'minor' => 0,
             'patch' => 0,
-            'label' => ""
+            'label' => "times-this"
         ], $result);
     }
 }

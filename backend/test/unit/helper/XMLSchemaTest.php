@@ -37,11 +37,12 @@ class XMLSchemaTest extends TestCase {
 
     private $testUrls = [
         'valid' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1/definitions/vo_SysCheck.xsd',
+        'valid_with_label' => 'https://raw.githubusercontent.com/iqb-berlin/testcenterd/130.0.0-alpha/definitions/vo_SysCheck.xsd',
         'valid_but_not_existing' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/500.0.100/definitions/vo_SysCheck.xsd',
         'valid_but_minor_not_existing' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.0.1000/definitions/vo_SysCheck.xsd',
         'valid_incomplete_version' => 'https://raw.githubusercontent.com/iqb-berlin/testcenter-backend/5.1/definitions/vo_SysCheck.xsd',
         'changed_repo_name' => 'https://raw.githubusercontent.com/iqb-berlin/future-repo/11.12.13/definitions/SysCheck.xsd',
-        'local' => 'definitions/vo_SysCheck.xsd',
+        'local' => '../definitions/vo_SysCheck.xsd',
         'invalid' => 'http://www.topografix.com/GPX/1/0',
         'empty' => ''
     ];
@@ -56,6 +57,7 @@ class XMLSchemaTest extends TestCase {
             "patch"         => 1,
             "type"          => 'SysCheck',
             "uri"           => $this->testUrls['valid'],
+            "label"         => ''
         ], XMLSchema::parseSchemaUrl($this->testUrls['valid']));
 
         $this->assertEquals([
@@ -66,6 +68,7 @@ class XMLSchemaTest extends TestCase {
             "patch"         => 13,
             "type"          => 'SysCheck',
             "uri"           => $this->testUrls['changed_repo_name'],
+            "label"         => ''
         ], XMLSchema::parseSchemaUrl($this->testUrls['changed_repo_name']));
 
         $this->assertEquals([
@@ -76,6 +79,7 @@ class XMLSchemaTest extends TestCase {
             "patch"         => 0,
             "type"          => 'SysCheck',
             "uri"           => $this->testUrls['local'],
+            "label"         => ''
         ], XMLSchema::parseSchemaUrl($this->testUrls['local']));
 
         $this->assertEquals([
@@ -86,6 +90,7 @@ class XMLSchemaTest extends TestCase {
             "patch"         => 0,
             "type"          => 'SysCheck',
             "uri"           => $this->testUrls['local_full'],
+            "label"         => ''
         ], XMLSchema::parseSchemaUrl($this->testUrls['local_full']));
 
 
@@ -97,7 +102,19 @@ class XMLSchemaTest extends TestCase {
             "patch"         => 0,
             "type"          => 'SysCheck',
             "uri"           => $this->testUrls['valid_incomplete_version'],
+            "label"         => ''
         ], XMLSchema::parseSchemaUrl($this->testUrls['valid_incomplete_version']));
+
+        $this->assertEquals([
+            "isExternal"    => true,
+            "version"       => '130.0.0-alpha',
+            "mayor"         => 130,
+            "minor"         => 0,
+            "patch"         => 0,
+            "label"         => 'alpha',
+            "type"          => 'SysCheck',
+            "uri"           => $this->testUrls['valid_with_label']
+        ], XMLSchema::parseSchemaUrl($this->testUrls['valid_with_label']));
 
         $this->assertNull(XMLSchema::parseSchemaUrl($this->testUrls['invalid']));
         $this->assertNull(XMLSchema::parseSchemaUrl($this->testUrls['empty']));

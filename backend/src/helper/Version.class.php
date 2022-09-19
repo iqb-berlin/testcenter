@@ -46,7 +46,7 @@ class Version {
 
     static function guessFromFileName(string $fileName): array {
         // this regex includes some naming habits from verona 2 to 4 times
-        $regex = "/^(\D+?)[@V-]?((\d+)(\.\d+)?(\.\d+)?(-\w+)?).\D{3,4}$/";
+        $regex = "/^(\D+?)[@V-]?((\d+)(\.\d+)?(\.\d+)?(-\S+?)?).\D{3,4}$/";
         $matches = [];
         preg_match($regex, $fileName, $matches);
         return [
@@ -54,7 +54,7 @@ class Version {
             'major' => (int) ($matches[3] ?? '0'),
             'minor' => isset($matches[4]) ? ((int) substr($matches[4], 1)) : 0,
             'patch' => isset($matches[5]) ? ((int) substr($matches[5], 1)) : 0,
-            'label' => isset($matches[6]) ? substr($matches[6], 1) : ''
+            'label' => isset($matches[6]) ? substr($matches[6], 1) : '',
         ];
     }
 
