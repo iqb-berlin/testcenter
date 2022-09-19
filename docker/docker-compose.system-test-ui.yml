@@ -31,7 +31,7 @@ services:
     command:
       - --log_error_verbosity=1
     volumes:
-      - ../script/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     ports:
       - "9091:3306"
       - "22:22"
