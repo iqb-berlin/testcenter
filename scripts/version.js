@@ -6,13 +6,9 @@
  */
 
 const fs = require('fs');
-const fsExtra = require('fs-extra');
 const gulp = require('gulp');
-const merge = require('merge-stream');
 const replace = require('gulp-replace');
 const tap = require('gulp-tap');
-const download = require('gulp-download2');
-const archiver = require('@bytestream/gulp-archiver');
 const cliPrint = require('./helper/cli-print');
 
 const rootPath = fs.realpathSync(`${__dirname}'/..`);
@@ -86,35 +82,16 @@ const updateVersionInFiles = gulp.parallel(
     '$1/$VERSION'
   ),
   replaceInFiles(
-    `${rootPath}/dist-src/docker-compose.prod.yml`,
-    /(iqbberlin\/testcenter-(backend|frontend|broadcasting-service)):(.*)/g,
-    '$1:$VERSION'
-  ),
-  replaceInFiles(
     `${rootPath}/CHANGELOG.md`,
     /## \[next]/g,
     '## $VERSION'
+  ),
+  replaceInFiles(
+    `${rootPath}/dist-src/.env`,
+    /VERSION=\d+.\d+.\d+(-\S+)?/g,
+    'VERSION=$VERSION'
   )
 );
-
-const getUpdateSh = () =>
-  download('https://raw.githubusercontent.com/iqb-berlin/iqb-scripts/master/update.sh')
-    .pipe(gulp.dest(`${rootPath}/dist-src`));
-
-const clearDistDir = () =>
-  new Promise(resolve => fsExtra.emptyDir(`${rootPath}/dist`, resolve));
-
-const createReleasePackage = async () =>
-  merge([
-    gulp.src(`${rootPath}/dist-src/docker-compose*`),
-    gulp.src(`${rootPath}/dist-src/manage.sh`),
-    gulp.src(`${rootPath}/dist-src/config/cert_config.yml`, { base: `${rootPath}/dist-src` }),
-    gulp.src(`${rootPath}/dist-src/.env`),
-    gulp.src(`${rootPath}/docker-compose.yml`),
-    gulp.src(`${rootPath}/CHANGELOG.md`)
-  ])
-    .pipe(archiver(`testcenter-${version.full}.tar`))
-    .pipe(gulp.dest(`${rootPath}/dist`));
 
 /**
  * Creates a new version number
@@ -131,8 +108,5 @@ exports.newVersion = gulp.series(
   updateVersion,
   checkPrerequisites,
   savePackageJson, // TODO how about package-lock?
-  updateVersionInFiles,
-  getUpdateSh,
-  clearDistDir,
-  createReleasePackage
+  updateVersionInFiles
 );
