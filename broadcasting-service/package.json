@@ -1,6 +1,12 @@
 {
   "name": "iqb-testcenter-broadcasting-service",
   "private": true,
+  "scripts": {
+    "build": "npx nest build",
+    "start": "npx nest start --watch",
+    "unit-test": "npx jest",
+    "coverage": "npx jest --coverage"
+  },
   "dependencies": {
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.7",

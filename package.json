@@ -26,10 +26,7 @@
     "frontend:unit-test:code-coverage": "npx -w frontend ng test --watch=false --code-coverage",
     "frontend:build": "npx -w frontend ng build --output-hashing all",
     "frontend:start": "npx -w frontend ng serve",
-    "broadcasting-service:build": "npx -w broadcasting-service nest build",
-    "broadcasting-service:start": "npx -w broadcasting-service nest start --watch",
-    "broadcasting-service:unit-test": "npx -w broadcasting-service jest",
-    "broadcasting-service:coverage": "npx -w broadcasting-service jest --coverage",
+
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
     "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
     "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"

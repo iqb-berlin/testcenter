@@ -28,13 +28,13 @@ describe('websocketGateway handle connection and disconnection (single client)',
     send: jest.fn()
   } as unknown as WebSocket;
   const incomingMessage = {
-    url: 'www.test.de/clientToken'
+    url: 'www.test.de/ws?token=clientToken'
   } as IncomingMessage;
   const incomingMessage2 = {
-    url: 'www.test.de/clientToken2'
+    url: 'www.test.de/ws?token=clientToken2'
   } as IncomingMessage;
   const incomingMessage3 = {
-    url: 'www.test.de/clientToken3'
+    url: 'www.test.de/ws?token=clientToken3'
   } as IncomingMessage;
   const expectedTokens = ['clientToken', 'clientToken2', 'clientToken3'];
 
