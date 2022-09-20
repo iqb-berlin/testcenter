@@ -219,3 +219,14 @@ deploy-tagged-docker-image:
     - docker push iqbberlin/testcenter-backend:$CI_COMMIT_TAG
     - docker push iqbberlin/testcenter-frontend:$CI_COMMIT_TAG
     - docker push iqbberlin/testcenter-broadcasting-service:$CI_COMMIT_TAG
+
+pages:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp -r docs/ public
+  artifacts:
+    paths:
+      - public
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
