@@ -138,6 +138,9 @@
             },
             "e2e": {
               "browserTarget": "testcenter-frontend:build:e2e"
+            },
+            "local": {
+              "browserTarget": "testcenter-frontend:build:local"
             }
           }
         },
