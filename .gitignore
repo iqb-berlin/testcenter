@@ -28,7 +28,7 @@
 
 # frontend config
 /frontend/src/environments/environment.ts
-/frontend/src/environments/environment.ts.bu
+#/frontend/src/environments/environment.local.ts
 
 # test config
 /test/dredd/config
