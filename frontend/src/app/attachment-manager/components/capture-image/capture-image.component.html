@@ -3,7 +3,7 @@
     <h2>
       {{'Seite aufnehmen' | customtext:'am_capture_image' | async}}
     </h2>
-    <div class="toolbar-section hidden" [class.show]="state === 'capture'">
+    <div class="toolbar-section hidden" [class.show]="['capture', 'error'].includes(state)">
       <mat-form-field appearance="fill">
         <mat-label>{{'Verfügbare Cameras' | customtext:'gm_available_cameras' | async}}</mat-label>
         <mat-select (selectionChange)="selectCamera($event.value)">

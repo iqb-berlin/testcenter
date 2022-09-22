@@ -168,7 +168,16 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
 
   listCameras(): void {
     QrScanner.listCameras(true)
-      .then(cameras => cameras.forEach(camera => { this.cameras[camera.id] = camera.label; }));
+      .then(
+        cameras => {
+          if (cameras.length) {
+            cameras.forEach(camera => { this.cameras[camera.id] = camera.label; });
+          } else {
+            this.state = 'error';
+            this.error = 'Keine Kamera gefunden';
+          }
+        }
+      );
   }
 
   updateFlashAvailability(): void {
