@@ -227,6 +227,7 @@ pages:
     - mkdir public
     - cd docs
     - gem install bundler jekyll
+    - bundle install
     - jekyll build -d ../public
   artifacts:
     paths:
