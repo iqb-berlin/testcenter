@@ -216,7 +216,8 @@ class Report {
      */
     private function generateLogsCSVReport(array $logData): string {
 
-        $csv[] = implode(self::DELIMITER, CSV::collectColumnNamesFromHeterogeneousObjects($logData)); // TODO: Adjust column headers?
+        $columns = ['groupname', 'loginname', 'code', 'bookletname', 'unitname', 'timestamp', 'logentry']; // TODO: Adjust column headers?
+        $csv[] = implode(self::DELIMITER, $columns);
 
         foreach ($logData as $log) {
             $csv[] = implode(
