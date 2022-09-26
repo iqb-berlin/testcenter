@@ -34,7 +34,7 @@ services:
       - ../backend/src:/var/www/backend/src
       - ../backend/test:/var/www/backend/test
       - ../data:/var/www/data
-      - ../scripts/database:/var/www/database
+      - ../scripts/database:/var/www/scripts/database
       - ../definitions:/var/www/definitions
       - ../docs/dist:/docs/dist
       - ../package.json:/var/www/package.json
