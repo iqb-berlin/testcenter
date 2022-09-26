@@ -2,17 +2,15 @@
   "name": "e2e",
   "version": "1.0.0",
   "description": "Cypress tests",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test-system-ui": "npx cypress open"
   },
-  "keywords": [],
-  "author": "Gleb Bahmutov <gleb.bahmutov@gmail.com> (https://glebbahmutov.com/)",
-  "license": "ISC",
+  "license": "MIT",
   "private": true,
   "devDependencies": {
     "cypress": "10.4.0",
     "cypress-iframe": "^1.0.1",
+    "typescript": "~4.3.4",
     "wait-on": "^6.0.1"
   }
 }
