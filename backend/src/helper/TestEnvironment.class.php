@@ -54,7 +54,7 @@ class TestEnvironment {
             XMLSchema::setup(false);
 
             $initDAO = new InitDAO();
-            $initDAO->runFile(ROOT_DIR . '/database/sqlite.sql');
+            $initDAO->runFile(ROOT_DIR . '/backend/test/database.sql');
 
             TestEnvironment::setUpTestData();
             TestEnvironment::overwriteModificationDatesVfs();

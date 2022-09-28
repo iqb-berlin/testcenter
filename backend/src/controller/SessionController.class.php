@@ -93,14 +93,16 @@ class SessionController extends Controller {
 
     private static function registerGroup(LoginSession $login): void {
 
-        if ($login->getLogin()->getMode() == 'monitor-group') {
+        if (!$login->getLogin()->getMode() == 'monitor-group') {
+            return;
+        }
 
-            $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
-            $bookletFiles = [];
+        $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
+        $bookletFiles = [];
 
-            $members = self::sessionDAO()->getLoginsByGroup($login->getLogin()->getGroupName(), $login->getLogin()->getWorkspaceId());
+        $members = self::sessionDAO()->getLoginsByGroup($login->getLogin()->getGroupName(), $login->getLogin()->getWorkspaceId());
 
-            foreach ($members as $member) { /* @var $member LoginSession */
+        foreach ($members as $member) { /* @var $member LoginSession */
 
                 if (Mode::hasCapability($member->getLogin()->getMode(), 'alwaysNewSession')) {
                     continue;
@@ -114,29 +116,26 @@ class SessionController extends Controller {
                     $member = SessionController::sessionDAO()->createLoginSession($member->getLogin());
                 }
 
-                foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
+            foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
 
-                    $memberPersonSession = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code);
+                $memberPersonSession = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code, false);
 
-                    foreach ($booklets as $bookletId) {
+                foreach ($booklets as $bookletId) {
 
-                        if (!isset($bookletFiles[$bookletId])) {
-
-                            // TODO this implies, that test can only run, when workspace is valid! TODO check this out
-                            $bookletFile = $workspace->findFileById('Booklet', $bookletId);
-                            /* @var $bookletFile XMLFileBooklet */
-                            $bookletFiles[$bookletId] = $bookletFile;
-                        }
-
-                        $test = self::testDAO()->getOrCreateTest(
-                            $memberPersonSession->getPerson()->getId(),
-                            $bookletId,
-                            $bookletFiles[$bookletId]->getLabel()
-                        );
-                        $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
-                        $sessionMessage->setTestState([], $bookletId);
-                        BroadcastService::sessionChange($sessionMessage);
+                    if (!isset($bookletLabels[$bookletId])) {
+                        // TODO this implies, that test can only run, when workspace is valid! TODO check this out
+                        $bookletFile = $workspace->findFileById('Booklet', $bookletId);
+                        /* @var $bookletFile XMLFileBooklet */
+                        $bookletFiles[$bookletId] = $bookletFile;
                     }
+                    $test = self::testDAO()->getOrCreateTest(
+                        $memberPersonSession->getPerson()->getId(),
+                        $bookletId,
+                        $bookletFiles[$bookletId]->getLabel()
+                    );
+                    $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
+                    $sessionMessage->setTestState([], $bookletId);
+                    BroadcastService::sessionChange($sessionMessage);
                 }
             }
         }

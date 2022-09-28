@@ -44,7 +44,6 @@
     "qr-scanner": "1.4.1",
     "rxjs": "^7.5.6",
     "sass-loader": "^10.3.1",
-    "srcdoc-polyfill": "git+https://github.com/jugglinmike/srcdoc-polyfill.git",
     "tslib": "^2.4.0",
     "ua-parser-js": "^0.7.23",
     "web-animations-js": "^2.3.2",

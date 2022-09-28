@@ -23,12 +23,12 @@
 /backend/composer.phar
 /backend/auth.json
 
-# backend config
-/backend/config
+# backend config (when running locally)
+/backend/config/DBConnectionData.json
+/backend/config/system.json
 
 # frontend config
 /frontend/src/environments/environment.ts
-/frontend/src/environments/environment.ts.bu
 
 # test config
 /test/dredd/config
@@ -47,16 +47,15 @@
 # tmp
 /tmp
 
-# other
-/dist-src/update.sh
-
 # env
 /.env
+/docker/.env
 
 # cypress
 /e2e/cypress/videos
 /e2e/cypress/screenshots
 /e2e/cypress/downloads
+/e2e/cypress/results
 /e2e/.nyc_output
 /e2e/.coverage
 

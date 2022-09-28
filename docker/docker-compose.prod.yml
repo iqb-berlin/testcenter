@@ -10,8 +10,8 @@ services:
   testcenter-backend:
     image: iqbberlin/testcenter-backend:current-prod
     build:
-      context: .
-      dockerfile: backend/docker/Dockerfile
+      context: ..
+      dockerfile: docker/backend.Dockerfile
       target: prod
     volumes:
       - ./data:/var/www/data
@@ -19,13 +19,13 @@ services:
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:current-prod
     build:
-      context: .
-      dockerfile: frontend/docker/Dockerfile
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
       target: prod
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:current-prod
     build:
-      context: .
-      dockerfile: broadcasting-service/docker/Dockerfile
+      context: ..
+      dockerfile: docker/broadcasting-service.Dockerfile
       target: prod

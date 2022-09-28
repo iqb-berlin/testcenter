@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Broadcasting-Service/Unit-Test - locally" type="js.build_tools.npm" folderName="Run Locally (NPM)">
+    <package-json value="$PROJECT_DIR$/broadcasting-service/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="unit-test" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

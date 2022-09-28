@@ -34,7 +34,7 @@ class WorkspaceDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new WorkspaceDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/database/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
         define('ROOT_DIR', REAL_ROOT_DIR);
     }

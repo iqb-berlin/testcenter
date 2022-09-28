@@ -12,7 +12,7 @@ import { IncomingMessage } from 'http';
 import { Logger } from '@nestjs/common';
 import { BroadcastingEvent } from './interfaces';
 
-@WebSocketGateway()
+@WebSocketGateway({ path: '/ws' })
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(WebsocketGateway.name);
 
@@ -24,16 +24,20 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   private clientLost$: Subject<string> = new Subject<string>();
 
   handleConnection(client: WebSocket, message: IncomingMessage): void {
-    const token = WebsocketGateway.getLastUrlPart(message.url as string);
+    const token = WebsocketGateway.getTokenFromUrl(message.url as string);
 
     this.clients[token] = client;
     this.clientsCount$.next(Object.values(this.clients).length);
     this.logger.log(`client connected: ${token}`);
   }
 
-  static getLastUrlPart(url: string): string {
-    const arr = url.split('/').filter(e => e); // filter removes empty string tokens
-    return arr[arr.length - 1];
+  static getTokenFromUrl(url: string): string {
+    const urlSearchParams = new URL(`xx://dumm.y/${url}`).searchParams;
+    const token = urlSearchParams.get('token');
+    if (!token) {
+      throw new Error('No token!');
+    }
+    return token;
   }
 
   handleDisconnect(client: WebSocket): void {

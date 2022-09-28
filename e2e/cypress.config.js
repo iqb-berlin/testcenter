@@ -13,7 +13,7 @@ module.exports = defineConfig({
     },
     baseUrl: 'http://localhost',
     env: {
-      TC_API_URL: 'http://localhost/api/'
+      TC_API_URL: 'http://localhost/api'
     }
   }
 });

@@ -15,7 +15,7 @@ class XMLSchema {
     // TODO use defined class instead of plain array
     static function parseSchemaUrl(string $schemaUri): ?array {
 
-        $regex = '#^(http)?.*?((\d+).(\d+).(\d+))?/?definitions/v?o?_?(\S*).xsd$#';
+        $regex = '#^(http)?.*?((\d+).(\d+).(\d+)(-\S*)?)?/definitions/v?o?_?(\S*).xsd$#';
         preg_match_all($regex, $schemaUri, $matches, PREG_SET_ORDER, 0);
 
         if (!count($matches)) {
@@ -30,7 +30,8 @@ class XMLSchema {
             "mayor"         => isset($urlParts[3]) ? (int) $urlParts[3] : 0,
             "minor"         => isset($urlParts[4]) ? (int) $urlParts[4] : 0,
             "patch"         => isset($urlParts[5]) ? (int) $urlParts[5] : 0,
-            "type"          => isset($urlParts[6]) ? $urlParts[6] : '',
+            "label"         => isset($urlParts[6]) ? substr($urlParts[6], 1) : '',
+            "type"          => isset($urlParts[7]) ? $urlParts[7] : '',
             "uri"           => $schemaUri
         ];
 
@@ -50,18 +51,14 @@ class XMLSchema {
             throw new Exception("Unknown XML type: `$type`");
         }
 
-        $version = Version::get();
-        $versionParts = explode('.', $version);
+        $currentVersion = Version::get();
+        $schemaData = Version::split($currentVersion);
+        $schemaData["version"] = $currentVersion;
+        $schemaData["isExternal"] = false;
+        $schemaData["type"] = $type;
+        $schemaData["uri"] = false;
 
-        return [
-            "isExternal"    => false,
-            "version"       => $version,
-            "mayor"         => isset($versionParts[0]) ? (int) $versionParts[0] : 0,
-            "minor"         => isset($versionParts[1]) ? (int) $versionParts[1] : 0,
-            "patch"         => isset($versionParts[2]) ? (int) $versionParts[2] : 0,
-            "type"          => $type,
-            "uri"           => false
-        ];
+        return $schemaData;
     }
 
 

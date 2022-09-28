@@ -41,7 +41,7 @@ class SessionDAOTest extends TestCase {
 
         DB::connect(new DBConfig(["type" => "temp", "staticTokens" => true]));
         $this->dbc = new SessionDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/database/sqlite.sql');
+        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
 
         $this->testLoginSession = new LoginSession(

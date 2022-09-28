@@ -1,7 +1,7 @@
 # Performs a single task on the whole project using the task-runner
 # Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 run-task-runner:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run \
+	docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 		--rm --no-deps \
 		testcenter-task-runner npm run $(task)
 
@@ -44,7 +44,7 @@ create-interfaces:
 	make run-task-runner task=create-interfaces
 
 init-env:
-	cp .env-default .env
+	cp docker/.env-default docker/.env
 
 composer-install: # TODO 13 - is this necessary? or automatically done with building the container
 	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
@@ -68,15 +68,15 @@ init-frontend:
 	cp frontend/src/environments/environment.dev.ts frontend/src/environments/environment.ts
 
 init-ensure-file-rights:
-	chmod -R 0444 database/my.cnf # mysql does not accept it otherwise
+	chmod -R 0444 scripts/database/my.cnf # mysql does not accept it otherwise
 
 new-version:
 	make run-task-runner task="new-version $(version)"
 
 fix-docker-user:
-	$(shell sed -i 's/user_id_placeholder/$(shell id -u)/g' .env)
-	$(shell sed -i 's/user_group_placeholder/$(shell id -g)/g' .env)
+	$(shell sed -i 's/user_id_placeholder/$(shell id -u)/g' docker/.env)
+	$(shell sed -i 's/user_group_placeholder/$(shell id -g)/g' docker/.env)
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
-	docker exec -it testcenter-backend php /var/www/html/inititailze.php
+	docker exec -it testcenter-backend php /var/www/backend/initialize.php

@@ -9,7 +9,7 @@ require_once "src/files/XMLFileBooklet.class.php";
 
 class XMLFileBookletExposed extends XMLFileBooklet {
 
-    public function getUnitIds(): array {
+    public function getUnitIds(bool $useAlias = false): array {
         return parent::getUnitIds();
     }
 };

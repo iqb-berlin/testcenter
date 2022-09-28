@@ -22,7 +22,7 @@ services:
       MYSQL_INITDB_SKIP_TZINFO: 'true'
     user: root
     volumes:
-      - ./database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     command:
       - --log_error_verbosity=1
     ports:
@@ -32,52 +32,53 @@ services:
       testcenter-initialization-test:
 
   testcenter-initialization-test-backend:
-    build:
-      context: .
-      dockerfile: backend/docker/Dockerfile
-      target: dev
-    image: iqbberlin/testcenter-backend:current
-    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)"]
     container_name: testcenter-initialization-test-backend
+    image: iqbberlin/testcenter-backend:current
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+      target: dev
+    entrypoint: ["bash", "-c", "(cd /var/www && bash backend/test/initialization/tests/${TEST_NAME:-fallback}.sh)"]
     environment:
       <<: *env-mysql
       MYSQL_HOST: testcenter-initialization-test-db
       MYSQL_PORT: 3306
       TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
     volumes:
-      - ./backend/.htaccess:/var/www/backend/.htaccess
-      - ./backend/autoload.php:/var/www/backend/autoload.php
-      - ./backend/index.php:/var/www/backend/index.php
-      - ./backend/initialize.php:/var/www/backend/initialize.php
-      - ./backend/routes.php:/var/www/backend/routes.php
-      - ./backend/src:/var/www/backend/srcmake test
-      - ./backend/test:/var/www/backend/test
-      - ./definitions:/var/www/definitions
-      - ./docs:/docs
-      - ./package.json:/var/www/package.original.json
-      - ./sampledata:/var/www/sampledata
+      - ../backend/.htaccess:/var/www/backend/.htaccess
+      - ../backend/autoload.php:/var/www/backend/autoload.php
+      - ../backend/index.php:/var/www/backend/index.php
+      - ../backend/initialize.php:/var/www/backend/initialize.php
+      - ../backend/routes.php:/var/www/backend/routes.php
+      - ../backend/src:/var/www/backend/srcmake test
+      - ../backend/test:/var/www/backend/test
+      - ../definitions:/var/www/definitions
+      - ../docs:/docs
+      - ../package.json:/var/www/package.original.json
+      - ../sampledata:/var/www/sampledata
     depends_on:
       - testcenter-initialization-test-db
     networks:
       testcenter-initialization-test:
 
   testcenter-initialization-test-runner:
+    container_name: testcenter-initialization-test-runner
     image: iqbberlin/testcenter-task-runner
     profiles:
       - dredd_test_against_mysql
     build:
-      context: .
-      dockerfile: runner.Dockerfile
-    command: "npm run backend:dredd-test"
-    container_name: testcenter-initialization-test-runner
+      context: ..
+      dockerfile: docker/runner.Dockerfile
+    command: "npm run backend:api-test"
     environment:
       TC_API_URL: http://testcenter-initialization-test-backend
     volumes:
-      - ./sampledata:/app/sampledata
-      - ./test:/app/test
-      - ./scripts:/app/scripts
-      - ./docs:/app/docs
-      - ./package.json:/app-temp/package.json
+      - ../sampledata:/app/sampledata
+      - ../test:/app/test
+      - ../scripts:/app/scripts
+      - ../docs:/app/docs
+      - ../package.json:/app/package.json
+      - ../package-lock.json:/app/package-lock.json
     depends_on:
       - testcenter-initialization-test-db
       - testcenter-initialization-test-backend

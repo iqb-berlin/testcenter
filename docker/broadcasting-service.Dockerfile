@@ -9,7 +9,7 @@ RUN apt-get update && apt-get -y install procps # needed for webpack not to cras
 
 WORKDIR /app
 
-COPY broadcasting-service/package*.json .
+COPY broadcasting-service/package*.json ./
 RUN npm install
 
 COPY broadcasting-service/src /app/src
@@ -30,6 +30,7 @@ RUN npx nest build
 #=============
 FROM node:${NODE_VERSION} as prod
 
+COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app
 
 EXPOSE 3000
