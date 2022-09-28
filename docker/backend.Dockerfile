@@ -44,7 +44,7 @@ COPY backend/index.php /var/www/backend/
 COPY backend/initialize.php /var/www/backend/
 COPY backend/routes.php /var/www/backend/
 COPY backend/src /var/www/backend/src
-COPY scripts/database /var/www/database
+COPY scripts/database /var/www/scripts/database
 COPY definitions /var/www/definitions
 COPY package.json /var/www/package.json
 COPY sampledata /var/www/sampledata

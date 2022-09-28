@@ -5,13 +5,12 @@
   "scripts": {
     "test-system-ui": "npx cypress open"
   },
-  "keywords": [],
-  "private": true,
   "license": "MIT",
+  "private": true,
   "devDependencies": {
     "cypress": "10.4.0",
     "cypress-iframe": "^1.0.1",
-    "wait-on": "^6.0.1",
-    "typescript": "~4.3.4"
+    "typescript": "~4.3.4",
+    "wait-on": "^6.0.1"
   }
 }

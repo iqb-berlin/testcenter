@@ -79,4 +79,4 @@ fix-docker-user:
 
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
-	docker exec -it testcenter-backend php /var/www/html/inititailze.php
+	docker exec -it testcenter-backend php /var/www/backend/initialize.php

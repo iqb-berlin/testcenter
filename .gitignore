@@ -23,9 +23,12 @@
 /backend/composer.phar
 /backend/auth.json
 
+# backend config (when running locally)
+/backend/config/DBConnectionData.json
+/backend/config/system.json
+
 # frontend config
 /frontend/src/environments/environment.ts
-/frontend/src/environments/environment.ts.bu
 
 # test config
 /test/dredd/config
