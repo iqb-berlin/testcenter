@@ -115,6 +115,7 @@
             <xs:simpleContent>
               <xs:extension base="xs:string">
                 <xs:attribute name="schemer" type="xs:string" use="required"/>
+                <xs:attribute name="schemeType" type="xs:string"/>
               </xs:extension>
             </xs:simpleContent>
           </xs:complexType>
