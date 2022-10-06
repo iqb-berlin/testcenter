@@ -46,7 +46,7 @@ services:
       - ../backend/routes.php:/var/www/backend/routes.php
       - ../backend/src:/var/www/backend/src
       - ../backend/test:/var/www/backend/test
-      - ../scripts/database:/var/www/scripts/database
+      - ../scripts/database:/var/www/database
       - ../definitions:/var/www/definitions
       - ../docs/dist:/docs/dist
       - ../package.json:/var/www/package.json
