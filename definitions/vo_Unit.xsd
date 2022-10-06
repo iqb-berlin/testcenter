@@ -55,18 +55,10 @@
   </xs:restriction>
  </xs:simpleType>
 
-  <xs:simpleType name="DependencyType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="service-url"/>
-      <xs:enumeration value="filename"/>
-    </xs:restriction>
-  </xs:simpleType>
-
  <xs:complexType name="Dependency">
   <xs:simpleContent>
    <xs:extension base="xs:string">
     <xs:attribute name="target" type="DependencyTarget" use="required"/>
-     <xs:attribute name="type" type="DependencyType" use="required"/>
    </xs:extension>
   </xs:simpleContent>
  </xs:complexType>
@@ -124,7 +116,10 @@
         <xs:element name="Dependencies" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Dependency" type="Dependency" maxOccurs="unbounded" minOccurs="0"/>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="File" type="Dependency"/>
+                <xs:element name="Service" type="Dependency"/>
+              </xs:choice>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
