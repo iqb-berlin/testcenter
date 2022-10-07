@@ -35,7 +35,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="VariableFormatValue">
+  <xs:simpleType name="VariableFormatValueExplicit">
     <xs:restriction base="xs:string">
       <xs:enumeration value="text-selection"/>
       <xs:enumeration value="image"/>
@@ -46,6 +46,16 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="VariableFormatValueOther">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^[a-z]+[a-z\d-]*[a-z\d]+$"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="VariableFormatValue">
+    <xs:union memberTypes="VariableFormatValueExplicit VariableFormatValueOther"/>
+  </xs:simpleType>
+
  <xs:simpleType name="DependencyTarget">
   <xs:restriction base="xs:string">
    <xs:enumeration value="player"/>
@@ -54,13 +64,6 @@
    <xs:enumeration value="coder"/>
   </xs:restriction>
  </xs:simpleType>
-
-  <xs:simpleType name="DependencyType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="service-url"/>
-      <xs:enumeration value="filename"/>
-    </xs:restriction>
-  </xs:simpleType>
 
  <xs:complexType name="Dependency">
   <xs:simpleContent>
@@ -79,7 +82,6 @@
               <xs:element name="Id" type="xs:ID" />
               <xs:element name="Label" type="xs:string" />
               <xs:element name="Description" type="xs:string" minOccurs="0" />
-              <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -92,7 +94,6 @@
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
                     <xs:attribute name="editor" type="xs:string"/>
-                    <xs:attribute name="type" type="xs:string"/><!-- deprecated -->
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>
@@ -103,7 +104,6 @@
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
                     <xs:attribute name="editor" type="xs:string"/>
-                    <xs:attribute name="type" type="xs:string"/><!-- deprecated -->
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>
@@ -124,10 +124,12 @@
 
         <xs:element name="Dependencies" minOccurs="0">
           <xs:complexType>
-            <xs:choice maxOccurs="unbounded" minOccurs="0">
-              <xs:element type="Dependency" name="File" maxOccurs="unbounded" minOccurs="0"/>
-              <xs:element type="Dependency" name="Service" maxOccurs="unbounded" minOccurs="0"/>
-            </xs:choice>
+            <xs:sequence>
+              <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="File" type="Dependency"/>
+                <xs:element name="Service" type="Dependency"/>
+              </xs:choice>
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
 
