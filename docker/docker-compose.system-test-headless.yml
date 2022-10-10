@@ -62,6 +62,8 @@ services:
     image: iqbberlin/testcenter-frontend:current
     volumes:
       - ../docs/dist:/docs/dist
+      - ../frontend/src:/app/src
+      - ../frontend/angular.json:/app/angular.json
     command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"
     depends_on:
       - testcenter-system-test-backend
