@@ -8,6 +8,8 @@ class XMLFile extends File {
     const type = 'xml';
     const knownTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Unit'];
 
+    const deprecatedElements = [];
+
     protected string $rootTagName = '';
     protected ?array $schema;
 
@@ -65,6 +67,7 @@ class XMLFile extends File {
         if ($validate) {
 
             $this->validateAgainstSchema();
+            $this->warnOnDeprecatedElements();
         }
 
         libxml_use_internal_errors(false);
@@ -127,20 +130,33 @@ class XMLFile extends File {
     private function validateAgainstSchema(): void {
 
         $this->readSchema();
-        $filePath = XMLSchema::getSchemaFilePath($this->schema);
-        if (!$filePath) {
+        $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
+        if (!$schemaFilePath) {
 
             $this->fallBackToCurrentSchemaVersion("XSD-Schema (´{$this->schema['version']}´) could not be obtained.");
-            $filePath = XMLSchema::getSchemaFilePath($this->schema);
+            $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
         }
 
         $xmlReader = new XMLReader();
         $xmlReader->open($this->path);
-        $xmlReader->setSchema($filePath);
+        $xmlReader->setSchema($schemaFilePath);
+
         do {
             $continue = $xmlReader->read();
             $this->importLibXmlErrors();
         } while ($continue);
+    }
+
+
+    private function warnOnDeprecatedElements(): void {
+
+        foreach ($this::deprecatedElements as $deprecatedElement) {
+
+            foreach ($this->xml->xpath($deprecatedElement) as $deprecatedItem) {
+
+                $this->report('warning', "Element `$deprecatedElement` is deprecated.");
+            }
+        }
     }
 
 

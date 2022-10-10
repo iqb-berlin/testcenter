@@ -6,6 +6,7 @@ declare(strict_types=1);
 class XMLFileUnit extends XMLFile {
 
     const type = 'Unit';
+    const deprecatedElements = ['/Unit/Definition/@type'];
 
     protected int $totalSize = 0;
     protected string $playerId = '';
