@@ -94,6 +94,11 @@
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
                     <xs:attribute name="editor" type="xs:string"/>
+                    <xs:attribute name="type" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
+                      </xs:annotation>
+                    </xs:attribute>
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>
@@ -104,6 +109,11 @@
                   <xs:extension base="xs:string">
                     <xs:attribute name="player" type="xs:string" use="required"/>
                     <xs:attribute name="editor" type="xs:string"/>
+                    <xs:attribute name="type" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
+                      </xs:annotation>
+                    </xs:attribute>
                   </xs:extension>
                 </xs:simpleContent>
               </xs:complexType>

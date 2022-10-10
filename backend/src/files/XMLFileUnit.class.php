@@ -172,7 +172,7 @@ class XMLFileUnit extends XMLFile {
 
         return array_map(
             function($e) { return (string) $e;},
-            $this->xml->xpath('/Unit/Dependencies/Package')
+            $this->xml->xpath('/Unit/Dependencies/File[@target="player"]')
         );
     }
 }
