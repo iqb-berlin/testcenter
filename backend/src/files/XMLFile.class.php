@@ -8,6 +8,8 @@ class XMLFile extends File {
     const type = 'xml';
     const knownTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Unit'];
 
+    const deprecatedElements = [];
+
     protected string $rootTagName = '';
     protected ?array $schema;
 
@@ -65,6 +67,7 @@ class XMLFile extends File {
         if ($validate) {
 
             $this->validateAgainstSchema();
+            $this->warnOnDeprecatedElements();
         }
 
         libxml_use_internal_errors(false);
@@ -127,27 +130,50 @@ class XMLFile extends File {
     private function validateAgainstSchema(): void {
 
         $this->readSchema();
-        $filePath = XMLSchema::getSchemaFilePath($this->schema);
-        if (!$filePath) {
+        $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
+        if (!$schemaFilePath) {
 
             $this->fallBackToCurrentSchemaVersion("XSD-Schema (´{$this->schema['version']}´) could not be obtained.");
-            $filePath = XMLSchema::getSchemaFilePath($this->schema);
+            $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
         }
 
         $xmlReader = new XMLReader();
         $xmlReader->open($this->path);
-        $xmlReader->setSchema($filePath);
+
+        try {
+            $xmlReader->setSchema($schemaFilePath);
+        } catch (Throwable $exception) {
+            $this->importLibXmlErrors($exception->getMessage() . ': ');
+            $xmlReader->close();
+            return;
+        }
+
+
         do {
             $continue = $xmlReader->read();
             $this->importLibXmlErrors();
         } while ($continue);
+
+        $xmlReader->close();
     }
 
 
-    private function importLibXmlErrors(): void {
+    private function warnOnDeprecatedElements(): void {
+
+        foreach ($this::deprecatedElements as $deprecatedElement) {
+
+            foreach ($this->xml->xpath($deprecatedElement) as $deprecatedItem) {
+
+                $this->report('warning', "Element `$deprecatedElement` is deprecated.");
+            }
+        }
+    }
+
+
+    private function importLibXmlErrors(string $prefix = ""): void {
 
         foreach (libxml_get_errors() as $error) {
-            $errorString = "Error [{$error->code}] in line {$error->line}: ";
+            $errorString = "{$prefix}Error [$error->code] in line $error->line: ";
             $errorString .= trim($error->message);
             $this->report('error', $errorString);
         }

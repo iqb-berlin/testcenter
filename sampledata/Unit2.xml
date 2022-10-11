@@ -6,7 +6,7 @@
     <Description>This is an Unit</Description>
   </Metadata>
 
-  <Definition player="verona-player-simple-4">
+  <Definition player="verona-player-simple-4" type="this-should-trigger-a-deprecation-warning">
     <![CDATA[
       <div class="container">
         <h1>Sample Unit calling external File</h1>
@@ -30,6 +30,7 @@
   </Definition>
 
   <Dependencies>
-    <File>sample_resource_package.itcr.zip</File>
+    <File for="player">sample_resource_package.itcr.zip</File>
+    <File for="editor">sample_resource_package.itcr.zip</File>
   </Dependencies>
 </Unit>

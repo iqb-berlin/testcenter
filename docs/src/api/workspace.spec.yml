@@ -309,7 +309,9 @@ paths:
                     modificationTime: 1615970109
                     type: Unit
                     id: UNIT.SAMPLE-2
-                    report: []
+                    report:
+                      warning:
+                        - "Element `/Unit/Definition/@type` is deprecated."
                     info:
                       description: This is an Unit
                       label: A sample unit
