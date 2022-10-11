@@ -48,12 +48,12 @@
 
   <xs:simpleType name="VariableFormatValueOther">
     <xs:restriction base="xs:string">
-      <xs:pattern value="^[a-z]+[a-z\d-]*[a-z\d]+$"/>
+      <xs:pattern value="[a-z]+[a-z\d-]*[a-z\d]+"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="VariableFormatValue">
-    <xs:union memberTypes="VariableFormatValueExplicit VariableFormatValueOther"/>
+    <xs:union memberTypes="VariableFormatValueOther"/>
   </xs:simpleType>
 
   <xs:simpleType name="DependencyTarget">
