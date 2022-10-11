@@ -139,12 +139,22 @@ class XMLFile extends File {
 
         $xmlReader = new XMLReader();
         $xmlReader->open($this->path);
-        $xmlReader->setSchema($schemaFilePath);
+
+        try {
+            $xmlReader->setSchema($schemaFilePath);
+        } catch (Throwable $exception) {
+            $this->importLibXmlErrors($exception->getMessage() . ': ');
+            $xmlReader->close();
+            return;
+        }
+
 
         do {
             $continue = $xmlReader->read();
             $this->importLibXmlErrors();
         } while ($continue);
+
+        $xmlReader->close();
     }
 
 
@@ -160,10 +170,10 @@ class XMLFile extends File {
     }
 
 
-    private function importLibXmlErrors(): void {
+    private function importLibXmlErrors(string $prefix = ""): void {
 
         foreach (libxml_get_errors() as $error) {
-            $errorString = "Error [{$error->code}] in line {$error->line}: ";
+            $errorString = "{$prefix}Error [$error->code] in line $error->line: ";
             $errorString .= trim($error->message);
             $this->report('error', $errorString);
         }

@@ -68,7 +68,7 @@
   <xs:complexType name="Dependency">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute name="target" type="DependencyTarget" use="required"/>
+        <xs:attribute name="for" type="DependencyTarget" default="player"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>

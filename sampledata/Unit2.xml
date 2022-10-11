@@ -30,7 +30,7 @@
   </Definition>
 
   <Dependencies>
-    <File target="player">sample_resource_package.itcr.zip</File>
-    <File target="editor">sample_resource_package.itcr.zip</File>
+    <File for="player">sample_resource_package.itcr.zip</File>
+    <File for="editor">sample_resource_package.itcr.zip</File>
   </Dependencies>
 </Unit>
