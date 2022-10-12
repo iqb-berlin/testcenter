@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Modes for test execution
 
 For the test or the survey, all execution parameters are given by

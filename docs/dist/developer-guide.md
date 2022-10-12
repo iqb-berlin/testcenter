@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Developer's Guide
 
 ## Application structure

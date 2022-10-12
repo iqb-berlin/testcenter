@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 ## Trouble Shooting
 
 ### Timeouts when building fresh images

@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Installation for production
 
 "Production" here means that you just want to install and use the application, not more. You do not like to get a look behind the curtain or to run sophisticated performance analyses. This type of installation has fewer requirements in regard of software and space.

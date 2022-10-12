@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # CustomTexts
 This application enables changes of texts during runtime. It's an implementation 
 of the CustomTextPipe/CustomTextService 

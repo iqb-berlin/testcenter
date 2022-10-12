@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # More server setup and handling
 
 ## SSL

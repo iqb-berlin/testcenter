@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Booklet config
 There are some configuration parameters for adjusting the behaviour during the test.This 
 document describes the ways to bring the parameters to the application and lists
