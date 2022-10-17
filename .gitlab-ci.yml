@@ -242,6 +242,11 @@ generate-docs:
     - make update-docs
   artifacts:
     paths:
+      - docs/index.md
+      - docs/pages/booklet-config.md
+      - docs/pages/test-mode.md
+      - docs/dist/api/index.html
+      - docs/dist/test-session-super-states.html
       - docs/dist/compodoc-frontend/*
       - docs/dist/compodoc-broadcasting-service/*
     expire_in: 30 minutes
