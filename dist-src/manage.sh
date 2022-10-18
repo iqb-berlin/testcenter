@@ -3,6 +3,9 @@
 REPO_URL=iqb-berlin/testcenter
 
 select_version() {
+  source .env
+  printf "\nInstalled version: $VERSION\n\n"
+
   versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
 #  echo "$versions" | jq -r 'map({name, tag_name, prerelease}) | .[] | select(.prerelease == true)'
   echo "[\"Index\",\"Tag name\", \"Release title\"]" | jq -r '@tsv'
@@ -22,7 +25,7 @@ select_version() {
 
   chosen_version_index=0
   while [[ "$chosen_version_index" -lt 1 || "$chosen_version_index" -gt "$number_of_versions" ]]; do
-    read  -p 'Choose version number: [1-'${number_of_versions}']' -r -n 1 -e chosen_version_index
+    read  -p 'Choose version index: [1-'${number_of_versions}']' -r -n 1 -e chosen_version_index
   done
   chosen_version_tag=$(echo "$versions" | jq -r '.['${chosen_version_index}-1'] | .tag_name')
 }
