@@ -48,6 +48,7 @@ get_version_list_from_api() {
   #read  -p 'Show only stable versions [Y/n]: ' -r -n 1 -e show_stable_versions
   # so koennte man betas filtern: select(.value.prerelease == true)
   versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
+  echo "[\"Index\",\"Tag name\", \"Release title\"]" | jq -r '@tsv'
   echo "$versions" | jq -r 'map({tag_name, name, prerelease})
                           | to_entries
                           | map({

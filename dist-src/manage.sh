@@ -5,6 +5,7 @@ REPO_URL=iqb-berlin/testcenter
 select_version() {
   versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
 #  echo "$versions" | jq -r 'map({name, tag_name, prerelease}) | .[] | select(.prerelease == true)'
+  echo "[\"Index\",\"Tag name\", \"Release title\"]" | jq -r '@tsv'
   echo "$versions" | jq -r 'map({tag_name, name, prerelease})
                           | to_entries
                           | map({
