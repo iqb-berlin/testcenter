@@ -166,6 +166,7 @@ test-e2e:
     - docker load -i frontend_image.tar
     - docker load -i backend_image.tar
     - docker load -i bs_image.tar
+    - make init
     - make test-system-headless
   artifacts:
     when: always
