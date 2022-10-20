@@ -6,23 +6,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="16">
-            <item index="0" class="java.lang.String" itemvalue="fxlayout" />
-            <item index="1" class="java.lang.String" itemvalue="mat-raised-button" />
-            <item index="2" class="java.lang.String" itemvalue="mattooltip" />
-            <item index="3" class="java.lang.String" itemvalue="fxlayoutalign" />
-            <item index="4" class="java.lang.String" itemvalue="fxflex" />
-            <item index="5" class="java.lang.String" itemvalue="mattooltipposition" />
-            <item index="6" class="java.lang.String" itemvalue="matcolumndef" />
-            <item index="7" class="java.lang.String" itemvalue="mat-dialog-title" />
-            <item index="8" class="java.lang.String" itemvalue="matinput" />
-            <item index="9" class="java.lang.String" itemvalue="formcontrolname" />
-            <item index="10" class="java.lang.String" itemvalue="color" />
-            <item index="11" class="java.lang.String" itemvalue="mat-icon-button" />
-            <item index="12" class="java.lang.String" itemvalue="mat-tab-nav-bar" />
-            <item index="13" class="java.lang.String" itemvalue="mat-tab-link" />
-            <item index="14" class="java.lang.String" itemvalue="routerlinkactive" />
-            <item index="15" class="java.lang.String" itemvalue="fxlayoutgap" />
+          <list size="0">
           </list>
         </value>
       </option>
