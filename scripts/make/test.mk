@@ -43,6 +43,7 @@ test-backend-initialization-general:
 	make test-backend-initialization test=general/vanilla-installation
 	make test-backend-initialization test=general/no-db-but-files
 	make test-backend-initialization test=general/install-db-patches
+	make test-backend-initialization test=general/initialize-again
 
 test-broadcasting-service-unit:
 	docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \

@@ -50,7 +50,7 @@ services:
       - ../backend/index.php:/var/www/backend/index.php
       - ../backend/initialize.php:/var/www/backend/initialize.php
       - ../backend/routes.php:/var/www/backend/routes.php
-      - ../backend/src:/var/www/backend/srcmake test
+      - ../backend/src:/var/www/backend/src
       - ../backend/test:/var/www/backend/test
       - ../definitions:/var/www/definitions
       - ../docs:/docs
