@@ -7,6 +7,17 @@ use Slim\Factory\AppFactory;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
+$rd = realpath(dirname(__FILE__) . '/../');
+$unit = "/testcenter/backend/test/7/unit/UNIT.SAMPLE/alias/UNIT.SAMPLE";
+$test = "/testcenter/backend/test/7";
+$res =  "/testcenter/backend/test/7/resource/SAMPLE_UNITCONTENTS.HTM?v=f";
+$sup =  "/testcenter/backend/workspace/9";
+$supd =  "/testcenter/backend/workspace/9/files";
+
+$bp = '/testcenter/backend/test/14/resource/huge.htm?v=';
+
+
+
 
 try {
 
@@ -17,6 +28,22 @@ try {
     require_once "vendor/autoload.php";
     require_once "autoload.php";
 
+    if(
+        ($_SERVER['REQUEST_URI'] == $res) and
+        ($_SERVER['REQUEST_METHOD'] != 'OPTIONS')
+    ) {
+        if (file_exists("$rd/x.x")) {
+            unlink("$rd/x.x");
+        } else {
+            file_put_contents("$rd/x.x", "[{$_SERVER['REQUEST_METHOD']}] {$_SERVER['REQUEST_URI']}");
+        header("HTTP/1.0 404 I'm A Teapot");die();
+//        ////    header('Location: http://the.void');
+//        //        die("not ok");
+//                throw new HttpError('dying', 500);
+//        die();
+//        throw new \Slim\Exception\HttpException('shit', 403);
+        }
+    }
 
     $isPreparedForRealDataTest =
         (getenv('TESTMODE_REAL_DATA', true) == 'yes') ||

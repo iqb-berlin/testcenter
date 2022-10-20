@@ -37,6 +37,7 @@ import { StatusCardComponent } from './app-root/status-card/status-card.componen
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
+import { RetryInterceptor } from './retry.interceptor';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,11 @@ import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.compo
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RetryInterceptor,
       multi: true
     },
     {
