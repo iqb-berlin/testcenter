@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { TestControllerService } from '../../services/test-controller.service';
 import { MainDataService } from '../../../shared/shared.module';
-import { AppError } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './test-status.component.html',
@@ -12,8 +11,7 @@ import { AppError } from '../../../app.interfaces';
 
 export class TestStatusComponent implements OnInit, OnDestroy {
   loginName = '??';
-  error: AppError;
-  errorDetailsOpen = false;
+
   private appErrorSubscription: Subscription;
 
   constructor(
@@ -35,18 +33,15 @@ export class TestStatusComponent implements OnInit, OnDestroy {
           // a) it can not get caught in testcontroller.component oder test-loader.service,
           // because the test-loading-promise is already completed when the unit's content gets loaded.
           // b) the error becomes visible when the units has been entered, not when it occurred.
-          this.errorDetailsOpen = false;
-          this.error = error;
+          // TODO
+          // this.errorDetailsOpen = false;
+          // this.error = error;
         });
     });
   }
 
   ngOnDestroy(): void {
     this.appErrorSubscription.unsubscribe();
-  }
-
-  toggleErrorDetails(): void {
-    this.errorDetailsOpen = !this.errorDetailsOpen;
   }
 
   terminateTest(): void {

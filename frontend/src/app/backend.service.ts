@@ -7,7 +7,7 @@ import {
   SysCheckInfo,
   AuthData,
   WorkspaceData,
-  BookletData, ApiError, AccessObject
+  BookletData, AppError, AccessObject
 } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
@@ -15,36 +15,17 @@ import { SysConfig } from './shared/shared.module';
   providedIn: 'root'
 })
 export class BackendService {
-  constructor(@Inject('SERVER_URL') private readonly serverUrl: string,
-              private http: HttpClient) {}
+  constructor(
+    @Inject('SERVER_URL') private readonly serverUrl: string,
+    private http: HttpClient
+  ) {}
 
-  login(loginType: 'admin' | 'login', name: string, password: string | undefined = undefined):Observable<AuthData | number> {
-    return (loginType === 'admin') ?
-      this.loginAsAdmin({ name, password }) :
-      this.loginAsLogin({ name, password });
+  login(loginType: 'admin' | 'login', name: string, password: string | undefined = undefined): Observable<AuthData> {
+    return this.http.put<AuthData>(`${this.serverUrl}session/${loginType}`, { name, password });
   }
 
-  loginAsAdmin(credentials: { name: string, password: string }): Observable<AuthData | number> {
-    return this.http
-      .put<AuthData>(`${this.serverUrl}session/admin`, credentials)
-      .pipe(catchError((err: ApiError) => of(err.code)));
-  }
-
-  loginAsLogin(credentials: { name: string, password?: string }): Observable<AuthData | number> {
-    return this.http
-      .put<AuthData>(`${this.serverUrl}session/login`, credentials)
-      .pipe(catchError((err: ApiError) => of(err.code)));
-  }
-
-  codeLogin(code: string): Observable<AuthData | number> {
-    return this.http
-      .put<AuthData>(`${this.serverUrl}session/person`, { code })
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`codeLogin Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
-      );
+  codeLogin(code: string): Observable<AuthData> {
+    return this.http.put<AuthData>(`${this.serverUrl}session/person`, { code });
   }
 
   getWorkspaceData(workspaceId: string): Observable<WorkspaceData> {
@@ -81,12 +62,10 @@ export class BackendService {
   }
 
   getSessionData(): Observable<AuthData | number> {
-    console.log(window.location);
-    console.trace();
     return this.http
       .get<AuthData>(`${this.serverUrl}session`)
       .pipe(
-        catchError((err: ApiError) => of(err.code))
+        catchError((err: AppError) => of(err.code))
       );
   }
 
@@ -97,13 +76,7 @@ export class BackendService {
         map(bData => {
           bData.id = bookletId;
           return bData;
-        }),
-        catchError(() => of(<BookletData>{
-          id: bookletId,
-          label: bookletId,
-          locked: true,
-          running: false
-        }))
+        })
       );
   }
 
@@ -112,7 +85,7 @@ export class BackendService {
       .put<number>(`${this.serverUrl}test`, { bookletName })
       .pipe(
         map((testId: number) => String(testId)),
-        catchError((err: ApiError) => of(err.code))
+        catchError((err: AppError) => of(err.code))
       );
   }
 

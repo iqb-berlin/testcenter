@@ -54,16 +54,10 @@ export class DirectLoginActivateGuard implements CanActivate {
   ): Observable<boolean> | boolean {
     const name = state.url.substr(1);
     if (name.length > 0 && name.indexOf('/') < 0) {
-      return this.bs.loginAsLogin({ name })
+      return this.bs.login('login', name)
         .pipe(
-          map((authDataResponse: AuthData | number) => {
-            if (typeof authDataResponse !== 'number') {
-              this.mds.setAuthData(authDataResponse as AuthData);
-              this.router.navigate(['/r']);
-              return false;
-            }
-            // if a link to a non-existing or password locked login was given, absolutely nothing happens.
-            // TODO should there be an error instead?
+          map((authDataResponse: AuthData) => {
+            this.mds.setAuthData(authDataResponse as AuthData);
             this.router.navigate(['/r']);
             return false;
           })

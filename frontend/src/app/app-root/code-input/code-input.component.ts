@@ -6,7 +6,7 @@ import {
   CustomtextService, MessageDialogComponent, MessageDialogData, MessageType,
   MainDataService
 } from '../../shared/shared.module';
-import { AuthData } from '../../app.interfaces';
+import { AppError, AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
 
 @Component({
@@ -26,11 +26,13 @@ export class CodeInputComponent implements OnInit {
     code: new FormControl('', [Validators.required, Validators.minLength(2)])
   });
 
-  constructor(private router: Router,
-              public messageDialog: MatDialog,
-              public cts: CustomtextService,
-              public bs: BackendService,
-              public mds: MainDataService) { }
+  constructor(
+    private router: Router,
+    public messageDialog: MatDialog,
+    public cts: CustomtextService,
+    public bs: BackendService,
+    public mds: MainDataService
+  ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -55,25 +57,23 @@ export class CodeInputComponent implements OnInit {
       });
     } else {
       this.mds.showLoadingAnimation();
-      this.bs.codeLogin(codeData.code).subscribe(
-        authData => {
-          this.mds.stopLoadingAnimation();
-          this.problemText = '';
-          if (typeof authData === 'number') {
-            const errCode = authData as number;
-            if (errCode === 400) {
-              this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
-            } else {
-              this.problemText = 'Problem bei der Anmeldung.';
-              // app.interceptor will show error message
-            }
+      this.problemText = '';
+      this.bs.codeLogin(codeData.code).subscribe({
+        next: authData => {
+          const authDataTyped = authData as AuthData;
+          this.mds.setAuthData(authDataTyped);
+          this.router.navigate(['/r']);
+        },
+        error: (error: AppError) => {
+          if (error.code === 400) {
+            this.problemText = 'Der Code ist leider nicht gültig. Bitte noch einmal versuchen';
           } else {
-            const authDataTyped = authData as AuthData;
-            this.mds.setAuthData(authDataTyped);
-            this.router.navigate(['/r']);
+            this.problemText = 'Problem bei der Anmeldung.';
+            throw error;
           }
-        }
-      );
+        },
+        complete: () => this.mds.stopLoadingAnimation()
+      });
     }
   }
 

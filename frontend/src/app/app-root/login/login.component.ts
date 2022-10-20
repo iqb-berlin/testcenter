@@ -34,10 +34,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     pw: new FormControl('', [Validators.required, Validators.minLength(7)])
   });
 
-  constructor(public mainDataService: MainDataService,
-              private backendService: BackendService,
-              private router: Router,
-              private route: ActivatedRoute) { }
+  constructor(
+    public mainDataService: MainDataService,
+    private backendService: BackendService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
     this.mainDataService.stopLoadingAnimation();
@@ -50,40 +52,39 @@ export class LoginComponent implements OnInit, OnDestroy {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name;
     this.mainDataService.showLoadingAnimation();
-    this.backendService.login(loginType, loginData.name, loginData.pw).subscribe(
-      authData => {
+    this.problemText = '';
+    this.backendService.login(loginType, loginData.name, loginData.pw).subscribe({
+      next: authData => {
         this.mainDataService.stopLoadingAnimation();
-        this.problemText = '';
-        if (typeof authData === 'number') {
-          const errCode = authData as number;
-          if (errCode === 400) {
-            this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
-          } else if (errCode === 401) {
-            this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
-          } else if (errCode === 204) {
-            this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
-          } else if (errCode === 410) {
-            this.problemText = 'Anmeldedaten sind abgelaufen';
-          } else {
-            this.problemText = 'Problem bei der Anmeldung.';
-            // app.interceptor will show error message
-          }
-          this.loginForm.reset();
+        const authDataTyped = authData as AuthData;
+        this.mainDataService.setAuthData(authDataTyped);
+        if (this.returnTo) {
+          this.router.navigateByUrl(this.returnTo).then(navOk => {
+            if (!navOk) {
+              this.router.navigate(['/r']);
+            }
+          });
         } else {
-          const authDataTyped = authData as AuthData;
-          this.mainDataService.setAuthData(authDataTyped);
-          if (this.returnTo) {
-            this.router.navigateByUrl(this.returnTo).then(navOk => {
-              if (!navOk) {
-                this.router.navigate(['/r']);
-              }
-            });
-          } else {
-            this.router.navigate(['/r']);
-          }
+          this.router.navigate(['/r']);
         }
+      },
+      error: error => {
+        this.mainDataService.stopLoadingAnimation();
+        if (error.code === 400) {
+          this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
+        } else if (error.code === 401) {
+          this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
+        } else if (error.code === 204) {
+          this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
+        } else if (error.code === 410) {
+          this.problemText = 'Anmeldedaten sind abgelaufen';
+        } else {
+          this.problemText = 'Problem bei der Anmeldung.';
+          throw error;
+        }
+        this.loginForm.reset();
       }
-    );
+    });
   }
 
   clearWarning(): void {

@@ -28,26 +28,21 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card fxFlex="0 0 400px" fxLayout="column" class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.ERROR">
-      <mat-card-title >{{error?.label}}</mat-card-title>
-      <mat-card-content>
-        <p><b>Angemeldet als "{{loginName}}"</b></p>
-        <p><b>{{tcs.testMode.modeLabel}}</b></p>
-        <p style="color: chocolate">
-          <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }} </b>
-        </p>
-        <div id="errorDetails" *ngIf="errorDetailsOpen">
-          <b>{{error?.label}}</b><br>
-          {{error?.description}}
-        </div>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button data-cy="endTest-2" color="primary" (click)="terminateTest()">
-          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
-        </button>
-        <button mat-raised-button color="none" (click)="toggleErrorDetails()">Fehlerdetails</button>
-      </mat-card-actions>
-    </mat-card>
+
+    <error
+      fxFlex="0 0 400px"
+      fxLayout="column"
+      *ngSwitchCase="tcs.testStatusEnum.ERROR"
+      [onClose]="terminateTest.bind(this)"
+      [closeCaption]="'Test beenden' | customtext:'login_testEndButtonLabel' | async"
+    >
+      <p><b>Angemeldet als "{{loginName}}"</b></p>
+      <p><b>{{tcs.testMode.modeLabel}}</b></p>
+      <p style="color: chocolate">
+        <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }} </b>
+      </p>
+    </error>
+
 
     <mat-card *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
       <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>

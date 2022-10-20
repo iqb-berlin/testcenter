@@ -47,19 +47,6 @@ body {
   z-index: 999;
 }
 
-.spinner-container-local { /* TODO remove */
-  align-items: center;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  left: 0;
-  margin: auto;
-  position: absolute;
-  right: 0;
-  text-align: center;
-  top: 0;
-  z-index: 999;
-}
 
 iframe.unitHost { /* has to be global because dynamic created element is not in the scope of the component */
   width: 100%;
@@ -106,26 +93,20 @@ div.logo img {
   color: white;
 }
 
-.main-alert {
+#main-alert-container {
   position: fixed !important;
-  top: 20%;
-  right: 10%;
-  left: 10%;
-  padding: 3em;
-  z-index: 999;
-  background: white;
-  cursor: pointer;
-}
 
-.main-alert mat-card-title {
-  font-size: 24px;
-  font-weight: 500;
-}
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
 
-.main-alert-close-button {
-  position: absolute !important;
-  right: 3px;
-  top: 3px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
 }
 
 mat-button-toggle-group {

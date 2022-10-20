@@ -22,6 +22,7 @@ import {
   VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
 } from '../../interfaces/verona.interfaces';
 import { Testlet, UnitControllerData } from '../../classes/test-controller.classes';
+import { AppError } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -247,11 +248,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.unitsLoading$.next(value);
         },
         error: err => {
-          this.mds.appError$.next({
-            label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed?
+          this.mds.appError$.next(new AppError({
+            label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed? TODO
             description: (err.info) ? err.info : err,
-            category: 'ERROR'
-          });
+            type: 'network'
+          }));
         },
         complete: () => this.prepareUnit()
       });
@@ -329,11 +330,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
-      this.mds.appError$.next({
+      this.mds.appError$.next(new AppError({
         label: 'Veralteter Browser',
         description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
-        category: 'ERROR'
-      });
+        type: 'general'
+      }));
       return;
     }
     this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');

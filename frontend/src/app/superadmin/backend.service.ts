@@ -6,7 +6,7 @@ import { catchError, map } from 'rxjs/operators';
 import {
   IdAndName, IdLabelSelectedData, IdRoleData, UserData
 } from './superadmin.interfaces';
-import { ApiError, KeyValuePairs } from '../app.interfaces';
+import { AppError, KeyValuePairs } from '../app.interfaces';
 import { AppSettings } from '../shared/shared.module';
 
 @Injectable({
@@ -23,8 +23,8 @@ export class BackendService {
   getUsers(): Observable<UserData[]> {
     return this.http
       .get<UserData[]>(`${this.serverUrl}users`)
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`getUsers Api-Error: ${err.code} ${err.info} `);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`getUsers Api-Error: ${err.code} ${err.description} `);
         return [];
       }));
   }
@@ -44,8 +44,8 @@ export class BackendService {
       .patch(`${this.serverUrl}user/${userId}/super-admin/${changeToSuperUser ? 'on' : 'off'}`, { p: password })
       .pipe(
         map(() => 0),
-        catchError((err: ApiError) => {
-          console.warn(`setSuperUserStatus Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`setSuperUserStatus Api-Error: ${err.code} ${err.description} `);
           return of(err.code);
         })
       );
@@ -54,8 +54,8 @@ export class BackendService {
   deleteUsers(users: string[]): Observable<boolean> {
     return this.http
       .request<boolean>('delete', `${this.serverUrl}users`, { body: { u: users } })
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`deleteUsers Api-Error: ${err.code} ${err.info} `);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`deleteUsers Api-Error: ${err.code} ${err.description} `);
         return of(false);
       }));
   }
@@ -63,8 +63,8 @@ export class BackendService {
   getWorkspacesByUser(userId: number): Observable<IdRoleData[]> {
     return this.http
       .get<IdLabelSelectedData[]>(`${this.serverUrl}user/${userId}/workspaces`)
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`getWorkspacesByUser Api-Error: ${err.code} ${err.info} `);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`getWorkspacesByUser Api-Error: ${err.code} ${err.description} `);
         return [];
       }));
   }
@@ -72,8 +72,8 @@ export class BackendService {
   setWorkspacesByUser(userId: number, accessTo: IdRoleData[]): Observable<boolean> {
     return this.http
       .patch<boolean>(`${this.serverUrl}user/${userId}/workspaces`, { ws: accessTo })
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`setWorkspacesByUser Api-Error: ${err.code} ${err.info}`);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`setWorkspacesByUser Api-Error: ${err.code} ${err.description}`);
         return of(false);
       }));
   }
@@ -81,8 +81,8 @@ export class BackendService {
   addWorkspace(name: string): Observable<boolean> {
     return this.http
       .put<boolean>(`${this.serverUrl}workspace`, { name })
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`addWorkspace Api-Error: ${err.code} ${err.info} `);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`addWorkspace Api-Error: ${err.code} ${err.description} `);
         return of(false);
       }));
   }
@@ -90,8 +90,8 @@ export class BackendService {
   renameWorkspace(workspaceId: number, wsName: string): Observable<boolean> {
     return this.http
       .patch<boolean>(`${this.serverUrl}workspace/${workspaceId}`, { name: wsName })
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`renameWorkspace Api-Error: ${err.code} ${err.info} `);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`renameWorkspace Api-Error: ${err.code} ${err.description} `);
         return of(false);
       }));
   }
@@ -99,8 +99,8 @@ export class BackendService {
   deleteWorkspaces(workspaces: number[]): Observable<boolean> {
     return this.http
       .request<boolean>('delete', `${this.serverUrl}workspaces`, { body: { ws: workspaces } })
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`deleteWorkspaces Api-Error: ${err.code} ${err.info} `);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`deleteWorkspaces Api-Error: ${err.code} ${err.description} `);
         return of(false);
       }));
   }
@@ -108,8 +108,8 @@ export class BackendService {
   getUsersByWorkspace(workspaceId: number): Observable<IdRoleData[]> {
     return this.http
       .get<IdRoleData[]>(`${this.serverUrl}workspace/${workspaceId}/users`)
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`getUsersByWorkspace Api-Error: ${err.code} ${err.info} `);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`getUsersByWorkspace Api-Error: ${err.code} ${err.description} `);
         return [];
       }));
   }
@@ -117,8 +117,8 @@ export class BackendService {
   setUsersByWorkspace(workspaceId: number, accessing: IdRoleData[]): Observable<boolean> {
     return this.http
       .patch<boolean>(`${this.serverUrl}workspace/${workspaceId}/users`, { u: accessing })
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`setUsersByWorkspace Api-Error: ${err.code} ${err.info}`);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`setUsersByWorkspace Api-Error: ${err.code} ${err.description}`);
         return of(false);
       }));
   }
@@ -126,8 +126,8 @@ export class BackendService {
   getWorkspaces(): Observable<IdAndName[]> {
     return this.http
       .get<IdAndName[]>(`${this.serverUrl}workspaces`)
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`getWorkspaces Api-Error: ${err.code} ${err.info}`);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`getWorkspaces Api-Error: ${err.code} ${err.description}`);
         return [];
       }));
   }
@@ -135,8 +135,8 @@ export class BackendService {
   setAppConfig(newConfig: AppSettings): Observable<boolean> {
     return this.http
       .patch<boolean>(`${this.serverUrl}system/config/app`, newConfig)
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`setAppConfig Api-Error: ${err.code} ${err.info}`);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`setAppConfig Api-Error: ${err.code} ${err.description}`);
         return of(false);
       }));
   }
@@ -144,8 +144,8 @@ export class BackendService {
   setCustomTexts(newCustomTexts: KeyValuePairs): Observable<boolean> {
     return this.http
       .patch<boolean>(`${this.serverUrl}system/config/custom-texts`, newCustomTexts)
-      .pipe(catchError((err: ApiError) => {
-        console.warn(`setCustomTexts Api-Error: ${err.code} ${err.info}`);
+      .pipe(catchError((err: AppError) => {
+        console.warn(`setCustomTexts Api-Error: ${err.code} ${err.description}`);
         return of(false);
       }));
   }

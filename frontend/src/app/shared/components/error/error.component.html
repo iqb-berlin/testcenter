@@ -1,0 +1,31 @@
+<mat-card class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
+  <mat-card-title>
+    <alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
+    <button
+      mat-icon-button
+      class="main-alert-close-button"
+      (click)="closeClick()"
+      [matTooltip]="closeCaption ?? defaultCloseCaption ?? 'Schließen'"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-card-title>
+  <mat-card-content>
+    <ng-content></ng-content>
+    <div id="errorDetailsWrapper" *ngIf="errorDetailsOpen">
+      <b>Fehlerbericht</b>
+      <div id="errorDetails">
+        <p><b>{{error.label}}</b></p>
+        <p>{{error.description}}</p>
+        <p>{{error.details}}</p>
+        <p><b>Error-Id:</b> {{error.errorId}}</p>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="closeClick()">
+      {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
+    </button>
+    <button mat-raised-button color="none" (click)="toggleErrorDetails()">Fehlerdetails</button>
+  </mat-card-actions>
+</mat-card>

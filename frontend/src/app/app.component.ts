@@ -3,9 +3,9 @@ import {
 } from '@angular/core';
 import { Subscription, combineLatest } from 'rxjs';
 import { DomSanitizer, Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { CustomtextService, MainDataService } from './shared/shared.module';
 import { BackendService } from './backend.service';
-import { AppError } from './app.interfaces';
 import { AppConfig } from './shared/classes/app.config';
 
 @Component({
@@ -18,32 +18,35 @@ export class AppComponent implements OnInit, OnDestroy {
   private appTitleSubscription: Subscription | null = null;
 
   showError = false;
-  errorData: AppError | undefined;
 
-  constructor(public mainDataService: MainDataService,
-              private backendService: BackendService,
-              private customtextService: CustomtextService,
-              private titleService: Title,
-              private sanitizer: DomSanitizer) { }
+  constructor(
+    public mainDataService: MainDataService,
+    private backendService: BackendService,
+    private customtextService: CustomtextService,
+    private titleService: Title,
+    private sanitizer: DomSanitizer,
+    private route: ActivatedRoute
+  ) { }
 
   closeErrorBox(): void {
     this.showError = false;
-    // this.mds.appError$.next(); // TODO quick and dirty fix; why is this a replaysubject anyway?
   }
 
   ngOnInit(): void {
     setTimeout(() => {
       this.appErrorSubscription = this.mainDataService.appError$.subscribe(err => {
-        if (err) {
-          this.errorData = err;
+        console.log('appError$: ', err);
+        const routeData = this.route.firstChild?.routeConfig?.data ?? {};
+        // eslint-disable-next-line @typescript-eslint/dot-notation
+        const disableGlobalErrorDisplay = 'disableGlobalErrorDisplay' in routeData; // some modules have their own error handling
+        if (err && !disableGlobalErrorDisplay) {
           this.showError = true;
+          this.mainDataService.spinnerOn = false;
         }
       });
-      this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$, this.mainDataService.isSpinnerOn$])
+      this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$])
         .subscribe(titles => {
-          if (titles[2]) {
-            this.titleService.setTitle(`${titles[0]} | Bitte warten}`);
-          } else if (titles[1]) {
+          if (titles[1]) {
             this.titleService.setTitle(`${titles[0]} | ${titles[1]}`);
           } else {
             this.titleService.setTitle(titles[0]);
@@ -64,11 +67,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.backendService.getSysConfig().subscribe(sysConfig => {
         if (!sysConfig) {
-          this.mainDataService.appError$.next({
-            label: 'Server-Problem: Konnte Konfiguration nicht laden',
-            description: 'getSysConfig ist fehlgeschlagen',
-            category: 'ERROR'
-          });
+          // this.mainDataService.appError$.next({
+          //   label: 'Server-Problem: Konnte Konfiguration nicht laden',
+          //   description: 'getSysConfig ist fehlgeschlagen',
+          //   type: 'general'
+          // });
           return;
         }
         this.mainDataService.appConfig = new AppConfig(sysConfig, this.customtextService, this.sanitizer);

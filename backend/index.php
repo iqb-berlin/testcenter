@@ -73,5 +73,6 @@ try {
     header('Error-ID:' . $id);
     error_log("$id (500) at {$e->getFile()}:{$e->getLine()}");
     error_log($e->getMessage());
-    echo "Fatal error!" . "$id (500) at {$e->getFile()}:{$e->getLine()} : {$e->getMessage()}";
+    $path = explode('/', $e->getFile());
+    echo "Fatal error (500) at {$path[count($path)-2]}/{$path[count($path)-1]}:{$e->getLine()} : {$e->getMessage()}";
 }

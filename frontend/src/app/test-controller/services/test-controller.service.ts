@@ -129,11 +129,7 @@ export class TestControllerService {
           changedDataParts.unitDbKey,
           changedDataParts.dataParts,
           changedDataParts.unitStateDataType
-        ).subscribe(ok => {
-          if (!ok) {
-            console.warn('storing unitData failed');
-          }
-        });
+        );
       });
   }
 
@@ -171,8 +167,12 @@ export class TestControllerService {
     return normalisedId;
   }
 
-  updateUnitStateDataParts(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString,
-                           unitStateDataType: string): void {
+  updateUnitStateDataParts(
+    unitDbKey: string,
+    sequenceId: number,
+    dataParts: KeyValuePairString,
+    unitStateDataType: string
+  ): void {
     const changedParts:KeyValuePairString = {};
 
     Object.keys(dataParts)
@@ -328,7 +328,11 @@ export class TestControllerService {
   }
 
   newUnitStateCurrentPage(
-    unitDbKey: string, unitSequenceId: number, pageNr: number, pageId: string, pageCount: number
+    unitDbKey: string,
+    unitSequenceId: number,
+    pageNr: number,
+    pageId: string,
+    pageCount: number
   ): void {
     this.unitStateCurrentPages[unitSequenceId] = pageId;
     if (this.testMode.saveResponses) {
@@ -398,7 +402,7 @@ export class TestControllerService {
     const oldTestStatus = this.testStatus$.getValue();
     this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
 
-    this.router.navigate(['/'], { state: { force } })
+    this.router.navigate(['/r/test-starter'], { state: { force } })
       .then(navigationSuccessful => {
         if (!(navigationSuccessful || force)) {
           this.testStatus$.next(oldTestStatus); // navigation was denied, test continues
@@ -410,10 +414,7 @@ export class TestControllerService {
 
   private finishTest(logEntryKey: string, lockTest: boolean = false): void {
     if (lockTest) {
-      this.bs.lockTest(this.testId, Date.now(), logEntryKey)
-        .subscribe(bsOk => {
-          this.testStatus$.next(bsOk ? TestControllerState.FINISHED : TestControllerState.ERROR);
-        });
+      this.bs.lockTest(this.testId, Date.now(), logEntryKey);
     } else {
       this.testStatus$.next(TestControllerState.FINISHED); // will not be logged, test is already locked maybe
     }
@@ -436,12 +437,10 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
-          this.router.navigate([`/t/${this.testId}/u/1`],
-            { state: { force } });
+          this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
           break;
         case UnitNavigationTarget.LAST:
-          this.router.navigate([`/t/${this.testId}/u/${this.allUnitIds.length}`],
-            { state: { force } });
+          this.router.navigate([`/t/${this.testId}/u/${this.allUnitIds.length}`], { state: { force } });
           break;
         case UnitNavigationTarget.END:
           this.terminateTest(

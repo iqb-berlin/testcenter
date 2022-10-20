@@ -19,7 +19,7 @@ import {
 import {
   FileDeletionReport, UploadReport, UploadResponse, UploadStatus
 } from './files/files.interfaces';
-import { ApiError, WorkspaceData } from '../app.interfaces';
+import { AppError, isAppError, WorkspaceData } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -35,22 +35,15 @@ export class BackendService {
     return this.http
       .get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`)
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getWorkspaceData Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getWorkspaceData Api-Error: ${err.code} ${err.description} `);
           return of(err.code);
         })
       );
   }
 
   getFiles(workspaceId: string): Observable<GetFileResponseData> {
-    return this.http
-      .get<GetFileResponseData>(`${this.serverUrl}workspace/${workspaceId}/files`)
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getFiles Api-Error: ${err.code} ${err.info} `);
-          return [];
-        })
-      );
+    return this.http.get<GetFileResponseData>(`${this.serverUrl}workspace/${workspaceId}/files`);
   }
 
   deleteFiles(workspaceId: string, filesToDelete: Array<string>): Observable<FileDeletionReport> {
@@ -58,11 +51,11 @@ export class BackendService {
     return this.http
       .request<FileDeletionReport>('delete', endpointUrl, { body: { f: filesToDelete } })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`deleteFiles Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`deleteFiles Api-Error: ${err.code} ${err.description} `);
           return of(<FileDeletionReport> {
             deleted: [],
-            not_allowed: [`deleteFiles Api-Error: ${err.code} ${err.info} `],
+            not_allowed: [`deleteFiles Api-Error: ${err.code} ${err.description} `],
             did_not_exist: []
           });
         })
@@ -73,8 +66,8 @@ export class BackendService {
     return this.http
       .get<ResultData[]>(`${this.serverUrl}workspace/${workspaceId}/results`, {})
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getResultData Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getResultData Api-Error: ${err.code} ${err.description} `);
           return [];
         })
       );
@@ -87,8 +80,8 @@ export class BackendService {
       { params: { groups: groups.join(',') } }
     )
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getResponses Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getResponses Api-Error: ${err.code} ${err.description} `);
           return [];
         })
       );
@@ -98,8 +91,8 @@ export class BackendService {
     return this.http
       .get<LogData[]>(`${this.serverUrl}workspace/${workspaceId}/logs`, { params: { groups: groups.join(',') } })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getLogs Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getLogs Api-Error: ${err.code} ${err.description} `);
           return [];
         })
       );
@@ -109,8 +102,8 @@ export class BackendService {
     return this.http
       .get<ReviewData[]>(`${this.serverUrl}workspace/${workspaceId}/reviews`, { params: { groups: groups.join(',') } })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getReviews Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getReviews Api-Error: ${err.code} ${err.description} `);
           return [];
         })
       );
@@ -121,8 +114,8 @@ export class BackendService {
       .request('delete', `${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } })
       .pipe(
         map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`deleteData Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`deleteData Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
@@ -132,8 +125,8 @@ export class BackendService {
     return this.http
       .get<ReviewData[]>(`${this.serverUrl}workspace/${workspaceId}/sys-check/reports/overview`)
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getSysCheckReportList Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getSysCheckReportList Api-Error: ${err.code} ${err.description} `);
           return [];
         })
       );
@@ -142,7 +135,8 @@ export class BackendService {
   getSysCheckReport(workspaceId: string, reports: string[], enclosure: string, delimiter: string, lineEnding: string)
     : Observable<Blob | boolean> {
     return this.http
-      .get(`${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
+      .get(
+        `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
         {
           params: {
             checkIds: reports.join(','),
@@ -154,10 +148,11 @@ export class BackendService {
             Accept: 'text/csv'
           },
           responseType: 'blob'
-        })
+        }
+      )
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getSysCheckReport Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getSysCheckReport Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
@@ -171,11 +166,11 @@ export class BackendService {
       { body: { checkIds } }
     )
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`deleteSysCheckReports Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`deleteSysCheckReports Api-Error: ${err.code} ${err.description} `);
           return of(<FileDeletionReport> {
             deleted: [],
-            not_allowed: [`deleteSysCheckReports Api-Error: ${err.code} ${err.info} `],
+            not_allowed: [`deleteSysCheckReports Api-Error: ${err.code} ${err.description} `],
             did_not_exist: []
           });
         })
@@ -184,7 +179,8 @@ export class BackendService {
 
   getReport(workspaceId: string, reportType: ReportType, dataIds: string[]) : Observable<Blob | boolean> {
     return this.http
-      .get(`${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
+      .get(
+        `${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
         {
           params: {
             dataIds: dataIds.join(',')
@@ -193,10 +189,11 @@ export class BackendService {
             Accept: 'text/csv'
           },
           responseType: 'blob'
-        })
+        }
+      )
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getReports Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getReports Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
@@ -206,8 +203,8 @@ export class BackendService {
     return this.http
       .get(`${this.serverUrl}workspace/${workspaceId}/file/${fileType}/${fileName}`, { responseType: 'blob' })
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`downloadFile Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`downloadFile Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
@@ -226,14 +223,14 @@ export class BackendService {
       }
     )
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`downloadFile Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`downloadFile Api-Error: ${err.code} ${err.description} `);
           let errorText = 'Hochladen nicht erfolgreich.';
           if (err instanceof HttpErrorResponse) {
             errorText = (err as HttpErrorResponse).message;
-          } else if (err instanceof ApiError) {
-            const slashPos = err.info.indexOf(' // ');
-            errorText = (slashPos > 0) ? err.info.substr(slashPos + 4) : err.info;
+          } else if (isAppError(err)) {
+            const slashPos = err.description.indexOf(' // ');
+            errorText = (slashPos > 0) ? err.description.substr(slashPos + 4) : err.description;
           }
           return of({
             progress: 0,

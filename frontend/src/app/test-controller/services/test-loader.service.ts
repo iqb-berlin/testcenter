@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, from, Observable, of, Subject, Subscription, throwError
+  BehaviorSubject, from, Observable, of, Subject, Subscription
 } from 'rxjs';
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
@@ -11,7 +11,7 @@ import {
 } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
-  TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
+  TestControllerState, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
 } from '../interfaces/test-controller.interfaces';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
@@ -39,29 +39,24 @@ export class TestLoaderService {
   }
 
   async loadTest(): Promise<void> {
-    let testData: TestData;
-    try {
-      this.reset();
+    this.reset();
 
-      this.tcs.testStatus$.next(TestControllerState.LOADING);
-      LocalStorage.setTestId(this.tcs.testId);
+    this.tcs.testStatus$.next(TestControllerState.LOADING);
+    LocalStorage.setTestId(this.tcs.testId);
 
-      testData = await this.bs.getTestData(this.tcs.testId).toPromise();
-      this.tcs.testMode = new TestMode(testData.mode);
-      this.restoreRestrictions(testData.laststate);
-      this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
+    const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
+    this.tcs.testMode = new TestMode(testData.mode);
+    this.restoreRestrictions(testData.laststate);
+    this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
 
-      await this.loadUnits();
-      this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
-      this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
-    } catch (e) {
-      return Promise.reject(e);
-    }
+    await this.loadUnits();
+    this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
+    this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
+
     return this.loadUnitContents()
       .then(() => {
         this.resumeTest(testData.laststate);
       });
-    // when this promise resolves, it is allowed to start the test
   }
 
   reset(): void {
@@ -125,8 +120,8 @@ export class TestLoaderService {
     return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
       .pipe(
         switchMap(unit => {
-          if (typeof unit === 'boolean') {
-            return throwError(`error requesting unit ${this.tcs.testId}/${unitDef.id}`);
+          if (!unit) {
+            throw new Error(`Unit is empty ${this.tcs.testId}/${unitDef.id}`);
           }
 
           this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
@@ -201,7 +196,7 @@ export class TestLoaderService {
         );
       });
 
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(resolve => {
       if (this.tcs.bookletConfig.loading_mode === 'LAZY') {
         resolve();
       }
@@ -232,7 +227,6 @@ export class TestLoaderService {
           })
         )
         .subscribe({
-          error: reject,
           complete: () => {
             if (this.tcs.testMode.saveResponses) {
               this.environment.loadTime = Date.now() - this.loadStartTimeStamp;
@@ -327,8 +321,11 @@ export class TestLoaderService {
     return rootTestlet;
   }
 
-  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element,
-                                          navigationLeaveRestrictions: NavigationLeaveRestrictions) {
+  private addTestletContentFromBookletXml(
+    targetTestlet: Testlet,
+    node: Element,
+    navigationLeaveRestrictions: NavigationLeaveRestrictions
+  ) {
     const childElements = TestLoaderService.getChildElements(node);
     if (childElements.length > 0) {
       let codeToEnter = '';

@@ -15,7 +15,7 @@ import { IdRoleData, UserData } from '../superadmin.interfaces';
 import {
   SuperadminPasswordRequestComponent
 } from '../superadmin-password-request/superadmin-password-request.component';
-import { ApiError } from '../../app.interfaces';
+import { AppError } from '../../app.interfaces';
 import { BackendService } from '../backend.service';
 import { NewUserComponent } from './newuser/new-user.component';
 import { NewPasswordComponent } from './newpassword/new-password.component';
@@ -82,9 +82,9 @@ export class UsersComponent implements OnInit {
             (<FormGroup>result).get('name').value,
             (<FormGroup>result).get('pw').value
           )
-            .pipe(catchError((err: ApiError) => {
+            .pipe(catchError((err: AppError) => {
               this.snackBar.open(
-                `Konnte Nutzer nicht hinzufügen: ${err.code} ${err.info} `,
+                `Konnte Nutzer nicht hinzufügen: ${err.code} ${err.description} `,
                 'Fehler',
                 { duration: 5000 }
               );
@@ -205,9 +205,9 @@ export class UsersComponent implements OnInit {
               selectedRows[0].id,
               (<FormGroup>result).get('pw').value
             )
-              .pipe(catchError((err: ApiError) => {
+              .pipe(catchError((err: AppError) => {
                 this.snackBar.open(
-                  `Konnte Kennwort nicht ändern: ${err.code} ${err.info} `,
+                  `Konnte Kennwort nicht ändern: ${err.code} ${err.description} `,
                   'Fehler',
                   { duration: 5000 }
                 );

@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ApplicationModule, NgModule } from '@angular/core';
+import { ApplicationModule, ErrorHandler, NgModule } from '@angular/core';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -26,7 +26,7 @@ import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BackendService } from './backend.service';
-import { AuthInterceptor } from './app.interceptor';
+import { AuthInterceptor } from './auth.interceptor';
 import { AppRootComponent } from './app-root/app-root.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
 import { LoginComponent } from './app-root/login/login.component';
@@ -37,6 +37,9 @@ import { StatusCardComponent } from './app-root/status-card/status-card.componen
 import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
+import { RetryInterceptor } from './retry.interceptor';
+import { AppErrorHandler } from './app.error-handler';
+import { ErrorInterceptor } from './error.interceptor';
 
 @NgModule({
   declarations: [
@@ -82,8 +85,22 @@ import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.compo
     BackendService,
     MatDialog,
     {
+      provide: ErrorHandler,
+      useClass: AppErrorHandler
+    },
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RetryInterceptor,
       multi: true
     },
     {

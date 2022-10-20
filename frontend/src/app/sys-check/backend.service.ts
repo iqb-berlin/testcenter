@@ -9,7 +9,7 @@ import {
   UnitAndPlayerContainer,
   SysCheckReport, ServerTime
 } from './sys-check.interfaces';
-import { ApiError } from '../app.interfaces';
+import { AppError } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +36,8 @@ export class BackendService {
       .put(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/report`, { ...sysCheckReport })
       .pipe(
         map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`saveReport Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`saveReport Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
@@ -52,8 +52,8 @@ export class BackendService {
           data.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
           return data;
         }),
-        catchError((err: ApiError) => {
-          console.warn(`getUnitAndPlayer Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`getUnitAndPlayer Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
@@ -63,8 +63,8 @@ export class BackendService {
     return this.http
       .get<ServerTime>(`${this.serverUrl}system/time`)
       .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`Could not get Time from Server: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          console.warn(`Could not get Time from Server: ${err.code} ${err.description} `);
           return of(null);
         })
       );

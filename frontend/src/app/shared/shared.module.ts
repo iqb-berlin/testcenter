@@ -9,11 +9,14 @@ import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { HttpClientModule } from '@angular/common/http';
+import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from './components/message-dialog/message-dialog.component';
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
+import { ErrorComponent } from './components/error/error.component';
 
 @NgModule({
   imports: [
@@ -24,9 +27,11 @@ import { AlertComponent } from './components/alert/alert.component';
     MatFormFieldModule,
     MatExpansionModule,
     MatSnackBarModule,
+    MatCardModule,
     FormsModule,
     MatInputModule,
-    HttpClientModule
+    HttpClientModule,
+    MatTooltipModule
   ],
   entryComponents: [
     ConfirmDialogComponent,
@@ -37,14 +42,16 @@ import { AlertComponent } from './components/alert/alert.component';
     MessageDialogComponent,
     BytesPipe,
     CustomtextPipe,
-    AlertComponent
+    AlertComponent,
+    ErrorComponent
   ],
   exports: [
     ConfirmDialogComponent,
     MessageDialogComponent,
     BytesPipe,
     CustomtextPipe,
-    AlertComponent
+    AlertComponent,
+    ErrorComponent
   ]
 })
 export class SharedModule {}

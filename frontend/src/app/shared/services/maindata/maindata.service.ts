@@ -22,8 +22,7 @@ export class MainDataService {
     return this._authData$.asObservable();
   }
 
-  errorReportingSilent = false;
-  isSpinnerOn$ = new BehaviorSubject<boolean>(false);
+  spinnerOn = false;
   progressVisualEnabled = true;
   appConfig: AppConfig = null;
   sysCheckAvailable = false;
@@ -67,14 +66,15 @@ export class MainDataService {
   constructor(
     private cts: CustomtextService
   ) {
+    this.appError$.subscribe(error => console.log({ error }));
   }
 
   showLoadingAnimation(): void {
-    this.isSpinnerOn$.next(true);
+    this.spinnerOn = true;
   }
 
   stopLoadingAnimation(): void {
-    this.isSpinnerOn$.next(false);
+    this.spinnerOn = false;
   }
 
   setAuthData(authData: AuthData = null): void {

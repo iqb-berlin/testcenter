@@ -28,7 +28,6 @@ import { ReviewDialogComponent } from '../review-dialog/review-dialog.component'
 import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { MaxTimerData } from '../../classes/test-controller.classes';
-import { ApiError } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -95,35 +94,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         });
 
       this.subscriptions.routing = this.route.params
-        .subscribe(params => {
+        .subscribe(async params => {
           this.tcs.testId = params.t;
-          this.tls.loadTest()
-            .then(() => {
-              this.startAppFocusLogging();
-              this.startConnectionStatusLogging();
-              this.setUnitScreenHeader();
-            })
-            .catch((error: string | Error | ApiError) => {
-              console.log('error', error);
-              if (typeof error === 'string') {
-                // interceptor already pushed mds.appError$
-                return;
-              }
-              if (error instanceof Error) {
-                this.mds.appError$.next({
-                  label: 'Kritischer Fehler',
-                  description: error.message,
-                  category: 'ERROR'
-                });
-              }
-              if (error instanceof ApiError) {
-                this.mds.appError$.next({
-                  label: error.code === 423 ? 'Test ist gesperrt' : 'Problem beim Laden des Tests',
-                  description: error.info,
-                  category: 'ERROR'
-                });
-              }
-            });
+          try {
+            await this.tls.loadTest();
+          } catch (err) {
+            console.log('!!', err);
+            Promise.reject(err);
+            return;
+          }
+          this.startAppFocusLogging();
+          this.startConnectionStatusLogging();
+          this.setUnitScreenHeader();
         });
 
       this.subscriptions.maxTimer = this.tcs.maxTimeTimer$

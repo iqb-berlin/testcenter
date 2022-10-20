@@ -4,20 +4,12 @@
   </a>
 </div>
 
-<div id="shield" *ngIf="showError"></div>
+<div id="main-alert-container" *ngIf="showError">
+  <error [onBeforeClose]="closeErrorBox.bind(this)"></error>
+</div>
 
-<mat-card *ngIf="showError" class="main-alert" (click)="closeErrorBox()" attr.data-cy="main-alert:{{errorData?.category}}">
-  <mat-card-title>
-    <alert *ngIf="errorData?.category === 'ERROR'" text="Fehler: {{ errorData?.label }}" level="error"></alert>
-    <alert *ngIf="errorData?.category === 'WARNING'" text="Warnung: {{ errorData?.label }}" level="warning"></alert>
-    <button mat-icon-button class="main-alert-close-button"><mat-icon>close</mat-icon></button>
-  </mat-card-title>
-  <mat-card-content>
-    {{ errorData?.description }}
-  </mat-card-content>
-</mat-card>
-
-<div class="spinner" *ngIf="mainDataService.isSpinnerOn$ | async">
+<div class="spinner" *ngIf="mainDataService.spinnerOn">
   <mat-spinner></mat-spinner>
 </div>
+
 <router-outlet></router-outlet>

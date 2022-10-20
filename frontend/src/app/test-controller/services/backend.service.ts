@@ -8,7 +8,7 @@ import { catchError, filter, map } from 'rxjs/operators';
 import {
   UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString
 } from '../interfaces/test-controller.interfaces';
-import { ApiError } from '../../app.interfaces';
+import { AppError } from '../../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +26,9 @@ export class BackendService {
       .put(`${this.serverUrl}test/${testId}/unit/${unitName}/review`, { priority, categories, entry })
       .pipe(
         map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`saveUnitReview Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          // TODO use the default error handler as reaction instead of the snackbar
+          console.warn(`saveUnitReview Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
@@ -38,27 +39,20 @@ export class BackendService {
       .put(`${this.serverUrl}test/${testId}/review`, { priority, categories, entry })
       .pipe(
         map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`saveTestReview Api-Error: ${err.code} ${err.info} `);
+        catchError((err: AppError) => {
+          // TODO use the default error handler as reaction instead of the snackbar
+          console.warn(`saveTestReview Api-Error: ${err.code} ${err.description} `);
           return of(false);
         })
       );
   }
 
   getTestData(testId: string): Observable<TestData> {
-    return this.http
-      .get<TestData>(`${this.serverUrl}test/${testId}`);
+    return this.http.get<TestData>(`${this.serverUrl}test/${testId}`);
   }
 
-  getUnitData(testId: string, unitid: string, unitalias: string): Observable<UnitData | boolean> {
-    return this.http
-      .get<UnitData>(`${this.serverUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`)
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getUnitData Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+  getUnitData(testId: string, unitid: string, unitalias: string): Observable<UnitData> {
+    return this.http.get<UnitData>(`${this.serverUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
   }
 
   getResource(testId: string, resId: string, versionning = false): Observable<LoadingFile> {
@@ -100,27 +94,19 @@ export class BackendService {
   }
 
   updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
-    return this.http
-      .patch(`${this.serverUrl}test/${testId}/state`, newState)
-      .subscribe({ error: (err: ApiError) => console.error(`updateTestState Api-Error: ${err.code} ${err.info}`) });
+    return this.http.patch(`${this.serverUrl}test/${testId}/state`, newState).subscribe();
   }
 
   addTestLog(testId: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http
-      .put(`${this.serverUrl}test/${testId}/log`, logEntries)
-      .subscribe({ error: (err: ApiError) => console.error(`addTestLog Api-Error: ${err.code} ${err.info}`) });
+    return this.http.put(`${this.serverUrl}test/${testId}/log`, logEntries).subscribe();
   }
 
   updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
-    return this.http
-      .patch(`${this.serverUrl}test/${testId}/unit/${unitName}/state`, newState)
-      .subscribe({ error: (err: ApiError) => console.error(`setUnitState Api-Error: ${err.code} ${err.info}`) });
+    return this.http.patch(`${this.serverUrl}test/${testId}/unit/${unitName}/state`, newState).subscribe();
   }
 
   addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http
-      .put(`${this.serverUrl}test/${testId}/unit/${unitName}/log`, logEntries)
-      .subscribe({ error: (err: ApiError) => console.error(`addUnitLog Api-Error: ${err.code} ${err.info}`) });
+    return this.http.put(`${this.serverUrl}test/${testId}/unit/${unitName}/log`, logEntries).subscribe();
   }
 
   notifyDyingTest(testId: string): void {
@@ -134,29 +120,16 @@ export class BackendService {
     }
   }
 
-  updateDataParts(testId: string, unitId: string,
-                  dataParts: KeyValuePairString, responseType: string): Observable<boolean> {
+  updateDataParts(testId: string, unitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
     const timeStamp = Date.now();
     return this.http
       .put(`${this.serverUrl}test/${testId}/unit/${unitId}/response`, { timeStamp, dataParts, responseType })
-      .pipe(
-        map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`Error storing unitResponse - Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+      .subscribe();
   }
 
-  lockTest(testId: string, timeStamp: number, message: string): Observable<boolean> {
+  lockTest(testId: string, timeStamp: number, message: string): Subscription {
     return this.http
       .patch<boolean>(`${this.serverUrl}test/${testId}/lock`, { timeStamp, message })
-      .pipe(
-        map(() => true),
-        catchError((err: ApiError) => {
-          console.warn(`lockBooklet Api-Error: ${err.code} ${err.info} `);
-          return of(false);
-        })
-      );
+      .subscribe();
   }
 }

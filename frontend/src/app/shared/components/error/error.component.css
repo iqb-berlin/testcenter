@@ -1,0 +1,39 @@
+:host {
+  display: contents;
+}
+
+#errorDetailsWrapper {
+  overflow: scroll;
+  border: 1px solid chocolate;
+  padding: 3px;
+  height: 300px; /* TODO use dynamic height for small screens */
+}
+
+#errorDetails {
+  font-family: monospace;
+  white-space: pre;
+}
+
+.mat-card-box {
+  background-color: var(--tc-box-background)
+}
+
+.main-alert {
+  width: 850px;
+  max-width: 90%;
+  max-height: 80%;
+  margin-top: 100px;
+  background-color: white;
+}
+
+
+mat-card-title {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.main-alert-close-button {
+  position: absolute !important;
+  right: 3px;
+  top: 3px;
+}

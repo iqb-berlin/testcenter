@@ -6,7 +6,7 @@ import {
   catchError, map, skipWhile, tap
 } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { ApiError } from '../../../app.interfaces';
+import { AppError } from '../../../app.interfaces';
 import { WebsocketService } from '../websocket/websocket.service';
 import { ConnectionStatus } from '../../interfaces/websocket-backend.interfaces';
 
@@ -57,12 +57,15 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
       .pipe(
         // TODO interceptor should have interfered and moved to error-page
         // https://github.com/iqb-berlin/testcenter-frontend/issues/53
-        catchError((err: ApiError) => {
+        catchError((err: AppError) => {
           this.connectionStatus$.next('error');
           return new Observable<T>();
         })
       )
       .subscribe((response: HttpResponse<T>) => {
+        if (!this.data$) {
+          return;
+        }
         this.data$.next(response.body);
         if (response.headers.has('SubscribeURI')) {
           this.wsUrl = response.headers.get('SubscribeURI');

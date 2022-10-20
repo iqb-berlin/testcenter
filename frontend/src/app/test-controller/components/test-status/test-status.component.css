@@ -19,7 +19,3 @@ mat-card {
   z-index: 999;
 }
 
-#errorDetails {
-  background: white;
-  font-family: monospace;
-}

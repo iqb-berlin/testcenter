@@ -6,7 +6,7 @@ import {
   BookletError, CommandResponse, GroupData, TestSessionData
 } from './group-monitor.interfaces';
 import { WebsocketBackendService } from '../shared/shared.module';
-import { ApiError } from '../app.interfaces';
+import { AppError } from '../app.interfaces';
 
 @Injectable()
 export class BackendService extends WebsocketBackendService<TestSessionData[]> {
@@ -27,7 +27,7 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
     return this.http
       .get(`${this.serverUrl}booklet/${bookletName}`, { headers, responseType: 'text' })
       .pipe(
-        catchError((err: ApiError) => {
+        catchError((err: AppError) => {
           if (err.code === 404) {
             // could potentially happen when booklet file was removed since test was started
             // TODO interceptor be omitted
