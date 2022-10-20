@@ -216,7 +216,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private open(currentUnitSequenceId: number): void {
     this.currentUnitSequenceId = currentUnitSequenceId;
     this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
-    this.mds.appSubTitle$.next(`Aufgabe ${this.currentUnitSequenceId}`);
 
     while (this.iFrameHostElement.hasChildNodes()) {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
@@ -226,6 +225,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.knownPages = [];
 
     this.currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
+
+    this.mds.appSubTitle$.next(this.currentUnit.unitDef.title);
 
     if (this.subscriptions.loading) {
       this.subscriptions.loading.unsubscribe();
