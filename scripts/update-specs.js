@@ -23,7 +23,7 @@ const sampledataDir = fs.realpathSync(`${__dirname}'/../sampledata`);
 // TODO make private task
 exports.mergeSpecFiles = () => {
   cliPrint.headline('compile spec files to one');
-  return gulp.src(`${docsDir}/src/api/*.spec.yml`)
+  return gulp.src(`${docsDir}/api/*.spec.yml`)
     .on('data', d => { console.log(`File: ${d.path}`); })
     .on('error', e => { console.warn(e); })
     .pipe(yamlMerge('compiled.specs.yml'))
@@ -37,7 +37,7 @@ exports.prepareDocsDestinationFolder = done => {
   if (!fs.existsSync(`${docsDir}/dist/api`)) {
     fs.mkdirSync(`${docsDir}/dist/api`);
   }
-  fs.copyFileSync(`${docsDir}/src/api/index.html`, `${docsDir}/dist/api/index.html`);
+  fs.copyFileSync(`${docsDir}/api/index.html`, `${docsDir}/dist/api/index.html`);
   done();
 };
 

@@ -48,6 +48,7 @@ get_version_list_from_api() {
   #read  -p 'Show only stable versions [Y/n]: ' -r -n 1 -e show_stable_versions
   # so koennte man betas filtern: select(.value.prerelease == true)
   versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
+  echo "[\"Index\",\"Tag name\", \"Release title\"]" | jq -r '@tsv'
   echo "$versions" | jq -r 'map({tag_name, name, prerelease})
                           | to_entries
                           | map({
@@ -71,12 +72,14 @@ get_version_list_from_api() {
 
 download_files() {
   echo "Downloading files..."
+  mkdir -p config
   wget -nv -O .env https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/.env
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O manage.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/manage.sh
+  wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
   chmod +x manage.sh
   echo "Download done"
 }
@@ -92,7 +95,6 @@ customize_settings() {
 set_tls() {
   read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
   if [[ $TLS =~ ^[yY]$ ]]; then
-    mkdir config
     touch config/cert_config.yml
     echo "tls:
   certificates:
