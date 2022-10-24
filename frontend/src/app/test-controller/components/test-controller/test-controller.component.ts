@@ -365,7 +365,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private refreshUnitMenu(): void {
-    this.sidebarOpen = false;
     this.unitNavigationList = [];
     if (!this.tcs.rootTestlet) {
       return;
@@ -388,10 +387,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           .scrollIntoView({ inline: 'center' });
       }, 50);
     }
-  }
-
-  toggleSidebar(): void {
-    this.sidebarOpen = !this.sidebarOpen;
   }
 
   private setUnitScreenHeader(): void {

@@ -104,7 +104,7 @@
       </button>
       <button
         mat-button
-        (click)="toggleSidebar()"
+        (click)="unitMenu.toggle(true)"
         *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
         matTooltip="Zur Aufgabenliste"
       >
@@ -119,8 +119,8 @@
   hasBackdrop="true"
 >
   <mat-sidenav
-    [(opened)]="sidebarOpen"
-    (click)="toggleSidebar()"
+    #unitMenu
+    (click)="unitMenu.toggle(false)"
     mode="over"
     class="sidebar"
     fixedInViewport="true"
