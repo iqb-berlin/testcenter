@@ -16,7 +16,6 @@ import { UnitControllerData } from '../classes/test-controller.classes';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
-import { LocalStorage } from '../utils/local-storage.util';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
@@ -29,16 +28,20 @@ export class UnitActivateGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
     const targetUnitSequenceId: number = Number(route.params.u);
     if (this.tcs.rootTestlet === null) {
-      const oldTestId = LocalStorage.getTestId();
-      if (oldTestId) {
-        this.router.navigate([`/t/${oldTestId}`]);
-      } else {
+      // unit-route got called before test is loaded. This happens on page-reload (F5).
+      const testId = Number(route.parent.params.t);
+      if (!testId) {
         this.router.navigate(['/']);
+        return false;
       }
+      // ignore unit-id from route, because test will get last opened unit ID from testStatus.CURRENT_UNIT_ID
+      console.log('goto', testId);
+      this.router.navigate([`/t/${testId}`]);
       return false;
     }
     const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
     if (!newUnit) {
+      // a unit-nr was entered in the URl which does not exist
       console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
       return false;
     }
@@ -164,9 +167,13 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     return of(true);
   }
 
-  canDeactivate(component: UnithostComponent, currentRoute: ActivatedRouteSnapshot,
-                currentState: RouterStateSnapshot, nextState: RouterStateSnapshot): Observable<boolean> | boolean {
-    console.log(nextState);
+  canDeactivate(
+    component: UnithostComponent,
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState: RouterStateSnapshot
+  ): Observable<boolean> | boolean {
+    console.log('nextState', nextState);
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
       return true;
     }

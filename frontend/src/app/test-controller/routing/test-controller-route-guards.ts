@@ -5,7 +5,6 @@ import { CanActivate, CanDeactivate } from '@angular/router';
 import { TestControllerComponent } from '../components/test-controller/test-controller.component';
 import { TestControllerState, UnitNavigationTarget } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../services/test-controller.service';
-import { LocalStorage } from '../utils/local-storage.util';
 
 @Injectable()
 export class TestControllerDeactivateGuard implements CanDeactivate<TestControllerComponent> {
@@ -22,7 +21,6 @@ export class TestControllerDeactivateGuard implements CanDeactivate<TestControll
         return false;
       }
     }
-    LocalStorage.removeTestId();
     return true;
   }
 }

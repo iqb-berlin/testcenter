@@ -34,8 +34,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;
 
-  showPageNav = false;
-
   currentUnitSequenceId = -1;
 
   private itemplayerSessionId = '';
