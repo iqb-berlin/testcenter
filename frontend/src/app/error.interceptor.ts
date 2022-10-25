@@ -49,7 +49,8 @@ export class ErrorInterceptor implements HttpInterceptor {
         label: 'Netzwerkfehler',
         description: httpError.error.type,
         details: httpError.message,
-        type: 'network'
+        type: 'network',
+        errorId: httpError.headers.get('error-id')
       });
     }
 
@@ -60,9 +61,25 @@ export class ErrorInterceptor implements HttpInterceptor {
         label: 'Fehler in der Netzwerkverbindung',
         description: httpError.error.message,
         type: 'network',
-        details: httpError.message
+        details: httpError.message,
+        errorId: httpError.headers.get('error-id')
       });
-      // return new ApiError(httpError.status, `${httpError.message} // ${httpError.error}`);
+    }
+
+    if (httpError.error instanceof Blob) {
+      console.log('httpError.error instanceof Blob');
+      httpError.error.text()
+        .then(text => {
+          throw new AppError({
+            code: httpError.status,
+            label: 'XYZg',
+            description: text,
+            type: 'network',
+            details: `details:${httpError.message}`,
+            errorId: httpError.headers.get('error-id')
+          });
+        });
+      return null;
     }
 
     let statusMessage: string;

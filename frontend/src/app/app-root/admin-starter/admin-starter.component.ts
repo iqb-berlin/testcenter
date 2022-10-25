@@ -19,9 +19,11 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   isSuperAdmin = false;
   private getWorkspaceDataSubscription: Subscription | null = null;
 
-  constructor(private router: Router,
-              private backendService: BackendService,
-              public mainDataService: MainDataService) { }
+  constructor(
+    private router: Router,
+    private backendService: BackendService,
+    public mainDataService: MainDataService
+  ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -43,7 +45,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
                 this.workspaces = [];
                 this.getWorkspaceDataSubscription = from(authData.access[AuthAccessKeyType.WORKSPACE_ADMIN])
                   .pipe(
-                    concatMap(workspaceId => this.backendService.getWorkspaceData(workspaceId))
+                    concatMap(workspaceId => this.backendService.getWorkspace(workspaceId))
                   ).subscribe(
                     wsData => this.workspaces.push(wsData),
                     () => this.mainDataService.stopLoadingAnimation(),

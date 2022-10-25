@@ -142,7 +142,7 @@ class Workspace {
                 $report['error'][] = $fileToDelete;
             }
 
-            if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
+            if ($this->isPathLegal($fileToDeletePath) and is_file($fileToDeletePath) and unlink($fileToDeletePath)) {
 
                 $report['deleted'][] = $fileToDelete;
 

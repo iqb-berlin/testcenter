@@ -17,23 +17,26 @@ export class WorkspaceDataService {
   wsRole = 'RW';
   wsName = '';
 
-  constructor(private backendService: BackendService,
-              private deleteConfirmDialog: MatDialog,
-              private mainDataService: MainDataService,
-              private messageService: MessageService,
-              public snackBar: MatSnackBar) { }
+  constructor(
+    private backendService: BackendService,
+    private deleteConfirmDialog: MatDialog,
+    private mainDataService: MainDataService,
+    private messageService: MessageService,
+    public snackBar: MatSnackBar
+  ) { }
 
   downloadReport(dataIds: string[], reportType: ReportType, filename: string): void {
     this.mainDataService.showLoadingAnimation();
 
-    this.backendService.getReport(this.workspaceID, reportType, dataIds).subscribe((response: Blob | boolean) => {
-      this.mainDataService.stopLoadingAnimation();
+    this.backendService.getReport(this.workspaceID, reportType, dataIds)
+      .subscribe((response: Blob) => {
+        this.mainDataService.stopLoadingAnimation();
 
-      if (response && (response as Blob).size > 0) {
-        FileService.saveBlobToFile((response as Blob), filename);
-      } else {
-        this.messageService.showError('Keine Daten verfügbar.');
-      }
-    });
+        if (response.size > 0) {
+          FileService.saveBlobToFile(response, filename);
+        } else {
+          this.messageService.showError('Keine Daten verfügbar.');
+        }
+      });
   }
 }

@@ -28,17 +28,8 @@ export class BackendService {
     return this.http.put<AuthData>(`${this.serverUrl}session/person`, { code });
   }
 
-  getWorkspaceData(workspaceId: string): Observable<WorkspaceData> {
-    return this.http
-      .get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`)
-      .pipe(catchError(() => {
-        console.warn(`get workspace data failed for ${workspaceId}`);
-        return of(<WorkspaceData>{
-          id: workspaceId,
-          name: workspaceId,
-          role: 'n.d.'
-        });
-      }));
+  getWorkspace(workspaceId: string): Observable<WorkspaceData> {
+    return this.http.get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`);
   }
 
   getGroupData(groupName: string): Observable<AccessObject> {

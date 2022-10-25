@@ -39,13 +39,12 @@ export class SyscheckComponent implements OnInit {
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    this.bs.getSysCheckReportList(this.wds.workspaceID).subscribe(
-      (resultData: SysCheckStatistics[]) => {
+    this.bs.getSysCheckReportsOverview(this.wds.workspaceID)
+      .subscribe((resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
         this.mds.stopLoadingAnimation();
-      }
-    );
+      });
   }
 
   isAllSelected(): boolean {
@@ -97,8 +96,11 @@ export class SyscheckComponent implements OnInit {
         }
       });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result !== false) {
+      dialogRef.afterClosed()
+        .subscribe(result => {
+          if (result === false) {
+            return;
+          }
           this.mds.showLoadingAnimation();
           this.bs.deleteSysCheckReports(this.wds.workspaceID, selectedReports).subscribe(fileDeletionReport => {
             const message = [];
@@ -111,8 +113,7 @@ export class SyscheckComponent implements OnInit {
             this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
             this.updateTable();
           });
-        }
-      });
+        });
     }
   }
 }

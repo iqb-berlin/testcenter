@@ -41,7 +41,7 @@ export class ResultsComponent implements OnInit {
 
   updateTable(): void {
     this.tableselectionCheckbox.clear();
-    this.backendService.getResultData(this.workspaceDataService.workspaceID).subscribe(
+    this.backendService.getResults(this.workspaceDataService.workspaceID).subscribe(
       (resultData: ResultData[]) => {
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
         this.resultDataSource.sort = this.sort;
@@ -112,20 +112,19 @@ export class ResultsComponent implements OnInit {
         }
       });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result !== false) {
+      dialogRef.afterClosed()
+        .subscribe(result => {
+          if (result !== false) {
+            return;
+          }
           this.mainDataService.showLoadingAnimation();
-          this.backendService.deleteData(this.workspaceDataService.workspaceID, selectedGroups).subscribe((ok: boolean) => {
-            if (ok) {
-              this.snackBar.open('Löschen erfolgreich.', 'Ok.', { duration: 3000 });
-            } else {
-              this.snackBar.open('Löschen nicht erfolgreich.', 'Fehler', { duration: 3000 });
-            }
-            this.tableselectionCheckbox.clear();
-            this.updateTable();
-          });
-        }
-      });
+          this.backendService.deleteResponses(this.workspaceDataService.workspaceID, selectedGroups)
+            .subscribe(() => {
+              this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });
+              this.tableselectionCheckbox.clear();
+              this.updateTable();
+            });
+        });
     }
   }
 }

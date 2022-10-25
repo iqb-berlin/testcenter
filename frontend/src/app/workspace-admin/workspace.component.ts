@@ -30,15 +30,13 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       this.mainDataService.appSubTitle$.next('');
       this.routingSubscription = this.route.params.subscribe((params: Params) => {
         this.workspaceDataService.workspaceID = params.ws;
-        // this.backendService.getWorkspaceData(params.ws).subscribe(workspaceData => {
-        //   if (typeof workspaceData !== 'number') {
-        //     this.workspaceDataService.wsName = workspaceData.name;
-        //     this.workspaceDataService.wsRole = workspaceData.role;
-        //     this.mainDataService.appSubTitle$.next(
-        //       `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
-        //     );
-        //   }
-        // });
+        this.backendService.getWorkspace(params.ws).subscribe(workspaceData => {
+          this.workspaceDataService.wsName = workspaceData.name;
+          this.workspaceDataService.wsRole = workspaceData.role;
+          this.mainDataService.appSubTitle$.next(
+            `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
+          );
+        });
       });
     });
   }

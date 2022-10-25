@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
 import { Injectable, Inject, SkipSelf } from '@angular/core';
-import {
-  HttpClient, HttpErrorResponse, HttpEvent, HttpEventType
-} from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
@@ -10,16 +8,13 @@ import { catchError, filter, map } from 'rxjs/operators';
 import {
   GetFileResponseData,
   SysCheckStatistics,
-  ReviewData,
-  LogData,
-  UnitResponse,
   ResultData,
   ReportType
 } from './workspace.interfaces';
 import {
   FileDeletionReport, UploadReport, UploadResponse, UploadStatus
 } from './files/files.interfaces';
-import { AppError, isAppError, WorkspaceData } from '../app.interfaces';
+import { AppError, WorkspaceData } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -31,15 +26,8 @@ export class BackendService {
   ) {
   }
 
-  getWorkspaceData(workspaceId: string): Observable<WorkspaceData | number> {
-    return this.http
-      .get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`)
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getWorkspaceData Api-Error: ${err.code} ${err.description} `);
-          return of(err.code);
-        })
-      );
+  getWorkspace(workspaceId: string): Observable<WorkspaceData> {
+    return this.http.get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`);
   }
 
   getFiles(workspaceId: string): Observable<GetFileResponseData> {
@@ -47,137 +35,35 @@ export class BackendService {
   }
 
   deleteFiles(workspaceId: string, filesToDelete: Array<string>): Observable<FileDeletionReport> {
-    const endpointUrl = `${this.serverUrl}workspace/${workspaceId}/files`;
-    return this.http
-      .request<FileDeletionReport>('delete', endpointUrl, { body: { f: filesToDelete } })
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`deleteFiles Api-Error: ${err.code} ${err.description} `);
-          return of(<FileDeletionReport> {
-            deleted: [],
-            not_allowed: [`deleteFiles Api-Error: ${err.code} ${err.description} `],
-            did_not_exist: []
-          });
-        })
-      );
+    return this.http.request<FileDeletionReport>(
+      'delete',
+      `${this.serverUrl}workspace/${workspaceId}/files`,
+      { body: { f: filesToDelete } }
+    );
   }
 
-  getResultData(workspaceId: string): Observable<ResultData[]> {
-    return this.http
-      .get<ResultData[]>(`${this.serverUrl}workspace/${workspaceId}/results`, {})
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getResultData Api-Error: ${err.code} ${err.description} `);
-          return [];
-        })
-      );
+  getResults(workspaceId: string): Observable<ResultData[]> {
+    return this.http.get<ResultData[]>(`${this.serverUrl}workspace/${workspaceId}/results`, {});
   }
 
-  getResponses(workspaceId: string, groups: string[]): Observable<UnitResponse[]> {
+  deleteResponses(workspaceId: string, groups: string[]): Observable<void> {
     return this.http
-      .get<UnitResponse[]>(
-      `${this.serverUrl}workspace/${workspaceId}/responses`,
-      { params: { groups: groups.join(',') } }
-    )
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getResponses Api-Error: ${err.code} ${err.description} `);
-          return [];
-        })
-      );
+      .request<void>('delete', `${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } });
   }
 
-  getLogs(workspaceId: string, groups: string[]): Observable<LogData[]> {
-    return this.http
-      .get<LogData[]>(`${this.serverUrl}workspace/${workspaceId}/logs`, { params: { groups: groups.join(',') } })
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getLogs Api-Error: ${err.code} ${err.description} `);
-          return [];
-        })
-      );
+  getSysCheckReportsOverview(workspaceId: string): Observable<SysCheckStatistics[]> {
+    return this.http.get<SysCheckStatistics[]>(`${this.serverUrl}workspace/${workspaceId}/sys-check/reports/overview`);
   }
 
-  getReviews(workspaceId: string, groups: string[]): Observable<ReviewData[]> {
-    return this.http
-      .get<ReviewData[]>(`${this.serverUrl}workspace/${workspaceId}/reviews`, { params: { groups: groups.join(',') } })
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getReviews Api-Error: ${err.code} ${err.description} `);
-          return [];
-        })
-      );
-  }
-
-  deleteData(workspaceId: string, groups: string[]): Observable<boolean> {
-    return this.http
-      .request('delete', `${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } })
-      .pipe(
-        map(() => true),
-        catchError((err: AppError) => {
-          console.warn(`deleteData Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
-      );
-  }
-
-  getSysCheckReportList(workspaceId: string): Observable<SysCheckStatistics[]> {
-    return this.http
-      .get<ReviewData[]>(`${this.serverUrl}workspace/${workspaceId}/sys-check/reports/overview`)
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getSysCheckReportList Api-Error: ${err.code} ${err.description} `);
-          return [];
-        })
-      );
-  }
-
-  getSysCheckReport(workspaceId: string, reports: string[], enclosure: string, delimiter: string, lineEnding: string)
-    : Observable<Blob | boolean> {
-    return this.http
-      .get(
-        `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
-        {
-          params: {
-            checkIds: reports.join(','),
-            delimiter,
-            enclosure,
-            lineEnding
-          },
-          headers: {
-            Accept: 'text/csv'
-          },
-          responseType: 'blob'
-        }
-      )
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getSysCheckReport Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
-      );
-  }
-
-  deleteSysCheckReports(workspaceId: string, checkIds: string[]): Observable <FileDeletionReport> {
-    return this.http
-      .request<FileDeletionReport>(
+  deleteSysCheckReports(workspaceId: string, checkIds: string[]): Observable<FileDeletionReport> {
+    return this.http.request<FileDeletionReport>(
       'delete',
       `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
       { body: { checkIds } }
-    )
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`deleteSysCheckReports Api-Error: ${err.code} ${err.description} `);
-          return of(<FileDeletionReport> {
-            deleted: [],
-            not_allowed: [`deleteSysCheckReports Api-Error: ${err.code} ${err.description} `],
-            did_not_exist: []
-          });
-        })
-      );
+    );
   }
 
-  getReport(workspaceId: string, reportType: ReportType, dataIds: string[]) : Observable<Blob | boolean> {
+  getReport(workspaceId: string, reportType: ReportType, dataIds: string[]) : Observable<Blob> {
     return this.http
       .get(
         `${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
@@ -190,27 +76,15 @@ export class BackendService {
           },
           responseType: 'blob'
         }
-      )
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`getReports Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
       );
   }
 
-  downloadFile(workspaceId: string, fileType: string, fileName: string): Observable<Blob | boolean> {
+  getFile(workspaceId: string, fileType: string, fileName: string): Observable<Blob> {
     return this.http
-      .get(`${this.serverUrl}workspace/${workspaceId}/file/${fileType}/${fileName}`, { responseType: 'blob' })
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`downloadFile Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
-      );
+      .get(`${this.serverUrl}workspace/${workspaceId}/file/${fileType}/${fileName}`, { responseType: 'blob' });
   }
 
-  uploadFile(workspaceId: string, formData: FormData): Observable<UploadResponse> {
+  postFile(workspaceId: string, formData: FormData): Observable<UploadResponse> {
     return this.http.post<UploadReport>(
       `${this.serverUrl}workspace/${workspaceId}/file`,
       formData,
@@ -223,22 +97,15 @@ export class BackendService {
       }
     )
       .pipe(
-        catchError((err: AppError) => {
-          console.warn(`downloadFile Api-Error: ${err.code} ${err.description} `);
-          let errorText = 'Hochladen nicht erfolgreich.';
-          if (err instanceof HttpErrorResponse) {
-            errorText = (err as HttpErrorResponse).message;
-          } else if (isAppError(err)) {
-            const slashPos = err.description.indexOf(' // ');
-            errorText = (slashPos > 0) ? err.description.substr(slashPos + 4) : err.description;
+        catchError((err: AppError) => of({
+          progress: 0,
+          status: UploadStatus.error,
+          report: { Upload: { error: [err.description] } }
+        })),
+        map((event: HttpEvent<UploadReport> | UploadResponse) => {
+          if ('progress' in event) {
+            return event;
           }
-          return of({
-            progress: 0,
-            status: UploadStatus.error,
-            report: { '': { error: [errorText] } }
-          });
-        }),
-        map((event: HttpEvent<UploadReport>) => {
           if (event.type === HttpEventType.UploadProgress) {
             return {
               progress: Math.floor((event.loaded * 100) / event.total),

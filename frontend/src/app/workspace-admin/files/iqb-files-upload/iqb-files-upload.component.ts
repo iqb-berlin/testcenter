@@ -43,14 +43,11 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
   /* Http request input bindings */
 
-  @Input()
-  fileAlias = 'file';
+  @Input() fileAlias = 'file';
 
-  @Input()
-  folderName = '';
+  @Input() folderName = '';
 
-  @Input()
-  folder = '';
+  @Input() folder = '';
 
   @Input()
   get file(): File {
@@ -100,7 +97,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.fileUploadSubscription = this.bs.uploadFile(this.wds.workspaceID, formData)
+    this.fileUploadSubscription = this.bs.postFile(this.wds.workspaceID, formData)
       .subscribe(res => {
         this.requestResponse = res.report;
         this.status = res.status;

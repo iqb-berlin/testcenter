@@ -119,21 +119,22 @@ export class FilesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
           this.mds.showLoadingAnimation();
-          this.bs.deleteFiles(this.wds.workspaceID, filesToDelete).subscribe((fileDeletionReport: FileDeletionReport) => {
-            const message = [];
-            if (fileDeletionReport.deleted.length > 0) {
-              message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
-            }
-            if (fileDeletionReport.not_allowed.length > 0) {
-              message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
-            }
-            if (fileDeletionReport.was_used.length > 0) {
-              message.push(`${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet
-              und wurden nicht gelöscht.`);
-            }
-            this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
-            this.updateFileList();
-          });
+          this.bs.deleteFiles(this.wds.workspaceID, filesToDelete)
+            .subscribe((fileDeletionReport: FileDeletionReport) => {
+              const message = [];
+              if (fileDeletionReport.deleted.length > 0) {
+                message.push(`${fileDeletionReport.deleted.length} Dateien erfolgreich gelöscht.`);
+              }
+              if (fileDeletionReport.not_allowed.length > 0) {
+                message.push(`${fileDeletionReport.not_allowed.length} Dateien konnten nicht gelöscht werden.`);
+              }
+              if (fileDeletionReport.was_used.length > 0) {
+                message.push(`${fileDeletionReport.was_used.length} Dateien werden von anderen verwendet
+                und wurden nicht gelöscht.`);
+              }
+              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
+              this.updateFileList();
+            });
         }
       });
     } else {
@@ -225,15 +226,11 @@ export class FilesComponent implements OnInit {
 
   download(file: IQBFile): void {
     this.mds.showLoadingAnimation();
-    this.bs.downloadFile(this.wds.workspaceID, file.type, file.name)
-      .subscribe(
-        (fileData: Blob | boolean) => {
-          this.mds.stopLoadingAnimation();
-          if (fileData !== false) {
-            FileService.saveBlobToFile(fileData as Blob, file.name);
-          }
-        }
-      );
+    this.bs.getFile(this.wds.workspaceID, file.type, file.name)
+      .subscribe((fileData: Blob) => {
+        this.mds.stopLoadingAnimation();
+        FileService.saveBlobToFile(fileData as Blob, file.name);
+      });
   }
 
   setTableSorting(sort: Sort): void {
