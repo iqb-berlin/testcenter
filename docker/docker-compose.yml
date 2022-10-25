@@ -64,7 +64,7 @@ services:
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
     volumes:
-      - testcenter_backend_data:/var/www/html/data
+      - testcenter_backend_data:/var/www/data
     networks:
       testcenter:
 
