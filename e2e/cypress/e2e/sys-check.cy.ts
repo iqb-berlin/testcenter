@@ -27,7 +27,7 @@ describe('Sys-Check', () => {
       .should('exist');
     cy.get('#syscheck-previous-step')
       .should('be.visible');
-    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 30000 });
+    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 60000 });
     cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/u`);
