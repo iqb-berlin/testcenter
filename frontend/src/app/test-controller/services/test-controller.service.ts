@@ -171,8 +171,12 @@ export class TestControllerService {
     return normalisedId;
   }
 
-  updateUnitStateDataParts(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString,
-                           unitStateDataType: string): void {
+  updateUnitStateDataParts(
+    unitDbKey: string,
+    sequenceId: number,
+    dataParts: KeyValuePairString,
+    unitStateDataType: string
+  ): void {
     const changedParts:KeyValuePairString = {};
 
     Object.keys(dataParts)
@@ -328,7 +332,11 @@ export class TestControllerService {
   }
 
   newUnitStateCurrentPage(
-    unitDbKey: string, unitSequenceId: number, pageNr: number, pageId: string, pageCount: number
+    unitDbKey: string,
+    unitSequenceId: number,
+    pageNr: number,
+    pageId: string,
+    pageCount: number
   ): void {
     this.unitStateCurrentPages[unitSequenceId] = pageId;
     if (this.testMode.saveResponses) {
@@ -396,7 +404,9 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
+    this.testStatus$.next(
+      TestControllerState.PAUSED ? TestControllerState.TERMINATED_PAUSED : TestControllerState.TERMINATED
+    ); // last state that will and can be logged
 
     this.router.navigate(['/'], { state: { force } })
       .then(navigationSuccessful => {
@@ -436,12 +446,13 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
-          this.router.navigate([`/t/${this.testId}/u/1`],
-            { state: { force } });
+          this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
           break;
         case UnitNavigationTarget.LAST:
-          this.router.navigate([`/t/${this.testId}/u/${this.allUnitIds.length}`],
-            { state: { force } });
+          this.router.navigate(
+            [`/t/${this.testId}/u/${this.allUnitIds.length}`],
+            { state: { force } }
+          );
           break;
         case UnitNavigationTarget.END:
           this.terminateTest(
