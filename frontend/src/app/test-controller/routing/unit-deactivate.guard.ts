@@ -1,53 +1,21 @@
-/* eslint-disable max-classes-per-file,no-console */
+/* eslint-disable no-console */
 
 import { map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {
-  ActivatedRouteSnapshot, CanActivate, CanDeactivate, Router, RouterStateSnapshot
+  ActivatedRouteSnapshot, CanDeactivate, Router, RouterStateSnapshot
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  ConfirmDialogComponent, ConfirmDialogData, CustomtextService, MainDataService
+  ConfirmDialogComponent, ConfirmDialogData, CustomtextService
 } from '../../shared/shared.module';
 import { NavigationLeaveRestrictionValue, TestControllerState } from '../interfaces/test-controller.interfaces';
 import { UnitControllerData } from '../classes/test-controller.classes';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
-
-@Injectable()
-export class UnitActivateGuard implements CanActivate {
-  constructor(
-    private tcs: TestControllerService,
-    private mds: MainDataService,
-    private router: Router
-  ) {}
-
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
-    const targetUnitSequenceId: number = Number(route.params.u);
-    if (this.tcs.rootTestlet === null) {
-      // unit-route got called before test is loaded. This happens on page-reload (F5).
-      const testId = Number(route.parent.params.t);
-      if (!testId) {
-        this.router.navigate(['/']);
-        return false;
-      }
-      // ignore unit-id from route, because test will get last opened unit ID from testStatus.CURRENT_UNIT_ID
-      console.log('goto', testId);
-      this.router.navigate([`/t/${testId}`]);
-      return false;
-    }
-    const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
-    if (!newUnit) {
-      // a unit-nr was entered in the URl which does not exist
-      console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
-      return false;
-    }
-    return true;
-  }
-}
 
 @Injectable()
 export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
@@ -125,8 +93,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (
       (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.responseComplete) > -1) &&
       this.tcs.hasUnitResponseProgress(this.tcs.currentUnitSequenceId) &&
-      (['complete', 'complete-and-valid']
-        .indexOf(this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)) === -1
+      (['complete', 'complete-and-valid'].indexOf(this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)) === -1
       )
     ) {
       reasons.push('responsesIncomplete');
@@ -207,5 +174,3 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       );
   }
 }
-
-export const unitRouteGuards = [UnitActivateGuard, UnitDeactivateGuard];
