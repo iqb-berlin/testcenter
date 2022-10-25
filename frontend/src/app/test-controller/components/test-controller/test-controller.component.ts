@@ -266,6 +266,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case 'goto':
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
+        console.log('goto', params);
         // eslint-disable-next-line no-case-declarations
         let gotoTarget: string;
         if ((params.length === 2) && (params[0] === 'id')) {
@@ -275,8 +276,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
-          this.tcs.interruptMaxTimer();
-
+          this.tcs.cancelMaxTimer();
           const targetUnit = this.tcs.rootTestlet.getUnitAt(parseInt(gotoTarget, 10));
           if (targetUnit) {
             targetUnit.codeRequiringTestlets
