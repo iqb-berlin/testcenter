@@ -40,8 +40,7 @@
 
         <mat-card-content *ngIf="codeRequiringTestlets.length">
           <ng-container *ngFor="let testlet of codeRequiringTestlets">
-            <mat-form-field style="display: block">
-              <mat-label>{{testlet.title || ('Block ' + (testlet.sequenceId + 1))}}</mat-label>
+            <mat-form-field style="display: block" >
               <input
                 matInput
                 type="text"
@@ -49,6 +48,7 @@
                 style="text-transform:uppercase"
                 (keydown)="onKeydownInClearCodeInput($event)"
                 data-cy="unlockUnit"
+                matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.title || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
               >
               <mat-hint align="start" *ngIf="testlet.codePrompt">{{testlet.codePrompt}}</mat-hint>
               <mat-hint *ngIf="!testlet.codePrompt">

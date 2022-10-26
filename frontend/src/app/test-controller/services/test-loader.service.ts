@@ -18,7 +18,6 @@ import {
 } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
-import { LocalStorage } from '../utils/local-storage.util';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +43,6 @@ export class TestLoaderService {
       this.reset();
 
       this.tcs.testStatus$.next(TestControllerState.LOADING);
-      LocalStorage.setTestId(this.tcs.testId);
 
       testData = await this.bs.getTestData(this.tcs.testId).toPromise();
       this.tcs.testMode = new TestMode(testData.mode);

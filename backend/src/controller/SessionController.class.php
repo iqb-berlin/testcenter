@@ -137,7 +137,7 @@ class SessionController extends Controller {
 
     private static function getBookletFolder(int $workspaceId): BookletsFolder {
 
-        if (!self::$_bookletFolders[$workspaceId]) {
+        if (!isset(self::$_bookletFolders[$workspaceId])) {
 
             self::$_bookletFolders[$workspaceId] = new BookletsFolder($workspaceId);
         }

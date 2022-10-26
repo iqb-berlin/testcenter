@@ -404,9 +404,7 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(
-      TestControllerState.PAUSED ? TestControllerState.TERMINATED_PAUSED : TestControllerState.TERMINATED
-    ); // last state that will and can be logged
+    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
 
     this.router.navigate(['/'], { state: { force } })
       .then(navigationSuccessful => {
@@ -468,7 +466,8 @@ export class TestControllerService {
             {
               state: { force },
               // eslint-disable-next-line no-bitwise
-              queryParams: targetIsCurrent ? { t: Date.now() >> 11 } : {}
+              queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
+              //  unit shall be reloaded even if we are there already there
             }
           )
             .then(navOk => {

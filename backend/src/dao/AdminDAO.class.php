@@ -553,7 +553,7 @@ class AdminDAO extends DAO {
                 "numUnitsMax" => (int) $groupStats["num_units_max"],
                 "numUnitsTotal" => (int) $groupStats["num_units_total"],
                 "numUnitsAvg" => (float) $groupStats["num_units_mean"],
-                "lastChange" => (int) $groupStats["lastchange"]
+                "lastChange" => TimeStamp::fromSQLFormat((string) $groupStats["lastchange"])
             ];
         }, $resultStats);
     }

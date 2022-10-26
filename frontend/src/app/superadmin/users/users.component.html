@@ -2,19 +2,19 @@
 
   <div class="objectlist" fxLayout="column" fxFlex="50">
     <div fxLayout="row">
-      <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="above" data-cy="add-user">
+      <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="below" data-cy="add-user">
         <mat-icon>add</mat-icon>
       </button>
       <button mat-raised-button (click)="deleteObject()"
-              matTooltip="Markierte Nutzer löschen" matTooltipPosition="above" data-cy="delete-user">
+              matTooltip="Markierte Nutzer löschen" matTooltipPosition="below" data-cy="delete-user">
         <mat-icon>delete</mat-icon>
       </button>
       <button mat-raised-button (click)="changePassword()"
-              matTooltip="Kennwort ändern" matTooltipPosition="above" data-cy="change-password">
+              matTooltip="Kennwort ändern" matTooltipPosition="below" data-cy="change-password">
         <mat-icon>edit</mat-icon>
       </button>
       <button mat-raised-button (click)="changeSuperadminStatus()"
-              matTooltip="Superadmin-Status ändern" matTooltipPosition="above" data-cy="change-superadmin">
+              matTooltip="Superadmin-Status ändern" matTooltipPosition="below" data-cy="change-superadmin">
         <mat-icon>edit</mat-icon>
       </button>
     </div>
