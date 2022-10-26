@@ -75,7 +75,7 @@ read  -p 'What do you want to do (1/2): ' -r -n 1 -e main_choice
 
 if [ $main_choice = 1 ]; then
   select_version
-#  update_files
+  update_files
 elif [ $main_choice = 2 ]; then
   set_tls
 fi
