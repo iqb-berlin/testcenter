@@ -78,6 +78,7 @@ download_files() {
 }
 
 customize_settings() {
+  echo "Please enter some configuration settings. Passwords are generated randomly."
   for var in "${ENV_VAR_ORDER[@]}"
     do
       read  -p "$var: " -e -i ${ENV_VARS[$var]} new_var
@@ -126,4 +127,10 @@ sed -i "s#VERSION.*#VERSION=$chosen_version_tag#" .env
 
 set_tls
 
-printf "\nInstallation done. Use 'make run' from the install directory.\n"
+read -p "\nInstallation complete. Do you want to start the application? [Y/n]:" -r -n 1 -e START
+if [[ ! $START =~ [nN] ]]
+  then
+    make run
+  else
+    echo "Use 'make run' from the install directory."
+fi
