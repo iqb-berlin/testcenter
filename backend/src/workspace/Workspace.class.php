@@ -170,7 +170,7 @@ class Workspace {
                 $file->uninstallPackage();
             }
 
-            $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file->getName());
+            $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file->getName(), $file->getType());
 
         } catch (Exception $e) {
 
@@ -435,6 +435,7 @@ class Workspace {
     }
 
 
+    // TODO unit-test
     public function storeAllFilesMeta(): array {
 
         $validator = new WorkspaceValidator($this);
@@ -444,6 +445,20 @@ class Workspace {
             'added' => 0
         ];
         $invalidCount = 0;
+
+        $filesInDb = $this->workspaceDAO->getFileNames($this->workspaceId);
+        $filesInFolder = $validator->getFiles();
+
+        foreach ($filesInDb as $file) {
+
+            $fileFullPath = $this->getWorkspacePath() . "/{$file['type']}/{$file['name']}";
+
+            if (!isset($filesInFolder[$fileFullPath])) {
+
+                $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file['name'], $file['type']);
+                $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file['name']);
+            }
+        }
 
         foreach ($validator->getFiles() as $file /* @var $file File */) {
 
@@ -470,6 +485,7 @@ class Workspace {
     }
 
 
+    // TODO unit-test
     public function storeFileMeta(File $file): ?array {
 
         $stats = [
@@ -499,6 +515,7 @@ class Workspace {
 
         return $stats;
     }
+
 
     public function getPackageFilePath($packageName, $resourceName): string {
 
