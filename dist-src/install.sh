@@ -4,7 +4,7 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-REQUIRED_PACKAGES=("docker" "docker-compose" "jq --help")
+REQUIRED_PACKAGES=("docker" "docker-compose")
 OPTIONAL_PACKAGES=(make)
 
 declare -A ENV_VARS
@@ -44,30 +44,23 @@ check_prerequisites() {
   done
 }
 
-get_version_list_from_api() {
-  #read  -p 'Show only stable versions [Y/n]: ' -r -n 1 -e show_stable_versions
-  # so koennte man betas filtern: select(.value.prerelease == true)
-  versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
-  echo "[\"Index\",\"Tag name\", \"Release title\"]" | jq -r '@tsv'
-  echo "$versions" | jq -r 'map({tag_name, name, prerelease})
-                          | to_entries
-                          | map({
-                            index: (.key + 1),
-                            tag_name: .value.tag_name,
-                            name: .value.name,
-                            prerelease: (if .value.prerelease == true then "(prerelease)" else "" end)
-                          })
-                          | .[]
-                          | [.[]]
-                          | @tsv'
-
-  number_of_versions=$(echo "$versions" | jq -r 'length')
-
-  chosen_version_index=0
-  while [[ "$chosen_version_index" -lt 1 || "$chosen_version_index" -gt "$number_of_versions" ]]; do
-    read  -p 'Choose version number: [1-'${number_of_versions}']' -r -n 1 -e chosen_version_index
-  done
-  chosen_version_tag=$(echo "$versions" | jq -r '.['${chosen_version_index}-1'] | .tag_name')
+choose_version() {
+  latest_version_tag=$(curl -s https://api.github.com/repos/$REPO_URL/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d " " )
+  echo $latest_version_tag
+  read -p 'Install latest version [Y/n]: ' -r -n 1 -e latest
+  if [[ $latest =~ ^[nN]$ ]]; then
+    echo "choose manually"
+    read -p 'Enter version tag: ' -r -e chosen_version_tag
+    if ! curl --head --silent --fail --output /dev/null https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/README.md 2> /dev/null;
+     then
+      echo "This version tag does not exist."
+      exit 1
+    fi
+  else
+    echo "Installing latest"
+    chosen_version_tag=$latest_version_tag
+  fi
+  echo "Chosen:$chosen_version_tag"
 }
 
 download_files() {
@@ -104,15 +97,11 @@ set_tls() {
     sed -i 's/TLS=off/TLS=on/' .env
     sed -i 's/ws:/wss:/' .env
     sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
-  else
-    sed -i 's/TLS=on/TLS=off/' .env
-    sed -i 's/wss:/ws:/' .env
-    sed -i 's/docker-compose.prod.yml -f docker-compose.prod.tls.yml/docker-compose.prod.yml/' Makefile
   fi
 }
 
 check_prerequisites
-get_version_list_from_api
+choose_version
 
 read  -p '1. Install directory: ' -e -i "`pwd`/$APP_NAME" TARGET_DIR
 

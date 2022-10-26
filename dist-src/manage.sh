@@ -6,28 +6,28 @@ select_version() {
   source .env
   printf "\nInstalled version: $VERSION\n\n"
 
-  versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
-#  echo "$versions" | jq -r 'map({name, tag_name, prerelease}) | .[] | select(.prerelease == true)'
-  echo "[\"Index\",\"Tag name\", \"Release title\"]" | jq -r '@tsv'
-  echo "$versions" | jq -r 'map({tag_name, name, prerelease})
-                          | to_entries
-                          | map({
-                            index: (.key + 1),
-                            tag_name: .value.tag_name,
-                            name: .value.name,
-                            prerelease: (if .value.prerelease == true then "(prerelease)" else "" end)
-                          })
-                          | .[]
-                          | [.[]]
-                          | @tsv'
+  latest_version_tag=$(curl -s https://api.github.com/repos/$REPO_URL/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d " " )
+  printf "Latest available version: $latest_version_tag\n"
 
-  number_of_versions=$(echo "$versions" | jq -r 'length')
+  if [ $VERSION = $latest_version_tag ]; then
+    echo "Latest version is already installed."
+    exit 0
+  fi
 
-  chosen_version_index=0
-  while [[ "$chosen_version_index" -lt 1 || "$chosen_version_index" -gt "$number_of_versions" ]]; do
-    read  -p 'Choose version index: [1-'${number_of_versions}']' -r -n 1 -e chosen_version_index
-  done
-  chosen_version_tag=$(echo "$versions" | jq -r '.['${chosen_version_index}-1'] | .tag_name')
+  read -p 'Install latest version [Y/n]: ' -r -n 1 -e latest
+  if [[ $latest =~ ^[nN]$ ]]; then
+    echo "choose manually"
+    read -p 'Enter version tag: ' -r -e chosen_version_tag
+    if ! curl --head --silent --fail --output /dev/null https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/README.md 2> /dev/null;
+     then
+      echo "This version tag does not exist."
+      exit 1
+    fi
+  else
+    echo "Installing latest"
+    chosen_version_tag=$latest_version_tag
+  fi
+  echo "Chosen:$chosen_version_tag"
 }
 
 update_files() {
@@ -47,7 +47,6 @@ update_files() {
     chmod +x patch.sh
     patch.sh
   fi
-
 }
 
 set_tls() {
@@ -76,7 +75,7 @@ read  -p 'What do you want to do (1/2): ' -r -n 1 -e main_choice
 
 if [ $main_choice = 1 ]; then
   select_version
-  update_files
+#  update_files
 elif [ $main_choice = 2 ]; then
   set_tls
 fi
