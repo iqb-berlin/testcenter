@@ -6,10 +6,23 @@ layout: default
 * npm 8
 * node 14
 * php 8.1
+* Apache2
 
 # Install node-dependencies
 ```
-npm install --workspaces
+npm install
+
+cd frontend
+npm install
+cd ..
+
+cd backend
+npm install
+cd ..
+
+cd broadcasting-service
+npm install
+cd ..
 ```
 
 # Install php-dependencies
@@ -38,5 +51,7 @@ sudo --user=www-data php backend/initialize.php \
  --broadcastServiceUriPush=(address of broadcast service to push for the backend) \
  --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
 ```
+
+# Serve backend
 
 

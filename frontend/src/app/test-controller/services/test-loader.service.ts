@@ -81,7 +81,10 @@ export class TestLoaderService {
   private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
     this.tcs.resumeTargetUnitSequenceId =
       this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[TestStateKey.CURRENT_UNIT_ID]) || 1;
-    if (lastState[TestStateKey.CONTROLLER] && (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)) {
+    if (
+      (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
+      (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
+    ) {
       this.tcs.testStatus$.next(TestControllerState.PAUSED);
       this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
       return;

@@ -444,10 +444,7 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
-          this.router.navigate(
-            [`/t/${this.testId}/u/1`],
-            { state: { force } }
-          );
+          this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
           break;
         case UnitNavigationTarget.LAST:
           this.router.navigate(

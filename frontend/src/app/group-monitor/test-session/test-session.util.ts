@@ -56,6 +56,9 @@ export class TestSessionUtil {
     if (this.hasState(state, 'CONTROLLER', 'TERMINATED')) {
       return 'controller_terminated';
     }
+    if (this.hasState(state, 'CONTROLLER', 'TERMINATED_PAUSED')) {
+      return 'controller_terminated';
+    }
     if (this.hasState(state, 'CONNECTION', 'LOST')) {
       return 'connection_lost';
     }
@@ -81,7 +84,7 @@ export class TestSessionUtil {
     return (Date.now() - testSession.timestamp * 1000) / (1000 * 60);
   }
 
-  private static parseJsonState(testStateObject: Record<string, string>, key: string): Record<string, string>|null {
+  private static parseJsonState(testStateObject: Record<string, string>, key: string): Record<string, string> | null {
     if (typeof testStateObject[key] === 'undefined') {
       return null;
     }
@@ -96,8 +99,12 @@ export class TestSessionUtil {
     }
   }
 
-  private static getCurrent(testlet: Testlet, searchUnitId: string,
-                            level = 0, context: UnitContext = null): UnitContext {
+  private static getCurrent(
+    testlet: Testlet,
+    searchUnitId: string,
+    level = 0,
+    context: UnitContext = null
+  ): UnitContext {
     const result: UnitContext = context || {
       unit: null,
       parent: testlet,
