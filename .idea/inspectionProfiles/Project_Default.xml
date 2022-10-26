@@ -31,7 +31,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="30">
+          <list size="32">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -62,6 +62,8 @@
             <item index="27" class="java.lang.String" itemvalue="router-outlet" />
             <item index="28" class="java.lang.String" itemvalue="mat-button-toggle" />
             <item index="29" class="java.lang.String" itemvalue="mat-button-toggle-group" />
+            <item index="30" class="java.lang.String" itemvalue="mat-card-actions" />
+            <item index="31" class="java.lang.String" itemvalue="mat-progress-bar" />
           </list>
         </value>
       </option>

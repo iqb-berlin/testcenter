@@ -6,7 +6,7 @@ const YAML = require('yamljs');
 const request = require('request');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
-const testcenterConfig = require('./config/dredd_test_config.json');
+const testcenterConfig = require('./config/dredd_test_config.json'); // TODO use the same source as environment.ts and don't check it in
 const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);

@@ -15,6 +15,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:local": "ng serve --configuration=local",
     "build": "ng build",
     "test": "ng test  --watch=false",
     "lint": "ng lint",

@@ -20,10 +20,6 @@
     "backend:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/dredd-test.js runDreddTest",
     "frontend:update-compodoc": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
     "broadcasting-service:update-compodoc": "npx compodoc -p broadcasting-service/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service",
-    "frontend:unit-test": "npx -w frontend ng test --watch=false",
-    "frontend:unit-test:code-coverage": "npx -w frontend ng test --watch=false --code-coverage",
-    "frontend:build": "npx -w frontend ng build --output-hashing all",
-    "frontend:start": "npx -w frontend ng serve",
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
     "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",
     "new-version": "bash -c 'npx gulp --gulpfile=./scripts/version.js newVersion --options $0'"

@@ -69,3 +69,15 @@ export interface SysCheckInfo {
   label: string;
   description: string;
 }
+
+export type HttpRetryPolicyNames = 'none' | 'test';
+
+export interface HttpRetryPolicy {
+  excludedStatusCodes: number[];
+  retryPattern: number[];
+}
+
+export interface AppModuleSettings {
+  httpRetryPolicy: HttpRetryPolicyNames;
+  disableGlobalErrorDisplay?: true;
+}

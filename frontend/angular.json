@@ -67,6 +67,7 @@
                 }
               ]
             },
+            "local": {},
             "e2e": {
               "fileReplacements": [
                 {
@@ -127,6 +128,9 @@
             },
             "dev": {
               "browserTarget": "testcenter-frontend:build:dev"
+            },
+            "local": {
+              "browserTarget": "testcenter-frontend:build:local"
             },
             "e2e": {
               "browserTarget": "testcenter-frontend:build:e2e"
