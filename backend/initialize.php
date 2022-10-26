@@ -212,7 +212,7 @@ try  {
         }
 
         if (!$installationArguments->skip_read_workspace_files) {
-echo "!!!";
+
             $stats = $workspace->storeAllFilesMeta();
 
             CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
