@@ -266,7 +266,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case 'goto':
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
-        console.log('goto', params);
         // eslint-disable-next-line no-case-declarations
         let gotoTarget: string;
         if ((params.length === 2) && (params[0] === 'id')) {
