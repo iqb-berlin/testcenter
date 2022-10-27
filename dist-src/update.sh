@@ -30,6 +30,12 @@ select_version() {
   echo "Chosen:$chosen_version_tag"
 }
 
+create_backup() {
+  mkdir -p backup/$(date +"%m-%d-%Y")
+  mv Makefile docker-compose.yml docker-compose.prod.yml docker-compose.prod.tls.yml config/nginx.conf backup/$(date +"%m-%d-%Y")
+  echo "Backup created. Files have been moved to: backup/$(date +"%m-%d-%Y")"
+}
+
 update_files() {
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
@@ -75,6 +81,7 @@ read  -p 'What do you want to do (1/2): ' -r -n 1 -e main_choice
 
 if [ $main_choice = 1 ]; then
   select_version
+  create_backup
   update_files
 elif [ $main_choice = 2 ]; then
   set_tls
