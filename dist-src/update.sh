@@ -38,9 +38,13 @@ create_backup() {
 
 update_files() {
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
+  wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
+  wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
   wget -nv -O patch.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/patch.sh || rm -f patch.sh
+
+  sed -i "s#VERSION=.*#VERSION=/$chosen_version_tag#" .env
 
   . .env
   echo "$TLS"
@@ -51,7 +55,7 @@ update_files() {
   if test -f "patch.sh"; then
     echo "Patch file found."
     chmod +x patch.sh
-    patch.sh
+    bash patch.sh
   fi
 }
 
