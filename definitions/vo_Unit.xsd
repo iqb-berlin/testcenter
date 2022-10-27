@@ -55,7 +55,7 @@
 
   <xs:simpleType name="VariableFormatValueOther">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[a-z]+[a-z\d-]*[a-z\d]+"/>
+      <xs:pattern value="[a-z\d-]*"/>
     </xs:restriction>
   </xs:simpleType>
 
