@@ -15,9 +15,18 @@
     <Variable id="v2" type="attachment" format="capture-image" />
     <Variable id="v3" type="string" multiple="true">
       <Values>
-        <Value>A</Value>
-        <Value>B</Value>
-        <Value>C</Value>
+        <Value>
+          <label>A</label>
+          <value>a</value>
+        </Value>
+        <Value>
+          <label>A</label>
+          <value>a</value>
+        </Value>
+        <Value>
+          <label>A</label>
+          <value>a</value>
+        </Value>
       </Values>
     </Variable>
   </BaseVariables>

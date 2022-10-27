@@ -6,7 +6,7 @@
       <xs:element name="Values" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="Value" maxOccurs="unbounded" />
+            <xs:element name="Value" maxOccurs="unbounded" type="VariableValue" />
           </xs:sequence>
           <xs:attribute name="complete" type="xs:boolean" />
         </xs:complexType>
@@ -23,6 +23,13 @@
     <xs:attribute name="format" type="VariableFormatValue"/>
     <xs:attribute name="multiple" type="xs:boolean"/>
     <xs:attribute name="nullable" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:complexType name="VariableValue">
+    <xs:sequence>
+      <xs:element name="label"/>
+      <xs:element name="value"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:simpleType name="VariableTypeValue">
