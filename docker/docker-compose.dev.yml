@@ -79,7 +79,6 @@ services:
     environment:
       TC_API_URL: http://testcenter-backend
     volumes:
-      - ../CHANGELOG.md:/app/CHANGELOG.md
       - ../README.md:/app/README.md
       - ../broadcasting-service:/app/broadcasting-service
       - ../common:/app/common
