@@ -154,6 +154,11 @@
             <xs:sequence>
               <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="File" type="Dependency"/>
+                <xs:element name="file" type="Dependency">
+                  <xs:annotation>
+                    <xs:documentation>Deprecated. Use "File".</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
                 <xs:element name="Service" type="Dependency"/>
               </xs:choice>
             </xs:sequence>
