@@ -28,7 +28,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   closeErrorBox(): void {
     this.showError = false;
-    // this.mds.appError$.next(); // TODO quick and dirty fix; why is this a replaysubject anyway?
+    // reset error state to no error, otherwise the old error will be replayed when TestControllerComponent reloads
+    this.mainDataService.appError$.next(null);
   }
 
   ngOnInit(): void {
