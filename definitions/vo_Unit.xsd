@@ -6,7 +6,7 @@
       <xs:element name="Values" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="Value" maxOccurs="unbounded" />
+            <xs:element name="Value" maxOccurs="unbounded" type="VariableValue" />
           </xs:sequence>
           <xs:attribute name="complete" type="xs:boolean" />
         </xs:complexType>
@@ -23,6 +23,13 @@
     <xs:attribute name="format" type="VariableFormatValue"/>
     <xs:attribute name="multiple" type="xs:boolean"/>
     <xs:attribute name="nullable" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:complexType name="VariableValue">
+    <xs:sequence>
+      <xs:element name="label"/>
+      <xs:element name="value"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:simpleType name="VariableTypeValue">
@@ -48,7 +55,7 @@
 
   <xs:simpleType name="VariableFormatValueOther">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[a-z]+[a-z\d-]*[a-z\d]+"/>
+      <xs:pattern value="[a-z\d-]*"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -73,9 +80,45 @@
     </xs:simpleContent>
   </xs:complexType>
 
+  <xs:element name="DefinitionElement" abstract="true" />
+
+  <xs:element name="Definition" substitutionGroup="DefinitionElement">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="player" type="xs:string" use="required"/>
+          <xs:attribute name="editor" type="xs:string"/>
+          <xs:attribute name="type" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="lastChange" type="xs:dateTime"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DefinitionRef" substitutionGroup="DefinitionElement">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="player" type="xs:string" use="required"/>
+          <xs:attribute name="editor" type="xs:string"/>
+          <xs:attribute name="type" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="lastChange" type="xs:dateTime"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="Unit" >
     <xs:complexType>
-      <xs:sequence>
+      <xs:all>
         <xs:element name="Metadata">
           <xs:complexType>
             <xs:sequence>
@@ -92,42 +135,7 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:sequence>
-          <xs:choice>
-            <xs:element name="Definition">
-              <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="xs:string">
-                    <xs:attribute name="player" type="xs:string" use="required"/>
-                    <xs:attribute name="editor" type="xs:string"/>
-                    <xs:attribute name="type" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
-                      </xs:annotation>
-                    </xs:attribute>
-                    <xs:attribute name="lastChange" type="xs:dateTime"/>
-                  </xs:extension>
-                </xs:simpleContent>
-              </xs:complexType>
-            </xs:element>
-            <xs:element name="DefinitionRef">
-              <xs:complexType>
-                <xs:simpleContent>
-                  <xs:extension base="xs:string">
-                    <xs:attribute name="player" type="xs:string" use="required"/>
-                    <xs:attribute name="editor" type="xs:string"/>
-                    <xs:attribute name="type" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Deprecated. Explicitly name a player and editor.</xs:documentation>
-                      </xs:annotation>
-                    </xs:attribute>
-                    <xs:attribute name="lastChange" type="xs:dateTime"/>
-                  </xs:extension>
-                </xs:simpleContent>
-              </xs:complexType>
-            </xs:element>
-          </xs:choice>
-        </xs:sequence>
+        <xs:element ref="DefinitionElement" />
 
         <xs:element name="CodingSchemeRef" minOccurs="0">
           <xs:complexType>
@@ -146,6 +154,11 @@
             <xs:sequence>
               <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="File" type="Dependency"/>
+                <xs:element name="file" type="Dependency">
+                  <xs:annotation>
+                    <xs:documentation>Deprecated. Use "File".</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
                 <xs:element name="Service" type="Dependency"/>
               </xs:choice>
             </xs:sequence>
@@ -168,7 +181,7 @@
           </xs:complexType>
         </xs:element>
 
-      </xs:sequence>
+      </xs:all>
     </xs:complexType>
   </xs:element>
 </xs:schema>

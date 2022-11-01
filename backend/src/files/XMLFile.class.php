@@ -101,20 +101,25 @@ class XMLFile extends File {
 
         if (!$this->schema) {
 
-            $this->report('error', 'File has no valid link to XSD-Schema.');
+            $this->report('error', 'File has no valid link to XSD-schema.');
             return;
         }
 
         if ($this->schema['type'] !== $this->getRoottagName()) {
 
-            $this->report('error', 'File has no valid link to XSD-Schema.');
+            $this->report('error', 'File has no valid link to XSD-schema.');
+            return;
+        }
+
+        if (!$this->schema['version']) {
+
+            $this->fallBackToCurrentSchemaVersion("Version of XSD-schema missing.");
             return;
         }
 
         if (!Version::isCompatible($this->schema['version'])) {
 
-            $this->fallBackToCurrentSchemaVersion("Outdated or wrong Version of XSD-Schema (`{$this->schema['version']}`).");
-            return;
+            $this->fallBackToCurrentSchemaVersion("Outdated or wrong version of XSD-schema (`{$this->schema['version']}`).");
         }
     }
 
@@ -133,7 +138,7 @@ class XMLFile extends File {
         $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
         if (!$schemaFilePath) {
 
-            $this->fallBackToCurrentSchemaVersion("XSD-Schema (´{$this->schema['version']}´) could not be obtained.");
+            $this->fallBackToCurrentSchemaVersion("XSD-Schema (`{$this->schema['version']}`) could not be obtained.");
             $schemaFilePath = XMLSchema::getSchemaFilePath($this->schema);
         }
 
