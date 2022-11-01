@@ -20,11 +20,13 @@ export class AppComponent implements OnInit, OnDestroy {
   showError = false;
   errorData: AppError | undefined;
 
-  constructor(public mainDataService: MainDataService,
-              private backendService: BackendService,
-              private customtextService: CustomtextService,
-              private titleService: Title,
-              private sanitizer: DomSanitizer) { }
+  constructor(
+    public mainDataService: MainDataService,
+    private backendService: BackendService,
+    private customtextService: CustomtextService,
+    private titleService: Title,
+    private sanitizer: DomSanitizer
+  ) { }
 
   closeErrorBox(): void {
     this.showError = false;
@@ -40,7 +42,11 @@ export class AppComponent implements OnInit, OnDestroy {
           this.showError = true;
         }
       });
-      this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$, this.mainDataService.isSpinnerOn$])
+      this.appTitleSubscription = combineLatest([
+        this.mainDataService.appTitle$,
+        this.mainDataService.appSubTitle$,
+        this.mainDataService.isSpinnerOn$
+      ])
         .subscribe(titles => {
           if (titles[2]) {
             this.titleService.setTitle(`${titles[0]} | Bitte warten}`);
@@ -77,7 +83,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.mainDataService.appConfig.applyBackgroundColors();
         this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
 
-        const authData = MainDataService.getAuthData();
+        const authData = this.mainDataService.getAuthData();
         if (authData) {
           this.customtextService.addCustomTexts(authData.customTexts);
         }

@@ -1,11 +1,13 @@
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CustomtextService } from '../services/customtext/customtext.service';
+// eslint-disable-next-line import/no-relative-packages
 import customTextsDefault from '../../../../../definitions/custom-texts.json';
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
   BroadCastingServiceStatus,
-  localStorageTestConfigKey, standardBackgroundBody, standardBackgroundBox,
+  standardBackgroundBody,
+  standardBackgroundBox,
   standardLogo,
   SysConfig
 } from '../interfaces/app-config.interfaces';
@@ -16,7 +18,6 @@ export class AppConfig {
   veronaPlayerApiVersionMin: number;
   veronaPlayerApiVersionMax: number;
   mainLogo = standardLogo;
-  testConfig: KeyValuePairs = {};
   broadcastingService: BroadCastingServiceStatus = 'off';
   appTitle = 'IQB-Testcenter';
   backgroundBody: string;
@@ -60,11 +61,6 @@ export class AppConfig {
       this.setAppConfig(null);
     }
 
-    if (this.testConfig) {
-      localStorage.setItem(localStorageTestConfigKey, JSON.stringify(this.testConfig));
-    } else {
-      localStorage.removeItem(localStorageTestConfigKey);
-    }
     this.applyBackgroundColors();
   }
 

@@ -3,12 +3,8 @@ import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
 import { CustomtextService } from '../customtext/customtext.service';
-import {
-  AppError,
-  AuthData, KeyValuePairs
-} from '../../../app.interfaces';
+import { AppError, AuthData } from '../../../app.interfaces';
 import { AppConfig } from '../../classes/app.config';
-import { localStorageTestConfigKey } from '../../interfaces/app-config.interfaces';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 
@@ -17,12 +13,11 @@ const localStorageAuthDataKey = 'iqb-tc-a';
 })
 export class MainDataService {
   appError$ = new ReplaySubject<AppError>(1);
-  private _authData$ = new Subject<AuthData>();
-  get authData$(): Observable<AuthData> {
+  private _authData$ = new BehaviorSubject<AuthData | null>(null);
+  get authData$(): Observable<AuthData | null> {
     return this._authData$.asObservable();
   }
 
-  errorReportingSilent = false;
   isSpinnerOn$ = new BehaviorSubject<boolean>(false);
   progressVisualEnabled = true;
   appConfig: AppConfig = null;
@@ -34,33 +29,14 @@ export class MainDataService {
   postMessage$ = new Subject<MessageEvent>();
   appWindowHasFocus$ = new Subject<boolean>();
 
-  // TODO refactor this, it's very inefficient
-  // everytime authData is needed, getAuthData gets called and localstorage gets accessed.
-  // better would be to access it once at loading time abd later use the valueOf _authData$
-
-  static getAuthData(): AuthData {
-    const storageEntry = localStorage.getItem(localStorageAuthDataKey);
-    if (!storageEntry) {
-      return null;
+  getAuthData(): AuthData {
+    if (this._authData$.getValue()) {
+      return this._authData$.getValue();
     }
     try {
-      return JSON.parse(storageEntry as string);
+      return JSON.parse(localStorage.getItem(localStorageAuthDataKey));
     } catch (e) {
-      console.warn('corrupt localStorage authData entry');
       return null;
-    }
-  }
-
-  static getTestConfig(): KeyValuePairs {
-    const storageEntry = localStorage.getItem(localStorageTestConfigKey); // TODO why at all?
-    if (!storageEntry) {
-      return {};
-    }
-    try {
-      return JSON.parse(storageEntry as string);
-    } catch (e) {
-      console.warn('corrupt localStorage testConfig entry');
-      return {};
     }
   }
 
@@ -94,15 +70,6 @@ export class MainDataService {
     if (storageEntry) {
       localStorage.removeItem(localStorageAuthDataKey);
     }
-    this._authData$.next(MainDataService.getAuthData());
-  }
-
-  setTestConfig(testConfig: KeyValuePairs = null): void {
-    if (testConfig) {
-      localStorage.setItem(localStorageTestConfigKey, JSON.stringify(testConfig));
-    } else {
-      localStorage.removeItem(localStorageTestConfigKey);
-    }
-    this._authData$.next(MainDataService.getAuthData());
+    this._authData$.next(this.getAuthData());
   }
 }

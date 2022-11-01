@@ -93,7 +93,9 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     if (
       (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.responseComplete) > -1) &&
       this.tcs.hasUnitResponseProgress(this.tcs.currentUnitSequenceId) &&
-      (['complete', 'complete-and-valid'].indexOf(this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)) === -1
+      (
+        ['complete', 'complete-and-valid']
+          .indexOf(this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)) === -1
       )
     ) {
       reasons.push('responsesIncomplete');
@@ -140,7 +142,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     currentState: RouterStateSnapshot,
     nextState: RouterStateSnapshot
   ): Observable<boolean> | boolean {
-    console.log('nextState', nextState);
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
       return true;
     }

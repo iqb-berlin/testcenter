@@ -3,11 +3,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { MainDataService, BookletConfig } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import {
   Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
 } from '../group-monitor.interfaces';
+import { BookletConfig } from '../../shared/classes/booklet-config.class';
 // eslint-disable-next-line import/extensions
 
 @Injectable()
@@ -78,7 +78,7 @@ export class BookletService {
   private static parseBookletConfig(bookletElement: Element): BookletConfig {
     const bookletConfigElements = BookletService.xmlGetChildIfExists(bookletElement, 'BookletConfig', true);
     const bookletConfig = new BookletConfig();
-    bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
+    // bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
     if (bookletConfigElements) {
       bookletConfig.setFromXml(bookletConfigElements);
     }

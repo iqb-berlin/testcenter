@@ -9,12 +9,17 @@ import { MainDataService } from './shared/shared.module';
 import { AuthAccessKeyType, AuthData, AuthFlagType } from './app.interfaces';
 import { BackendService } from './backend.service';
 
+// TODO put classes in separate files and clean up absurd if-ceptions
+
 @Injectable()
 export class RouteDispatcherActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.token) {
         if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
@@ -77,10 +82,13 @@ export class DirectLoginActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class CodeInputComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.flags) {
         if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
@@ -101,10 +109,13 @@ export class CodeInputComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class AdminComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.access) {
         if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]) {
@@ -125,10 +136,13 @@ export class AdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.access) {
         if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
@@ -149,10 +163,13 @@ export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class SuperAdminComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.access) {
         if (authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
@@ -173,10 +190,13 @@ export class SuperAdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class TestComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.access) {
         if (authData.access[AuthAccessKeyType.TEST]) {
@@ -198,11 +218,12 @@ export class TestComponentActivateGuard implements CanActivate {
 })
 export class GroupMonitorActivateGuard implements CanActivate {
   constructor(
-    private router: Router
+    private router: Router,
+    private mainDataService: MainDataService
   ) {}
 
   canActivate(): boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
 
     if (authData && authData.access && authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
       return true;
