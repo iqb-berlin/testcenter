@@ -113,7 +113,7 @@ class XMLFile extends File {
 
         if (!$this->schema['version']) {
 
-            $this->fallBackToCurrentSchemaVersion("Version of XSD-schema Missing.");
+            $this->fallBackToCurrentSchemaVersion("Version of XSD-schema missing.");
             return;
         }
 
