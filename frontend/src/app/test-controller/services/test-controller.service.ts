@@ -404,7 +404,9 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
+    this.testStatus$.next(
+      TestControllerState.PAUSED ? TestControllerState.TERMINATED_PAUSED : TestControllerState.TERMINATED
+    ); // last state that will and can be logged
 
     this.router.navigate(['/'], { state: { force } })
       .then(navigationSuccessful => {
