@@ -16,7 +16,6 @@ x-env-logging-conf: &env-logging-conf
   max-file: "10"
 
 services:
-
   traefik:
     container_name: testcenter-traefik
     image: traefik:v2.2
@@ -24,7 +23,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     ports:
-      - "80:80"
+      - "${PORT}:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
