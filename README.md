@@ -2,8 +2,6 @@
 [![(CI Status)](https://scm.cms.hu-berlin.de/iqb/testcenter/badges/master/pipeline.svg)](https://scm.cms.hu-berlin.de/iqb/testcenter)
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/iqb-berlin/testcenter)
 
-
-
 # IQB-Testcenter
 
 The IQB-Testcenter is a web application for technology based accessed and surveys. It is developed by
@@ -22,8 +20,6 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 
 ## Install & Run
 * **[Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)**
-* [Server Configuration](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/server-setup.html)
-* [Trouble Shooting](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/trouble-shooting.html)
 
 ## For Developers
 * **[Installation for Development](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-dev.html)**
