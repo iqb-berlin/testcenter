@@ -49,7 +49,6 @@ choose_version() {
   echo $latest_version_tag
   read -p 'Install latest version [Y/n]: ' -r -n 1 -e latest
   if [[ $latest =~ ^[nN]$ ]]; then
-    echo "choose manually"
     read -p 'Enter version tag: ' -r -e chosen_version_tag
     if ! curl --head --silent --fail --output /dev/null https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/README.md 2> /dev/null;
      then
@@ -94,7 +93,7 @@ set_tls() {
   certificates:
     - certFile: /certs/certificate.cer
       keyFile: /certs/private_key.key" > config/cert_config.yml
-    echo "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml."
+    printf "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml.\n"
     sed -i 's/TLS=off/TLS=on/' .env
     sed -i 's/ws:/wss:/' .env
     sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
@@ -127,7 +126,7 @@ sed -i "s#VERSION.*#VERSION=$chosen_version_tag#" .env
 
 set_tls
 
-read -p "\nInstallation complete. Do you want to start the application? [Y/n]:" -r -n 1 -e START
+read -p "Installation complete. Do you want to start the application? [Y/n]:" -r -n 1 -e START
 if [[ ! $START =~ [nN] ]]
   then
     make run
