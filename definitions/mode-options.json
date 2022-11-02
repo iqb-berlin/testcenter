@@ -1,5 +1,5 @@
 {
-  "alwaysNewSession": "Bie jedem Einloggen wird ein neuer Nutzer angelegt",
+  "alwaysNewSession": "Bie jedem Einloggen wird ein neuer Benutzer angelegt",
   "canReview":  "Es können Reviews abgegeben werden (Kommentare/Einschätzungen zur Unit bzw. zum Test)",
   "saveResponses": "Es werden Antworten und Logs gespeichert.",
   "forceTimeRestrictions": "Alle Zeitbeschränkungen für Testabschnitte werden angewendet.",
