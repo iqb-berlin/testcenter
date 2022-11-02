@@ -133,6 +133,7 @@ test-broadcasting-service-unit:
   stage: test
   rules:
     - !reference [.bs-change, rules]
+    - !reference [.frontend-change, rules]
     - if: "$CI_COMMIT_TAG"
   needs:
     - job: build-broadcasting-service
