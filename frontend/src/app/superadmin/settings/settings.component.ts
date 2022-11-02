@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   template: `
-    <div fxLayout="column" fxLayoutAlign="start stretch" class="admin-tab-content">
+    <div fxLayout="column" fxLayoutAlign="start stretch">
       <div fxLayout="row" class="settings-group">
         <div fxFlex="20">
           <mat-label>Text-Ersetzungen</mat-label>
