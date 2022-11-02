@@ -78,7 +78,6 @@ export class BookletService {
   private static parseBookletConfig(bookletElement: Element): BookletConfig {
     const bookletConfigElements = BookletService.xmlGetChildIfExists(bookletElement, 'BookletConfig', true);
     const bookletConfig = new BookletConfig();
-    // bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
     if (bookletConfigElements) {
       bookletConfig.setFromXml(bookletConfigElements);
     }

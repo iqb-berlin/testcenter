@@ -6,9 +6,9 @@ import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
   BroadCastingServiceStatus,
-  standardBackgroundBody,
-  standardBackgroundBox,
-  standardLogo,
+  DEFAULT_BACKGROUND_BODY,
+  DEFAULT_BACKGROUND_BOX,
+  DEFAULT_LOGO,
   SysConfig
 } from '../interfaces/app-config.interfaces';
 
@@ -17,7 +17,7 @@ export class AppConfig {
   version = '';
   veronaPlayerApiVersionMin: number;
   veronaPlayerApiVersionMax: number;
-  mainLogo = standardLogo;
+  mainLogo = DEFAULT_LOGO;
   broadcastingService: BroadCastingServiceStatus = 'off';
   appTitle = 'IQB-Testcenter';
   backgroundBody: string;
@@ -87,9 +87,9 @@ export class AppConfig {
       this.introHtml = 'Einführungstext nicht definiert';
       this.legalNoticeHtml = 'Impressum/Datenschutz nicht definiert';
     }
-    this.mainLogo = standardLogo;
-    this.backgroundBody = standardBackgroundBody;
-    this.backgroundBox = standardBackgroundBox;
+    this.mainLogo = DEFAULT_LOGO;
+    this.backgroundBody = DEFAULT_BACKGROUND_BODY;
+    this.backgroundBox = DEFAULT_BACKGROUND_BOX;
     this.trustedIntroHtml = null;
     this.trustedLegalNoticeHtml = null;
     this.globalWarningText = '';
