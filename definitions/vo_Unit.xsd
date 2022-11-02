@@ -60,7 +60,7 @@
   </xs:simpleType>
 
   <xs:simpleType name="VariableFormatValue">
-    <xs:union memberTypes="VariableFormatValueOther"/>
+    <xs:union memberTypes="VariableFormatValueOther VariableFormatValueExplicit"/>
   </xs:simpleType>
 
   <xs:simpleType name="DependencyTarget">
