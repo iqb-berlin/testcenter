@@ -131,8 +131,8 @@ exports.testMode = done => {
  * Creates documentation about the available custom-texts. Custom-texts is an internal system to replace labels in the
  * UI in defined contexts.
  *
- * See result and read more: TODO make link available and add here
- * Read more in user's manual (german): TODO add link
+ * See result and read more: https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html
+ * Read more in user's manual (german): https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter
  *
  * Primary Source of test-modes is `custom-texts.json`. This is used to generate an interface
  * and the docs (with the task below).
@@ -140,19 +140,16 @@ exports.testMode = done => {
  */
 exports.customTexts = done => {
   cliPrint.headline('customTexts: Writing Markdown documentation');
-
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/custom-texts.json`).toString());
-
   let output = fs.readFileSync(`${docsDir}/pages/custom-texts.md`, 'utf8').toString();
 
   Object.keys(definition)
     .sort()
-    .forEach(k => {
-      output += `|${k}|${definition[k].label}|${definition[k].defaultvalue}|\n`;
+    .forEach(key => {
+      output += `|${key}|${definition[key].label}|${definition[key].defaultvalue}|\n`;
     });
 
   fs.writeFileSync(`${docsDir}/pages/custom-texts.md`, output, 'utf8');
-
   done();
 };
 

@@ -14,20 +14,15 @@ sync-npm-files:
 	docker-compose cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
 	docker-compose cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
 
-# Updates all automatic generated documentation files.
 update-docs:
 	make docs-frontend-compodoc
 	make docs-broadcasting-service-compodoc
-	make docs-frontend-compodoc
 	make docs-api-specs
 	make docs-user
 
-
-# Creates code documentation (with Compodoc) of the frontend.
 docs-frontend-compodoc:
 	make run-task-runner task=frontend:update-compodoc
 
-# Creates code documentation (with Compodoc) of the broadcasting-service.
 docs-broadcasting-service-compodoc:
 	make run-task-runner task=broadcasting-service:update-compodoc
 

@@ -250,6 +250,7 @@ generate-docs:
       - docs/pages/test-mode.md
       - docs/dist/api/index.html
       - docs/dist/api/specs.yml
+      - docs/dist/custom-texts.md
       - docs/dist/test-session-super-states.html
       - docs/dist/compodoc-frontend/*
       - docs/dist/compodoc-broadcasting-service/*
