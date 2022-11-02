@@ -27,7 +27,6 @@ export class UnitActivateGuard implements CanActivate {
         return false;
       }
       // ignore unit-id from route, because test will get last opened unit ID from testStatus.CURRENT_UNIT_ID
-      console.log('goto', testId);
       this.router.navigate([`/t/${testId}`]);
       return false;
     }

@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { AppConfig } from '../../shared/classes/app.config';
 import { MainDataService } from '../../shared/services/maindata/maindata.service';
 import { BackendService } from '../backend.service';
-import { AppSettings, standardLogo } from '../../shared/interfaces/app-config.interfaces';
+import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
 
 @Component({
   selector: 'app-app-config',
@@ -166,7 +166,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
   }
 
   removeLogoImg(): void {
-    this.logoImageBase64 = standardLogo;
+    this.logoImageBase64 = DEFAULT_LOGO;
     this.dataChanged = true;
   }
 

@@ -6,9 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import {
-  CustomtextService, MainDataService, BookletConfig, TestMode
-} from '../../shared/shared.module';
+import { CustomtextService, BookletConfig, TestMode } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
@@ -308,7 +306,7 @@ export class TestLoaderService {
       const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
       this.tcs.bookletConfig = new BookletConfig();
-      this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
+      // this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
       if (bookletConfigElements.length > 0) {
         this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
       }
