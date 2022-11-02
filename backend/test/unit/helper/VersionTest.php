@@ -135,7 +135,8 @@ class VersionTest extends TestCase {
             'major' => 0,
             'minor' => 0,
             'patch' => 0,
-            'label' => ""
+            'label' => "",
+            'module' => ''
         ], $result);
 
         $result = Version::guessFromFileName("whatever-1.2.3-patch.HtmL");
@@ -144,7 +145,8 @@ class VersionTest extends TestCase {
             'major' => 1,
             'minor' => 2,
             'patch' => 3,
-            'label' => "patch"
+            'label' => "patch",
+            'module' => 'whatever'
         ], $result);
 
         $result = Version::guessFromFileName("whatever-1.2-patch.HtmL");
@@ -153,7 +155,8 @@ class VersionTest extends TestCase {
             'major' => 1,
             'minor' => 2,
             'patch' => 0,
-            'label' => "patch"
+            'label' => "patch",
+            'module' => 'whatever'
         ], $result);
 
         $result = Version::guessFromFileName("whatever-1-patch.HtmL");
@@ -162,7 +165,8 @@ class VersionTest extends TestCase {
             'major' => 1,
             'minor' => 0,
             'patch' => 0,
-            'label' => "patch"
+            'label' => "patch",
+            'module' => 'whatever'
         ], $result);
 
         $result = Version::guessFromFileName("whatever-1.HtmL");
@@ -171,7 +175,8 @@ class VersionTest extends TestCase {
             'major' => 1,
             'minor' => 0,
             'patch' => 0,
-            'label' => ""
+            'label' => "",
+            'module' => 'whatever'
         ], $result);
 
         $result = Version::guessFromFileName("ILIKEUPPACERforSOMEREAsonV12.HTML");
@@ -180,7 +185,8 @@ class VersionTest extends TestCase {
             'major' => 12,
             'minor' => 0,
             'patch' => 0,
-            'label' => ""
+            'label' => "",
+            'module' => 'ILIKEUPPACERforSOMEREAson'
         ], $result);
 
         $result = Version::guessFromFileName("no-u-use@1.2.HTML");
@@ -189,7 +195,8 @@ class VersionTest extends TestCase {
             'major' => 1,
             'minor' => 2,
             'patch' => 0,
-            'label' => ""
+            'label' => "",
+            'module' => 'no-u-use'
         ], $result);
 
         $result = Version::guessFromFileName("But-Not-1-times-this.HTML");
@@ -198,7 +205,8 @@ class VersionTest extends TestCase {
             'major' => 1,
             'minor' => 0,
             'patch' => 0,
-            'label' => "times-this"
+            'label' => "times-this",
+            'module' => 'But-Not'
         ], $result);
     }
 }

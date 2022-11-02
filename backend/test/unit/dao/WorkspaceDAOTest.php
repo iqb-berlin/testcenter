@@ -69,7 +69,7 @@ class WorkspaceDAOTest extends TestCase {
         $file->setFilePath(REAL_ROOT_DIR . '/sampledata/Booklet.xml');
 
         $this->dbc->storeFileMeta(1, $file);
-        $files = $this->dbc->_("select * from files", [], true);
+        $files = $this->dbc->_("select * from files where type = 'Booklet'", [], true);
         $expectation = [
             [
                 'workspace_id' => '1',
@@ -104,4 +104,106 @@ class WorkspaceDAOTest extends TestCase {
         ];
         $this->assertEquals($expectation, $files);
     }
+
+
+    public function test_getFileSimilarVersion_exactVersionExisting(): void {
+
+        $result = $this->dbc->getFileSimilarVersion(1, 'verona-player-simple-4.0.0.html', 'Resource');
+        $expectation = [
+            'name' => 'verona-player-simple-4.0.0.html',
+            'id' => 'verona-player-simple-4.0.0.html',
+            'version_mayor' => 4,
+            'version_minor' => 0,
+            'version_patch' => 0,
+            'version_label' => null,
+            'label' => null,
+            'type' => 'Resource',
+            'verona_module_type' => 'player',
+            'verona_module_id' => 'verona-player-simple',
+            'match_type' => 1
+        ];
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_getFileSimilarVersion_fallBackToFileName(): void {
+
+        $result = $this->dbc->getFileSimilarVersion(1, 'missnamed-player-simple-4.1.5.html', 'Resource');
+        $expectation = [
+            'name' => 'missnamed-player-simple-4.1.5.html',
+            'id' => 'missnamed-player-simple-4.1.5.html',
+            'version_mayor' => 4,
+            'version_minor' => 1,
+            'version_patch' => 5,
+            'version_label' => null,
+            'label' => null,
+            'type' => 'Resource',
+            'verona_module_type' => 'player',
+            'verona_module_id' => 'verona-player-simple',
+            'match_type' => -1
+        ];
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_getFileSimilarVersion_notExistingButNewerPatch(): void {
+
+        $result = $this->dbc->getFileSimilarVersion(1, 'verona-player-simple-4.1.6.html', 'Resource');
+        $expectation = [
+            'name' => 'verona-player-simple-4.1.7.html',
+            'id' => 'verona-player-simple-4.1.7.html',
+            'version_mayor' => 4,
+            'version_minor' => 1,
+            'version_patch' => 7,
+            'version_label' => null,
+            'label' => null,
+            'type' => 'Resource',
+            'verona_module_type' => 'player',
+            'verona_module_id' => 'verona-player-simple',
+            'match_type' => 0
+        ];
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_getFileSimilarVersion_notExistingButNewerMinor(): void {
+
+        $result = $this->dbc->getFileSimilarVersion(1, 'verona-player-simple-4.0.99.html', 'Resource');
+        $expectation = [
+            'name' => 'verona-player-simple-4.1.7.html',
+            'id' => 'verona-player-simple-4.1.7.html',
+            'version_mayor' => 4,
+            'version_minor' => 1,
+            'version_patch' => 7,
+            'version_label' => null,
+            'label' => null,
+            'type' => 'Resource',
+            'verona_module_type' => 'player',
+            'verona_module_id' => 'verona-player-simple',
+            'match_type' => 0
+        ];
+        $this->assertEquals($expectation, $result);
+    }
+
+
+    public function test_getFileSimilarVersion_onlyOlderMinorExists(): void {
+
+        $result = $this->dbc->getFileSimilarVersion(1, 'verona-player-simple-4.2.0.html', 'Resource');
+        $this->assertNull($result);
+    }
+
+
+    public function test_getFileSimilarVersion_onlyOlderMajorExists(): void {
+
+        $result = $this->dbc->getFileSimilarVersion(1, 'verona-player-simple-5.0.0.html', 'Resource');
+        $this->assertNull($result);
+    }
+
+
+    public function test_getFileSimilarVersion_moduleNotPresent(): void {
+
+        $result = $this->dbc->getFileSimilarVersion(1, 'something-4.0.0.html', 'Resource');
+        $this->assertNull($result);
+    }
+
 }

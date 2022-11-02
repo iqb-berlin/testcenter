@@ -104,3 +104,18 @@ values(1, 'Booklet.xml', 'BOOKLET.SAMPLE-1', 'Sample Booklet Label', 'Desc', 'Bo
 
 insert into files(workspace_id, name, id, label, description, type)
 values(1, 'Booklet-no-test.xml', 'BOOKLET.NO.TEST', 'Booklet without test', 'No test yet', 'Booklet');
+
+insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
+values(1, 'verona-player-simple-4.0.0.html', 'verona-player-simple-4.0.0.html', 4, 0, 0, 'player', 'verona-player-simple', 'Resource');
+
+insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
+values(1, 'verona-player-simple-4.0.5.html', 'verona-player-simple-4.0.5.html', 4, 0, 5, 'player', 'verona-player-simple', 'Resource');
+
+insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
+values(1, 'verona-player-simple-4.0.6.html', 'verona-player-simple-4.0.6.html', 4, 0, 6, 'player', 'verona-player-simple', 'Resource');
+
+insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
+values(1, 'missnamed-player-simple-4.1.5.html', 'missnamed-player-simple-4.1.5.html', 4, 1, 5, 'player', 'verona-player-simple', 'Resource');
+
+insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
+values(1, 'verona-player-simple-4.1.7.html', 'verona-player-simple-4.1.7.html', 4, 1, 7, 'player', 'verona-player-simple', 'Resource');

@@ -187,4 +187,89 @@ class WorkspaceDAO extends DAO {
 
         $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$workspaceId, $name, $type]);
     }
+
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getFile(int $workspaceId, string $fileId, string $type): ?array {
+
+        return $this->_(
+            "select
+                    name,
+                    id,
+                    version_mayor,
+                    version_minor,
+                    version_patch,
+                    version_label,
+                    label,
+                    type,
+                    verona_module_type,
+                    verona_module_id
+                from
+                    files
+                where
+                    workspace_id = ? and id = ? and type = ?",
+            [
+                $workspaceId,
+                $fileId,
+                $type
+            ]
+        );
+    }
+
+
+    // TODO use proper data-class
+    public function getFileSimilarVersion(int $workspaceId, string $fileId, string $type): ?array {
+
+        $version = Version::guessFromFileName($fileId);
+
+        return $this->_(
+            "select
+                    name,
+                    id,
+                    version_mayor,
+                    version_minor,
+                    version_patch,
+                    version_label,
+                    label,
+                    type,
+                    verona_module_type,
+                    verona_module_id,
+                    (case
+                        when (verona_module_id = :module_id and version_mayor = :version_mayor and version_minor = :version_minor and version_patch = :version_patch and ifnull(version_label, '') = :version_label) then 1
+                        when (workspace_id = :ws_id and type = :type and id = :file_id and verona_module_id != :module_id) then -1 
+                        else 0
+                    end) as match_type
+                from
+                    files
+                where
+                    (workspace_id = :ws_id and type = :type)
+                    and
+                    (
+                        (
+                            (verona_module_id = :module_id)
+                            and
+                            (version_mayor = :version_mayor)
+                            and
+                            (version_minor >= :version_minor)
+                        )
+                        or
+                        (id = :file_id)
+                    )
+                order by match_type desc, version_minor desc, version_patch desc, version_label
+                limit 1
+            ",
+            [
+                ':ws_id' => $workspaceId,
+                ':file_id' => $fileId,
+                ':type' => $type,
+                ':version_mayor' => $version['major'],
+                ':version_minor' => $version['minor'],
+                ':version_patch' => $version['patch'],
+                ':version_label' => $version['label'],
+                ':module_id' => $version['module']
+            ]
+        );
+    }
 }

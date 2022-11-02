@@ -350,61 +350,36 @@ class Workspace {
     }
 
 
-    public function getResource(string $findId, bool $allowSimilarVersion = false): File {
-
-        $dirToSearch = $this->getOrCreateSubFolderPath('Resource');
-
-        if (file_exists("$dirToSearch/$findId")) {
-
-            return File::get("$dirToSearch/$findId", 'Resource');
-        }
-        return $this->findFileById('Resource', $findId, $allowSimilarVersion);
-    }
-
-
-    // TODO fetch from DB instead of searching
     public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
         $dirToSearch = $this->getOrCreateSubFolderPath($type);
-        $bestMatch = null;
-        $version = Version::guessFromFileName($findId)['full'];
 
-        if (file_exists("$dirToSearch/$findId")) {
+        if ($fileMeta = $this->workspaceDAO->getFile($this->workspaceId, $findId, $type)) {
 
-            File::get("$dirToSearch/$findId", $type);
-        }
+            $file = File::get("$dirToSearch/{$fileMeta['name']}", $type, true);
 
-        foreach (Folder::glob($dirToSearch, "*.*", true) as $fullFilePath) {
+            if ($file->isValid()) {
 
-            $file = File::get($fullFilePath, $type);
-
-            $compareId = FileName::normalize($file->getId(), false);
-
-            if ($file->isValid() && ($compareId == FileName::normalize($findId, false))) {
                 return $file;
             }
+        }
 
-            if ($allowSimilarVersion and !$bestMatch) {
+        if (!$allowSimilarVersion) {
 
-                $compareIdMajor = FileName::normalize($file->getId(), true);
+            throw new HttpError("No $type with id `$findId` found on workspace `$this->workspaceId`!", 404);
+        }
 
-                if ($file->isValid() && ($compareIdMajor == FileName::normalize($findId, true))) {
+        if ($fileMeta = $this->workspaceDAO->getFileSimilarVersion($this->workspaceId, $findId, $type)) {
 
-                    $compareVersion = Version::guessFromFileName($file->getId())['full'];
+            $file = File::get("$dirToSearch/{$fileMeta['name']}", $type, true);
 
-                    if (Version::isCompatible($version, $compareVersion)) {
+            if ($file->isValid()) {
 
-                        $bestMatch = $file;
-                    }
-                }
+                return $file;
             }
         }
 
-        if ($bestMatch) {
-            return $bestMatch;
-        }
-
-        throw new HttpError("No $type with name `$findId` found on Workspace`$this->workspaceId`!", 404);
+        throw new HttpError("No suitable version of $type `$findId` found on workspace `$this->workspaceId`!", 404);
     }
 
 

@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpIllegalPsrClassPathInspection */
 
+use Mockery\MockInterface;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
@@ -14,7 +15,7 @@ class WorkspaceTest extends TestCase {
 
     private vfsStreamDirectory $vfs;
     private Workspace $workspace;
-    private WorkspaceDAO $workspaceDaoMock;
+    private WorkspaceDAO|MockInterface $workspaceDaoMock;
 
     const validFile = '<Unit ><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
     const invalidFile = '<Unit><Metadata><Id>id</Id></Metadata></Unit>';
@@ -418,7 +419,7 @@ class WorkspaceTest extends TestCase {
     }
 
 
-    function getErrorsFromValidationResult($result): array {
+    private function getErrorsFromValidationResult($result): array {
         return array_filter(
             array_map(function($file) {
                 return $file->getValidationReportSorted()['error'] ?? null;
@@ -428,82 +429,132 @@ class WorkspaceTest extends TestCase {
     }
 
 
-    function test_findFileById() {
+    function test_findFileById_validXmlFile(): void {
 
-        $result = $this->workspace->findFileById('SysCheck', 'SYSCHECK.SAMPLE');
+        $this->workspaceDaoMock
+            ->expects('getFile')
+            ->once()
+            ->withArgs([1, 'SYSCHECK.SAMPLE', 'SysCheck'])
+            ->andReturn([
+                'name' => 'SAMPLE_SYSCHECK.XML',
+                'id' => 'SYSCHECK.SAMPLE',
+                'version_mayor' => 0,
+                'version_minor' => 0,
+                'version_patch' => 0,
+                'version_label' => '',
+                'label' => '',
+                'type' => 'SysCheck',
+                'verona_module_type' => '',
+                'verona_module_id' => ''
+            ]);
+        $workspace = new Workspace(1);
+        $result = $workspace->findFileById('SysCheck', 'SYSCHECK.SAMPLE');
+
         $this->assertEquals('XMLFileSysCheck', get_class($result));
         $this->assertEquals('vfs://root/data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', $result->getPath());
+    }
 
-        try {
-            $this->workspace->findFileById('SysCheck', 'not-existing-id');
-            $this->fail("expected exception");
-        } catch (Exception $exception) {}
+    function test_findFileById_notExistingXmlFile(): void {
 
-        try {
-            $this->workspace->findFileById('SysCheck', 'not-existing-id');
-            $this->fail("expected exception");
-        } catch (Exception $exception) {}
+        $this->workspaceDaoMock
+            ->expects('getFile')
+            ->once()
+            ->withArgs([1, 'not-existing-id', 'SysCheck'])
+            ->andReturn(null);
+        $workspace = new Workspace(1);
 
-        try {
-            $this->workspace->findFileById('not-existing-type', 'SYSCHECK.SAMPLE');
-            $this->fail("expected exception");
-        } catch (Exception $exception) {}
-
-        $result = $this->workspace->findFileById('Resource', 'verona-player-simple-4.0.0.html', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
-
-        $result = $this->workspace->findFileById('Resource', 'verona-player-simple-4.0.99.HTML', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
-
-        copy('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html',
-            'vfs://root/data/ws_1/Resource/verona-player-simple-4.0.99.html');
-
-        $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.0.HTML', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
-
-        $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.HTML', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.99.html', $result->getPath());
-
-        unlink('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.99.html');
-        copy('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html',
-            'vfs://root/data/ws_1/Resource/verona-player-simple-4.7.0.html');
-
-        $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.0.HTML', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html', $result->getPath());
-
-        $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.1.0.HTML', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.7.0.html', $result->getPath());
-
-        $result = $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.0.7.HTML', true);
-        $this->assertEquals('ResourceFile', get_class($result));
-        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.7.0.html', $result->getPath());
+        $this->expectException("HttpError");
+        $workspace->findFileById('SysCheck', 'not-existing-id');
     }
 
 
-    function test_findFileById_newerMinorRequested() {
-        copy('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.0.html',
-            'vfs://root/data/ws_1/Resource/verona-player-simple-4.5.0.html');
-        $this->expectException('HttpError');
-        $this->workspace->findFileById('Resource', 'VERONA-PLAYER-SIMPLE-4.6.HTML', true);
+    function test_findFileById_notExistingType(): void{
+
+        $this->workspaceDaoMock
+            ->expects('getFileSimilarVersion')
+            ->once()
+            ->withArgs([1, 'SYSCHECK.SAMPLE', 'not-existing-type']);
+        $workspace = new Workspace(1);
+
+        $this->expectException("Exception");
+        $workspace->findFileById('not-existing-type', 'SYSCHECK.SAMPLE');
     }
 
 
-    function test_findFileById_wrongVersion() {
+    function test_findFileById_test_invalidXmlFile(): void{
 
-        $this->expectException('HttpError');
-        $this->workspace->findFileById('Resource','VERONA-PLAYER-SIMPLE-400.HTML', false);
+        $this->workspaceDaoMock
+            ->expects('getFile')
+            ->once()
+            ->withArgs([1, 'SYSCHECK.SAMPLE', 'SysCheck'])
+            ->andReturn([
+                'name' => 'not existing', // an entry from the db to a missing file results in an invalid File-object
+                'id' => 'SYSCHECK.SAMPLE',
+                'version_mayor' => 0,
+                'version_minor' => 0,
+                'version_patch' => 0,
+                'version_label' => '',
+                'label' => '',
+                'type' => 'SysCheck',
+                'verona_module_type' => '',
+                'verona_module_id' => ''
+            ]);
+        $workspace = new Workspace(1);
+
+        $this->expectException("HttpError");
+        $workspace->findFileById('SysCheck', 'SYSCHECK.SAMPLE');
     }
 
 
-    function test_findFileById_notExisting() {
+    function test_findFileById_similarAllowedAndPresent(): void {
+
+        $this->workspaceDaoMock
+            ->expects('getFile')
+            ->once()
+            ->withArgs([1, 'verona-player-simple-4.0.1.html', 'Resource'])
+            ->andReturn(null);
+        $this->workspaceDaoMock
+            ->expects('getFileSimilarVersion')
+            ->once()
+            ->withArgs([1, 'verona-player-simple-4.0.1.html', 'Resource'])
+            ->andReturn([
+                'name' => 'verona-player-simple-4.0.5.html',
+                'id' => 'SYSCHECK.SAMPLE',
+                'version_mayor' => 4,
+                'version_minor' => 0,
+                'version_patch' => 5,
+                'version_label' => '',
+                'label' => '',
+                'type' => 'Resource',
+                'verona_module_type' => 'player',
+                'verona_module_id' => 'verona-player-simple'
+            ]);
+        $workspace = new Workspace(1);
+        file_put_contents($this->vfs->url() . '/data/ws_1/Resource/verona-player-simple-4.0.5.html', "content");
+
+        $result = $workspace->findFileById('Resource', 'verona-player-simple-4.0.1.html', true);
+
+        $this->assertEquals('ResourceFile', get_class($result));
+        $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.5.html', $result->getPath());
+    }
+
+
+
+    function test_findFileById_similarAllowedAndNotFound(): void {
+
+        $this->workspaceDaoMock
+            ->expects('getFile')
+            ->once()
+            ->withArgs([1, 'verona-player-simple-4.0.1.html', 'Resource'])
+            ->andReturn(null);
+        $this->workspaceDaoMock
+            ->expects('getFileSimilarVersion')
+            ->once()
+            ->withArgs([1, 'verona-player-simple-4.0.1.html', 'Resource'])
+            ->andReturn(null);
+        $workspace = new Workspace(1);
 
         $this->expectException('HttpError');
-        $this->workspace->findFileById('Resource','NOT-EXISTING-ID', false);
+        $workspace->findFileById('Resource', 'verona-player-simple-4.0.1.html', true);
     }
 }

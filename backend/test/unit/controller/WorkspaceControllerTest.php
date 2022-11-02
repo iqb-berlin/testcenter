@@ -36,17 +36,19 @@ final class WorkspaceControllerTest extends TestCase {
     ];
 
     private array $callable;
+
     private Report|MockInterface $reportMock;
     private AdminDAO|MockInterface $adminDaoMock;
     private SysChecksFolder|MockInterface $sysChecksFolderMock;
+    private Workspace|MockInterface $workspaceMock;
+    private WorkspaceDAO|MockInterface $workspaceDaoMock;
+    private UploadedFilesHandler|MockInterface $uploadedFilesHandler;
+    private BroadcastService|MockInterface $broadcastingServiceMock;
+
 
     private string $requestMethod = 'GET';
     private int $workspaceId = 1;
     private string $dataIds = 'id1,id2';
-
-    private Workspace|MockInterface $workspaceMock;
-    private WorkspaceDAO|MockInterface $workspaceDaoMock;
-    private UploadedFilesHandler|MockInterface $uploadedFilesHandler;
 
     function setUp(): void {
 
@@ -81,10 +83,8 @@ final class WorkspaceControllerTest extends TestCase {
         $this->reportMock = Mockery::mock('overload:' . Report::class);
         $this->adminDaoMock = Mockery::mock(AdminDAO::class);
         $this->sysChecksFolderMock = Mockery::mock(SysChecksFolder::class);
-
         $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
         $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
-
         $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
 
         define('ROOT_DIR', REAL_ROOT_DIR);

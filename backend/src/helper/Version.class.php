@@ -50,6 +50,7 @@ class Version {
         $matches = [];
         preg_match($regex, $fileName, $matches);
         return [
+            'module' => $matches[1] ?? '',
             'full' => $matches[2] ?? '',
             'major' => (int) ($matches[3] ?? '0'),
             'minor' => isset($matches[4]) ? ((int) substr($matches[4], 1)) : 0,
