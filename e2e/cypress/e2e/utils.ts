@@ -73,6 +73,17 @@ export const loginAsAdmin = (username = 'super', password = 'user123'): void => 
     .should('exist');
 };
 
+export const logout = (): void => {
+  cy.url().then($url => {
+    if($url.includes(`${Cypress.config().baseUrl}/#/r/admin-starter`)) {
+      cy.get('[data-cy="logout"]')
+        .click();
+    } else  {
+      cy.log("Not logged in... doing nothing.")
+    }
+  })
+};
+
 export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
     .click();
