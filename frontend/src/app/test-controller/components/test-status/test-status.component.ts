@@ -18,16 +18,16 @@ export class TestStatusComponent implements OnInit, OnDestroy {
 
   constructor(
     public tcs: TestControllerService,
-    public mds: MainDataService
+    public mainDataService: MainDataService
   ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-      const authData = MainDataService.getAuthData();
+      const authData = this.mainDataService.getAuthData();
       if (authData) {
         this.loginName = authData.displayName;
       }
-      this.appErrorSubscription = this.mds.appError$
+      this.appErrorSubscription = this.mainDataService.appError$
         .pipe(filter(error => !!error))
         .subscribe(error => {
           // This happens, when in lazy-loading-mode, an error occurred during the loading of the unit's content.

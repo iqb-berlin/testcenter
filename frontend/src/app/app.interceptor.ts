@@ -11,8 +11,10 @@ import { ApiError } from './app.interfaces';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private mainDataService: MainDataService,
-              private router: Router) {}
+  constructor(
+    private mainDataService: MainDataService,
+    private router: Router
+  ) {}
 
   // TODO separation of concerns: split into two interceptors,
   // one for error handling, one for auth token addition
@@ -27,7 +29,7 @@ export class AuthInterceptor implements HttpInterceptor {
     // }
 
     let tokenStr = '';
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.token) {
         tokenStr = authData.token;

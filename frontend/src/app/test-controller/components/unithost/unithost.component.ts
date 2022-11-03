@@ -53,7 +53,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   constructor(
     public tcs: TestControllerService,
-    private mds: MainDataService,
+    private mainDataService: MainDataService,
     private bs: BackendService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
@@ -64,7 +64,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = null;
     this.leaveWarning = false;
     setTimeout(() => {
-      this.subscriptions.postMessage = this.mds.postMessage$
+      this.subscriptions.postMessage = this.mainDataService.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
       this.subscriptions.routing = merge(this.route.queryParamMap, this.route.params)
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
@@ -224,7 +224,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
     this.currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
 
-    this.mds.appSubTitle$.next(this.currentUnit.unitDef.title);
+    this.mainDataService.appSubTitle$.next(this.currentUnit.unitDef.title);
 
     if (this.subscriptions.loading) {
       this.subscriptions.loading.unsubscribe();
@@ -246,7 +246,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.unitsLoading$.next(value);
         },
         error: err => {
-          this.mds.appError$.next({
+          this.mainDataService.appError$.next({
             label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed?
             description: (err.info) ? err.info : err,
             category: 'ERROR'
@@ -328,7 +328,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
-      this.mds.appError$.next({
+      this.mainDataService.appError$.next({
         label: 'Veralteter Browser',
         description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
         category: 'ERROR'
@@ -375,7 +375,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnitTitle,
       unitId: this.currentUnit.unitDef.alias,
-      directDownloadUrl: `${this.bs.serverUrl}${MainDataService.getAuthData()?.token}/resource`
+      directDownloadUrl: `${this.bs.serverUrl}${this.mainDataService.getAuthData()?.token}/resource`
     };
     if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
       playerConfig.startPage = this.pendingUnitData.currentPage;
