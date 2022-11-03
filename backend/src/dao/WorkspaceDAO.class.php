@@ -166,7 +166,7 @@ class WorkspaceDAO extends DAO {
                 $file->getLabel(),
                 $file->getDescription(),
                 $file->getType(),
-                (($file instanceof ResourceFile) and $file->isPlayer()) ? 'player' : '',
+                (($file instanceof ResourceFile) and $file->isVeronaModule()) ? $file->getSpecialInfo()->veronaModuleType : '',
                 $file->getSpecialInfo()->veronaVersion,
                 $file->getSpecialInfo()->playerId
             ]

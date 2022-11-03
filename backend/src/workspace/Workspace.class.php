@@ -481,7 +481,11 @@ class Workspace {
             $stats['logins_added'] = $added;
         }
 
-        if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+        if (
+            ($file->getType() == 'Resource')
+            /* @var $file ResourceFile */
+            and $file->isPackage()
+        ) {
 
             $file->installPackage();
         }

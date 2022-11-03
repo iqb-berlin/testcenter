@@ -5,12 +5,18 @@ declare(strict_types=1);
 class ResourceFile extends File {
 
     const type = 'Resource';
-    protected PlayerMeta $meta;
+    protected VeronaModuleMeta $meta;
 
     public function __construct(string $path, bool $validate = true) {
 
-        $this->meta = new PlayerMeta([]);
+        $this->meta = new VeronaModuleMeta();
+
         parent::__construct($path);
+
+        if (FileExt::has($this->getPath(), 'HTML')) {
+            $this->readVeronaMetaData();
+        }
+
         if ($validate) {
             $this->validate();
         }
@@ -19,21 +25,17 @@ class ResourceFile extends File {
 
     private function validate() {
 
-        if ($this->isPlayer()) {
-            $this->validatePlayer();
-        }
-
         if ($this->isPackage()) {
             $this->validatePackage();
         }
     }
 
 
-    // TODO don't detect by extension, detect by metadata - when support of verona2 is dropped
-    public function isPlayer(): bool {
+    public function isVeronaModule(): bool {
 
-        return FileExt::has($this->getPath(), 'HTML');
+        return !!$this->meta->veronaModuleType;
     }
+
 
 
     public function isPackage(): bool {
@@ -44,7 +46,7 @@ class ResourceFile extends File {
 
     // player is not it's own class, because player and other resources are stores in the same dir
     // TODO make player and resource two different types
-    private function validatePlayer() {
+    private function readVeronaMetaData() {
 
         if (!$this->isValid() or !$this->getContent()) {
             return;
@@ -53,11 +55,11 @@ class ResourceFile extends File {
         $document = new DOMDocument();
         $document->loadHTML($this->getContent(), LIBXML_NOERROR);
 
-        if ($metaV4Problem = $this->readPlayerMetadataV4($document)) {
+        if ($metaV4Problem = $this->readVeronaMetadataV4($document)) {
 
-            if (!$this->readPlayerMetadataV35($document)) {
+            if (!$this->readVeronaMetadataV35($document)) {
 
-                if (!$this->readPlayerMetadataV3($document)) {
+                if (!$this->readVeronaMetadataV3($document)) {
 
                     $this->report('warning', $metaV4Problem);
                 }
@@ -82,7 +84,7 @@ class ResourceFile extends File {
      *
      * @deprecated
      */
-    private function readPlayerMetadataV3(DOMDocument $document): bool {
+    private function readVeronaMetadataV3(DOMDocument $document): bool {
 
         $this->meta->label = $this->getPlayerTitleV3($document);
 
@@ -107,6 +109,7 @@ class ResourceFile extends File {
         $this->meta->version = $meta->getAttribute('data-version');
         $this->meta->veronaVersion = $meta->getAttribute('data-api-version');
         $this->meta->description = $meta->getAttribute('data-description');
+        $this->meta->veronaModuleType = 'player';
 
         $this->report('warning', 'Metadata in meta-tag is deprecated!');
         return true;
@@ -144,7 +147,7 @@ class ResourceFile extends File {
      *
      * @deprecated
      */
-    private function readPlayerMetadataV35(DOMDocument $document): bool {
+    private function readVeronaMetadataV35(DOMDocument $document): bool {
 
         $metaElem = $this->getPlayerMetaElementV4($document);
         if (!$metaElem) {
@@ -163,6 +166,7 @@ class ResourceFile extends File {
         $this->meta->playerId = $meta['@id'];
         $this->meta->veronaVersion = $meta['apiVersion'];
         $this->meta->version = $meta['version'];
+        $this->meta->veronaModuleType = $meta['@type'];
 
         $this->report('warning', 'Deprecated meta-data-format found!');
         return true;
@@ -182,7 +186,7 @@ class ResourceFile extends File {
     }
 
 
-    private function readPlayerMetadataV4(DOMDocument $document): ?string {
+    private function readVeronaMetadataV4(DOMDocument $document): ?string {
 
         $metaElem = $this->getPlayerMetaElementV4($document);
         if (!$metaElem) {
@@ -204,6 +208,7 @@ class ResourceFile extends File {
         $this->meta->playerId = $meta['id'];
         $this->meta->veronaVersion = $meta['specVersion'];
         $this->meta->version = $meta['version'];
+        $this->meta->veronaModuleType = $meta['type'];
         return null;
     }
 
