@@ -29,7 +29,7 @@ class ResourceFile extends File {
     }
 
 
-    // TODO don't detect by extension, detect by metadata
+    // TODO don't detect by extension, detect by metadata - when support of verona2 is dropped
     public function isPlayer(): bool {
 
         return FileExt::has($this->getPath(), 'HTML');
@@ -53,15 +53,21 @@ class ResourceFile extends File {
         $document = new DOMDocument();
         $document->loadHTML($this->getContent(), LIBXML_NOERROR);
 
-        $metaV4Problem = $this->readPlayerMetadataV4($document);
+        if ($metaV4Problem = $this->readPlayerMetadataV4($document)) {
 
-        if ($metaV4Problem) {
-            if (!$this->readPlayerMetadataV3($document)) {
-                $this->report('warning', $metaV4Problem);
+            if (!$this->readPlayerMetadataV35($document)) {
+
+                if (!$this->readPlayerMetadataV3($document)) {
+
+                    $this->report('warning', $metaV4Problem);
+                }
             }
-            if (!$this->meta->version) {
-                $this->meta->version = Version::guessFromFileName(basename($this->getPath()))['full'];
-            }
+        }
+
+        if (!$this->meta->version) {
+
+            $this->meta->version = Version::guessFromFileName(basename($this->getPath()))['full'];
+            $this->report('warning', 'Metadata missing. Version guessed from Filename.');
         }
 
         $this->applyMeta();
@@ -130,6 +136,52 @@ class ResourceFile extends File {
     }
 
 
+
+    /**
+     * This was another temporary way of defining meta-data of a player until in Verona4 a definitive way was defined.
+     * Since we produced a bunch of player-versions including this kind of metadata we should support it as long as
+     * we support Verona3.
+     *
+     * @deprecated
+     */
+    private function readPlayerMetadataV35(DOMDocument $document): bool {
+
+        $metaElem = $this->getPlayerMetaElementV4($document);
+        if (!$metaElem) {
+            return false;
+        }
+        try {
+            $meta = JSON::decode($metaElem->textContent, true);
+        } catch (Exception $e) {
+            return false;
+        }
+        if ($meta["@context"] !== "https://w3id.org/iqb/verona-modules") {
+            return false;
+        }
+        $this->meta->label = $this->getPreferredTranslationV35($meta['name']);
+        $this->meta->description = $this->getPreferredTranslationV35($meta['description']);
+        $this->meta->playerId = $meta['@id'];
+        $this->meta->veronaVersion = $meta['apiVersion'];
+        $this->meta->version = $meta['version'];
+
+        $this->report('warning', 'Deprecated meta-data-format found!');
+        return true;
+    }
+
+
+    private function getPreferredTranslationV35(?array $multiLangItem): string {
+
+        if (!$multiLangItem or !count($multiLangItem)) {
+            return '';
+        }
+
+        $first = array_keys($multiLangItem)[0];
+        return $multiLangItem['de']
+            ?? $multiLangItem['en']
+            ?? $multiLangItem[$first];
+    }
+
+
     private function readPlayerMetadataV4(DOMDocument $document): ?string {
 
         $metaElem = $this->getPlayerMetaElementV4($document);
@@ -147,15 +199,16 @@ class ResourceFile extends File {
         if ($meta['$schema'] !== "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json") {
             return "Wrong metadata-schema: {$meta['$schema']}";
         }
-        $this->meta->label = $this->getPreferredTranslation($meta['name']);
-        $this->meta->description = $this->getPreferredTranslation($meta['description']);
+        $this->meta->label = $this->getPreferredTranslationV4($meta['name']);
+        $this->meta->description = $this->getPreferredTranslationV4($meta['description']);
         $this->meta->playerId = $meta['id'];
         $this->meta->veronaVersion = $meta['specVersion'];
+        $this->meta->version = $meta['version'];
         return null;
     }
 
 
-    private function getPreferredTranslation(?array $multiLangItem): string {
+    private function getPreferredTranslationV4(?array $multiLangItem): string {
 
         if (!$multiLangItem or !count($multiLangItem)) {
             return '';
@@ -167,8 +220,8 @@ class ResourceFile extends File {
         foreach ($multiLangItem as $entry) {
             if ($entry['lang'] == 'en') return $entry['value'];
         }
-        $first = array_keys($multiLangItem)[0];
-        return $multiLangItem[$first]['value'];
+
+        return $multiLangItem[0]['value'];
     }
 
 
