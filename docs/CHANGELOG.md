@@ -4,6 +4,9 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 13.0.0-rc.6
+test
+
 ## 13.0.0-rc.5
 test
 
