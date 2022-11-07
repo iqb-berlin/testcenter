@@ -348,12 +348,15 @@ export class TestControllerService {
     }
   }
 
-  startMaxTimer(testletId: string, timeLeftMinutes: number): void {
+  startMaxTimer(testlet: Testlet): void {
+    const timeLeftMinutes = (testlet.id in this.maxTimeTimers) ?
+      Math.min(this.maxTimeTimers[testlet.id], testlet.maxTimeLeft) :
+      testlet.maxTimeLeft;
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
-    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testletId, MaxTimerDataType.STARTED));
-    this.currentMaxTimerTestletId = testletId;
+    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testlet.id, MaxTimerDataType.STARTED));
+    this.currentMaxTimerTestletId = testlet.id;
     this.maxTimeIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
@@ -362,11 +365,11 @@ export class TestControllerService {
         map(val => (timeLeftMinutes * 60) - val - 1)
       ).subscribe(
         val => {
-          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testletId, MaxTimerDataType.STEP));
+          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testlet.id, MaxTimerDataType.STEP));
         },
         e => console.log('maxTime onError: %s', e),
         () => {
-          this.maxTimeTimer$.next(new MaxTimerData(0, testletId, MaxTimerDataType.ENDED));
+          this.maxTimeTimer$.next(new MaxTimerData(0, testlet.id, MaxTimerDataType.ENDED));
           this.currentMaxTimerTestletId = '';
         }
       );

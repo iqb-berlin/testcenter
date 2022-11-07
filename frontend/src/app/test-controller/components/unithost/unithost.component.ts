@@ -319,10 +319,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     ) {
       return;
     }
-    this.tcs.startMaxTimer(
-      this.currentUnit.maxTimerRequiringTestlet.id,
-      this.currentUnit.maxTimerRequiringTestlet.maxTimeLeft
-    );
+    this.tcs.startMaxTimer(this.currentUnit.maxTimerRequiringTestlet);
   }
 
   private prepareIframe(): void {
