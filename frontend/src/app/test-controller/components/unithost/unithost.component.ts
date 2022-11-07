@@ -335,7 +335,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
