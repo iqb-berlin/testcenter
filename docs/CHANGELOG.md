@@ -4,20 +4,51 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 13.0.0-rc.6
-test
+## 13.0.0
+Für diese Testcenter-Version wurde die gesamte Grundarchitektur der Anwendung überarbeitet, um von jetzt an schneller
+und einfacher weitere Verbesserungen und neue Funktionen liefern zu können.
+Der Code dieses neuen Testcenters befindet sich unter [einer neuen URL](https://github.com/iqb-berlin/testcenter).
 
-## 13.0.0-rc.5
-test
+Daneben gibt es große Verbesserungen in folgenden Punkten
+- Sicherheit: Aktualisierung auf aktuelle Pakete und Webserver-Komponenten.
+- Stabilität: Durch Netzwerkfehler während der laufenden Testung fehlschlagende Aktionen (z. B. Antworten speichern)
+  führen nicht mehr zu einer sofortigen Fehleranzeige, sondern können vorher bis zu dreimal erneut versucht werden.
+- Kompatibilität: Das Testcenter akzeptiert nun die erweitere Unit-Definition wie sie aktuelle Versionen des IQB-Studios
+  produzieren. Alle älteren Units und Player funktionieren weiterhin.
 
-## 13.0.0-rc.4
-test
+Das Release wird durch zahlreiche kleinere Verbesserungen und Bugfixes abgerundet, z. B.: 
+- Zeitgesteuerte Blöcke: Zeit wird durch Pausierung nicht mehr zurückgesetzt, Weiterleitung nach Zeitablauf repariert.
+- Verbesserungen in der UI, z. B. im Review-Dialog.
+- Bestimmte, gelegentlich bem (Neu-)laden von Testungen auftretende Fehler beseitigt.
+- Gelöschte logins, verblieben unter bestimmten Umständen im System; dies ist bereinigt.
 
-## 13.0.0-rc.3
-test
 
-## 13.0.0-alpha
-test
+### Information for Administrators
+#### Migration from old version
+
+1. Although update from previous version *should* be possible seamlessly this update contains a major architectural 
+redesign and making a backup before the update __is strongly recommended__. 
+
+2. Rename or remove old installation-dir. (eg `mv testcenter testcenter-backup`).
+
+3. Download and run installer [as put in the readme](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html).
+Use old `.env`-file als reference for DB-credentials and other settings.
+__important__ use "t" for the salt settings, because older versions did not accept other salts.
+
+
+
+## 13.0.0-rc.7
+..
+
+
+* The Ngnix-Config of the frontend-container is now available for custom edits under /config.
+
+## API Changes
+### XML Exchange Formats
+* The unit.XML is vastly extended. No breaking changes. 
+
+
+
 
 ## Backend 12.4.2
 * radically speed up initialization and tests and fix workspace loading issues
