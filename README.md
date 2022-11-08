@@ -7,7 +7,7 @@
 ## [Deutsch]
 
 Das IQB-Testcenter ist eine Webanwendung für die Durchführung von Kompetenztests oder Befragungen. Für Beschreibungen und Hinweise zur Benutzung konsultieren sie bitte unsere [Wiki-Seiten](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter).
-Der Rest dieser ReadMe beschreibt die technischen Details zur Verwendung und ist vornehmlich an Administratoren gerichtet.
+Der Rest dieser ReadMe beschreibt die technischen Details zur Verwendung und ist vornehmlich an Administratoren und Entwickler gerichtet.
 
 Eine Versionshistorie und Änderungshinweise finden sie unter [Releases](https://github.com/iqb-berlin/testcenter/releases).
 
