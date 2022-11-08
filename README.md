@@ -26,13 +26,12 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 * **[Developer's Guide](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/developer-guide.html)**
 
 ### API Documentation
-* [HTTP API Backend](https://pages.cms.hu-berlin.de/iqb/testcenter/docs/api/index.html)
+* [HTTP API Backend](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/api/index.html)
 * [Verona Player API](https://verona-interfaces.github.io/player/)
 
 ### Compodoc Documentation
 
 * [Frontend](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/compodoc-frontend/index.html)
-
 * [Broadcasting-Service](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/compodoc-broadcasting-service/index.html)
 
 ### Test Coverage
