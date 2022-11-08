@@ -17,10 +17,10 @@ Further explainations to these applications are beyond the scope of this documen
 ## 1. Install
 
 ```
- wget https://raw.githubusercontent.com/iqb-berlin/testcenter/master/dist-src/install.sh
+wget -O install.sh https://raw.githubusercontent.com/iqb-berlin/testcenter/master/dist-src/install.sh
 ```
 ```
- bash install.sh
+bash install.sh
 ```
 
 The script will try to run `docker`, `docker-compose` and `make` and notify you if it encounters problems with that.
