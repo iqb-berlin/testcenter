@@ -95,7 +95,7 @@ services:
 
 volumes:
   dbdata:
-  testcenter_vo_backend_data:
+  testcenter_backend_vo_data:
 
 networks:
   testcenter:
