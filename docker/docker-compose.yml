@@ -16,7 +16,6 @@ x-env-logging-conf: &env-logging-conf
   max-file: "10"
 
 services:
-
   traefik:
     container_name: testcenter-traefik
     image: traefik:v2.2
@@ -24,7 +23,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
     ports:
-      - "80:80"
+      - "${PORT}:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
@@ -64,7 +63,7 @@ services:
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
     volumes:
-      - testcenter_backend_data:/var/www/html/data
+      - testcenter_backend_vo_data:/var/www/data
     networks:
       testcenter:
 
@@ -96,7 +95,7 @@ services:
 
 volumes:
   dbdata:
-  testcenter_backend_data:
+  testcenter_backend_vo_data:
 
 networks:
   testcenter:

@@ -4,11 +4,13 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-REQUIRED_PACKAGES=("docker" "docker-compose" "jq --help")
+REQUIRED_PACKAGES=("docker" "docker-compose")
 OPTIONAL_PACKAGES=(make)
 
 declare -A ENV_VARS
-ENV_VARS[HOST_NAME]=localhost
+ENV_VARS[HOSTNAME]=localhost
+ENV_VARS[PORT]=80
+ENV_VARS[TLS_PORT]=443
 ENV_VARS[MYSQL_ROOT_PASSWORD]=secret_root_pw
 ENV_VARS[MYSQL_DATABASE]=iqb_tba_testcenter
 ENV_VARS[MYSQL_SALT]=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 5 | head -n 1)
@@ -17,7 +19,7 @@ ENV_VARS[MYSQL_PASSWORD]=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | 
 ENV_VARS[SUPERUSER_NAME]=super
 ENV_VARS[SUPERUSER_PASSWORD]=user123
 
-ENV_VAR_ORDER=(HOST_NAME MYSQL_ROOT_PASSWORD MYSQL_DATABASE MYSQL_SALT MYSQL_USER MYSQL_PASSWORD SUPERUSER_NAME SUPERUSER_PASSWORD)
+ENV_VAR_ORDER=(HOSTNAME PORT TLS_PORT MYSQL_ROOT_PASSWORD MYSQL_DATABASE MYSQL_SALT MYSQL_USER MYSQL_PASSWORD SUPERUSER_NAME SUPERUSER_PASSWORD)
 
 check_prerequisites() {
   for app in "${REQUIRED_PACKAGES[@]}"
@@ -44,73 +46,64 @@ check_prerequisites() {
   done
 }
 
-get_version_list_from_api() {
-  #read  -p 'Show only stable versions [Y/n]: ' -r -n 1 -e show_stable_versions
-  # so koennte man betas filtern: select(.value.prerelease == true)
-  versions=$(curl -s -H "Accept: application/json" https://api.github.com/repos/$REPO_URL/releases)
-  echo "$versions" | jq -r 'map({tag_name, name, prerelease})
-                          | to_entries
-                          | map({
-                            index: (.key + 1),
-                            tag_name: .value.tag_name,
-                            name: .value.name,
-                            prerelease: (if .value.prerelease == true then "(prerelease)" else "" end)
-                          })
-                          | .[]
-                          | [.[]]
-                          | @tsv'
-
-  number_of_versions=$(echo "$versions" | jq -r 'length')
-
-  chosen_version_index=0
-  while [[ "$chosen_version_index" -lt 1 || "$chosen_version_index" -gt "$number_of_versions" ]]; do
-    read  -p 'Choose version number: [1-'${number_of_versions}']' -r -n 1 -e chosen_version_index
-  done
-  chosen_version_tag=$(echo "$versions" | jq -r '.['${chosen_version_index}-1'] | .tag_name')
+choose_version() {
+  latest_version_tag=$(curl -s https://api.github.com/repos/$REPO_URL/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d " " )
+  echo $latest_version_tag
+  read -p 'Install latest version [Y/n]: ' -r -n 1 -e latest
+  if [[ $latest =~ ^[nN]$ ]]; then
+    read -p 'Enter version tag: ' -r -e chosen_version_tag
+    if ! curl --head --silent --fail --output /dev/null https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/README.md 2> /dev/null;
+     then
+      echo "This version tag does not exist."
+      exit 1
+    fi
+  else
+    echo "Installing latest"
+    chosen_version_tag=$latest_version_tag
+  fi
+  echo "Chosen:$chosen_version_tag"
 }
 
 download_files() {
   echo "Downloading files..."
+  mkdir -p config
   wget -nv -O .env https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/.env
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
-  wget -nv -O manage.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/manage.sh
-  chmod +x manage.sh
+  wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/update.sh
+  wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
+  chmod +x update.sh
   echo "Download done"
 }
 
 customize_settings() {
+  echo "Please enter some configuration settings. Passwords are generated randomly."
   for var in "${ENV_VAR_ORDER[@]}"
     do
       read  -p "$var: " -e -i ${ENV_VARS[$var]} new_var
-      sed -i "s#$var.*#$var=$new_var#" .env
+      sed -i "s#$var=.*#$var=$new_var#" .env
     done
 }
 
 set_tls() {
   read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
   if [[ $TLS =~ ^[yY]$ ]]; then
-    mkdir config
     touch config/cert_config.yml
     echo "tls:
   certificates:
     - certFile: /certs/certificate.cer
       keyFile: /certs/private_key.key" > config/cert_config.yml
-    echo "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml."
+    printf "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml.\n"
     sed -i 's/TLS=off/TLS=on/' .env
     sed -i 's/ws:/wss:/' .env
     sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
-  else
-    sed -i 's/TLS=on/TLS=off/' .env
-    sed -i 's/wss:/ws:/' .env
-    sed -i 's/docker-compose.prod.yml -f docker-compose.prod.tls.yml/docker-compose.prod.yml/' Makefile
   fi
 }
 
 check_prerequisites
-get_version_list_from_api
+choose_version
 
 read  -p '1. Install directory: ' -e -i "`pwd`/$APP_NAME" TARGET_DIR
 
@@ -135,4 +128,10 @@ sed -i "s#VERSION.*#VERSION=$chosen_version_tag#" .env
 
 set_tls
 
-printf "\nInstallation done. Use 'make run' from the install directory.\n"
+read -p "Installation complete. Do you want to start the application? [Y/n]:" -r -n 1 -e START
+if [[ ! $START =~ [nN] ]]
+  then
+    make run
+  else
+    echo "Use 'make run' from the install directory."
+fi

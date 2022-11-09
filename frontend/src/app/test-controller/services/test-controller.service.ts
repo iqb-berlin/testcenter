@@ -171,8 +171,12 @@ export class TestControllerService {
     return normalisedId;
   }
 
-  updateUnitStateDataParts(unitDbKey: string, sequenceId: number, dataParts: KeyValuePairString,
-                           unitStateDataType: string): void {
+  updateUnitStateDataParts(
+    unitDbKey: string,
+    sequenceId: number,
+    dataParts: KeyValuePairString,
+    unitStateDataType: string
+  ): void {
     const changedParts:KeyValuePairString = {};
 
     Object.keys(dataParts)
@@ -328,7 +332,11 @@ export class TestControllerService {
   }
 
   newUnitStateCurrentPage(
-    unitDbKey: string, unitSequenceId: number, pageNr: number, pageId: string, pageCount: number
+    unitDbKey: string,
+    unitSequenceId: number,
+    pageNr: number,
+    pageId: string,
+    pageCount: number
   ): void {
     this.unitStateCurrentPages[unitSequenceId] = pageId;
     if (this.testMode.saveResponses) {
@@ -340,12 +348,15 @@ export class TestControllerService {
     }
   }
 
-  startMaxTimer(testletId: string, timeLeftMinutes: number): void {
+  startMaxTimer(testlet: Testlet): void {
+    const timeLeftMinutes = (testlet.id in this.maxTimeTimers) ?
+      Math.min(this.maxTimeTimers[testlet.id], testlet.maxTimeLeft) :
+      testlet.maxTimeLeft;
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
-    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testletId, MaxTimerDataType.STARTED));
-    this.currentMaxTimerTestletId = testletId;
+    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testlet.id, MaxTimerDataType.STARTED));
+    this.currentMaxTimerTestletId = testlet.id;
     this.maxTimeIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
@@ -354,11 +365,11 @@ export class TestControllerService {
         map(val => (timeLeftMinutes * 60) - val - 1)
       ).subscribe(
         val => {
-          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testletId, MaxTimerDataType.STEP));
+          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testlet.id, MaxTimerDataType.STEP));
         },
         e => console.log('maxTime onError: %s', e),
         () => {
-          this.maxTimeTimer$.next(new MaxTimerData(0, testletId, MaxTimerDataType.ENDED));
+          this.maxTimeTimer$.next(new MaxTimerData(0, testlet.id, MaxTimerDataType.ENDED));
           this.currentMaxTimerTestletId = '';
         }
       );
@@ -396,7 +407,11 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
+    this.testStatus$.next(
+      (oldTestStatus === TestControllerState.PAUSED) ?
+        TestControllerState.TERMINATED_PAUSED :
+        TestControllerState.TERMINATED
+    ); // last state that will and can be logged
 
     this.router.navigate(['/'], { state: { force } })
       .then(navigationSuccessful => {
@@ -436,12 +451,13 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
-          this.router.navigate([`/t/${this.testId}/u/1`],
-            { state: { force } });
+          this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });
           break;
         case UnitNavigationTarget.LAST:
-          this.router.navigate([`/t/${this.testId}/u/${this.allUnitIds.length}`],
-            { state: { force } });
+          this.router.navigate(
+            [`/t/${this.testId}/u/${this.allUnitIds.length}`],
+            { state: { force } }
+          );
           break;
         case UnitNavigationTarget.END:
           this.terminateTest(
@@ -457,7 +473,8 @@ export class TestControllerService {
             {
               state: { force },
               // eslint-disable-next-line no-bitwise
-              queryParams: targetIsCurrent ? { t: Date.now() >> 11 } : {}
+              queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
+              //  unit shall be reloaded even if we are there already there
             }
           )
             .then(navOk => {

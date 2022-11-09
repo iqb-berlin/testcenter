@@ -34,8 +34,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;
 
-  showPageNav = false;
-
   currentUnitSequenceId = -1;
 
   private itemplayerSessionId = '';
@@ -55,7 +53,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
   constructor(
     public tcs: TestControllerService,
-    private mds: MainDataService,
+    private mainDataService: MainDataService,
     private bs: BackendService,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
@@ -66,7 +64,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer = null;
     this.leaveWarning = false;
     setTimeout(() => {
-      this.subscriptions.postMessage = this.mds.postMessage$
+      this.subscriptions.postMessage = this.mainDataService.postMessage$
         .subscribe(messageEvent => this.handleIncomingMessage(messageEvent));
       this.subscriptions.routing = merge(this.route.queryParamMap, this.route.params)
         .subscribe((params: Params) => (params.u ? this.open(Number(<Params>params.u)) : this.reload()));
@@ -216,7 +214,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private open(currentUnitSequenceId: number): void {
     this.currentUnitSequenceId = currentUnitSequenceId;
     this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
-    this.mds.appSubTitle$.next(`Aufgabe ${this.currentUnitSequenceId}`);
 
     while (this.iFrameHostElement.hasChildNodes()) {
       this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
@@ -226,6 +223,8 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.knownPages = [];
 
     this.currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
+
+    this.mainDataService.appSubTitle$.next(this.currentUnit.unitDef.title);
 
     if (this.subscriptions.loading) {
       this.subscriptions.loading.unsubscribe();
@@ -247,7 +246,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.unitsLoading$.next(value);
         },
         error: err => {
-          this.mds.appError$.next({
+          this.mainDataService.appError$.next({
             label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed?
             description: (err.info) ? err.info : err,
             category: 'ERROR'
@@ -320,23 +319,20 @@ export class UnithostComponent implements OnInit, OnDestroy {
     ) {
       return;
     }
-    this.tcs.startMaxTimer(
-      this.currentUnit.maxTimerRequiringTestlet.id,
-      this.currentUnit.maxTimerRequiringTestlet.maxTimeLeft
-    );
+    this.tcs.startMaxTimer(this.currentUnit.maxTimerRequiringTestlet);
   }
 
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
-      this.mds.appError$.next({
+      this.mainDataService.appError$.next({
         label: 'Veralteter Browser',
         description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
         category: 'ERROR'
       });
       return;
     }
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);
@@ -376,7 +372,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitNumber: this.currentUnitSequenceId,
       unitTitle: this.tcs.currentUnitTitle,
       unitId: this.currentUnit.unitDef.alias,
-      directDownloadUrl: `${this.bs.serverUrl}${MainDataService.getAuthData()?.token}/resource`
+      directDownloadUrl: `${this.bs.serverUrl}${this.mainDataService.getAuthData()?.token}/resource`
     };
     if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
       playerConfig.startPage = this.pendingUnitData.currentPage;

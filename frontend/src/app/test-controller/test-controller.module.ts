@@ -22,14 +22,16 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { ReviewDialogComponent } from './components/review-dialog/review-dialog.component';
-import { unitRouteGuards } from './routing/unit-route-guards';
 import { TestControllerComponent } from './components/test-controller/test-controller.component';
 import { UnithostComponent } from './components/unithost/unithost.component';
 import { TestControllerRoutingModule } from './routing/test-controller-routing.module';
 import { TestStatusComponent } from './components/test-status/test-status.component';
 import { UnitMenuComponent } from './components/unit-menu/unit-menu.component';
-import { testControllerRouteGuards } from './routing/test-controller-route-guards';
 import { SharedModule } from '../shared/shared.module';
+import { UnitActivateGuard } from './routing/unit-activate.guard';
+import { UnitDeactivateGuard } from './routing/unit-deactivate.guard';
+import { TestControllerErrorPausedActivateGuard } from './routing/test-controller-error-paused-activate.guard';
+import { TestControllerDeactivateGuard } from './routing/test-controller-deactivate.guard';
 
 export { TestControllerService } from './services/test-controller.service';
 
@@ -72,8 +74,10 @@ export { TestControllerService } from './services/test-controller.service';
     ReviewDialogComponent
   ],
   providers: [
-    unitRouteGuards,
-    testControllerRouteGuards
+    UnitActivateGuard,
+    UnitDeactivateGuard,
+    TestControllerErrorPausedActivateGuard,
+    TestControllerDeactivateGuard
   ],
   exports: [
     TestControllerComponent

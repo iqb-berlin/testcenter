@@ -174,12 +174,18 @@ class WorkspaceDAO extends DAO {
     }
 
 
+    public function getFileNames(int $workspaceId): array {
+
+        return $this->_('select type, name from files where workspace_id = ?', [$workspaceId], true);
+    }
+
+
     /**
      * @codeCoverageIgnore
      */
-    public function deleteFileMeta(int $workspaceId, $name): void {
+    public function deleteFileMeta(int $workspaceId, string $name, string $type): void {
 
-        $this->_("delete from files where workspace_id = ? and name = ?", [$workspaceId, $name]);
+        $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$workspaceId, $name, $type]);
     }
 
 

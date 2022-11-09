@@ -2,8 +2,6 @@
 
 source "http://rubygems.org"
 
-gem "jekyll"
-
+gem "jekyll", "~> 4.2.2"
 gem "webrick", "~> 1.7"
-
-gem "jekyll-theme-minimal"
+gem "minima", "~> 2.5"

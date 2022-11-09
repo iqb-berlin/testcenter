@@ -14,7 +14,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--providers.file.directory=/"
     ports:
-      - "443:443"
+      - "${TLS_PORT}:443"
     volumes:
       - ./config/certs/:/certs/
       - ./config/cert_config.yml:/cert_config.yml

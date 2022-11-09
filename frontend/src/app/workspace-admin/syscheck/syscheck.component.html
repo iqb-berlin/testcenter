@@ -1,11 +1,22 @@
 <div class="columnhost" fxLayout="column">
   <div fxLayout="row" fxLayoutGap="10px">
-    <button mat-raised-button (click)="downloadReportsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download Berichte als CSV für Excel" matTooltipPosition="above" data-cy="download-button">
+    <button
+      mat-raised-button
+      (click)="downloadReportsCSV()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Download Berichte als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-button"
+    >
       <mat-icon>cloud_download</mat-icon>Berichte
     </button>
-    <button mat-raised-button (click)="deleteReports()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Löschen Berichte für markierte System-Checks" matTooltipPosition="above">
+    <button
+      mat-raised-button
+      (click)="deleteReports()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Löschen Berichte für markierte System-Checks"
+      matTooltipPosition="below"
+    >
       <mat-icon>delete</mat-icon>
     </button>
   </div>

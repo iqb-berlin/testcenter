@@ -83,7 +83,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
     volumes:
-      - ../docs/dist:/docs/dist
+      - ../frontend/src:/app/src
     networks:
       - testcenter-system-test
     depends_on:

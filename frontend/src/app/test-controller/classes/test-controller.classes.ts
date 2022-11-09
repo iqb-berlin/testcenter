@@ -95,6 +95,8 @@ export class Testlet extends TestletContentElement {
   }
 
   // first looking for the unit, then on the way back adding restrictions
+  // TODO this very ineffective function is called quite often, so ...
+  // ...instead of enrich the unit with the parental data, collect it beforehand
   getUnitAt(sequenceId: number, isEntryPoint = true): UnitControllerData {
     let myreturn: UnitControllerData = null;
     for (let i = 0; i < this.children.length; i++) {
@@ -190,7 +192,9 @@ export class Testlet extends TestletContentElement {
     return myreturn;
   }
 
+  // TODO make this function obsolete. maxTimeLeft should never be changed, use tcs.maxTimeTimers instead
   setTimeLeft(testletId: string, maxTimeLeft: number): void {
+    // attention, it's absurd: if you want to setTime of this use testlet.setTime(testelt.id, time)...
     if (testletId) {
       // find testlet
       const testlet = this.getTestlet(testletId);
@@ -265,7 +269,7 @@ export class EnvironmentData {
   }
 
   osName = '';
-  device = '' ;
+  device = '';
 
   screenSizeWidth = 0;
   screenSizeHeight = 0;

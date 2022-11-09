@@ -6,9 +6,7 @@ import {
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import {
-  CustomtextService, MainDataService, BookletConfig, TestMode
-} from '../../shared/shared.module';
+import { CustomtextService, BookletConfig, TestMode } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
   TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
@@ -18,7 +16,6 @@ import {
 } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
-import { LocalStorage } from '../utils/local-storage.util';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +41,6 @@ export class TestLoaderService {
       this.reset();
 
       this.tcs.testStatus$.next(TestControllerState.LOADING);
-      LocalStorage.setTestId(this.tcs.testId);
 
       testData = await this.bs.getTestData(this.tcs.testId).toPromise();
       this.tcs.testMode = new TestMode(testData.mode);
@@ -83,7 +79,10 @@ export class TestLoaderService {
   private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
     this.tcs.resumeTargetUnitSequenceId =
       this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[TestStateKey.CURRENT_UNIT_ID]) || 1;
-    if (lastState[TestStateKey.CONTROLLER] && (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)) {
+    if (
+      (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
+      (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
+    ) {
       this.tcs.testStatus$.next(TestControllerState.PAUSED);
       this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
       return;
@@ -307,7 +306,7 @@ export class TestLoaderService {
       const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
       this.tcs.bookletConfig = new BookletConfig();
-      this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
+      // this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
       if (bookletConfigElements.length > 0) {
         this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
       }
@@ -327,8 +326,11 @@ export class TestLoaderService {
     return rootTestlet;
   }
 
-  private addTestletContentFromBookletXml(targetTestlet: Testlet, node: Element,
-                                          navigationLeaveRestrictions: NavigationLeaveRestrictions) {
+  private addTestletContentFromBookletXml(
+    targetTestlet: Testlet,
+    node: Element,
+    navigationLeaveRestrictions: NavigationLeaveRestrictions
+  ) {
     const childElements = TestLoaderService.getChildElements(node);
     if (childElements.length > 0) {
       let codeToEnter = '';

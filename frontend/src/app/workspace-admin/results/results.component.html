@@ -1,19 +1,42 @@
 <div class="columnhost" fxLayout="column">
   <div fxLayout="row">
-    <button mat-raised-button (click)="downloadResponsesCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above" data-cy="download-responses">
+    <button
+      mat-raised-button
+      (click)="downloadResponsesCSV()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Download markierte Gruppen als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-responses"
+    >
       <mat-icon>cloud_download</mat-icon>Antworten
     </button>
-    <button mat-raised-button (click)="downloadLogsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above" data-cy="download-logs">
+    <button
+      mat-raised-button (click)="downloadLogsCSV()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Download markierte Gruppen als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-logs"
+    >
       <mat-icon>cloud_download</mat-icon>Logs
     </button>
-    <button mat-raised-button (click)="downloadReviewsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above" data-cy="download-comments">
+    <button
+      mat-raised-button
+      (click)="downloadReviewsCSV()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Download markierte Gruppen als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-comments"
+    >
       <mat-icon>cloud_download</mat-icon>Kommentare
     </button>
-    <button mat-raised-button (click)="deleteData()" [disabled]="!tableselectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"
-        matTooltip="Löschen Ergebnisdaten aus der Datenbank für markierte Gruppen" matTooltipPosition="above" data-cy="delete-files">
+    <button
+      mat-raised-button
+      (click)="deleteData()"
+      [disabled]="!tableselectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"
+      matTooltip="Löschen Ergebnisdaten aus der Datenbank für markierte Gruppen"
+      matTooltipPosition="below"
+      data-cy="delete-files"
+    >
       <mat-icon>delete</mat-icon>
     </button>
   </div>

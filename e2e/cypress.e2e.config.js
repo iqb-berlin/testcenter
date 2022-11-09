@@ -10,6 +10,7 @@ module.exports = defineConfig({
   reporterOptions: {
     mochaFile: 'cypress/results/output.xml'
   },
+  requestTimeout: 10000,
   e2e: {
     setupNodeEvents(on, config) {
       // return require('./cypress/plugins/index.js')(on, config);

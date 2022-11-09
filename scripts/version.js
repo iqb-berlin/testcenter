@@ -49,7 +49,7 @@ const checkPrerequisites = async done => {
   cliPrint.headline('Check Prerequisites');
 
   // changelog updated?
-  const changelog = fs.readFileSync(`${rootPath}/CHANGELOG.md`).toString();
+  const changelog = fs.readFileSync(`${rootPath}/docs/CHANGELOG.md`).toString();
   if (!changelog.match(`## (\\[next]|${version.full})`)) {
     const msg = `No section for '## ${version.full}' found in CHANGELOG.md. Add it or use '## [next]'`;
     done(new Error(cliPrint.get.error(msg)));
@@ -82,7 +82,7 @@ const updateVersionInFiles = gulp.parallel(
     '$1/$VERSION'
   ),
   replaceInFiles(
-    `${rootPath}/CHANGELOG.md`,
+    `${rootPath}/docs/CHANGELOG.md`,
     /## \[next]/g,
     '## $VERSION'
   ),

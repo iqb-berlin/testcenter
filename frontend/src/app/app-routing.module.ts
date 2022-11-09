@@ -15,6 +15,7 @@ import { TestStarterComponent } from './app-root/test-starter/test-starter.compo
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
+import { AppModuleSettings } from './app.interfaces';
 
 const routes: Routes = [
   {
@@ -102,7 +103,11 @@ const routes: Routes = [
   {
     path: 't',
     loadChildren: () => import('./test-controller/test-controller.module').then(module => module.TestControllerModule),
-    canActivate: [TestComponentActivateGuard]
+    canActivate: [TestComponentActivateGuard],
+    data: <AppModuleSettings>{
+      httpRetryPolicy: 'test',
+      disableGlobalErrorDisplay: true // because test-controller module has its own error display
+    }
   },
   {
     path: '**',

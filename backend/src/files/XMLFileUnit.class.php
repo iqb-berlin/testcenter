@@ -6,6 +6,11 @@ declare(strict_types=1);
 class XMLFileUnit extends XMLFile {
 
     const type = 'Unit';
+    const deprecatedElements = [
+        '/Unit/Definition/@type',
+        '/Unit/Metadata/Lastchange',
+        '/Unit/Dependencies/file'
+    ];
 
     protected int $totalSize = 0;
     protected string $playerId = '';
@@ -174,7 +179,7 @@ class XMLFileUnit extends XMLFile {
 
         return array_map(
             function($e) { return (string) $e;},
-            $this->xml->xpath('/Unit/Dependencies/Package')
+            $this->xml->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|File[not(@for) or @for="player"]')
         );
     }
 

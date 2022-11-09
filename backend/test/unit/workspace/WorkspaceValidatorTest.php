@@ -112,6 +112,9 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('error', 'Resource `not-existing.voud` not found'),
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
             ],
+            'Unit/SAMPLE_UNIT2.XML' => [
+                new ValidationReportEntry('warning', "Element `/Unit/Definition/@type` is deprecated.")
+            ],
             'Resource/resource-unused.voud' => [
                 new ValidationReportEntry('warning', 'Resource is never used'),
             ],

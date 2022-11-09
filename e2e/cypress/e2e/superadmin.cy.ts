@@ -1,11 +1,12 @@
 // TODO better selectors
 
 import {
-  clickSuperadmin, insertCredentials, loginAsAdmin, logoutAdmin, resetBackendData, visitLoginPage
+  clickSuperadmin, insertCredentials, loginAsAdmin, logout, logoutAdmin, resetBackendData, visitLoginPage
 } from './utils';
 
 describe('Superadmin', () => {
   beforeEach(resetBackendData);
+  beforeEach(logout);
   beforeEach(() => loginAsAdmin());
   beforeEach(clickSuperadmin);
 
