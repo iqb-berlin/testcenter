@@ -4,24 +4,33 @@
 
 # IQB-Testcenter
 
+## [Deutsch]
+
+Das IQB-Testcenter ist eine Webanwendung für die Durchführung von Kompetenztests oder Befragungen. Für Beschreibungen und Hinweise zur Benutzung konsultieren sie bitte unsere [Wiki-Seiten](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter).
+Der Rest dieser ReadMe beschreibt die technischen Details zur Verwendung und ist vornehmlich an Administratoren und Entwickler gerichtet.
+
+Eine Versionshistorie und Änderungshinweise finden sie unter [Releases](https://github.com/iqb-berlin/testcenter/releases).
+
+## [English]
+
 The IQB-Testcenter is a web application for technology based accessed and surveys. It is developed by
 [the Institute for Educational Quality Improvement (IQB)](https://www.iqb.hu-berlin.de/) in Berlin, Germany.
 
-## General
+### General
 * **[User's Manual](https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/2-Testcenter)** (in german)
 * [Bug Reports](https://github.com/iqb-berlin/testcenter/issues)
 * [Changelog](https://pages.cms.hu-berlin.de/iqb/testcenter/CHANGELOG.html)
 
-### Additional docs and settings
+#### Additional docs and settings
 * [Overview about super-states of running sessions and their icons](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-session-super-states.html)
 * [List of modes of test-execution](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html)
 * [Parameters of booklet-configuration](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html)
 * [Customizable Labels in the UI](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html)
 
-## Install & Run
+### Install & Run
 * **[Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)**
 
-## For Developers
+### For Developers
 * **[Installation for Development](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-dev.html)**
 * **[Developer's Guide](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/developer-guide.html)**
 
@@ -30,7 +39,6 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 * [Verona Player API](https://verona-interfaces.github.io/player/)
 
 ### Compodoc Documentation
-
 * [Frontend](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/compodoc-frontend/index.html)
 * [Broadcasting-Service](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/compodoc-broadcasting-service/index.html)
 
