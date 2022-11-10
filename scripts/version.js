@@ -93,6 +93,13 @@ const updateVersionInFiles = gulp.parallel(
   )
 );
 
+const updateSQLPatch = async done => {
+  if (fs.existsSync(`${rootPath}/scripts/database/mysql.patches.d/next.sql`)) {
+    fs.renameSync(`${rootPath}/scripts/database/mysql.patches.d/${version.full}.sql`);
+  }
+  done();
+};
+
 /**
  * Creates a new version number
  * Which type depends on the last parameter provided.
@@ -108,5 +115,6 @@ exports.newVersion = gulp.series(
   updateVersion,
   checkPrerequisites,
   savePackageJson, // TODO how about package-lock?
+  updateSQLPatch,
   updateVersionInFiles
 );
