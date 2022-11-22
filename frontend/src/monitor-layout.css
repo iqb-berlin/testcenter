@@ -1,9 +1,10 @@
 .corner-menu {
-    position: fixed;
-    right: 10px;
-    top: 72px;
+    position: absolute;
+    right: 0;
+    top: 0;
     z-index: 10000;
     border-bottom-left-radius: 10px;
+    background: white;
 }
 
 mat-sidenav {

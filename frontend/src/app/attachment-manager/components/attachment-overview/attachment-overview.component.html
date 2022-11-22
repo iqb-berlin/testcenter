@@ -1,5 +1,27 @@
 <mat-sidenav-container class="{{mobileView ? 'mobile' : 'desktop'}}">
   <mat-sidenav #sidenav opened="true" [mode]="mobileView ? 'over' : 'side'" fixedInViewport="true" fixedTopGap="55" class="toolbar">
+    <div class="corner-menu">
+      <button
+          *ngIf="!(sidenav.opened && (this.selectedAttachmentIndex === -1))"
+          mat-icon-button
+          [matTooltip]="'Anhang hinzufügen' | customtext:'am_add_button' | async"
+          matTooltipPosition="above"
+          (click)="addClick()"
+      >
+        <mat-icon>add-circle-material</mat-icon>
+      </button>
+      <button
+          *ngIf="sidenav.opened"
+          mat-icon-button
+          [matTooltip]="'Ansicht' | customtext:'am_sidebar_button' | async"
+          matTooltipPosition="above"
+          (click)="sidebarClick()"
+      >
+        <mat-icon>{{sidenav.opened ? 'close' : 'menu'}}</mat-icon>
+      </button>
+    </div>
+
+
     <h2>Verwaltung der Aufgabenanhänge</h2>
     <ng-container *ngIf="attachments.data[selectedAttachmentIndex] as selectedAttachment; then attachmentSelected; else commonControls"></ng-container>
     <ng-template #attachmentSelected let-selectedAttachment>
@@ -96,42 +118,41 @@
     <div class="adminbackground">
       <div class="corner-menu">
         <button
-            id="toggle-sidebar-button"
-            class="settings-button"
+            *ngIf="!sidenav.opened && (this.selectedAttachmentIndex === -1)"
             mat-icon-button
-            [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
+            [matTooltip]="'Anhang hinzufügen' | customtext:'am_add_button' | async"
             matTooltipPosition="above"
-            (click)="menuClick()"
+            (click)="addClick()"
         >
-          <mat-icon>menu</mat-icon>
+          <mat-icon>add-circle-material</mat-icon>
         </button>
       </div>
 
       <table mat-table matSort [dataSource]="attachments" class="attachment-table">
 
         <ng-container matColumnDef="personLabel">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Person</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="personLabel">Person</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.personLabel}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="testLabel">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Test</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="testLabel">Test</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.testLabel}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="unitLabel">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Aufgabe</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="unitLabel">Aufgabe</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.unitLabel}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="attachmentType">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Typ</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="attachmentType">Typ</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             <ng-container *ngIf="element.attachmentType === 'capture-image'">
               {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
@@ -140,23 +161,23 @@
         </ng-container>
 
         <ng-container matColumnDef="variableId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Variable</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="variableId">Variable</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.variableId}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="lastModified">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Letzte Änderung</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="lastModified">Letzte Änderung</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
             {{element.lastModified | date: 'dd.MM.yy HH:mm'}}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Dateien</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="status">Dateien</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
-            <alert *ngIf="!element.attachmentFileIds.length" level="warning" text="0" mattooltip="Fehlt noch"></alert>
+            <alert *ngIf="!element.attachmentFileIds.length" level="warning" text="0"></alert>
             <alert *ngIf="element.attachmentFileIds.length" level="success" text="{{element.attachmentFileIds.length}}" ></alert>
           </td>
         </ng-container>

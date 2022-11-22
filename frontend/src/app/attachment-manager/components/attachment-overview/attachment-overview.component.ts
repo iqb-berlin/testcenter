@@ -88,7 +88,7 @@ export class AttachmentOverviewComponent implements OnInit {
     this.selectedAttachmentIndex = index;
     this.selectedAttachmentFileIndex = 0;
 
-    if (this.attachments.data[index].attachmentFileIds.length) {
+    if (this.attachments.data[index]?.attachmentFileIds.length) {
       this.loadSelectedAttachment();
     }
   }
@@ -157,9 +157,18 @@ export class AttachmentOverviewComponent implements OnInit {
     this.loadSelectedAttachment();
   }
 
-  menuClick(): void {
-    this.sidenav.toggle();
+  sidebarClick(): void {
+    if (this.sidenav.opened) {
+      this.sidenav.close();
+    } else {
+      this.sidenav.open()
+        .then(() => this.selectAttachment(-1));
+    }
+  }
+
+  addClick(): void {
     this.selectAttachment(-1);
+    this.sidenav.open();
   }
 
   downloadAllPageTemplates(): void {
