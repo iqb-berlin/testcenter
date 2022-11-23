@@ -128,7 +128,7 @@ $app->group('/attachments', function(RouteCollectorProxy $group) { // TODO Specs
 
     $group->get('/list', [AttachmentController::class, 'getList']);
 
-    $group->get('/pages', [AttachmentController::class, 'getAttaachmentsPages']);
+    $group->get('/pages', [AttachmentController::class, 'getAttachmentsPages']);
 })
     ->add(new MayModifyAttachments())
     ->add(new RequireToken('person', 'admin'));

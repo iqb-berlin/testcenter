@@ -94,7 +94,7 @@ class AttachmentController extends Controller {
     }
 
 
-    public static function getAttaachmentsPages(Request $request, Response $response): Response {
+    public static function getAttachmentsPages(Request $request, Response $response): Response {
 
         $authToken = self::authToken($request);
         $groupNames = [$authToken->getGroup()];
