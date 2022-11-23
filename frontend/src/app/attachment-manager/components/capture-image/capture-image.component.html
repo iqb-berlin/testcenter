@@ -4,29 +4,31 @@
       {{'Seite aufnehmen' | customtext:'am_capture_image' | async}}
     </h2>
     <div class="toolbar-section hidden" [class.show]="state === 'capture'">
-      <mat-form-field appearance="fill">
-        <mat-label>{{'Verfügbare Cameras' | customtext:'gm_available_cameras' | async}}</mat-label>
-        <mat-select (selectionChange)="selectCamera($event.value)">
-          <mat-option *ngFor="let camera of cameras | keyvalue" [value]="camera.key">
-            {{camera.value}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <br>
-      <mat-checkbox class="example-margin" [disabled]="!hasFlash">
-        {{'Blitz' | customtext:'gm_flash' | async}}
-      </mat-checkbox>
+      <form>
+        <mat-form-field appearance="fill">
+          <mat-label>{{'Verfügbare Cameras' | customtext:'gm_available_cameras' | async}}</mat-label>
+          <mat-select (selectionChange)="selectCamera($event.value)" [(ngModel)]="selectedCameraId" name="camera">
+            <mat-option *ngFor="let camera of cameras | keyvalue" [value]="camera.key">
+              {{camera.value}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <br>
+        <mat-checkbox class="example-margin" [disabled]="!hasFlash">
+          {{'Blitz' | customtext:'gm_flash' | async}}
+        </mat-checkbox>
+      </form>
     </div>
 
     <div class="toolbar-section" *ngIf="this.attachmentLabel">
-      <p>Seite gehört zu: <b>{{attachmentLabel.label}}</b></p>
+      <p>Seite gehört zu: <b>{{attachmentLabel}}</b></p>
       <button mat-raised-button color="primary" data-cy="dialog-confirm" (click)="uploadImage()">
         Upload
       </button>
     </div>
 
     <div class="toolbar-section hidden" [class.show]="state === 'confirm' || state === 'error'">
-      <button mat-raised-button data-cy="new-capture" (click)="reset()">Neue Aufnahme</button>
+      <button mat-raised-button color="primary" data-cy="new-capture" (click)="reset()">Neue Aufnahme</button>
     </div>
 
   </mat-sidenav>
@@ -51,8 +53,14 @@
         text="Halten Sie die Seite so in die Kamera, dass der aufgedruckte QR-Code in der oberen rechten Ecke liegt"
       ></alert>
       <div id="video-container" >
-        <video #video id="video" autoplay></video>
-        <div id="shape-page"></div>
+        <video
+          #video
+          id="video"
+          autoplay
+        ></video>
+        <div
+          id="shape-page"
+        ></div>
       </div>
 
       <div class="navbar-bottom">

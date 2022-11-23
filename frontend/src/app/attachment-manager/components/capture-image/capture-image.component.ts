@@ -53,6 +53,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   attachmentLabel: string = '';
   attachmentId: string;
   mobileView: boolean;
+  selectedCameraId: string;
 
   constructor(
     private bs: BackendService,
@@ -87,6 +88,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   private runCamera() {
+    console.log('runCamera');
     this.qrScanner = new QrScanner(
       this.video.nativeElement,
       result => {
@@ -101,12 +103,15 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
             return {};
           }
           const { page } = this.videoSize;
-          const scanRegionX = (this.pageDesign.qrCode.left * 0.9 * page.full.width) / this.pageDesign.width;
+          let scanRegionX = (this.pageDesign.qrCode.left * 0.9 * page.full.width) / this.pageDesign.width;
           const scanRegionY = (this.pageDesign.qrCode.top * 0.9 * page.full.height) / this.pageDesign.height;
           const scanRegionWidth = (this.pageDesign.qrCode.size * 1.1 * page.full.width) / this.pageDesign.width;
           const scanRegionHeight = (this.pageDesign.qrCode.size * 1.1 * page.full.height) / this.pageDesign.height;
+          const isMirrored = CaptureImageComponent.isMirrored(<MediaStream> videoElem.srcObject);
+          scanRegionX = isMirrored ? videoElem.videoWidth + scanRegionX - page.full.width : scanRegionX;
+          console.log('is', isMirrored);
           return {
-            x: videoElem.videoWidth + scanRegionX - page.full.width, // (0|0) is top-right in this context
+            x: scanRegionX,
             y: scanRegionY,
             width: scanRegionWidth,
             height: scanRegionHeight
@@ -117,11 +122,19 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
         returnDetailedScanResult: true
       }
     );
+
     this.qrScanner.start()
       .then(
         () => {
-          this.listCameras();
-          this.updateFlashAvailability();
+          this.listCameras()
+            .then(
+              () => {
+                // auto-select the first camera, because what gets loaded automatically is the first camera, but
+                // with wrong orientation.
+                this.selectedCameraId = Object.keys(this.cameras)[0];
+                this.selectCamera(this.selectedCameraId);
+              }
+            );
         },
         err => {
           this.state = 'error';
@@ -164,10 +177,11 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
         }
       }
     };
+    console.log(this.videoSize);
   }
 
-  listCameras(): void {
-    QrScanner.listCameras(true)
+  listCameras(): Promise<void> {
+    return QrScanner.listCameras(true)
       .then(cameras => cameras.forEach(camera => { this.cameras[camera.id] = camera.label; }));
   }
 
@@ -231,6 +245,27 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
         this.calculateSizes();
       }
     );
+  }
+
+  static isMirrored(videoStream: MediaStream | null): boolean {
+    /**
+     * qr-Scanner guesses the camera's facingMode from its label. Sounds awful, but is not critical.
+     * The only thing, qr-scanner does with this info is to mirror the image if camera
+     * is facing the user, which makes scanning easier. Which is nice but is expendable.
+     * For us this is a problem, because it affects the calculation of the scanRegion.
+     * To take this into account we have to determine the facingMode the same way qr-scanner does.
+     * @see:
+     * https://github.com/nimiq/qr-scanner/blob/34bccc6b278672e28d6eb62f07c1832f1e6d2e92/src/qr-scanner.ts#L907
+     * https://github.com/nimiq/qr-scanner/blob/34bccc6b278672e28d6eb62f07c1832f1e6d2e92/src/qr-scanner.ts#L913
+     */
+    if (!videoStream) {
+      return false;
+    }
+    const videoTrack = videoStream.getVideoTracks()[0];
+    if (!videoTrack) {
+      return false;
+    }
+    return /front|user|face/i.test(videoTrack.label);
   }
 
   uploadImage(): void {
