@@ -88,7 +88,6 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   private runCamera() {
-    console.log('runCamera');
     this.qrScanner = new QrScanner(
       this.video.nativeElement,
       result => {

@@ -11,13 +11,13 @@
 }
 
 #video-container {
+    border: 3px solid orange;
     position: relative;
     height: 500px;
     overflow: hidden;
 }
 
 #video-container video {
-    border: 1px solid silver;
     background: silver;
     height: 500px;
 }
