@@ -663,7 +663,7 @@ class AdminDAO extends DAO {
                 variable_id as variableId,
                 attachment_type as attachmentType,
                 unit_data.content as dataPartContent,
-                concat(tests.id, ':', unit_name, ':', variable_id) as attachmentId,
+                (tests.id || ':' || unit_name ||  ':' || variable_id) as attachmentId,
                 unit_data.ts as lastModified
             from
                 unit_defs_attachments
@@ -671,7 +671,7 @@ class AdminDAO extends DAO {
                 left join person_sessions on tests.person_id = person_sessions.id
                 left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
                 left join logins on logins.name = login_sessions.name
-                left join unit_data on part_id = concat(tests.id, ':', unit_name, ':', variable_id)
+                left join unit_data on part_id = (tests.id || ':' || unit_name || ':' || variable_id)
             where " . implode(' and ', $selectors);
 
         $attachments = $this->_($sql, $replacements, true);

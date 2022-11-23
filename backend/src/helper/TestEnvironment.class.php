@@ -25,10 +25,10 @@ class TestEnvironment {
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
             FileTime::setup(TestEnvironment::staticDate);
+            TestEnvironment::makeRandomStatic();
 
             TestEnvironment::resetState();
             TestEnvironment::setUpTestData();
-            TestEnvironment::makeRandomStatic();
 
         } catch (Throwable $exception) {
 
@@ -52,6 +52,7 @@ class TestEnvironment {
             TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
+            TestEnvironment::makeRandomStatic();
 
             $initDAO = new InitDAO();
             $initDAO->runFile(ROOT_DIR . '/backend/test/database.sql');
@@ -59,8 +60,6 @@ class TestEnvironment {
             TestEnvironment::setUpTestData();
             TestEnvironment::overwriteModificationDatesVfs();
             TestEnvironment::debugVirtualEnvironment();
-
-            TestEnvironment::makeRandomStatic();
 
         } catch (Throwable $exception) {
 
@@ -124,6 +123,9 @@ class TestEnvironment {
         $personSessions = $initDAO->createSampleMonitorSessions();
         $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
         $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
+
+        $sampleScanImage = $initializer->createSampleScanImage($workspaceId);
+        $initDAO->importScanImage($workspaceId, $sampleScanImage, $groupMonitor->getPerson()->getId());
     }
 
 

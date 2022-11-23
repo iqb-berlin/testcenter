@@ -17,10 +17,12 @@ class AttachmentController extends Controller {
     public static function getFile(Request $request, Response $response): Response {
 
         $attachment = AttachmentController::getRequestedAttachmentById($request);
-        $filePath = AttachmentController::getAttachmentFilePath($request, $attachment);
-        if (!file_exists($filePath)) {
-            throw new HttpNotFoundException($request, "File not found:`$attachment->attachmentId`");
-        }
+        $filePath = AttachmentFiles::getAttachmentFilePath(
+            self::authToken($request)->getWorkspaceId(),
+            (string) $request->getAttribute('fileId'),
+            $attachment
+        );
+
         $response->write(file_get_contents($filePath));
 
         return $response->withHeader('Content-Type', FileExt::getMimeType($filePath));
@@ -38,37 +40,11 @@ class AttachmentController extends Controller {
 
     public static function deleteFile(Request $request, Response $response): Response {
 
-        $attachmentFileId = (string) $request->getAttribute('fileId');
-        $attachment = AttachmentController::getRequestedAttachmentById($request);
-
-        $attachmentFileIds = $attachment->attachmentFileIds;
-        if (!in_array($attachmentFileId, $attachmentFileIds)) {
-            throw new HttpNotFoundException($request, "File `$attachmentFileId` not found in attachment `$attachment->attachmentId`.");
-        }
-        array_splice($attachmentFileIds, array_search($attachmentFileId, $attachmentFileIds), 1);
-
-        $dataParts = [];
-        $dataParts[$attachment->attachmentId] = AttachmentController::stringifyDataChunk($attachment->variableId, $attachmentFileIds);
-
-        if (count($attachmentFileIds)) {
-
-            self::testDAO()->updateDataParts(
-                $attachment->_testId,
-                $attachment->_unitName,
-                $dataParts,
-                'iqb-standard@1.0',
-                TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
-            );
-
-        } else {
-
-            self::testDAO()->deleteAttachmentDataPart($attachment->attachmentId);
-        }
-
-        $filePath = AttachmentController::getAttachmentFilePath($request, $attachment);
-        if (!file_exists($filePath)) {
-            unlink($filePath);
-        }
+        AttachmentFiles::deleteFile(
+            self::authToken($request)->getWorkspaceId(),
+            (string) $request->getAttribute('fileId'),
+            self::getRequestedAttachmentById($request)
+        );
 
         return $response->withStatus(200);
     }
@@ -122,34 +98,18 @@ class AttachmentController extends Controller {
 
         $mimeType = $request->getParam('mimeType');
         $type = explode('/', $mimeType)[0];
-        $authToken = self::authToken($request);
 
+        $workspace = new Workspace(self::authToken($request)->getWorkspaceId());
+        $workspacePath = $workspace->getWorkspacePath();
         $attachment = AttachmentController::getRequestedAttachmentById($request);
 
-        $workspace = new Workspace($authToken->getWorkspaceId());
-        $workspacePath = $workspace->getWorkspacePath();
         $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'attachment', $workspacePath);
 
-        $dataParts = [];
-        foreach ($uploadedFiles as $originalFileName) {
-
-            $dst = "$workspacePath/UnitAttachments/";
-            Folder::createPath($dst);
-            $attachmentCode = AttachmentController::randomString();
-            $extension = FileExt::get($originalFileName);
-            $attachmentFileId = "$type:$attachmentCode.$extension";
-            copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
-            unlink("$workspacePath/$originalFileName");
-            $attachmentFileIds = [...$attachment->attachmentFileIds, $attachmentFileId];
-            $dataParts[$attachmentId] = AttachmentController::stringifyDataChunk($attachment->variableId, $attachmentFileIds);
-        }
-
-        self::testDAO()->updateDataParts(
-            $attachment->_testId,
-            $attachment->_unitName,
-            $dataParts,
-            'iqb-standard@1.0',
-            TimeStamp::now() * 1000 // unit_data.last_modified normally expects CLIENT-side timestamps in ms
+        AttachmentFiles::importFiles(
+            $workspace->getId(),
+            $uploadedFiles,
+            $attachment,
+            $type
         );
 
         return $response->withStatus(201);
@@ -170,20 +130,6 @@ class AttachmentController extends Controller {
         return $attachment;
     }
 
-
-    private static function getAttachmentFilePath(Request $request, Attachment $attachment): string {
-
-        $authToken = self::authToken($request);
-        $attachmentFileId = (string) $request->getAttribute('fileId');
-        list($dataType, $fileName) = explode(':', $attachmentFileId);
-        if (!in_array($attachmentFileId, $attachment->attachmentFileIds)) {
-            throw new HttpNotFoundException($request,"AttachmentId `$attachmentFileId` not found in attachment `$attachment->attachmentId`");
-        }
-
-        return DATA_DIR . "/ws_{$authToken->getWorkspaceId()}/UnitAttachments/$fileName";
-    }
-
-
     private static function isGroupAllowed(AuthToken $authToken, string $groupName): bool {
 
         if ($authToken->getMode() == 'monitor-group') {
@@ -192,27 +138,5 @@ class AttachmentController extends Controller {
         }
 
         return false;
-    }
-
-
-    private static function randomString(int $size = 32): string {
-        $fileName = '';
-        $allowedChars = "ABCDEFGHIJKLOMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz0123456789_-";
-        while ($size-- > 1) {
-            $fileName .= substr($allowedChars, rand(0, strlen($allowedChars) - 1), 1);
-        }
-        return $fileName;
-    }
-
-
-    private static function stringifyDataChunk(string $variableId, array $attachmentIds): string {
-
-        return json_encode([
-            [
-                "id" => $variableId,
-                "value" => $attachmentIds,
-                "status" => 'VALUE_CHANGED'
-            ]
-        ]);
     }
 }

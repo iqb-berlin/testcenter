@@ -230,6 +230,14 @@ class InitDAO extends SessionDAO {
     }
 
 
+    public function importScanImage(int $workspaceId, string $imagePath, int $groupMonitorId): void {
+
+        $adminDAO = new AdminDAO();
+        $attachment = $adminDAO->getAttachmentById('1:UNIT.SAMPLE:v2');
+        AttachmentFiles::importFiles($workspaceId, [$imagePath], $attachment, 'image');
+    }
+
+
     public function adminExists(): bool {
 
         $admins = $this->_("select count(*) as count from users where is_superadmin = 1");

@@ -168,10 +168,19 @@ create table files
     constraint files_workspaces_id_fk foreign key (workspace_id) references workspaces (id) on delete cascade
 );
 
+create table unit_defs_attachments
+(
+    workspace_id bigint not null,
+    unit_name varchar(120) not null,
+    booklet_name varchar(50) not null,
+    attachment_type text check (attachment_type in ('capture-image')) not null,
+    variable_id varchar(100) not null,
+    constraint unit_defs_attachments_pk primary key (booklet_name, unit_name, variable_id, workspace_id)
+);
+
+
 create index files_workspace_id_name_index on files (workspace_id, name);
 create index files_id_index on files (id);
-
-
 CREATE INDEX "unit_reviews_index_fk_review_unit" ON "unit_reviews" ("unit_id");
 CREATE INDEX "test_commands_test_commands_id_uindex" ON "test_commands" ("id", "test_id");
 CREATE INDEX "test_commands_test_commands_person_sessions_id_fk" ON "test_commands" ("commander_id");
