@@ -25,7 +25,7 @@ export class BackendService {
 
   postAttachment(attachmentId: string, file: File): Observable<boolean> {
     const formData = new FormData();
-    formData.append('mimeType', file.type);
+    formData.append('type', file.type.split('/')[0]);
     formData.append('attachment', file, file.name);
     return this.http
       .post<boolean>(`${this.serverUrl}attachment/${attachmentId}/file`, formData, { observe: 'response' })

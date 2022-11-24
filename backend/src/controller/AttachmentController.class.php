@@ -96,8 +96,13 @@ class AttachmentController extends Controller {
             throw new HttpBadRequestException($request, "AttachmentId Missing!");
         }
 
-        $mimeType = $request->getParam('mimeType');
-        $type = explode('/', $mimeType)[0];
+        $body = $request->getBody()->getContents();
+
+        $type = $request->getParam('type');
+        if (!$type) {
+
+            throw new HttpBadRequestException($request, "No type given");
+        }
 
         $workspace = new Workspace(self::authToken($request)->getWorkspaceId());
         $workspacePath = $workspace->getWorkspacePath();

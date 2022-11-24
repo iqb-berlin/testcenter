@@ -10,7 +10,7 @@ class TestEnvironment {
 
     const staticDate = 1627545600;
 
-    static function setUpEnvironmentForRealDataE2ETests() {
+    static function setUpEnvironmentForRealDataE2ETests(): void {
 
         try {
 
@@ -37,7 +37,7 @@ class TestEnvironment {
     }
 
 
-    static function setUpEnvironmentForE2eTests() {
+    static function setUpEnvironmentForE2eTests(): void {
 
         try {
 
@@ -68,13 +68,13 @@ class TestEnvironment {
     }
 
 
-    private static function makeRandomStatic() {
+    private static function makeRandomStatic(): void {
 
         srand(1);
     }
 
 
-    private static function resetState() {
+    private static function resetState(): void {
 
         Folder::deleteContentsRecursive(DATA_DIR);
 
@@ -124,8 +124,9 @@ class TestEnvironment {
         $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
         $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
-        $sampleScanImage = $initializer->createSampleScanImage($workspaceId);
-        $initDAO->importScanImage($workspaceId, $sampleScanImage, $groupMonitor->getPerson()->getId());
+        $fileName = 'sample_scanned_image.png';
+        $initializer->createSampleScanImage($fileName, $workspaceId);
+        $initDAO->importScanImage($workspaceId, $fileName);
     }
 
 

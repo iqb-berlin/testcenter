@@ -55,17 +55,9 @@ class WorkspaceInitializer {
     }
 
 
-    public function createSampleScanImage(int $workspaceId): string {
+    public function createSampleScanImage(string $fileName, int $workspaceId): void {
 
-        $png = <<<END
-\89PNG
-
-\00\00\00
-IHDR\00\00\00\00\00\00\00\00\00%\DBV\CA\00\00\00PLTE\00\00\00\A7z=\DA\00\00\00tRNS\00@\E6\D8f\00\00\00
-IDAT\D7c`\00\00\00\00\E2!\BC3\00\00\00\00IEND\AEB`\82
-END;
-        $fileName = 'sample_scanned_image.png';
-        file_put_contents(Folder::createPath(DATA_DIR . "/ws_$workspaceId/") . $fileName, $png);
-        return $fileName;
+        $png = '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da636460f85f0f0002870180eb47ba920000000049454e44ae426082';
+        file_put_contents(Folder::createPath(DATA_DIR . "/ws_$workspaceId/") . $fileName, hex2bin($png));
     }
 }

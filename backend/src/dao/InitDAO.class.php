@@ -2,6 +2,10 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 // TODO unit tests
+/* TODO refactor: this should not *be* a DAO, because it initializes several DAOs itself, it should
+    - inherit from the controller maybe instead of DAO
+    - can be merged with WorkspaceInitializer maybe (since files and db management is not separable anymore anyways)
+*/
 
 class InitDAO extends SessionDAO {
 
@@ -230,7 +234,7 @@ class InitDAO extends SessionDAO {
     }
 
 
-    public function importScanImage(int $workspaceId, string $imagePath, int $groupMonitorId): void {
+    public function importScanImage(int $workspaceId, string $imagePath): void {
 
         $adminDAO = new AdminDAO();
         $attachment = $adminDAO->getAttachmentById('1:UNIT.SAMPLE:v2');

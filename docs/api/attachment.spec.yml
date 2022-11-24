@@ -15,15 +15,35 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for group-monitor
-          example: "a:user000000000.0000000000"
+          example: "m:user000000000.0000000000"
+          schema:
+            type: string
         - in: path
           name: attachment_id
           description: id of the attachment_id
-          example: "TODO"
+          example: 1:UNIT.SAMPLE:v2
           required: true
           schema:
             type: string
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: image
+                attachment:
+                  type: string
+                  example: (image)
+              required:
+                - type
+                - attachment
       responses:
+        "201":
+          description: OK, image was uploaded
         "401":
           description: Not authenticated
         "410":
@@ -43,22 +63,28 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for group-monitor
-          example: "a:user000000000.0000000000"
+          example: "m:user000000000.0000000000"
         - in: path
           name: attachment_id
           description: id of the attachment_id
-          example: "TODO"
+          example: 1:UNIT.SAMPLE:v2
           required: true
           schema:
             type: string
         - in: path
           name: attachment_file_id
-          description: TODO
-          example: "TODO"
+          example: image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png
           required: true
           schema:
             type: string
       responses:
+        "200":
+          description: The image file
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
         "401":
           description: Not authenticated
         "410":
@@ -77,18 +103,17 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for group-monitor
-          example: "a:user000000000.0000000000"
+          example: "m:user000000000.0000000000"
         - in: path
           name: attachment_id
           description: id of the attachment_id
-          example: "TODO"
+          example: 1:UNIT.SAMPLE:v2
           required: true
           schema:
             type: string
         - in: path
           name: attachment_file_id
-          description: TODO
-          example: "TODO"
+          example: image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png
           required: true
           schema:
             type: string
@@ -114,7 +139,7 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for group-monitor
-          example: "a:user000000000.0000000000"
+          example: "m:user000000000.0000000000"
       responses:
         "200":
           description: a list of all (requested) attachments in this group.
@@ -156,55 +181,6 @@ paths:
         "500":
           description: Server Error
 
-  /attachment/{attachment_id}/page:
-    get:
-      summary: get attachment template page
-      description: "Returns the template page of a specific (scan-page-)attachment."
-      tags:
-        - run attachment-manager
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for group-monitor
-          example: "a:user000000000.0000000000"
-        - in: path
-          name: attachment_id
-          description: id of the attachment_id
-          example: "TODO"
-          required: true
-          schema:
-            type: string
-      responses:
-        "401":
-          description: Not authenticated
-        "410":
-          description: Session Expired
-        "403":
-          description: Forbidden
-        "500":
-          description: Server Error
-
-  /attachments/pages:
-    get:
-      summary: get all attachment template page
-      description: "Returns template page of all (scan-page-)attachments of the group."
-      tags:
-        - run attachment-manager
-      parameters:
-        - in: header
-          name: AuthToken
-          description: auth-token for group-monitor
-          example: "a:user000000000.0000000000"
-      responses:
-        "401":
-          description: Not authenticated
-        "410":
-          description: Session Expired
-        "403":
-          description: Forbidden
-        "500":
-          description: Server Error
-
   /attachment/{attachment_id}/data:
     get:
       summary: get attachment metadata
@@ -215,11 +191,11 @@ paths:
         - in: header
           name: AuthToken
           description: auth-token for group-monitor
-          example: "a:user000000000.0000000000"
+          example: "m:user000000000.0000000000"
         - in: path
           name: attachment_id
           description: id of the attachment_id
-          example: "TODO"
+          example: 1:UNIT.SAMPLE:v2
           required: true
           schema:
             type: string
@@ -250,3 +226,70 @@ paths:
           description: Forbidden
         "500":
           description: Server Error
+
+  /attachment/{attachment_id}/page:
+    get:
+      summary: get attachment template page
+      description: "Returns the template page of a specific (scan-page-)attachment."
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+        - in: path
+          name: attachment_id
+          description: id of the attachment_id
+          example: 1:UNIT.SAMPLE:v2
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A PDF containing the page-templates for the given attachment. Note- This can be created, even 
+            if the attachment-type is different than scan-attachment although it doesn't make much sense.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /attachments/pages:
+    get:
+      summary: get all attachment template page
+      description: "Returns template page of all (scan-page-)attachments of the group."
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+      responses:
+        "200":
+          description: A PDF containing all page-templates for all requested scan-image-attachments in the given group
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+
