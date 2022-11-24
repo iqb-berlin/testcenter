@@ -107,6 +107,10 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 })
     ->add(new RequireToken('person'));
 
+$app->group('/test', function(RouteCollectorProxy $group) { // TODO Spec
+
+    $group->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
+});
 
 $app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) { // TODO Specs
 
