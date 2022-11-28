@@ -13,6 +13,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { FormsModule } from '@angular/forms';
+import { MatRadioModule } from '@angular/material/radio';
 import { SharedModule } from '../shared/shared.module';
 import { AttachmentManagerRoutingModule } from './routing/attachment-manager-routing.module';
 import { AttachmentManagerComponent } from './components/attachment-manager/attachment-manager.component';
@@ -44,7 +45,8 @@ import { AddAttachmentComponent } from './components/add-attachment/add-attachme
     MatSlideToggleModule,
     SharedModule,
     MatSortModule,
-    FormsModule
+    FormsModule,
+    MatRadioModule
   ],
   providers: [
     BackendService

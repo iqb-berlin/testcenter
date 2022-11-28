@@ -4,7 +4,7 @@
       {{'Seite aufnehmen' | customtext:'am_capture_image' | async}}
     </h2>
     <div class="toolbar-section hidden" [class.show]="state === 'capture'">
-      <form>
+      <div>
         <mat-form-field appearance="fill">
           <mat-label>{{'Verfügbare Cameras' | customtext:'gm_available_cameras' | async}}</mat-label>
           <mat-select (selectionChange)="selectCamera($event.value)" [(ngModel)]="selectedCameraId" name="camera">
@@ -17,7 +17,15 @@
         <mat-checkbox class="example-margin" [disabled]="!hasFlash">
           {{'Blitz' | customtext:'gm_flash' | async}}
         </mat-checkbox>
-      </form>
+        <br>
+        <mat-label>{{'Bild spiegeln' | customtext:'gm_swap_image' | async}}</mat-label>
+        <mat-radio-group aria-label="mode of image swapping" [(ngModel)]='swapImage' (change)="reloadCamera()">
+          <mat-radio-button value="auto">Auto</mat-radio-button>
+          <mat-radio-button value="yes">Ja</mat-radio-button>
+          <mat-radio-button value="no">Nein</mat-radio-button>
+        </mat-radio-group>
+        <pre>{{swapImage}}</pre>
+      </div>
     </div>
 
     <div class="toolbar-section" *ngIf="this.attachmentLabel">
@@ -69,6 +77,7 @@
           <video
             #video
             id="video"
+            class="swap-image-{{swapImage}}"
             autoplay
           ></video>
         </div>

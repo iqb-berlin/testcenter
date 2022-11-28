@@ -54,6 +54,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   attachmentId: string;
   mobileView: boolean;
   selectedCameraId: string;
+  swapImage = 'auto';
 
   constructor(
     private bs: BackendService,
@@ -106,9 +107,14 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
           const scanRegionY = (this.pageDesign.qrCode.top * 0.9 * page.full.height) / this.pageDesign.height;
           const scanRegionWidth = (this.pageDesign.qrCode.size * 1.1 * page.full.width) / this.pageDesign.width;
           const scanRegionHeight = (this.pageDesign.qrCode.size * 1.1 * page.full.height) / this.pageDesign.height;
-          const isMirrored = CaptureImageComponent.isMirrored(<MediaStream> videoElem.srcObject);
+          const isMirrored = this.isMirrored(<MediaStream> videoElem.srcObject);
           scanRegionX = isMirrored ? videoElem.videoWidth + scanRegionX - page.full.width : scanRegionX;
-          console.log('is', isMirrored);
+          console.log('is', isMirrored, {
+            x: scanRegionX,
+            y: scanRegionY,
+            width: scanRegionWidth,
+            height: scanRegionHeight
+          });
           return {
             x: scanRegionX,
             y: scanRegionY,
@@ -215,7 +221,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     this.canvas.nativeElement.width = page.full.width;
     this.canvas.nativeElement.height = page.full.height;
     const ctx: CanvasRenderingContext2D = this.canvas.nativeElement.getContext('2d');
-    const isMirrored = CaptureImageComponent.isMirrored(<MediaStream> this.video.nativeElement.srcObject);
+    const isMirrored = this.isMirrored(<MediaStream> this.video.nativeElement.srcObject);
     ctx.scale(isMirrored ? 1 : -1, 1);
     ctx.drawImage(
       this.video.nativeElement,
@@ -247,7 +253,12 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     );
   }
 
-  static isMirrored(videoStream: MediaStream | null): boolean {
+  reloadCamera(): void {
+    // eslint-disable-next-line
+    this.qrScanner['_onLoadedMetaData']();
+  }
+
+  private isMirrored(videoStream: MediaStream | null): boolean {
     /**
      * qr-Scanner guesses the camera's facingMode from its label. Sounds awful, but is not critical.
      * The only thing, qr-scanner does with this info is to mirror the image if camera
@@ -258,6 +269,9 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
      * https://github.com/nimiq/qr-scanner/blob/34bccc6b278672e28d6eb62f07c1832f1e6d2e92/src/qr-scanner.ts#L907
      * https://github.com/nimiq/qr-scanner/blob/34bccc6b278672e28d6eb62f07c1832f1e6d2e92/src/qr-scanner.ts#L913
      */
+    if (this.swapImage !== 'auto') {
+      return this.swapImage === 'yes';
+    }
     if (!videoStream) {
       return false;
     }
