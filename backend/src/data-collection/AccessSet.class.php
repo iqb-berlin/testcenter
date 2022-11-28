@@ -8,7 +8,8 @@ class AccessSet extends DataCollectionTypeSafe {
         'test',
         'superAdmin',
         'workspaceAdmin',
-        'testGroupMonitor'
+        'testGroupMonitor',
+        'attachmentManager'
     ];
 
     protected $token;
@@ -39,6 +40,9 @@ class AccessSet extends DataCollectionTypeSafe {
         switch ($login->getMode()) {
 
             case "monitor-group":
+                if (str_starts_with($login->getGroupName(), 'experimental')) {
+                    $accessSet->addAccessObjects('attachmentManager', $login->getGroupName());
+                }
                 $accessSet->addAccessObjects('testGroupMonitor', $login->getGroupName());
                 break;
 

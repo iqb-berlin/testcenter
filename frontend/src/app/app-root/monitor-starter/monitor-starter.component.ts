@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { from, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { concatMap, map } from 'rxjs/operators';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
 import {
@@ -28,7 +27,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
-      this.mds.showLoadingAnimation();
+
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped === 'number') {
           this.mds.stopLoadingAnimation();
@@ -42,43 +41,31 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
         }
         this.accessObjects = {};
 
-        const scopeIdList: { [id: string]: { id: string, type: AuthAccessKeyType } } = {};
-        [AuthAccessKeyType.TEST_GROUP_MONITOR, AuthAccessKeyType.TEST]
+        [AuthAccessKeyType.TEST_GROUP_MONITOR, AuthAccessKeyType.TEST, AuthAccessKeyType.ATTACHMENT_MANAGER]
           .forEach(accessType => {
             this.accessObjects[accessType] = [];
             (authData.access[accessType] || [])
               .forEach(accessObjectId => {
-                scopeIdList[accessObjectId] = { id: accessObjectId, type: accessType };
+                if (accessType === AuthAccessKeyType.TEST_GROUP_MONITOR) {
+                  this.bs.getGroupData(accessObjectId)
+                    .subscribe(idAndLabel => {
+                      this.accessObjects[accessType].push(idAndLabel);
+                    });
+                }
+                if (accessType === AuthAccessKeyType.ATTACHMENT_MANAGER) {
+                  this.bs.getGroupData(accessObjectId)
+                    .subscribe(idAndLabel => {
+                      this.accessObjects[accessType].push(idAndLabel);
+                    });
+                }
+                if (accessType === AuthAccessKeyType.TEST) {
+                  this.bs.getBookletData(accessObjectId)
+                    .subscribe(idAndLabel => {
+                      this.accessObjects[accessType].push(idAndLabel);
+                    });
+                }
               });
           });
-
-        if (this.getMonitorDataSubscription !== null) {
-          this.getMonitorDataSubscription.unsubscribe();
-        }
-
-        this.getMonitorDataSubscription =
-          from(Object.keys(scopeIdList))
-            .pipe(
-              map((accessType: AuthAccessKeyType) => scopeIdList[accessType]),
-              concatMap(accessIdAndType => {
-                if (accessIdAndType.type === AuthAccessKeyType.TEST_GROUP_MONITOR) {
-                  return this.bs.getGroupData(accessIdAndType.id);
-                }
-                if (authData.access[AuthAccessKeyType.TEST]) {
-                  return this.bs.getBookletData(accessIdAndType.id);
-                }
-                return null;
-              })
-            )
-            .subscribe(
-              (wsData: AccessObject) => {
-                if (wsData) {
-                  this.accessObjects[scopeIdList[wsData.id].type].push(wsData);
-                }
-              },
-              () => this.mds.stopLoadingAnimation(),
-              () => this.mds.stopLoadingAnimation()
-            );
 
         this.mds.setAuthData(authData);
       });
