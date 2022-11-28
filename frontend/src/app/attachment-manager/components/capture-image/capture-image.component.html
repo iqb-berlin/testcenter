@@ -31,47 +31,54 @@
       <button mat-raised-button color="primary" data-cy="new-capture" (click)="reset()">Neue Aufnahme</button>
     </div>
 
-  </mat-sidenav>
-
-  <mat-sidenav-content>
-    <div class="adminbackground hidden" [class.show]="state === 'capture'">
-      <div class="corner-menu">
-        <button
-            id="toggle-sidebar-button"
-            class="settings-button"
-            mat-icon-button
-            [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
-            matTooltipPosition="above"
-            (click)="sidenav.toggle()"
-        >
-          <mat-icon>menu</mat-icon>
-        </button>
-      </div>
-      <alert
-        level="info"
-        customtext="am_capture_image_text"
-        text="Halten Sie die Seite so in die Kamera, dass der aufgedruckte QR-Code in der oberen rechten Ecke liegt"
-      ></alert>
-      <div id="video-container" >
-        <video
-          #video
-          id="video"
-          autoplay
-        ></video>
-        <div
-          id="shape-page"
-        ></div>
-      </div>
-
-      <div class="navbar-bottom">
-        <a mat-raised-button class="control" color="primary" [routerLink]="'..'">
+    <div class="toolbar-section-bottom">
+      <div class="toolbar-section">
+        <a mat-raised-button color="primary" [routerLink]="'..'">
           {{'Abbrechen' | customtext:'am_attachment_overview' | async}}
         </a>
       </div>
     </div>
 
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="corner-menu">
+      <button
+        id="toggle-sidebar-button"
+        class="settings-button"
+        mat-icon-button
+        [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
+        matTooltipPosition="above"
+        (click)="sidenav.toggle()"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+
+    <div class="adminbackground hidden" [class.show]="state === 'capture'">
+      <div id="toolbar">
+        <alert
+          level="info"
+          customtext="am_capture_image_text"
+          text="Halten Sie die Seite so in die Kamera, dass der aufgedruckte QR-Code in der oberen linken Ecke liegt"
+        ></alert>
+      </div>
+
+      <div id="video-container">
+        <div id="video-clip">
+          <video
+            #video
+            id="video"
+            autoplay
+          ></video>
+        </div>
+      </div>
+    </div>
+
     <div class="adminbackground hidden" [class.show]="state === 'confirm'">
-      <canvas #canvas id="canvas" height="500"></canvas>
+      <div id="canvas-container">
+        <canvas #canvas id="canvas"></canvas>
+      </div>
     </div>
 
     <div class="adminbackground hidden" [class.show]="state === 'wait'">

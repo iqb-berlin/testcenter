@@ -215,10 +215,11 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     this.canvas.nativeElement.width = page.full.width;
     this.canvas.nativeElement.height = page.full.height;
     const ctx: CanvasRenderingContext2D = this.canvas.nativeElement.getContext('2d');
-    ctx.scale(-1, 1);
+    const isMirrored = CaptureImageComponent.isMirrored(<MediaStream> this.video.nativeElement.srcObject);
+    ctx.scale(isMirrored ? 1 : -1, 1);
     ctx.drawImage(
       this.video.nativeElement,
-      video.full.width - page.full.width,
+      isMirrored ? video.full.width - page.full.width : 0,
       0,
       page.full.width,
       page.full.height,

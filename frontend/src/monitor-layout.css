@@ -1,103 +1,102 @@
 .corner-menu {
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 10000;
-    border-bottom-left-radius: 10px;
-    background: white;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10000;
+  border-bottom-left-radius: 10px;
+  background: white;
 }
 
 mat-sidenav {
-    min-width: min(500px, 100%);
-    max-width: 100%;
+  width: min(500px, 100%);
 }
 
 mat-sidenav-container.mobile .adminbackground {
-    margin-left: 0;
+  margin-left: 0;
 }
 
 mat-sidenav-container.desktop #toggle-sidebar-button {
-    display: none;
+  display: none;
 }
 
 .page-body {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 .adminbackground {
-    box-shadow: 5px 10px 20px black;
-    background-color: white;
-    margin: 0 0 0 15px;
-    padding: 15px 15px 10px 15px;
-    min-height: 100%;
-    overflow: auto;
-    scroll-behavior: smooth;
+  box-shadow: 5px 10px 20px black;
+  background-color: white;
+  margin: 0 0 0 15px;
+  padding: 15px 15px 10px 15px;
+  min-height: 100%;
+  overflow: auto;
+  scroll-behavior: smooth;
 }
 
 .page-header {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .page-header > p:last-child {
-    margin-right: 15px;
+  margin-right: 15px;
 }
 
 .page-header > div {
-    text-align: right;
-    vertical-align: middle;
+  text-align: right;
+  vertical-align: middle;
 }
 
 .page-header .fill-remaining-space {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .mat-drawer-content {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 10px;
-    overflow: initial;
-    height: initial;
-    position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: initial;
+  height: initial;
+  position: absolute;
 }
 
 .mat-drawer-container {
-    position: initial;
-    background: none;
+  position: initial;
+  background: none;
 }
 
 .mat-drawer {
-    margin: 15px 0 0 0;
-    padding: 1em;
+  margin: 15px 0 0 0;
+  padding: 1em;
 }
 
 .toolbar {
-    padding: 15px;
+  padding: 15px;
 }
 
 .toolbar h2 {
-    margin-top: 0;
-    font-size: 1.5em;
+  margin-top: 0;
+  font-size: 1.5em;
 }
 
 .toolbar .mat-radio-button ~ .mat-radio-button {
-    margin-left: 16px;
+  margin-left: 16px;
 }
 
 .toolbar-section {
-    margin-bottom: 1em
+  margin-bottom: 1em
 }
 
 .toolbar .control ~ .control {
-    margin-left: 15px;
+  margin-left: 15px;
 }
 
 .min-height-section {
-    min-height: 3em;
+  min-height: 3em;
 }
 
 .toolbar-section-bottom {
-    position: absolute;
-    bottom: 0;
+  position: absolute;
+  bottom: 0;
 }
