@@ -5,7 +5,22 @@ declare(strict_types=1);
 
 class AttachmentTemplate {
 
-    public static function render(string $title, Attachment ...$attachments): string {
+    private const DEFAULT_LABEL_TEMPLATE = "%TESTTAKER% | %BOOKLET% | %UNIT% | %VAR%";
+
+    public static function render(?string $labelTemplate, Attachment ...$attachments): string {
+
+        $title = (count($attachments) > 1)
+             ? implode(', ',
+                 array_unique(
+                     array_map(
+                         function(Attachment $attachment): string {
+                             return $attachment->_groupLabel;
+                             },
+                         $attachments
+                    )
+                )
+            )
+            : self::applyTemplate($attachments[0], $labelTemplate);
 
         $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator('IQB-Testcenter');
@@ -15,8 +30,12 @@ class AttachmentTemplate {
 
         foreach ($attachments as $attachment) {
 
+            $label = self::applyTemplate($attachment, $labelTemplate);
+
             $pdf->AddPage();
-            $pdf->Bookmark($attachment->_label, 0, 0, '', 'B', array(0,64,128));
+            $pdf->Bookmark($label, 0, 0, '', 'B', array(0,64,128));
+
+            $pdf->MultiCell(0, 15, $label,0,'C');
 
             $style = array(
                 'border' => 0,
@@ -27,10 +46,35 @@ class AttachmentTemplate {
                 'module_width' => 1, // width of a single module in points
                 'module_height' => 1 // height of a single module in points
             );
-
             $pdf->write2DBarcode($attachment->attachmentId, 'QRCODE,L', 20, 20, 40, 40, $style, 'N');
         }
 
         return $pdf->Output('/* ignored */', 'S');
+    }
+
+
+    private static function applyTemplate(Attachment $attachment, ?string $labelTemplate = null): string {
+
+        return str_replace(
+            [
+                '%GROUP%',
+                '%TESTTAKER%',
+                '%BOOKLET%',
+                '%UNIT%',
+                '%VAR%',
+                '%LOGIN%',
+                '%CODE%'
+            ],
+            [
+                $attachment->_groupName,
+                $attachment->personLabel,
+                $attachment->_bookletName,
+                $attachment->_unitName,
+                $attachment->variableId,
+                $attachment->_loginName,
+                $attachment->_loginNameSuffix
+            ],
+            $labelTemplate ?? self::DEFAULT_LABEL_TEMPLATE
+        );
     }
 }

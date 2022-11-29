@@ -60,7 +60,9 @@ class AttachmentController extends Controller {
     public static function getAttachmentPage(Request $request, Response $response): Response {
 
         $attachment = AttachmentController::getRequestedAttachmentById($request);
-        $pdfString = AttachmentTemplate::render($attachment->_label, $attachment);
+        $labelTemplate = $request->getParam('labelTemplate');
+
+        $pdfString = AttachmentTemplate::render($labelTemplate, $attachment);
 
         $response->write($pdfString);
         return $response
@@ -74,9 +76,10 @@ class AttachmentController extends Controller {
 
         $authToken = self::authToken($request);
         $groupNames = [$authToken->getGroup()];
+        $labelTemplate = $request->getParam('labelTemplate');
 
         $attachments = self::adminDAO()->getAttachments($authToken->getWorkspaceId(), $groupNames);
-        $pdfString = AttachmentTemplate::render(implode(', ', $groupNames), ...$attachments);
+        $pdfString = AttachmentTemplate::render($labelTemplate, ...$attachments);
 
         $response->write($pdfString);
         return $response
@@ -86,8 +89,6 @@ class AttachmentController extends Controller {
     }
 
 
-    // TODO unit-test
-    // TODO api-spec
     public static function postFile(Request $request, Response $response): Response {
 
         $attachmentId = (string) $request->getAttribute('attachmentId');
@@ -95,8 +96,6 @@ class AttachmentController extends Controller {
 
             throw new HttpBadRequestException($request, "AttachmentId Missing!");
         }
-
-        $body = $request->getBody()->getContents();
 
         $type = $request->getParam('type');
         if (!$type) {
@@ -134,6 +133,7 @@ class AttachmentController extends Controller {
 
         return $attachment;
     }
+
 
     private static function isGroupAllowed(AuthToken $authToken, string $groupName): bool {
 

@@ -9,6 +9,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { BackendService } from '../../services/backend/backend.service';
 import { AttachmentData, AttachmentType } from '../../interfaces/users.interfaces';
 import { FileService } from '../../../shared/services/file.service';
+import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
   templateUrl: './attachment-overview.component.html',
@@ -37,7 +38,8 @@ export class AttachmentOverviewComponent implements OnInit {
   constructor(
     private bs: BackendService,
     public snackBar: MatSnackBar,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private customTextService: CustomtextService
   ) {
 
   }
@@ -140,7 +142,8 @@ export class AttachmentOverviewComponent implements OnInit {
 
   downloadPageTemplate(): void {
     this.bs.getAttachmentPage(
-      this.attachments.data[this.selectedAttachmentIndex].attachmentId
+      this.attachments.data[this.selectedAttachmentIndex].attachmentId,
+      this.customTextService.getCustomText('am_page_template_label')
     )
       .subscribe(pdf => { FileService.saveBlobToFile(pdf, 'Anhänge.pdf'); });
   }
@@ -172,7 +175,9 @@ export class AttachmentOverviewComponent implements OnInit {
   }
 
   downloadAllPageTemplates(): void {
-    this.bs.getAttachmentPages()
+    this.bs.getAttachmentPages(
+      this.customTextService.getCustomText('am_page_template_label') ?? ''
+    )
       .subscribe(pdf => { FileService.saveBlobToFile(pdf, 'Anhänge.pdf'); });
   }
 }

@@ -23,7 +23,6 @@ class Attachment extends DataCollectionTypeSafe {
     public readonly int $_testId;
     public readonly string $_unitName;
     public readonly string $variableId;
-    public readonly string $_label;
 
     public function __construct(
         string $attachmentId,
@@ -63,8 +62,6 @@ class Attachment extends DataCollectionTypeSafe {
         $this->_testId = (int) $idPieces[0];
         $this->_unitName = $idPieces[1];
         $this->variableId = $idPieces[2];
-
-        $this->_label = "$this->personLabel: $this->testLabel → $this->unitLabel [$this->variableId]";
     }
 
     static function decodeId(string $attachmentId): array {

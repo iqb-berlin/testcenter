@@ -245,6 +245,19 @@ paths:
           required: true
           schema:
             type: string
+        - in: query
+          name: labelTemplate
+          schema:
+            type: string
+          example: "%TESTTAKER% @ %BOOKLET%, in unit '%UNIT%' (variable: %VAR%)"
+          description: A Template for the header of the page. You can use the following template strings
+            * '%GROUP%'
+            * '%TESTTAKER%'
+            * '%BOOKLET%'
+            * '%UNIT%'
+            * '%VAR%'
+            * '%LOGIN%'
+            * '%CODE%'
       responses:
         "200":
           description: A PDF containing the page-templates for the given attachment. Note- This can be created, even 
@@ -275,6 +288,19 @@ paths:
           name: AuthToken
           description: auth-token for group-monitor
           example: "m:user000000000.0000000000"
+        - in: query
+          name: labelTemplate
+          schema:
+            type: string
+          example: "%TESTTAKER% @ %BOOKLET%, in unit '%UNIT%' (variable: %VAR%)"
+          description: A Template for the header of the page. You can use the following template strings 
+            * '%GROUP%'
+            * '%TESTTAKER%'
+            * '%BOOKLET%'
+            * '%UNIT%'
+            * '%VAR%'
+            * '%LOGIN%'
+            * '%CODE%'
       responses:
         "200":
           description: A PDF containing all page-templates for all requested scan-image-attachments in the given group
