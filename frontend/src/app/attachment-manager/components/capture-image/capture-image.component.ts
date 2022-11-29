@@ -6,8 +6,9 @@ import QrScanner from 'qr-scanner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { VideoRegion } from '../../interfaces/video.interfaces';
 import { BackendService } from '../../services/backend/backend.service';
+import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
+import { PageDesign } from '../../interfaces/page.interfaces';
 
 @Component({
   templateUrl: './capture-image.component.html',
@@ -21,7 +22,12 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   @ViewChild('canvas') canvas: ElementRef;
   @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
 
-  pageDesign = {
+  /**
+   * This will *never* be customizable per variable because we don't know for wich one
+   * we are going to scan, but eventually it will be possible to set it up system-wide.
+   * CSS and everything is ready to accept changes of pageDesign on the fly.
+   */
+  pageDesign: PageDesign = { // A4 = 210 * 297
     width: 210, // mm
     height: 297, // mm
     qrCode: {
@@ -31,13 +37,15 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     }
   };
 
-  display = {
-    forcedHeight: 500 // px
-  };
-
   videoSize: null | {
-    video: VideoRegion,
-    page: VideoRegion
+    video: {
+      height: number,
+      width: number
+    },
+    page: {
+      height: number,
+      width: number
+    }
   };
 
   private capturedImage: string = '';
@@ -45,7 +53,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
 
   state: 'capture' | 'confirm' | 'error' | 'wait' = 'capture';
 
-  error: any;
+  error: string;
 
   cameras: { [id: string]: string } = {};
   flashOn: boolean = false;
@@ -59,8 +67,9 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   constructor(
     private bs: BackendService,
     private ngZone: NgZone,
-    public snackBar: MatSnackBar,
-    breakpointObserver: BreakpointObserver
+    private customTextService: CustomtextService,
+    private breakpointObserver: BreakpointObserver,
+    public snackBar: MatSnackBar
   ) {
     breakpointObserver
       .observe([
@@ -70,10 +79,14 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
       ])
       .subscribe(result => {
         if (result.matches) {
-          this.sidenav.close();
+          if (this.sidenav) {
+            this.sidenav.close();
+          }
           this.mobileView = true;
         } else {
-          this.sidenav.open();
+          if (this.sidenav) {
+            this.sidenav.open();
+          }
           this.mobileView = false;
         }
       });
@@ -88,7 +101,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     this.qrScanner.destroy();
   }
 
-  private runCamera() {
+  private runCamera(): void {
     this.qrScanner = new QrScanner(
       this.video.nativeElement,
       result => {
@@ -103,12 +116,12 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
             return {};
           }
           const { page } = this.videoSize;
-          let scanRegionX = (this.pageDesign.qrCode.left * 0.9 * page.full.width) / this.pageDesign.width;
-          const scanRegionY = (this.pageDesign.qrCode.top * 0.9 * page.full.height) / this.pageDesign.height;
-          const scanRegionWidth = (this.pageDesign.qrCode.size * 1.1 * page.full.width) / this.pageDesign.width;
-          const scanRegionHeight = (this.pageDesign.qrCode.size * 1.1 * page.full.height) / this.pageDesign.height;
+          let scanRegionX = (this.pageDesign.qrCode.left * 0.9 * page.width) / this.pageDesign.width;
+          const scanRegionY = (this.pageDesign.qrCode.top * 0.9 * page.height) / this.pageDesign.height;
+          const scanRegionWidth = (this.pageDesign.qrCode.size * 1.1 * page.width) / this.pageDesign.width;
+          const scanRegionHeight = (this.pageDesign.qrCode.size * 1.1 * page.height) / this.pageDesign.height;
           const isMirrored = this.isMirrored(<MediaStream> videoElem.srcObject);
-          scanRegionX = isMirrored ? videoElem.videoWidth + scanRegionX - page.full.width : scanRegionX;
+          scanRegionX = isMirrored ? videoElem.videoWidth + scanRegionX - page.width : scanRegionX;
           console.log('is', isMirrored, {
             x: scanRegionX,
             y: scanRegionY,
@@ -162,24 +175,12 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
 
     this.videoSize = {
       video: {
-        full: {
-          height: videoElem.videoHeight,
-          width: videoElem.videoWidth
-        },
-        scaled: {
-          height: videoScaledSize.height,
-          width: videoScaledSize.width
-        }
+        height: videoElem.videoHeight,
+        width: videoElem.videoWidth
       },
       page: {
-        full: {
-          height: videoElem.videoHeight,
-          width: (videoElem.videoWidth / videoScaledSize.width) * pageScaledWidth
-        },
-        scaled: {
-          height: this.display.forcedHeight,
-          width: pageScaledWidth
-        }
+        height: videoElem.videoHeight,
+        width: (videoElem.videoWidth / videoScaledSize.width) * pageScaledWidth
       }
     };
     console.log(this.videoSize);
@@ -218,21 +219,21 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
 
   private drawImageToCanvas() {
     const { page, video } = this.videoSize;
-    this.canvas.nativeElement.width = page.full.width;
-    this.canvas.nativeElement.height = page.full.height;
+    this.canvas.nativeElement.width = page.width;
+    this.canvas.nativeElement.height = page.height;
     const ctx: CanvasRenderingContext2D = this.canvas.nativeElement.getContext('2d');
     const isMirrored = this.isMirrored(<MediaStream> this.video.nativeElement.srcObject);
     ctx.scale(isMirrored ? 1 : -1, 1);
     ctx.drawImage(
       this.video.nativeElement,
-      isMirrored ? video.full.width - page.full.width : 0,
+      isMirrored ? video.width - page.width : 0,
       0,
-      page.full.width,
-      page.full.height,
+      page.width,
+      page.height,
       0,
       0,
-      -page.full.width,
-      page.full.height
+      -page.width,
+      page.height
     );
   }
 

@@ -73,7 +73,12 @@
       </div>
 
       <div id="video-container">
-        <div id="video-clip">
+        <div
+          id="video-clip"
+          [style.aspect-ratio]="pageDesign.width + ' / ' + pageDesign.height"
+          [style.width]="pageDesign.width > pageDesign.height ? '100%' : 'auto'"
+          [style.height]="pageDesign.width <= pageDesign.height ? '100%' : 'auto'"
+        >
           <video
             #video
             id="video"
@@ -86,7 +91,7 @@
 
     <div class="adminbackground hidden" [class.show]="state === 'confirm'">
       <div id="canvas-container">
-        <canvas #canvas id="canvas"></canvas>
+        <canvas #canvas id="canvas" [style.aspect-ratio]="pageDesign.width + ' / ' + pageDesign.height"></canvas>
       </div>
     </div>
 
