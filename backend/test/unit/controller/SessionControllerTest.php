@@ -30,7 +30,7 @@ class SessionControllerInjector extends SessionController {
         SessionController::$_adminDAO = $adminDAO;
     }
 
-    public static function injectBookletsFolder(BookletsFolder $bookletsFolder, int $workspaceId) {
+    public static function injectWorkspace(Workspace $bookletsFolder, int $workspaceId) {
 
         self::$_workspaces[$workspaceId] = $bookletsFolder;
     }
@@ -58,6 +58,9 @@ final class SessionControllerTest extends TestCase {
         require_once "src/data-collection/AuthToken.class.php";
         require_once "src/controller/Controller.class.php";
         require_once "src/controller/SessionController.class.php";
+        require_once "src/files/File.class.php";
+        require_once "src/files/XMLFile.class.php";
+        require_once "src/files/XMLFileBooklet.class.php";
         require_once "src/helper/RequestBodyParser.class.php";
         require_once "src/helper/JSON.class.php";
         require_once "src/helper/Password.class.php";
@@ -69,15 +72,17 @@ final class SessionControllerTest extends TestCase {
         require_once "src/dao/TestDAO.class.php";
         require_once "src/dao/AdminDAO.class.php";
         require_once "src/workspace/Workspace.class.php";
-        require_once "src/workspace/BookletsFolder.class.php";
 
-
-        $mockBookletsFolder = $this->createMock('BookletsFolder');
-        $mockBookletsFolder
-            ->method('getBookletLabel')
+        $mockBooklet = $this->createMock('XMLFileBooklet');
+        $mockBooklet
+            ->method('getLabel')
             ->willReturn('A BOOKLET LABEL READ FROM FILE');
+        $mockWorkspace = $this->createMock('Workspace');
+        $mockWorkspace
+            ->method('findFileById')
+            ->willReturn($mockBooklet);
 
-        SessionControllerInjector::injectBookletsFolder($mockBookletsFolder, 1);
+        SessionControllerInjector::injectWorkspace($mockWorkspace, 1);
     }
 
 

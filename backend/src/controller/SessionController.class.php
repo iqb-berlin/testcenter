@@ -123,7 +123,6 @@ class SessionController extends Controller {
                 foreach ($booklets as $bookletId) {
 
                     if (!isset($bookletLabels[$bookletId])) {
-                        // TODO this implies, that test can only run, when workspace is valid! TODO check this out
                         $bookletFile = $workspace->findFileById('Booklet', $bookletId);
                         /* @var $bookletFile XMLFileBooklet */
                         $bookletFiles[$bookletId] = $bookletFile;
