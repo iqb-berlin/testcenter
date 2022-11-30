@@ -15,10 +15,6 @@ mat-sidenav-container.mobile .adminbackground {
   margin-left: 0;
 }
 
-mat-sidenav-container.desktop #toggle-sidebar-button {
-  display: none;
-}
-
 .page-body {
   overflow-x: hidden;
 }

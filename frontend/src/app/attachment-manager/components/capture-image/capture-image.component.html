@@ -1,5 +1,17 @@
 <mat-sidenav-container class="{{mobileView ? 'mobile' : 'desktop'}}">
   <mat-sidenav #sidenav opened="true" [mode]="mobileView ? 'over' : 'side'" fixedInViewport="true" fixedTopGap="55" class="toolbar">
+
+    <div class="corner-menu" *ngIf="sidenav.opened">
+      <button
+          mat-icon-button
+          [matTooltip]="'Ansicht' | customtext:'am_sidebar_button' | async"
+          matTooltipPosition="above"
+          (click)="sidenav.toggle()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
     <h2>
       {{'Seite aufnehmen' | customtext:'am_capture_image' | async}}
     </h2>
@@ -42,7 +54,7 @@
     <div class="toolbar-section-bottom">
       <div class="toolbar-section">
         <a mat-raised-button color="primary" [routerLink]="'..'">
-          {{'Abbrechen' | customtext:'am_attachment_overview' | async}}
+          {{'Zurück zur Übersicht' | customtext:'am_attachment_overview' | async}}
         </a>
       </div>
     </div>
@@ -50,10 +62,8 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <div class="corner-menu">
+    <div class="corner-menu" *ngIf="!sidenav.opened">
       <button
-        id="toggle-sidebar-button"
-        class="settings-button"
         mat-icon-button
         [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
         matTooltipPosition="above"
@@ -61,6 +71,7 @@
       >
         <mat-icon>menu</mat-icon>
       </button>
+      !!!
     </div>
 
     <div class="adminbackground hidden" [class.show]="state === 'capture'">

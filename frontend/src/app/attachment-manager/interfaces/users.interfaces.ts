@@ -10,7 +10,7 @@ export type AttachmentDataType = 'image' | 'missing';
 export interface AttachmentData {
   attachmentId: string;
   personLabel: string;
-  testLabel: string;
+  bookletLabel: string;
   unitLabel: string;
   dataType: AttachmentDataType;
   lastModified: number;

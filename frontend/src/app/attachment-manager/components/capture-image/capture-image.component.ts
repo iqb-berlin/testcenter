@@ -7,7 +7,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { BackendService } from '../../services/backend/backend.service';
-import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 import { PageDesign } from '../../interfaces/page.interfaces';
 
 @Component({
@@ -67,7 +66,6 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   constructor(
     private bs: BackendService,
     private ngZone: NgZone,
-    private customTextService: CustomtextService,
     private breakpointObserver: BreakpointObserver,
     public snackBar: MatSnackBar
   ) {
@@ -208,7 +206,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
       .subscribe(
         attachmentData => {
           this.attachmentId = code;
-          this.attachmentLabel = `${attachmentData.personLabel}: ${attachmentData.testLabel}`;
+          this.attachmentLabel = `${attachmentData.personLabel}: ${attachmentData.bookletLabel}`;
         },
         () => {
           this.state = 'error';

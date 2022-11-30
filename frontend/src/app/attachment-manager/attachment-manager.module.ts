@@ -21,13 +21,15 @@ import { CaptureImageComponent } from './components/capture-image/capture-image.
 import { BackendService } from './services/backend/backend.service';
 import { AttachmentOverviewComponent } from './components/attachment-overview/attachment-overview.component';
 import { AddAttachmentComponent } from './components/add-attachment/add-attachment.component';
+import { AttachmentTitlePipe } from './pipes/attachment-title.pipe';
 
 @NgModule({
   declarations: [
     AttachmentManagerComponent,
     CaptureImageComponent,
     AttachmentOverviewComponent,
-    AddAttachmentComponent
+    AddAttachmentComponent,
+    AttachmentTitlePipe
   ],
   imports: [
     CommonModule,
