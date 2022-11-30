@@ -226,16 +226,18 @@ class Workspace {
         $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
         $filesAfterSorting = [];
 
-        foreach ($files as $localFilePath => $file) {
+        foreach ($files as $filesOfAType) {
+            foreach ($filesOfAType as $localFilePath => $file) {
 
-            if ($file->isValid()) {
+                if ($file->isValid()) {
 
-                $this->sortUnsortedFile($localFilePath, $file);
+                    $this->sortUnsortedFile($localFilePath, $file);
+                }
+
+                $this->storeFileMeta($file);
+
+                $filesAfterSorting[$localFilePath] = $file;
             }
-
-            $this->storeFileMeta($file);
-
-            $filesAfterSorting[$localFilePath] = $file;
         }
 
         return $filesAfterSorting;
@@ -244,7 +246,7 @@ class Workspace {
 
     protected function crossValidateUnsortedFiles(array $localFilePaths): array {
 
-        $files = [];
+        $files = array_fill_keys(Workspace::subFolders, []);
 
         $validator = new WorkspaceValidator($this);
 
@@ -252,7 +254,7 @@ class Workspace {
 
             $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
             $validator->addFile($file->getType(), $file, true);
-            $files[$localFilePath] = $file;
+            $files[$file->getType()][$localFilePath] = $file;
         }
 
         $validator->validate();

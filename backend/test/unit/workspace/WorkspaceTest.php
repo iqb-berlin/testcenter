@@ -79,7 +79,8 @@ class WorkspaceTest extends TestCase {
         $this->workspaceDaoMock->allows([
             'getGlobalIds' => VfsForTest::globalIds,
             'updateLoginSource' => [10, 10],
-            'storeFileMeta' => null
+            'storeFileMeta' => null,
+            'updateUnitDefsAttachments' => null
         ]);
         $this->vfs = VfsForTest::setUp();
         $this->workspace = new Workspace(1);
