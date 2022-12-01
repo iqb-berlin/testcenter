@@ -94,8 +94,9 @@ const updateVersionInFiles = gulp.parallel(
 );
 
 const updateSQLPatch = async done => {
-  if (fs.existsSync(`${rootPath}/scripts/database/mysql.patches.d/next.sql`)) {
-    fs.renameSync(`${rootPath}/scripts/database/mysql.patches.d/${version.full}.sql`);
+  const nextSQLPatchFileName = `${rootPath}/scripts/database/mysql.patches.d/next.sql`;
+  if (fs.existsSync(nextSQLPatchFileName)) {
+    fs.renameSync(nextSQLPatchFileName, `${rootPath}/scripts/database/mysql.patches.d/${version.full}.sql`);
   }
   done();
 };

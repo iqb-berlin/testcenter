@@ -289,18 +289,25 @@ class InitDAO extends SessionDAO {
         );
         usort($patches, [Version::class, 'compare']);
 
-        if ($patches[0] == 'next') {
+        $nextPatchAvailable = ($patches[0] == 'next');
+        if ($nextPatchAvailable) {
             $patches[] = array_shift($patches);
         }
 
+        $isFutureVersion = true;
+
         foreach ($patches as $patch) {
 
+            $lastWasFutureVersion = $isFutureVersion;
             $isFutureVersion = Version::compare($patch) > 0;
             $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
-            // echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n');
+            $forcePatch = ($patch == 'next') && !$lastWasFutureVersion;
+
+             echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n') . ' ~ ' . ($forcePatch?'y':'n');
+
 
             if (
-                ($patch != 'next') &&
+                (!$forcePatch) &&
                 ($isFutureVersion or $shouldBeInstalled)
             ) {
                 continue;
