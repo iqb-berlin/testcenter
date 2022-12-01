@@ -11,11 +11,11 @@ class AccessSet extends DataCollectionTypeSafe {
         'testGroupMonitor'
     ];
 
-    protected $token;
-    protected $displayName;
-    protected $customTexts;
-    protected $flags;
-    protected $access;
+    protected string $token;
+    protected string $displayName;
+    protected object $customTexts;
+    protected array $flags;
+    protected array $access;
 
 
     // TODO add unit-test
@@ -36,12 +36,25 @@ class AccessSet extends DataCollectionTypeSafe {
         switch ($login->getMode()) {
 
             case "monitor-group":
-                $accessSet->addAccessObjects('testGroupMonitor', $login->getGroupName());
+                $accessSet->addAccessObjects(
+                    'testGroupMonitor',
+                    new AccessObject(
+                        $login->getGroupName(),
+                        'testGroupMonitor',
+                        $login->getGroupLabel()
+                    )
+                );
                 break;
 
             default:
                 $personsBooklets = $login->getBooklets()[$loginWithPerson->getPerson()->getCode()] ?? [];
-                $accessSet->addAccessObjects('test', ...$personsBooklets);
+                $personsBookletsAsAccessObjects = array_map(
+                    function(string $bookletId): AccessObject {
+                        return new AccessObject($bookletId, 'test', 'labelFor $bookletId');
+                    },
+                    $personsBooklets
+                );
+                $accessSet->addAccessObjects('test', ...$personsBookletsAsAccessObjects);
                 break;
         }
 
@@ -73,20 +86,20 @@ class AccessSet extends DataCollectionTypeSafe {
             return (string) $flag;
         }, $flags);
 
-        $this->access = new stdClass();
+        $this->access = [];
 
         $this->customTexts = $customTexts ?? (object) [];
     }
 
 
-    public function addAccessObjects(string $type, string ...$accessObjects): AccessSet {
+    public function addAccessObjects(string $type, AccessObject ...$accessObjects): AccessSet {
 
         if (!in_array($type, $this::$accessObjectTypes)) {
 
             throw new Exception("AccessObject type `$type` is not valid.");
         }
 
-        $this->access->$type = $accessObjects;
+        $this->access[$type] = $accessObjects;
 
         return $this;
     }
