@@ -26,8 +26,8 @@
           </mat-select>
         </mat-form-field>
         <br>
-        <mat-checkbox class="example-margin" [disabled]="!hasFlash">
-          {{'Blitz' | customtext:'gm_flash' | async}}
+        <mat-checkbox class="example-margin" (change)="toggleFlash($event.checked)" [disabled]="!hasFlash">
+          {{'Blitz' | customtext:'gm_flash_checkbox' | async}}
         </mat-checkbox>
         <br>
         <mat-label>{{'Bild spiegeln' | customtext:'gm_swap_image' | async}}</mat-label>
@@ -71,7 +71,6 @@
       >
         <mat-icon>menu</mat-icon>
       </button>
-      !!!
     </div>
 
     <div class="adminbackground hidden" [class.show]="state === 'capture'">

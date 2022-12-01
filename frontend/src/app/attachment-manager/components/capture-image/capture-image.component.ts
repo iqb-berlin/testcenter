@@ -321,4 +321,12 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  toggleFlash(checked: boolean) {
+    if (checked) {
+      this.qrScanner.turnFlashOn();
+    } else {
+      this.qrScanner.turnFlashOff();
+    }
+  }
 }
