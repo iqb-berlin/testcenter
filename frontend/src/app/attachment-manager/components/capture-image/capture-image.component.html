@@ -4,7 +4,7 @@
     <div class="corner-menu" *ngIf="sidenav.opened">
       <button
           mat-icon-button
-          [matTooltip]="'Ansicht' | customtext:'am_sidebar_button' | async"
+          [matTooltip]="'Seiteleiste' | customtext:'am_sidebar_button' | async"
           matTooltipPosition="above"
           (click)="sidenav.toggle()"
       >
@@ -18,7 +18,7 @@
     <div class="toolbar-section hidden" [class.show]="state === 'capture'">
       <div>
         <mat-form-field appearance="fill">
-          <mat-label>{{'Verfügbare Cameras' | customtext:'gm_available_cameras' | async}}</mat-label>
+          <mat-label>{{'Verfügbare Cameras' | customtext:'am_available_cameras' | async}}</mat-label>
           <mat-select (selectionChange)="selectCamera($event.value)" [(ngModel)]="selectedCameraId" name="camera">
             <mat-option *ngFor="let camera of cameras | keyvalue" [value]="camera.key">
               {{camera.value}}
@@ -46,7 +46,7 @@
     <div class="toolbar-section-bottom">
       <div class="toolbar-section">
         <a mat-raised-button color="primary" [routerLink]="'..'">
-          {{'Zurück zur Übersicht' | customtext:'am_attachment_overview' | async}}
+          {{'Zurück zur Übersicht' | customtext:'am_goto_attachment_overview' | async}}
         </a>
       </div>
     </div>
@@ -57,7 +57,7 @@
     <div class="corner-menu" *ngIf="!sidenav.opened">
       <button
         mat-icon-button
-        [matTooltip]="'Ansicht' | customtext:'gm_settings_tooltip' | async"
+        [matTooltip]="'Einstellungen' | customtext:'gm_settings_tooltip' | async"
         matTooltipPosition="above"
         (click)="sidenav.toggle()"
       >
@@ -69,7 +69,7 @@
       <div id="toolbar">
         <alert
           level="info"
-          customtext="am_capture_image_text"
+          customtext="am_capture_image_instructions"
           text="Halten Sie die Seite so in die Kamera, dass der aufgedruckte QR-Code in der oberen linken Ecke liegt"
         ></alert>
       </div>
