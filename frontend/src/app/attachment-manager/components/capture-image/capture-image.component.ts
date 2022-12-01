@@ -55,13 +55,11 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   error: string;
 
   cameras: { [id: string]: string } = {};
-  flashOn: boolean = false;
   hasFlash: boolean = false;
   attachmentLabel: string = '';
   attachmentId: string;
   mobileView: boolean;
   selectedCameraId: string;
-  swapImage = 'auto';
 
   constructor(
     private bs: BackendService,
@@ -108,6 +106,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
         });
       },
       {
+        preferredCamera: 'environment',
         calculateScanRegion: videoElem => {
           this.calculateSizes();
           if (!this.videoSize) {
@@ -118,14 +117,8 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
           const scanRegionY = (this.pageDesign.qrCode.top * 0.9 * page.height) / this.pageDesign.height;
           const scanRegionWidth = (this.pageDesign.qrCode.size * 1.1 * page.width) / this.pageDesign.width;
           const scanRegionHeight = (this.pageDesign.qrCode.size * 1.1 * page.height) / this.pageDesign.height;
-          const isMirrored = this.isMirrored(<MediaStream> videoElem.srcObject);
+          const isMirrored = CaptureImageComponent.isMirrored(<MediaStream> videoElem.srcObject);
           scanRegionX = isMirrored ? videoElem.videoWidth + scanRegionX - page.width : scanRegionX;
-          console.log('is', isMirrored, {
-            x: scanRegionX,
-            y: scanRegionY,
-            width: scanRegionWidth,
-            height: scanRegionHeight
-          });
           return {
             x: scanRegionX,
             y: scanRegionY,
@@ -146,9 +139,9 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
             .then(
               () => {
                 // auto-select the first camera, because what gets loaded automatically is the first camera, but
-                // with wrong orientation.
-                this.selectedCameraId = Object.keys(this.cameras)[0];
-                this.selectCamera(this.selectedCameraId);
+                // // with wrong orientation.
+                // this.selectedCameraId = Object.keys(this.cameras)[0];
+                // this.selectCamera(this.selectedCameraId);
               }
             );
         },
@@ -181,7 +174,6 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
         width: (videoElem.videoWidth / videoScaledSize.width) * pageScaledWidth
       }
     };
-    console.log(this.videoSize);
   }
 
   listCameras(): Promise<void> {
@@ -220,7 +212,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     this.canvas.nativeElement.width = page.width;
     this.canvas.nativeElement.height = page.height;
     const ctx: CanvasRenderingContext2D = this.canvas.nativeElement.getContext('2d');
-    const isMirrored = this.isMirrored(<MediaStream> this.video.nativeElement.srcObject);
+    const isMirrored = CaptureImageComponent.isMirrored(<MediaStream> this.video.nativeElement.srcObject);
     ctx.scale(isMirrored ? 1 : -1, 1);
     ctx.drawImage(
       this.video.nativeElement,
@@ -257,7 +249,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     this.qrScanner['_onLoadedMetaData']();
   }
 
-  private isMirrored(videoStream: MediaStream | null): boolean {
+  private static isMirrored(videoStream: MediaStream | null): boolean {
     /**
      * qr-Scanner guesses the camera's facingMode from its label. Sounds awful, but is not critical.
      * The only thing, qr-scanner does with this info is to mirror the image if camera
@@ -268,9 +260,6 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
      * https://github.com/nimiq/qr-scanner/blob/34bccc6b278672e28d6eb62f07c1832f1e6d2e92/src/qr-scanner.ts#L907
      * https://github.com/nimiq/qr-scanner/blob/34bccc6b278672e28d6eb62f07c1832f1e6d2e92/src/qr-scanner.ts#L913
      */
-    if (this.swapImage !== 'auto') {
-      return this.swapImage === 'yes';
-    }
     if (!videoStream) {
       return false;
     }

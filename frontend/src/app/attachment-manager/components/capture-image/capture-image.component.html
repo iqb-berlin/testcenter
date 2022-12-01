@@ -29,14 +29,6 @@
         <mat-checkbox class="example-margin" (change)="toggleFlash($event.checked)" [disabled]="!hasFlash">
           {{'Blitz' | customtext:'gm_flash_checkbox' | async}}
         </mat-checkbox>
-        <br>
-        <mat-label>{{'Bild spiegeln' | customtext:'gm_swap_image' | async}}</mat-label>
-        <mat-radio-group aria-label="mode of image swapping" [(ngModel)]='swapImage' (change)="reloadCamera()">
-          <mat-radio-button value="auto">Auto</mat-radio-button>
-          <mat-radio-button value="yes">Ja</mat-radio-button>
-          <mat-radio-button value="no">Nein</mat-radio-button>
-        </mat-radio-group>
-        <pre>{{swapImage}}</pre>
       </div>
     </div>
 
@@ -89,12 +81,7 @@
           [style.width]="pageDesign.width > pageDesign.height ? '100%' : 'auto'"
           [style.height]="pageDesign.width <= pageDesign.height ? '100%' : 'auto'"
         >
-          <video
-            #video
-            id="video"
-            class="swap-image-{{swapImage}}"
-            autoplay
-          ></video>
+          <video #video id="video" autoplay></video>
         </div>
       </div>
     </div>

@@ -36,15 +36,7 @@
 
 #video-container video {
   background: silver;
-  max-height: 100%;
-}
-
-#video-container video.swap-image-yes {
-  transform: scaleX(-1) !important;
-}
-
-#video-container video.swap-image-no {
-  transform: scaleX(1)  !important;
+  height: 100%;
 }
 
 .scan-region-highlight {
