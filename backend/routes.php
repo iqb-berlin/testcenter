@@ -10,7 +10,6 @@ $app->get('/', [SystemController::class, 'get']);
 
 $app->group('/booklet', function(RouteCollectorProxy $group) {
 
-    $group->get('/{booklet_name}/data', [BookletController::class, 'getData']);
     $group->get('/{booklet_name}',[BookletController::class, 'getBooklet']);
 })
     ->add(new RequireToken('person'));

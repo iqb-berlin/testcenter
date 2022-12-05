@@ -74,23 +74,6 @@ export class BackendService {
       );
   }
 
-  getBookletData(bookletId: string): Observable<BookletData> {
-    return this.http
-      .get<BookletData>(`${this.serverUrl}booklet/${bookletId}/data`)
-      .pipe(
-        map(bData => {
-          bData.id = bookletId;
-          return bData;
-        }),
-        catchError(() => of(<BookletData>{
-          id: bookletId,
-          label: bookletId,
-          locked: true,
-          running: false
-        }))
-      );
-  }
-
   startTest(bookletName: string): Observable<string | number> {
     return this.http
       .put<number>(`${this.serverUrl}test`, { bookletName })
