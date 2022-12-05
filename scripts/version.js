@@ -40,8 +40,12 @@ const updateVersion = async done => {
   const versionType = (lastArg === 'bash') ? 'patch' : lastArg;
   cliPrint.headline(`Prepare new version-tag: ${versionType}`);
   console.log(`Current version is ${version.full}`);
+  const oldVersion = version.full;
   createNewVersionTag(versionType);
   console.log(`Target version is ${version.full}`);
+  if (oldVersion === version.full) {
+    throw new Error(`No new Version given on ${lastArg}!`);
+  }
   done();
 };
 

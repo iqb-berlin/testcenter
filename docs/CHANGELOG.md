@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 13.1.0
+In dieser Version wurde der experimentelle Bereich "Anhang-Verwaltung" hinzugefügt. Da dieses Feature noch im
+experimentellen Status ist, ist es zunächst versteckt und undokumentiert. Ein Update ist nur erforderlich, wenn es
+genutzt werden soll; weitere nennenswerte Änderungen gibt es nicht. 
+
 ## 13.0.0
 Für diese Testcenter-Version wurde die gesamte Grundarchitektur der Anwendung überarbeitet, um von jetzt an schneller
 und einfacher weitere Verbesserungen und neue Funktionen liefern zu können.
