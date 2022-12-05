@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 class AccessObject extends DataCollectionTypeSafe {
-    private string $label;
-    private string $id;
-    private string $type;
-    private array $flags;
+    protected string $label;
+    protected string $id;
+    protected string $type;
+    protected array $flags;
 
     public function __construct(string $id, string $type, string $label, array $flags = []) {
 

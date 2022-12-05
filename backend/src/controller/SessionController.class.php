@@ -64,7 +64,14 @@ class SessionController extends Controller {
                 self::registerGroup($loginSession);
 
                 $booklets = $loginSession->getLogin()->getBooklets()[''];
-                $accessObject->addAccessObjects('test', ...$booklets);
+                $bookletsData = array_map(
+                    function (FileData $bookletData): AccessObject {
+                        return new AccessObject($bookletData->getId(), 'test', $bookletData->getLabel());
+                    },
+                    self::workspaceDAO()->getFileDataById($loginSession->getLogin()->getWorkspaceId(), ...$booklets)
+                );
+
+                $accessObject->addAccessObjects('test', ...$bookletsData);
             }
 
         } else {

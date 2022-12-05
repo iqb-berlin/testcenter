@@ -41,7 +41,14 @@ class AccessSet extends DataCollectionTypeSafe {
 
             case "monitor-group":
                 if (str_starts_with($login->getGroupName(), 'experimental')) {
-                    $accessSet->addAccessObjects('attachmentManager', $login->getGroupName());
+                    $accessSet->addAccessObjects(
+                        'attachmentManager',
+                        new AccessObject(
+                            $login->getGroupName(),
+                            'attachmentManager',
+                            $login->getGroupLabel()
+                        )
+                    );
                 }
                 $accessSet->addAccessObjects(
                     'testGroupMonitor',

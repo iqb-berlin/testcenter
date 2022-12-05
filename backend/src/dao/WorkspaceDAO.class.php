@@ -216,4 +216,27 @@ class WorkspaceDAO extends DAO {
         }
     }
 
+
+    public function getFileDataById(int $workspaceId, string ...$fileIds): array {
+
+        $placeHolder = implode(', ', array_fill(0, count($fileIds), '?'));
+        $result = $this->_(
+            "select name, id, label, description, type from files where workspace_id=? and id in ($placeHolder)",
+            [$workspaceId, ...$fileIds],
+            true
+        );
+
+        return array_map(
+            function(array $res): FileData {
+                return new FileData(
+                    $res['name'], // TODO provide full path
+                    $res['type'],
+                    $res['id'],
+                    $res['id'],
+                    $res['description']
+                );
+            },
+            $result
+        );
+    }
 }
