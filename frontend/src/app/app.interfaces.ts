@@ -9,7 +9,8 @@ export enum AuthAccessKeyType {
   SUPER_ADMIN = 'superAdmin',
   TEST = 'test',
   WORKSPACE_MONITOR = 'workspaceMonitor',
-  TEST_GROUP_MONITOR = 'testGroupMonitor'
+  TEST_GROUP_MONITOR = 'testGroupMonitor',
+  ATTACHMENT_MANAGER = 'attachmentManager'
 }
 
 export interface AccessType {

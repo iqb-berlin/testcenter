@@ -40,8 +40,12 @@ const updateVersion = async done => {
   const versionType = (lastArg === 'bash') ? 'patch' : lastArg;
   cliPrint.headline(`Prepare new version-tag: ${versionType}`);
   console.log(`Current version is ${version.full}`);
+  const oldVersion = version.full;
   createNewVersionTag(versionType);
   console.log(`Target version is ${version.full}`);
+  if (oldVersion === version.full) {
+    throw new Error(`No new Version given on ${lastArg}!`);
+  }
   done();
 };
 
@@ -93,6 +97,14 @@ const updateVersionInFiles = gulp.parallel(
   )
 );
 
+const updateSQLPatch = async done => {
+  const nextSQLPatchFileName = `${rootPath}/scripts/database/mysql.patches.d/next.sql`;
+  if (fs.existsSync(nextSQLPatchFileName)) {
+    fs.renameSync(nextSQLPatchFileName, `${rootPath}/scripts/database/mysql.patches.d/${version.full}.sql`);
+  }
+  done();
+};
+
 /**
  * Creates a new version number
  * Which type depends on the last parameter provided.
@@ -108,5 +120,6 @@ exports.newVersion = gulp.series(
   updateVersion,
   checkPrerequisites,
   savePackageJson, // TODO how about package-lock?
+  updateSQLPatch,
   updateVersionInFiles
 );

@@ -1,0 +1,12 @@
+<div class="page-header">
+  <p>
+    {{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} -
+    <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
+  </p>
+</div>
+
+<div class="page-body">
+  <router-outlet></router-outlet>
+</div>
+
+

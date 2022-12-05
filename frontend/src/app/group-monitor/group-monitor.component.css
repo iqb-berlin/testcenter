@@ -1,5 +1,10 @@
-.page-body {
-  overflow-x: hidden;
+.adminbackground {
+    padding-top: 0;
+}
+
+mat-sidenav {
+    width: 350px;
+    min-width: 350px;
 }
 
 .test-session-table {
@@ -22,34 +27,6 @@
 
 .test-session-table td[mat-sort-header="_checked"] {
   padding-left: 5px;
-}
-
-.adminbackground {
-  box-shadow: 5px 10px 20px black;
-  background-color: white;
-  margin: 0 0 0 15px;
-  padding: 0 25px 25px 25px;
-  height: 100%;
-  overflow: auto;
-  scroll-behavior: smooth;
-}
-
-.page-header {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.page-header > p:last-child {
-  margin-right: 15px;
-}
-
-.page-header > div {
-  text-align: right;
-  vertical-align: middle;
-}
-
-.page-header .fill-remaining-space {
-  flex: 1 1 auto;
 }
 
 .connection-status {
@@ -112,71 +89,6 @@
   }
 }
 
-.toolbar {
-  padding: 15px;
-}
-
-.toolbar h2 {
-  margin-top: 0;
-  font-size: 1.5em;
-}
-
-.toolbar .mat-radio-button ~ .mat-radio-button {
-  margin-left: 16px;
-}
-
-.toolbar-section {
-  margin-bottom: 1em
-}
-
-.toolbar button {
-  text-transform: uppercase;
-}
-
-.toolbar .control ~ .control {
-  margin-left: 15px;
-}
-
-.min-height-section {
-  min-height: 3em;
-}
-
-.toolbar-section-bottom {
-  position: absolute;
-  bottom: 0;
-}
-
-mat-sidenav {
-  width: 350px;
-}
-
-.mat-drawer-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 25px;
-  overflow: initial;
-  height: initial;
-}
-
-.mat-drawer-container {
-  position: initial;
-  background: none;
-}
-
-.mat-drawer {
-  margin: 15px 0 0 0;
-}
-
-.corner-menu {
-  position: fixed;
-  right: 10px;
-  top: 72px;
-  z-index: 10000;
-  border-bottom-left-radius: 10px;
-}
-
 .scroll-hint {
   position: fixed;
   right: 15px;
@@ -231,6 +143,10 @@ mat-sidenav {
 
 [disabled] .emph {
   color: #821123
+}
+
+mat-sidenav {
+    width: 350px;
 }
 
 #message-panel alert:first-of-type {

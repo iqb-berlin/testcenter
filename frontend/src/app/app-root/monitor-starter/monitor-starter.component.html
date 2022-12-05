@@ -10,11 +10,28 @@
           Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
         </p>
 
-        <button mat-raised-button color="primary" (click)="buttonGotoMonitor(accessObject)"
-                *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="buttonGotoMonitor(accessObject)"
+          *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]"
+        >
           <span class="booklet_title">{{accessObject.name}}</span>
           <span class="booklet_status">Überwachung starten</span>
         </button>
+
+        <ng-container *ngIf="accessObjects[AuthAccessKeyType.ATTACHMENT_MANAGER] && accessObjects[AuthAccessKeyType.ATTACHMENT_MANAGER].length">
+          <h4>Aufgaben-Anhänge Verwalten</h4>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="buttonGotoAttachmentManager(accessObject)"
+            *ngFor="let accessObject of accessObjects[AuthAccessKeyType.ATTACHMENT_MANAGER]"
+          >
+            <span class="booklet_title">{{accessObject.name}}</span>
+            <span class="booklet_status">Anhänge Verwalten</span>
+          </button>
+        </ng-container>
 
         <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
 
@@ -26,7 +43,7 @@
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button data-cy="logout" color="foreground" (click)="resetLogin()">Neu anmelden</button>
+      <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
     </mat-card-actions>
   </mat-card>
 

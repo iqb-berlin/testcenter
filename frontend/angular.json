@@ -60,14 +60,7 @@
               "buildOptimizer": true
             },
             "dev": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
-                }
-              ]
             },
-            "local": {},
             "e2e": {
               "fileReplacements": [
                 {
@@ -157,5 +150,8 @@
       }
     }
   },
-  "defaultProject": "testcenter-frontend"
+  "defaultProject": "testcenter-frontend",
+  "cli": {
+    "analytics": false
+  }
 }

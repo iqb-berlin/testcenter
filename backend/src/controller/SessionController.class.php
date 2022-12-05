@@ -12,7 +12,7 @@ use Slim\Exception\HttpException;
 
 class SessionController extends Controller {
 
-    protected static array $_bookletFolders = [];
+    protected static array $_workspaces = [];
 
     /**
      * @codeCoverageIgnore
@@ -97,8 +97,8 @@ class SessionController extends Controller {
             return;
         }
 
-        $bookletsFolder = self::getBookletFolder($login->getLogin()->getWorkspaceId());
-        $bookletLabels = [];
+        $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
+        $bookletFiles = [];
 
         $members = self::sessionDAO()->getLoginsByGroup($login->getLogin()->getGroupName(), $login->getLogin()->getWorkspaceId());
 
@@ -120,14 +120,20 @@ class SessionController extends Controller {
 
                 $memberPersonSession = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code, false);
 
-                foreach ($booklets as $booklet) {
+                foreach ($booklets as $bookletId) {
 
-                    if (!isset($bookletLabels[$booklet])) {
-                        $bookletLabels[$booklet] = $bookletsFolder->getBookletLabel($booklet) ?? "LABEL OF $booklet";
+                    if (!isset($bookletLabels[$bookletId])) {
+                        $bookletFile = $workspace->findFileById('Booklet', $bookletId);
+                        /* @var $bookletFile XMLFileBooklet */
+                        $bookletFiles[$bookletId] = $bookletFile;
                     }
-                    $test = self::testDAO()->getOrCreateTest($memberPersonSession->getPerson()->getId(), $booklet, $bookletLabels[$booklet]);
+                    $test = self::testDAO()->getOrCreateTest(
+                        $memberPersonSession->getPerson()->getId(),
+                        $bookletId,
+                        $bookletFiles[$bookletId]->getLabel()
+                    );
                     $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
-                    $sessionMessage->setTestState([], $booklet);
+                    $sessionMessage->setTestState([], $bookletId);
                     BroadcastService::sessionChange($sessionMessage);
                 }
             }
@@ -135,14 +141,14 @@ class SessionController extends Controller {
     }
 
 
-    private static function getBookletFolder(int $workspaceId): BookletsFolder {
+    private static function getWorkspace(int $workspaceId): Workspace {
 
-        if (!isset(self::$_bookletFolders[$workspaceId])) {
+        if (!isset(self::$_workspaces[$workspaceId])) {
 
-            self::$_bookletFolders[$workspaceId] = new BookletsFolder($workspaceId);
+            self::$_workspaces[$workspaceId] = new Workspace($workspaceId);
         }
 
-        return self::$_bookletFolders[$workspaceId];
+        return self::$_workspaces[$workspaceId];
     }
 
 

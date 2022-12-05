@@ -10,7 +10,7 @@ class TestEnvironment {
 
     const staticDate = 1627545600;
 
-    static function setUpEnvironmentForRealDataE2ETests() {
+    static function setUpEnvironmentForRealDataE2ETests(): void {
 
         try {
 
@@ -25,10 +25,10 @@ class TestEnvironment {
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
             FileTime::setup(TestEnvironment::staticDate);
+            TestEnvironment::makeRandomStatic();
 
             TestEnvironment::resetState();
             TestEnvironment::setUpTestData();
-            TestEnvironment::makeRandomStatic();
 
         } catch (Throwable $exception) {
 
@@ -37,7 +37,7 @@ class TestEnvironment {
     }
 
 
-    static function setUpEnvironmentForE2eTests() {
+    static function setUpEnvironmentForE2eTests(): void {
 
         try {
 
@@ -52,6 +52,7 @@ class TestEnvironment {
             TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
+            TestEnvironment::makeRandomStatic();
 
             $initDAO = new InitDAO();
             $initDAO->runFile(ROOT_DIR . '/backend/test/database.sql');
@@ -60,8 +61,6 @@ class TestEnvironment {
             TestEnvironment::overwriteModificationDatesVfs();
             TestEnvironment::debugVirtualEnvironment();
 
-            TestEnvironment::makeRandomStatic();
-
         } catch (Throwable $exception) {
 
             TestEnvironment::bailOut($exception);
@@ -69,13 +68,13 @@ class TestEnvironment {
     }
 
 
-    private static function makeRandomStatic() {
+    private static function makeRandomStatic(): void {
 
         srand(1);
     }
 
 
-    private static function resetState() {
+    private static function resetState(): void {
 
         Folder::deleteContentsRecursive(DATA_DIR);
 
@@ -124,6 +123,10 @@ class TestEnvironment {
         $personSessions = $initDAO->createSampleMonitorSessions();
         $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
         $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
+
+        $fileName = 'sample_scanned_image.png';
+        $initializer->createSampleScanImage($fileName, $workspaceId);
+        $initDAO->importScanImage($workspaceId, $fileName);
     }
 
 

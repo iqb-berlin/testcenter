@@ -173,10 +173,12 @@
         ></alert>
       </div>
 
-      <div class="toolbar-section toolbar-section-bottom">
-        <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
-          <mat-icon>stop</mat-icon>{{'Testung beenden' | customtext:'gm_control_finish_everything' | async}}
-        </button>
+      <div class="toolbar-section-bottom">
+        <div class="toolbar-section">
+          <button mat-raised-button class="control" color="primary" (click)="finishEverythingCommand()">
+            <mat-icon>stop</mat-icon>{{'Testung beenden' | customtext:'gm_control_finish_everything' | async}}
+          </button>
+        </div>
       </div>
 
     </mat-sidenav>

@@ -96,6 +96,11 @@ const routes: Routes = [
     // canActivate: [GroupMonitorActivateGuard]
   },
   {
+    path: 'am',
+    loadChildren: () => import('./attachment-manager/attachment-manager.module').then(module => module.AttachmentManagerModule)
+    // canActivate: [GroupMonitorActivateGuard]
+  },
+  {
     path: 't',
     loadChildren: () => import('./test-controller/test-controller.module').then(module => module.TestControllerModule),
     canActivate: [TestComponentActivateGuard],

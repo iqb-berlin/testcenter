@@ -8,7 +8,8 @@ class AccessSet extends DataCollectionTypeSafe {
         'test',
         'superAdmin',
         'workspaceAdmin',
-        'testGroupMonitor'
+        'testGroupMonitor',
+        'attachmentManager'
     ];
 
     protected string $token;
@@ -23,8 +24,11 @@ class AccessSet extends DataCollectionTypeSafe {
 
         $login = $loginWithPerson->getLoginSession()->getLogin();
 
-        $displayName = "{$login->getGroupLabel()}/{$login->getName()}";
-        $displayName .= $loginWithPerson->getPerson()->getNameSuffix() ? '/' . $loginWithPerson->getPerson()->getNameSuffix() : '';
+        $displayName = self::getDisplayName(
+            $login->getGroupLabel(),
+            $login->getName(),
+            $loginWithPerson->getPerson()->getNameSuffix()
+        );
 
         $accessSet = new AccessSet(
             $loginWithPerson->getPerson()->getToken(),
@@ -36,6 +40,9 @@ class AccessSet extends DataCollectionTypeSafe {
         switch ($login->getMode()) {
 
             case "monitor-group":
+                if (str_starts_with($login->getGroupName(), 'experimental')) {
+                    $accessSet->addAccessObjects('attachmentManager', $login->getGroupName());
+                }
                 $accessSet->addAccessObjects(
                     'testGroupMonitor',
                     new AccessObject(
@@ -59,6 +66,14 @@ class AccessSet extends DataCollectionTypeSafe {
         }
 
         return $accessSet;
+    }
+
+
+    static function getDisplayName(string $groupLabel, string $loginName, ?string $nameSuffix): string {
+
+        $displayName = "$groupLabel/$loginName";
+        $displayName .= $nameSuffix ? '/' . $nameSuffix : '';
+        return $displayName;
     }
 
 

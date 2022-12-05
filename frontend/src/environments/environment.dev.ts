@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  testcenterUrl: '/api/'
+  testcenterUrl: 'http://localhost/testcenter/backend/'
 };
