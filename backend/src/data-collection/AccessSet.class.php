@@ -37,10 +37,7 @@ class AccessSet extends DataCollectionTypeSafe {
             $login->getCustomTexts() ?? new stdClass()
         );
 
-        $accessSet->addTests(
-            $loginWithPerson->getLoginSession(),
-            $loginWithPerson->getPerson()->getCode() ?? ''
-        );
+        $accessSet->addTests($loginWithPerson);
 
         if ($login->getMode() == "monitor-group") {
             if (str_starts_with($login->getGroupName(), 'experimental')) {
@@ -98,13 +95,6 @@ class AccessSet extends DataCollectionTypeSafe {
         return $accessSet;
     }
 
-    static function getDisplayName(string $groupLabel, string $loginName, ?string $nameSuffix): string {
-
-        $displayName = "$groupLabel/$loginName";
-        $displayName .= $nameSuffix ? '/' . $nameSuffix : '';
-        return $displayName;
-    }
-
 
     static function createFromLoginSession(LoginSession $loginSession): AccessSet {
 
@@ -136,16 +126,11 @@ class AccessSet extends DataCollectionTypeSafe {
     }
 
 
-    public function addAccessObjects(string $type, AccessObject ...$accessObjects): AccessSet {
+    static function getDisplayName(string $groupLabel, string $loginName, ?string $nameSuffix): string {
 
-        if (!in_array($type, $this::$accessObjectTypes)) {
-
-            throw new Exception("AccessObject type `$type` is not valid.");
-        }
-
-        $this->access[$type] = $accessObjects;
-
-        return $this;
+        $displayName = "$groupLabel/$loginName";
+        $displayName .= $nameSuffix ? '/' . $nameSuffix : '';
+        return $displayName;
     }
 
 
@@ -163,15 +148,35 @@ class AccessSet extends DataCollectionTypeSafe {
     }
 
 
-    private function addTests(LoginSession $loginSession, string $code = ''): void {
+    private function addAccessObjects(string $type, AccessObject ...$accessObjects): AccessSet {
 
-        $workspaceDAO = new WorkspaceDAO();
-        $bookletIds = $loginSession->getLogin()->getBooklets()[$code];
+        if (!in_array($type, $this::$accessObjectTypes)) {
+
+            throw new Exception("AccessObject type `$type` is not valid.");
+        }
+
+        $this->access[$type] = $accessObjects;
+
+        return $this;
+    }
+
+
+    private function addTests(PersonSession $personSession): void {
+
+        $workspaceDAO = new SessionDAO();
         $bookletsData = array_map(
-            function (FileData $bookletData): AccessObject {
-                return new AccessObject($bookletData->getId(), 'test', $bookletData->getLabel());
+            function (TestData $testData): AccessObject {
+                return new AccessObject(
+                    $testData->getBookletId(),
+                    'test',
+                    $testData->getLabel(),
+                    [
+                        'locked' => $testData->isLocked(),
+                        'running' => $testData->isRunning()
+                    ]
+                );
             },
-            $workspaceDAO->getFileDataById($loginSession->getLogin()->getWorkspaceId(), ...$bookletIds)
+            $workspaceDAO->getTestsOfPerson($personSession)
         );
         $this->addAccessObjects('test', ...$bookletsData);
     }

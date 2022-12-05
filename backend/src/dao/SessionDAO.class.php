@@ -585,4 +585,45 @@ class SessionDAO extends DAO {
 
         return $personSession->withNewToken($newToken);
     }
+
+    public function getTestsOfPerson(PersonSession $personSession): array {
+
+        $bookletIds = $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? ''];
+        $placeHolder = implode(', ', array_fill(0, count($bookletIds), '?'));
+        $tests = $this->_(
+            "select
+                    t.locked,
+                    t.running,
+                    files.name,
+                    files.id as bookletId,
+                    files.label as testLabel,
+                    description
+                from files
+                     left outer join tests t on files.id = t.name
+                where
+                    workspace_id = ?
+                    and (t.person_id is null or t.person_id = ?)
+                    and files.id in ($placeHolder)
+                order by
+                    files.label",
+                [
+                    $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
+                    $personSession->getLoginSession()->getId(),
+                    ...$bookletIds
+                ],
+            true
+        );
+        return array_map(
+            function(array $res): TestData {
+                return new TestData(
+                    $res['bookletId'],
+                    $res['testLabel'],
+                    $res['description'],
+                    (bool) $res['locked'],
+                    (bool) $res['running']
+                );
+            },
+            $tests
+        );
+    }
 }

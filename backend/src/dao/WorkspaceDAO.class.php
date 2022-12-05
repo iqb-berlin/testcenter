@@ -232,7 +232,7 @@ class WorkspaceDAO extends DAO {
                     $res['name'], // TODO provide full path
                     $res['type'],
                     $res['id'],
-                    $res['id'],
+                    $res['label'],
                     $res['description']
                 );
             },
