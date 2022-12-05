@@ -5,28 +5,6 @@ declare(strict_types=1);
 
 class AdminDAO extends DAO {
 
-    public function getAdminAccessSet(string $adminToken): AccessSet {
-
-        $admin = $this->getAdmin($adminToken);
-        $accessSet = new AccessSet(
-            $admin['adminToken'],
-            $admin['name']
-        );
-
-        $workspacesIds = array_map(function($workspace) {
-            return (string) $workspace['id'];
-        }, $this->getWorkspaces($adminToken));
-
-        $accessSet->addAccessObjects('workspaceAdmin', ...$workspacesIds);
-
-        if ($admin["isSuperadmin"]) {
-            $accessSet->addAccessObjects('superAdmin');
-        }
-
-        return $accessSet;
-    }
-
-
     /**
      * @codeCoverageIgnore
      */

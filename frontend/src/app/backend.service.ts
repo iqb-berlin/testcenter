@@ -7,7 +7,7 @@ import {
   SysCheckInfo,
   AuthData,
   WorkspaceData,
-  BookletData, ApiError, AccessObject
+  BookletData, ApiError
 } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
@@ -62,26 +62,6 @@ export class BackendService {
           id: workspaceId,
           name: workspaceId,
           role: 'n.d.'
-        });
-      }));
-  }
-
-  getGroupData(groupName: string): Observable<AccessObject> {
-    // TODO find consistent terminology. in XSD they are called name & label
-    // and likewise (mostly) in newer BE-versions
-    interface NameAndLabel {
-      name: string;
-      label: string;
-    }
-
-    return this.http
-      .get<NameAndLabel>(`${this.serverUrl}monitor/group/${groupName}`)
-      .pipe(map((r: NameAndLabel): AccessObject => ({ id: r.name, name: r.label })))
-      .pipe(catchError(() => {
-        console.warn(`get group data failed for ${groupName}`);
-        return of(<AccessObject>{
-          id: groupName,
-          name: groupName
         });
       }));
   }

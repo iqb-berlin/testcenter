@@ -16,7 +16,7 @@
           (click)="buttonGotoMonitor(accessObject)"
           *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]"
         >
-          <span class="booklet_title">{{accessObject.name}}</span>
+          <span class="booklet_title">{{accessObject.label}}</span>
           <span class="booklet_status">Überwachung starten</span>
         </button>
 
@@ -28,17 +28,17 @@
             (click)="buttonGotoAttachmentManager(accessObject)"
             *ngFor="let accessObject of accessObjects[AuthAccessKeyType.ATTACHMENT_MANAGER]"
           >
-            <span class="booklet_title">{{accessObject.name}}</span>
+            <span class="booklet_title">{{accessObject.label}}</span>
             <span class="booklet_status">Anhänge Verwalten</span>
           </button>
         </ng-container>
 
         <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
 
-        <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="b.locked"
+        <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="!!b.flags.locked"
                 *ngFor="let b of accessObjects[AuthAccessKeyType.TEST]">
           <span class="booklet_title">{{b.label}}</span>
-          <span class="booklet_status">{{b.locked ? 'gesperrt' : (b.running ? 'Fortsetzen' : 'Ansehen')}}</span>
+          <span class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Ansehen')}}</span>
         </button>
       </div>
     </mat-card-content>

@@ -3,16 +3,14 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
-import {
-  AccessObject, AuthAccessKeyType, AuthData, BookletData
-} from '../../app.interfaces';
+import { AccessObject, AuthAccessKeyType, AuthData } from '../../app.interfaces';
 
 @Component({
   templateUrl: './monitor-starter.component.html',
   styleUrls: ['./monitor-starter.component.css']
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
-  accessObjects: { [accessType: string]: (AccessObject | BookletData)[] } = {};
+  accessObjects: { [accessType: string]: AccessObject[] } = {};
   private getMonitorDataSubscription: Subscription | null = null;
   AuthAccessKeyType = AuthAccessKeyType;
   problemText: string;
@@ -39,41 +37,14 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
           this.mds.stopLoadingAnimation();
           return;
         }
-        this.accessObjects = {};
-
-        [AuthAccessKeyType.TEST_GROUP_MONITOR, AuthAccessKeyType.TEST, AuthAccessKeyType.ATTACHMENT_MANAGER]
-          .forEach(accessType => {
-            this.accessObjects[accessType] = [];
-            (authData.access[accessType] || [])
-              .forEach(accessObjectId => {
-                if (accessType === AuthAccessKeyType.TEST_GROUP_MONITOR) {
-                  this.bs.getGroupData(accessObjectId)
-                    .subscribe(idAndLabel => {
-                      this.accessObjects[accessType].push(idAndLabel);
-                    });
-                }
-                if (accessType === AuthAccessKeyType.ATTACHMENT_MANAGER) {
-                  this.bs.getGroupData(accessObjectId)
-                    .subscribe(idAndLabel => {
-                      this.accessObjects[accessType].push(idAndLabel);
-                    });
-                }
-                if (accessType === AuthAccessKeyType.TEST) {
-                  this.bs.getBookletData(accessObjectId)
-                    .subscribe(idAndLabel => {
-                      this.accessObjects[accessType].push(idAndLabel);
-                    });
-                }
-              });
-          });
-
+        this.accessObjects = authData.access;
         this.mds.setAuthData(authData);
       });
     });
   }
 
-  startTest(b: BookletData): void {
-    this.bs.startTest(b.id).subscribe(testId => {
+  startTest(test: AccessObject): void {
+    this.bs.startTest(test.id).subscribe(testId => {
       if (typeof testId === 'number') {
         const errCode = testId as number;
         if (errCode === 423) {

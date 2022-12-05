@@ -1,7 +1,6 @@
 export enum AuthFlagType {
   CODE_REQUIRED = 'codeRequired',
-  PENDING = 'pending',
-  EXPIRED = 'expired'
+  PENDING = 'pending'
 }
 
 export enum AuthAccessKeyType {
@@ -13,8 +12,13 @@ export enum AuthAccessKeyType {
   ATTACHMENT_MANAGER = 'attachmentManager'
 }
 
-export interface AccessType {
-  [key: string]: string[];
+export type AccessObjectFlags = 'locked' | 'running';
+
+export interface AccessObject {
+  label: string;
+  id: string;
+  type: string;
+  flags: { [key in AccessObjectFlags]: string | boolean };
 }
 
 export interface AuthData {
@@ -22,18 +26,13 @@ export interface AuthData {
   displayName: string;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
-  access: AccessType;
+  access: { [key: string]: AccessObject[] };
 }
 
 export interface WorkspaceData {
   id: string;
   name: string;
   role: 'RW' | 'RO' | 'n.d.';
-}
-
-export interface AccessObject {
-  id: string;
-  name: string;
 }
 
 export interface BookletData {

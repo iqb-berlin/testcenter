@@ -26,7 +26,7 @@ class SessionController extends Controller {
 
         $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
 
-        $accessSet = self::adminDAO()->getAdminAccessSet($token);
+        $accessSet = AccessSet::createFromAdminToken($token);
 
         self::adminDAO()->refreshAdminToken($token);
 
@@ -57,29 +57,19 @@ class SessionController extends Controller {
 
             $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
             $personSession = self::sessionDAO()->renewPersonToken($personSession);
-            $accessObject = AccessSet::createFromPersonSession($personSession);
+            $accessSet = AccessSet::createFromPersonSession($personSession);
 
             if ($loginSession->getLogin()->getMode() == 'monitor-group') {
 
                 self::registerGroup($loginSession);
-
-                $booklets = $loginSession->getLogin()->getBooklets()[''];
-                $bookletsData = array_map(
-                    function (FileData $bookletData): AccessObject {
-                        return new AccessObject($bookletData->getId(), 'test', $bookletData->getLabel());
-                    },
-                    self::workspaceDAO()->getFileDataById($loginSession->getLogin()->getWorkspaceId(), ...$booklets)
-                );
-
-                $accessObject->addAccessObjects('test', ...$bookletsData);
             }
 
         } else {
 
-            $accessObject = AccessSet::createFromLoginSession($loginSession);
+            $accessSet = AccessSet::createFromLoginSession($loginSession);
         }
 
-        return $response->withJson($accessObject);
+        return $response->withJson($accessSet);
     }
 
 
@@ -173,19 +163,12 @@ class SessionController extends Controller {
 
             $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
             $accessSet = AccessSet::createFromPersonSession($personSession);
-
-            if ($authToken->getMode() == 'monitor-group') {
-
-                $booklets = $personSession->getLoginSession()->getLogin()->getBooklets()[''];
-                $accessSet->addAccessObjects('test', ...$booklets);
-            }
-
             return $response->withJson($accessSet);
         }
 
         if ($authToken->getType() == "admin") {
 
-            $accessSet = self::adminDAO()->getAdminAccessSet($authToken->getToken());
+            $accessSet = AccessSet::createFromAdminToken($authToken->getToken());
             self::adminDAO()->refreshAdminToken($authToken->getToken());
             return $response->withJson($accessSet);
         }

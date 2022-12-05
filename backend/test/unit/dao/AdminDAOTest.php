@@ -50,24 +50,6 @@ final class AdminDAOTest extends TestCase {
     }
 
 
-    public function test_getAdminAccessSet() {
-
-        $expectation = new AccessSet('admin_token', 'super');
-        $expectation->addAccessObjects('workspaceAdmin', '1');
-        $expectation->addAccessObjects('superAdmin');
-        $result = $this->dbc->getAdminAccessSet('admin_token');
-        $this->assertEquals($expectation, $result);
-
-        $expectation = new AccessSet('other_admin_token', 'i_exist_but_am_not_allowed_anything');
-        $expectation->addAccessObjects('workspaceAdmin');
-        $result = $this->dbc->getAdminAccessSet('other_admin_token');
-        $this->assertEquals($expectation, $result);
-
-        $this->expectException(HttpError::class);
-        $this->dbc->getAdminAccessSet('not_existing_admin_token');
-    }
-
-
     public function test_login() {
 
         $token = $this->dbc->createAdminToken('super', 'user123');

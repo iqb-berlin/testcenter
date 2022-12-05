@@ -37,44 +37,66 @@ class AccessSet extends DataCollectionTypeSafe {
             $login->getCustomTexts() ?? new stdClass()
         );
 
-        switch ($login->getMode()) {
+        $accessSet->addTests(
+            $loginWithPerson->getLoginSession(),
+            $loginWithPerson->getPerson()->getCode() ?? ''
+        );
 
-            case "monitor-group":
-                if (str_starts_with($login->getGroupName(), 'experimental')) {
-                    $accessSet->addAccessObjects(
-                        'attachmentManager',
-                        new AccessObject(
-                            $login->getGroupName(),
-                            'attachmentManager',
-                            $login->getGroupLabel()
-                        )
-                    );
-                }
+        if ($login->getMode() == "monitor-group") {
+            if (str_starts_with($login->getGroupName(), 'experimental')) {
                 $accessSet->addAccessObjects(
-                    'testGroupMonitor',
+                    'attachmentManager',
                     new AccessObject(
                         $login->getGroupName(),
-                        'testGroupMonitor',
+                        'attachmentManager',
                         $login->getGroupLabel()
                     )
                 );
-                break;
-
-            default:
-                $personsBooklets = $login->getBooklets()[$loginWithPerson->getPerson()->getCode()] ?? [];
-                $personsBookletsAsAccessObjects = array_map(
-                    function(string $bookletId): AccessObject {
-                        return new AccessObject($bookletId, 'test', 'labelFor $bookletId');
-                    },
-                    $personsBooklets
-                );
-                $accessSet->addAccessObjects('test', ...$personsBookletsAsAccessObjects);
-                break;
+            }
+            $accessSet->addAccessObjects(
+                'testGroupMonitor',
+                new AccessObject(
+                    $login->getGroupName(),
+                    'testGroupMonitor',
+                    $login->getGroupLabel()
+                )
+            );
         }
 
         return $accessSet;
     }
 
+
+    static function createFromAdminToken(string $adminToken): AccessSet {
+
+        $adminDAO = new AdminDAO();
+        $admin = $adminDAO->getAdmin($adminToken);
+
+        $accessSet = new AccessSet(
+            $adminToken,
+            $admin['name']
+        );
+
+        $accessObjects = array_map(
+            function($workspace): AccessObject {
+                return new AccessObject(
+                    (string) $workspace['id'],
+                    'workspaceAdmin',
+                    (string) $workspace['name'],
+                    [ "mode" => $workspace["role"]]
+                );
+            },
+            $adminDAO->getWorkspaces($adminToken)
+        );
+
+        $accessSet->addAccessObjects('workspaceAdmin', ...$accessObjects);
+
+        if ($admin["isSuperadmin"]) {
+            $accessSet->addAccessObjects('superAdmin');
+        }
+
+        return $accessSet;
+    }
 
     static function getDisplayName(string $groupLabel, string $loginName, ?string $nameSuffix): string {
 
@@ -130,13 +152,27 @@ class AccessSet extends DataCollectionTypeSafe {
     public function hasAccess(string $type, string $id = null): bool {
 
         if (!$id) {
-            return isset($this->access->$type);
+            return isset($this->access[$type]);
         }
 
-        if (!isset($this->access->$type)) {
+        if (!isset($this->access[$type])) {
             return false;
         }
 
-        return in_array($id, $this->access->$type);
+        return in_array($id, $this->access[$type]);
+    }
+
+
+    private function addTests(LoginSession $loginSession, string $code = ''): void {
+
+        $workspaceDAO = new WorkspaceDAO();
+        $bookletIds = $loginSession->getLogin()->getBooklets()[$code];
+        $bookletsData = array_map(
+            function (FileData $bookletData): AccessObject {
+                return new AccessObject($bookletData->getId(), 'test', $bookletData->getLabel());
+            },
+            $workspaceDAO->getFileDataById($loginSession->getLogin()->getWorkspaceId(), ...$bookletIds)
+        );
+        $this->addAccessObjects('test', ...$bookletsData);
     }
 }
