@@ -9,8 +9,8 @@ require_once "src/files/XMLFileBooklet.class.php";
 
 class XMLFileBookletExposed extends XMLFileBooklet {
 
-    public function getAllUnitIds(): array {
-        return parent::getAllUnitIds();
+    public function getUnitIds(bool $useAlias = false): array {
+        return parent::getUnitIds();
     }
 };
 
@@ -47,7 +47,7 @@ class XMLFilesBookletTest extends TestCase {
 
         $expected = ['UNIT.SAMPLE', 'UNIT.SAMPLE-2', 'UNIT.SAMPLE'];
 
-        $result = $xmlFile->getAllUnitIds();
+        $result = $xmlFile->getUnitIds();
 
         $this->assertEquals($expected, $result);
     }

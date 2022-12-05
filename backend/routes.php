@@ -112,6 +112,31 @@ $app->group('/test', function(RouteCollectorProxy $group) { // TODO Spec
     $group->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
 });
 
+$app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) { // TODO Specs
+
+    $group->get('/file/{fileId}', [AttachmentController::class, 'getFile']);
+
+    $group->delete('/file/{fileId}', [AttachmentController::class, 'deleteFile']);
+
+    $group->post('/file', [AttachmentController::class, 'postFile']);
+
+    $group->get('/data', [AttachmentController::class, 'getData']);
+
+    $group->get('/page', [AttachmentController::class, 'getAttachmentPage']);
+})
+    ->add(new MayModifyAttachments())
+    ->add(new RequireToken('person'));
+
+
+$app->group('/attachments', function(RouteCollectorProxy $group) { // TODO Specs
+
+    $group->get('/list', [AttachmentController::class, 'getList']);
+
+    $group->get('/pages', [AttachmentController::class, 'getAttachmentsPages']);
+})
+    ->add(new MayModifyAttachments())
+    ->add(new RequireToken('person', 'admin'));
+
 $app->group('/workspace', function(RouteCollectorProxy $group) {
 
     $group->get('/{ws_id}', [WorkspaceController::class, 'get'])

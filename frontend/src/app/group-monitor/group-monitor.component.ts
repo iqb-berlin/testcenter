@@ -25,7 +25,10 @@ import { BookletUtil } from './booklet/booklet.util';
 @Component({
   selector: 'app-group-monitor',
   templateUrl: './group-monitor.component.html',
-  styleUrls: ['./group-monitor.component.css']
+  styleUrls: [
+    '../../monitor-layout.css',
+    './group-monitor.component.css'
+  ]
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
   connectionStatus$: Observable<ConnectionStatus>;

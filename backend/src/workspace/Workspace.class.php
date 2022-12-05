@@ -56,7 +56,7 @@ class Workspace {
 
         $subFolderPath = $this->workspacePath . '/' . $type;
         if (!in_array($type, $this::subFolders)) {
-            throw new Exception("Invalid type $type!");
+            throw new Exception("Invalid type `$type`!");
         }
         if (file_exists($subFolderPath) and !is_dir($subFolderPath)) {
             throw new Exception("Workspace dir `$subFolderPath` seems not to be a proper directory!");
@@ -226,16 +226,18 @@ class Workspace {
         $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
         $filesAfterSorting = [];
 
-        foreach ($files as $localFilePath => $file) {
+        foreach ($files as $filesOfAType) {
+            foreach ($filesOfAType as $localFilePath => $file) {
 
-            if ($file->isValid()) {
+                if ($file->isValid()) {
 
-                $this->sortUnsortedFile($localFilePath, $file);
+                    $this->sortUnsortedFile($localFilePath, $file);
+                }
+
+                $this->storeFileMeta($file);
+
+                $filesAfterSorting[$localFilePath] = $file;
             }
-
-            $this->storeFileMeta($file);
-
-            $filesAfterSorting[$localFilePath] = $file;
         }
 
         return $filesAfterSorting;
@@ -244,7 +246,7 @@ class Workspace {
 
     protected function crossValidateUnsortedFiles(array $localFilePaths): array {
 
-        $files = [];
+        $files = array_fill_keys(Workspace::subFolders, []);
 
         $validator = new WorkspaceValidator($this);
 
@@ -252,7 +254,7 @@ class Workspace {
 
             $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
             $validator->addFile($file->getType(), $file, true);
-            $files[$localFilePath] = $file;
+            $files[$file->getType()][$localFilePath] = $file;
         }
 
         $validator->validate();
@@ -511,6 +513,13 @@ class Workspace {
             $file->installPackage();
         }
 
+        if ($file->getType() == 'Booklet') {
+
+            /* @var XMLFileBooklet $file */
+            $requestedAttachments = $this->getRequestedAttachments($file);
+            $this->workspaceDAO->updateUnitDefsAttachments($this->workspaceId, $file->getId(), $requestedAttachments);
+        }
+
         $this->workspaceDAO->storeFileMeta($this->getId(), $file);
 
         return $stats;
@@ -524,5 +533,18 @@ class Workspace {
             throw new HttpError("File of package `$packageName` not found: `$resourceName` ($path)");
         }
         return $path;
+    }
+
+
+    public function getRequestedAttachments(XMLFileBooklet $booklet): array {
+
+        $requestedAttachments = [];
+        foreach ($booklet->getUnitIds(false) as $uniId) {
+
+            $unit = $this->findFileById('Unit', $uniId);
+            /* @var $unit XMLFileUnit */
+            $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
+        }
+        return $requestedAttachments;
     }
 }

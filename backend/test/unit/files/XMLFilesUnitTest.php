@@ -14,6 +14,7 @@ class XMLFilesUnitTest extends TestCase {
 
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
         require_once "src/data-collection/ValidationReportEntry.class.php";
+        require_once "src/data-collection/RequestedAttachment.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileUnit.class.php";

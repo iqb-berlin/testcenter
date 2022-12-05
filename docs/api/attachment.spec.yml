@@ -1,0 +1,321 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+  /attachment/{attachment_id}/file:
+    post:
+      summary: upload a new attachment-file
+      description: "Upload a new attachment-file"
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+          schema:
+            type: string
+        - in: path
+          name: attachment_id
+          description: id of the attachment_id
+          example: 1:UNIT.SAMPLE:v2
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: image
+                attachment:
+                  type: string
+                  example: (image)
+              required:
+                - type
+                - attachment
+      responses:
+        "201":
+          description: OK, image was uploaded
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /attachment/{attachment_id}/file/{attachment_file_id}:
+    get:
+      summary: get an attachment-file
+      description: "Returns an attachment-file by its AttachmentId and FileId"
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+        - in: path
+          name: attachment_id
+          description: id of the attachment_id
+          example: 1:UNIT.SAMPLE:v2
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: attachment_file_id
+          example: image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The image file
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+    delete:
+      summary: delete an attachment-file
+      description: "Deletes an attachment-file by its AttachmentId and FileId"
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+        - in: path
+          name: attachment_id
+          description: id of the attachment_id
+          example: 1:UNIT.SAMPLE:v2
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: attachment_file_id
+          example: image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+            description: OK File deleted
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /attachments/list:
+    get:
+      summary: list attachments
+      description: "Lists all (requested) attachments of a given group."
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+      responses:
+        "200":
+          description: a list of all (requested) attachments in this group.
+          content:
+            application/json:
+              example:
+                [
+                  {
+                    "attachmentId": "1:UNIT.SAMPLE:v2",
+                    "attachmentType": "capture-image",
+                    "dataType": "image",
+                    "attachmentFileIds": [
+                      "image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png"
+                    ],
+                    "lastModified": 1627545600000,
+                    "testLabel": "sample_booklet_label",
+                    "unitLabel": "UNIT.SAMPLE",
+                    "personLabel": "Primary Sample Group/test/xxx",
+                    "variableId": "v2"
+                  },
+                  {
+                    "attachmentId": "2:UNIT.SAMPLE:v2",
+                    "attachmentType": "capture-image",
+                    "dataType": "missing",
+                    "attachmentFileIds": [ ],
+                    "lastModified": null,
+                    "testLabel": "a locked test",
+                    "unitLabel": "UNIT.SAMPLE",
+                    "personLabel": "Primary Sample Group/test/xxx",
+                    "variableId": "v2"
+                  }
+                ]
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /attachment/{attachment_id}/data:
+    get:
+      summary: get attachment metadata
+      description: "Returns all meta-data to a given attachment"
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+        - in: path
+          name: attachment_id
+          description: id of the attachment_id
+          example: 1:UNIT.SAMPLE:v2
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Attachment data
+          content:
+            application/json:
+              example:
+                {
+                  "attachmentId": "1:UNIT.SAMPLE:v2",
+                  "attachmentType": "capture-image",
+                  "dataType": "image",
+                  "attachmentFileIds": [
+                    "image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png"
+                  ],
+                  "lastModified": 1627545600000,
+                  "testLabel": "sample_booklet_label",
+                  "unitLabel": "UNIT.SAMPLE",
+                  "personLabel": "Primary Sample Group/test/xxx",
+                  "variableId": "v2"
+                }
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /attachment/{attachment_id}/page:
+    get:
+      summary: get attachment template page
+      description: "Returns the template page of a specific (scan-page-)attachment."
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+        - in: path
+          name: attachment_id
+          description: id of the attachment_id
+          example: 1:UNIT.SAMPLE:v2
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: labelTemplate
+          schema:
+            type: string
+          example: "%TESTTAKER% @ %BOOKLET%, in unit '%UNIT%' (variable: %VAR%)"
+          description: A Template for the header of the page. You can use the following template strings
+            * '%GROUP%'
+            * '%TESTTAKER%'
+            * '%BOOKLET%'
+            * '%UNIT%'
+            * '%VAR%'
+            * '%LOGIN%'
+            * '%CODE%'
+      responses:
+        "200":
+          description: A PDF containing the page-templates for the given attachment. Note- This can be created, even 
+            if the attachment-type is different than scan-attachment although it doesn't make much sense.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /attachments/pages:
+    get:
+      summary: get all attachment template page
+      description: "Returns template page of all (scan-page-)attachments of the group."
+      tags:
+        - run attachment-manager
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "m:user000000000.0000000000"
+        - in: query
+          name: labelTemplate
+          schema:
+            type: string
+          example: "%TESTTAKER% @ %BOOKLET%, in unit '%UNIT%' (variable: %VAR%)"
+          description: A Template for the header of the page. You can use the following template strings 
+            * '%GROUP%'
+            * '%TESTTAKER%'
+            * '%BOOKLET%'
+            * '%UNIT%'
+            * '%VAR%'
+            * '%LOGIN%'
+            * '%CODE%'
+      responses:
+        "200":
+          description: A PDF containing all page-templates for all requested scan-image-attachments in the given group
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+

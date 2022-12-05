@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="backend:api-test" type="js.build_tools.npm" folderName="Run Locally (NPM)" nameIsGenerated="true">
+  <configuration default="false" name="Backend/Api-Test" type="js.build_tools.npm" folderName="Run Locally (NPM)">
     <package-json value="$PROJECT_DIR$/package.json" />
     <command value="run" />
     <scripts>

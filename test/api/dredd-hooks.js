@@ -32,6 +32,9 @@ const changeAuthToken = (transaction, newAuthTokenData) => {
     case 'g':
       authToken = newAuthTokenData.groupMonitorToken;
       break;
+    case 'm':
+      authToken = newAuthTokenData.groupMonitorToken;
+      break;
     default:
   }
 
@@ -225,6 +228,19 @@ dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get repo
 
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', (transaction, done) => {
   transaction.expected.body = `\uFEFF${transaction.expected.body}`;
+  done();
+});
+
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', async (transaction, done) => {
+  try {
+    const form = new Multipart();
+    form.append('attachment', Readable.from(['image data']), { filename: 'image.png' });
+    form.append('type', 'image');
+    transaction.request.body = await streamToString(form.stream());
+    transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
+  } catch (e) {
+    transaction.fail = e;
+  }
   done();
 });
 

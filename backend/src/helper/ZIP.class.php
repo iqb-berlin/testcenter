@@ -34,6 +34,19 @@ class ZIP {
         }
     }
 
+
+    static function create(string $fileName): ZipArchive {
+
+        $zip = new ZipArchive;
+        $res = $zip->open($fileName, ZipArchive::CREATE);
+        if ($res === TRUE) {
+            return $zip;
+        }
+        $error = ZIP::getErrorMessageText($res);
+        throw new Exception("Could not create ZIP: `$error`");
+    }
+
+
     static private function getErrorMessageText(int $errorCode): string {
 
         return match ($errorCode) {
