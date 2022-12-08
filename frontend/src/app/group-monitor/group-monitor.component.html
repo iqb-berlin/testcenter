@@ -1,8 +1,5 @@
 <div class="page-header">
-  <p>
-    {{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} -
-    <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
-  </p>
+  <p>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} - {{groupLabel}}</p>
   <span class="fill-remaining-space"></span>
   <p>
     <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">

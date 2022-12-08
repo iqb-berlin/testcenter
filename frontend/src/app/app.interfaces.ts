@@ -1,6 +1,6 @@
 export type AuthFlagType = 'codeRequired';
 
-export type AuthAccessKeyType =
+export type AuthAccessType =
   | 'workspaceAdmin'
   | 'superAdmin'
   | 'test'
@@ -8,13 +8,15 @@ export type AuthAccessKeyType =
   | 'testGroupMonitor'
   | 'attachmentManager';
 
-export type AccessObjectFlags = 'locked' | 'running';
-
 export interface AccessObject {
   label: string;
   id: string;
   type: string;
-  flags: { [key in AccessObjectFlags]: string | boolean };
+  flags: {
+    locked?: boolean;
+    running?: boolean;
+    mode: 'RW' | 'RO'
+  };
 }
 
 export interface AuthData {
@@ -22,13 +24,7 @@ export interface AuthData {
   displayName: string;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
-  access: { [key in AuthAccessKeyType]: AccessObject[] };
-}
-
-export interface WorkspaceData {
-  id: string;
-  name: string;
-  role: 'RW' | 'RO' | 'n.d.';
+  access: { [key in AuthAccessType]: AccessObject[] };
 }
 
 export interface KeyValuePairs {

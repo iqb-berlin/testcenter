@@ -1,8 +1,5 @@
 <div class="page-header">
-  <p>
-    {{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} -
-    <span *ngIf="ownGroup$ | async as ownGroup">{{ownGroup.label}}</span>
-  </p>
+  <p>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} - {{groupLabel}}</p>
 </div>
 
 <div class="page-body">

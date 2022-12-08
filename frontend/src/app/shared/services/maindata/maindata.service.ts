@@ -3,7 +3,9 @@ import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
 import { CustomtextService } from '../customtext/customtext.service';
-import { AppError, AuthData } from '../../../app.interfaces';
+import {
+  AccessObject, AppError, AuthAccessType, AuthData
+} from '../../../app.interfaces';
 import { AppConfig } from '../../classes/app.config';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
@@ -38,6 +40,10 @@ export class MainDataService {
     } catch (e) {
       return null;
     }
+  }
+
+  getAccessObject(type: AuthAccessType, id: string): AccessObject {
+    return this.getAuthData().access[type].find(accessObject => accessObject.id === id);
   }
 
   constructor(
