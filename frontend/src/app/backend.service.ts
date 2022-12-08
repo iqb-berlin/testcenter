@@ -3,12 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import {
-  SysCheckInfo,
-  AuthData,
-  WorkspaceData,
-  BookletData, ApiError
-} from './app.interfaces';
+import { SysCheckInfo, AuthData, ApiError } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
 @Injectable({
@@ -51,19 +46,6 @@ export class BackendService {
           return of(err.code);
         })
       );
-  }
-
-  getWorkspaceData(workspaceId: string): Observable<WorkspaceData> {
-    return this.http
-      .get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`)
-      .pipe(catchError(() => {
-        console.warn(`get workspace data failed for ${workspaceId}`);
-        return of(<WorkspaceData>{
-          id: workspaceId,
-          name: workspaceId,
-          role: 'n.d.'
-        });
-      }));
   }
 
   getSessionData(): Observable<AuthData | number> {

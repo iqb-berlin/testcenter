@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BackendService } from '../../backend.service';
-import { AccessObject, AuthAccessKeyType } from '../../app.interfaces';
+import { AccessObject } from '../../app.interfaces';
 import { MainDataService } from '../../shared/shared.module';
 
 @Component({
@@ -33,8 +33,8 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.workspaces = authDataUntyped.access[AuthAccessKeyType.WORKSPACE_ADMIN];
-        this.isSuperAdmin = typeof authDataUntyped.access[AuthAccessKeyType.SUPER_ADMIN] !== 'undefined';
+        this.workspaces = authDataUntyped.access.workspaceAdmin;
+        this.isSuperAdmin = typeof authDataUntyped.access.superAdmin !== 'undefined';
 
         this.mainDataService.stopLoadingAnimation();
       });

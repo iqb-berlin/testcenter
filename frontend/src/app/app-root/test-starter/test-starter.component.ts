@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { BackendService } from '../../backend.service';
 import { MainDataService } from '../../shared/shared.module';
-import { AccessObject, AuthAccessKeyType, AuthData } from '../../app.interfaces';
+import { AccessObject, AuthData } from '../../app.interfaces';
 
 @Component({
   templateUrl: './test-starter.component.html',
@@ -37,7 +37,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
         this.mds.setAuthData();
         this.mds.stopLoadingAnimation();
       }
-      this.booklets = authData.access[AuthAccessKeyType.TEST];
+      this.booklets = authData.access.test;
       this.mds.setAuthData(authData);
       this.mds.stopLoadingAnimation();
     });

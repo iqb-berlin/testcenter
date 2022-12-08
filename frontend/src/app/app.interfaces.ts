@@ -1,16 +1,12 @@
-export enum AuthFlagType {
-  CODE_REQUIRED = 'codeRequired',
-  PENDING = 'pending'
-}
+export type AuthFlagType = 'codeRequired';
 
-export enum AuthAccessKeyType {
-  WORKSPACE_ADMIN = 'workspaceAdmin',
-  SUPER_ADMIN = 'superAdmin',
-  TEST = 'test',
-  WORKSPACE_MONITOR = 'workspaceMonitor',
-  TEST_GROUP_MONITOR = 'testGroupMonitor',
-  ATTACHMENT_MANAGER = 'attachmentManager'
-}
+export type AuthAccessKeyType =
+  | 'workspaceAdmin'
+  | 'superAdmin'
+  | 'test'
+  | 'workspaceMonitor'
+  | 'testGroupMonitor'
+  | 'attachmentManager';
 
 export type AccessObjectFlags = 'locked' | 'running';
 
@@ -26,21 +22,13 @@ export interface AuthData {
   displayName: string;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
-  access: { [key: string]: AccessObject[] };
+  access: { [key in AuthAccessKeyType]: AccessObject[] };
 }
 
 export interface WorkspaceData {
   id: string;
   name: string;
   role: 'RW' | 'RO' | 'n.d.';
-}
-
-export interface BookletData {
-  id: string;
-  label: string;
-  running: boolean;
-  locked: boolean;
-  xml?: string; // in monitor
 }
 
 export interface KeyValuePairs {

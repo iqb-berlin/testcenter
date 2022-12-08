@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
-import { AccessObject, AuthAccessKeyType, AuthData } from '../../app.interfaces';
+import { AccessObject, AuthData } from '../../app.interfaces';
 
 @Component({
   templateUrl: './monitor-starter.component.html',
@@ -12,7 +12,6 @@ import { AccessObject, AuthAccessKeyType, AuthData } from '../../app.interfaces'
 export class MonitorStarterComponent implements OnInit, OnDestroy {
   accessObjects: { [accessType: string]: AccessObject[] } = {};
   private getMonitorDataSubscription: Subscription | null = null;
-  AuthAccessKeyType = AuthAccessKeyType;
   problemText: string;
 
   constructor(
