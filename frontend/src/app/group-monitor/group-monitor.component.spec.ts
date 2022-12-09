@@ -18,8 +18,7 @@ import { AlertComponent, CustomtextPipe } from '../shared/shared.module';
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
   CheckingOptions, CommandResponse,
-  GroupData, TestSession,
-  TestSessionData, TestSessionSetStats
+  TestSession, TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { BackendService } from './backend.service';
 import { TestSessionComponent } from './test-session/test-session.component';
@@ -42,13 +41,6 @@ class MockMatDialog {
 class MockBackendService {
   observeSessionsMonitor(): Observable<TestSessionData[]> {
     return of([unitTestExampleSessions[0].data]);
-  }
-
-  getGroupData(groupName: string): Observable<GroupData> {
-    return of(<GroupData>{
-      name: groupName,
-      label: `Label of: ${groupName}`
-    });
   }
 
   cutConnection(): void {}

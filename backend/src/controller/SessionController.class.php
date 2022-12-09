@@ -26,11 +26,13 @@ class SessionController extends Controller {
 
         $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
 
-        $accessSet = self::adminDAO()->getAdminAccessSet($token);
+        $admin = self::adminDAO()->getAdmin($token);
+        $workspaces = self::adminDAO()->getWorkspaces($token);
+        $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
 
         self::adminDAO()->refreshAdminToken($token);
 
-        if (!$accessSet->hasAccess('workspaceAdmin') and !$accessSet->hasAccess('superAdmin')) {
+        if (!$accessSet->hasAccessType('workspaceAdmin') and !$accessSet->hasAccessType('superAdmin')) {
 
             throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
         }
@@ -57,22 +59,20 @@ class SessionController extends Controller {
 
             $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
             $personSession = self::sessionDAO()->renewPersonToken($personSession);
-            $accessObject = AccessSet::createFromPersonSession($personSession);
+            $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+            $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
 
             if ($loginSession->getLogin()->getMode() == 'monitor-group') {
 
                 self::registerGroup($loginSession);
-
-                $booklets = $loginSession->getLogin()->getBooklets()[''];
-                $accessObject->addAccessObjects('test', ...$booklets);
             }
 
         } else {
 
-            $accessObject = AccessSet::createFromLoginSession($loginSession);
+            $accessSet = AccessSet::createFromLoginSession($loginSession);
         }
 
-        return $response->withJson($accessObject);
+        return $response->withJson($accessSet);
     }
 
 
@@ -87,7 +87,8 @@ class SessionController extends Controller {
         $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
         $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
         $personSession = self::sessionDAO()->renewPersonToken($personSession);
-        return $response->withJson(AccessSet::createFromPersonSession($personSession));
+        $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+        return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
     }
 
 
@@ -165,20 +166,16 @@ class SessionController extends Controller {
         if ($authToken->getType() == "person") {
 
             $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
-            $accessSet = AccessSet::createFromPersonSession($personSession);
-
-            if ($authToken->getMode() == 'monitor-group') {
-
-                $booklets = $personSession->getLoginSession()->getLogin()->getBooklets()[''];
-                $accessSet->addAccessObjects('test', ...$booklets);
-            }
-
+            $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+            $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
             return $response->withJson($accessSet);
         }
 
         if ($authToken->getType() == "admin") {
 
-            $accessSet = self::adminDAO()->getAdminAccessSet($authToken->getToken());
+            $admin = self::adminDAO()->getAdmin($authToken->getToken());
+            $workspaces = self::adminDAO()->getWorkspaces($authToken->getToken());
+            $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
             self::adminDAO()->refreshAdminToken($authToken->getToken());
             return $response->withJson($accessSet);
         }

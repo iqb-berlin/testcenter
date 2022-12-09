@@ -7,25 +7,27 @@
         <p *ngIf="workspaces.length === 0">
           Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
         </p>
-        <button mat-raised-button color="primary"
-                (click)="buttonGotoWorkspaceAdmin(ws)"
-                [attr.data-cy]="'workspace-' + ws.id"
-                *ngFor="let ws of workspaces">
-          {{ws.name}}
+        <button
+          mat-raised-button color="primary"
+          (click)="buttonGotoWorkspaceAdmin(ws)"
+          [attr.data-cy]="'workspace-' + ws.id"
+          *ngFor="let ws of workspaces"
+        >
+          {{ws.label}}
         </button>
       </div>
     </mat-card-content>
     <mat-card-actions>
       <button
         mat-raised-button
-        color="foreground"
+        color="primary"
         *ngIf="isSuperAdmin"
         [routerLink]="['/superadmin']"
         data-cy='goto-superadmin'
       >
         Systemverwaltung
       </button>
-      <button mat-raised-button data-cy="logout" color="foreground" (click)="resetLogin()" data-cy='logout'>
+      <button mat-raised-button data-cy="logout" (click)="resetLogin()">
         Neu anmelden
       </button>
     </mat-card-actions>

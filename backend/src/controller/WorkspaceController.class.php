@@ -14,6 +14,9 @@ use Slim\Psr7\Stream;
 
 class WorkspaceController extends Controller {
 
+    /**
+     * @deprecated
+     */
     public static function get(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');

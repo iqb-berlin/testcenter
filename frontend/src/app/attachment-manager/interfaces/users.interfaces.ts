@@ -1,8 +1,3 @@
-export interface GroupData {
-  name: string;
-  label: string;
-}
-
 export type AttachmentType = 'capture-image';
 
 export type AttachmentDataType = 'image' | 'missing';

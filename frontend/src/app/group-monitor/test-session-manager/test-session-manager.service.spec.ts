@@ -4,10 +4,8 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
-  Booklet,
-  BookletError, CommandResponse,
-  GroupData, Selected, Testlet,
-  TestSessionData, TestSessionFilter, TestSessionSetStats
+  Booklet, BookletError, CommandResponse,
+  Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
 import { BackendService } from '../backend.service';
@@ -35,13 +33,6 @@ class MockBookletService {
 class MockBackendService {
   observeSessionsMonitor(): Observable<TestSessionData[]> {
     return of([...unitTestExampleSessions, ...additionalUnitTestExampleSessions].map(s => s.data));
-  }
-
-  getGroupData(groupName: string): Observable<GroupData> {
-    return of(<GroupData>{
-      name: groupName,
-      label: `Label of: ${groupName}`
-    });
   }
 
   command(keyword: string, args: string[], testIds: number[]): Observable<CommandResponse> {

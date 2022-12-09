@@ -9,7 +9,10 @@ paths:
   /session:
     get:
       summary: get a session
-      description: returns session data according to an authToken.
+      description:
+        Returns session data according to an authToken.
+        ** Note, that it contains the relevant data twice, one time in the deprecated object `access` and one in the new
+        form, `claims`. Don't use `access`, it will be removed.**
       tags:
         - session management
       parameters:
@@ -37,15 +40,39 @@ paths:
                   value:
                     token:  "static:person:sample_group_test_xxx"
                     displayName: "sample_group/test/xxx"
+                    claims:
+                      test:
+                        - label: Reduced Booklet
+                          id: BOOKLET.SAMPLE-2
+                          type: test
+                          flags:
+                            locked: true
+                            running: true
+                        - label: Sample booklet
+                          id: BOOKLET.SAMPLE-1
+                          type: test
+                          flags:
+                            locked: false
+                            running: true
+                        - label: Similar Booklet to Sample 1
+                          id: BOOKLET.SAMPLE-3
+                          type: test
+                          flags:
+                            locked: false
+                            running: false
                     access:
-                      test:  ["BOOKLET.SAMPLE-1"]
+                      test:
+                        - BOOKLET.SAMPLE-1
+                        - BOOKLET.SAMPLE-2
+                        - BOOKLET.SAMPLE-3
                     customTexts: {}
                     flags: []
                 loginToken:
                   value:
                     token: "static:login:test"
                     displayName: "sample_group/test"
-                    access: {}
+                    access:
+                    claims:
                     customTexts: {}
                     flags: ["codeRequired"]
                 adminToken:
@@ -54,6 +81,7 @@ paths:
                     displayName: "super"
                     access:
                       superAdmin: []
+                    claims:
                     customTexts: {}
                     flags: []
         "401":
@@ -124,7 +152,8 @@ paths:
                 token:  "static_login_sample_login"
                 displayName: "sample_group/test"
                 access: {}
-                customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
+                claims: {}
+                customTexts: {}
                 flags: ['codeRequired']
         "400":
           description: Insufficent Crendetials
@@ -171,7 +200,15 @@ paths:
                 displayName: "sample_group/test/xxx"
                 access:
                   test:
-                    - ["BOOKLET.SAMPLE-1"]
+                    - BOOKLET.SAMPLE-1
+                claims:
+                  test:
+                    - id: BOOKLET.SAMPLE-1
+                      label: a sample booklet
+                      type: test
+                      flags:
+                        running: false
+                        locked: true
                 customTexts: {} # due to https://github.com/iqb-berlin/testcenter-iqb-php/issues/53 get customTexts
                 flags: []
         "400":

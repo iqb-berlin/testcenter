@@ -2,10 +2,8 @@ import {
   Component, OnDestroy, OnInit
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-import { BackendService } from '../../services/backend/backend.service';
+import { Subscription } from 'rxjs';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
-import { GroupData } from '../../../group-monitor/group-monitor.interfaces';
 
 @Component({
   selector: 'app-attachment-manager',
@@ -13,20 +11,19 @@ import { GroupData } from '../../../group-monitor/group-monitor.interfaces';
   styleUrls: ['../../../../monitor-layout.css']
 })
 export class AttachmentManagerComponent implements OnInit, OnDestroy {
-  ownGroup$: Observable<GroupData>;
+  groupLabel: string;
 
   private subscriptions: Subscription[] = [];
 
   constructor(
     public mds: MainDataService,
-    private route: ActivatedRoute,
-    private bs: BackendService
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
       this.route.params.subscribe(params => {
-        this.ownGroup$ = this.bs.getGroupData(params['group-name']);
+        this.groupLabel = this.mds.getAccessObject('testGroupMonitor', params['group-name']).label;
       })
     ];
   }
