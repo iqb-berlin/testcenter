@@ -7,6 +7,10 @@ use PHPUnit\Framework\TestCase;
 use Slim\Exception\HttpUnauthorizedException;
 
 
+require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+require_once "src/data-collection/AccessObject.class.php";
+require_once "src/data-collection/TestData.class.php";
+require_once "src/data-collection/WorkspaceData.class.php";
 require_once "src/controller/Controller.class.php";
 require_once "src/controller/SessionController.class.php";
 
@@ -49,6 +53,7 @@ final class SessionControllerTest extends TestCase {
         require_once "test/unit/test-helper/RequestCreator.class.php";
         require_once "test/unit/test-helper/ResponseCreator.class.php";
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+        require_once "src/data-collection/FileData.class.php";
         require_once "src/data-collection/Login.class.php";
         require_once "src/data-collection/LoginSession.class.php";
         require_once "src/data-collection/AccessSet.class.php";
@@ -56,6 +61,7 @@ final class SessionControllerTest extends TestCase {
         require_once "src/data-collection/Person.class.php";
         require_once "src/data-collection/SessionChangeMessage.class.php";
         require_once "src/data-collection/AuthToken.class.php";
+        require_once "src/data-collection/Admin.class.php";
         require_once "src/controller/Controller.class.php";
         require_once "src/controller/SessionController.class.php";
         require_once "src/files/File.class.php";
@@ -163,7 +169,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"some_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"access":{}}',
+            '{"token":"some_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"claims":{},"access":{}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -228,7 +234,10 @@ final class SessionControllerTest extends TestCase {
             ),
             'renewPersonToken' => function(PersonSession $personSession): PersonSession {
                 return $personSession->withNewToken('new_token');
-            }
+            },
+            'getTestsOfPerson' => [
+                new TestData('THE_BOOKLET', 'Label of THE_BOOKLET', 'Description', true, false)
+            ]
         ]);
 
         $response = SessionController::putSessionLogin(
@@ -239,7 +248,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"new_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":[],"access":{"test":["THE_BOOKLET"]}}',
+            '{"token":"new_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":[],"claims":{"test":[{"label":"Label of THE_BOOKLET","id":"THE_BOOKLET","type":"test","flags":{"locked":true,"running":false}}]},"access":{"test":["THE_BOOKLET"]}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -305,6 +314,14 @@ final class SessionControllerTest extends TestCase {
                 ],
                 'renewPersonToken' => function(PersonSession $personSession): PersonSession {
                     return $personSession->withNewToken('new_token');
+                },
+                'getTestsOfPerson' => function(PersonSession $personSession): array {
+                    return array_map(
+                        function(string $bookletId): TestData {
+                            return new TestData($bookletId, "label of $bookletId", "desc", false, true);
+                        },
+                        $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? '']
+                    );
                 }
             ],
             [
@@ -331,7 +348,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"new_token","displayName":"Sample Group\/test-monitor","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
+            '{"token":"new_token","displayName":"Sample Group\/test-monitor","customTexts":{},"flags":[],"claims":{"test":[{"label":"label of THE_BOOKLET","id":"THE_BOOKLET","type":"test","flags":{"locked":false,"running":true}}],"testGroupMonitor":[{"label":"Sample Group","id":"sample_group","type":"testGroupMonitor","flags":[]}]},"access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
             $response->getBody()->getContents()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -368,7 +385,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"login_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"access":{}}',
+            '{"token":"login_token","displayName":"Sample Group\/sample_user","customTexts":{},"flags":["codeRequired"],"claims":{},"access":{}}',
             $response->getBody()->getContents()
         );
 
@@ -401,7 +418,10 @@ final class SessionControllerTest extends TestCase {
         $personToken = new AuthToken('person_token', 1, 'person', 1, 'run-hot-return', 'sample_group');
 
         $this->mockSessionDAO([
-            'getPersonSessionByToken' => $personSession
+            'getPersonSessionByToken' => $personSession,
+            'getTestsOfPerson' => [
+                new TestData('THE_BOOKLET', 'Label of THE_BOOKLET', 'Description', true, false)
+            ]
         ]);
 
         $response = SessionController::getSession(
@@ -412,7 +432,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"person_token","displayName":"Sample Group\/sample_user\/xxx","customTexts":{},"flags":[],"access":{"test":["THE_BOOKLET"]}}',
+            '{"token":"person_token","displayName":"Sample Group\/sample_user\/xxx","customTexts":{},"flags":[],"claims":{"test":[{"label":"Label of THE_BOOKLET","id":"THE_BOOKLET","type":"test","flags":{"locked":true,"running":false}}]},"access":{"test":["THE_BOOKLET"]}}',
             $response->getBody()->getContents()
         );
     }
@@ -445,7 +465,10 @@ final class SessionControllerTest extends TestCase {
         $personToken = new AuthToken('monitor_token', 2, 'person', 1, 'monitor-group', 'sample_group');
 
         $this->mockSessionDAO([
-            'getPersonSessionByToken' => $personSession
+            'getPersonSessionByToken' => $personSession,
+            'getTestsOfPerson' => [
+                new TestData('THE_BOOKLET', 'Label of THE_BOOKLET', 'Description', true, false)
+            ]
         ]);
 
         $response = SessionController::getSession(
@@ -456,7 +479,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","customTexts":{},"flags":[],"access":{"testGroupMonitor":["sample_group"],"test":["THE_BOOKLET"]}}',
+            '{"token":"monitor_token","displayName":"Sample Group\/sample_monitor","customTexts":{},"flags":[],"claims":{"test":[{"label":"Label of THE_BOOKLET","id":"THE_BOOKLET","type":"test","flags":{"locked":true,"running":false}}],"testGroupMonitor":[{"label":"Sample Group","id":"sample_group","type":"testGroupMonitor","flags":[]}]},"access":{"test":["THE_BOOKLET"],"testGroupMonitor":["sample_group"]}}',
             $response->getBody()->getContents()
         );
     }
@@ -466,12 +489,13 @@ final class SessionControllerTest extends TestCase {
 
         $adminToken = new AuthToken('admin_token', 1, 'admin', -1, 'admin', '[admins]');
 
-        $accessObject = new AccessSet('admin_token', 'Super', []);
-        $accessObject->addAccessObjects("workspaceAdmin", "1");
+//        $accessObject = new AccessSet('admin_token', 'Super', []);
+//        $accessObject->addAccessObjects("workspaceAdmin", "1");
 
         $this->mockAdminDao([
-            'getAdminAccessSet' => $accessObject,
-            'refreshAdminToken' => function(): void {}
+            'refreshAdminToken' => function(): void {},
+            'getAdmin' => new Admin(1, 'super', '', true, 'admin_token'),
+            'getWorkspaces' => [new WorkspaceData(1, 'workspace', 'RW')]
         ]);
 
         $response = SessionController::getSession(
@@ -482,7 +506,7 @@ final class SessionControllerTest extends TestCase {
         $response->getBody()->rewind();
 
         $this->assertEquals(
-            '{"token":"admin_token","displayName":"Super","customTexts":{},"flags":[],"access":{"workspaceAdmin":["1"]}}',
+            '{"token":"admin_token","displayName":"super","customTexts":{},"flags":[],"claims":{"workspaceAdmin":[{"label":"workspace","id":"1","type":"workspaceAdmin","flags":{"mode":"RW"}}],"superAdmin":[]},"access":{"workspaceAdmin":["1"],"superAdmin":[]}}',
             $response->getBody()->getContents()
         );
     }

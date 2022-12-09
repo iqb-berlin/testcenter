@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+require_once "src/data-collection/FileData.class.php";
 require_once "src/files/File.class.php";
 require_once "src/files/XMLFile.class.php";
 require_once "src/files/XMLFileBooklet.class.php";

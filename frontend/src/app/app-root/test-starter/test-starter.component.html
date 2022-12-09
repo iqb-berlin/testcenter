@@ -15,15 +15,15 @@
           (click)="startTest(b)"
           [attr.aria-label]="'Starte Testheft ' + b.label"
           [attr.data-cy]="'booklet-' + b.id"
-          [disabled]="b.locked" *ngFor="let b of booklets"
+          [disabled]="!!b.flags.locked" *ngFor="let b of booklets"
         >
           <div class="booklet_title">{{b.label}}</div>
-          <div class="booklet_status">{{b.locked ? 'gesperrt' : (b.running ? 'Fortsetzen' : 'Starten')}}</div>
+          <div class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Starten')}}</div>
         </a>
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <a mat-raised-button data-cy="logout" color="foreground" (click)="resetLogin()">Neu anmelden</a>
+      <a mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</a>
     </mat-card-actions>
   </mat-card>
 

@@ -8,7 +8,7 @@ class PlayerMeta implements JsonSerializable {
     public string $description = "";
     public string $label = "";
 
-    public function jsonSerialize(): array{
+    public function jsonSerialize(): mixed {
 
         $jsonData = [];
 

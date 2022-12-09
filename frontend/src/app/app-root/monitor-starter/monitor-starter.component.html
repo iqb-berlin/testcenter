@@ -6,7 +6,7 @@
 
         <p *ngIf="problemText" style="color: chocolate"><b>{{ problemText }}</b></p>
 
-        <p *ngIf="!accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR] || accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR].length === 0">
+        <p *ngIf="!accessObjects.testGroupMonitor || accessObjects.testGroupMonitor.length === 0">
           Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
         </p>
 
@@ -14,31 +14,31 @@
           mat-raised-button
           color="primary"
           (click)="buttonGotoMonitor(accessObject)"
-          *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]"
+          *ngFor="let accessObject of accessObjects.testGroupMonitor"
         >
-          <span class="booklet_title">{{accessObject.name}}</span>
+          <span class="booklet_title">{{accessObject.label}}</span>
           <span class="booklet_status">Überwachung starten</span>
         </button>
 
-        <ng-container *ngIf="accessObjects[AuthAccessKeyType.ATTACHMENT_MANAGER] && accessObjects[AuthAccessKeyType.ATTACHMENT_MANAGER].length">
+        <ng-container *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">
           <h4>Aufgaben-Anhänge Verwalten</h4>
           <button
             mat-raised-button
             color="primary"
             (click)="buttonGotoAttachmentManager(accessObject)"
-            *ngFor="let accessObject of accessObjects[AuthAccessKeyType.ATTACHMENT_MANAGER]"
+            *ngFor="let accessObject of accessObjects.attachmentManager"
           >
-            <span class="booklet_title">{{accessObject.name}}</span>
+            <span class="booklet_title">{{accessObject.label}}</span>
             <span class="booklet_status">Anhänge Verwalten</span>
           </button>
         </ng-container>
 
         <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
 
-        <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="b.locked"
-                *ngFor="let b of accessObjects[AuthAccessKeyType.TEST]">
+        <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="!!b.flags.locked"
+                *ngFor="let b of accessObjects.test">
           <span class="booklet_title">{{b.label}}</span>
-          <span class="booklet_status">{{b.locked ? 'gesperrt' : (b.running ? 'Fortsetzen' : 'Ansehen')}}</span>
+          <span class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Ansehen')}}</span>
         </button>
       </div>
     </mat-card-content>

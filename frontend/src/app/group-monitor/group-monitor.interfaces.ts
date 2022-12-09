@@ -71,11 +71,6 @@ export interface Restrictions {
   };
 }
 
-export interface GroupData {
-  name: string;
-  label: string;
-}
-
 export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
 
 export interface TestSessionFilter {

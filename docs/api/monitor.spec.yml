@@ -8,6 +8,7 @@ paths:
 
   /monitor/group/{group_name}:
     get:
+      deprecated: true
       summary: get a group
       description: "Retrieves Information about a (testtakers-)group. It has to be in the same workspace as the
        requesting user, who has to have in mode `monitor-group`."
