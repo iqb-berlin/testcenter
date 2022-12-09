@@ -590,25 +590,27 @@ class SessionDAO extends DAO {
 
         $bookletIds = $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? ''];
         $placeHolder = implode(', ', array_fill(0, count($bookletIds), '?'));
-        $tests = $this->_(
-            "select
-                    t.locked,
-                    t.running,
+        $tests = $this->_("
+                select
+                    tests.person_id,
+                    tests.id,
+                    tests.locked,
+                    tests.running,
                     files.name,
                     files.id as bookletId,
                     files.label as testLabel,
-                    description
+                    files.description
                 from files
-                     left outer join tests t on files.id = t.name
+                    left outer join tests on files.id = tests.name and tests.person_id = ?
                 where
-                    workspace_id = ?
-                    and (t.person_id is null or t.person_id = ?)
+                    files.workspace_id = ?
+                    and files.type = 'Booklet'
                     and files.id in ($placeHolder)
                 order by
                     files.label",
                 [
-                    $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
                     $personSession->getLoginSession()->getId(),
+                    $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
                     ...$bookletIds
                 ],
             true

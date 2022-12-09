@@ -164,6 +164,7 @@ class AccessSet extends DataCollectionTypeSafe {
     private function addTests(PersonSession $personSession): void {
 
         $workspaceDAO = new SessionDAO();
+        $testsOfPerson = $workspaceDAO->getTestsOfPerson($personSession);
         $bookletsData = array_map(
             function (TestData $testData): AccessObject {
                 return new AccessObject(
@@ -176,7 +177,7 @@ class AccessSet extends DataCollectionTypeSafe {
                     ]
                 );
             },
-            $workspaceDAO->getTestsOfPerson($personSession)
+            $testsOfPerson
         );
         $this->addAccessObjects('test', ...$bookletsData);
     }
