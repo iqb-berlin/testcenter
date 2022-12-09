@@ -170,7 +170,7 @@ describe('Superadmin', () => {
       .click();
     cy.contains('Verwaltung von Testinhalten')
       .should('exist');
-    cy.contains('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen')
+    cy.contains('Verwaltung von Benutzerrechten und von grundsätzlichen Systemeinstellungen')
       .should('exist');
   });
 

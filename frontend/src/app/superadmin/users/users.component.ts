@@ -84,7 +84,7 @@ export class UsersComponent implements OnInit {
           )
             .pipe(catchError((err: ApiError) => {
               this.snackBar.open(
-                `Konnte Benutzer nicht hinzufügen: ${err.code} ${err.info} `,
+                `Konnte Administrator:in nicht hinzufügen: ${err.code} ${err.info} `,
                 'Fehler',
                 { duration: 5000 }
               );
@@ -92,7 +92,7 @@ export class UsersComponent implements OnInit {
             })).subscribe(
               respOk => {
                 if (respOk !== false) {
-                  this.snackBar.open('Benutzer hinzugefügt', '', { duration: 1000 });
+                  this.snackBar.open('Administrator:in hinzugefügt', '', { duration: 1000 });
                   this.updateObjectList();
                 } else {
                   this.mds.stopLoadingAnimation();
@@ -114,7 +114,7 @@ export class UsersComponent implements OnInit {
         width: '400px',
         data: <MessageDialogData>{
           title: 'Superadmin-Status ändern',
-          content: 'Bitte markieren Sie erst einen Benutzer!',
+          content: 'Bitte markieren Sie erst eine Administrator:in!',
           type: MessageType.error
         }
       });
@@ -187,7 +187,7 @@ export class UsersComponent implements OnInit {
         width: '400px',
         data: <MessageDialogData>{
           title: 'Kennwort ändern',
-          content: 'Bitte markieren Sie erst einen Benutzer!',
+          content: 'Bitte markieren Sie erst eine Administrator:in!',
           type: MessageType.error
         }
       });
@@ -236,24 +236,24 @@ export class UsersComponent implements OnInit {
 
         width: '400px',
         data: <MessageDialogData>{
-          title: 'Löschen von Nutzern',
-          content: 'Bitte markieren Sie erst Benutzer!',
+          title: 'Löschen von Administrator:innen',
+          content: 'Bitte markieren Sie erst eine Administrator:in!',
           type: MessageType.error
         }
       });
     } else {
       let prompt;
       if (selectedRows.length > 1) {
-        prompt = `Sollen ${selectedRows.length} Benutzer gelöscht werden?`;
+        prompt = `Sollen ${selectedRows.length} Administrator:innen gelöscht werden?`;
       } else {
-        prompt = `Soll Benutzer "${selectedRows[0].name}" gelöscht werden?`;
+        prompt = `Soll Administrator:in "${selectedRows[0].name}" gelöscht werden?`;
       }
       const dialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
         width: '400px',
         data: <ConfirmDialogData>{
-          title: 'Löschen von Nutzern',
+          title: 'Löschen von Administrator:innen',
           content: prompt,
-          confirmbuttonlabel: 'Benutzer löschen',
+          confirmbuttonlabel: 'Administrator:in löschen',
           showcancel: true
         }
       });
@@ -266,11 +266,11 @@ export class UsersComponent implements OnInit {
           this.bs.deleteUsers(usersToDelete).subscribe(
             respOk => {
               if (respOk !== false) {
-                this.snackBar.open('Benutzer gelöscht', '', { duration: 1000 });
+                this.snackBar.open('Administrator:in gelöscht', '', { duration: 1000 });
                 this.updateObjectList();
               } else {
                 this.mds.stopLoadingAnimation();
-                this.snackBar.open('Konnte Benutzer nicht löschen', 'Fehler', { duration: 2000 });
+                this.snackBar.open('Konnte Administrator:in nicht löschen', 'Fehler', { duration: 2000 });
               }
             }
           );
