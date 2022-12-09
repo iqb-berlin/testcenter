@@ -26,7 +26,9 @@ class SessionController extends Controller {
 
         $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
 
-        $accessSet = AccessSet::createFromAdminToken($token);
+        $admin = self::adminDAO()->getAdmin($token);
+        $workspaces = self::adminDAO()->getWorkspaces($token);
+        $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
 
         self::adminDAO()->refreshAdminToken($token);
 
@@ -57,7 +59,8 @@ class SessionController extends Controller {
 
             $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
             $personSession = self::sessionDAO()->renewPersonToken($personSession);
-            $accessSet = AccessSet::createFromPersonSession($personSession);
+            $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+            $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
 
             if ($loginSession->getLogin()->getMode() == 'monitor-group') {
 
@@ -84,7 +87,8 @@ class SessionController extends Controller {
         $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
         $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
         $personSession = self::sessionDAO()->renewPersonToken($personSession);
-        return $response->withJson(AccessSet::createFromPersonSession($personSession));
+        $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+        return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
     }
 
 
@@ -162,13 +166,16 @@ class SessionController extends Controller {
         if ($authToken->getType() == "person") {
 
             $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
-            $accessSet = AccessSet::createFromPersonSession($personSession);
+            $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+            $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
             return $response->withJson($accessSet);
         }
 
         if ($authToken->getType() == "admin") {
 
-            $accessSet = AccessSet::createFromAdminToken($authToken->getToken());
+            $admin = self::adminDAO()->getAdmin($authToken->getToken());
+            $workspaces = self::adminDAO()->getWorkspaces($authToken->getToken());
+            $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
             self::adminDAO()->refreshAdminToken($authToken->getToken());
             return $response->withJson($accessSet);
         }

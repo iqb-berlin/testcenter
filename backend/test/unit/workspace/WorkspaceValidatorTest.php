@@ -40,6 +40,7 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/helper/FileTime.class.php";
         require_once "src/helper/FileExt.class.php";
+        require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileSysCheck.class.php";

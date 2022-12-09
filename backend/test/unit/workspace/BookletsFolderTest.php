@@ -28,6 +28,7 @@ class BookletsFolderTest extends TestCase {
         require_once "src/exception/HttpError.class.php";
         require_once "src/workspace/Workspace.class.php";
         require_once "src/workspace/BookletsFolder.class.php";
+        require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileTesttakers.class.php";

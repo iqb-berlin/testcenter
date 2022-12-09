@@ -89,31 +89,34 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function getAdmin(string $token): array {
+	public function getAdmin(string $token): Admin {
 
-		$tokenInfo = $this->_(
+		$admin = $this->_(
 			'SELECT
-                users.id as "userId",
+                users.id,
                 users.name,
-                users.email as "userEmail",
-                users.is_superadmin as "isSuperadmin",
-                admin_sessions.valid_until as "_validTo",
-                admin_sessions.token as "adminToken"
+                users.email,
+                users.is_superadmin,
+                admin_sessions.valid_until
             FROM users
 			INNER JOIN admin_sessions ON users.id = admin_sessions.user_id
 			WHERE admin_sessions.token=:token',
 			[':token' => $token]
 		);
 
-		if (!$tokenInfo) {
+		if (!$admin) {
             throw new HttpError("Token not valid! ($token)", 403);
         }
 
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($tokenInfo['_validTo']));
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($admin['valid_until']));
 
-        $tokenInfo['userEmail'] = $tokenInfo['userEmail'] ?? '';
-
-        return $tokenInfo;
+        return new Admin(
+            $admin['id'],
+            $admin['name'],
+            $admin['email'] ?? '',
+            !!$admin['is_superadmin'],
+            $token
+        );
 	}
 
 
@@ -131,14 +134,25 @@ class AdminDAO extends DAO {
 
 	public function getWorkspaces(string $token): array {
 
-        return $this->_(
-            'SELECT workspaces.id, workspaces.name, workspace_users.role FROM workspaces
-                INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
-                INNER JOIN users ON workspace_users.user_id = users.id
-                INNER JOIN admin_sessions ON  users.id = admin_sessions.user_id
-                WHERE admin_sessions.token =:token',
+        $workspaces =  $this->_(
+        'select
+                workspaces.id,
+                workspaces.name,
+                workspace_users.role
+            from workspaces
+                inner join workspace_users on workspaces.id = workspace_users.workspace_id
+                inner join users on workspace_users.user_id = users.id
+                inner join admin_sessions on  users.id = admin_sessions.user_id
+            where
+                admin_sessions.token =:token',
             [':token' => $token],
             true
+        );
+        return array_map(
+            function(array $ws): WorkspaceData {
+                return new WorkspaceData($ws['id'], $ws['name'], $ws['role']);
+            },
+            $workspaces
         );
 	}
 

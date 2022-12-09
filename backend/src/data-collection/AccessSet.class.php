@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+// TODO add unit-tests
 
 class AccessSet extends DataCollectionTypeSafe {
 
@@ -19,8 +20,7 @@ class AccessSet extends DataCollectionTypeSafe {
     protected object $claims;
 
 
-    // TODO add unit-test
-    static function createFromPersonSession(PersonSession $loginWithPerson): AccessSet {
+    static function createFromPersonSession(PersonSession $loginWithPerson, TestData ...$tests): AccessSet {
 
         $login = $loginWithPerson->getLoginSession()->getLogin();
 
@@ -37,7 +37,7 @@ class AccessSet extends DataCollectionTypeSafe {
             $login->getCustomTexts() ?? new stdClass()
         );
 
-        $accessSet->addTests($loginWithPerson);
+        $accessSet->addTests(...$tests);
 
         if ($login->getMode() == "monitor-group") {
             if (str_starts_with($login->getGroupName(), 'experimental')) {
@@ -64,31 +64,28 @@ class AccessSet extends DataCollectionTypeSafe {
     }
 
 
-    static function createFromAdminToken(string $adminToken): AccessSet {
-
-        $adminDAO = new AdminDAO();
-        $admin = $adminDAO->getAdmin($adminToken);
+    static function createFromAdminToken(Admin $admin, WorkspaceData ...$workspaces): AccessSet {
 
         $accessSet = new AccessSet(
-            $adminToken,
-            $admin['name']
+            $admin->getToken(),
+            $admin->getName()
         );
 
         $accessObjects = array_map(
-            function($workspace): AccessObject {
+            function(WorkspaceData $workspace): AccessObject {
                 return new AccessObject(
-                    (string) $workspace['id'],
+                    (string) $workspace->getId(),
                     'workspaceAdmin',
-                    (string) $workspace['name'],
-                    [ "mode" => $workspace["role"]]
+                    $workspace->getName(),
+                    [ "mode" => $workspace->getMode()]
                 );
             },
-            $adminDAO->getWorkspaces($adminToken)
+            $workspaces
         );
 
         $accessSet->addAccessObjects('workspaceAdmin', ...$accessObjects);
 
-        if ($admin["isSuperadmin"]) {
+        if ($admin->isSuperadmin()) {
             $accessSet->addAccessObjects('superAdmin');
         }
 
@@ -169,10 +166,8 @@ class AccessSet extends DataCollectionTypeSafe {
     }
 
 
-    private function addTests(PersonSession $personSession): void {
+    private function addTests(TestData ...$testsOfPerson): void {
 
-        $workspaceDAO = new SessionDAO();
-        $testsOfPerson = $workspaceDAO->getTestsOfPerson($personSession);
         $bookletsData = array_map(
             function (TestData $testData): AccessObject {
                 return new AccessObject(
