@@ -72,7 +72,7 @@ class SessionTest extends TestCase {
     }
 
 
-    function test_hasAccess() {
+    function test_hasAccessType() {
 
         $session = new AccessSet(
             "token-string",
@@ -82,12 +82,8 @@ class SessionTest extends TestCase {
         $session->addAccessObjects("test", "1", "2", "3");
         $session->addAccessObjects("superAdmin");
 
-        $this->assertEquals(true, $session->hasAccess("test"));
-        $this->assertEquals(true, $session->hasAccess("superAdmin"));
-        $this->assertEquals(false, $session->hasAccess("workspaceAdmin"));
-        $this->assertEquals(true, $session->hasAccess("test", 1));
-        $this->assertEquals(false, $session->hasAccess("test", 5));
-        $this->assertEquals(false, $session->hasAccess("superAdmin", 1));
-        $this->assertEquals(false, $session->hasAccess("workspaceAdmin", 1));
+        $this->assertEquals(true, $session->hasAccessType("test"));
+        $this->assertEquals(true, $session->hasAccessType("superAdmin"));
+        $this->assertEquals(false, $session->hasAccessType("workspaceAdmin"));
     }
 }

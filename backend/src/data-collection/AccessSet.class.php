@@ -16,7 +16,7 @@ class AccessSet extends DataCollectionTypeSafe {
     protected string $displayName;
     protected object $customTexts;
     protected array $flags;
-    protected array $claims;
+    protected object $claims;
 
 
     // TODO add unit-test
@@ -120,7 +120,7 @@ class AccessSet extends DataCollectionTypeSafe {
             return (string) $flag;
         }, $flags);
 
-        $this->claims = [];
+        $this->claims = (object) [];
 
         $this->customTexts = $customTexts ?? (object) [];
     }
@@ -152,30 +152,20 @@ class AccessSet extends DataCollectionTypeSafe {
     }
 
 
-    public function hasAccess(string $type, string $id = null): bool {
+    public function hasAccessType(string $type): bool {
 
-        if (!$id) {
-            return isset($this->claims[$type]);
-        }
-
-        if (!isset($this->claims[$type])) {
-            return false;
-        }
-
-        return in_array($id, $this->claims[$type]);
+        return isset($this->claims->$type);
     }
 
 
-    private function addAccessObjects(string $type, AccessObject ...$accessObjects): AccessSet {
+    private function addAccessObjects(string $type, AccessObject ...$accessObjects) {
 
         if (!in_array($type, $this::$accessObjectTypes)) {
 
             throw new Exception("AccessObject type `$type` is not valid.");
         }
 
-        $this->claims[$type] = $accessObjects;
-
-        return $this;
+        $this->claims->$type = $accessObjects;
     }
 
 

@@ -481,6 +481,7 @@ paths:
 
   /workspace/{ws_id}:
     get:
+      deprecated: true
       summary: get workspace
       description: returns basic information about a workspace
       tags:

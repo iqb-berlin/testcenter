@@ -11,6 +11,9 @@ use Slim\Http\Response;
 
 class MonitorController extends Controller {
 
+    /**
+     * @deprecated
+     */
     public static function getGroup(Request $request, Response $response): Response {
 
         /* @var $authToken AuthToken */
@@ -30,7 +33,9 @@ class MonitorController extends Controller {
             throw new HttpForbiddenException($request,"Group `$groupName` not allowed.");
         }
 
-        return $response->withJson($group);
+        return $response
+            ->withHeader("Deprecation", "true")
+            ->withJson($group);
     }
 
 

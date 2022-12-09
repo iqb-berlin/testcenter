@@ -4,6 +4,24 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## next
+Diese Version enthält eine starke Optimierung der Test-/Arbeitsbereich-Auswahl, die nun sehr viel schneller läd und 
+Serverzugriffe spart.
+
+### Information for developers
+#### API
+* The Session endpoints `[GET] /session`, `[PUT] /session/person`, `[PUT] /session/login` and `[PUT] /session/admin` 
+  return a new format containing not only the IDs, but also the labels and other useful stuff. 
+  
+  See: https://pages.cms.hu-berlin.de/iqb/testcenter/dist/api/index.html#tag/session-management/paths/~1session/get
+
+  The old format is still delivered as well, but will be removed at some point in the future. 
+
+* Some endpoints are no longer necessary and therefore got deprecated:
+  - `[GET] /monitor/group/{group_id}`
+  - `[GET] /workspace/{workspace_id}`
+ 
+
 ## 13.1.0
 In dieser Version wurde der experimentelle Bereich "Anhang-Verwaltung" hinzugefügt. Da dieses Feature noch im
 experimentellen Status ist, ist es zunächst versteckt und undokumentiert. Ein Update ist nur erforderlich, wenn es

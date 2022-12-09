@@ -10,6 +10,9 @@ $app->get('/', [SystemController::class, 'get']);
 
 $app->group('/booklet', function(RouteCollectorProxy $group) {
 
+    /* @deprecated */
+    $group->get('/{booklet_name}/data', [BookletController::class, 'getData']);
+
     $group->get('/{booklet_name}',[BookletController::class, 'getBooklet']);
 })
     ->add(new RequireToken('person'));
@@ -20,6 +23,7 @@ $app->get('/list/routes', [SystemController::class, 'getListRoutes']);
 
 $app->group('/monitor', function(RouteCollectorProxy $group) {
 
+    /* @deprecated */
     $group->get('/group/{group_name}', [MonitorController::class, 'getGroup']);
 
     $group->get('/test-sessions', [MonitorController::class, 'getTestSessions']);
@@ -138,6 +142,7 @@ $app->group('/attachments', function(RouteCollectorProxy $group) { // TODO Specs
 
 $app->group('/workspace', function(RouteCollectorProxy $group) {
 
+    /* @deprecated */
     $group->get('/{ws_id}', [WorkspaceController::class, 'get'])
         ->add(new IsWorkspacePermitted('RO'));
 
