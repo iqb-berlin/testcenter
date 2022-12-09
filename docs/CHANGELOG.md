@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## next
+## 13.2.0
 ### Performance
 Diese Version enthält eine starke Optimierung der Test-/Arbeitsbereich-Auswahl, die nun sehr viel schneller läd und 
 Serverzugriffe spart.
