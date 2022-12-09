@@ -33,8 +33,8 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.workspaces = authDataUntyped.access.workspaceAdmin;
-        this.isSuperAdmin = typeof authDataUntyped.access.superAdmin !== 'undefined';
+        this.workspaces = authDataUntyped.claims.workspaceAdmin;
+        this.isSuperAdmin = typeof authDataUntyped.claims.superAdmin !== 'undefined';
 
         this.mainDataService.stopLoadingAnimation();
       });

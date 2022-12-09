@@ -43,7 +43,7 @@ export class MainDataService {
   }
 
   getAccessObject(type: AuthAccessType, id: string): AccessObject {
-    return this.getAuthData().access[type].find(accessObject => accessObject.id === id);
+    return this.getAuthData().claims[type].find(accessObject => accessObject.id === id);
   }
 
   constructor(

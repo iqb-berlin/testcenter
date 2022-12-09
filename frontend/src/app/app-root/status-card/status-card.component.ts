@@ -20,27 +20,27 @@ export class StatusCardComponent implements OnInit {
         return;
       }
       this.loginName = authData.displayName;
-      if (authData.access.workspaceAdmin) {
+      if (authData.claims.workspaceAdmin) {
         this.loginAuthority.push('Verwaltung von Testinhalten');
       }
-      if (authData.access.superAdmin) {
+      if (authData.claims.superAdmin) {
         this.loginAuthority.push('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen');
       }
-      if (authData.access.test) {
-        if (authData.access.test.length > 1) {
+      if (authData.claims.test) {
+        if (authData.claims.test.length > 1) {
           this.loginAuthority.push('Ausführung/Ansicht von Befragungen oder Testheften');
         } else {
           this.loginAuthority.push('Ausführung/Ansicht einer Befragung oder eines Testheftes');
         }
       }
-      if (authData.access.workspaceMonitor) {
-        if (authData.access.workspaceMonitor.length > 1) {
+      if (authData.claims.workspaceMonitor) {
+        if (authData.claims.workspaceMonitor.length > 1) {
           this.loginAuthority.push('Beobachtung/Prüfung der Durchführung von Befragungen oder Kompetenztests');
         } else {
           this.loginAuthority.push('Beobachtung/Prüfung der Durchführung einer Befragung oder eines Kompetenztests');
         }
       }
-      if (authData.access.testGroupMonitor) {
+      if (authData.claims.testGroupMonitor) {
         this.loginAuthority.push('Beobachtung/Prüfung einer Testgruppe');
       }
       if (authData.flags.indexOf('codeRequired') >= 0) {

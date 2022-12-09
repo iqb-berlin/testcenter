@@ -22,13 +22,13 @@ export class RouteDispatcherActivateGuard implements CanActivate {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.token) {
-        if (authData.access.workspaceAdmin || authData.access.superAdmin) {
+        if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
           this.router.navigate(['/r/admin-starter']);
         } else if (authData.flags.indexOf('codeRequired') >= 0) {
           this.router.navigate(['/r/code-input']);
-        } else if (authData.access.testGroupMonitor) {
+        } else if (authData.claims.testGroupMonitor) {
           this.router.navigate(['/r/monitor-starter']);
-        } else if (authData.access.test) {
+        } else if (authData.claims.test) {
           this.router.navigate(['/r/test-starter'], this.router.getCurrentNavigation().extras);
         } else {
           this.router.navigate(['/r/login', '']);
@@ -117,8 +117,8 @@ export class AdminComponentActivateGuard implements CanActivate {
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access.workspaceAdmin) {
+      if (authData.claims) {
+        if (authData.claims.workspaceAdmin) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -144,8 +144,8 @@ export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access.workspaceAdmin || authData.access.superAdmin) {
+      if (authData.claims) {
+        if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -171,8 +171,8 @@ export class SuperAdminComponentActivateGuard implements CanActivate {
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access.superAdmin) {
+      if (authData.claims) {
+        if (authData.claims.superAdmin) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -198,8 +198,8 @@ export class TestComponentActivateGuard implements CanActivate {
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access.test) {
+      if (authData.claims) {
+        if (authData.claims.test) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -225,7 +225,7 @@ export class GroupMonitorActivateGuard implements CanActivate {
   canActivate(): boolean {
     const authData = this.mainDataService.getAuthData();
 
-    if (authData && authData.access && authData.access.testGroupMonitor) {
+    if (authData && authData.claims && authData.claims.testGroupMonitor) {
       return true;
     }
     this.router.navigate(['/r']);

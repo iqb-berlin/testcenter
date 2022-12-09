@@ -16,7 +16,7 @@ class AccessSet extends DataCollectionTypeSafe {
     protected string $displayName;
     protected object $customTexts;
     protected array $flags;
-    protected array $access;
+    protected array $claims;
 
 
     // TODO add unit-test
@@ -120,9 +120,27 @@ class AccessSet extends DataCollectionTypeSafe {
             return (string) $flag;
         }, $flags);
 
-        $this->access = [];
+        $this->claims = [];
 
         $this->customTexts = $customTexts ?? (object) [];
+    }
+
+
+    function jsonSerialize(): mixed {
+        $json = parent::jsonSerialize();
+        $deprecatedFormat = (object) [];
+        foreach ($this->claims as $accessType => $accessObjectList) {
+
+            $deprecatedFormat->$accessType = [];
+
+            foreach ($accessObjectList as $accessObject) {
+
+                /* @var $accessObject AccessObject */
+                $deprecatedFormat->$accessType[] = $accessObject->getId();
+            }
+        }
+        $json['access'] = $deprecatedFormat;
+        return $json;
     }
 
 
@@ -137,14 +155,14 @@ class AccessSet extends DataCollectionTypeSafe {
     public function hasAccess(string $type, string $id = null): bool {
 
         if (!$id) {
-            return isset($this->access[$type]);
+            return isset($this->claims[$type]);
         }
 
-        if (!isset($this->access[$type])) {
+        if (!isset($this->claims[$type])) {
             return false;
         }
 
-        return in_array($id, $this->access[$type]);
+        return in_array($id, $this->claims[$type]);
     }
 
 
@@ -155,7 +173,7 @@ class AccessSet extends DataCollectionTypeSafe {
             throw new Exception("AccessObject type `$type` is not valid.");
         }
 
-        $this->access[$type] = $accessObjects;
+        $this->claims[$type] = $accessObjects;
 
         return $this;
     }

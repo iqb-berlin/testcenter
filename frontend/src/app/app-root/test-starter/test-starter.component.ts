@@ -37,7 +37,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
         this.mds.setAuthData();
         this.mds.stopLoadingAnimation();
       }
-      this.booklets = authData.access.test;
+      this.booklets = authData.claims.test;
       this.mds.setAuthData(authData);
       this.mds.stopLoadingAnimation();
     });

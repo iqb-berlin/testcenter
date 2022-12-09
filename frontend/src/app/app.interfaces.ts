@@ -24,7 +24,7 @@ export interface AuthData {
   displayName: string;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
-  access: { [key in AuthAccessType]: AccessObject[] };
+  claims: { [key in AuthAccessType]: AccessObject[] };
 }
 
 export interface KeyValuePairs {

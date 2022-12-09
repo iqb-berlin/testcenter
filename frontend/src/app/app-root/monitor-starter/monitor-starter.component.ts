@@ -36,7 +36,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
           this.mds.stopLoadingAnimation();
           return;
         }
-        this.accessObjects = authData.access;
+        this.accessObjects = authData.claims;
         this.mds.setAuthData(authData);
       });
     });
