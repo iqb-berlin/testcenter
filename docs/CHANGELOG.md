@@ -5,8 +5,12 @@ layout: default
 # Changelog & Upgrade Information
 
 ## next
+### Performance
 Diese Version enthält eine starke Optimierung der Test-/Arbeitsbereich-Auswahl, die nun sehr viel schneller läd und 
 Serverzugriffe spart.
+
+### Bug Fixes
+Das update-script wurde repariert!
 
 ### Information for developers
 #### API
