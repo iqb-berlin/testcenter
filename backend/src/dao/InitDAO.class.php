@@ -2,6 +2,10 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 // TODO unit tests
+/* TODO refactor: this should not *be* a DAO, because it initializes several DAOs itself, it should
+    - inherit from the controller maybe instead of DAO
+    - can be merged with WorkspaceInitializer maybe (since files and db management is not separable anymore anyways)
+*/
 
 class InitDAO extends SessionDAO {
 
@@ -230,6 +234,14 @@ class InitDAO extends SessionDAO {
     }
 
 
+    public function importScanImage(int $workspaceId, string $imagePath): void {
+
+        $adminDAO = new AdminDAO();
+        $attachment = $adminDAO->getAttachmentById('1:UNIT.SAMPLE:v2');
+        AttachmentFiles::importFiles($workspaceId, [$imagePath], $attachment, 'image');
+    }
+
+
     public function adminExists(): bool {
 
         $admins = $this->_("select count(*) as count from users where is_superadmin = 1");
@@ -277,13 +289,27 @@ class InitDAO extends SessionDAO {
         );
         usort($patches, [Version::class, 'compare']);
 
+        $nextPatchAvailable = ($patches[0] == 'next');
+        if ($nextPatchAvailable) {
+            $patches[] = array_shift($patches);
+        }
+
+        $isFutureVersion = true;
+
         foreach ($patches as $patch) {
 
+            $lastWasFutureVersion = $isFutureVersion;
             $isFutureVersion = Version::compare($patch) > 0;
             $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
-            // echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n');
+            $forcePatch = ($patch == 'next') && !$lastWasFutureVersion;
 
-            if ($isFutureVersion or $shouldBeInstalled) {
+             echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n') . ' ~ ' . ($forcePatch?'y':'n');
+
+
+            if (
+                (!$forcePatch) &&
+                ($isFutureVersion or $shouldBeInstalled)
+            ) {
                 continue;
             }
 

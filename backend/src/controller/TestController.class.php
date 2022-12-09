@@ -359,8 +359,7 @@ class TestController extends Controller {
         $testId = (int) $request->getAttribute('test_id');
 
         $lockEvent = RequestBodyParser::getElements($request, [
-            'timeStamp' => null,
-            'message' => '',
+            'timeStamp' => null
         ]);
 
         self::testDAO()->lockTest($testId);
@@ -445,7 +444,6 @@ class TestController extends Controller {
 
         return $response->withStatus(200);
     }
-
 
     // TODO replace this and use proper data-class
     private static function stateArray2KeyValue(array $stateData): array {

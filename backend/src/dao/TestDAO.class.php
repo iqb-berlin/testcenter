@@ -50,7 +50,7 @@ class TestDAO extends DAO {
         );
 
         return [
-            'id' => $this->pdoDBhandle->lastInsertId(),
+            'id' => (int) $this->pdoDBhandle->lastInsertId(),
             'label' => $bookletLabel,
             'name' => $bookletName,
             'person_id' => $personId,
@@ -346,6 +346,18 @@ class TestDAO extends DAO {
             );
         }
     }
+
+
+    // TODO unit test
+    public function deleteAttachmentDataPart(string $partId) : void {
+
+        // unitId is not necessary for identification, because partId contains unitName and TestId in case of attachments
+        $this->_(
+            'delete from unit_data where part_id = :partId',
+            [ ':partId' => $partId ]
+        );
+    }
+
 
 
     // TODO unit test

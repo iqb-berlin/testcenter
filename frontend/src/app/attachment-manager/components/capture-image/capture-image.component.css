@@ -1,0 +1,49 @@
+.hidden {
+  display: none;
+}
+
+.hidden.show {
+  display: flex;
+}
+
+.adminbackground {
+  display: none;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+#toolbar {
+  display: flex;
+  flex-direction: row;
+}
+
+#canvas-container,
+#video-container {
+  flex-grow: 1;
+  position: relative;
+}
+
+#canvas,
+#video-clip {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--tc-body-background);
+  overflow: hidden;
+  max-height: 100%;
+  max-width: 100%;
+  position: absolute;
+}
+
+#video-container video {
+  background: silver;
+  height: 100%;
+}
+
+.scan-region-highlight {
+  border-radius: 3px;
+  outline: rgba(0, 0, 0, .15) solid 75vmax;
+}
+
+.scan-region-highlight-svg {
+  display: none;
+}

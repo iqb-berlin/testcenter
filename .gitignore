@@ -46,6 +46,7 @@
 
 # tmp
 /tmp
+/docs/dist
 
 # env
 /.env

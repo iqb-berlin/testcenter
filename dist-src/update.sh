@@ -44,7 +44,7 @@ update_files() {
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
   wget -nv -O patch.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/patch.sh || rm -f patch.sh
 
-  sed -i "s#VERSION=.*#VERSION=/$chosen_version_tag#" .env
+  sed -i "s#VERSION=.*#VERSION=$chosen_version_tag#" .env
 
   . .env
   echo "$TLS"
@@ -83,11 +83,11 @@ echo "1. Update version"
 echo "2. Switch TLS on/off"
 read  -p 'What do you want to do (1/2): ' -r -n 1 -e main_choice
 
-if [ $main_choice = 1 ]; then
+if [ "$main_choice" = 1 ]; then
   select_version
   create_backup
   update_files
-elif [ $main_choice = 2 ]; then
+elif [ "$main_choice" = 2 ]; then
   set_tls
 fi
 

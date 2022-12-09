@@ -16,6 +16,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { CdkTableModule } from '@angular/cdk/table';
 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDialogModule } from '@angular/material/dialog';
 import { SharedModule } from '../shared/shared.module';
 import { GroupMonitorRoutingModule } from './group-monitor-routing.module';
 import { GroupMonitorComponent } from './group-monitor.component';
@@ -47,7 +48,8 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
     MatSidenavModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    SharedModule
+    SharedModule,
+    MatDialogModule
   ],
   providers: [
     BackendService,

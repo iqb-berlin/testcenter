@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 class BookletsFolder extends Workspace {
 
+    // TODO replace with database call on files
     public function getBookletLabel(string $bookletId): string {
 
         $lookupFolder = $this->workspacePath . '/Booklet';
@@ -38,27 +39,5 @@ class BookletsFolder extends Workspace {
         }
 
         throw new HttpError("No booklet with name `$bookletId` found", 404);
-    }
-
-
-    public function getLogins(): LoginArray {
-
-        $testTakerDirPath = $this->workspacePath . '/Testtakers';
-        if (!file_exists($testTakerDirPath)) {
-            throw new Exception("Folder not found: $testTakerDirPath");
-        }
-        $testtakers = [];
-
-        foreach (Folder::glob($testTakerDirPath, "*.[xX][mM][lL]") as $fullFilePath) {
-
-            $testtakersFile = new XMLFileTesttakers($fullFilePath);
-            if (!$testtakersFile->isValid()) { // TODO cross-file-validity?!
-
-                continue;
-            }
-
-            array_push($testtakers, ...$testtakersFile->getAllLogins());
-        }
-        return new LoginArray(...$testtakers);
     }
 }

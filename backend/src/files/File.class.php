@@ -1,20 +1,15 @@
 <?php
 declare(strict_types=1);
 
-class File extends DataCollectionTypeSafe {
+class File extends FileData {
 
     private const type = 'file';
     public const canHaveDependencies = true;
-    protected ?string $type;
-    protected string $path = '';
     protected string $name = '';
-    protected int $size = 0;
-    protected int $modificationTime = 0;
-    protected string $id = '';
     protected array $validationReport = [];
-    protected string $label = '';
-    protected string $description = '';
-    private ?array $usedBy = [];
+    protected ?array $usedBy = [];
+    protected int $modificationTime = 0;
+    protected int $size = 0;
 
     static function get(string $path, string $type = null, bool $validate = false, string $content = ''): File {
 
@@ -61,6 +56,7 @@ class File extends DataCollectionTypeSafe {
 
     public function __construct(string $path, string $type = null) {
 
+        parent::__construct();
         $this->type = $type;
         $this->setFilePath($path);
         $this->id = FileName::normalize($this->getName(), false);
@@ -96,45 +92,15 @@ class File extends DataCollectionTypeSafe {
     }
 
 
-    public function getPath(): string {
-
-        return $this->path;
-    }
-
-
-    public function getName(): string {
-
-        return $this->name;
-    }
-
-
-    public function getSize(): int {
-
-        return $this->size;
-    }
-
-
-    public function getId(): string {
-
-        return $this->id;
-    }
-
-
     public function getModificationTime(): int {
 
         return $this->modificationTime;
     }
 
 
-    public function getLabel(): string {
+    public function getName(): string {
 
-        return $this->label;
-    }
-
-
-    public function getDescription(): string {
-
-        return $this->description;
+        return $this->name;
     }
 
 

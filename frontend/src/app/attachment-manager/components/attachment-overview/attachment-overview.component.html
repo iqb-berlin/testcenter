@@ -1,0 +1,188 @@
+<mat-sidenav-container class="{{mobileView ? 'mobile' : 'desktop'}}">
+  <mat-sidenav #sidenav opened="true" [mode]="mobileView ? 'over' : 'side'" fixedInViewport="true" fixedTopGap="55" class="toolbar">
+    <div class="corner-menu">
+      <button
+        *ngIf="sidenav.opened"
+        mat-icon-button
+        [matTooltip]="'Seiteleiste' | customtext:'am_sidebar_button' | async"
+        matTooltipPosition="above"
+        (click)="sidebarClick()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <h2>Verwaltung der Aufgabenanhänge</h2>
+    <ng-container *ngIf="attachments.data[selectedAttachmentIndex] as selectedAttachment; then attachmentSelected; else commonControls">
+    </ng-container>
+
+    <ng-template #attachmentSelected let-selectedAttachment>
+      <h3>{{selectedAttachment | AttachmentTitle }}</h3>
+      <div class="toolbar-section" *ngIf="selectedAttachment.dataType === 'missing'">
+        <alert level="warning" text="Dieser Anhang muss noch hinzugefügt werden."></alert>
+      </div>
+
+      <div class="toolbar-section">
+        <table>
+          <tr>
+            <td>Typ:</td>
+            <td>
+              <ng-container *ngIf="selectedAttachment.attachmentType === 'capture-image'">
+                {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
+              </ng-container>
+            </td>
+          </tr>
+          <tr>
+            <td>Variable:</td>
+            <td>{{selectedAttachment.variableId}}</td>
+          </tr>
+          <tr>
+            <td>Testperson:</td>
+            <td>{{selectedAttachment.personLabel}}</td>
+          </tr>
+          <tr>
+            <td>Test:</td>
+            <td>{{selectedAttachment.testLabel}}</td>
+          </tr>
+          <tr>
+            <td>Aufgabe:</td>
+            <td>{{selectedAttachment.unitLabel}}</td>
+          </tr>
+        </table>
+      </div>
+
+      <ng-container *ngIf="selectedAttachment.attachmentFileIds.length">
+        <div class="toolbar-section" style="text-align: center">
+          <button mat-mini-fab color="primary" aria-label="Previous instance from this image-attachment" (click)="previousAttachmentId()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          {{selectedAttachmentFileIndex + 1 }} / {{selectedAttachment.attachmentFileIds.length}}
+          <button mat-mini-fab color="primary" aria-label="Next instance from this image-attachment" (click)="nextAttachmentId()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+
+        <div class="toolbar-section" *ngIf="selectedAttachment.dataType === 'image'">
+          <div id="previewImage" [style.background-image]="'url(' + selectedAttachmentImage + ')'"></div>
+        </div>
+      </ng-container>
+
+      <div class="toolbar-section">
+        <button
+          mat-raised-button
+          class="control"
+          color="primary"
+          *ngIf="selectedAttachment.attachmentType === 'capture-image'"
+          (click)="$event.stopPropagation(); downloadPageTemplate()"
+          matTooltip="Seitenvorlage neu ausdrucken"
+        >
+          <mat-icon>description</mat-icon>
+        </button>
+        <button
+          mat-raised-button
+          class="control"
+          color="primary"
+          *ngIf="selectedAttachment.dataType !== 'missing'"
+          (click)="deleteAttachment()"
+          matTooltip="{{'Anhang Löschen' | customtext:'am_button_delete_attachment' | async}}"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+
+      <div [class.toolbar-section-bottom]="!selectedAttachment.attachmentFileIds.length">
+        <ng-container *ngTemplateOutlet="commonControls"></ng-container>
+      </div>
+    </ng-template>
+
+    <ng-template #commonControls>
+      <div class="toolbar-section">
+        <app-add-attachment></app-add-attachment>
+      </div>
+      <div class="toolbar-section" *ngIf="attachmentTypes.includes('capture-image')">
+        <h3>{{'Werkzeuge' | customtext:'am_tools_headline' | async}}</h3>
+        <button mat-raised-button color="primary" (click)="downloadAllPageTemplates()">
+          <mat-icon>library_books</mat-icon>
+          Alle Seitenvorlagen herunterladen
+        </button>
+      </div>
+    </ng-template>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="adminbackground">
+      <div class="corner-menu">
+        <button
+            *ngIf="!sidenav.opened && (this.selectedAttachmentIndex === -1)"
+            mat-icon-button
+            [matTooltip]="'Anhang hinzufügen' | customtext:'am_add_button' | async"
+            matTooltipPosition="above"
+            (click)="addClick()"
+        >
+          <mat-icon>add-circle-material</mat-icon>
+        </button>
+      </div>
+
+      <table mat-table matSort [dataSource]="attachments" class="attachment-table">
+
+        <ng-container matColumnDef="personLabel">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="personLabel">Person</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            {{element.personLabel}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="testLabel">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="testLabel">Test</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            {{element.testLabel}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="unitLabel">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="unitLabel">Aufgabe</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            {{element.unitLabel}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="attachmentType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="attachmentType">Typ</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            <ng-container *ngIf="element.attachmentType === 'capture-image'">
+              {{'Foto einer Seite' | customtext:'am_attachment_type_capture-image' | async}}
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="variableId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="variableId">Variable</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            {{element.variableId}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastModified">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="lastModified">Letzte Änderung</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            {{element.lastModified | date: 'dd.MM.yy HH:mm'}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="status">Dateien</th>
+          <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
+            <alert *ngIf="!element.attachmentFileIds.length" level="warning" text="0"></alert>
+            <alert *ngIf="element.attachmentFileIds.length" level="success" text="{{element.attachmentFileIds.length}}" ></alert>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row
+            *matRowDef="let row; columns: displayedColumns; let i = index"
+            [class]="{ selected: (i === selectedAttachmentIndex) }"
+        ></tr>
+      </table>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

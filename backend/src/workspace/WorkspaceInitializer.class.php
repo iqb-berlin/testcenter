@@ -21,7 +21,7 @@ class WorkspaceInitializer {
     ];
 
 
-    private function importSampleFile(int $workspaceId, string $source, string $target) {
+    private function importSampleFile(int $workspaceId, string $source, string $target): void {
 
         $importFileName = ROOT_DIR . '/' . $source;
 
@@ -52,5 +52,12 @@ class WorkspaceInitializer {
 
         Folder::deleteContentsRecursive(DATA_DIR . "/ws_$workspaceId/");
         rmdir(DATA_DIR . "/ws_$workspaceId/");
+    }
+
+
+    public function createSampleScanImage(string $fileName, int $workspaceId): void {
+
+        $png = '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da636460f85f0f0002870180eb47ba920000000049454e44ae426082';
+        file_put_contents(Folder::createPath(DATA_DIR . "/ws_$workspaceId/") . $fileName, hex2bin($png));
     }
 }

@@ -319,10 +319,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     ) {
       return;
     }
-    this.tcs.startMaxTimer(
-      this.currentUnit.maxTimerRequiringTestlet.id,
-      this.currentUnit.maxTimerRequiringTestlet.maxTimeLeft
-    );
+    this.tcs.startMaxTimer(this.currentUnit.maxTimerRequiringTestlet);
   }
 
   private prepareIframe(): void {
@@ -335,7 +332,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       });
       return;
     }
-    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups');
+    this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.appendChild(this.iFrameItemplayer);

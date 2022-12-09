@@ -8,7 +8,9 @@ REQUIRED_PACKAGES=("docker" "docker-compose")
 OPTIONAL_PACKAGES=(make)
 
 declare -A ENV_VARS
-ENV_VARS[HOST_NAME]=localhost
+ENV_VARS[HOSTNAME]=localhost
+ENV_VARS[PORT]=80
+ENV_VARS[TLS_PORT]=443
 ENV_VARS[MYSQL_ROOT_PASSWORD]=secret_root_pw
 ENV_VARS[MYSQL_DATABASE]=iqb_tba_testcenter
 ENV_VARS[MYSQL_SALT]=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 5 | head -n 1)
@@ -17,7 +19,7 @@ ENV_VARS[MYSQL_PASSWORD]=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | 
 ENV_VARS[SUPERUSER_NAME]=super
 ENV_VARS[SUPERUSER_PASSWORD]=user123
 
-ENV_VAR_ORDER=(HOST_NAME MYSQL_ROOT_PASSWORD MYSQL_DATABASE MYSQL_SALT MYSQL_USER MYSQL_PASSWORD SUPERUSER_NAME SUPERUSER_PASSWORD)
+ENV_VAR_ORDER=(HOSTNAME PORT TLS_PORT MYSQL_ROOT_PASSWORD MYSQL_DATABASE MYSQL_SALT MYSQL_USER MYSQL_PASSWORD SUPERUSER_NAME SUPERUSER_PASSWORD)
 
 check_prerequisites() {
   for app in "${REQUIRED_PACKAGES[@]}"
@@ -81,7 +83,7 @@ customize_settings() {
   for var in "${ENV_VAR_ORDER[@]}"
     do
       read  -p "$var: " -e -i ${ENV_VARS[$var]} new_var
-      sed -i "s#$var.*#$var=$new_var#" .env
+      sed -i "s#$var=.*#$var=$new_var#" .env
     done
 }
 

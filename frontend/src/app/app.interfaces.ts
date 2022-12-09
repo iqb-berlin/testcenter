@@ -1,19 +1,22 @@
-export enum AuthFlagType {
-  CODE_REQUIRED = 'codeRequired',
-  PENDING = 'pending',
-  EXPIRED = 'expired'
-}
+export type AuthFlagType = 'codeRequired';
 
-export enum AuthAccessKeyType {
-  WORKSPACE_ADMIN = 'workspaceAdmin',
-  SUPER_ADMIN = 'superAdmin',
-  TEST = 'test',
-  WORKSPACE_MONITOR = 'workspaceMonitor',
-  TEST_GROUP_MONITOR = 'testGroupMonitor'
-}
+export type AuthAccessType =
+  | 'workspaceAdmin'
+  | 'superAdmin'
+  | 'test'
+  | 'workspaceMonitor'
+  | 'testGroupMonitor'
+  | 'attachmentManager';
 
-export interface AccessType {
-  [key: string]: string[];
+export interface AccessObject {
+  label: string;
+  id: string;
+  type: string;
+  flags: {
+    locked?: boolean;
+    running?: boolean;
+    mode: 'RW' | 'RO'
+  };
 }
 
 export interface AuthData {
@@ -21,26 +24,7 @@ export interface AuthData {
   displayName: string;
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
-  access: AccessType;
-}
-
-export interface WorkspaceData {
-  id: string;
-  name: string;
-  role: 'RW' | 'RO' | 'n.d.';
-}
-
-export interface AccessObject {
-  id: string;
-  name: string;
-}
-
-export interface BookletData {
-  id: string;
-  label: string;
-  running: boolean;
-  locked: boolean;
-  xml?: string; // in monitor
+  claims: { [key in AuthAccessType]: AccessObject[] };
 }
 
 export interface KeyValuePairs {

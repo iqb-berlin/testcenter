@@ -19,7 +19,7 @@ import {
 import {
   FileDeletionReport, UploadReport, UploadResponse, UploadStatus
 } from './files/files.interfaces';
-import { ApiError, WorkspaceData } from '../app.interfaces';
+import { ApiError } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -29,17 +29,6 @@ export class BackendService {
     @Inject('SERVER_URL') private readonly serverUrl: string,
     @SkipSelf() private http: HttpClient
   ) {
-  }
-
-  getWorkspaceData(workspaceId: string): Observable<WorkspaceData | number> {
-    return this.http
-      .get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`)
-      .pipe(
-        catchError((err: ApiError) => {
-          console.warn(`getWorkspaceData Api-Error: ${err.code} ${err.info} `);
-          return of(err.code);
-        })
-      );
   }
 
   getFiles(workspaceId: string): Observable<GetFileResponseData> {
