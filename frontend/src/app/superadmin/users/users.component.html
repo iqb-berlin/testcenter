@@ -2,11 +2,11 @@
 
   <div class="objectlist" fxLayout="column" fxFlex="50">
     <div fxLayout="row">
-      <button mat-raised-button (click)="addObject()" matTooltip="Nutzer hinzufügen" matTooltipPosition="below" data-cy="add-user">
+      <button mat-raised-button (click)="addObject()" matTooltip="Administrator:in hinzufügen" matTooltipPosition="below" data-cy="add-user">
         <mat-icon>add</mat-icon>
       </button>
       <button mat-raised-button (click)="deleteObject()"
-              matTooltip="Markierte Nutzer löschen" matTooltipPosition="below" data-cy="delete-user">
+              matTooltip="Markierte Administrator:in löschen" matTooltipPosition="below" data-cy="delete-user">
         <mat-icon>delete</mat-icon>
       </button>
       <button mat-raised-button (click)="changePassword()"
@@ -31,7 +31,7 @@
           <mat-checkbox (click)="$event.stopPropagation()"
                         (change)="$event ? tableselectionCheckbox.toggle(row) : null"
                         [checked]="tableselectionCheckbox.isSelected(row)"
-                        [attr.data-cy]="checkbox">
+                        [attr.data-cy]="'checkbox'">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
@@ -52,7 +52,7 @@
 
     <div *ngIf="selectedUser < 0">
       <div>Zugriffsrechte für Arbeitsbereich(e):</div>
-      <div>Bitte links einen Nutzer wählen</div>
+      <div>Bitte links Administrator:in wählen</div>
     </div>
 
     <div *ngIf="selectedUser > 0" fxLayout="row" fxLayoutAlign="space-between center">
