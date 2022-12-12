@@ -52,7 +52,7 @@ abstract class DataCollection implements JsonSerializable {
     }
 
 
-    public function jsonSerialize(): array{
+    public function jsonSerialize(): mixed {
 
         $jsonData = [];
 

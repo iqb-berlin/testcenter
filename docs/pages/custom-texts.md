@@ -43,9 +43,3 @@ replacements:
 ...
 </Config>
 ```
-
-
-
-### List of possible replacements
-| Key       | Used for     | Default     |
-| :------------- | :---------- | :----------- |

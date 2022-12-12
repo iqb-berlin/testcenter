@@ -22,7 +22,8 @@ class DAO {
         'workspaces',
         'meta',
         'unit_data',
-        'files'
+        'files',
+        'unit_defs_attachments'
     ];
 
     protected $pdoDBhandle = false;

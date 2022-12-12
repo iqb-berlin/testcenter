@@ -5,28 +5,6 @@ declare(strict_types=1);
 
 class AdminDAO extends DAO {
 
-    public function getAdminAccessSet(string $adminToken): AccessSet {
-
-        $admin = $this->getAdmin($adminToken);
-        $accessSet = new AccessSet(
-            $admin['adminToken'],
-            $admin['name']
-        );
-
-        $workspacesIds = array_map(function($workspace) {
-            return (string) $workspace['id'];
-        }, $this->getWorkspaces($adminToken));
-
-        $accessSet->addAccessObjects('workspaceAdmin', ...$workspacesIds);
-
-        if ($admin["isSuperadmin"]) {
-            $accessSet->addAccessObjects('superAdmin');
-        }
-
-        return $accessSet;
-    }
-
-
     /**
      * @codeCoverageIgnore
      */
@@ -111,31 +89,34 @@ class AdminDAO extends DAO {
 	}
 
 
-	public function getAdmin(string $token): array {
+	public function getAdmin(string $token): Admin {
 
-		$tokenInfo = $this->_(
+		$admin = $this->_(
 			'SELECT
-                users.id as "userId",
+                users.id,
                 users.name,
-                users.email as "userEmail",
-                users.is_superadmin as "isSuperadmin",
-                admin_sessions.valid_until as "_validTo",
-                admin_sessions.token as "adminToken"
+                users.email,
+                users.is_superadmin,
+                admin_sessions.valid_until
             FROM users
 			INNER JOIN admin_sessions ON users.id = admin_sessions.user_id
 			WHERE admin_sessions.token=:token',
 			[':token' => $token]
 		);
 
-		if (!$tokenInfo) {
+		if (!$admin) {
             throw new HttpError("Token not valid! ($token)", 403);
         }
 
-        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($tokenInfo['_validTo']));
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($admin['valid_until']));
 
-        $tokenInfo['userEmail'] = $tokenInfo['userEmail'] ?? '';
-
-        return $tokenInfo;
+        return new Admin(
+            $admin['id'],
+            $admin['name'],
+            $admin['email'] ?? '',
+            !!$admin['is_superadmin'],
+            $token
+        );
 	}
 
 
@@ -153,14 +134,25 @@ class AdminDAO extends DAO {
 
 	public function getWorkspaces(string $token): array {
 
-        return $this->_(
-            'SELECT workspaces.id, workspaces.name, workspace_users.role FROM workspaces
-                INNER JOIN workspace_users ON workspaces.id = workspace_users.workspace_id
-                INNER JOIN users ON workspace_users.user_id = users.id
-                INNER JOIN admin_sessions ON  users.id = admin_sessions.user_id
-                WHERE admin_sessions.token =:token',
+        $workspaces =  $this->_(
+        'select
+                workspaces.id,
+                workspaces.name,
+                workspace_users.role
+            from workspaces
+                inner join workspace_users on workspaces.id = workspace_users.workspace_id
+                inner join users on workspace_users.user_id = users.id
+                inner join admin_sessions on  users.id = admin_sessions.user_id
+            where
+                admin_sessions.token =:token',
             [':token' => $token],
             true
+        );
+        return array_map(
+            function(array $ws): WorkspaceData {
+                return new WorkspaceData($ws['id'], $ws['name'], $ws['role']);
+            },
+            $workspaces
         );
 	}
 
@@ -605,5 +597,98 @@ class AdminDAO extends DAO {
             ]
         );
         return ($group == null) ? null : new Group($group['group_name'], $group['group_label']);
+    }
+
+
+    // TODO unit-test
+    public function getAttachmentById(string $attachmentId): Attachment {
+
+        $attachments = $this->getAttachments(0, [], $attachmentId);
+
+        if (!count($attachments)) {
+            throw new HttpError("Attachment not found: `$attachmentId`", 404);
+        }
+
+        return $attachments[0];
+    }
+
+
+    // TODO unit-test
+    public function getAttachments(int $workspaceId = 0, array $groups = [], string $attachmentId = ''): array {
+
+        $selectors = [];
+        $replacements = [];
+
+        if (count($groups)) {
+
+            $selectors[] = "logins.group_name in (" . implode(',', array_fill(0, count($groups), '? ')) . ")";
+            $replacements = $groups;
+        }
+
+        if ($workspaceId) {
+
+            $selectors[] = "logins.workspace_id = ?";
+            $replacements[] = $workspaceId;
+        }
+
+        if ($attachmentId) {
+
+            list($testId, $unitName, $variableId) = Attachment::decodeId($attachmentId);
+            $selectors[] = "tests.id = ?";
+            $selectors[] = "unit_name = ?";
+            $selectors[] = "variable_id = ?";
+            $replacements[] = $testId;
+            $replacements[] = $unitName;
+            $replacements[] = $variableId;
+        }
+
+        $sql = "select
+                group_label as groupLabel,
+                logins.group_name as groupName,
+                logins.name as loginName,
+                name_suffix as nameSuffix,
+                tests.label as testLabel,
+                tests.id as testId,
+                tests.name as bookletName,
+                unit_name as unitName,
+                unit_name as unitLabel, -- TODO get real unitLabel
+                variable_id as variableId,
+                attachment_type as attachmentType,
+                unit_data.content as dataPartContent,
+                (tests.id || ':' || unit_name ||  ':' || variable_id) as attachmentId,
+                unit_data.ts as lastModified
+            from
+                unit_defs_attachments
+                left join tests on booklet_name = tests.name
+                left join person_sessions on tests.person_id = person_sessions.id
+                left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+                left join logins on logins.name = login_sessions.name
+                left join unit_data on part_id = (tests.id || ':' || unit_name || ':' || variable_id)
+            where " . implode(' and ', $selectors);
+
+        $attachments = $this->_($sql, $replacements, true);
+
+        $attachmentData = [];
+        foreach ($attachments as $attachment) {
+
+            $dataPart = JSON::decode($attachment['dataPartContent'], true);
+            $attachmentFileIds = $dataPart ? $dataPart[0]['value'] : [];
+
+            $attachmentData[] = new Attachment(
+                $attachment['attachmentId'],
+                $attachment['attachmentType'],
+                $attachment['dataPartContent'] ? explode(':', $attachmentFileIds[0])[0] : 'missing',
+                $attachmentFileIds,
+                $attachment['lastModified'],
+                $attachment['groupName'],
+                $attachment['groupLabel'],
+                $attachment['loginName'],
+                $attachment['nameSuffix'],
+                $attachment['testLabel'],
+                $attachment['bookletName'],
+                $attachment['unitLabel']
+            );
+        }
+        return $attachmentData;
     }
 }

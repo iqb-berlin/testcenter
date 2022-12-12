@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Backend/Units-Tests" type="PHPUnitRunConfigurationType" factoryName="PHPUnit" folderName="Run Locally (PHP)">
+  <configuration default="false" name="Backend/Units-Tests" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
     <TestRunner bootstrap_file="$PROJECT_DIR$/backend/test/unit/bootstrap.php" configuration_file="$PROJECT_DIR$/backend/phpunit.xml" directory="$PROJECT_DIR$/backend/test/unit" use_alternative_bootstrap_file="true" />
     <method v="2" />
   </configuration>

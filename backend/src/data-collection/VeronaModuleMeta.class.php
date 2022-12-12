@@ -9,7 +9,7 @@ class VeronaModuleMeta implements JsonSerializable {
     public string $label = "";
     public string $veronaModuleType = "";
 
-    public function jsonSerialize(): array{
+    public function jsonSerialize(): mixed {
 
         $jsonData = [];
 

@@ -10,7 +10,9 @@ $app->get('/', [SystemController::class, 'get']);
 
 $app->group('/booklet', function(RouteCollectorProxy $group) {
 
+    /* @deprecated */
     $group->get('/{booklet_name}/data', [BookletController::class, 'getData']);
+
     $group->get('/{booklet_name}',[BookletController::class, 'getBooklet']);
 })
     ->add(new RequireToken('person'));
@@ -21,6 +23,7 @@ $app->get('/list/routes', [SystemController::class, 'getListRoutes']);
 
 $app->group('/monitor', function(RouteCollectorProxy $group) {
 
+    /* @deprecated */
     $group->get('/group/{group_name}', [MonitorController::class, 'getGroup']);
 
     $group->get('/test-sessions', [MonitorController::class, 'getTestSessions']);
@@ -112,8 +115,34 @@ $app->group('/test', function(RouteCollectorProxy $group) { // TODO Spec
     $group->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
 });
 
+$app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) { // TODO Specs
+
+    $group->get('/file/{fileId}', [AttachmentController::class, 'getFile']);
+
+    $group->delete('/file/{fileId}', [AttachmentController::class, 'deleteFile']);
+
+    $group->post('/file', [AttachmentController::class, 'postFile']);
+
+    $group->get('/data', [AttachmentController::class, 'getData']);
+
+    $group->get('/page', [AttachmentController::class, 'getAttachmentPage']);
+})
+    ->add(new MayModifyAttachments())
+    ->add(new RequireToken('person'));
+
+
+$app->group('/attachments', function(RouteCollectorProxy $group) { // TODO Specs
+
+    $group->get('/list', [AttachmentController::class, 'getList']);
+
+    $group->get('/pages', [AttachmentController::class, 'getAttachmentsPages']);
+})
+    ->add(new MayModifyAttachments())
+    ->add(new RequireToken('person', 'admin'));
+
 $app->group('/workspace', function(RouteCollectorProxy $group) {
 
+    /* @deprecated */
     $group->get('/{ws_id}', [WorkspaceController::class, 'get'])
         ->add(new IsWorkspacePermitted('RO'));
 

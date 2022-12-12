@@ -1,21 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { from, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { concatMap, map } from 'rxjs/operators';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../../backend.service';
-import {
-  AccessObject, AuthAccessKeyType, AuthData, BookletData
-} from '../../app.interfaces';
+import { AccessObject, AuthData } from '../../app.interfaces';
 
 @Component({
   templateUrl: './monitor-starter.component.html',
   styleUrls: ['./monitor-starter.component.css']
 })
 export class MonitorStarterComponent implements OnInit, OnDestroy {
-  accessObjects: { [accessType: string]: (AccessObject | BookletData)[] } = {};
+  accessObjects: { [accessType: string]: AccessObject[] } = {};
   private getMonitorDataSubscription: Subscription | null = null;
-  AuthAccessKeyType = AuthAccessKeyType;
   problemText: string;
 
   constructor(
@@ -28,7 +24,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
-      this.mds.showLoadingAnimation();
+
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped === 'number') {
           this.mds.stopLoadingAnimation();
@@ -40,53 +36,14 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
           this.mds.stopLoadingAnimation();
           return;
         }
-        this.accessObjects = {};
-
-        const scopeIdList: { [id: string]: { id: string, type: AuthAccessKeyType } } = {};
-        [AuthAccessKeyType.TEST_GROUP_MONITOR, AuthAccessKeyType.TEST]
-          .forEach(accessType => {
-            this.accessObjects[accessType] = [];
-            (authData.access[accessType] || [])
-              .forEach(accessObjectId => {
-                scopeIdList[accessObjectId] = { id: accessObjectId, type: accessType };
-              });
-          });
-
-        if (this.getMonitorDataSubscription !== null) {
-          this.getMonitorDataSubscription.unsubscribe();
-        }
-
-        this.getMonitorDataSubscription =
-          from(Object.keys(scopeIdList))
-            .pipe(
-              map((accessType: AuthAccessKeyType) => scopeIdList[accessType]),
-              concatMap(accessIdAndType => {
-                if (accessIdAndType.type === AuthAccessKeyType.TEST_GROUP_MONITOR) {
-                  return this.bs.getGroupData(accessIdAndType.id);
-                }
-                if (authData.access[AuthAccessKeyType.TEST]) {
-                  return this.bs.getBookletData(accessIdAndType.id);
-                }
-                return null;
-              })
-            )
-            .subscribe(
-              (wsData: AccessObject) => {
-                if (wsData) {
-                  this.accessObjects[scopeIdList[wsData.id].type].push(wsData);
-                }
-              },
-              () => this.mds.stopLoadingAnimation(),
-              () => this.mds.stopLoadingAnimation()
-            );
-
+        this.accessObjects = authData.claims;
         this.mds.setAuthData(authData);
       });
     });
   }
 
-  startTest(b: BookletData): void {
-    this.bs.startTest(b.id).subscribe(testId => {
+  startTest(test: AccessObject): void {
+    this.bs.startTest(test.id).subscribe(testId => {
       if (typeof testId === 'number') {
         const errCode = testId as number;
         if (errCode === 423) {
@@ -102,6 +59,10 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
 
   buttonGotoMonitor(accessObject: AccessObject): void {
     this.router.navigateByUrl(`/gm/${accessObject.id.toString()}`);
+  }
+
+  buttonGotoAttachmentManager(accessObject) {
+    this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
   }
 
   resetLogin(): void {

@@ -11,7 +11,7 @@ export class SuperadminComponent implements OnInit {
   ) { }
 
   navLinks = [
-    { path: 'users', label: 'Users' },
+    { path: 'users', label: 'Admins' },
     { path: 'workspaces', label: 'Arbeitsbereiche' },
     { path: 'settings', label: 'Einstellungen' }
   ];

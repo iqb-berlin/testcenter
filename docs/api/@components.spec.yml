@@ -72,24 +72,88 @@ components:
           description: |-
             flags with additional information.
               * `codeRequired` that indicates that a second part of authentication is required
-        access:
-          description: A collection of available obejcts. The keys are type of object.
+        claims:
+          description: A collection of available objects. The keys are type of object.
           type: object
           properties:
             workspaceAdmin:
-              type: string
-              description: Elements are (numeric) Workspace-Ids. Use `[GET] /workspace/{worksapce_id}` to obtain
-                label, user-rights and such.
+              type: array
+              items:
+                $ref: '#/components/schemas/accessObject'
+              description: Elements are Workspaces.
             superAdmin:
-              type: string
+              type: array
+              items:
+                $ref: '#/components/schemas/accessObject'
               description: No Elements. Presence of this key indicates access to Superadmin-functions for this user.
             test:
-              type: string
-              description: Elements are booklet-names (not test-ids because unstarted tests don't have one. Through
-                the endpoint `[GET] /booklet/{test_name}` the corresponding ids, and if startet, status etc. can be obtained.
+              type: array
+              items:
+                $ref: '#/components/schemas/accessObject'
+              description: Elements are available tests.
             testGroupMonitor:
+              type: array
+              items:
+                $ref: '#/components/schemas/accessObject'
+              description: Elements are available groups.
+            attachmentManager:
+              type: array
+              items:
+                $ref: '#/components/schemas/accessObject'
+              description: Elements are available groups.
+        access:
+          deprecated: true
+          description: old format of claims, kept for backwards compatibility
+          type: object
+          properties:
+            workspaceAdmin:
+              type: array
+              items:
+                type: string
+            superAdmin:
+              type: array
+              items:
+                type: string
+            test:
+              type: array
+              items:
+                type: string
+            testGroupMonitor:
+              type: array
+              items:
+                type: string
+            attachmentManager:
+              type: array
+              items:
+                type: string
+
+    accessObject:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          description: workspaceAdmin, superAdmin, test, testGroupMonitor or attachmentManager
+        label:
+          type: string
+        flags:
+          type: object
+          description: Key-value pairs, containing additional information depending on type
+          properties:
+            mode:
               type: string
-              description: workspace(s)
+              description: can be 'RO' or 'RW', occurs when type is workspaceAdmin
+            running:
+              type: boolean
+              description: occurs when type is test, and tells if the test is already started
+            locked:
+              type: boolean
+              description: occurs when type is test, and tells if the test is locked
+
+
+
+
 
     workspace:
       type: object

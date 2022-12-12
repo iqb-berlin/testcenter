@@ -6,7 +6,8 @@ const YAML = require('yamljs');
 const request = require('request');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
-const testcenterConfig = require('./config/dredd_test_config.json'); // TODO use the same source as environment.ts and don't check it in
+// TODO use the same source as environment.ts instead of /config/dredd_test_config.json and don't check it in
+const testcenterConfig = require('./config/dredd_test_config.json');
 const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
@@ -18,11 +19,11 @@ const confirmTestConfig = async done => {
     return done(new Error(cliPrint.get.error('No API Url given!')));
   }
 
-  const getStatus = () => new Promise(resolve =>
-    request(`${apiUrl}/system/config`, (error, response) => resolve(!response ? -1 : response.statusCode))
-  );
+  const getStatus = () => new Promise(resolve => {
+    request(`${apiUrl}/system/config`, (error, response) => resolve(!response ? -1 : response.statusCode));
+  });
 
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
   cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
 
@@ -96,6 +97,7 @@ const prepareSpecsForDredd = done => {
     'items > \\$ref$': resolveReference,
     deprecated: null,
     'properties > .*? > format': null,
+    'schema > format': null,
     '^(paths > [^> ]+ > [^> ]+) > tags$': null
   };
 

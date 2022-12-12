@@ -142,6 +142,9 @@ exports.customTexts = done => {
   cliPrint.headline('customTexts: Writing Markdown documentation');
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/custom-texts.json`).toString());
   let output = fs.readFileSync(`${docsDir}/pages/custom-texts.md`, 'utf8').toString();
+  output += '### List of possible replacements\n\n';
+  output += '| Key       | Used for     | Default     |\n';
+  output += '| :------------- | :---------- | :----------- |\n';
 
   Object.keys(definition)
     .sort()

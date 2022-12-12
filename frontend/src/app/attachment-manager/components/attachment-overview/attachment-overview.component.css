@@ -1,0 +1,42 @@
+.adminbackground {
+    padding-top: 0;
+}
+
+.attachment-table {
+    border-collapse: collapse;
+    display: table;
+    width: 100%;
+}
+
+.attachment-table thead tr td {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.attachment-table td {
+    margin-right: 1em;
+    padding-bottom: 0.2em;
+    padding-top: 0.2em;
+    border-bottom: 1px solid silver;
+    padding-right: 2em;
+}
+
+.attachment-table tr {
+    cursor: pointer;
+}
+
+.attachment-table tr.selected td {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+#previewImage {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #b2b2b2;
+    background-size: contain;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    position: relative;
+}

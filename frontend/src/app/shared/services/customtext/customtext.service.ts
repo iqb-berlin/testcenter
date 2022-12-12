@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subscribable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { CustomTextDefs } from '../../interfaces/customtext.interfaces';
 
 @Injectable({

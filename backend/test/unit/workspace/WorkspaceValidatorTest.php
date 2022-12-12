@@ -32,6 +32,7 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/data-collection/Login.class.php";
         require_once "src/data-collection/LoginArray.class.php";
         require_once "src/data-collection/Group.class.php";
+        require_once "src/data-collection/RequestedAttachment.class.php";
         require_once "src/helper/FileName.class.php";
         require_once "src/helper/Version.class.php";
         require_once "src/helper/JSON.class.php";
@@ -39,6 +40,7 @@ class WorkspaceValidatorTest extends TestCase{
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/helper/FileTime.class.php";
         require_once "src/helper/FileExt.class.php";
+        require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileSysCheck.class.php";
@@ -111,6 +113,9 @@ class WorkspaceValidatorTest extends TestCase{
                 new ValidationReportEntry('warning', 'Unit is never used'),
                 new ValidationReportEntry('error', 'Resource `not-existing.voud` not found'),
                 new ValidationReportEntry('warning', "File has no link to XSD-Schema. Current version (`$version`) will be used instead.")
+            ],
+            'Unit/SAMPLE_UNIT.XML' => [
+                new ValidationReportEntry('info', "`1` attachment(s) requested.")
             ],
             'Unit/SAMPLE_UNIT2.XML' => [
                 new ValidationReportEntry('warning', "Element `/Unit/Definition/@type` is deprecated.")

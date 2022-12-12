@@ -333,13 +333,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         break;
       case MaxTimerDataType.INTERRUPTED:
-        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.maxTimeTimers[maxTimerData.testletId]);
         this.timerValue = null;
         break;
       case MaxTimerDataType.STEP:
         this.timerValue = maxTimerData;
         if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-          this.tcs.maxTimeTimers[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+          this.tcs.maxTimeTimers[maxTimerData.testletId] = maxTimerData.timeLeftSeconds / 60;
           if (this.tcs.testMode.saveResponses) {
             this.bs.updateTestState(
               this.tcs.testId,
