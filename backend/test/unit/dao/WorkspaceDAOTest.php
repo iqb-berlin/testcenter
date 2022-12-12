@@ -18,7 +18,7 @@ class WorkspaceDAOTest extends TestCase {
         require_once "src/data-collection/DataCollection.class.php";
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
         require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/data-collection/PlayerMeta.class.php";
+        require_once "src/data-collection/VeronaModuleMeta.class.php";
         require_once "src/data-collection/FileData.class.php";
         require_once "src/data-collection/FileSpecialInfo.class.php";
         require_once "src/helper/DB.class.php";

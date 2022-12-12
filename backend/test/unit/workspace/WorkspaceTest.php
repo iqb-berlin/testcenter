@@ -61,7 +61,7 @@ class WorkspaceTest extends TestCase {
         require_once "src/exception/HttpError.class.php";
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
         require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/data-collection/PlayerMeta.class.php";
+        require_once "src/data-collection/VeronaModuleMeta.class.php";
         require_once "src/data-collection/FileSpecialInfo.class.php";
         require_once "src/data-collection/Login.class.php";
         require_once "src/data-collection/LoginArray.class.php";

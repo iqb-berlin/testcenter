@@ -61,8 +61,7 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "src/controller/WorkspaceController.class.php";
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
         require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/data-collection/PlayerMeta.class.php";
-        require_once "src/data-collection/PlayerMeta.class.php";
+        require_once "src/data-collection/VeronaModuleMeta.class.php";
         require_once "src/data-collection/ReportType.php";
         require_once "src/data-collection/ReportFormat.php";
         require_once "src/data-collection/Login.class.php";
@@ -73,7 +72,6 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/Version.class.php";
         require_once "src/helper/TimeStamp.class.php";
-        require_once "src/data-collection/FileData.class.php";
         require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/ResourceFile.class.php";
