@@ -180,14 +180,9 @@ class WorkspaceDAO extends DAO {
             ]
         );
 
-        echo "\n [STORE] {$file->getId()} ({$file->getPath()})";
-
         foreach ($file->getRelations() as $relation) {
 
             /* @var $relation FileRelation */
-
-            echo "\n [STORE REL] {$relation->getTargetName()} >> {$file->getName()}";
-
 
             $this->_(
             "insert into file_relations (workspace_id, subject_name, subject_type, object_name, object_type, object_request)
@@ -196,9 +191,9 @@ class WorkspaceDAO extends DAO {
                     $workspaceId,
                     $file->getName(),
                     $file->getType(),
-                    'we will see',
+                    $relation->getTargetName(),
                     $relation->getTargetType(),
-                    $relation->getTargetName()
+                    $relation->getTargetName() // TODO!
                 ]
             );
         }
@@ -372,9 +367,9 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getFiles(int $workspaceId, string $workspacePath): array {
+    public function getAllFiles(int $workspaceId, string $workspacePath): array {
 
-        $files = $this->_("
+        $sql = "
             select
                 name,
                 type,
@@ -386,32 +381,10 @@ class WorkspaceDAO extends DAO {
                 size,
                 modification_ts
             from files
-                where workspace_id = ?",
-            [$workspaceId],
-            true
-        );
+                where workspace_id = ?";
+        $replacements = [$workspaceId];
 
-        return array_map(
-            function(array $f) use ($workspaceId, $workspacePath): File {
-                $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
-                return File::get(
-                    new FileData(
-                        "$workspacePath/{$f['type']}/{$f['name']}",
-                        $f['type'],
-                        $f['id'],
-                        $f['label'],
-                        $f['description'],
-                        !!$f['is_valid'],
-                        unserialize($f['validation_report']),
-                        $relations,
-                        TimeStamp::fromSQLFormat($f['modification_ts']),
-                        $f['size']
-                    ),
-                    $f['type']
-                );
-            },
-            $files
-        );
+        return $this->fetchFiles($workspaceId, $workspacePath, $sql, $replacements);
     }
 
 
@@ -441,5 +414,115 @@ class WorkspaceDAO extends DAO {
             },
             $relations
         );
+    }
+
+
+    // TODO! dont' work with $localPaths!
+    public function getFiles(int $workspaceId, string $workspacePath, array $localPaths): array {
+
+        $placeholder = implode(' or ', array_fill(0, count($localPaths), '(object_type = ? and object_name = ?)'));
+
+        $replacements = [$workspaceId];
+
+        foreach ($localPaths as $fileLocalPath) {
+
+            list($replacements[], $replacements[]) = explode('/', $fileLocalPath, 2);
+        }
+
+        $sql = "select distinct
+                    name,
+                    type,
+                    id,
+                    label,
+                    description,
+                    is_valid,
+                    validation_report,
+                    size,
+                    modification_ts
+                from files
+                where
+                    files.workspace_id = ?
+                    and files.is_valid
+                    and ($placeholder)";
+
+        return $this->fetchFiles($workspaceId, $workspacePath, $sql, $replacements);
+    }
+
+
+    // TODO! get rid of int $workspaceId, string $workspacePath
+    private function fetchFiles(int $workspaceId, string $workspacePath, $sql, $replacements): array {
+
+        $files = [];
+        foreach ($this->_($sql, $replacements, true) as $f) {
+            $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
+            $files["{$f['type']}/{$f['name']}"] = File::get(
+                new FileData(
+                    "$workspacePath/{$f['type']}/{$f['name']}",
+                    $f['type'],
+                    $f['id'],
+                    $f['label'],
+                    $f['description'],
+                    !!$f['is_valid'],
+                    unserialize($f['validation_report']),
+                    $relations,
+                    TimeStamp::fromSQLFormat($f['modification_ts']),
+                    $f['size']
+                ),
+                $f['type']
+            );
+        }
+        return $files;
+    }
+
+
+    public function getAffectedFiles(int $workspaceId, string $workspacePath, array $files): array {
+
+        if (!count($files)) {
+            return [];
+        }
+
+        $placeholder = implode(' or ', array_fill(0, count($files), '(object_type = ? and object_name = ?)'));
+
+        $replacements = [$workspaceId];
+
+        foreach ($files as $file) {
+
+            /* @var File $file */
+            $replacements[] = $file->getType();
+            $replacements[] = $file->getName();
+        }
+
+        $replacements[] = $workspaceId;
+
+        $sql = "with recursive R as (
+                    select
+                        subject_name, subject_type, workspace_id
+                    from file_relations
+                    where
+                        workspace_id = ? and ($placeholder)
+                
+                    union all
+                
+                    select
+                        file_relations.subject_name, file_relations.subject_type, file_relations.workspace_id
+                    from R
+                        join file_relations on R.subject_name = file_relations.object_name and R.subject_type = file_relations.object_type and file_relations.workspace_id = 6
+                )
+                select distinct
+                    name,
+                    type,
+                    id,
+                    label,
+                    description,
+                    is_valid,
+                    validation_report,
+                    size,
+                    modification_ts
+                from R
+                     left join files on R.workspace_id = files.workspace_id and R.subject_name = files.name and R.subject_type = files.type
+                where
+                    files.workspace_id = ? and files.is_valid;";
+
+        return $this->fetchFiles($workspaceId, $workspacePath, $sql, $replacements);
     }
 }

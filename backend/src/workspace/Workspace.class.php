@@ -114,35 +114,47 @@ class Workspace {
             'was_used' => []
         ];
 
-        $validator = new WorkspaceValidator($this);
-        $validator->validate();
-        $allFiles = $validator->getFiles();
+        $cachedFilesToDelete = $this->workspaceDAO->getFiles($this->workspaceId, $this->workspacePath, $filesToDelete);
+        $affectedFiles = $this->workspaceDAO->getAffectedFiles($this->workspaceId, $this->workspacePath, $cachedFilesToDelete);
+
+//        $validator = new WorkspaceValidator($this);
+//        if (count($affectedFiles)) {
+//
+//            foreach ($affectedFiles as $file) {
+//                $validator->addFile($file->getType(), $file);
+//            }
+//            $validator->validate();
+//        }
+
+
 
         foreach($filesToDelete as $fileToDelete) {
 
-            $fileToDeletePath = $this->workspacePath . '/' . $fileToDelete;
+            $cachedFile = $cachedFilesToDeleteMap[$fileToDelete] ?? null;
 
-            if (!file_exists($fileToDeletePath)) {
+            // file does not exist in validator means it must be something not validatable like sysCheck-Reports
+            if ($cachedFile and $cachedFile->isValid()) {
+
+                // Hat die Datei abhängigkeiten, die nicht ebenfalls gelöscht werden sollen
+
+                // STAND: Wir haben zwar $affectedFiles, wissen aber nicht welche von was abhängt.
+
+                // nein: $report['was_used'][] = $fileToDelete; continue;
+
+                if ($this->postProcessFileDeletion($cachedFile)) {
+
+                    $report['error'][] = $fileToDelete;
+                }
+            }
+
+            $fullPath = $this->workspacePath . '/' . $fileToDelete;
+            if (!file_exists($fullPath)) {
 
                 $report['did_not_exist'][] = $fileToDelete;
                 continue;
             }
 
-            // file does not exist in validator means it must be something not validatable like sysCheck-Reports
-            $validatedFile = $allFiles[$fileToDeletePath] ?? null;
-
-            if ($validatedFile and !$this->isUnusedFileAndCanBeDeleted($validatedFile, $filesToDelete)) {
-
-                $report['was_used'][] = $fileToDelete;
-                continue;
-            }
-
-            if ($validatedFile and $this->postProcessFileDeletion($validatedFile)) {
-
-                $report['error'][] = $fileToDelete;
-            }
-
-            if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
+            if ($this->isPathLegal($fullPath) /* and unlink($fullPath) */) {
 
                 $report['deleted'][] = $fileToDelete;
 

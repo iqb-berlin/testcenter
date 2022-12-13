@@ -171,7 +171,7 @@ class WorkspaceController extends Controller {
 
         $fileDigestList = [];
 
-        foreach ($workspace->workspaceDAO->getFiles($workspace->getId(), $workspace->getWorkspacePath()) as $file) {
+        foreach ($workspace->workspaceDAO->getAllFiles($workspace->getId(), $workspace->getWorkspacePath()) as $file) {
 
             if (!isset($fileDigestList[$file->getType()])) {
                 $fileDigestList[$file->getType()] = [];
