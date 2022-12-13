@@ -67,8 +67,6 @@ class File extends FileData {
 
         $this->id = FileName::normalize($this->getName(), false);
 
-        echo "\n [READ] $this->id";
-
         if (strlen($this->getName()) > 120) {
             $this->report('error', "Filename too long!");
         }
@@ -200,7 +198,6 @@ class File extends FileData {
 
         if (!in_array($file, $this->usedBy)) {
 
-            echo "\n $this->id << $file->id";
             $this->usedBy["{$file->getType()}/{$file->getName()}"] = $file;
         }
     }

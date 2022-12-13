@@ -169,6 +169,8 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $workspace = new Workspace($workspaceId);
 
+        $fileDigestList = [];
+
         foreach ($workspace->workspaceDAO->getFiles($workspace->getId(), $workspace->getWorkspacePath()) as $file) {
 
             if (!isset($fileDigestList[$file->getType()])) {

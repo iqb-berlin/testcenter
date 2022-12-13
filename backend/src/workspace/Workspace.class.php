@@ -409,7 +409,7 @@ class Workspace {
     // TODO unit-test
     public function storeAllFilesMeta(): array {
 
-        $files = $this->getValidatorReadAllFilesFromFs();
+        $files = $this->getValidatorWithAllFilesFromFs();
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
             'deleted' => 0,
@@ -431,14 +431,16 @@ class Workspace {
             }
         }
 
-        foreach ($files->getFiles() as $file /* @var $file File */) {
+        foreach ($files->getFiles() as $file) {
+
+            /* @var $file File */
 
             $file->crossValidate($files);
 
             if (!$file->isValid()) {
 
                 $invalidCount++;
-                continue;
+//                continue;
             }
 
             $stats = $this->storeFileMeta($file);
@@ -461,39 +463,37 @@ class Workspace {
 
         $stats = [
             'logins_deleted' => 0,
-            'logins_added' => 0
+            'logins_added' => 0,
+            'resource_packages_installed' => 0,
+            'attachments_noted' => 0
         ];
+
+        $this->workspaceDAO->storeFileMeta($this->getId(), $file);
 
         if (!$file->isValid()) {
 
-            return null;
+            return $stats;
         }
 
-        if ($file->getType() == 'Testtakers') {
+        if (is_a($file, XMLFileTesttakers::class)) {
 
-            /* @var $file XMLFileTesttakers */
             list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
             $stats['logins_deleted'] = $deleted;
             $stats['logins_added'] = $added;
         }
 
-        if (
-            ($file->getType() == 'Resource')
-            /* @var $file ResourceFile */
-            and $file->isPackage()
-        ) {
+        if (is_a($file, ResourceFile::class) and $file->isPackage()) {
 
             $file->installPackage();
+            $stats['resource_packages_installed'] = 1;
         }
 
-        if ($file->getType() == 'Booklet') {
+        if (is_a($file, XMLFileBooklet::class)) {
 
-            /* @var XMLFileBooklet $file */
             $requestedAttachments = $this->getRequestedAttachments($file);
             $this->workspaceDAO->updateUnitDefsAttachments($this->workspaceId, $file->getId(), $requestedAttachments);
+            $stats['attachments_noted'] = count($requestedAttachments);
         }
-
-        $this->workspaceDAO->storeFileMeta($this->getId(), $file);
 
         return $stats;
     }
@@ -524,7 +524,7 @@ class Workspace {
     }
 
 
-    private function getValidatorReadAllFilesFromFs(): WorkspaceValidator {
+    private function getValidatorWithAllFilesFromFs(): WorkspaceValidator {
 
         $validator = new WorkspaceValidator($this);
 
