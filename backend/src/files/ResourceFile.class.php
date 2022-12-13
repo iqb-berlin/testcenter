@@ -11,11 +11,7 @@ class ResourceFile extends File {
 
         $this->meta = new VeronaModuleMeta();
 
-        if (is_a($init, FileData::class)) {
-
-            parent::__construct($init);
-            return;
-        }
+        parent::__construct($init);
 
         if (FileExt::has($this->getPath(), 'HTML')) {
             $this->readVeronaMetaData();

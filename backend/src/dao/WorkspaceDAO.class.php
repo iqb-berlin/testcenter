@@ -155,8 +155,10 @@ class WorkspaceDAO extends DAO {
                     verona_version,
                     verona_module_id,
                     is_valid,
-                    validation_report
-                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                    validation_report,
+                    size,
+                    modification_ts
+                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             [
                 $workspaceId,
                 $file->getName(),
@@ -172,11 +174,13 @@ class WorkspaceDAO extends DAO {
                 $file->getSpecialInfo()->veronaVersion,
                 $file->getSpecialInfo()->playerId,
                 $file->isValid(),
-                serialize($file->getValidationReport())
+                serialize($file->getValidationReport()),
+                $file->getSize(),
+                TimeStamp::toSQLFormat($file->getModificationTime())
             ]
         );
 
-        echo "\n [STORE] {$file->getId()}";
+        echo "\n [STORE] {$file->getId()} ({$file->getPath()})";
 
         foreach ($file->getRelations() as $relation) {
 
@@ -235,7 +239,9 @@ class WorkspaceDAO extends DAO {
                     verona_module_type,
                     verona_module_id,
                     is_valid,
-                    validation_report
+                    validation_report,
+                    size,
+                    modification_ts
                 from
                     files
                 where
@@ -249,13 +255,15 @@ class WorkspaceDAO extends DAO {
 
         return File::get(
             new FileData(
-                $fileData['name'],
+                $fileData['name'],  // TODO! path
                 $fileData['type'],
                 $fileData['id'],
                 $fileData['label'],
                 $fileData['description'],
                 (bool) $fileData['is_valid'],
-                unserialize($fileData['validation_report'])
+                unserialize($fileData['validation_report']),
+                $fileData['size'],
+                $fileData['modification_ts']
             ),
             $fileData['type']
         );
@@ -282,6 +290,8 @@ class WorkspaceDAO extends DAO {
                     verona_module_id,
                     is_valid,
                     validation_report,
+                    size,
+                    modification_ts,
                     (case
                         when (verona_module_id = :module_id and version_mayor = :version_mayor and version_minor = :version_minor and version_patch = :version_patch and ifnull(version_label, '') = :version_label) then 1
                         when (workspace_id = :ws_id and type = :type and id = :file_id and verona_module_id != :module_id) then -1 
@@ -320,12 +330,14 @@ class WorkspaceDAO extends DAO {
 
         return new File(
             new FileData(
-                $fileData['name'],
+                $fileData['name'], // TODO! path
                 $fileData['type'],
                 $fileData['label'],
                 $fileData['description'],
                 $fileData['is_valid'],
-                unserialize($fileData['validation_report'])
+                unserialize($fileData['validation_report']),
+                $fileData['size'],
+                $fileData['modification_ts']
             ),
             $fileData['type']
         );
@@ -360,7 +372,7 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getFiles(int $workspaceId): array {
+    public function getFiles(int $workspaceId, string $workspacePath): array {
 
         $files = $this->_("
             select
@@ -370,7 +382,9 @@ class WorkspaceDAO extends DAO {
                 label,
                 description,
                 is_valid,
-                validation_report
+                validation_report,
+                size,
+                modification_ts
             from files
                 where workspace_id = ?",
             [$workspaceId],
@@ -378,18 +392,20 @@ class WorkspaceDAO extends DAO {
         );
 
         return array_map(
-            function(array $f) use ($workspaceId): File {
+            function(array $f) use ($workspaceId, $workspacePath): File {
                 $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
                 return File::get(
                     new FileData(
-                        $f['name'], // !TODO! name != path
+                        "$workspacePath/{$f['type']}/{$f['name']}",
                         $f['type'],
                         $f['id'],
                         $f['label'],
                         $f['description'],
                         !!$f['is_valid'],
                         unserialize($f['validation_report']),
-                        $relations
+                        $relations,
+                        TimeStamp::fromSQLFormat($f['modification_ts']),
+                        $f['size']
                     ),
                     $f['type']
                 );

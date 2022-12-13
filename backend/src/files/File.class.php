@@ -6,7 +6,6 @@ class File extends FileData {
     private const type = 'file';
     public const canHaveDependencies = true;
     protected string $name = '';
-    protected array $validationReport = [];
     protected ?array $usedBy = [];
 
 
@@ -52,17 +51,24 @@ class File extends FileData {
             $this->id = $init->id;
             $this->label = $init->label;
             $this->description = $init->description;
-            $this->validationReport = $init->getValidationReport();
+            $this->validationReport = $init->validationReport;
             $this->relations = $init->relations;
             $this->modificationTime = $init->modificationTime;
             $this->size = $init->size;
+            $this->name = basename($init->path);
             return;
         }
 
         parent::__construct();
+
         $this->type = $type;
+
         $this->setFilePath($init);
+
         $this->id = FileName::normalize($this->getName(), false);
+
+        echo "\n [READ] $this->id";
+
         if (strlen($this->getName()) > 120) {
             $this->report('error', "Filename too long!");
         }

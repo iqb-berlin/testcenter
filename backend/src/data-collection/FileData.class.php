@@ -10,7 +10,7 @@ class FileData extends DataCollectionTypeSafe {
     protected string $description = '';
     protected array $relations = [];
     private bool $isValid;
-    private array $validationReport;
+    protected array $validationReport = [];
     protected int $modificationTime = 0;
     protected int $size = 0;
 

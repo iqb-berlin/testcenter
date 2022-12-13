@@ -1,8 +1,7 @@
-alter table files
-    add is_valid boolean not null;
-
-alter table files
-    add validation_report text null;
+alter table files add is_valid boolean not null;
+alter table files add validation_report text null;
+alter table files add modification_ts timestamp not null;
+alter table files add size int not null;
 
 create table file_relations
 (

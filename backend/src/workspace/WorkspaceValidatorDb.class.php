@@ -7,7 +7,7 @@ class WorkspaceValidatorDb extends WorkspaceValidator {
 
     public function getFiles(): array {
 
-        return $this->workspace->workspaceDAO->getFiles($this->getId());
+        return $this->workspace->workspaceDAO->getFiles($this->getId(), $this->workspace->getWorkspacePath());
     }
 
 
