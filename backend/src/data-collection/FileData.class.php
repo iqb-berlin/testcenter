@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class FileData extends DataCollectionTypeSafe {
 
@@ -7,19 +8,34 @@ class FileData extends DataCollectionTypeSafe {
     protected string $id = '';
     protected string $label = '';
     protected string $description = '';
+    protected array $relations = [];
+    private bool $isValid;
+    private array $validationReport;
+    protected int $modificationTime = 0;
+    protected int $size = 0;
 
     public function __construct(
         string $path = '',
         string $type = null,
         string $id = '',
         string $label = '',
-        string $description = ''
+        string $description = '',
+        bool $isValid = true,
+        array $validationReport = [],
+        array $relations = [],
+        int $modificationTime = 0,
+        int $size = 0
     ) {
-        $this->type = $type;
         $this->path = $path;
+        $this->type = $type;
         $this->id = $id;
         $this->label = $label;
         $this->description = $description;
+        $this->isValid = $isValid;
+        $this->validationReport = $validationReport;
+        $this->relations = $relations;
+        $this->modificationTime = $modificationTime;
+        $this->size = $size;
     }
 
 
@@ -56,5 +72,29 @@ class FileData extends DataCollectionTypeSafe {
     public function getDescription(): string {
 
         return $this->description;
+    }
+
+
+    public function getRelations(): array {
+
+        return $this->relations;
+    }
+
+
+    public function isValid(): bool {
+
+        return $this->isValid;
+    }
+
+
+    public function getValidationReport(): array {
+
+        return $this->validationReport;
+    }
+
+
+    public function getModificationTime(): int {
+
+        return $this->modificationTime;
     }
 }

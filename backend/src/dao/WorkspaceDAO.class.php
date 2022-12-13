@@ -153,8 +153,10 @@ class WorkspaceDAO extends DAO {
                     type,
                     verona_module_type,
                     verona_version,
-                    verona_module_id
-                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                    verona_module_id,
+                    is_valid,
+                    validation_report
+                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             [
                 $workspaceId,
                 $file->getName(),
@@ -168,9 +170,34 @@ class WorkspaceDAO extends DAO {
                 $file->getType(),
                 (($file instanceof ResourceFile) and $file->isVeronaModule()) ? $file->getSpecialInfo()->veronaModuleType : '',
                 $file->getSpecialInfo()->veronaVersion,
-                $file->getSpecialInfo()->playerId
+                $file->getSpecialInfo()->playerId,
+                $file->isValid(),
+                serialize($file->getValidationReport())
             ]
         );
+
+        echo "\n [STORE] {$file->getId()}";
+
+        foreach ($file->getRelations() as $relation) {
+
+            /* @var $relation FileRelation */
+
+            echo "\n [STORE REL] {$relation->getTargetName()} >> {$file->getName()}";
+
+
+            $this->_(
+            "insert into file_relations (workspace_id, subject_name, subject_type, object_name, object_type, object_request)
+                values (?, ?, ?, ?, ?, ?);",
+                [
+                    $workspaceId,
+                    $file->getName(),
+                    $file->getType(),
+                    'we will see',
+                    $relation->getTargetType(),
+                    $relation->getTargetName()
+                ]
+            );
+        }
     }
 
 
@@ -192,9 +219,9 @@ class WorkspaceDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function getFile(int $workspaceId, string $fileId, string $type): ?array {
+    public function getFile(int $workspaceId, string $fileId, string $type): ?File {
 
-        return $this->_(
+        $fileData =  $this->_(
             "select
                     name,
                     id,
@@ -204,8 +231,11 @@ class WorkspaceDAO extends DAO {
                     version_label,
                     label,
                     type,
+                    description,
                     verona_module_type,
-                    verona_module_id
+                    verona_module_id,
+                    is_valid,
+                    validation_report
                 from
                     files
                 where
@@ -216,15 +246,29 @@ class WorkspaceDAO extends DAO {
                 $type
             ]
         );
+
+        return File::get(
+            new FileData(
+                $fileData['name'],
+                $fileData['type'],
+                $fileData['id'],
+                $fileData['label'],
+                $fileData['description'],
+                (bool) $fileData['is_valid'],
+                unserialize($fileData['validation_report'])
+            ),
+            $fileData['type']
+        );
     }
 
 
+
     // TODO use proper data-class
-    public function getFileSimilarVersion(int $workspaceId, string $fileId, string $type): ?array {
+    public function getFileSimilarVersion(int $workspaceId, string $fileId, string $type): ?File {
 
         $version = Version::guessFromFileName($fileId);
 
-        return $this->_(
+        $fileData = $this->_(
             "select
                     name,
                     id,
@@ -236,6 +280,8 @@ class WorkspaceDAO extends DAO {
                     type,
                     verona_module_type,
                     verona_module_id,
+                    is_valid,
+                    validation_report,
                     (case
                         when (verona_module_id = :module_id and version_mayor = :version_mayor and version_minor = :version_minor and version_patch = :version_patch and ifnull(version_label, '') = :version_label) then 1
                         when (workspace_id = :ws_id and type = :type and id = :file_id and verona_module_id != :module_id) then -1 
@@ -271,6 +317,18 @@ class WorkspaceDAO extends DAO {
                 ':module_id' => $version['module']
             ]
         );
+
+        return new File(
+            new FileData(
+                $fileData['name'],
+                $fileData['type'],
+                $fileData['label'],
+                $fileData['description'],
+                $fileData['is_valid'],
+                unserialize($fileData['validation_report'])
+            ),
+            $fileData['type']
+        );
     }
 
 
@@ -299,5 +357,73 @@ class WorkspaceDAO extends DAO {
                     ':attachment_type' => $requestedAttachment->attachmentType
                 ]);
         }
+    }
+
+
+    public function getFiles(int $workspaceId): array {
+
+        $files = $this->_("
+            select
+                name,
+                type,
+                id,
+                label,
+                description,
+                is_valid,
+                validation_report
+            from files
+                where workspace_id = ?",
+            [$workspaceId],
+            true
+        );
+
+        return array_map(
+            function(array $f) use ($workspaceId): File {
+                $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
+                return File::get(
+                    new FileData(
+                        $f['name'], // !TODO! name != path
+                        $f['type'],
+                        $f['id'],
+                        $f['label'],
+                        $f['description'],
+                        !!$f['is_valid'],
+                        unserialize($f['validation_report']),
+                        $relations
+                    ),
+                    $f['type']
+                );
+            },
+            $files
+        );
+    }
+
+
+    private function getFileRelations(int $workspaceId, string $name, string $type): array {
+
+        $relations = $this->_("
+            select
+                object_type,
+                object_request
+            from
+                file_relations
+            where
+                workspace_id = ?
+                and subject_name = ?
+                and subject_type = ?",
+            [$workspaceId, $name, $type],
+            true
+        );
+
+        return array_map(
+            function(array $r): FileRelation {
+                return new FileRelation(
+                    $r['object_type'],
+                    $r['object_request'],
+                    'TBA'
+                );
+            },
+            $relations
+        );
     }
 }

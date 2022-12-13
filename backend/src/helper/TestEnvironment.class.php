@@ -109,7 +109,7 @@ class TestEnvironment {
         $workspaceId = $initDAO->createWorkspace('sample_workspace');
         $workspace = new Workspace($workspaceId);
         $adminId = $initDAO->createAdmin('super', 'user123');
-        $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
+        $initDAO->addWorkspacesToAdmin($adminId, [$workspaceId]);
 
         $initializer = new WorkspaceInitializer();
         $initializer->cleanWorkspace($workspaceId);

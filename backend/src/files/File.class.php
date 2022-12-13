@@ -8,42 +8,31 @@ class File extends FileData {
     protected string $name = '';
     protected array $validationReport = [];
     protected ?array $usedBy = [];
-    protected int $modificationTime = 0;
-    protected int $size = 0;
 
-    static function get(string $path, string $type = null, bool $validate = false, string $content = ''): File {
+
+    static function get(string | FileData $init, string $type = null, bool $validate = false): File {
 
         if (!$type) {
-            $type = File::determineType($path, $content);
+            $type = File::determineType($init);
         }
 
-        $isRawXml = false;
-
-        if ($content) {
-
-            $isRawXml = true;
-            $path = $content;
-        }
-
-
-        switch ($type) {
-            case 'Testtakers': return new XMLFileTesttakers($path, $validate, $isRawXml);
-            case 'SysCheck': return new XMLFileSysCheck($path, $validate, $isRawXml);
-            case 'Booklet': return new XMLFileBooklet($path, $validate, $isRawXml);
-            case 'Unit': return new XMLFileUnit($path, $validate, $isRawXml);
-            case 'Resource': return new ResourceFile($path, $validate);
-            case 'xml': return new XMLFile($path, $validate, $isRawXml);
-        }
-
-        return new File($path, $type);
+        return match ($type) {
+            'Testtakers' => new XMLFileTesttakers($init, $validate),
+            'SysCheck' => new XMLFileSysCheck($init, $validate),
+            'Booklet' => new XMLFileBooklet($init, $validate),
+            'Unit' => new XMLFileUnit($init, $validate),
+            'Resource' => new ResourceFile($init, $validate),
+            'xml' => new XMLFile($init, $validate),
+            default => new File($init, $type),
+        };
     }
 
 
     // TODO unit-test
-    private static function determineType(string $path, string $content = ''): string {
+    private static function determineType(string $path): string {
 
         if (strtoupper(substr($path, -4)) == '.XML') {
-            $asGenericXmlFile = new XMLFile(empty($content) ? $path : $content, false, !!$content);
+            $asGenericXmlFile = new XMLFile($path, false);
             if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownTypes)) {
                 return 'xml';
             }
@@ -54,11 +43,25 @@ class File extends FileData {
     }
 
 
-    public function __construct(string $path, string $type = null) {
+    public function __construct(string | FileData $init, string $type = null) {
+
+        if (is_a($init, FileData::class)) {
+
+            $this->path = $init->path;
+            $this->type = $init->type;
+            $this->id = $init->id;
+            $this->label = $init->label;
+            $this->description = $init->description;
+            $this->validationReport = $init->getValidationReport();
+            $this->relations = $init->relations;
+            $this->modificationTime = $init->modificationTime;
+            $this->size = $init->size;
+            return;
+        }
 
         parent::__construct();
         $this->type = $type;
-        $this->setFilePath($path);
+        $this->setFilePath($init);
         $this->id = FileName::normalize($this->getName(), false);
         if (strlen($this->getName()) > 120) {
             $this->report('error', "Filename too long!");
@@ -92,10 +95,7 @@ class File extends FileData {
     }
 
 
-    public function getModificationTime(): int {
 
-        return $this->modificationTime;
-    }
 
 
     public function getName(): string {
@@ -153,7 +153,7 @@ class File extends FileData {
 
     public function getErrors(): array {
 
-        return array_filter($this->validationReport, function(ValidationReportEntry $validationReportEntry): bool {
+        return array_filter($this->validationReport, function($validationReportEntry): bool {
             return $validationReportEntry->level == 'error';
         });
     }
@@ -180,6 +180,12 @@ class File extends FileData {
     }
 
 
+    public function addRelation(FileRelation $dependency): void {
+
+        $this->relations[] = $dependency;
+    }
+
+
     public function addUsedBy(File $file): void {
 
         if (!$this::canHaveDependencies) {
@@ -188,6 +194,7 @@ class File extends FileData {
 
         if (!in_array($file, $this->usedBy)) {
 
+            echo "\n $this->id << $file->id";
             $this->usedBy["{$file->getType()}/{$file->getName()}"] = $file;
         }
     }

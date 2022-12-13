@@ -7,11 +7,15 @@ class ResourceFile extends File {
     const type = 'Resource';
     protected VeronaModuleMeta $meta;
 
-    public function __construct(string $path, bool $validate = true) {
+    public function __construct(string | FileData $init, bool $validate = true) {
 
         $this->meta = new VeronaModuleMeta();
 
-        parent::__construct($path);
+        if (is_a($init, FileData::class)) {
+
+            parent::__construct($init);
+            return;
+        }
 
         if (FileExt::has($this->getPath(), 'HTML')) {
             $this->readVeronaMetaData();

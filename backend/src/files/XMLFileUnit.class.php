@@ -16,9 +16,9 @@ class XMLFileUnit extends XMLFile {
     protected string $playerId = '';
     private array $dependencies = [];
 
-    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
+    public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
 
-        parent::__construct($path, $validate, $isRawXml);
+        parent::__construct($init, $validate, $isRawXml);
 
         $this->checkRequestedAttachments();
 
@@ -47,6 +47,7 @@ class XMLFileUnit extends XMLFile {
 
         if ($resource != null) {
             $resource->addUsedBy($this);
+            $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), 'usesPlayer'));
         } else {
             $this->report('error', "No suitable version of `{$this->playerId}` found");
         }
@@ -73,6 +74,7 @@ class XMLFileUnit extends XMLFile {
             $resource = $validator->getResource($resourceId, false);
             if ($resource != null) {
                 $resource->addUsedBy($this);
+                $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), 'usesResource'));
                 $this->totalSize += $resource->getSize(); // TODO also for additional resources?
             } else {
                 $this->report('error', "Resource `$resourceName` not found");

@@ -17,6 +17,7 @@ class XMLFileSysCheck extends XMLFile {
 
         if ($unit != null) {
             $unit->addUsedBy($this);
+            $this->addRelation(new FileRelation($unit->getType(), $unit->getName(), 'employsUnit'));
         }
     }
 

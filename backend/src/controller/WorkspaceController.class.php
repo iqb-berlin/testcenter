@@ -167,7 +167,7 @@ class WorkspaceController extends Controller {
     public static function getFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
-        $validator = new WorkspaceValidator(new Workspace($workspaceId));
+        $validator = new WorkspaceValidatorDb(new Workspace($workspaceId));
         $validator->validate();
         $fileDigestList = [];
         foreach ($validator->getFiles() as $file) {
@@ -321,7 +321,7 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
 
-        $validator = new WorkspaceValidator(new Workspace($workspaceId));
+        $validator = new WorkspaceValidatorDb(new Workspace($workspaceId));
 
         /* @var XMLFileSysCheck $sysCheck */
         $sysCheck = $validator->getSysCheck($sysCheckName);

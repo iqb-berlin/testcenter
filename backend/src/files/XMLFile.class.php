@@ -16,14 +16,14 @@ class XMLFile extends File {
     public SimpleXMLElement $xml;
 
 
-    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
+    public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
 
         libxml_use_internal_errors(true);
         libxml_clear_errors();
 
         if (!$isRawXml) {
 
-            parent::__construct($path);
+            parent::__construct($init);
 
             if (!$this->isValid()) {
 
@@ -31,12 +31,12 @@ class XMLFile extends File {
                 return;
             }
 
-            $xmlElem = simplexml_load_file($path);
+            $xmlElem = simplexml_load_file($this->getPath());
             $this->importLibXmlErrors();
 
         } else {
 
-            $xmlElem = simplexml_load_string($path);
+            $xmlElem = simplexml_load_string($init);
         }
 
 

@@ -55,7 +55,7 @@ class XMLFileTesttakers extends XMLFile {
                 if ($booklet != null) {
 
                     $booklet->addUsedBy($this);
-
+                    $this->addRelation(new FileRelation($booklet->getType(), $booklet->getName(), 'employsBooklet'));
                 }
 
                 if (!$booklet or !$booklet->isValid()) {

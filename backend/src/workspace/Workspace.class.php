@@ -114,7 +114,7 @@ class Workspace {
             'was_used' => []
         ];
 
-        $validator = new WorkspaceValidator($this);
+        $validator = new WorkspaceValidatorDb($this);
         $validator->validate();
         $allFiles = $validator->getFiles();
 
@@ -248,7 +248,7 @@ class Workspace {
 
         $files = array_fill_keys(Workspace::subFolders, []);
 
-        $validator = new WorkspaceValidator($this);
+        $validator = new WorkspaceValidatorDb($this);
 
         foreach ($localFilePaths as $localFilePath) {
 
@@ -354,11 +354,7 @@ class Workspace {
 
     public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
-        $dirToSearch = $this->getOrCreateSubFolderPath($type);
-
-        if ($fileMeta = $this->workspaceDAO->getFile($this->workspaceId, $findId, $type)) {
-
-            $file = File::get("$dirToSearch/{$fileMeta['name']}", $type, true);
+        if ($file = $this->workspaceDAO->getFile($this->workspaceId, $findId, $type)) {
 
             if ($file->isValid()) {
 
@@ -371,9 +367,7 @@ class Workspace {
             throw new HttpError("No $type with id `$findId` found on workspace `$this->workspaceId`!", 404);
         }
 
-        if ($fileMeta = $this->workspaceDAO->getFileSimilarVersion($this->workspaceId, $findId, $type)) {
-
-            $file = File::get("$dirToSearch/{$fileMeta['name']}", $type, true);
+        if ($file = $this->workspaceDAO->getFileSimilarVersion($this->workspaceId, $findId, $type)) {
 
             if ($file->isValid()) {
 
@@ -415,7 +409,7 @@ class Workspace {
     // TODO unit-test
     public function storeAllFilesMeta(): array {
 
-        $validator = new WorkspaceValidator($this);
+        $validator = new WorkspaceValidatorFs($this);
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
             'deleted' => 0,
@@ -516,6 +510,8 @@ class Workspace {
 
 
     public function getRequestedAttachments(XMLFileBooklet $booklet): array {
+
+        return []; // TODO! tmp !!!!
 
         $requestedAttachments = [];
         foreach ($booklet->getUnitIds(false) as $uniId) {
