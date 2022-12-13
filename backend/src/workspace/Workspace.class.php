@@ -82,27 +82,27 @@ class Workspace {
     }
 
 
-    public function getFiles(): array {
-
-        $files = [];
-
-        foreach ($this::subFolders as $type) {
-
-            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-            $filePaths = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
-
-            foreach ($filePaths as $filePath) {
-
-                if (!is_file($filePath)) {
-                    continue;
-                }
-
-                $files[] = new File($filePath, $type);
-            }
-        }
-
-        return $files;
-    }
+//    public function getFiles(): array {
+//
+//        $files = [];
+//
+//        foreach ($this::subFolders as $type) {
+//
+//            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+//            $filePaths = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
+//
+//            foreach ($filePaths as $filePath) {
+//
+//                if (!is_file($filePath)) {
+//                    continue;
+//                }
+//
+//                $files[] = new File($filePath, $type);
+//            }
+//        }
+//
+//        return $files;
+//    }
 
 
     public function deleteFiles(array $filesToDelete): array {
@@ -114,7 +114,7 @@ class Workspace {
             'was_used' => []
         ];
 
-        $validator = new WorkspaceValidatorDb($this);
+        $validator = new WorkspaceValidator($this);
         $validator->validate();
         $allFiles = $validator->getFiles();
 
@@ -248,7 +248,7 @@ class Workspace {
 
         $files = array_fill_keys(Workspace::subFolders, []);
 
-        $validator = new WorkspaceValidatorDb($this);
+        $validator = new WorkspaceValidator($this);
 
         foreach ($localFilePaths as $localFilePath) {
 
@@ -409,7 +409,7 @@ class Workspace {
     // TODO unit-test
     public function storeAllFilesMeta(): array {
 
-        $validator = new WorkspaceValidatorFs($this);
+        $files = $this->getValidatorReadAllFilesFromFs();
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
             'deleted' => 0,
@@ -418,7 +418,7 @@ class Workspace {
         $invalidCount = 0;
 
         $filesInDb = $this->workspaceDAO->getFileNames($this->workspaceId);
-        $filesInFolder = $validator->getFiles();
+        $filesInFolder = $files->getFiles();
 
         foreach ($filesInDb as $file) {
 
@@ -431,9 +431,9 @@ class Workspace {
             }
         }
 
-        foreach ($validator->getFiles() as $file /* @var $file File */) {
+        foreach ($files->getFiles() as $file /* @var $file File */) {
 
-            $file->crossValidate($validator);
+            $file->crossValidate($files);
 
             if (!$file->isValid()) {
 
@@ -521,5 +521,25 @@ class Workspace {
             $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
         }
         return $requestedAttachments;
+    }
+
+
+    private function getValidatorReadAllFilesFromFs(): WorkspaceValidator {
+
+        $validator = new WorkspaceValidator($this);
+
+        foreach (Workspace::subFolders as $type) {
+
+            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+            $files = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
+
+            foreach ($files as $filePath) {
+
+                $file = File::get($filePath, $type, true);
+                $validator->addFile($type, $file);
+            }
+        }
+
+        return $validator;
     }
 }
