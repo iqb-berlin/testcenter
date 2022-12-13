@@ -263,9 +263,9 @@ try  {
         $adminId = $initDAO->createAdmin($installationArguments->user_name, $installationArguments->user_password);
         CLI::success("Sys-Admin created: `$installationArguments->user_name`.");
 
+        $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
         foreach ($workspaceIds as $workspaceId) {
 
-            $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
             CLI::p("Workspace `ws_$workspaceId` added to `$installationArguments->user_name`.");
         }
 

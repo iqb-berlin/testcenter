@@ -139,17 +139,20 @@ class InitDAO extends SessionDAO {
     }
 
 
-    public function addWorkspaceToAdmin(int $adminId, int $workspaceId): void {
+    public function addWorkspacesToAdmin(int $adminId, array $workspaceIds): void {
 
         $superAdminDAO = new SuperAdminDAO();
         $superAdminDAO->setWorkspaceRightsByUser(
             $adminId,
-            [
-                (object) [
-                    "id" => $workspaceId,
-                    "role" => "RW"
-                ]
-            ]
+            array_map(
+                function(int $wsId) {
+                    return (object) [
+                        "role" => "RW",
+                        "id" => $wsId
+                    ];
+                },
+                $workspaceIds
+            )
         );
     }
 
