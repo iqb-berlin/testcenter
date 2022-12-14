@@ -344,7 +344,7 @@ class Workspace {
 
     public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
-        if ($file = $this->workspaceDAO->getFile($this->workspaceId, $findId, $type)) {
+        if ($file = $this->workspaceDAO->getFileById($this->workspaceId, $this->workspacePath, $findId, $type)) {
 
             if ($file->isValid()) {
 
@@ -357,7 +357,7 @@ class Workspace {
             throw new HttpError("No $type with id `$findId` found on workspace `$this->workspaceId`!", 404);
         }
 
-        if ($file = $this->workspaceDAO->getFileSimilarVersion($this->workspaceId, $findId, $type)) {
+        if ($file = $this->workspaceDAO->getFileSimilarVersion($this->workspaceId, $this->workspacePath, $findId, $type)) {
 
             if ($file->isValid()) {
 
@@ -432,11 +432,15 @@ class Workspace {
                 $invalidCount++;
             }
 
+            $this->workspaceDAO->storeFile($this->getId(), $file);
+            $typeStats[$file->getType()] += 1;
+        }
+
+        foreach ($files->getFiles() as $file) {
+
             $stats = $this->storeFileMeta($file);
             $loginStats['deleted'] += $stats['logins_deleted'];
             $loginStats['added'] += $stats['logins_added'];
-
-            $typeStats[$file->getType()] += 1;
         }
 
         return [
@@ -456,8 +460,6 @@ class Workspace {
             'resource_packages_installed' => 0,
             'attachments_noted' => 0
         ];
-
-        $this->workspaceDAO->storeFile($this->getId(), $file);
 
         if (!$file->isValid()) {
 
@@ -500,10 +502,17 @@ class Workspace {
 
     public function getRequestedAttachments(XMLFileBooklet $booklet): array {
 
-        return []; // TODO! tmp !!!!
+        /**
+         * Problem:
+         * - [!] beim initialen Einlesen können wir nicht aus der DB lesen, weil vllt. sind die entsprechenden Files noch
+         *   nicht da
+         * Also: das darf erst hinterher passieren
+         * - [!] Beim erneuten einlesen aber zugleich ...
+         */
+
 
         $requestedAttachments = [];
-        foreach ($booklet->getUnitIds(false) as $uniId) {
+        foreach ($booklet->getUnitIds() as $uniId) {
 
             $unit = $this->findFileById('Unit', $uniId);
             /* @var $unit XMLFileUnit */

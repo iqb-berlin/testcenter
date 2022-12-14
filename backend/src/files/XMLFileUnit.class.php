@@ -204,8 +204,7 @@ class XMLFileUnit extends XMLFile {
         $requestedAttachments = [];
         foreach ($variables as $variable) {
 
-            if (!is_a($variable, 'SimpleXMLElement')) {
-
+            if (!is_a($variable, SimpleXMLElement::class)) {
                 continue;
             }
 

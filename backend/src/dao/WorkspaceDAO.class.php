@@ -200,12 +200,6 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getFileNames(int $workspaceId): array {
-
-        return $this->_('select type, name from files where workspace_id = ?', [$workspaceId], true);
-    }
-
-
     /**
      * @codeCoverageIgnore
      */
@@ -215,10 +209,9 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getFile(int $workspaceId, string $fileId, string $type): ?File {
+    // TODO! duplicate id is now possible
+    // TODO! workspacePath
+    public function getFileById(int $workspaceId, string $workspacePath, string $fileId, string $type): ?File {
 
         $fileData =  $this->_(
             "select
@@ -248,26 +241,13 @@ class WorkspaceDAO extends DAO {
             ]
         );
 
-        return File::get(
-            new FileData(
-                $fileData['name'],  // TODO! path
-                $fileData['type'],
-                $fileData['id'],
-                $fileData['label'],
-                $fileData['description'],
-                (bool) $fileData['is_valid'],
-                unserialize($fileData['validation_report']),
-                $fileData['size'],
-                $fileData['modification_ts']
-            ),
-            $fileData['type']
-        );
+        return $this->resultRow2File($workspacePath, $fileData, []);
     }
 
 
-
-    // TODO use proper data-class
-    public function getFileSimilarVersion(int $workspaceId, string $fileId, string $type): ?File {
+    // TODO! duplicate id is now possible
+    // TODO! workspacePath
+    public function getFileSimilarVersion(int $workspaceId, string $workspacePath, string $fileId, string $type): ?File {
 
         $version = Version::guessFromFileName($fileId);
 
@@ -323,19 +303,7 @@ class WorkspaceDAO extends DAO {
             ]
         );
 
-        return new File(
-            new FileData(
-                $fileData['name'], // TODO! path
-                $fileData['type'],
-                $fileData['label'],
-                $fileData['description'],
-                $fileData['is_valid'],
-                unserialize($fileData['validation_report']),
-                $fileData['size'],
-                $fileData['modification_ts']
-            ),
-            $fileData['type']
-        );
+        return $this->resultRow2File($workspacePath, $fileData, []);
     }
 
 
@@ -454,24 +422,30 @@ class WorkspaceDAO extends DAO {
 
         $files = [];
         foreach ($this->_($sql, $replacements, true) as $f) {
-//            $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
-            $files["{$f['type']}/{$f['name']}"] = File::get(
-                new FileData(
-                    "$workspacePath/{$f['type']}/{$f['name']}",
-                    $f['type'],
-                    $f['id'],
-                    $f['label'],
-                    $f['description'],
-                    !!$f['is_valid'],
-                    unserialize($f['validation_report']),
-                    [],
-                    TimeStamp::fromSQLFormat($f['modification_ts']),
-                    $f['size']
-                ),
-                $f['type']
-            );
+            // $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
+            $files["{$f['type']}/{$f['name']}"] = $this->resultRow2File($workspacePath, $f, []);
         }
         return $files;
+    }
+
+
+    private function resultRow2File(string $workspacePath, array $row, array $relations): File {
+
+        return File::get(
+            new FileData(
+                "$workspacePath/{$row['type']}/{$row['name']}",
+                $row['type'],
+                $row['id'],
+                $row['label'],
+                $row['description'],
+                !!$row['is_valid'],
+                unserialize($row['validation_report']),
+                $relations,
+                TimeStamp::fromSQLFormat($row['modification_ts']),
+                $row['size']
+            ),
+            $row['type']
+        );
     }
 
 
