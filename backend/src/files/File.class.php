@@ -6,7 +6,6 @@ class File extends FileData {
     private const type = 'file';
     public const canHaveDependencies = true;
     protected string $name = '';
-    protected ?array $usedBy = [];
 
 
     static function get(string | FileData $init, string $type = null, bool $validate = false): File {
@@ -184,39 +183,5 @@ class File extends FileData {
     public function addRelation(FileRelation $dependency): void {
 
         $this->relations[] = $dependency;
-    }
-
-
-    public function addUsedBy(File $file): void {
-
-        if (!$this::canHaveDependencies) {
-            return;
-        }
-
-        if (!in_array($file, $this->usedBy)) {
-
-            $this->usedBy["{$file->getType()}/{$file->getName()}"] = $file;
-        }
-    }
-
-
-    public function isUsed(): bool {
-
-        return count($this->usedBy) > 0;
-    }
-
-
-    public function getUsedBy(): array {
-
-        if (!$this::canHaveDependencies) {
-            return [];
-        }
-
-        $depending = [];
-        foreach ($this->usedBy as $localPath => /*+ @var File */ $file) {
-            $depending[$localPath] = $file;
-            $depending = array_merge($depending, $file->getUsedBy());
-        }
-        return $depending;
     }
 }

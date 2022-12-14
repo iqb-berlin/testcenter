@@ -50,7 +50,6 @@ class XMLFileUnit extends XMLFile {
         $resource = $validator->getResource($this->playerId, true);
 
         if ($resource != null) {
-            $resource->addUsedBy($this);
             $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), 'usesPlayer'));
         } else {
             $this->report('error', "No suitable version of `{$this->playerId}` found");
@@ -77,7 +76,6 @@ class XMLFileUnit extends XMLFile {
             $resourceId = FileName::normalize($resourceName, false);
             $resource = $validator->getResource($resourceId, false);
             if ($resource != null) {
-                $resource->addUsedBy($this);
                 $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), 'usesResource'));
                 $this->totalSize += $resource->getSize(); // TODO also for additional resources?
             } else {

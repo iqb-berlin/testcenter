@@ -26,7 +26,6 @@ class XMLFileBooklet extends XMLFile {
                 continue;
             }
 
-            $unit->addUsedBy($this);
             $this->addRelation(new FileRelation($unit->getType(), $unit->getName(), 'employsUnit'));
 
             $this->totalSize += $unit->getTotalSize();

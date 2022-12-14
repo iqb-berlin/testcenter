@@ -185,20 +185,6 @@ class Workspace {
     }
 
 
-    private function isUnusedFileAndCanBeDeleted(File $file, array $allFilesToDelete): bool {
-
-        if (!$file->isUsed()) {
-
-            return true;
-        }
-
-        $usingFiles = array_keys($file->getUsedBy());
-
-        return count(array_intersect($usingFiles, $allFilesToDelete)) === count($usingFiles);
-    }
-
-
-
     protected function isPathLegal(string $path): bool {
 
         return substr_count($path, '..') == 0;

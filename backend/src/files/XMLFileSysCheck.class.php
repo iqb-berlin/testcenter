@@ -16,7 +16,6 @@ class XMLFileSysCheck extends XMLFile {
         $unit = $validator->getUnit($unitId);
 
         if ($unit != null) {
-            $unit->addUsedBy($this);
             $this->addRelation(new FileRelation($unit->getType(), $unit->getName(), 'employsUnit'));
         }
     }
