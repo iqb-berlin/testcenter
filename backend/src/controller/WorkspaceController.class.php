@@ -26,7 +26,7 @@ class WorkspaceController extends Controller {
 
         return $response->withJson([
             "id" => $workspaceId,
-            "name" => self::workspaceDAO()->getWorkspaceName($workspaceId),
+            "name" => self::workspaceDAO($workspaceId)->getWorkspaceName(),
             "role" => self::adminDAO()->getWorkspaceRole($authToken->getToken(), $workspaceId)
         ]);
     }
@@ -171,7 +171,7 @@ class WorkspaceController extends Controller {
 
         $fileDigestList = [];
 
-        foreach ($workspace->workspaceDAO->getAllFiles($workspace->getId(), $workspace->getWorkspacePath()) as $file) {
+        foreach ($workspace->workspaceDAO->getAllFiles() as $file) {
 
             if (!isset($fileDigestList[$file->getType()])) {
                 $fileDigestList[$file->getType()] = [];

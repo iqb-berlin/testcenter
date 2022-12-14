@@ -5,17 +5,27 @@ declare(strict_types=1);
 
 class WorkspaceDAO extends DAO {
 
-    public function getWorkspaceName($workspaceId): string {
+    private int $workspaceId;
+    private string $workspacePath;
+
+    public function __construct(int $workspaceId, string $workspacePath) {
+
+        parent::__construct();
+        $this->workspaceId = $workspaceId;
+        $this->workspacePath = $workspacePath;
+    }
+
+    public function getWorkspaceName(): string {
 
         $workspace = $this->_(
             'SELECT workspaces.name 
             FROM workspaces
             WHERE workspaces.id=:workspace_id',
-            [':workspace_id' => $workspaceId]
+            [':workspace_id' => $this->workspaceId]
         );
 
         if ($workspace == null) {
-            throw new HttpError("Workspace `$workspaceId` not found", 404); // @codeCoverageIgnore
+            throw new HttpError("Workspace `$this->workspaceId` not found", 404); // @codeCoverageIgnore
         }
 
         return $workspace['name'];
@@ -62,10 +72,10 @@ class WorkspaceDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function updateLoginSource(int $workspaceId, string $source, LoginArray $logins): array {
+    public function updateLoginSource(string $source, LoginArray $logins): array {
 
-        $deleted = $this->deleteLoginSource($workspaceId, $source);
-        $added = $this->addLoginSource($workspaceId, $source, $logins);
+        $deleted = $this->deleteLoginSource($source);
+        $added = $this->addLoginSource($source, $logins);
         return [$deleted, $added];
     }
 
@@ -73,11 +83,11 @@ class WorkspaceDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function addLoginSource(int $workspaceId, string $source, LoginArray $logins): int {
+    public function addLoginSource(string $source, LoginArray $logins): int {
 
         foreach ($logins as $login) {
 
-            $this->createLogin($login, $workspaceId, $source);
+            $this->createLogin($login, $source);
         }
         return count($logins->asArray());
     }
@@ -86,7 +96,7 @@ class WorkspaceDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function createLogin(Login $login, int $workspaceId, string $source): void {
+    public function createLogin(Login $login, string $source): void {
 
         $this->_('insert into logins 
                  (
@@ -106,7 +116,7 @@ class WorkspaceDAO extends DAO {
             [
                 $login->getName(),
                 $login->getMode(),
-                $workspaceId,
+                $this->workspaceId,
                 json_encode($login->getBooklets()),
                 $login->getGroupName(),
                 $login->getGroupLabel(),
@@ -123,20 +133,20 @@ class WorkspaceDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function deleteLoginSource(int $workspaceId, string $source): int {
+    public function deleteLoginSource(string $source): int {
 
         $this->_(
             'delete from logins where source = :source and workspace_id = :ws_id',
             [
                 ':source' => $source,
-                ':ws_id' => $workspaceId
+                ':ws_id' => $this->workspaceId
             ]
         );
         return $this->lastAffectedRows;
     }
 
 
-    public function storeFile(int $workspaceId, File $file): void {
+    public function storeFile(File $file): void {
 
         $version = Version::split($file->getSpecialInfo()->version);
 
@@ -160,7 +170,7 @@ class WorkspaceDAO extends DAO {
                     modification_ts
                 ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             [
-                $workspaceId,
+                $this->workspaceId,
                 $file->getName(),
                 $file->getId(),
                 $version['major'],
@@ -188,7 +198,7 @@ class WorkspaceDAO extends DAO {
             "insert into file_relations (workspace_id, subject_name, subject_type, object_name, object_type, object_request)
                 values (?, ?, ?, ?, ?, ?);",
                 [
-                    $workspaceId,
+                    $this->workspaceId,
                     $file->getName(),
                     $file->getType(),
                     $relation->getTargetName(),
@@ -203,15 +213,14 @@ class WorkspaceDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function deleteFile(int $workspaceId, File $file): void {
+    public function deleteFile(File $file): void {
 
-        $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$workspaceId, $file->getName(), $file->getType()]);
+        $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$this->workspaceId, $file->getName(), $file->getType()]);
     }
 
 
     // TODO! duplicate id is now possible
-    // TODO! workspacePath
-    public function getFileById(int $workspaceId, string $workspacePath, string $fileId, string $type): ?File {
+    public function getFileById(string $fileId, string $type): ?File {
 
         $fileData =  $this->_(
             "select
@@ -235,19 +244,18 @@ class WorkspaceDAO extends DAO {
                 where
                     workspace_id = ? and id = ? and type = ?",
             [
-                $workspaceId,
+                $this->workspaceId,
                 $fileId,
                 $type
             ]
         );
 
-        return $this->resultRow2File($workspacePath, $fileData, []);
+        return $this->resultRow2File($fileData, []);
     }
 
 
     // TODO! duplicate id is now possible
-    // TODO! workspacePath
-    public function getFileSimilarVersion(int $workspaceId, string $workspacePath, string $fileId, string $type): ?File {
+    public function getFileSimilarVersion(string $fileId, string $type): ?File {
 
         $version = Version::guessFromFileName($fileId);
 
@@ -292,7 +300,7 @@ class WorkspaceDAO extends DAO {
                 limit 1
             ",
             [
-                ':ws_id' => $workspaceId,
+                ':ws_id' => $this->workspaceId,
                 ':file_id' => $fileId,
                 ':type' => $type,
                 ':version_mayor' => $version['major'],
@@ -303,16 +311,16 @@ class WorkspaceDAO extends DAO {
             ]
         );
 
-        return $this->resultRow2File($workspacePath, $fileData, []);
+        return $this->resultRow2File($fileData, []);
     }
 
 
-    public function updateUnitDefsAttachments(int $workspaceId, string $bookletName, array $attachments): void {
+    public function updateUnitDefsAttachments(string $bookletName, array $attachments): void {
 
         $this->_(
             'delete from unit_defs_attachments where workspace_id = :workspace_id and booklet_name = :booklet_name;',
             [
-                ':workspace_id' => $workspaceId,
+                ':workspace_id' => $this->workspaceId,
                 ':booklet_name' => $bookletName
             ]
         );
@@ -325,7 +333,7 @@ class WorkspaceDAO extends DAO {
                 'replace into unit_defs_attachments(workspace_id, booklet_name, unit_name, variable_id, attachment_type)
                     values(:workspace_id, :booklet_name, :unit_name, :variable_id, :attachment_type)',
                 [
-                    ':workspace_id' => $workspaceId,
+                    ':workspace_id' => $this->workspaceId,
                     ':booklet_name' => $bookletName,
                     ':unit_name' => $requestedAttachment->unitName,
                     ':variable_id' => $requestedAttachment->variableId,
@@ -335,7 +343,7 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getAllFiles(int $workspaceId, string $workspacePath): array {
+    public function getAllFiles(): array {
 
         $sql = "
             select
@@ -350,47 +358,47 @@ class WorkspaceDAO extends DAO {
                 modification_ts
             from files
                 where workspace_id = ?";
-        $replacements = [$workspaceId];
+        $replacements = [$this->workspaceId];
 
-        return $this->fetchFiles($workspaceId, $workspacePath, $sql, $replacements);
+        return $this->fetchFiles($sql, $replacements);
     }
 
 
-    private function getFileRelations(int $workspaceId, string $name, string $type): array {
+//    private function getFileRelations(string $name, string $type): array {
+//
+//        $relations = $this->_("
+//            select
+//                object_type,
+//                object_request
+//            from
+//                file_relations
+//            where
+//                workspace_id = ?
+//                and subject_name = ?
+//                and subject_type = ?",
+//            [$this->workspaceId, $name, $type],
+//            true
+//        );
+//
+//        return array_map(
+//            function(array $r): FileRelation {
+//                return new FileRelation(
+//                    $r['object_type'],
+//                    $r['object_request'],
+//                    'TBA'
+//                );
+//            },
+//            $relations
+//        );
+//    }
 
-        $relations = $this->_("
-            select
-                object_type,
-                object_request
-            from
-                file_relations
-            where
-                workspace_id = ?
-                and subject_name = ?
-                and subject_type = ?",
-            [$workspaceId, $name, $type],
-            true
-        );
-
-        return array_map(
-            function(array $r): FileRelation {
-                return new FileRelation(
-                    $r['object_type'],
-                    $r['object_request'],
-                    'TBA'
-                );
-            },
-            $relations
-        );
-    }
 
 
-    // TODO! dont' work with $localPaths!
-    public function getFiles(int $workspaceId, string $workspacePath, array $localPaths): array {
+    public function getFiles(array $localPaths): array {
 
         $placeholder = implode(' or ', array_fill(0, count($localPaths), '(type = ? and name = ?)'));
 
-        $replacements = [$workspaceId];
+        $replacements = [$this->workspaceId];
 
         foreach ($localPaths as $fileLocalPath) {
 
@@ -413,27 +421,26 @@ class WorkspaceDAO extends DAO {
                     and files.is_valid
                     and ($placeholder)";
 
-        return $this->fetchFiles($workspaceId, $workspacePath, $sql, $replacements);
+        return $this->fetchFiles($sql, $replacements);
     }
 
 
-    // TODO! get rid of int $workspaceId, string $workspacePath
-    private function fetchFiles(int $workspaceId, string $workspacePath, $sql, $replacements): array {
+    private function fetchFiles($sql, $replacements): array {
 
         $files = [];
         foreach ($this->_($sql, $replacements, true) as $f) {
             // $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
-            $files["{$f['type']}/{$f['name']}"] = $this->resultRow2File($workspacePath, $f, []);
+            $files["{$f['type']}/{$f['name']}"] = $this->resultRow2File($f, []);
         }
         return $files;
     }
 
 
-    private function resultRow2File(string $workspacePath, array $row, array $relations): File {
+    private function resultRow2File(array $row, array $relations): File {
 
         return File::get(
             new FileData(
-                "$workspacePath/{$row['type']}/{$row['name']}",
+                "$this->workspacePath/{$row['type']}/{$row['name']}",
                 $row['type'],
                 $row['id'],
                 $row['label'],
@@ -449,14 +456,14 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getBlockedFiles(int $workspaceId, array $files): array {
+    public function getBlockedFiles(array $files): array {
 
         if (!count($files)) {
             return [];
         }
 
         $replacements = [
-            ':ws_id' => $workspaceId
+            ':ws_id' => $this->workspaceId
         ];
         $conditions = [];
         $i = 0;

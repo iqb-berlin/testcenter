@@ -33,7 +33,7 @@ class Workspace {
 
         $this->workspaceId = $workspaceId;
         $this->workspacePath = $this->getOrCreateWorkspacePath();
-        $this->workspaceDAO = new WorkspaceDAO();
+        $this->workspaceDAO = new WorkspaceDAO($this->workspaceId, $this->workspacePath);
     }
 
 
@@ -114,8 +114,8 @@ class Workspace {
             'was_used' => []
         ];
 
-        $cachedFilesToDelete = $this->workspaceDAO->getFiles($this->workspaceId, $this->workspacePath, $filesToDelete);
-        $blockedFiles = $this->workspaceDAO->getBlockedFiles($this->workspaceId, $cachedFilesToDelete);
+        $cachedFilesToDelete = $this->workspaceDAO->getFiles($filesToDelete);
+        $blockedFiles = $this->workspaceDAO->getBlockedFiles($cachedFilesToDelete);
 
         foreach($filesToDelete as $localFilePath) {
 
@@ -167,7 +167,7 @@ class Workspace {
 
             if (is_a($file, XMLFileTesttakers::class)) {
 
-                $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file->getName());
+                $this->workspaceDAO->deleteLoginSource($file->getName());
             }
 
             if (is_a($file, ResourceFile::class) and $file->isPackage()) {
@@ -175,7 +175,7 @@ class Workspace {
                 $file->uninstallPackage();
             }
 
-            $this->workspaceDAO->deleteFile($this->workspaceId, $file);
+            $this->workspaceDAO->deleteFile($file);
 
         } catch (Exception $e) {
 
@@ -344,7 +344,7 @@ class Workspace {
 
     public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
-        if ($file = $this->workspaceDAO->getFileById($this->workspaceId, $this->workspacePath, $findId, $type)) {
+        if ($file = $this->workspaceDAO->getFileById($findId, $type)) {
 
             if ($file->isValid()) {
 
@@ -357,7 +357,7 @@ class Workspace {
             throw new HttpError("No $type with id `$findId` found on workspace `$this->workspaceId`!", 404);
         }
 
-        if ($file = $this->workspaceDAO->getFileSimilarVersion($this->workspaceId, $this->workspacePath, $findId, $type)) {
+        if ($file = $this->workspaceDAO->getFileSimilarVersion($findId, $type)) {
 
             if ($file->isValid()) {
 
@@ -407,7 +407,7 @@ class Workspace {
         ];
         $invalidCount = 0;
 
-        $filesInDb = $this->workspaceDAO->getAllFiles($this->workspaceId, $this->workspacePath);
+        $filesInDb = $this->workspaceDAO->getAllFiles();
         $filesInFolder = $files->getFiles();
 
         foreach ($filesInDb as $file) {
@@ -416,8 +416,8 @@ class Workspace {
 
             if (!isset($filesInFolder[$file->getPath()])) {
 
-                $this->workspaceDAO->deleteFile($this->workspaceId, $file);
-                $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file['name']);
+                $this->workspaceDAO->deleteFile($file);
+                $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file['name']);
             }
         }
 
@@ -432,7 +432,7 @@ class Workspace {
                 $invalidCount++;
             }
 
-            $this->workspaceDAO->storeFile($this->getId(), $file);
+            $this->workspaceDAO->storeFile($file);
             $typeStats[$file->getType()] += 1;
         }
 
@@ -468,7 +468,7 @@ class Workspace {
 
         if (is_a($file, XMLFileTesttakers::class)) {
 
-            list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
+            list($deleted, $added) = $this->workspaceDAO->updateLoginSource($file->getName(), $file->getAllLogins());
             $stats['logins_deleted'] = $deleted;
             $stats['logins_added'] = $added;
         }
@@ -482,7 +482,7 @@ class Workspace {
         if (is_a($file, XMLFileBooklet::class)) {
 
             $requestedAttachments = $this->getRequestedAttachments($file);
-            $this->workspaceDAO->updateUnitDefsAttachments($this->workspaceId, $file->getId(), $requestedAttachments);
+            $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
             $stats['attachments_noted'] = count($requestedAttachments);
         }
 
