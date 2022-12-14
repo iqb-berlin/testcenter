@@ -136,7 +136,7 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function storeFileMeta(int $workspaceId, File $file): void {
+    public function storeFile(int $workspaceId, File $file): void {
 
         $version = Version::split($file->getSpecialInfo()->version);
 
@@ -209,9 +209,9 @@ class WorkspaceDAO extends DAO {
     /**
      * @codeCoverageIgnore
      */
-    public function deleteFileMeta(int $workspaceId, string $name, string $type): void {
+    public function deleteFile(int $workspaceId, File $file): void {
 
-        $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$workspaceId, $name, $type]);
+        $this->_("delete from files where workspace_id = ? and name = ? and type = ?", [$workspaceId, $file->getName(), $file->getType()]);
     }
 
 
@@ -454,7 +454,7 @@ class WorkspaceDAO extends DAO {
 
         $files = [];
         foreach ($this->_($sql, $replacements, true) as $f) {
-            $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
+//            $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
             $files["{$f['type']}/{$f['name']}"] = File::get(
                 new FileData(
                     "$workspacePath/{$f['type']}/{$f['name']}",
@@ -464,7 +464,7 @@ class WorkspaceDAO extends DAO {
                     $f['description'],
                     !!$f['is_valid'],
                     unserialize($f['validation_report']),
-                    $relations,
+                    [],
                     TimeStamp::fromSQLFormat($f['modification_ts']),
                     $f['size']
                 ),

@@ -69,7 +69,7 @@ class WorkspaceDAOTest extends TestCase {
         $file = new XMLFileBooklet('<Booklet><Metadata><Id>BOOKLET.SAMPLE-1</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>', false, true);
         $file->setFilePath(REAL_ROOT_DIR . '/sampledata/Booklet.xml');
 
-        $this->dbc->storeFileMeta(1, $file);
+        $this->dbc->storeFile(1, $file);
         $files = $this->dbc->_("select * from files where type = 'Booklet'", [], true);
         $expectation = [
             [

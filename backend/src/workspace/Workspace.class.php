@@ -175,7 +175,7 @@ class Workspace {
                 $file->uninstallPackage();
             }
 
-            $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file->getName(), $file->getType());
+            $this->workspaceDAO->deleteFile($this->workspaceId, $file);
 
         } catch (Exception $e) {
 
@@ -407,16 +407,16 @@ class Workspace {
         ];
         $invalidCount = 0;
 
-        $filesInDb = $this->workspaceDAO->getFileNames($this->workspaceId);
+        $filesInDb = $this->workspaceDAO->getAllFiles($this->workspaceId, $this->workspacePath);
         $filesInFolder = $files->getFiles();
 
         foreach ($filesInDb as $file) {
 
-            $fileFullPath = $this->getWorkspacePath() . "/{$file['type']}/{$file['name']}";
+            /* @var File $file */
 
-            if (!isset($filesInFolder[$fileFullPath])) {
+            if (!isset($filesInFolder[$file->getPath()])) {
 
-                $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file['name'], $file['type']);
+                $this->workspaceDAO->deleteFile($this->workspaceId, $file);
                 $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file['name']);
             }
         }
@@ -457,7 +457,7 @@ class Workspace {
             'attachments_noted' => 0
         ];
 
-        $this->workspaceDAO->storeFileMeta($this->getId(), $file);
+        $this->workspaceDAO->storeFile($this->getId(), $file);
 
         if (!$file->isValid()) {
 

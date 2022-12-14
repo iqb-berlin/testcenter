@@ -180,8 +180,8 @@ class File extends FileData {
     }
 
 
-    public function addRelation(FileRelation $dependency): void {
+    public function addRelation(FileRelation $relation): void {
 
-        $this->relations[] = $dependency;
+        $this->relations[] = $relation;
     }
 }
