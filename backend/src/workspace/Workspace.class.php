@@ -237,9 +237,8 @@ class Workspace {
                 if ($file->isValid()) {
 
                     $this->sortUnsortedFile($localFilePath, $file);
+                    $this->storeFileMeta($file);
                 }
-
-                $this->storeFileMeta($file);
 
                 $filesAfterSorting[$localFilePath] = $file;
             }
@@ -253,7 +252,7 @@ class Workspace {
 
         $files = array_fill_keys(Workspace::subFolders, []);
 
-        $validator = new WorkspaceValidator($this);
+        $validator = $this->getValidatorWithAllFilesFromFs();
 
         foreach ($localFilePaths as $localFilePath) {
 
@@ -445,7 +444,6 @@ class Workspace {
             if (!$file->isValid()) {
 
                 $invalidCount++;
-//                continue;
             }
 
             $stats = $this->storeFileMeta($file);

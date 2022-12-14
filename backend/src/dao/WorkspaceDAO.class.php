@@ -173,7 +173,7 @@ class WorkspaceDAO extends DAO {
                 (($file instanceof ResourceFile) and $file->isVeronaModule()) ? $file->getSpecialInfo()->veronaModuleType : '',
                 $file->getSpecialInfo()->veronaVersion,
                 $file->getSpecialInfo()->playerId,
-                $file->isValid(),
+                $file->isValid() ? 1 : 0,
                 serialize($file->getValidationReport()),
                 $file->getSize(),
                 TimeStamp::toSQLFormat($file->getModificationTime())

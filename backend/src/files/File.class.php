@@ -99,9 +99,6 @@ class File extends FileData {
     }
 
 
-
-
-
     public function getName(): string {
 
         return $this->name;
