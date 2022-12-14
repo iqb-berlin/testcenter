@@ -115,69 +115,62 @@ class Workspace {
         ];
 
         $cachedFilesToDelete = $this->workspaceDAO->getFiles($this->workspaceId, $this->workspacePath, $filesToDelete);
-        $affectedFiles = $this->workspaceDAO->getAffectedFiles($this->workspaceId, $this->workspacePath, $cachedFilesToDelete);
+        $blockedFiles = $this->workspaceDAO->getBlockedFiles($this->workspaceId, $cachedFilesToDelete);
 
-//        $validator = new WorkspaceValidator($this);
-//        if (count($affectedFiles)) {
-//
-//            foreach ($affectedFiles as $file) {
-//                $validator->addFile($file->getType(), $file);
-//            }
-//            $validator->validate();
-//        }
+        foreach($filesToDelete as $localFilePath) {
+
+            $cachedFile = $cachedFilesToDelete[$localFilePath] ?? null;
+
+            // file does not exist in db means, it must be something not validatable like sysCheck-Reports
+            if ($cachedFile) {
+
+                if (isset($blockedFiles[$localFilePath])) {
+
+                    $report['was_used'][] = $localFilePath;
+                    continue;
+                }
 
 
+                if (!$this->deleteFileFromDb($cachedFile)) {
 
-        foreach($filesToDelete as $fileToDelete) {
-
-            $cachedFile = $cachedFilesToDeleteMap[$fileToDelete] ?? null;
-
-            // file does not exist in validator means it must be something not validatable like sysCheck-Reports
-            if ($cachedFile and $cachedFile->isValid()) {
-
-                // Hat die Datei abhängigkeiten, die nicht ebenfalls gelöscht werden sollen
-
-                // STAND: Wir haben zwar $affectedFiles, wissen aber nicht welche von was abhängt.
-
-                // nein: $report['was_used'][] = $fileToDelete; continue;
-
-                if ($this->postProcessFileDeletion($cachedFile)) {
-
-                    $report['error'][] = $fileToDelete;
+                    $report['error'][] = $localFilePath;
+                    continue;
                 }
             }
 
-            $fullPath = $this->workspacePath . '/' . $fileToDelete;
+            $fullPath = $this->workspacePath . '/' . $localFilePath;
             if (!file_exists($fullPath)) {
 
-                $report['did_not_exist'][] = $fileToDelete;
+                $report['did_not_exist'][] = $localFilePath;
                 continue;
             }
 
-            if ($this->isPathLegal($fullPath) /* and unlink($fullPath) */) {
+            if ($this->isPathLegal($fullPath) and unlink($fullPath)) {
 
-                $report['deleted'][] = $fileToDelete;
+                $report['deleted'][] = $localFilePath;
 
             } else {
 
-                $report['not_allowed'][] = $fileToDelete;
+                $report['not_allowed'][] = $localFilePath;
             }
+
+
         }
 
         return $report;
     }
 
 
-    private function postProcessFileDeletion(?File $file): bool {
+    private function deleteFileFromDb(?File $file): bool {
 
         try {
 
-            if ($file->getType() == 'Testtakers') {
+            if (is_a($file, XMLFileTesttakers::class)) {
 
                 $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file->getName());
             }
 
-            if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+            if (is_a($file, ResourceFile::class) and $file->isPackage()) {
 
                 $file->uninstallPackage();
             }

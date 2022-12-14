@@ -420,7 +420,7 @@ class WorkspaceDAO extends DAO {
     // TODO! dont' work with $localPaths!
     public function getFiles(int $workspaceId, string $workspacePath, array $localPaths): array {
 
-        $placeholder = implode(' or ', array_fill(0, count($localPaths), '(object_type = ? and object_name = ?)'));
+        $placeholder = implode(' or ', array_fill(0, count($localPaths), '(type = ? and name = ?)'));
 
         $replacements = [$workspaceId];
 
@@ -475,54 +475,63 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getAffectedFiles(int $workspaceId, string $workspacePath, array $files): array {
+    public function getBlockedFiles(int $workspaceId, array $files): array {
 
         if (!count($files)) {
             return [];
         }
 
-        $placeholder = implode(' or ', array_fill(0, count($files), '(object_type = ? and object_name = ?)'));
-
-        $replacements = [$workspaceId];
-
+        $replacements = [
+            ':ws_id' => $workspaceId
+        ];
+        $conditions = [];
+        $i = 0;
         foreach ($files as $file) {
-
-            /* @var File $file */
-            $replacements[] = $file->getType();
-            $replacements[] = $file->getName();
+            $i++;
+            $replacements[":type_$i"] = $file->getType();
+            $replacements[":name_$i"] = $file->getName();
+            $conditions[] = "(object_type = :type_$i and object_name = :name_$i)";
         }
 
-        $replacements[] = $workspaceId;
+        $selectedFilesConditions = implode(' or ', $conditions);
 
-        $sql = "with recursive R as (
+        $sql = "with recursive affected_files as (
                     select
-                        subject_name, subject_type, workspace_id
+                        subject_type as object_type,
+                        subject_name as object_name,
+                        concat (object_type, '/', object_name) as ancestor
                     from file_relations
                     where
-                        workspace_id = ? and ($placeholder)
+                        workspace_id = :ws_id and ($selectedFilesConditions)
                 
                     union all
                 
                     select
-                        file_relations.subject_name, file_relations.subject_type, file_relations.workspace_id
-                    from R
-                        join file_relations on R.subject_name = file_relations.object_name and R.subject_type = file_relations.object_type and file_relations.workspace_id = 6
+                        file_relations.subject_type as object_type,
+                        file_relations.subject_name as object_name,
+                        affected_files.ancestor
+                    from affected_files
+                        join file_relations
+                            on affected_files.object_name = file_relations.object_name
+                                and affected_files.object_type = file_relations.object_type
+                                and file_relations.workspace_id = 6
                 )
                 select distinct
-                    name,
-                    type,
-                    id,
-                    label,
-                    description,
-                    is_valid,
-                    validation_report,
-                    size,
-                    modification_ts
-                from R
-                     left join files on R.workspace_id = files.workspace_id and R.subject_name = files.name and R.subject_type = files.type
+                    affected_files.ancestor as file_local_path,
+                    concat (object_type, '/', object_name) as blocked_by
+                from affected_files
                 where
-                    files.workspace_id = ? and files.is_valid;";
+                    not ($selectedFilesConditions)";
 
-        return $this->fetchFiles($workspaceId, $workspacePath, $sql, $replacements);
+        $result = $this->_($sql, $replacements, true);
+
+        return array_reduce(
+            $result,
+            function(array $agg, array $row) {
+                $agg[$row['file_local_path']] = $row['blocked_by'];
+                return $agg;
+            },
+            []
+        );
     }
 }
