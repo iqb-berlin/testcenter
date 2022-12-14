@@ -44,9 +44,7 @@ class XMLFile extends File {
 
             $this->xml = new SimpleXMLElement('<error />');
 
-            if (!count($this->validationReport)) {
-                $this->validationReport[] = new ValidationReportEntry('error', "Invalid File");
-            }
+            $this->report('error', "Invalid File");
 
             libxml_use_internal_errors(false);
             return;

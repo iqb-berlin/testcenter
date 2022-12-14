@@ -151,7 +151,7 @@ class WorkspaceController extends Controller {
         $containsErrors = false;
         foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
-            $reports[$localPath] = $file->getValidationReportSorted();
+            $reports[$localPath] = $file->getValidationReport();
             $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
             $loginsAffected = ($loginsAffected or ($file->isValid() and ($file->getType() == 'Testtakers')));
         }
@@ -182,7 +182,7 @@ class WorkspaceController extends Controller {
                 'modificationTime' => $file->getModificationTime(),
                 'type' => $file->getType(),
                 'id' => $file->getId(),
-                'report' => $file->getValidationReportSorted(),
+                'report' => $file->getValidationReport(),
                 'info' => $file->getSpecialInfo()
             ];
         }

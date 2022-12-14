@@ -7,7 +7,6 @@ class File extends FileData {
     public const canHaveDependencies = true;
     protected string $name = '';
 
-
     static function get(string | FileData $init, string $type = null, bool $validate = false): File {
 
         if (!$type) {
@@ -106,13 +105,13 @@ class File extends FileData {
 
     public function isValid(): bool {
 
-        return count($this->getErrors()) == 0;
+        return count($this->validationReport['error'] ?? []) == 0;
     }
 
 
     public function report(string $level, string $message): void {
 
-        $this->validationReport[] = new ValidationReportEntry($level, $message);
+        $this->validationReport[$level][] = $message;
     }
 
 
@@ -130,40 +129,10 @@ class File extends FileData {
         }
     }
 
-    public function getValidationReport(): array {
-
-        return $this->validationReport;
-    }
-
-
-    // TODO maybe store report sorted by level at the first time
-    // TODO unit-test
-    public function getValidationReportSorted(): array {
-
-        return array_reduce(
-            $this->getValidationReport(),
-            function(array $carry, ValidationReportEntry $a) {
-                $carry[$a->level][] = $a->message;
-                return $carry;
-            },
-            []
-        );
-    }
-
-
-    public function getErrors(): array {
-
-        return array_filter($this->validationReport, function($validationReportEntry): bool {
-            return $validationReportEntry->level == 'error';
-        });
-    }
-
 
     public function getErrorString(): string {
 
-        return implode(", ", array_map(function (ValidationReportEntry $entry): string {
-            return "[{$entry->level}] {$entry->message}";
-        }, $this->getErrors()));
+        return implode(", ", $this->validationReport['error']);
     }
 
 

@@ -10,7 +10,7 @@ class FileData extends DataCollectionTypeSafe {
     protected string $description = '';
     protected array $relations = [];
     private bool $isValid;
-    protected array $validationReport = [];
+    protected array $validationReport = ['warning' => [], 'error' => [], 'info' => []];
     protected int $modificationTime = 0;
     protected int $size = 0;
 
@@ -32,7 +32,7 @@ class FileData extends DataCollectionTypeSafe {
         $this->label = $label;
         $this->description = $description;
         $this->isValid = $isValid;
-        $this->validationReport = $validationReport;
+        $this->validationReport = $validationReport ?? ['warning' => [], 'error' => [], 'info' => []];
         $this->relations = $relations;
         $this->modificationTime = $modificationTime;
         $this->size = $size;
