@@ -119,7 +119,9 @@ class Workspace {
 
         foreach($filesToDelete as $localFilePath) {
 
-            $cachedFile = $cachedFilesToDelete[$localFilePath] ?? null;
+            list($type, $name) = explode('/', $localFilePath, 2);
+
+            $cachedFile = $cachedFilesToDelete[$type][$name] ?? null;
 
             // file does not exist in db means, it must be something not validatable like sysCheck-Reports
             if ($cachedFile) {
@@ -410,14 +412,17 @@ class Workspace {
         $filesInDb = $this->workspaceDAO->getAllFiles();
         $filesInFolder = $files->getFiles();
 
-        foreach ($filesInDb as $file) {
+        foreach ($filesInDb as $fileSet) {
 
-            /* @var File $file */
+            foreach ($fileSet as $file) {
 
-            if (!isset($filesInFolder[$file->getPath()])) {
+                /* @var File $file */
 
-                $this->workspaceDAO->deleteFile($file);
-                $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file['name']);
+                if (!isset($filesInFolder[$file->getPath()])) {
+
+                    $this->workspaceDAO->deleteFile($file);
+                    $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file['name']);
+                }
             }
         }
 

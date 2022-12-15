@@ -13,8 +13,14 @@ class FileData extends DataCollectionTypeSafe {
     protected array $validationReport = ['warning' => [], 'error' => [], 'info' => []];
     protected int $modificationTime = 0;
     protected int $size = 0;
-    protected VeronaModuleMeta $specialInfo;
     protected array $contextData;
+    protected string $veronaModuleType;
+    protected string $veronaModuleId;
+    protected int $versionMayor;
+    protected int $versionMinor;
+    protected int $versionPatch;
+    protected string $versionLabel;
+    protected string $veronaVersion;
 
     public function __construct(
         string $path = '',
@@ -27,8 +33,14 @@ class FileData extends DataCollectionTypeSafe {
         array $relations = [],
         int $modificationTime = 0,
         int $size = 0,
-        VeronaModuleMeta $VeronaModuleMeta = new VeronaModuleMeta(),
-        array $contextData = []
+        array $contextData = [],
+        string $veronaModuleType = "",
+        string $veronaModuleId = "",
+        int $versionMayor = 0,
+        int $versionMinor = 0,
+        int $versionPatch = 0,
+        string $versionLabel = "",
+        string $veronaVersion = ""
     ) {
         $this->path = $path;
         $this->type = $type;
@@ -40,8 +52,14 @@ class FileData extends DataCollectionTypeSafe {
         $this->relations = $relations;
         $this->modificationTime = $modificationTime;
         $this->size = $size;
-        $this->specialInfo = $VeronaModuleMeta;
         $this->contextData = $contextData;
+        $this->veronaModuleType = $veronaModuleType;
+        $this->veronaModuleId = $veronaModuleId;
+        $this->versionMayor = $versionMayor;
+        $this->versionMinor = $versionMinor;
+        $this->versionPatch = $versionPatch;
+        $this->versionLabel = $versionLabel;
+        $this->veronaVersion = $veronaVersion;
     }
 
 
@@ -105,14 +123,50 @@ class FileData extends DataCollectionTypeSafe {
     }
 
 
-    public function getSpecialInfo(): VeronaModuleMeta {
-
-        return $this->specialInfo;
-    }
-
-
     public function getContextData(): array {
 
         return $this->contextData;
+    }
+
+
+    public function getVeronaModuleType(): string {
+
+        return $this->veronaModuleType;
+    }
+
+
+    public function getVeronaModuleId(): string {
+
+        return $this->veronaModuleId;
+    }
+
+
+    public function getVersionMayor(): int {
+
+        return $this->versionMayor;
+    }
+
+
+    public function getVersionMinor(): int {
+
+        return $this->versionMinor;
+    }
+
+
+    public function getVersionPatch(): int {
+
+        return $this->versionPatch;
+    }
+
+
+    public function getVersionLabel(): string {
+
+        return $this->versionLabel;
+    }
+
+
+    public function getVeronaVersion(): string {
+
+        return $this->veronaVersion;
     }
 }

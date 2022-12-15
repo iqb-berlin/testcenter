@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
 
@@ -63,15 +64,15 @@ class ResourceFile extends File {
             }
         }
 
-        if (!$this->specialInfo->version) {
+        if (!$this->getVersion()) {
 
             list(
-                $this->specialInfo->veronaModuleId,
-                $this->specialInfo->version,
-                $this->specialInfo->versionMayor,
-                $this->specialInfo->versionMinor,
-                $this->specialInfo->versionPatch,
-                $this->specialInfo->versionLabel,
+                $this->veronaModuleId,
+                ,
+                $this->versionMayor,
+                $this->versionMinor,
+                $this->versionPatch,
+                $this->versionLabel,
             ) = array_values(Version::guessFromFileName(basename($this->getPath())));
 
             $this->report('warning', 'Metadata missing. Version guessed from Filename.');
@@ -101,7 +102,7 @@ class ResourceFile extends File {
         // habits where differently back then
         $contentAttr = $meta->getAttribute('content');
         $includedVersion = Version::guessFromFileName($contentAttr . '.xxx');
-        $this->specialInfo->veronaModuleId =
+        $this->veronaModuleId =
             'verona-player-' .
             implode(
                 '-',
@@ -112,16 +113,15 @@ class ResourceFile extends File {
         );
 
         list(
-            $this->specialInfo->version,
-            $this->specialInfo->versionMayor,
-            $this->specialInfo->versionMinor,
-            $this->specialInfo->versionPatch,
-            $this->specialInfo->versionLabel
+            $this->versionMayor,
+            $this->versionMinor,
+            $this->versionPatch,
+            $this->versionLabel
         ) = array_values(Version::split($meta->getAttribute('data-version')));
 
-        $this->specialInfo->veronaVersion = $meta->getAttribute('data-api-version');
+        $this->veronaVersion = $meta->getAttribute('data-api-version');
         $this->description = $meta->getAttribute('data-description');
-        $this->specialInfo->veronaModuleType = 'player';
+        $this->veronaModuleType = 'player';
 
         $this->report('warning', 'Metadata in meta-tag is deprecated!');
         return true;
@@ -167,7 +167,7 @@ class ResourceFile extends File {
         }
         try {
             $meta = JSON::decode($metaElem->textContent, true);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         if ($meta["@context"] !== "https://w3id.org/iqb/verona-modules") {
@@ -175,16 +175,15 @@ class ResourceFile extends File {
         }
         $this->label = $this->getPreferredTranslationV35($meta['name']);
         $this->description = $this->getPreferredTranslationV35($meta['description']);
-        $this->specialInfo->veronaModuleId = $meta['@id'];
-        $this->specialInfo->veronaVersion = $meta['apiVersion'];
+        $this->veronaModuleId = $meta['@id'];
+        $this->veronaVersion = $meta['apiVersion'];
         list(
-            $this->specialInfo->version,
-            $this->specialInfo->versionMayor,
-            $this->specialInfo->versionMinor,
-            $this->specialInfo->versionPatch,
-            $this->specialInfo->versionLabel
+            $this->versionMayor,
+            $this->versionMinor,
+            $this->versionPatch,
+            $this->versionLabel
         ) = array_values(Version::split($meta['version']));
-        $this->specialInfo->veronaModuleType = $meta['@type'];
+        $this->veronaModuleType = $meta['@type'];
 
         $this->report('warning', 'Deprecated meta-data-format found!');
         return true;
@@ -223,16 +222,15 @@ class ResourceFile extends File {
         }
         $this->label = $this->getPreferredTranslationV4($meta['name']);
         $this->description = $this->getPreferredTranslationV4($meta['description']);
-        $this->specialInfo->veronaModuleId = $meta['id'];
-        $this->specialInfo->veronaVersion = $meta['specVersion'];
+        $this->veronaModuleId = $meta['id'];
+        $this->veronaVersion = $meta['specVersion'];
         list(
-            $this->specialInfo->version,
-            $this->specialInfo->versionMayor,
-            $this->specialInfo->versionMinor,
-            $this->specialInfo->versionPatch,
-            $this->specialInfo->versionLabel
+            $this->versionMayor,
+            $this->versionMinor,
+            $this->versionPatch,
+            $this->versionLabel
         ) = array_values(Version::split($meta['version']));
-        $this->specialInfo->veronaModuleType = $meta['type'];
+        $this->veronaModuleType = $meta['type'];
         return null;
     }
 
@@ -268,30 +266,30 @@ class ResourceFile extends File {
 
     private function applyMeta(): void {
 
-        if (!$this->label and $this->specialInfo->veronaModuleId) {
+        if (!$this->label and $this->veronaModuleId) {
 
-            $this->label = $this->specialInfo->veronaModuleId;
-            $this->label .= $this->specialInfo->version ? '-' . $this->specialInfo->version : '';
+            $this->label = $this->veronaModuleId;
+            $this->label .= $this->getVersion() ? '-' . $this->getVersion() : '';
         }
     }
 
 
     private function analyzeMeta(): void {
 
-        if ($this->specialInfo->veronaVersion) {
-            $this->report('info', "Verona-Version: {$this->specialInfo->veronaVersion}");
+        if ($this->veronaVersion) {
+            $this->report('info', "Verona-Version: $this->veronaVersion");
         }
 
-        if ($this->specialInfo->veronaModuleId and $this->specialInfo->version) {
+        if ($this->veronaModuleId and $this->getVersion()) {
             if (
                 !FileName::hasRecommendedFormat(
                     basename($this->getPath()),
-                    $this->specialInfo->veronaModuleId,
-                    $this->specialInfo->version,
+                    $this->veronaModuleId,
+                    $this->getVersion(),
                     "html"
                 )
             ) {
-                $this->report('warning', "Non-Standard-Filename: `{$this->specialInfo->veronaModuleId}-{$this->specialInfo->version}.html` expected.");
+                $this->report('warning', "Non-Standard-Filename: `$this->veronaModuleId-{$this->getVersion()}.html` expected.");
             }
         }
     }

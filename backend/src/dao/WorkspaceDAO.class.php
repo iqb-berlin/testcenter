@@ -172,16 +172,16 @@ class WorkspaceDAO extends DAO {
                 $this->workspaceId,
                 $file->getName(),
                 $file->getId(),
-                $file->getSpecialInfo()->versionMayor,
-                $file->getSpecialInfo()->versionMinor,
-                $file->getSpecialInfo()->versionPatch,
-                $file->getSpecialInfo()->versionLabel,
+                $file->getVersionMayor(),
+                $file->getVersionMinor(),
+                $file->getVersionPatch(),
+                $file->getVersionLabel(),
                 $file->getLabel(),
                 $file->getDescription(),
                 $file->getType(),
-                $file->getSpecialInfo()->veronaModuleType,
-                $file->getSpecialInfo()->veronaVersion,
-                $file->getSpecialInfo()->veronaModuleId,
+                $file->getVeronaModuleType(),
+                $file->getVeronaVersion(),
+                $file->getVeronaModuleId(),
                 $file->isValid() ? 1 : 0,
                 serialize($file->getValidationReport()),
                 $file->getSize(),
@@ -433,7 +433,8 @@ class WorkspaceDAO extends DAO {
                     version_label,
                     verona_module_id,
                     verona_module_type,
-                    verona_version
+                    verona_version,
+                    context_data
                 from files
                 where
                     files.workspace_id = ?
@@ -448,8 +449,10 @@ class WorkspaceDAO extends DAO {
 
         $files = [];
         foreach ($this->_($sql, $replacements, true) as $f) {
+
+            $files[$f['type']] ??= [];
             // $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
-            $files["{$f['type']}/{$f['name']}"] = $this->resultRow2File($f, []);
+            $files[$f['type']][$f['name']] = $this->resultRow2File($f, []);
         }
         return $files;
     }
@@ -469,16 +472,14 @@ class WorkspaceDAO extends DAO {
                 $relations,
                 TimeStamp::fromSQLFormat($row['modification_ts']),
                 $row['size'],
-                new VeronaModuleMeta(
-                    $row['verona_module_type'],
-                    $row['verona_module_id'],
-                    $row['version_mayor'],
-                    $row['version_minor'],
-                    $row['version_patch'],
-                    $row['version_label'],
-                    $row['verona_version'],
-                ),
-                unserialize($row['context_data'])
+                unserialize($row['context_data']),
+                $row['verona_module_type'],
+                $row['verona_module_id'],
+                $row['version_mayor'],
+                $row['version_minor'],
+                $row['version_patch'],
+                $row['version_label'],
+                $row['verona_version']
             ),
             $row['type']
         );

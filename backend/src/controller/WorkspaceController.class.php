@@ -169,33 +169,7 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $workspace = new Workspace($workspaceId);
 
-        $fileDigestList = [];
-
-        foreach ($workspace->workspaceDAO->getAllFiles() as $file) {
-
-            /* @var $file File */
-
-            if (!isset($fileDigestList[$file->getType()])) {
-                $fileDigestList[$file->getType()] = [];
-            }
-
-            $fileDigestList[$file->getType()][] = [
-                'name' => $file->getName(),
-                'size' => $file->getSize(),
-                'modificationTime' => $file->getModificationTime(),
-                'type' => $file->getType(),
-                'id' => $file->getId(),
-                'report' => $file->getValidationReport(),
-                'info' => array_merge(
-                    [
-                        'label' => $file->getLabel(),
-                        'description' => $file->getDescription(),
-                    ],
-                    JSON::decode(json_encode($file->getSpecialInfo()), true),
-                    $file->getContextData()
-                ),
-            ];
-        }
+        $fileDigestList = $workspace->workspaceDAO->getAllFiles();
 
         return $response->withJson($fileDigestList);
     }

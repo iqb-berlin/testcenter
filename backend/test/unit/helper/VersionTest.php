@@ -218,5 +218,8 @@ class VersionTest extends TestCase {
 
         $result = Version::asString(3, 4, 5, '');
         $this->assertEquals('3.4.5', $result);
+
+        $result = Version::asString(0, 0, 0, '');
+        $this->assertNull($result);
     }
 }

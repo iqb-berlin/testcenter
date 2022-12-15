@@ -13,9 +13,10 @@ class Version {
     }
 
 
-    static function asString(int $major, int $minor, int $patch, string $label): string {
+    static function asString(int $major, int $minor, int $patch, string $label): ?string {
 
-        return implode('-', array_filter(["$major.$minor.$patch", $label]));
+        $version = implode('-', array_filter(["$major.$minor.$patch", $label]));
+        return ($version == '0.0.0') ? null : $version;
     }
 
 
@@ -71,7 +72,6 @@ class Version {
         $objectVersionParts = preg_split("/[.-]/", $versionString);
 
         return [
-            'full' => $versionString,
             'major' => (int) $objectVersionParts[0],
             'minor' => isset($objectVersionParts[1]) ? (int) $objectVersionParts[1] : 0,
             'patch' => isset($objectVersionParts[2]) ? (int) $objectVersionParts[2] : 0,

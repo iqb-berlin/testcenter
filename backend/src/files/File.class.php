@@ -54,8 +54,14 @@ class File extends FileData {
             $this->modificationTime = $init->modificationTime;
             $this->size = $init->size;
             $this->name = basename($init->path);
-            $this->specialInfo = $init->getSpecialInfo();
-            $this->contextData = $init->getContextData();
+            $this->contextData = $init->contextData;
+            $this->veronaModuleType = $init->veronaModuleType;
+            $this->veronaModuleId = $init->veronaModuleId;
+            $this->versionMayor = $init->versionMayor;
+            $this->versionMinor = $init->versionMinor;
+            $this->versionPatch = $init->versionPatch;
+            $this->versionLabel = $init->versionLabel;
+            $this->veronaVersion = $init->veronaVersion;
             return;
         }
 
@@ -105,6 +111,12 @@ class File extends FileData {
     }
 
 
+    public function getVersion(): string {
+
+        return Version::asString($this->versionMayor, $this->versionMinor, $this->versionPatch, $this->versionLabel) ?? '';
+    }
+
+
     public function isValid(): bool {
 
         return count($this->validationReport['error'] ?? []) == 0;
@@ -141,6 +153,32 @@ class File extends FileData {
     public function addRelation(FileRelation $relation): void {
 
         $this->relations[] = $relation;
+    }
+
+    public function jsonSerialize(): mixed {
+
+        $info = [
+            'label' => $this->getLabel(),
+            'description' => $this->getDescription(),
+        ];
+        if ($this->veronaModuleType) {
+            $info['veronaModuleType'] = $this->veronaModuleType;
+            $info['veronaVersion'] = $this->veronaVersion;
+            $info['version'] = $this->getVersion();
+        }
+
+        $output = [
+            'name' => $this->name,
+            'size' => $this->size,
+            'modificationTime' => $this->modificationTime,
+            'type' => $this->type,
+            'id' => $this->id,
+            'report' => $this->validationReport,
+            'info' => array_merge($info, $this->getContextData()
+            ),
+        ];
+
+        return $output;
     }
 }
 
