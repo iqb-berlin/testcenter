@@ -3,11 +3,11 @@
     <mat-card fxFlex="0 0 400px">
       <mat-card-title>Anmelden</mat-card-title>
       <mat-card-content *ngIf="mainDataService.appConfig">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-label>Anmeldename</mat-label>
           <input matInput formControlName="name" (keyup.enter)="pw.focus()" (keyup)="clearWarning()">
         </mat-form-field>
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-label>Kennwort</mat-label>
           <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" (keyup)="clearWarning()">
           <mat-icon
