@@ -13,6 +13,8 @@ class FileData extends DataCollectionTypeSafe {
     protected array $validationReport = ['warning' => [], 'error' => [], 'info' => []];
     protected int $modificationTime = 0;
     protected int $size = 0;
+    protected VeronaModuleMeta $specialInfo;
+    protected array $contextData;
 
     public function __construct(
         string $path = '',
@@ -24,7 +26,9 @@ class FileData extends DataCollectionTypeSafe {
         array $validationReport = [],
         array $relations = [],
         int $modificationTime = 0,
-        int $size = 0
+        int $size = 0,
+        VeronaModuleMeta $VeronaModuleMeta = new VeronaModuleMeta(),
+        array $contextData = []
     ) {
         $this->path = $path;
         $this->type = $type;
@@ -36,6 +40,8 @@ class FileData extends DataCollectionTypeSafe {
         $this->relations = $relations;
         $this->modificationTime = $modificationTime;
         $this->size = $size;
+        $this->specialInfo = $VeronaModuleMeta;
+        $this->contextData = $contextData;
     }
 
 
@@ -96,5 +102,17 @@ class FileData extends DataCollectionTypeSafe {
     public function getModificationTime(): int {
 
         return $this->modificationTime;
+    }
+
+
+    public function getSpecialInfo(): VeronaModuleMeta {
+
+        return $this->specialInfo;
+    }
+
+
+    public function getContextData(): array {
+
+        return $this->contextData;
     }
 }

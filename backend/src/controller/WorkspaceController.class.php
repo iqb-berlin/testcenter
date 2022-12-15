@@ -173,9 +173,12 @@ class WorkspaceController extends Controller {
 
         foreach ($workspace->workspaceDAO->getAllFiles() as $file) {
 
+            /* @var $file File */
+
             if (!isset($fileDigestList[$file->getType()])) {
                 $fileDigestList[$file->getType()] = [];
             }
+
             $fileDigestList[$file->getType()][] = [
                 'name' => $file->getName(),
                 'size' => $file->getSize(),
@@ -183,7 +186,14 @@ class WorkspaceController extends Controller {
                 'type' => $file->getType(),
                 'id' => $file->getId(),
                 'report' => $file->getValidationReport(),
-                'info' => $file->getSpecialInfo()
+                'info' => array_merge(
+                    [
+                        'label' => $file->getLabel(),
+                        'description' => $file->getDescription(),
+                    ],
+                    JSON::decode(json_encode($file->getSpecialInfo()), true),
+                    $file->getContextData()
+                ),
             ];
         }
 

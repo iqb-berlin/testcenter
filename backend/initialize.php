@@ -213,7 +213,7 @@ try  {
 
         if (!$installationArguments->skip_read_workspace_files) {
 
-            $stats = $workspace->storeAllFilesMeta();
+            $stats = $workspace->storeAllFiles();
 
             CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
@@ -246,7 +246,7 @@ try  {
 
         if (!$installationArguments->skip_read_workspace_files) {
 
-            $stats = $sampleWorkspace->storeAllFilesMeta();
+            $stats = $sampleWorkspace->storeAllFiles();
         }
 
         CLI::success("Sample content files created.");

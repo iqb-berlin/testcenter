@@ -209,4 +209,14 @@ class VersionTest extends TestCase {
             'module' => 'But-Not'
         ], $result);
     }
+
+
+    function test_asString() {
+
+        $result = Version::asString(0, 1, 2, 'alpha');
+        $this->assertEquals('0.1.2-alpha', $result);
+
+        $result = Version::asString(3, 4, 5, '');
+        $this->assertEquals('3.4.5', $result);
+    }
 }

@@ -114,7 +114,7 @@ class TestEnvironment {
         $initializer = new WorkspaceInitializer();
         $initializer->cleanWorkspace($workspaceId);
         $initializer->importSampleFiles($workspaceId);
-        $workspace->storeAllFilesMeta();
+        $workspace->storeAllFiles();
 
         $initDAO->createSampleLoginsReviewsLogs();
         $initDAO->createSampleExpiredSessions();

@@ -12,7 +12,6 @@ class XMLFileUnit extends XMLFile {
         '/Unit/Dependencies/file'
     ];
 
-    protected int $totalSize = 0;
     protected string $playerId = '';
     private array $dependencies = [];
 
@@ -61,7 +60,7 @@ class XMLFileUnit extends XMLFile {
 
     private function checkIfResourceExists(WorkspaceValidator $validator): void {
 
-        $this->totalSize = $this->size;
+        $this->contextData['totalSize'] = $this->size;
 
         $definitionRef = $this->getDefinitionRef();
 
@@ -77,7 +76,7 @@ class XMLFileUnit extends XMLFile {
             $resource = $validator->getResource($resourceId, false);
             if ($resource != null) {
                 $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), 'usesResource'));
-                $this->totalSize += $resource->getSize(); // TODO also for additional resources?
+                $this->contextData['totalSize'] += $resource->getSize(); // TODO also for additional resources?
             } else {
                 $this->report('error', "Resource `$resourceName` not found");
             }
@@ -87,7 +86,7 @@ class XMLFileUnit extends XMLFile {
 
     public function getTotalSize(): int {
 
-        return $this->totalSize;
+        return $this->contextData['totalSize'];
     }
 
 
@@ -163,17 +162,11 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->totalSize = $this->getTotalSize();
-        return $meta;
-    }
-
     public function getDependencies(): array {
 
         return $this->dependencies;
     }
+
 
     private function readDependencies(): array {
 

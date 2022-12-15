@@ -54,6 +54,8 @@ class File extends FileData {
             $this->modificationTime = $init->modificationTime;
             $this->size = $init->size;
             $this->name = basename($init->path);
+            $this->specialInfo = $init->getSpecialInfo();
+            $this->contextData = $init->getContextData();
             return;
         }
 
@@ -136,21 +138,9 @@ class File extends FileData {
     }
 
 
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $info = new FileSpecialInfo([]);
-        if ($this->getDescription()) {
-            $info->description = $this->getDescription();
-        }
-        if ($this->getLabel()) {
-            $info->label = $this->getLabel();
-        }
-        return $info;
-    }
-
-
     public function addRelation(FileRelation $relation): void {
 
         $this->relations[] = $relation;
     }
 }
+

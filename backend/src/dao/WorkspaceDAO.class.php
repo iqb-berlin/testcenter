@@ -148,8 +148,6 @@ class WorkspaceDAO extends DAO {
 
     public function storeFile(File $file): void {
 
-        $version = Version::split($file->getSpecialInfo()->version);
-
         $this->_("replace into files (
                     workspace_id,
                     name,
@@ -167,26 +165,28 @@ class WorkspaceDAO extends DAO {
                     is_valid,
                     validation_report,
                     size,
-                    modification_ts
-                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                    modification_ts,
+                    context_data
+                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             [
                 $this->workspaceId,
                 $file->getName(),
                 $file->getId(),
-                $version['major'],
-                $version['minor'],
-                $version['patch'],
-                $version['label'],
+                $file->getSpecialInfo()->versionMayor,
+                $file->getSpecialInfo()->versionMinor,
+                $file->getSpecialInfo()->versionPatch,
+                $file->getSpecialInfo()->versionLabel,
                 $file->getLabel(),
                 $file->getDescription(),
                 $file->getType(),
-                (($file instanceof ResourceFile) and $file->isVeronaModule()) ? $file->getSpecialInfo()->veronaModuleType : '',
+                $file->getSpecialInfo()->veronaModuleType,
                 $file->getSpecialInfo()->veronaVersion,
-                $file->getSpecialInfo()->playerId,
+                $file->getSpecialInfo()->veronaModuleId,
                 $file->isValid() ? 1 : 0,
                 serialize($file->getValidationReport()),
                 $file->getSize(),
-                TimeStamp::toSQLFormat($file->getModificationTime())
+                TimeStamp::toSQLFormat($file->getModificationTime()),
+                serialize($file->getContextData())
             ]
         );
 
@@ -226,19 +226,21 @@ class WorkspaceDAO extends DAO {
             "select
                     name,
                     id,
+                    label,
+                    type,
+                    description,
+                    is_valid,
+                    validation_report,
+                    size,
+                    modification_ts,
                     version_mayor,
                     version_minor,
                     version_patch,
                     version_label,
-                    label,
-                    type,
-                    description,
-                    verona_module_type,
                     verona_module_id,
-                    is_valid,
-                    validation_report,
-                    size,
-                    modification_ts
+                    verona_module_type,
+                    verona_version,
+                    context_data
                 from
                     files
                 where
@@ -263,18 +265,20 @@ class WorkspaceDAO extends DAO {
             "select
                     name,
                     id,
-                    version_mayor,
-                    version_minor,
-                    version_patch,
-                    version_label,
                     label,
                     type,
-                    verona_module_type,
-                    verona_module_id,
                     is_valid,
                     validation_report,
                     size,
                     modification_ts,
+                    version_mayor,
+                    version_minor,
+                    version_patch,
+                    version_label,
+                    verona_module_id,
+                    verona_module_type,
+                    verona_version,
+                    context_data
                     (case
                         when (verona_module_id = :module_id and version_mayor = :version_mayor and version_minor = :version_minor and version_patch = :version_patch and ifnull(version_label, '') = :version_label) then 1
                         when (workspace_id = :ws_id and type = :type and id = :file_id and verona_module_id != :module_id) then -1 
@@ -355,7 +359,15 @@ class WorkspaceDAO extends DAO {
                 is_valid,
                 validation_report,
                 size,
-                modification_ts
+                modification_ts,
+                version_mayor,
+                version_minor,
+                version_patch,
+                version_label,
+                verona_module_id,
+                verona_module_type,
+                verona_version,
+                context_data
             from files
                 where workspace_id = ?";
         $replacements = [$this->workspaceId];
@@ -414,7 +426,14 @@ class WorkspaceDAO extends DAO {
                     is_valid,
                     validation_report,
                     size,
-                    modification_ts
+                    modification_ts,
+                    version_mayor,
+                    version_minor,
+                    version_patch,
+                    version_label,
+                    verona_module_id,
+                    verona_module_type,
+                    verona_version
                 from files
                 where
                     files.workspace_id = ?
@@ -449,7 +468,17 @@ class WorkspaceDAO extends DAO {
                 unserialize($row['validation_report']),
                 $relations,
                 TimeStamp::fromSQLFormat($row['modification_ts']),
-                $row['size']
+                $row['size'],
+                new VeronaModuleMeta(
+                    $row['verona_module_type'],
+                    $row['verona_module_id'],
+                    $row['version_mayor'],
+                    $row['version_minor'],
+                    $row['version_patch'],
+                    $row['version_label'],
+                    $row['verona_version'],
+                ),
+                unserialize($row['context_data'])
             ),
             $row['type']
         );

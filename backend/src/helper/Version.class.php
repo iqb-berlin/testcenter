@@ -13,6 +13,12 @@ class Version {
     }
 
 
+    static function asString(int $major, int $minor, int $patch, string $label): string {
+
+        return implode('-', array_filter(["$major.$minor.$patch", $label]));
+    }
+
+
     static function getAll(): array {
 
         $composerFile = file_get_contents(ROOT_DIR . '/package.json');
@@ -60,11 +66,12 @@ class Version {
     }
 
 
-    static function split(string $object): array {
+    static function split(string $versionString): array {
 
-        $objectVersionParts = preg_split("/[.-]/", $object);
+        $objectVersionParts = preg_split("/[.-]/", $versionString);
 
         return [
+            'full' => $versionString,
             'major' => (int) $objectVersionParts[0],
             'minor' => isset($objectVersionParts[1]) ? (int) $objectVersionParts[1] : 0,
             'patch' => isset($objectVersionParts[2]) ? (int) $objectVersionParts[2] : 0,

@@ -397,7 +397,7 @@ class Workspace {
 
 
     // TODO unit-test
-    public function storeAllFilesMeta(): array {
+    public function storeAllFiles(): array {
 
         $files = $this->getValidatorWithAllFilesFromFs();
         $typeStats = array_fill_keys(Workspace::subFolders, 0);

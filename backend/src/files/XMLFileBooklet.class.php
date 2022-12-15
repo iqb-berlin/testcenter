@@ -7,15 +7,12 @@ class XMLFileBooklet extends XMLFile {
 
     const type = 'Booklet';
 
-    protected int $totalSize = 0;
-
-
     public function crossValidate(WorkspaceValidator $validator): void {
 
         parent::crossValidate($validator);
 
         $bookletPlayers = [];
-        $this->totalSize = $this->getSize();
+        $this->contextData['totalSize'] = $this->getSize();
 
         foreach($this->getUnitIds() as $unitId) {
 
@@ -28,7 +25,7 @@ class XMLFileBooklet extends XMLFile {
 
             $this->addRelation(new FileRelation($unit->getType(), $unit->getName(), 'employsUnit'));
 
-            $this->totalSize += $unit->getTotalSize();
+            $this->contextData['totalSize'] += $unit->getTotalSize();
 
             $playerFile = $unit->getPlayerIfExists($validator);
 
@@ -39,16 +36,10 @@ class XMLFileBooklet extends XMLFile {
 
             if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
 
-                $this->totalSize += $playerFile->getSize();
+                $this->contextData['totalSize'] += $playerFile->getSize();
                 $bookletPlayers[] = $playerFile->getId();
             }
         }
-    }
-
-
-    public function getTotalSize(): int {
-
-        return $this->totalSize;
     }
 
 
@@ -82,13 +73,5 @@ class XMLFileBooklet extends XMLFile {
             }
         }
         return $unitIds;
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->totalSize = $this->getTotalSize();
-        return $meta;
     }
 }

@@ -14,6 +14,7 @@ class XMLFileTesttakers extends XMLFile {
         parent::crossValidate($validator);
 
         $this->logins = $this->getAllLogins();
+        $this->contextData['testtakers'] = count($this->logins->asArray());
 
         $this->checkForDuplicateLogins();
 
@@ -24,12 +25,6 @@ class XMLFileTesttakers extends XMLFile {
         }
 
         $this->checkIfIdsAreUsedInOtherFiles($validator);
-    }
-
-
-    public function getLoginCount(): int {
-
-        return isset($this->logins) ? count($this->logins->asArray()) : 0;
     }
 
 
@@ -337,13 +332,5 @@ class XMLFileTesttakers extends XMLFile {
             $customTexts[(string) $customTextElement['key'] ?? ''] = (string) $customTextElement;
         }
         return (object) $customTexts;
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->testtakers = $this->getLoginCount();
-        return $meta;
     }
 }
