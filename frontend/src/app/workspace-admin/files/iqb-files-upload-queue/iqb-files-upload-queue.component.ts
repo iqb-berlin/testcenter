@@ -46,6 +46,7 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   }
 
   analyseStatus(): void {
+    this.disableClearButton = true;
     let someoneisbusy = false;
     let someoneisready = false;
     let countcomplete = 0;
@@ -57,14 +58,12 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
       } else if (fileUpload.status === UploadStatus.ready) {
         someoneisready = true;
       }
-
-      if (countcomplete == this.fileUploads.length && !someoneisbusy) {
-        this.uploadCompleteEvent.emit();
-        this.disableClearButton = false;
-      }
     });
 
-
+    if (countcomplete == this.fileUploads.length && !someoneisbusy && this.fileUploads.length > 0) {
+      this.uploadCompleteEvent.emit();
+      this.disableClearButton = false;
+    }
 
   }
 }
