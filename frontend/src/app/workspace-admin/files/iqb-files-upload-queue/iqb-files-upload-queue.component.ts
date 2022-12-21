@@ -52,7 +52,7 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
     let countcomplete = 0;
     this.fileUploads.forEach(fileUpload => {
       if ((fileUpload.status === UploadStatus.ok) || (fileUpload.status === UploadStatus.error)) {
-        countcomplete++;
+        countcomplete = countcomplete + 1;
       } else if (fileUpload.status === UploadStatus.busy) {
         someoneisbusy = true;
       } else if (fileUpload.status === UploadStatus.ready) {
@@ -60,10 +60,9 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
       }
     });
 
-    if (countcomplete == this.fileUploads.length && !someoneisbusy && this.fileUploads.length > 0) {
+    if (countcomplete === this.fileUploads.length && !someoneisbusy && this.fileUploads.length > 0) {
       this.uploadCompleteEvent.emit();
       this.disableClearButton = false;
-    }
-
+    };
   }
 }
