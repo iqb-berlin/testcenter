@@ -36,7 +36,7 @@ Clone this repository
 Run
 
 ```
-make init-dev-config
+make init
 ```
 
 > :warning: This creates configuration files with values meant for

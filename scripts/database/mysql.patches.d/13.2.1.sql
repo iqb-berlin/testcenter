@@ -1,0 +1,1 @@
+ALTER TABLE iqb_tba_testcenter.unit_data MODIFY COLUMN content LONGTEXT;

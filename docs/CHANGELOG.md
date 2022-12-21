@@ -4,9 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 13.2.1
 ### UI
-Betsimmte Schaltflächen im Administrations-Interface bekamen angemessenere Beschriftungen.
+* Bestimmte Schaltflächen im Administrations-Interface bekamen angemessenere Beschriftungen.
+* Die Eingabefelder (Login, Code-Eingabe, Freigabewort) mit denen SuS konfrontiert werden können, wurden deutlicher als Eingabefelder gestaltet, da SuS sie sonst von den SuS manchmal nicht als solche erkannt wurden.
 
 ## 13.2.0
 ### Performance

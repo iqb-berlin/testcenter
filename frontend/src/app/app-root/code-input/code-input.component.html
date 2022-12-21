@@ -8,7 +8,7 @@
         {{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt' | async }}
       </mat-card-subtitle>
       <mat-card-content>
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <input matInput formControlName="code"> <!-- no placeholder! -->
         </mat-form-field>
         <p style="color: chocolate"><b>{{ problemText }}</b></p>
