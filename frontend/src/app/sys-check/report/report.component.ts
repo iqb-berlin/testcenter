@@ -81,8 +81,4 @@ export class ReportComponent implements OnInit {
     });
   }
 
-  ngOnDestroy() : void {
-    this.ds.questionnaireReport.length = 0;
-    
-  }
 }
