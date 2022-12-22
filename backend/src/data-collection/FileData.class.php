@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 class FileData extends DataCollectionTypeSafe {
 
-    protected string | null $type;
+    protected string | null $type = null;
     protected string $path = '';
     protected string $id = '';
     protected string $label = '';
@@ -13,8 +13,8 @@ class FileData extends DataCollectionTypeSafe {
     protected array $validationReport = ['warning' => [], 'error' => [], 'info' => []];
     protected int $modificationTime = 0;
     protected int $size = 0;
-    protected array $contextData;
-    protected string $veronaModuleType;
+    protected array $contextData = [];
+    protected string $veronaModuleType = '';
     protected string $veronaModuleId;
     protected int $versionMayor;
     protected int $versionMinor;
