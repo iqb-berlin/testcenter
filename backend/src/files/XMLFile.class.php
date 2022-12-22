@@ -18,6 +18,10 @@ class XMLFile extends File {
 
     public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
 
+        if (is_a($init, FileData::class)) {
+            return;
+        }
+
         libxml_use_internal_errors(true);
         libxml_clear_errors();
 

@@ -19,10 +19,6 @@ class XMLFileUnit extends XMLFile {
 
         parent::__construct($init, $validate, $isRawXml);
 
-        if (is_a($init, FileData::class)) {
-            return;
-        }
-
         $this->checkRequestedAttachments();
 
         if ($this->isValid()) {
