@@ -169,7 +169,14 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $workspace = new Workspace($workspaceId);
 
-        $fileDigestList = $workspace->workspaceDAO->getAllFiles();
+        $files = $workspace->workspaceDAO->getAllFiles();
+
+        // TODo change the FE and endpoint to accept it with keys
+        $fileDigestList = [];
+        foreach ($files as $fileType => $fileList) {
+
+            $fileDigestList[$fileType] = array_values($fileList);
+        }
 
         return $response->withJson($fileDigestList);
     }
