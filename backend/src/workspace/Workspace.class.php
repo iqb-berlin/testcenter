@@ -401,7 +401,9 @@ class Workspace {
     // TODO unit-test
     public function storeAllFiles(): array {
 
-        $files = $this->getValidatorWithAllFilesFromFs();
+        $folder = $this->getValidatorWithAllFilesFromFs();
+//        $folder->findUnusedItems();
+
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
             'deleted' => 0,
@@ -409,28 +411,30 @@ class Workspace {
         ];
         $invalidCount = 0;
 
-        $filesInDb = $this->workspaceDAO->getAllFiles();
-        $filesInFolder = $files->getFiles();
+//        $filesInDb = $this->workspaceDAO->getAllFiles();
+//        $filesInFolder = $folder->getFiles();
+//
+//        foreach ($filesInDb as $fileSet) {
+//
+//            foreach ($fileSet as $file) {
+//
+//                /* @var File $file */
+//
+//                if (!isset($filesInFolder[$file->getPath()])) {
+//
+//                    $this->workspaceDAO->deleteFile($file);
+//                    $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file->getName());
+//                }
+//            }
+//        }
 
-        foreach ($filesInDb as $fileSet) {
+        // 1. Schritt alle Files selbst speichern
 
-            foreach ($fileSet as $file) {
-
-                /* @var File $file */
-
-                if (!isset($filesInFolder[$file->getPath()])) {
-
-                    $this->workspaceDAO->deleteFile($file);
-                    $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file['name']);
-                }
-            }
-        }
-
-        foreach ($files->getFiles() as $file) {
+        foreach ($folder->getFiles() as $file) {
 
             /* @var $file File */
 
-            $file->crossValidate($files);
+            $file->crossValidate($folder);
 
             if (!$file->isValid()) {
 
@@ -441,7 +445,9 @@ class Workspace {
             $typeStats[$file->getType()] += 1;
         }
 
-        foreach ($files->getFiles() as $file) {
+        // 2. Schritt erweiterte Daten speichern. Dabei müssen die Dateien bereits in der Db liegen
+
+        foreach ($folder->getFiles() as $file) {
 
             $stats = $this->storeFileMeta($file);
             $loginStats['deleted'] += $stats['logins_deleted'];
@@ -463,12 +469,21 @@ class Workspace {
             'logins_deleted' => 0,
             'logins_added' => 0,
             'resource_packages_installed' => 0,
-            'attachments_noted' => 0
+            'attachments_noted' => 0,
+            'resolved_relations' => 0,
+            'unresolved_relations' => 0,
         ];
 
         if (!$file->isValid()) {
 
             return $stats;
+        }
+
+        // TODO! relationen interpretieren!
+        if (is_a($file, XMLFileUnit::class)) {
+            list($resolved, $unresolved) = $this->workspaceDAO->storeRelations($file);
+            $stats['resolved_relations'] = $resolved;
+            $stats['unresolved_relations'] = $unresolved;
         }
 
         if (is_a($file, XMLFileTesttakers::class)) {
@@ -484,12 +499,12 @@ class Workspace {
             $stats['resource_packages_installed'] = 1;
         }
 
-        if (is_a($file, XMLFileBooklet::class)) {
-
-            $requestedAttachments = $this->getRequestedAttachments($file);
-            $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
-            $stats['attachments_noted'] = count($requestedAttachments);
-        }
+//        if (is_a($file, XMLFileBooklet::class)) { TODO! !!!
+//
+//            $requestedAttachments = $this->getRequestedAttachments($file);
+//            $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
+//            $stats['attachments_noted'] = count($requestedAttachments);
+//        }
 
         return $stats;
     }

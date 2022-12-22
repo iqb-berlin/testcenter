@@ -4,16 +4,16 @@ declare(strict_types=1);
 class FileRelation extends DataCollectionTypeSafe {
 
     protected string $targetType = '';
-    protected string $targetName = '';
+    protected string $targetId = '';
     protected string $relationshipType = '';
 
     public function __construct(
         string $targetType = '',
-        string $targetName = null,
+        string $targetId = null,
         string $relationshipType = '',
     ) {
         $this->targetType = $targetType;
-        $this->targetName = $targetName;
+        $this->targetId = $targetId;
         $this->relationshipType = $relationshipType;
     }
 
@@ -24,9 +24,9 @@ class FileRelation extends DataCollectionTypeSafe {
     }
 
 
-    public function getTargetName(): string {
+    public function getTargetId(): string {
 
-        return $this->targetName;
+        return $this->targetId;
     }
 
 

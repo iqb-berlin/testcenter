@@ -215,7 +215,7 @@ class WorkspaceValidator {
     }
 
 
-    private function findUnusedItems(): void {
+    public function findUnusedItems(): void {
 
         foreach (Workspace::subFolders as $type) {
 

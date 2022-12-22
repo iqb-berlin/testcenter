@@ -49,9 +49,9 @@ class XMLFileUnit extends XMLFile {
         $resource = $validator->getResource($this->playerId, true);
 
         if ($resource != null) {
-            $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), 'usesPlayer'));
+            $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), 'fuzzy'));
         } else {
-            $this->report('error', "No suitable version of `{$this->playerId}` found");
+            $this->report('error', "No suitable version of `$this->playerId` found");
         }
 
         return $resource;
@@ -75,7 +75,7 @@ class XMLFileUnit extends XMLFile {
             $resourceId = FileName::normalize($resourceName, false);
             $resource = $validator->getResource($resourceId, false);
             if ($resource != null) {
-                $this->addRelation(new FileRelation($resource->getType(), $resource->getName(), 'usesResource'));
+                $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), 'fuzzy'));
                 $this->contextData['totalSize'] += $resource->getSize(); // TODO also for additional resources?
             } else {
                 $this->report('error', "Resource `$resourceName` not found");
