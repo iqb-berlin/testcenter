@@ -39,9 +39,7 @@ build-backend:
     - changes:
       - e2e/**/*
   script:
-    - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
+    - apk add make
     - make init
     - make build service=testcenter-backend
     - docker save iqbberlin/testcenter-backend > backend_image.tar
@@ -59,9 +57,7 @@ build-frontend:
     - changes:
       - e2e/**/*
   script:
-    - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
+    - apk add make
     - make init
     - make build service=testcenter-frontend
     - docker save iqbberlin/testcenter-frontend > frontend_image.tar
@@ -79,9 +75,7 @@ build-broadcasting-service:
     - changes:
         - e2e/**/*
   script:
-    - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
+    - apk add make
     - make init
     - make build service=testcenter-broadcasting-service
     - docker save iqbberlin/testcenter-broadcasting-service > bs_image.tar
@@ -99,7 +93,7 @@ test-backend-unit:
   dependencies:
     - build-backend
   script:
-    - apk add make docker-compose
+    - apk add make
     - make init
     - docker load -i backend_image.tar
     - make test-backend-unit-coverage
@@ -117,7 +111,7 @@ test-frontend-unit:
   dependencies:
     - build-frontend
   script:
-    - apk add make docker-compose
+    - apk add make
     - make init-env
     - make init-frontend
     - docker load -i frontend_image.tar
@@ -135,7 +129,7 @@ test-broadcasting-service-unit:
   dependencies:
     - build-broadcasting-service
   script:
-    - apk add make docker-compose
+    - apk add make
     - make init-env
     - docker load -i bs_image.tar
     - make test-broadcasting-service-unit-coverage
@@ -213,9 +207,7 @@ deploy-tagged-docker-image:
   rules:
     - if: "$CI_COMMIT_TAG"
   script:
-    - apk add make curl
-    - curl -SL https://github.com/docker/compose/releases/download/v2.6.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
+    - apk add make
     - make init
     - docker build --target prod -t iqbberlin/testcenter-backend:$CI_COMMIT_TAG -f docker/backend.Dockerfile .
     - docker build --target prod -t iqbberlin/testcenter-frontend:$CI_COMMIT_TAG -f docker/frontend.Dockerfile .
@@ -230,7 +222,7 @@ generate-docs:
   rules:
     - if: "$CI_COMMIT_TAG"
   script:
-    - apk add make docker-compose
+    - apk add make
     - make init
     - make update-docs
   artifacts:

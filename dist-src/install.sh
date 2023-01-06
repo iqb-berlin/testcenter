@@ -4,8 +4,8 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-REQUIRED_PACKAGES=("docker" "docker-compose")
-OPTIONAL_PACKAGES=(make)
+REQUIRED_PACKAGES=("docker -v" "docker compose version")
+OPTIONAL_PACKAGES=("make -v")
 
 declare -A ENV_VARS
 ENV_VARS[HOSTNAME]=localhost
@@ -25,7 +25,7 @@ check_prerequisites() {
   for app in "${REQUIRED_PACKAGES[@]}"
   do
     {
-      $app -v > /dev/null 2>&1
+      $app > /dev/null 2>&1
     } || {
       echo "$app not found, please install before running!"
       exit 1
@@ -34,7 +34,7 @@ check_prerequisites() {
   for app in "${OPTIONAL_PACKAGES[@]}"
   do
     {
-      $app -v > /dev/null 2>&1
+      $app > /dev/null 2>&1
     } || {
       echo "$app not found! It is recommended to have it installed."
       read  -p 'Continue anyway? (y/N): ' -r -n 1 -e CONTINUE
