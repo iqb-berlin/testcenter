@@ -67,6 +67,7 @@ export class MainDataService {
       }
       localStorage.setItem(localStorageAuthDataKey, JSON.stringify(authData));
     } else {
+      this.cts.restoreDefault();
       localStorage.removeItem(localStorageAuthDataKey);
     }
   }
