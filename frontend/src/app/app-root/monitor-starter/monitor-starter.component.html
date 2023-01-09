@@ -17,7 +17,7 @@
           *ngFor="let accessObject of accessObjects.testGroupMonitor"
         >
           <span class="booklet_title">{{accessObject.label}}</span>
-          <span class="booklet_status">{{'Überwachung starten' | customtext: 'tlk-text' | async}}</span>
+          <span class="booklet_status">{{'gm_tlk_selection_text' | customtext: 'gm_tlk_selection_text' | async}}</span>
         </button>
 
         <ng-container *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">
