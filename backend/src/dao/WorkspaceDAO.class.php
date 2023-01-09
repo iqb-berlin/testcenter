@@ -267,6 +267,7 @@ class WorkspaceDAO extends DAO {
                     id,
                     label,
                     type,
+                    description,
                     is_valid,
                     validation_report,
                     size,
@@ -278,7 +279,7 @@ class WorkspaceDAO extends DAO {
                     verona_module_id,
                     verona_module_type,
                     verona_version,
-                    context_data
+                    context_data,
                     (case
                         when (verona_module_id = :module_id and version_mayor = :version_mayor and version_minor = :version_minor and version_patch = :version_patch and ifnull(version_label, '') = :version_label) then 1
                         when (workspace_id = :ws_id and type = :type and id = :file_id and verona_module_id != :module_id) then -1 
@@ -578,11 +579,11 @@ class WorkspaceDAO extends DAO {
                     $file->getType(),
                     $relation->getTargetId(),
                     $relation->getTargetType(),
-                    $relatedFile
+                    $relatedFile->getName()
                 ]
             );
-
-            return [count($file->getRelations()), $unresolvedRelations];
         }
+
+        return [count($file->getRelations()), $unresolvedRelations];
     }
 }
