@@ -40,7 +40,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       this.tcs.interruptMaxTimer();
       return of(true);
     }
-    console.log('Hallo')
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
       width: '500px',
       data: <ConfirmDialogData>{
