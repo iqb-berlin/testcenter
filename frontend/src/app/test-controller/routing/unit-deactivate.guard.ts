@@ -40,6 +40,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       this.tcs.interruptMaxTimer();
       return of(true);
     }
+    console.log('Hallo')
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
       width: '500px',
       data: <ConfirmDialogData>{
@@ -143,11 +144,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     nextState: RouterStateSnapshot
   ): Observable<boolean> | boolean {
     if (this.tcs.testStatus$.getValue() === TestControllerState.ERROR) {
-      return true;
-    }
-
-    const target = nextState.url.split('/').pop();
-    if (['route-dispatcher', 'status'].indexOf(target) > -1) { // clicking on the IQB-Logo
       return true;
     }
 
