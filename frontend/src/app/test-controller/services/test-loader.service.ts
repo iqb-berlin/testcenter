@@ -293,7 +293,7 @@ export class TestLoaderService {
         const customTexts = TestLoaderService.getChildElements(customTextsElements[0]);
         const customTextsForBooklet = {};
         for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
-          if (customTexts[childIndex].nodeName === 'Text') {
+          if (customTexts[childIndex].nodeName === 'CustomText') {
             const customTextKey = customTexts[childIndex].getAttribute('key');
             if ((typeof customTextKey !== 'undefined') && (customTextKey !== null)) {
               customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent;
