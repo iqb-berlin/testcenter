@@ -4,6 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 13.2.2
+### Bug Fixes
+Zu große Antwort-Daten (durch GeoGebra erzeugt) führten zu Fehlern.
+
 ## 13.2.1
 ### UI
 * Bestimmte Schaltflächen im Administrations-Interface bekamen angemessenere Beschriftungen.
