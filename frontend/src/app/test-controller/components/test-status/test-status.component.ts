@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { TestControllerService } from '../../services/test-controller.service';
-import { MainDataService } from '../../../shared/shared.module';
+import { CustomtextService, MainDataService } from '../../../shared/shared.module';
 import { AppError } from '../../../app.interfaces';
 
 @Component({
@@ -18,7 +18,9 @@ export class TestStatusComponent implements OnInit, OnDestroy {
 
   constructor(
     public tcs: TestControllerService,
-    public mainDataService: MainDataService
+    public mainDataService: MainDataService,
+
+    private cts: CustomtextService
   ) { }
 
   ngOnInit(): void {
@@ -51,5 +53,6 @@ export class TestStatusComponent implements OnInit, OnDestroy {
 
   terminateTest(): void {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', true, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
+    this.cts.restoreDefault(false);
   }
 }

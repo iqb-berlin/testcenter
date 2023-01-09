@@ -35,18 +35,21 @@ export class CustomtextService {
     return this.customTexts[key];
   }
 
-  restoreDefault() {
+  restoreDefault(all: boolean) {
     if ( typeof this.customTexts == 'undefined') {
       return null;
     }
+
     Object.keys(this.customTexts).forEach(k => {
       if(this.customTexts[k] && customTextsDefault[k]){
         this.customTexts[k].next(customTextsDefault[k].defaultvalue);
       }
-      if(!(k in customTextsDefault)){
-        this.customTexts[k] = new BehaviorSubject<string>(null);
+      if(all === true){
+        if(!(k in customTextsDefault)){
+          this.customTexts[k] = new BehaviorSubject<string>(null);
+        }
       }
-    })
+    });
   }
   getCustomText(key: string): string {
     if (typeof this.customTexts[key] === 'undefined') {
