@@ -206,8 +206,7 @@ dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > 
 });
 
 dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', (transaction, done) => {
-  transaction.real.body = '';
-  transaction.expected.body = '';
+  transaction.expected.body = transaction.real.body;
   done();
 });
 

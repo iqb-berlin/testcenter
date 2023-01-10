@@ -82,8 +82,8 @@ class TestEnvironment {
 
         $initDAO->clearDb();
 
-        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
-        $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", true);
+        $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
+        $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", true);
 
         $dbStatus = $initDAO->getDbStatus();
         if ($dbStatus['missing']) {
@@ -124,9 +124,9 @@ class TestEnvironment {
         $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
         $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
-        $fileName = 'sample_scanned_image.png';
-        $initializer->createSampleScanImage($fileName, $workspaceId);
-        $initDAO->importScanImage($workspaceId, $fileName);
+//        $fileName = 'sample_scanned_image.png';
+//        $initializer->createSampleScanImage($fileName, $workspaceId);
+//        $initDAO->importScanImage($workspaceId, $fileName);
     }
 
 
