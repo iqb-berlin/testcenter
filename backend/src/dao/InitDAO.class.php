@@ -306,9 +306,6 @@ class InitDAO extends SessionDAO {
             $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
             $forcePatch = ($patch == 'next') && !$lastWasFutureVersion;
 
-             echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n') . ' ~ ' . ($forcePatch?'y':'n');
-
-
             if (
                 (!$forcePatch) &&
                 ($isFutureVersion or $shouldBeInstalled)
