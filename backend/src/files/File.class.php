@@ -155,6 +155,7 @@ class File extends FileData {
         $this->relations[] = $relation;
     }
 
+
     public function jsonSerialize(): mixed {
 
         $info = [
@@ -179,6 +180,15 @@ class File extends FileData {
         ];
 
         return $output;
+    }
+
+
+    public function getContent(): string {
+
+        if ($this->isValid()) { // does it even exist?
+            return file_get_contents($this->path);
+        }
+        return "";
     }
 }
 

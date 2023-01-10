@@ -13,7 +13,7 @@ class XMLFileUnit extends XMLFile {
     ];
 
     protected string $playerId = '';
-    private array $dependencies = [];
+    private array $dependencies = []; // TODO! we need this anymore?
 
     public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
 
@@ -27,7 +27,7 @@ class XMLFileUnit extends XMLFile {
 
         if ($this->isValid()) {
             $this->playerId = $this->readPlayerId();
-            $this->dependencies = $this->readDependencies();
+            $this->dependencies = $this->readPlayerDependencies();
         }
     }
 
@@ -35,7 +35,7 @@ class XMLFileUnit extends XMLFile {
 
         parent::crossValidate($validator);
 
-        $this->checkIfResourceExists($validator);
+        $this->checkIfResourcesExist($validator);
         $this->getPlayerIfExists($validator);
     }
 
@@ -49,7 +49,7 @@ class XMLFileUnit extends XMLFile {
         $resource = $validator->getResource($this->playerId, true);
 
         if ($resource != null) {
-            $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), 'fuzzy'));
+            $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), FileRelationshipType::usesPlayer));
         } else {
             $this->report('error', "No suitable version of `$this->playerId` found");
         }
@@ -58,25 +58,26 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    private function checkIfResourceExists(WorkspaceValidator $validator): void {
+    private function checkIfResourcesExist(WorkspaceValidator $validator): void {
 
         $this->contextData['totalSize'] = $this->size;
 
         $definitionRef = $this->getDefinitionRef();
 
-        $resources = $this->getResources();
+        $resources = $this->readPlayerDependencies();
 
         if ($definitionRef) {
-            $resources[] = $definitionRef;
+            $resources['definition'] = $definitionRef;
         }
 
-        foreach ($resources as $resourceName) {
+        foreach ($resources as $key => $resourceName) {
 
             $resourceId = FileName::normalize($resourceName, false);
             $resource = $validator->getResource($resourceId, false);
             if ($resource != null) {
-                $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), 'fuzzy'));
-                $this->contextData['totalSize'] += $resource->getSize(); // TODO also for additional resources?
+                $relationshipType = ($key === 'definition') ? FileRelationshipType::isDefinedBy : FileRelationshipType::usesPlayerResource;
+                $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), $relationshipType));
+                $this->contextData['totalSize'] += $resource->getSize();
             } else {
                 $this->report('error', "Resource `$resourceName` not found");
             }
@@ -115,7 +116,7 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    public function getContent(WorkspaceValidator $workspaceValidator): string {
+    public function getUnitDefinition(WorkspaceValidator $workspaceValidator): string {
 
         $this->crossValidate($workspaceValidator);
         if (!$this->isValid()) {
@@ -145,16 +146,6 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    public function getResources(): array {
-
-        $resourceNodes = $this->xml->xpath('/Unit/Dependencies/File');
-        return array_map(
-            function(SimpleXMLElement $fileElem) { return (string) $fileElem; },
-            $resourceNodes
-        );
-    }
-
-
     public function getDefinition(): string {
 
         $definitionNodes = $this->xml->xpath('/Unit/Definition');
@@ -162,13 +153,7 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    public function getDependencies(): array {
-
-        return $this->dependencies;
-    }
-
-
-    private function readDependencies(): array {
+    private function readPlayerDependencies(): array {
 
         if (!$this->isValid()) {
             return [];

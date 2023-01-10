@@ -49,7 +49,7 @@ class XMLFileTesttakers extends XMLFile {
 
                 if ($booklet != null) {
 
-                    $this->addRelation(new FileRelation($booklet->getType(), $booklet->getId(), 'exact'));
+                    $this->addRelation(new FileRelation($booklet->getType(), $booklet->getId(), FileRelationshipType::hasBooklet));
                 }
 
                 if (!$booklet or !$booklet->isValid()) {

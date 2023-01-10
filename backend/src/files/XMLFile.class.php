@@ -13,12 +13,14 @@ class XMLFile extends File {
     protected string $rootTagName = '';
     protected ?array $schema;
 
-    public SimpleXMLElement $xml;
+    protected SimpleXMLElement $xml;
 
 
     public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
 
         if (is_a($init, FileData::class)) {
+
+            parent::__construct($init);
             return;
         }
 

@@ -377,33 +377,34 @@ class WorkspaceDAO extends DAO {
     }
 
 
-//    private function getFileRelations(string $name, string $type): array {
-//
-//        $relations = $this->_("
-//            select
-//                object_type,
-//                object_request
-//            from
-//                file_relations
-//            where
-//                workspace_id = ?
-//                and subject_name = ?
-//                and subject_type = ?",
-//            [$this->workspaceId, $name, $type],
-//            true
-//        );
-//
-//        return array_map(
-//            function(array $r): FileRelation {
-//                return new FileRelation(
-//                    $r['object_type'],
-//                    $r['object_request'],
-//                    'TBA'
-//                );
-//            },
-//            $relations
-//        );
-//    }
+    public function getFileRelations(string $name, string $type): array {
+
+        $relations = $this->_("
+            select
+                object_type,
+                object_request,
+                relationship_type
+            from
+                file_relations
+            where
+                workspace_id = ?
+                and subject_name = ?
+                and subject_type = ?",
+            [$this->workspaceId, $name, $type],
+            true
+        );
+
+        return array_map(
+            function(array $r): FileRelation {
+                return new FileRelation(
+                    $r['object_type'],
+                    $r['object_request'],
+                    constant("FileRelationshipType::{$r['relationship_type']}")
+                );
+            },
+            $relations
+        );
+    }
 
 
 
@@ -555,7 +556,7 @@ class WorkspaceDAO extends DAO {
 
             /* @var $relation FileRelation */
 
-            if ($relation->getRelationshipType() == 'fuzzy') {
+            if ($relation->getRelationshipType()->allowsSimilarVersion()) {
 
                 $relatedFile = $this->getFileSimilarVersion($relation->getTargetId(), $relation->getTargetType());
 
@@ -571,12 +572,13 @@ class WorkspaceDAO extends DAO {
 
 
             $this->_(
-                "insert into file_relations (workspace_id, subject_name, subject_type, object_request, object_type, object_name)
-                values (?, ?, ?, ?, ?, ?);",
+                "insert ignore into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_request, object_type, object_name)
+                values (?, ?, ?, ?, ?, ?, ?);",
                 [
                     $this->workspaceId,
                     $file->getName(),
                     $file->getType(),
+                    $relation->getRelationshipType()->name,
                     $relation->getTargetId(),
                     $relation->getTargetType(),
                     $relatedFile->getName()

@@ -354,13 +354,4 @@ class ResourceFile extends File {
             }
         }
     }
-
-
-    public function getContent(): string {
-
-        if ($this->isValid()) { // does it even exist?
-            return file_get_contents($this->path);
-        }
-        return "";
-    }
 }

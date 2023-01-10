@@ -120,13 +120,13 @@ class XMLFilesUnitTest extends TestCase {
 
         $unitString = '<Unit><Metadata><Id>i</Id></Metadata><Definition player="super-player-1">a unit definition</Definition></Unit>';
         $xmlFile = new XMLFileUnit($unitString, false, true);
-        $result = $xmlFile->getContent($validator);
+        $result = $xmlFile->getUnitDefinition($validator);
         $this->assertEquals("a unit definition", $result);
 
 
         $unitString = '<Unit><Metadata><Id>i</Id></Metadata><DefinitionRef player="super-player-1">A_UNITS_CONTENT.VOUD</DefinitionRef></Unit>';
         $xmlFile = new XMLFileUnit($unitString, false, true);
-        $result = $xmlFile->getContent($validator);
+        $result = $xmlFile->getUnitDefinition($validator);
         $this->assertEquals("content of: A_UNITS_CONTENT.VOUD", $result);
     }
 }

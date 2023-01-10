@@ -23,7 +23,7 @@ class XMLFileBooklet extends XMLFile {
                 continue;
             }
 
-            $this->addRelation(new FileRelation($unit->getType(), $unit->getId(), 'exact'));
+            $this->addRelation(new FileRelation($unit->getType(), $unit->getId(), FileRelationshipType::containsUnit));
 
             $this->contextData['totalSize'] += $unit->getTotalSize();
 

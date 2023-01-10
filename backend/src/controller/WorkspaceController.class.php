@@ -350,7 +350,7 @@ class WorkspaceController extends Controller {
 
         return $response->withJson([
             'player_id' => $unit->getPlayerId(),
-            'def' => $unit->getContent($validator),
+            'def' => $unit->getUnitDefinition($validator),
             'player' => $player->getContent()
         ]);
     }

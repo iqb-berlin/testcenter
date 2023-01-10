@@ -542,6 +542,12 @@ class Workspace {
     }
 
 
+    public function getFileRelations(File $file): array {
+
+        return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
+    }
+
+
     private function getValidatorWithAllFilesFromFs(): WorkspaceValidator {
 
         $validator = new WorkspaceValidator($this);
