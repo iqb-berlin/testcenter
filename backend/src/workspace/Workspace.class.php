@@ -115,11 +115,18 @@ class Workspace {
         ];
 
         $cachedFilesToDelete = $this->workspaceDAO->getFiles($filesToDelete);
-        $blockedFiles = $this->workspaceDAO->getBlockedFiles($cachedFilesToDelete);
+        $blockedFiles = $this->workspaceDAO->getBlockedFiles(array_merge(...array_values($cachedFilesToDelete)));
 
         foreach($filesToDelete as $localFilePath) {
 
-            list($type, $name) = explode('/', $localFilePath, 2);
+            $pathParts = explode('/', $localFilePath, 2);
+
+            if (count($pathParts) != 2) {
+                $report['not_allowed'][] = $localFilePath;
+                continue;
+            }
+
+            list($type, $name) = $pathParts;
 
             $cachedFile = $cachedFilesToDelete[$type][$name] ?? null;
 

@@ -99,7 +99,7 @@ class SysChecksFolder extends Workspace {
             return 'SysCheck/reports/' . $report->getFileName();
         }, $reports);
 
-        return $this->deleteFiles($filesToDelete); // TODO don't validate here!!!;
+        return $this->deleteFiles($filesToDelete); // TODO! test/fix this .. will most likely not work anymore  // TODO don't validate here!!!;
     }
 
 

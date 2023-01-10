@@ -182,6 +182,9 @@ class WorkspaceController extends Controller {
     }
 
 
+    /** TODO since only allowed files are in the five main folders, a better syntax for the body would suit
+     * eg [{"type": "Booklet", "name": "SAMPLE_BOOKLET.XML"}]
+     */
     public static function deleteFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');

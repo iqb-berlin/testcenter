@@ -410,14 +410,19 @@ class WorkspaceDAO extends DAO {
 
     public function getFiles(array $localPaths): array {
 
-        $placeholder = implode(' or ', array_fill(0, count($localPaths), '(type = ? and name = ?)'));
-
         $replacements = [$this->workspaceId];
+        $validFilePaths = 0;
 
         foreach ($localPaths as $fileLocalPath) {
 
-            list($replacements[], $replacements[]) = explode('/', $fileLocalPath, 2);
+            $partParts = explode('/', $fileLocalPath, 2);
+            if (count($partParts) == 2) {
+                list($replacements[], $replacements[]) = $partParts;
+                $validFilePaths++;
+            }
         }
+
+        $placeholder = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
 
         $sql = "select distinct
                     name,
