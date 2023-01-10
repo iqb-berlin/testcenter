@@ -110,12 +110,12 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 })
     ->add(new RequireToken('person'));
 
-$app->group('/test', function(RouteCollectorProxy $group) { // TODO Spec
+$app->group('/test', function(RouteCollectorProxy $group) {
 
     $group->post('/{test_id}/connection-lost', [TestController::class, 'postConnectionLost']);
 });
 
-$app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) { // TODO Specs
+$app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) {
 
     $group->get('/file/{fileId}', [AttachmentController::class, 'getFile']);
 
@@ -131,7 +131,7 @@ $app->group('/attachment/{attachmentId}', function(RouteCollectorProxy $group) {
     ->add(new RequireToken('person'));
 
 
-$app->group('/attachments', function(RouteCollectorProxy $group) { // TODO Specs
+$app->group('/attachments', function(RouteCollectorProxy $group) {
 
     $group->get('/list', [AttachmentController::class, 'getList']);
 
