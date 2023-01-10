@@ -4,7 +4,7 @@ declare(strict_types=1);
 class File extends FileData {
 
     private const type = 'file';
-    public const canHaveDependencies = true;
+    public const canHaveRelations = true;
     protected string $name = '';
 
     static function get(string | FileData $init, string $type = null, bool $validate = false): File {

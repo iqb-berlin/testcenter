@@ -57,7 +57,7 @@ class WorkspaceValidator {
 
         foreach ($this->allFiles as $type => $fileList) {
 
-            if ($ofFile->getType() !== substr($type, 0, strlen($ofFile->getType()))) {
+            if (!str_starts_with($type, $ofFile->getType())) {
                 continue;
             }
 
@@ -217,11 +217,30 @@ class WorkspaceValidator {
 
     public function findUnusedItems(): void {
 
+        $relationsMap = [];
+
+        foreach (Workspace::subFolders as $type) {
+
+            foreach ($this->allFiles[$type] as $file) {
+
+                /* @var $file File */
+                if ($file::canHaveRelations) {
+
+                    $relations = $file->getRelations();
+                    foreach ($relations as $relation) {
+
+                        /* @var FileRelation $relation */
+                        $relationsMap[$relation->getTargetType()][$relation->getTargetId()] = $relation;
+                    }
+                }
+            }
+        }
+
         foreach (Workspace::subFolders as $type) {
 
             foreach($this->allFiles[$type] as $file) { /* @var $file File */
 
-                if ($file::canHaveDependencies and !$file->isUsed()) {
+                if ($file::canHaveRelations and !isset($relationsMap[$file->getType()][$file->getId()])) {
 
                     $file->report('warning', "{$file->getType()} is never used");
                 }

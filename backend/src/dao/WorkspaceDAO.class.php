@@ -252,7 +252,7 @@ class WorkspaceDAO extends DAO {
             ]
         );
 
-        return $this->resultRow2File($fileData, []);
+        return $fileData ? $this->resultRow2File($fileData, []) : null;
     }
 
 
