@@ -134,9 +134,9 @@ class TestController extends Controller {
         }
 
         if (!isset($res['definitionRef'])) {
-            // TODO get rid of this ugly recreation of the file
-            $unitFromFile = new XMLFileUnit($unitFile->getPath());
-            $res['definition'] = $unitFromFile->getDefinition();
+
+            $unitFile->load();
+            $res['definition'] = $unitFile->getDefinition();
         }
 
         return $response->withJson($res);
