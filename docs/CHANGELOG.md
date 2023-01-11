@@ -4,6 +4,18 @@ layout: default
 
 # Changelog & Upgrade Information
 
+[next]
+# Performance
+Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
+sodass Vorgänge wie das Laden eines Tests oder eines Arbeitsbereiches in der Admin-Ansicht
+schneller und vor allem mit wesentlich (bis zu quadratisch) weniger Dateizugriffen auskommt.
+Damit sollte die Anwendung mit **wesentlich** mehr gleichzeitigen Benutzern arbeiten
+können. Vorangegangene Lasttests hatten eine Grenze bei etwa 5000 gleichzeitigen
+Ladevorgängen festgestellt.
+
+## Sicherheit
+* Es wird eine aktuelle MySQL Version verwendet 
+
 ## 13.2.2
 ### Bug Fixes
 Zu große Antwort-Daten (durch GeoGebra erzeugt) führten zu Fehlern.
