@@ -24,12 +24,26 @@ class XMLFile extends File {
             return;
         }
 
+        if (!$isRawXml) {
+
+            $this->path = $init;
+            $this->load($validate);
+
+        } else {
+
+            $this->load($validate, $init);
+        }
+    }
+
+
+    public function load(bool $validate = false, string $overwriteContent = null): void {
+
         libxml_use_internal_errors(true);
         libxml_clear_errors();
 
-        if (!$isRawXml) {
+        if (!$overwriteContent) {
 
-            parent::__construct($init);
+            parent::__construct($this->getPath());
 
             if (!$this->isValid()) {
 
@@ -42,7 +56,7 @@ class XMLFile extends File {
 
         } else {
 
-            $xmlElem = simplexml_load_string($init);
+            $xmlElem = simplexml_load_string($overwriteContent);
         }
 
 
@@ -77,15 +91,17 @@ class XMLFile extends File {
         libxml_use_internal_errors(false);
     }
 
+
+
     private function readMetadata(): void {
 
-        $id = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Id");
+        $id = $this->xmlGetNodeContentIfPresent("/$this->rootTagName/Metadata/Id");
         if ($id) {
             $this->id = trim(strtoupper($id));
         }
 
-        $this->label = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Label");
-        $this->description = $this->xmlGetNodeContentIfPresent("/{$this->rootTagName}/Metadata/Description");
+        $this->label = $this->xmlGetNodeContentIfPresent("/$this->rootTagName/Metadata/Label");
+        $this->description = $this->xmlGetNodeContentIfPresent("/$this->rootTagName/Metadata/Description");
     }
 
 
@@ -109,7 +125,7 @@ class XMLFile extends File {
             return;
         }
 
-        if ($this->schema['type'] !== $this->getRoottagName()) {
+        if ($this->schema['type'] !== $this->getRootTagName()) {
 
             $this->report('error', 'File has no valid link to XSD-schema.');
             return;
@@ -131,8 +147,8 @@ class XMLFile extends File {
     private function fallBackToCurrentSchemaVersion(string $message): void {
 
         $currentVersion = Version::get();
-        $this->report('warning', "{$message} Current version (`$currentVersion`) will be used instead.");
-        $this->schema = XMLSchema::getLocalSchema($this->getRoottagName());
+        $this->report('warning', "$message Current version (`$currentVersion`) will be used instead.");
+        $this->schema = XMLSchema::getLocalSchema($this->getRootTagName());
     }
 
 
@@ -171,7 +187,7 @@ class XMLFile extends File {
 
         foreach ($this::deprecatedElements as $deprecatedElement) {
 
-            foreach ($this->xml->xpath($deprecatedElement) as $deprecatedItem) {
+            foreach ($this->xml->xpath($deprecatedElement) as $ignored) {
 
                 $this->report('warning', "Element `$deprecatedElement` is deprecated.");
             }
@@ -197,7 +213,7 @@ class XMLFile extends File {
     }
 
 
-    public function getRoottagName() { // TODO is this needed?
+    public function getRootTagName(): string { // TODO is this needed?
 
         return $this->rootTagName;
     }

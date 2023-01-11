@@ -65,7 +65,7 @@ class File extends FileData {
             return;
         }
 
-        parent::__construct();
+        parent::__construct(); // TODO! whats this?!
 
         $this->type = $type;
 

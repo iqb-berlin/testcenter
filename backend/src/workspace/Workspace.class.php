@@ -186,7 +186,7 @@ class Workspace {
 
             $this->workspaceDAO->deleteFile($file);
 
-        } catch (Exception $e) {
+        } catch (Exception) {
 
             return false;
         }
@@ -409,7 +409,7 @@ class Workspace {
     public function storeAllFiles(): array {
 
         $folder = $this->getValidatorWithAllFilesFromFs();
-//        $folder->findUnusedItems();
+//        $folder->findUnusedItems(); TODO!
 
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
@@ -418,22 +418,24 @@ class Workspace {
         ];
         $invalidCount = 0;
 
-//        $filesInDb = $this->workspaceDAO->getAllFiles();
-//        $filesInFolder = $folder->getFiles();
-//
-//        foreach ($filesInDb as $fileSet) {
-//
-//            foreach ($fileSet as $file) {
-//
-//                /* @var File $file */
-//
-//                if (!isset($filesInFolder[$file->getPath()])) {
-//
-//                    $this->workspaceDAO->deleteFile($file);
-//                    $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file->getName());
-//                }
-//            }
-//        }
+        // 0. remove all files, which are gone
+
+        $filesInDb = $this->workspaceDAO->getAllFiles();
+        $filesInFolder = $folder->getFiles();
+
+        foreach ($filesInDb as $fileSet) {
+
+            foreach ($fileSet as $file) {
+
+                /* @var File $file */
+
+                if (!isset($filesInFolder[$file->getPath()])) {
+
+                    $this->workspaceDAO->deleteFile($file);
+                    $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file->getName());
+                }
+            }
+        }
 
         // 1. Schritt alle Files selbst speichern
 
@@ -506,12 +508,12 @@ class Workspace {
             $stats['resource_packages_installed'] = 1;
         }
 
-//        if (is_a($file, XMLFileBooklet::class)) { TODO! !!!
-//
-//            $requestedAttachments = $this->getRequestedAttachments($file);
-//            $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
-//            $stats['attachments_noted'] = count($requestedAttachments);
-//        }
+        if (is_a($file, XMLFileBooklet::class)) {
+
+            $requestedAttachments = $this->getRequestedAttachments($file);
+            $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
+            $stats['attachments_noted'] = count($requestedAttachments);
+        }
 
         return $stats;
     }
@@ -543,6 +545,7 @@ class Workspace {
 
             $unit = $this->findFileById('Unit', $uniId);
             /* @var $unit XMLFileUnit */
+            $unit->load();
             $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
         }
         return $requestedAttachments;
