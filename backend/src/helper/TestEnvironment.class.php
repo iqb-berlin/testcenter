@@ -124,9 +124,9 @@ class TestEnvironment {
         $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
         $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
-//        $fileName = 'sample_scanned_image.png';
-//        $initializer->createSampleScanImage($fileName, $workspaceId);
-//        $initDAO->importScanImage($workspaceId, $fileName);
+        $fileName = 'sample_scanned_image.png';
+        $initializer->createSampleScanImage($fileName, $workspaceId);
+        $initDAO->importScanImage($workspaceId, $fileName);
     }
 
 
