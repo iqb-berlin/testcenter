@@ -22,7 +22,7 @@ services:
 
   testcenter-system-test-db:
     container_name: testcenter-system-test-db
-    image: mysql:5.7
+    image: mysql:8.0
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
