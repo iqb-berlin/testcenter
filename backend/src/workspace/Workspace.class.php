@@ -409,7 +409,7 @@ class Workspace {
     public function storeAllFiles(): array {
 
         $folder = $this->getValidatorWithAllFilesFromFs();
-//        $folder->findUnusedItems(); TODO!
+        $folder->findUnusedItems();
 
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
