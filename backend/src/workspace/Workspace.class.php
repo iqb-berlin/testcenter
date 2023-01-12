@@ -281,9 +281,16 @@ class Workspace {
 
             if ($oldFile->getId() !== $file->getId()) {
 
-                $file->report('error', "File of name `{$oldFile->getName()}` did already exist.
-                    Overwriting was rejected since new file's ID (`{$file->getId()}`) 
-                    differs from old one (`{$oldFile->getId()}`)."
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+                    . "Overwriting was rejected since new file's ID (`{$file->getId()}`) differs from old one (`{$oldFile->getId()}`)."
+                );
+                return;
+            }
+
+            if ($oldFile->getVeronaModuleId() !== $file->getVeronaModuleId()) {
+
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+                    . "Overwriting was rejected since new file's Verona-Module-ID (`{$file->getVeronaModuleId()}`) differs from old one (`{$oldFile->getVeronaModuleId()}`)."
                 );
                 return;
             }
