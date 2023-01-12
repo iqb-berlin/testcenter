@@ -296,6 +296,7 @@ class WorkspaceController extends Controller {
         $workspaceController = new Workspace($workspaceId);
         /* @var XMLFileSysCheck $xmlFile */
         $xmlFile = $workspaceController->findFileById('SysCheck', $sysCheckName);
+        $xmlFile->load();
 
         return $response->withJson(new SysCheck([
             'name' => $xmlFile->getId(),
@@ -316,46 +317,61 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
 
-        $validator = new WorkspaceValidator(new Workspace($workspaceId));
+        $workspace = new Workspace($workspaceId);
 
         /* @var XMLFileSysCheck $sysCheck */
-        $sysCheck = $validator->getSysCheck($sysCheckName);
-        if (($sysCheck == null)) {
-            throw new HttpNotFoundException($request);
-        }
+        $sysCheck = $workspace->findFileById('SysCheck', $sysCheckName);
+        $sysCheck->load(true);
+//        if (($sysCheck == null)) {
+//            throw new HttpNotFoundException($request);
+//        }
+
+        $res = [
+            'player_id' => '',
+            'def' => '',
+            'player' => ''
+        ];
 
         if (!$sysCheck->hasUnit()) {
-            return $response->withJson([
-                'player_id' => '',
-                'def' => '',
-                'player' => ''
-            ]);
+            return $response->withJson($res);
         }
 
-        $sysCheck->crossValidate($validator);
-        if (!$sysCheck->isValid()) {
+        $unit = $workspace->findFileById('Unit', $sysCheck->getUnitId());
+        /* @var XMLFileUnit $unit */
+        $unitRelations = $workspace->getFileRelations($unit);
 
-            throw new HttpInternalServerErrorException($request, 'SysCheck is invalid');
+        foreach ($unitRelations as $unitRelation) {
+
+            /* @var FileRelation $unitRelation */
+
+            switch ($unitRelation->getRelationshipType()) {
+
+                case FileRelationshipType::containsUnit:
+
+                    $unitDefinitionFile = $workspace->findFileById('Resource', $unitRelation->getTargetId());
+                    $res['def'] = $unitDefinitionFile->getContent();
+                    break;
+
+                case FileRelationshipType::usesPlayer:
+
+                    $playerFile = $workspace->findFileById('Resource', $unitRelation->getTargetId());
+                    $res['player'] = $playerFile->getContent();
+                    $res['player_id'] = $playerFile->getVeronaModuleId();
+                    break;
+            }
         }
 
-        $unit = $validator->getUnit($sysCheck->getUnitId());
-        $unit->crossValidate($validator);
-        if (!$unit->isValid()) {
+        if (!$res['def']) {
 
-            throw new HttpInternalServerErrorException($request, 'Unit is invalid');
+            $unit->load();
+
+            $unitEmbeddedDefinition = $unit->getDefinition();
+            if ($unitEmbeddedDefinition) {
+                $res['def'] = $unitEmbeddedDefinition;
+            }
         }
 
-        $player = $unit->getPlayerIfExists($validator);
-        if (!$player or !$player->isValid()) {
-
-            throw new HttpInternalServerErrorException($request, 'Player is invalid');
-        }
-
-        return $response->withJson([
-            'player_id' => $unit->getPlayerId(),
-            'def' => $unit->getUnitDefinition($validator),
-            'player' => $player->getContent()
-        ]);
+        return $response->withJson($res);
     }
 
     public static function putSysCheckReport(Request $request, Response $response): Response {
@@ -368,6 +384,7 @@ class WorkspaceController extends Controller {
 
         /* @var XMLFileSysCheck $xmlFile */
         $xmlFile = $sysChecksFolder->findFileById('SysCheck', $sysCheckName);
+        $xmlFile->load();
 
         if (strlen((string) $report->keyPhrase) <= 0) {
 

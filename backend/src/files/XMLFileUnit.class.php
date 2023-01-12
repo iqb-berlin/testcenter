@@ -16,7 +16,6 @@ class XMLFileUnit extends XMLFile {
     ];
 
     protected string $playerId = '';
-    private array $dependencies = []; // TODO! we need this anymore?
 
     public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
 
@@ -30,7 +29,6 @@ class XMLFileUnit extends XMLFile {
 
         if ($this->isValid()) {
             $this->playerId = $this->readPlayerId();
-            $this->dependencies = $this->readPlayerDependencies();
         }
     }
 
@@ -109,36 +107,13 @@ class XMLFileUnit extends XMLFile {
         $definition = $this->xml->xpath('/Unit/Definition | /Unit/DefinitionRef');
         if (count($definition)) {
             $playerId = strtoupper((string) $definition[0]['player']);
-            if (substr($playerId, -5) != '.HTML') {
+            if (!str_ends_with($playerId, '.HTML')) {
                 $playerId = $playerId . '.HTML';
             }
             return $playerId;
         }
 
         return '';
-    }
-
-
-    public function getUnitDefinition(WorkspaceValidator $workspaceValidator): string {
-
-        $this->crossValidate($workspaceValidator);
-        if (!$this->isValid()) {
-            return '';
-        }
-
-        $definitionNode = $this->xml->xpath('/Unit/Definition');
-        if (count($definitionNode)) {
-            return (string) $definitionNode[0];
-        }
-
-        $definitionRef = (string) $this->xml->xpath('/Unit/DefinitionRef')[0];
-        $unitContentFile = $workspaceValidator->getResource($definitionRef, true);
-
-        if (!$unitContentFile) {
-            throw new HttpError("Resource not found: `$definitionRef`");
-        }
-
-        return $unitContentFile->getContent();
     }
 
 
@@ -162,9 +137,11 @@ class XMLFileUnit extends XMLFile {
             return [];
         }
 
+        $dE = $this->xml->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|/Unit/Dependencies/File[not(@for) or @for="player"]');
+
         return array_map(
             function($e) { return (string) $e;},
-            $this->xml->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|File[not(@for) or @for="player"]')
+            $dE
         );
     }
 
@@ -174,7 +151,7 @@ class XMLFileUnit extends XMLFile {
         $requestedAttachments = $this->getRequestedAttachments();
         $requestedAttachmentsCount = count($requestedAttachments);
         if ($requestedAttachmentsCount) {
-            $this->report('info', "`{$requestedAttachmentsCount}` attachment(s) requested.");
+            $this->report('info', "`$requestedAttachmentsCount` attachment(s) requested.");
         }
     }
 

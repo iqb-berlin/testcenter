@@ -358,6 +358,7 @@ class Workspace {
     }
 
 
+    // TODO! wann dürfen auch invalide geholt werden, und wann nicht?
     public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
 
         if ($file = $this->workspaceDAO->getFileById($findId, $type)) {
