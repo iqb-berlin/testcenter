@@ -575,9 +575,11 @@ class WorkspaceDAO extends DAO {
                 $unresolvedRelations++;
             }
 
+            // this is maybe the the most ugly think I ever did. At one point we have to get rid of teh SQLite thing at all.
+            $or = ($this->getDBType() == 'mysql') ? '' : 'or';
 
             $this->_(
-                "insert ignore into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_request, object_type, object_name)
+                "insert $or ignore into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_request, object_type, object_name)
                 values (?, ?, ?, ?, ?, ?, ?);",
                 [
                     $this->workspaceId,
