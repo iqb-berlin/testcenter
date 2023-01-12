@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 class FileName {
 
+    // TODO! can we get rid of $skipMinorAndPatchVersion now?
     static function normalize(string $fileName, bool $skipMinorAndPatchVersion): string {
 
         $normalizedFilename = strtoupper($fileName);

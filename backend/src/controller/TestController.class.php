@@ -157,7 +157,7 @@ class TestController extends Controller {
         $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
 
         $workspace = new Workspace($authToken->getWorkspaceId());
-        $resourceFile = $workspace->findFileById('Resource', $resourceName, $allowSimilarVersion);
+        $resourceFile = $workspace->findFileById('Resource', FileName::normalize($resourceName, false), $allowSimilarVersion);
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
