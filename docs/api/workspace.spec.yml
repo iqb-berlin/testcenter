@@ -264,127 +264,125 @@ paths:
                 $ref: './components.spec.yml#/components/schemas/file_list'
               example: # TODO add schema
                 Booklet:
-                  - id: BOOKLET.SAMPLE-1
-                    info:
-                      description: This a sample booklet for testing/development/showcase purposes.
-                      label: Sample booklet
-                      totalSize: 68601
-                    modificationTime: 1627545600
-                    name: SAMPLE_BOOKLET.XML
-                    report: []
+                  - name: SAMPLE_BOOKLET.XML
                     size: 1397
+                    modificationTime: 1673525827
                     type: Booklet
-                  - id: BOOKLET.SAMPLE-2
-                    info:
-                      description: ''
-                      label: Reduced Booklet
-                      totalSize: 52288
-                    modificationTime: 1627545600
-                    name: SAMPLE_BOOKLET2.XML
+                    id: BOOKLET.SAMPLE-1
                     report: []
+                    info:
+                      label: Sample booklet
+                      description: This a sample booklet for testing/development/showcase purposes.
+                      totalSize: 69013
+                  - name: SAMPLE_BOOKLET2.XML
                     size: 557
+                    modificationTime: 1673525827
                     type: Booklet
-                  - id: BOOKLET.SAMPLE-3
-                    info:
-                      description: "\n      This booklet has the same species as sample Booklet 1. The
-                      term booklet species indicates that both booklets can\n      be controlled by
-                      the group-monitor as if they where the same.\n      The species is currently
-                      defined as having the same number of testlets on the first level (called blocks).
-                      This\n      definition may change later.\n    "
-                      label: Similar Booklet to Sample 1
-                      totalSize: 68481
-                    modificationTime: 1627545600
-                    name: SAMPLE_BOOKLET3.XML
+                    id: BOOKLET.SAMPLE-2
                     report: []
-                    size: 1277
-                    type: Booklet
-                Resource:
-                  - id: SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP
                     info:
+                      label: Reduced Booklet
                       description: ''
+                      totalSize: 52700
+                  - name: SAMPLE_BOOKLET3.XML
+                    size: 1277
+                    modificationTime: 1673525827
+                    type: Booklet
+                    id: BOOKLET.SAMPLE-3
+                    report: []
+                    info:
+                      label: Similar Booklet to Sample 1
+                      description: some description
+                      totalSize: 68893
+                SysCheck:
+                  - name: SAMPLE_SYSCHECK.XML
+                    size: 1232
+                    modificationTime: 1673525827
+                    type: SysCheck
+                    id: SYSCHECK.SAMPLE
+                    report: []
+                    info:
+                      label: An example SysCheck definition
+                      description: An example SysCheck definition with long description
+                Testtakers:
+                  - name: SAMPLE_TESTTAKERS.XML
+                    size: 2173
+                    modificationTime: 1673525827
+                    type: Testtakers
+                    id: SAMPLE_TESTTAKERS.XML
+                    report: []
+                    info:
                       label: ''
-                    modificationTime: 1627545600
-                    name: sample_resource_package.itcr.zip
+                      description: This file contains some logins for testing and works a a sample for developers.
+                      testtakers: 10
+                Unit:
+                  - name: SAMPLE_UNIT.XML
+                    size: 1278
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE
                     report:
                       info:
-                        - Contains 1 files.
-                    size: 412
-                    type: Resource
-                  - id: SAMPLE_UNITCONTENTS.HTM
+                        - "`1` attachment(s) requested."
                     info:
-                      description: ''
-                      label: ''
-                    modificationTime: 1627545600
-                    name: SAMPLE_UNITCONTENTS.HTM
-                    report: []
+                      label: A sample unit
+                      description: This is a sample unit showing the possibilities of the sample player.
+                      totalSize: 15473
+                  - name: SAMPLE_UNIT2.XML
+                    size: 1394
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE-2
+                    report:
+                      warning:
+                        - Element `/Unit/Definition/@type` is deprecated.
+                    info:
+                      label: A sample unit
+                      description: This is an Unit
+                      totalSize: 1806
+                Resource:
+                  - name: SAMPLE_UNITCONTENTS.HTM
                     size: 14195
+                    modificationTime: 1673525827
                     type: Resource
-                  - id: VERONA-PLAYER-SIMPLE-4.0.0.HTML
+                    id: SAMPLE_UNITCONTENTS.HTM
+                    report: []
                     info:
+                      label: ''
+                      description: ''
+                  - name: sample_resource_package.itcr.zip
+                    size: 412
+                    modificationTime: 1673525827
+                    type: Resource
+                    id: SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP
+                    report:
+                      info:
+                        - Contains 0 files.
+                    info:
+                      label: ''
+                      description: ''
+                  - name: verona-player-simple-4.0.0.html
+                    size: 34864
+                    modificationTime: 1673525827
+                    type: Resource
+                    id: VERONA-PLAYER-SIMPLE-4.0.0.HTML
+                    report:
+                      info:
+                        - 'Verona-Version: 4.0'
+                    info:
+                      label: Simple HTML Player
                       description: This is a simple, dependency-less, vanilla-js-written, but full-featured
                         unit player, mainly as showcase for developers and for software-testing. It
                         does implement the Verona 4.0.0-Standard and can be used for units containing
                         simple any content in HTML-format. Unit Description ist the <code>form-content
                         as HTML. Just give some names to the form element, and the player does the rest.
                         Use some special Ids for some special buttons.
-                      label: Simple HTML Player
                       veronaModuleType: player
                       veronaVersion: '4.0'
                       version: 4.0.0
-                    modificationTime: 1627545600
-                    name: verona-player-simple-4.0.0.html
-                    report:
-                      info:
-                        - 'Verona-Version: 4.0'
-                    size: 34864
-                    type: Resource
-                SysCheck:
-                  - id: SYSCHECK.SAMPLE
-                    info:
-                      description: An example SysCheck definition with long description
-                      label: An example SysCheck definition
-                    modificationTime: 1627545600
-                    name: SAMPLE_SYSCHECK.XML
-                    report: []
-                    size: 1232
-                    type: SysCheck
-                Testtakers:
-                  - id: SAMPLE_TESTTAKERS.XML
-                    info:
-                      description: This file contains some logins for testing and works a a sample for
-                        developers.
-                      label: ''
-                      testtakers: 10
-                    modificationTime: 1627545600
-                    name: SAMPLE_TESTTAKERS.XML
-                    report: []
-                    size: 2173
-                    type: Testtakers
-                Unit:
-                  - id: UNIT.SAMPLE
-                    info:
-                      description: This is a sample unit showing the possibilities of the sample player.
-                      label: A sample unit
-                      totalSize: 15473
-                    modificationTime: 1627545600
-                    name: SAMPLE_UNIT.XML
-                    report:
-                      info:
-                        - "`1` attachment(s) requested."
-                    size: 1278
-                    type: Unit
-                  - id: UNIT.SAMPLE-2
-                    info:
-                      description: This is an Unit
-                      label: A sample unit
-                      totalSize: 1394
-                    modificationTime: 1627545600
-                    name: SAMPLE_UNIT2.XML
-                    report:
-                      warning:
-                        - Element `/Unit/Definition/@type` is deprecated.
-                    size: 1394
-                    type: Unit
+
+
+
 
         "401":
           description: Not authenticated
