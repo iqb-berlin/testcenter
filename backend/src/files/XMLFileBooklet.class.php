@@ -6,6 +6,8 @@ declare(strict_types=1);
 class XMLFileBooklet extends XMLFile {
 
     const type = 'Booklet';
+    const canBeRelationSubject = true;
+    const canBeRelationObject = true;
 
     public function crossValidate(WorkspaceValidator $validator): void {
 

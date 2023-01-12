@@ -4,7 +4,8 @@ declare(strict_types=1);
 class File extends FileData {
 
     private const type = 'file';
-    public const canHaveRelations = true;
+    public const canBeRelationSubject = false;
+    public const canBeRelationObject = false;
     protected string $name = '';
 
     static function get(string | FileData $init, string $type = null, bool $validate = false): File {
@@ -30,7 +31,7 @@ class File extends FileData {
 
         if (strtoupper(substr($path, -4)) == '.XML') {
             $asGenericXmlFile = new XMLFile($path, false);
-            if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownTypes)) {
+            if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownRootTags)) {
                 return 'xml';
             }
             return $asGenericXmlFile->rootTagName;

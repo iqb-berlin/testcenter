@@ -6,7 +6,7 @@ declare(strict_types=1);
 class XMLFile extends File {
 
     const type = 'xml';
-    const knownTypes = ['Testtakers', 'Booklet', 'SysCheck', 'Unit'];
+    const knownRootTags = ['Testtakers', 'Booklet', 'SysCheck', 'Unit'];
 
     const deprecatedElements = [];
 
@@ -73,7 +73,7 @@ class XMLFile extends File {
         $this->xml = $xmlElem;
         $this->rootTagName = $this->xml->getName();
 
-        if (!in_array($this->rootTagName, $this::knownTypes)) {
+        if (!in_array($this->rootTagName, $this::knownRootTags)) {
 
             $this->report('error', "Invalid root-tag: `$this->rootTagName`");
             libxml_use_internal_errors(false);

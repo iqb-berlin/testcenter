@@ -6,6 +6,8 @@ declare(strict_types=1);
 class ResourceFile extends File {
 
     const type = 'Resource';
+    const canBeRelationSubject = false;
+    const canBeRelationObject = true;
 
     public function __construct(string | FileData $init, bool $validate = true) {
 

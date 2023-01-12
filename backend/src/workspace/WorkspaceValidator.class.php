@@ -22,9 +22,9 @@ class WorkspaceValidator {
     public function validate(): array {
 
         $this->crossValidate();
-        $this->findUnusedItems();
+        $this->markUnusedItems();
 
-        return $this->fullReport();
+        return $this->fullReport(); // TODO! no need for return value
     }
 
 
@@ -215,7 +215,7 @@ class WorkspaceValidator {
     }
 
 
-    public function findUnusedItems(): void {
+    private function markUnusedItems(): void {
 
         $relationsMap = [];
 
@@ -224,7 +224,7 @@ class WorkspaceValidator {
             foreach ($this->allFiles[$type] as $file) {
 
                 /* @var $file File */
-                if ($file::canHaveRelations) {
+                if ($file::canBeRelationSubject) {
 
                     $relations = $file->getRelations();
                     foreach ($relations as $relation) {
@@ -240,7 +240,7 @@ class WorkspaceValidator {
 
             foreach($this->allFiles[$type] as $file) { /* @var $file File */
 
-                if ($file::canHaveRelations and !isset($relationsMap[$file->getType()][$file->getId()])) {
+                if ($file::canBeRelationObject and !isset($relationsMap[$file->getType()][$file->getId()])) {
 
                     $file->report('warning', "{$file->getType()} is never used");
                 }

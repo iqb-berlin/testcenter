@@ -6,7 +6,8 @@ declare(strict_types=1);
 class XMLFileTesttakers extends XMLFile {
 
     const type = 'Testtakers';
-    const canHaveRelations = false;
+    const canBeRelationSubject = true;
+    const canBeRelationObject = false;
     protected LoginArray $logins;
 
     public function crossValidate(WorkspaceValidator $validator): void {

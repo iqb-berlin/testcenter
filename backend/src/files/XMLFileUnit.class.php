@@ -6,6 +6,9 @@ declare(strict_types=1);
 class XMLFileUnit extends XMLFile {
 
     const type = 'Unit';
+    const canBeRelationSubject = true;
+    const canBeRelationObject = true;
+
     const deprecatedElements = [
         '/Unit/Definition/@type',
         '/Unit/Metadata/Lastchange',

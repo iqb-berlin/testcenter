@@ -6,7 +6,8 @@ declare(strict_types=1);
 class XMLFileSysCheck extends XMLFile {
 
     const type = 'SysCheck';
-    const canHaveRelations = false;
+    const canBeRelationSubject = true;
+    const canBeRelationObject = false;
 
     public function crossValidate(WorkspaceValidator $validator): void {
 

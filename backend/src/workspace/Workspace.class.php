@@ -409,7 +409,7 @@ class Workspace {
     public function storeAllFiles(): array {
 
         $folder = $this->getValidatorWithAllFilesFromFs();
-        $folder->findUnusedItems();
+        $folder->validate();
 
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
@@ -488,8 +488,7 @@ class Workspace {
             return $stats;
         }
 
-        // TODO! relationen interpretieren!
-        if (is_a($file, XMLFileUnit::class)) {
+        if ($file::canBeRelationSubject) {
             list($resolved, $unresolved) = $this->workspaceDAO->storeRelations($file);
             $stats['resolved_relations'] = $resolved;
             $stats['unresolved_relations'] = $unresolved;
