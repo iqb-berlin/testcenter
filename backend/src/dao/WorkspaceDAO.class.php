@@ -517,7 +517,7 @@ class WorkspaceDAO extends DAO {
                     select
                         subject_type as object_type,
                         subject_name as object_name,
-                        concat (object_type, '/', object_name) as ancestor
+                        object_type || '/' || object_name as ancestor
                     from file_relations
                     where
                         workspace_id = :ws_id and ($selectedFilesConditions)
@@ -536,7 +536,7 @@ class WorkspaceDAO extends DAO {
                 )
                 select distinct
                     affected_files.ancestor as file_local_path,
-                    concat (object_type, '/', object_name) as blocked_by
+                    object_type || '/' || object_name as blocked_by
                 from affected_files
                 where
                     not ($selectedFilesConditions)";
