@@ -132,10 +132,10 @@ const runDredd = async done => {
     endpoint: apiUrl,
     path: [`${tmpDir}/transformed.specs.*.yml`],
     hookfiles: ['dredd-hooks.js'],
-    output: [`${tmpDir}/report.html`], // TODO 13
+    output: [`${tmpDir}/report.html`], // TODO do something with it
     reporter: ['html'],
     names: false,
-    only: ['specs > /workspace/{ws_id}/file > upload file > 403']
+    only: []
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
