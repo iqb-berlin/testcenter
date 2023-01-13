@@ -232,6 +232,7 @@ class Workspace {
                 if ($file->isValid()) {
 
                     $this->sortUnsortedFile($localFilePath, $file);
+                    $this->workspaceDAO->storeFile($file);
                     $this->storeFileMeta($file);
                 }
 
