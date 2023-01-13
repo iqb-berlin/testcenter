@@ -134,8 +134,7 @@ const runDredd = async done => {
     hookfiles: ['dredd-hooks.js'],
     output: [`${tmpDir}/report.html`], // TODO 13
     reporter: ['html'],
-    names: false,
-    only: ['specs > /workspace/{ws_id}/file > upload file > 403']
+    names: false // use sth like this to restrict: ['specs > /workspace/{ws_id}/file > upload file > 403']
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
