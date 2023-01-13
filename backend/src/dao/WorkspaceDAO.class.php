@@ -316,7 +316,7 @@ class WorkspaceDAO extends DAO {
             ]
         );
 
-        return $this->resultRow2File($fileData, []);
+        return $fileData ? $this->resultRow2File($fileData, []) : null;
     }
 
 
@@ -455,17 +455,17 @@ class WorkspaceDAO extends DAO {
     private function fetchFiles($sql, $replacements): array {
 
         $files = [];
-        foreach ($this->_($sql, $replacements, true) as $f) {
+        foreach ($this->_($sql, $replacements, true) as $row) {
 
-            $files[$f['type']] ??= [];
-            // $relations = $this->getFileRelations($workspaceId, $f['name'], $f['type']);
-            $files[$f['type']][$f['name']] = $this->resultRow2File($f, []);
+            $files[$row['type']] ??= [];
+            // $relations = $this->getFileRelations($workspaceId, $row['name'], $row['type']);
+            $files[$row['type']][$row['name']] = $this->resultRow2File($row, []);
         }
         return $files;
     }
 
 
-    private function resultRow2File(array $row, array $relations): File {
+    private function resultRow2File(array $row, array $relations): ?File {
 
         return File::get(
             new FileData(
@@ -555,20 +555,15 @@ class WorkspaceDAO extends DAO {
 
     public function storeRelations(File $file): array {
 
+        // TODO! object request stimmt nicht - wird eigentlich aber auch nicht gebraucht
+
         $unresolvedRelations = 0;
 
         foreach ($file->getRelations() as $relation) {
 
             /* @var $relation FileRelation */
 
-            if ($relation->getRelationshipType()->allowsSimilarVersion()) {
-
-                $relatedFile = $this->getFileSimilarVersion($relation->getTargetId(), $relation->getTargetType());
-
-            } else {
-
-                $relatedFile = $this->getFileById($relation->getTargetId(), $relation->getTargetType());
-            }
+            $relatedFile = $relation->getTarget();
 
             if (!$relatedFile) {
 
@@ -586,7 +581,7 @@ class WorkspaceDAO extends DAO {
                     $file->getName(),
                     $file->getType(),
                     $relation->getRelationshipType()->name,
-                    $relation->getTargetId(),
+                    $relation->getTargetRequest(),
                     $relation->getTargetType(),
                     $relatedFile->getName()
                 ]

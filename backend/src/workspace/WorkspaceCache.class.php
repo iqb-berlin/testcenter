@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 
-class WorkspaceValidator {
+class WorkspaceCache {
 
-    protected array $allFiles = [];
+    protected array $cachedFiles = [];
     protected array $versionMap = [];
     protected Workspace $workspace;
     protected array $globalIds = []; // type => [id => fileName]
@@ -19,13 +19,13 @@ class WorkspaceValidator {
     }
 
 
-    public function validate(): array {
-
-        $this->crossValidate();
-        $this->markUnusedItems();
-
-        return $this->fullReport(); // TODO! no need for return value
-    }
+//    public function validate(): array {
+//
+//        $this->crossValidate();
+//        $this->markUnusedItems();
+//
+//        return $this->fullReport(); // TODO! no need for return value
+//    }
 
 
     public function getId(): int {
@@ -34,11 +34,16 @@ class WorkspaceValidator {
     }
 
 
-    public function getFiles(): array {
+    public function getFiles(bool $flat = false): array {
+
+        if (!$flat) {
+
+            return $this->cachedFiles; // TODO! special folderZ
+        }
 
         $files = [];
 
-        foreach ($this->allFiles as $fileSet) {
+        foreach ($this->cachedFiles as $fileSet) {
 
             foreach ($fileSet as /** @var File */ $file) {
 
@@ -55,7 +60,7 @@ class WorkspaceValidator {
 
         $files = [];
 
-        foreach ($this->allFiles as $type => $fileList) {
+        foreach ($this->cachedFiles as $type => $fileList) {
 
             if (!str_starts_with($type, $ofFile->getType())) {
                 continue;
@@ -74,69 +79,61 @@ class WorkspaceValidator {
     }
 
 
-    public function getResource(string $resourceId, bool $ignoreMinorAndPatchVersion): ?ResourceFile {
+    public function getResource(string $resourceId, bool $allowSimilarVersion): ?ResourceFile {
 
-        if ($ignoreMinorAndPatchVersion) {
+        if ($allowSimilarVersion or !isset($this->cachedFiles['Resource'][$resourceId])) {
 
-            $mayorVersionResourceId = FileName::normalize($resourceId, true);
+            try {
 
-            // minor version given, and exact this version exists
-            if (($mayorVersionResourceId !== $resourceId) and isset($this->allFiles['Resource'][$resourceId])) {
+                $resource = $this->workspace->findFileById('Resource', $resourceId, $allowSimilarVersion);
+                /* @var $resource ResourceFile */
+                return $resource;
 
-                return $this->allFiles['Resource'][$resourceId];
+            } catch(HttpError $exception) {
+
+                return null;
             }
 
-            // other major version exists, or no minor version specified
-            if (isset($this->versionMap[$mayorVersionResourceId])) {
-
-                return $this->allFiles['Resource'][$this->versionMap[$mayorVersionResourceId]];
-            }
         }
 
-        if (isset($this->allFiles['Resource'][$resourceId])) {
-
-            return $this->allFiles['Resource'][$resourceId];
-        }
-
-        return null;
+        return $this->cachedFiles['Resource'][$resourceId] ?? null;
     }
 
 
     public function getUnit(string $unitId): ?XMLFileUnit {
 
-        if (isset($this->allFiles['Unit'][$unitId])) {
-            return $this->allFiles['Unit'][$unitId];
-        }
-
-        return null;
+        return $this->cachedFiles['Unit'][$unitId] ?? null;
     }
 
 
     public function getBooklet(string $bookletId): ?XMLFileBooklet {
 
-        if (isset($this->allFiles['Booklet'][$bookletId])) {
-            return $this->allFiles['Booklet'][$bookletId];
-        }
-
-        return null;
+        return $this->cachedFiles['Booklet'][$bookletId] ?? null;
     }
 
 
     public function getSysCheck(string $sysCheckId): ?XMLFileSysCheck {
 
-        if (isset($this->allFiles['SysCheck'][$sysCheckId])) {
-            return $this->allFiles['SysCheck'][$sysCheckId];
+        return $this->cachedFiles['SysCheck'][$sysCheckId] ?? null;
+    }
+
+
+    private function getFileById(string $type, string $fileId, bool $allowSimilarVersion = false): ?File {
+
+        if (!$allowSimilarVersion and isset($this->cachedFiles[$type][$fileId])) {
+
+            return $this->workspace->findFileById($type, $fileId, $allowSimilarVersion);
         }
 
-        return null;
+        return $this->cachedFiles[$type][$fileId] ?? null;
     }
 
 
     public function addFile(string $type, File $file, $overwriteAllowed = false): string {
 
-        if (isset($this->allFiles[$type][$file->getId()])) {
+        if (isset($this->cachedFiles[$type][$file->getId()])) {
 
-            $duplicate = $this->allFiles[$type][$file->getId()];
+            $duplicate = $this->cachedFiles[$type][$file->getId()];
 
             if (!$overwriteAllowed or ($file->getName() !== $duplicate->getName())) {
 
@@ -144,7 +141,7 @@ class WorkspaceValidator {
             }
         }
 
-        $this->allFiles[$type][$file->getId()] = $file;
+        $this->cachedFiles[$type][$file->getId()] = $file;
 
         if ($file->getType() == 'Resource') {
 
@@ -158,7 +155,7 @@ class WorkspaceValidator {
     protected function getPseudoTypeForDuplicate(string $type, string $id): string {
 
         $i = 2;
-        while (isset($this->allFiles["$type/duplicates/$id/$i"])) {
+        while (isset($this->cachedFiles["$type/duplicates/$id/$i"])) {
             $i++;
         }
         return "$type/duplicates/$id/$i";
@@ -181,7 +178,7 @@ class WorkspaceValidator {
 
     private function crossValidate(): void {
 
-        foreach ($this->allFiles as $fileList) {
+        foreach ($this->cachedFiles as $fileList) {
 
             foreach ($fileList as /* @var */ $file) {
 
@@ -198,9 +195,9 @@ class WorkspaceValidator {
 
         $report = [];
 
-        foreach (array_keys($this->allFiles) as $type) {
+        foreach (array_keys($this->cachedFiles) as $type) {
 
-            foreach ($this->allFiles[$type] as $file) {
+            foreach ($this->cachedFiles[$type] as $file) {
 
                 if (!count($file->getValidationReport())) {
                     continue;
@@ -215,13 +212,13 @@ class WorkspaceValidator {
     }
 
 
-    private function markUnusedItems(): void {
+    public function markUnusedItems(): void {
 
         $relationsMap = [];
 
         foreach (Workspace::subFolders as $type) {
 
-            foreach ($this->allFiles[$type] as $file) {
+            foreach ($this->cachedFiles[$type] as $file) {
 
                 /* @var $file File */
                 if ($file::canBeRelationSubject) {
@@ -230,7 +227,7 @@ class WorkspaceValidator {
                     foreach ($relations as $relation) {
 
                         /* @var FileRelation $relation */
-                        $relationsMap[$relation->getTargetType()][$relation->getTargetId()] = $relation;
+                        $relationsMap[$relation->getTargetType()][$relation->getTargetRequest()] = $relation;
                     }
                 }
             }
@@ -238,7 +235,7 @@ class WorkspaceValidator {
 
         foreach (Workspace::subFolders as $type) {
 
-            foreach($this->allFiles[$type] as $file) { /* @var $file File */
+            foreach($this->cachedFiles[$type] as $file) { /* @var $file File */
 
                 if ($file::canBeRelationObject and !isset($relationsMap[$file->getType()][$file->getId()])) {
 
@@ -263,7 +260,7 @@ class WorkspaceValidator {
 
         foreach (Workspace::subFolders as $type) {
 
-            $this->allFiles[$type] = [];
+            $this->cachedFiles[$type] = [];
         }
     }
 }

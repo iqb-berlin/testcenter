@@ -10,7 +10,7 @@ class XMLFileTesttakers extends XMLFile {
     const canBeRelationObject = false;
     protected LoginArray $logins;
 
-    public function crossValidate(WorkspaceValidator $validator): void {
+    public function crossValidate(WorkspaceCache $validator): void {
 
         parent::crossValidate($validator);
 
@@ -40,7 +40,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function checkIfBookletsArePresent(Login $testtaker, WorkspaceValidator $validator): void {
+    private function checkIfBookletsArePresent(Login $testtaker, WorkspaceCache $validator): void {
 
         foreach ($testtaker->getBooklets() as $code => $booklets) {
 
@@ -50,7 +50,7 @@ class XMLFileTesttakers extends XMLFile {
 
                 if ($booklet != null) {
 
-                    $this->addRelation(new FileRelation($booklet->getType(), $booklet->getId(), FileRelationshipType::hasBooklet));
+                    $this->addRelation(new FileRelation($booklet->getType(), $bookletId, FileRelationshipType::hasBooklet, $booklet));
                 }
 
                 if (!$booklet or !$booklet->isValid()) {
@@ -62,7 +62,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function checkIfIdsAreUsedInOtherFiles(WorkspaceValidator $validator): void {
+    private function checkIfIdsAreUsedInOtherFiles(WorkspaceCache $validator): void {
 
         $loginList = $this->getAllLoginNames();
         $groupList = array_keys($this->getGroups());

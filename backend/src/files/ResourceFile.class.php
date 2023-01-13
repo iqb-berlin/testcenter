@@ -11,8 +11,6 @@ class ResourceFile extends File {
 
     public function __construct(string | FileData $init, bool $validate = true) {
 
-//        $this->specialInfo = new VeronaModuleMeta();
-
         parent::__construct($init);
 
         if (is_a($init, FileData::class)) {

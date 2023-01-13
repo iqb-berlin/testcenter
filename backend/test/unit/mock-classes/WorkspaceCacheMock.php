@@ -1,11 +1,11 @@
 <?php
 
-class WorkspaceValidatorMock extends WorkspaceValidator {
+class WorkspaceCacheMock extends WorkspaceCache {
     /** @noinspection PhpMissingParentConstructorInspection */
     public function __construct(array $mockResources) {
-        $this->allFiles['Resource'] = [];
+        $this->cachedFiles['Resource'] = [];
         foreach ($mockResources as $mockResource) {
-            $this->allFiles['Resource'][$mockResource] = new ResourceFileMock($mockResource);
+            $this->cachedFiles['Resource'][$mockResource] = new ResourceFileMock($mockResource);
         }
         $this->createVersionMap();
     }

@@ -56,7 +56,7 @@ class XMLFilesUnitTest extends TestCase {
 
         $unitString = '<Unit><Metadata><Id>i</Id></Metadata><Definition player="%s">a</Definition></Unit>';
 
-        $validator = new WorkspaceValidatorMock([
+        $validator = new WorkspaceCacheMock([
             'SUPER-PLAYER-1.7.HTML',
             'SUPER-PLAYER-1.HTML',
             'SUPER-PLAYER-1.5.HTML',

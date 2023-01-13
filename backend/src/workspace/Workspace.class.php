@@ -223,44 +223,76 @@ class Workspace {
 
     protected function sortValidUnsortedFiles(array $relativeFilePaths): array {
 
-        $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
+        $files = $this->unsortedFilesByType($relativeFilePaths);
         $filesAfterSorting = [];
+        $sortedFiles = [];
+        $workspaceCache = $this->getCacheWithAllFilesFromFs();
 
         foreach ($files as $filesOfAType) {
             foreach ($filesOfAType as $localFilePath => $file) {
+
+                /* @var $file File */
+
+                $file->crossValidate($workspaceCache);
 
                 if ($file->isValid()) {
 
                     $this->sortUnsortedFile($localFilePath, $file);
                     $this->workspaceDAO->storeFile($file);
                     $this->storeFileMeta($file);
+                    $workspaceCache->addFile($file->getType(), $file, true);
+                    $sortedFiles[] = $file;
                 }
 
                 $filesAfterSorting[$localFilePath] = $file;
             }
         }
 
+//        $affectedFiles = $this->workspaceDAO->getBlockedFiles($sortedFiles); // TODO !determine affected files correctly
+//
+//        foreach ($affectedFiles as $affectedFileLocalPath) {
+//
+//            $affectedFile = File::get("$this->workspacePath/$affectedFileLocalPath", null, true);
+//            $affectedFile->crossValidate($workspaceCache);
+//            $file->report('info', "File `{$affectedFile->getId()}` affected.");
+//            $this->workspaceDAO->storeFile($file);
+//        }
+
         return $filesAfterSorting;
     }
 
 
-    protected function crossValidateUnsortedFiles(array $localFilePaths): array {
+    protected function unsortedFilesByType(array $localFilePaths): array {
 
         $files = array_fill_keys(Workspace::subFolders, []);
-
-        $validator = $this->getValidatorWithAllFilesFromFs();
 
         foreach ($localFilePaths as $localFilePath) {
 
             $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
-            $validator->addFile($file->getType(), $file, true);
             $files[$file->getType()][$localFilePath] = $file;
         }
 
-        $validator->validate();
-
         return $files;
     }
+
+
+//    protected function crossValidateUnsortedFiles(array $localFilePaths): array {
+//
+//        $files = array_fill_keys(Workspace::subFolders, []);
+//
+//        $validator = $this->getValidatorWithAllFilesFromFs();
+//
+//        foreach ($localFilePaths as $localFilePath) {
+//
+//            $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
+//            $validator->addFile($file->getType(), $file, true);
+//            $files[$file->getType()][$localFilePath] = $file;
+//        }
+//
+//        $validator->validate();
+//
+//        return $files;
+//    }
 
 
     protected function sortUnsortedFile(string $localFilePath, File $file): void {
@@ -417,8 +449,8 @@ class Workspace {
     // TODO unit-test
     public function storeAllFiles(): array {
 
-        $folder = $this->getValidatorWithAllFilesFromFs();
-        $folder->validate();
+        $workspaceCache = $this->getCacheWithAllFilesFromFs();
+//        $workspaceCache->markUnusedItems(); TODO! wann soll das sein?! hier kennen wir die Dateien noch gar nicht alle!
 
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
@@ -430,7 +462,7 @@ class Workspace {
         // 0. remove all files, which are gone
 
         $filesInDb = $this->workspaceDAO->getAllFiles();
-        $filesInFolder = $folder->getFiles();
+        $filesInFolder = $workspaceCache->getFiles(true);
 
         foreach ($filesInDb as $fileSet) {
 
@@ -446,30 +478,37 @@ class Workspace {
             }
         }
 
+
         // 1. Schritt alle Files selbst speichern
 
-        foreach ($folder->getFiles() as $file) {
+        foreach ($workspaceCache->getFiles() as $fileSet) {
 
-            /* @var $file File */
+            foreach ($fileSet as $file) {
 
-            $file->crossValidate($folder);
+                /* @var $file File */
 
-            if (!$file->isValid()) {
+                $file->crossValidate($workspaceCache);
 
-                $invalidCount++;
+                if (!$file->isValid()) {
+
+                    $invalidCount++;
+                }
+
+                $this->workspaceDAO->storeFile($file);
+                $typeStats[$file->getType()] += 1;
             }
-
-            $this->workspaceDAO->storeFile($file);
-            $typeStats[$file->getType()] += 1;
         }
 
         // 2. Schritt erweiterte Daten speichern. Dabei müssen die Dateien bereits in der Db liegen
 
-        foreach ($folder->getFiles() as $file) {
+        foreach ($workspaceCache->getFiles() as $fileSet) {
 
-            $stats = $this->storeFileMeta($file);
-            $loginStats['deleted'] += $stats['logins_deleted'];
-            $loginStats['added'] += $stats['logins_added'];
+            foreach ($fileSet as $file) {
+
+                $stats = $this->storeFileMeta($file);
+                $loginStats['deleted'] += $stats['logins_deleted'];
+                $loginStats['added'] += $stats['logins_added'];
+            }
         }
 
         return [
@@ -566,9 +605,9 @@ class Workspace {
     }
 
 
-    private function getValidatorWithAllFilesFromFs(): WorkspaceValidator {
+    private function getCacheWithAllFilesFromFs(): WorkspaceCache {
 
-        $validator = new WorkspaceValidator($this);
+        $validator = new WorkspaceCache($this);
 
         foreach (Workspace::subFolders as $type) {
 

@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  */
 class WorkspaceValidatorTest extends TestCase{
 
-    private WorkspaceValidator $validator;
+    private WorkspaceCache $validator;
     private WorkspaceDAO $workspaceDaoMock;
 
     public static function setUpBeforeClass(): void {
@@ -60,7 +60,7 @@ class WorkspaceValidatorTest extends TestCase{
             'getGlobalIds' => VfsForTest::globalIds
         ]);
         VfsForTest::setUp(true);
-        $this->validator = new WorkspaceValidator(new Workspace(1));
+        $this->validator = new WorkspaceCache(new Workspace(1));
     }
 
 

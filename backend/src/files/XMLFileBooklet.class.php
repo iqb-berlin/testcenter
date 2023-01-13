@@ -9,7 +9,7 @@ class XMLFileBooklet extends XMLFile {
     const canBeRelationSubject = true;
     const canBeRelationObject = true;
 
-    public function crossValidate(WorkspaceValidator $validator): void {
+    public function crossValidate(WorkspaceCache $validator): void {
 
         parent::crossValidate($validator);
 
@@ -25,7 +25,7 @@ class XMLFileBooklet extends XMLFile {
                 continue;
             }
 
-            $this->addRelation(new FileRelation($unit->getType(), $unit->getId(), FileRelationshipType::containsUnit));
+            $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
 
             $this->contextData['totalSize'] += $unit->getTotalSize();
 

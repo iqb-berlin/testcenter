@@ -131,7 +131,7 @@ class File extends FileData {
 
 
     // TODO unit-test
-    public function crossValidate(WorkspaceValidator $validator): void {
+    public function crossValidate(WorkspaceCache $validator): void {
 
         $duplicates = $validator->findDuplicates($this);
 

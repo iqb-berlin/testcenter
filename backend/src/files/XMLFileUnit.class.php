@@ -32,7 +32,7 @@ class XMLFileUnit extends XMLFile {
         }
     }
 
-    public function crossValidate(WorkspaceValidator $validator) : void {
+    public function crossValidate(WorkspaceCache $validator) : void {
 
         parent::crossValidate($validator);
 
@@ -41,7 +41,7 @@ class XMLFileUnit extends XMLFile {
     }
 
 
-    public function getPlayerIfExists(WorkspaceValidator $validator): ?ResourceFile {
+    public function getPlayerIfExists(WorkspaceCache $validator): ?ResourceFile {
 
         if (!$this->isValid()) {
             return null;
@@ -50,16 +50,16 @@ class XMLFileUnit extends XMLFile {
         $resource = $validator->getResource($this->playerId, true);
 
         if ($resource != null) {
-            $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), FileRelationshipType::usesPlayer));
+            $this->addRelation(new FileRelation($resource->getType(), $this->playerId, FileRelationshipType::usesPlayer, $resource));
         } else {
-            $this->report('error', "No suitable version of `$this->playerId` found");
+            $this->report('error', "No suitable version of `$this->playerId` found.");
         }
 
         return $resource;
     }
 
 
-    private function checkIfResourcesExist(WorkspaceValidator $validator): void {
+    private function checkIfResourcesExist(WorkspaceCache $validator): void {
 
         $this->contextData['totalSize'] = $this->size;
 
@@ -75,11 +75,15 @@ class XMLFileUnit extends XMLFile {
 
             $resourceId = FileName::normalize($resourceName, false);
             $resource = $validator->getResource($resourceId, false);
+
             if ($resource != null) {
+
                 $relationshipType = ($key === 'definition') ? FileRelationshipType::isDefinedBy : FileRelationshipType::usesPlayerResource;
-                $this->addRelation(new FileRelation($resource->getType(), $resource->getId(), $relationshipType));
+                $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
                 $this->contextData['totalSize'] += $resource->getSize();
+
             } else {
+
                 $this->report('error', "Resource `$resourceName` not found");
             }
         }
