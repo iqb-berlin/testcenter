@@ -62,7 +62,6 @@ export class ReportComponent implements OnInit {
       this.questionnaireDataWarnings = [];
       if (this.ds.checkConfig && this.ds.checkConfig.questions.length > 0) {
         if (this.ds.questionnaireReport.length > 0) {
-          console.log(this.ds.questionnaireReport)
           this.ds.questionnaireReport.forEach(re => {
             if (re.warning) {
               this.questionnaireDataWarnings.push(re);
