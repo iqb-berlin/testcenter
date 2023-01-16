@@ -139,6 +139,6 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(85, $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRootTagName());
         $this->assertEquals('', $xf->getDescription());
-        $this->assertEquals("[error] Error [1871] in line 1: Element 'Invalid': This element is not expected. Expected is one of ( BookletConfig, Units ).", $xf->getErrorString());
+        $this->assertEquals("[error] Error [1871] in line 1: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, Units ).", $xf->getErrorString());
     }
 }

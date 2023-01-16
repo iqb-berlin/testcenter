@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-[next]
+[next from master]
 # Performance
 Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
 sodass Vorgänge wie das Laden eines Tests oder eines Arbeitsbereiches in der Admin-Ansicht
@@ -15,6 +15,15 @@ Ladevorgängen festgestellt.
 
 ## Sicherheit
 * Es wird eine aktuelle MySQL Version verwendet 
+
+## [next]
+### Neue Fetaures
+* CustomTexts können jetzt (wieder) nicht nur Login-bezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festgelegt werden.
+* Die Verona-Schnittstelle wird jetzt auch in der Version 5 unterstützt
+
+### UI
+* Kleinere Verbesserungen im Bereich SystemCheck
+
 
 ## 13.2.2
 ### Bug Fixes

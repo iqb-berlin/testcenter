@@ -15,6 +15,14 @@
           </xs:complexType>
         </xs:element>
 
+        <xs:element name="CustomTexts" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CustomText" type="customTextType" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
         <xs:element name="BookletConfig" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
@@ -120,6 +128,14 @@
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="key" type="xs:ID" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="customTextType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="key" type="xs:ID" use="required"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
