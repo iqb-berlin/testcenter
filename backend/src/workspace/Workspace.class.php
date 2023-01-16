@@ -237,11 +237,16 @@ class Workspace {
 
                 if ($file->isValid()) {
 
-                    $this->sortUnsortedFile($localFilePath, $file);
-                    $this->workspaceDAO->storeFile($file);
-                    $this->storeFileMeta($file);
-                    $workspaceCache->addFile($file->getType(), $file, true);
-                    $sortedFiles[] = $file;
+                    $couldBeSorted = $this->sortUnsortedFile($localFilePath, $file);
+
+                    if ($couldBeSorted) {
+
+                        $this->workspaceDAO->storeFile($file);
+                        $this->storeFileMeta($file);
+
+                        $workspaceCache->addFile($file->getType(), $file, true);
+                        $sortedFiles[] = $file;
+                    }
                 }
 
                 $filesAfterSorting[$localFilePath] = $file;
@@ -295,7 +300,7 @@ class Workspace {
 //    }
 
 
-    protected function sortUnsortedFile(string $localFilePath, File $file): void {
+    protected function sortUnsortedFile(string $localFilePath, File $file): bool {
 
         $targetFolder = $this->workspacePath . '/' . $file->getType();
 
@@ -303,7 +308,7 @@ class Workspace {
             if (!mkdir($targetFolder)) {
 
                 $file->report('error', "Could not create folder: `$targetFolder`.");
-                return;
+                return false;
             }
         }
 
@@ -317,21 +322,31 @@ class Workspace {
                 $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
                     . "Overwriting was rejected since new file's ID (`{$file->getId()}`) differs from old one (`{$oldFile->getId()}`)."
                 );
-                return;
+                return false;
             }
 
             if ($oldFile->getVeronaModuleId() !== $file->getVeronaModuleId()) {
 
                 $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
                     . "Overwriting was rejected since new file's Verona-Module-ID (`{$file->getVeronaModuleId()}`) differs from old one (`{$oldFile->getVeronaModuleId()}`)."
+                    . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
                 );
-                return;
+                return false;
+            }
+
+            if (!Version::isCompatible($oldFile->getVersion(), $file->getVersion())) {
+
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+                    . "Overwriting was rejected since version conflict between old ({$oldFile->getVersion()} and new ({$file->getVersion()}) file."
+                    . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
+                );
+                return false;
             }
 
             if (!unlink($targetFilePath)) {
 
                 $file->report('error', "Could not delete file: `$targetFolder/$localFilePath`");
-                return;
+                return false;
             }
 
             $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
@@ -340,10 +355,12 @@ class Workspace {
         if (!rename($this->workspacePath . '/' . $localFilePath, $targetFilePath)) {
 
             $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
-            return;
+            return false;
         }
 
         $file->setFilePath($targetFilePath);
+
+        return true;
     }
 
 
