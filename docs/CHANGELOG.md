@@ -6,7 +6,8 @@ layout: default
 
 ## [next]
 ### Neue Fetaures
-* CustomTexts können jetzt (wieder) nicht nur Loginbezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festegelgt werden.
+* CustomTexts können jetzt (wieder) nicht nur Login-bezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festgelegt werden.
+* Die Verona-Schnittstelle wird jetzt auch in der Version 5 unterstützt
 
 ### UI
 * Kleinere Verbesserungen im Bereich SystemCheck
