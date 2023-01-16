@@ -4,6 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
+[##]
+### UI
+* Kleinere Verbesserungen im Bereich SystemCheck
+
 ## 13.2.2
 ### Bug Fixes
 Zu große Antwort-Daten (durch GeoGebra erzeugt) führten zu Fehlern.
