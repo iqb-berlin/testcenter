@@ -4,9 +4,13 @@ layout: default
 
 # Changelog & Upgrade Information
 
-[##]
+## [next]
+### Neue Fetaures
+* CustomTexts können jetzt (wieder) nicht nur Loginbezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festegelgt werden.
+
 ### UI
 * Kleinere Verbesserungen im Bereich SystemCheck
+
 
 ## 13.2.2
 ### Bug Fixes
