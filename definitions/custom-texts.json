@@ -283,7 +283,7 @@
     "label" : "Der 'Immer alle Auswählen'-Schalter",
     "defaultvalue" : "Alle Tests gleichzeitig steuern"
   },
-  "gm_tlk_selection_text": {
+  "gm_selection_text": {
     "label" : "Der Text im Button bei Auswahl der Testleitungskonsole",
     "defaultvalue" : "Überwachung starten"
   }
