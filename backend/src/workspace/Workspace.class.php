@@ -246,6 +246,7 @@ class Workspace {
 
                         $workspaceCache->addFile($file->getType(), $file, true);
                         $sortedFiles[] = $file;
+                        $this->updateRelations($file, $workspaceCache);
                     }
                 }
 
@@ -278,6 +279,32 @@ class Workspace {
         }
 
         return $files;
+    }
+
+
+    protected function updateRelations(File $file, WorkspaceCache $workspaceCache): void {
+
+        $objectId = $file->getVeronaModuleId();
+        if (!$objectId) {
+
+            return;
+        }
+
+        $rFiles = $this->workspaceDAO->getRelatingFiles($file);
+
+        foreach ($rFiles as $fileSet) {
+            foreach ($fileSet as $rFile) {
+
+                /* @var $rFile File */
+                $rFile->load(true);
+                $rFile->crossValidate($workspaceCache);
+                list($ignore, $updatedRelations) = $this->workspaceDAO->storeRelations($rFile);
+                foreach ($updatedRelations as $r) {
+
+                    $file->report('info', "Related {$rFile->getType()} `{$rFile->getId()}` now uses this.");
+                }
+            }
+        }
     }
 
 
@@ -545,7 +572,8 @@ class Workspace {
             'resource_packages_installed' => 0,
             'attachments_noted' => 0,
             'resolved_relations' => 0,
-            'unresolved_relations' => 0,
+            'relations_resolved' => 0,
+            'relations_unresolved' => 0,
         ];
 
         if (!$file->isValid()) {
@@ -554,9 +582,9 @@ class Workspace {
         }
 
         if ($file::canBeRelationSubject) {
-            list($resolved, $unresolved) = $this->workspaceDAO->storeRelations($file);
-            $stats['resolved_relations'] = $resolved;
-            $stats['unresolved_relations'] = $unresolved;
+            list($relationsUnresolved) = $this->workspaceDAO->storeRelations($file);
+            $stats['relations_resolved'] = count($file->getRelations()) - count($relationsUnresolved);
+            $stats['relations_unresolved'] = count($relationsUnresolved);
         }
 
         if (is_a($file, XMLFileTesttakers::class)) {

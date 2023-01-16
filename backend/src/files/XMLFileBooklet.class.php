@@ -33,7 +33,7 @@ class XMLFileBooklet extends XMLFile {
 
             if (!$playerFile) {
 
-                $this->report('error', "No suitable version of `{$unit->getPlayerId()}` found");
+                $this->report('error', "No suitable version of Player found (Unit `$unitId`).");
             }
 
             if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {

@@ -38,18 +38,18 @@ class XMLFilesUnitTest extends TestCase {
     }
 
 
-    function test_getPlayerId() {
-
-        $xmlFile = new XMLFileUnit(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
-        $expected = 'VERONA-PLAYER-SIMPLE-4.HTML';
-        $result = $xmlFile->getPlayerId();
-        $this->assertEquals($expected, $result);
-
-        $xmlFile = new XMLFileUnit('<Unit><Metadata><Id>some</Id></Metadata><Definition player="x_player">a</Definition></Unit>', false, true);
-        $expected = 'X_PLAYER.HTML';
-        $result = $xmlFile->getPlayerId();
-        $this->assertEquals($expected, $result);
-    }
+//    function test_getPlayerId() {
+//
+//        $xmlFile = new XMLFileUnit(DATA_DIR . '/ws_1/Unit/SAMPLE_UNIT.XML');
+//        $expected = 'VERONA-PLAYER-SIMPLE-4.HTML';
+//        $result = $xmlFile->getPlayerId();
+//        $this->assertEquals($expected, $result);
+//
+//        $xmlFile = new XMLFileUnit('<Unit><Metadata><Id>some</Id></Metadata><Definition player="x_player">a</Definition></Unit>', false, true);
+//        $expected = 'X_PLAYER.HTML';
+//        $result = $xmlFile->getPlayerId();
+//        $this->assertEquals($expected, $result);
+//    }
 
 
     function test_getPlayerIfExists() {

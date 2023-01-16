@@ -25,11 +25,7 @@ class XMLFileUnit extends XMLFile {
             return;
         }
 
-        $this->checkRequestedAttachments();
-
-        if ($this->isValid()) {
-            $this->playerId = $this->readPlayerId();
-        }
+        $this->checkRequestedAttachments(); // TODO! move this from constructor to crossValidate?
     }
 
     public function crossValidate(WorkspaceCache $validator) : void {
@@ -47,12 +43,14 @@ class XMLFileUnit extends XMLFile {
             return null;
         }
 
-        $resource = $validator->getResource($this->playerId, true);
+        $playerId = $this->readPlayerId();
+
+        $resource = $validator->getResource($playerId, true);
 
         if ($resource != null) {
-            $this->addRelation(new FileRelation($resource->getType(), $this->playerId, FileRelationshipType::usesPlayer, $resource));
+            $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));
         } else {
-            $this->report('error', "No suitable version of `$this->playerId` found.");
+            $this->report('error', "No suitable version of `$playerId` found.");
         }
 
         return $resource;
@@ -93,12 +91,6 @@ class XMLFileUnit extends XMLFile {
     public function getTotalSize(): int {
 
         return $this->contextData['totalSize'];
-    }
-
-
-    public function getPlayerId(): string {
-
-        return $this->playerId;
     }
 
 
