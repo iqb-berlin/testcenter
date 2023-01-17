@@ -189,24 +189,6 @@ class WorkspaceDAO extends DAO {
                 serialize($file->getContextData())
             ]
         );
-
-//        foreach ($file->getRelations() as $relation) {
-//
-//            /* @var $relation FileRelation */
-//
-//            $this->_(
-//            "insert into file_relations (workspace_id, subject_name, subject_type, object_name, object_type, object_request)
-//                values (?, ?, ?, ?, ?, ?);",
-//                [
-//                    $this->workspaceId,
-//                    $file->getName(),
-//                    $file->getType(),
-//                    $relation->getTargetName(),
-//                    $relation->getTargetType(),
-//                    'unresolved' // TODO!
-//                ]
-//            );
-//        }
     }
 
 
@@ -555,8 +537,6 @@ class WorkspaceDAO extends DAO {
 
     public function storeRelations(File $file): array {
 
-        // TODO! object request stimmt nicht - wird eigentlich aber auch nicht gebraucht
-
         $unresolvedRelations = [];
         $updatedRelations = [];
 
@@ -570,8 +550,6 @@ class WorkspaceDAO extends DAO {
 
                 $unresolvedRelations++;
             }
-
-            // TODO! STAND wenn das selbe noch mal gespeichert wird, wird es als added wahrgenommen
 
             $this->_(
                 "replace into file_relations (workspace_id, subject_name, subject_type, relationship_type, object_request, object_type, object_name)

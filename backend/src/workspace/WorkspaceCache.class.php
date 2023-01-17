@@ -14,19 +14,8 @@ class WorkspaceCache {
 
         $this->workspace = $workspace;
         $this->setGlobalIds();
-//        $this->createVersionMap();
         $this->initializeFilesArray();
     }
-
-
-//    public function validate(): array {
-//
-//        $this->crossValidate();
-//        $this->markUnusedItems();
-//
-//        return $this->fullReport(); // TODO! no need for return value
-//    }
-
 
     public function getId(): int {
 
@@ -159,56 +148,6 @@ class WorkspaceCache {
             $i++;
         }
         return "$type/duplicates/$id/$i";
-    }
-
-
-//    protected function createVersionMap(): void {
-//
-//        uksort($this->allFiles['Resource'], function($rId1, $rId2) {
-//            $rId1 = substr($rId1, 0, strrpos($rId1, "."));
-//            $rId2 = substr($rId2, 0, strrpos($rId2, "."));
-//            return strcasecmp($rId1, $rId2);
-//        });
-//        $this->versionMap = [];
-//        foreach ($this->allFiles['Resource'] as $key => $value) {
-//            $this->versionMap[FileName::normalize($key, true)] = $key;
-//        }
-//    }
-
-
-    private function crossValidate(): void {
-
-        foreach ($this->cachedFiles as $fileList) {
-
-            foreach ($fileList as /* @var */ $file) {
-
-                if ($file->isValid()) {
-
-                    $file->crossValidate($this);
-                }
-            }
-        }
-    }
-
-
-    private function fullReport(): array {
-
-        $report = [];
-
-        foreach (array_keys($this->cachedFiles) as $type) {
-
-            foreach ($this->cachedFiles[$type] as $file) {
-
-                if (!count($file->getValidationReport())) {
-                    continue;
-                }
-
-                $fileCode = "{$file->getType()}/{$file->getName()}";
-                $report[$fileCode] = $file->getValidationReport();
-            }
-        }
-
-        return $report;
     }
 
 
