@@ -74,7 +74,7 @@ class WorkspaceCache {
 
             try {
 
-                $resource = $this->workspace->findFileById('Resource', $resourceId, $allowSimilarVersion);
+                $resource = $this->workspace->getFileById('Resource', $resourceId, $allowSimilarVersion);
                 /* @var $resource ResourceFile */
                 return $resource;
 
@@ -111,7 +111,7 @@ class WorkspaceCache {
 
         if (!$allowSimilarVersion and isset($this->cachedFiles[$type][$fileId])) {
 
-            return $this->workspace->findFileById($type, $fileId, $allowSimilarVersion);
+            return $this->workspace->getFileById($type, $fileId, $allowSimilarVersion);
         }
 
         return $this->cachedFiles[$type][$fileId] ?? null;

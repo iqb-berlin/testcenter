@@ -50,7 +50,7 @@ class XMLFileUnit extends XMLFile {
         if ($resource != null) {
             $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));
         } else {
-            $this->report('error', "No suitable version of `$playerId` found.");
+            $this->report('error', "Player not found `$playerId`.");
         }
 
         return $resource;
@@ -101,15 +101,14 @@ class XMLFileUnit extends XMLFile {
         }
 
         $definition = $this->xml->xpath('/Unit/Definition | /Unit/DefinitionRef');
-        if (count($definition)) {
-            $playerId = strtoupper((string) $definition[0]['player']);
-            if (!str_ends_with($playerId, '.HTML')) {
-                $playerId = $playerId . '.HTML';
-            }
-            return $playerId;
+
+        $playerIdRaw = count($definition) ? (string)$definition[0]['player'] : null;
+
+        if (!$playerIdRaw) {
+            return '';
         }
 
-        return '';
+        return FileID::normalize($playerIdRaw);
     }
 
 

@@ -20,6 +20,7 @@ class ResourceFile extends File {
 
         if (FileExt::has($this->getPath(), 'HTML')) {
             $this->readVeronaMetaData();
+            $this->id = $this->getVeronaModuleId() . '-' . $this->versionMayor . '.' . $this->versionMinor;
         }
 
         if ($validate) {
@@ -43,26 +44,25 @@ class ResourceFile extends File {
 
 
     // player is not it's own class, because player and other resources are stores in the same dir
-    // TODO make player and resource two different types
     private function readVeronaMetaData() {
 
-        if (!$this->isValid() or !$this->getContent()) {
-            return;
-        }
+        if ($this->isValid() and $this->getContent()) {
 
-        $document = new DOMDocument();
-        $document->loadHTML($this->getContent(), LIBXML_NOERROR);
+            $document = new DOMDocument();
+            $document->loadHTML($this->getContent(), LIBXML_NOERROR);
 
-        if ($metaV4Problem = $this->readVeronaMetadataV4($document)) {
+            if ($metaV4Problem = $this->readVeronaMetadataV4($document)) {
 
-            if (!$this->readVeronaMetadataV35($document)) {
+                if (!$this->readVeronaMetadataV35($document)) {
 
-                if (!$this->readVeronaMetadataV3($document)) {
+                    if (!$this->readVeronaMetadataV3($document)) {
 
-                    $this->report('warning', $metaV4Problem);
+                        $this->report('warning', $metaV4Problem);
+                    }
                 }
             }
         }
+
 
         if (!$this->getVersion()) {
 
@@ -282,10 +282,10 @@ class ResourceFile extends File {
 
         if ($this->veronaModuleId and $this->getVersion()) {
             if (
-                !FileName::hasRecommendedFormat(
+                !FileName::hasRecommendedFormat( // !TODO refactor
                     basename($this->getPath()),
                     $this->veronaModuleId,
-                    $this->getVersion(),
+                    $this->getVersionMayorMinor(),
                     "html"
                 )
             ) {

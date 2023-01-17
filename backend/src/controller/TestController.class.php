@@ -21,7 +21,7 @@ class TestController extends Controller {
         ]);
 
         $Workspace = new Workspace($authToken->getWorkspaceId());
-        $bookletLabel = $Workspace->findFileById('Booklet', $body['bookletName'])->getLabel();
+        $bookletLabel = $Workspace->getFileById('Booklet', $body['bookletName'])->getLabel();
 
         $test = self::testDAO()->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
 
@@ -61,7 +61,7 @@ class TestController extends Controller {
 
         $bookletName = self::testDAO()->getBookletName($testId);
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $bookletFile = $workspaceController->findFileById('Booklet', $bookletName);
+        $bookletFile = $workspaceController->getFileById('Booklet', $bookletName);
 
         if (self::testDAO()->isTestLocked($testId)) {
             throw new HttpException($request,"Test #$testId `{$bookletFile->getLabel()}` is locked.", 423);
@@ -85,7 +85,7 @@ class TestController extends Controller {
 
         $workspace = new Workspace($authToken->getWorkspaceId());
         /* @var $unitFile XMLFileUnit */
-        $unitFile = $workspace->findFileById('Unit', $unitName);
+        $unitFile = $workspace->getFileById('Unit', $unitName);
 
         if (!$unitAlias) {
             $unitAlias = $unitName;
@@ -154,10 +154,13 @@ class TestController extends Controller {
         }
 
         $resourceName = $request->getAttribute('resource_name');
-        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
+        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f'; // TODO! remove & DOKU!
 
         $workspace = new Workspace($authToken->getWorkspaceId());
-        $resourceFile = $workspace->findFileById('Resource', FileName::normalize($resourceName, false), $allowSimilarVersion);
+
+        $fileId = $allowSimilarVersion ? FileID::normalize($resourceName) : FileName::normalize($resourceName, false);
+
+        $resourceFile = $workspace->getFileById('Resource', $fileId);
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))

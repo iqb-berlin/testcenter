@@ -9,8 +9,4 @@ enum FileRelationshipType {
     case usesPlayerResource;
     case isDefinedBy;
     case unknown;
-
-    public function allowsSimilarVersion(): bool {
-        return $this->name == 'usesPlayer';
-    }
 }

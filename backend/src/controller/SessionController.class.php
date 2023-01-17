@@ -124,7 +124,7 @@ class SessionController extends Controller {
                 foreach ($booklets as $bookletId) {
 
                     if (!isset($bookletLabels[$bookletId])) {
-                        $bookletFile = $workspace->findFileById('Booklet', $bookletId);
+                        $bookletFile = $workspace->getFileById('Booklet', $bookletId);
                         /* @var $bookletFile XMLFileBooklet */
                         $bookletFiles[$bookletId] = $bookletFile;
                     }

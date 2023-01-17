@@ -390,7 +390,7 @@ class WorkspaceDAO extends DAO {
 
 
 
-    public function getFiles(array $localPaths): array {
+    public function getFiles(array $localPaths, bool $includeInvalid = false): array {
 
         $replacements = [$this->workspaceId];
         $validFilePaths = 0;
@@ -405,6 +405,7 @@ class WorkspaceDAO extends DAO {
         }
 
         $placeholder = implode(' or ', array_fill(0, $validFilePaths, '(type = ? and name = ?)'));
+        $andIsValid = $includeInvalid ? '' : ' and files.is_valid';
 
         $sql = "select distinct
                     name,
@@ -427,7 +428,7 @@ class WorkspaceDAO extends DAO {
                 from files
                 where
                     files.workspace_id = ?
-                    and files.is_valid
+                    $andIsValid
                     and ($placeholder)";
 
         return $this->fetchFiles($sql, $replacements);

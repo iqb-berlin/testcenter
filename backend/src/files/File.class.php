@@ -118,6 +118,12 @@ class File extends FileData {
     }
 
 
+    public function getVersionMayorMinor(): string {
+
+        return "{$this->versionMayor}.{$this->versionMinor}";
+    }
+
+
     public function isValid(): bool {
 
         return count($this->validationReport['error'] ?? []) == 0;
@@ -184,6 +190,7 @@ class File extends FileData {
     }
 
 
+    // TODO! wird ganz oft aufgerufen bei resource ZB!
     public function getContent(): string {
 
         if ($this->isValid()) { // does it even exist?

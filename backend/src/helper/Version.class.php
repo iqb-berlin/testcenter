@@ -35,6 +35,10 @@ class Version {
 
     static function isCompatible(string $subject, ?string $object = null): bool {
 
+        if (!$object and !$subject) {
+            return true;
+        }
+
         if (!$object) {
             $object = Version::get();
         }
@@ -52,8 +56,9 @@ class Version {
 
 
     static function guessFromFileName(string $fileName): array {
+
         // this regex includes some naming habits from verona 2 to 4 times
-        $regex = "/^(\D+?)[@V-]?((\d+)(\.\d+)?(\.\d+)?(-\S+?)?).\D{3,4}$/";
+        $regex = "/^(\D+?)[@V-]?((\d+)(\.\d+)?(\.\d+)?(-\S+?)?)(.\D{3,4})?$/";
         $matches = [];
         preg_match($regex, $fileName, $matches);
         return [

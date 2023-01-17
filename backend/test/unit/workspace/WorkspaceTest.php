@@ -451,7 +451,7 @@ class WorkspaceTest extends TestCase {
                 'verona_module_id' => ''
             ]);
         $workspace = new Workspace(1);
-        $result = $workspace->findFileById('SysCheck', 'SYSCHECK.SAMPLE');
+        $result = $workspace->getFileById('SysCheck', 'SYSCHECK.SAMPLE');
 
         $this->assertEquals('XMLFileSysCheck', get_class($result));
         $this->assertEquals('vfs://root/data/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', $result->getPath());
@@ -467,7 +467,7 @@ class WorkspaceTest extends TestCase {
         $workspace = new Workspace(1);
 
         $this->expectException("HttpError");
-        $workspace->findFileById('SysCheck', 'not-existing-id');
+        $workspace->getFileById('SysCheck', 'not-existing-id');
     }
 
 
@@ -480,7 +480,7 @@ class WorkspaceTest extends TestCase {
         $workspace = new Workspace(1);
 
         $this->expectException("Exception");
-        $workspace->findFileById('not-existing-type', 'SYSCHECK.SAMPLE');
+        $workspace->getFileById('not-existing-type', 'SYSCHECK.SAMPLE');
     }
 
 
@@ -505,7 +505,7 @@ class WorkspaceTest extends TestCase {
         $workspace = new Workspace(1);
 
         $this->expectException("HttpError");
-        $workspace->findFileById('SysCheck', 'SYSCHECK.SAMPLE');
+        $workspace->getFileById('SysCheck', 'SYSCHECK.SAMPLE');
     }
 
 
@@ -535,7 +535,7 @@ class WorkspaceTest extends TestCase {
         $workspace = new Workspace(1);
         file_put_contents($this->vfs->url() . '/data/ws_1/Resource/verona-player-simple-4.0.5.html', "content");
 
-        $result = $workspace->findFileById('Resource', 'verona-player-simple-4.0.1.html', true);
+        $result = $workspace->getFileById('Resource', 'verona-player-simple-4.0.1.html', true);
 
         $this->assertEquals('ResourceFile', get_class($result));
         $this->assertEquals('vfs://root/data/ws_1/Resource/verona-player-simple-4.0.5.html', $result->getPath());
@@ -558,6 +558,6 @@ class WorkspaceTest extends TestCase {
         $workspace = new Workspace(1);
 
         $this->expectException('HttpError');
-        $workspace->findFileById('Resource', 'verona-player-simple-4.0.1.html', true);
+        $workspace->getFileById('Resource', 'verona-player-simple-4.0.1.html', true);
     }
 }

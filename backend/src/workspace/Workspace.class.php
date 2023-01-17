@@ -114,7 +114,7 @@ class Workspace {
             'was_used' => []
         ];
 
-        $cachedFilesToDelete = $this->workspaceDAO->getFiles($filesToDelete);
+        $cachedFilesToDelete = $this->workspaceDAO->getFiles($filesToDelete, true);
         $blockedFiles = $this->workspaceDAO->getBlockedFiles(array_merge(...array_values($cachedFilesToDelete)));
 
         foreach($filesToDelete as $localFilePath) {
@@ -184,6 +184,9 @@ class Workspace {
                 $file->uninstallPackage();
             }
 
+            // TODO! delete requested attachments
+
+
             $this->workspaceDAO->deleteFile($file);
 
         } catch (Exception) {
@@ -225,7 +228,6 @@ class Workspace {
 
         $files = $this->unsortedFilesByType($relativeFilePaths);
         $filesAfterSorting = [];
-        $sortedFiles = [];
         $workspaceCache = $this->getCacheWithAllFilesFromFs();
 
         foreach ($files as $filesOfAType) {
@@ -245,24 +247,13 @@ class Workspace {
                         $this->storeFileMeta($file);
 
                         $workspaceCache->addFile($file->getType(), $file, true);
-                        $sortedFiles[] = $file;
-                        $this->updateRelations($file, $workspaceCache);
+                        $this->updateRelationsOfRelatedFiles($file, $workspaceCache);
                     }
                 }
 
                 $filesAfterSorting[$localFilePath] = $file;
             }
         }
-
-//        $affectedFiles = $this->workspaceDAO->getBlockedFiles($sortedFiles); // TODO !determine affected files correctly
-//
-//        foreach ($affectedFiles as $affectedFileLocalPath) {
-//
-//            $affectedFile = File::get("$this->workspacePath/$affectedFileLocalPath", null, true);
-//            $affectedFile->crossValidate($workspaceCache);
-//            $file->report('info', "File `{$affectedFile->getId()}` affected.");
-//            $this->workspaceDAO->storeFile($file);
-//        }
 
         return $filesAfterSorting;
     }
@@ -282,7 +273,7 @@ class Workspace {
     }
 
 
-    protected function updateRelations(File $file, WorkspaceCache $workspaceCache): void {
+    protected function updateRelationsOfRelatedFiles(File $file, WorkspaceCache $workspaceCache): void {
 
         $objectId = $file->getVeronaModuleId();
         if (!$objectId) {
@@ -364,7 +355,7 @@ class Workspace {
             if (!Version::isCompatible($oldFile->getVersion(), $file->getVersion())) {
 
                 $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
-                    . "Overwriting was rejected since version conflict between old ({$oldFile->getVersion()} and new ({$file->getVersion()}) file."
+                    . "Overwriting was rejected since version conflict between old ({$oldFile->getVersion()}) and new ({$file->getVersion()}) file."
                     . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
                 );
                 return false;
@@ -436,22 +427,9 @@ class Workspace {
 
 
     // TODO! wann dürfen auch invalide geholt werden, und wann nicht?
-    public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
+    public function getFileById(string $type, string $fileId): File {
 
-        if ($file = $this->workspaceDAO->getFileById($findId, $type)) {
-
-            if ($file->isValid()) {
-
-                return $file;
-            }
-        }
-
-        if (!$allowSimilarVersion) {
-
-            throw new HttpError("No $type with id `$findId` found on workspace `$this->workspaceId`!", 404);
-        }
-
-        if ($file = $this->workspaceDAO->getFileSimilarVersion($findId, $type)) {
+        if ($file = $this->workspaceDAO->getFileById($fileId, $type)) {
 
             if ($file->isValid()) {
 
@@ -459,7 +437,7 @@ class Workspace {
             }
         }
 
-        throw new HttpError("No suitable version of $type `$findId` found on workspace `$this->workspaceId`!", 404);
+        throw new HttpError("No $type with id `$fileId` found on workspace `$this->workspaceId`!", 404);
     }
 
 
@@ -535,6 +513,8 @@ class Workspace {
 
                 if (!$file->isValid()) {
 
+                    echo str_pad("\n I: {$file->getType()}/{$file->getId()} [{$file->getName()}]:", 100);
+                    echo implode("\n * ", $file->getValidationReport()['error']);
                     $invalidCount++;
                 }
 
@@ -623,19 +603,13 @@ class Workspace {
 
     public function getRequestedAttachments(XMLFileBooklet $booklet): array {
 
-        /**
-         * Problem:
-         * - [!] beim initialen Einlesen können wir nicht aus der DB lesen, weil vllt. sind die entsprechenden Files noch
-         *   nicht da
-         * Also: das darf erst hinterher passieren
-         * - [!] Beim erneuten einlesen aber zugleich ...
-         */
+        // TODO! geht das beim er erneuten einlesen?
 
 
         $requestedAttachments = [];
         foreach ($booklet->getUnitIds() as $uniId) {
 
-            $unit = $this->findFileById('Unit', $uniId);
+            $unit = $this->getFileById('Unit', $uniId);
             /* @var $unit XMLFileUnit */
             $unit->load();
             $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());

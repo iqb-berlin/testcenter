@@ -295,7 +295,7 @@ class WorkspaceController extends Controller {
 
         $workspaceController = new Workspace($workspaceId);
         /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $workspaceController->findFileById('SysCheck', $sysCheckName);
+        $xmlFile = $workspaceController->getFileById('SysCheck', $sysCheckName);
         $xmlFile->load();
 
         return $response->withJson(new SysCheck([
@@ -320,7 +320,7 @@ class WorkspaceController extends Controller {
         $workspace = new Workspace($workspaceId);
 
         /* @var XMLFileSysCheck $sysCheck */
-        $sysCheck = $workspace->findFileById('SysCheck', $sysCheckName);
+        $sysCheck = $workspace->getFileById('SysCheck', $sysCheckName);
         $sysCheck->load(true);
 //        if (($sysCheck == null)) {
 //            throw new HttpNotFoundException($request);
@@ -336,7 +336,7 @@ class WorkspaceController extends Controller {
             return $response->withJson($res);
         }
 
-        $unit = $workspace->findFileById('Unit', $sysCheck->getUnitId());
+        $unit = $workspace->getFileById('Unit', $sysCheck->getUnitId());
         /* @var XMLFileUnit $unit */
         $unitRelations = $workspace->getFileRelations($unit);
 
@@ -348,13 +348,13 @@ class WorkspaceController extends Controller {
 
                 case FileRelationshipType::containsUnit:
 
-                    $unitDefinitionFile = $workspace->findFileById('Resource', $unitRelation->getTargetRequest());
+                    $unitDefinitionFile = $workspace->getFileById('Resource', $unitRelation->getTargetRequest());
                     $res['def'] = $unitDefinitionFile->getContent();
                     break;
 
                 case FileRelationshipType::usesPlayer:
 
-                    $playerFile = $workspace->findFileById('Resource', $unitRelation->getTargetRequest());
+                    $playerFile = $workspace->getFileById('Resource', $unitRelation->getTargetRequest());
                     $res['player'] = $playerFile->getContent();
                     $res['player_id'] = $playerFile->getVeronaModuleId();
                     break;
@@ -383,7 +383,7 @@ class WorkspaceController extends Controller {
         $sysChecksFolder = new SysChecksFolder($workspaceId);
 
         /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $sysChecksFolder->findFileById('SysCheck', $sysCheckName);
+        $xmlFile = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
         $xmlFile->load();
 
         if (strlen((string) $report->keyPhrase) <= 0) {
