@@ -153,7 +153,7 @@ create table files
 (
     "workspace_id"       integer                                                                        not null,
     "name"               varchar(120)                                                                    not null,
-    "id"                 varchar(40)                                                                        null,
+    "id"                 varchar(40)  collate nocase                                                        null,
     "version_mayor"      integer                                                                            null,
     "version_minor"      integer                                                                            null,
     "version_patch"      integer                                                                            null,

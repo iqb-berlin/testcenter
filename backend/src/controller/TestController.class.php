@@ -154,7 +154,7 @@ class TestController extends Controller {
         }
 
         $resourceName = $request->getAttribute('resource_name');
-        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f'; // TODO! remove & DOKU!
+        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f';
 
         $workspace = new Workspace($authToken->getWorkspaceId());
 
