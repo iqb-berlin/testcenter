@@ -72,7 +72,7 @@ class File extends FileData {
 
         $this->setFilePath($init);
 
-        $this->id = FileName::normalize($this->getName(), false);
+        $this->id = FileName::normalize($this->getName());
 
         if (strlen($this->getName()) > 120) {
             $this->report('error', "Filename too long!");

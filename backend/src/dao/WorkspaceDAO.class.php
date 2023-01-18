@@ -201,7 +201,6 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    // TODO! duplicate id is now possible
     public function getFileById(string $fileId, string $type): ?File {
 
         $fileData =  $this->_(
@@ -238,7 +237,6 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    // TODO! duplicate id is now possible
     public function getFileSimilarVersion(string $fileId, string $type): ?File {
 
         $version = Version::guessFromFileName($fileId);

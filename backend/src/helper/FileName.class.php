@@ -6,25 +6,9 @@ declare(strict_types=1);
 
 class FileName {
 
-    // TODO! can we get rid of $skipMinorAndPatchVersion now?
-    static function normalize(string $fileName, bool $skipMinorAndPatchVersion): string {
+    static function normalize(string $fileName): string {
 
-        $normalizedFilename = strtoupper($fileName);
-
-        if (!$skipMinorAndPatchVersion) {
-
-            return $normalizedFilename;
-        }
-
-        $firstDotPos = strpos($normalizedFilename, '.');
-        if ($firstDotPos) {
-            $lastDotPos = strrpos($normalizedFilename, '.');
-            if ($lastDotPos > $firstDotPos) {
-                $normalizedFilename = substr($normalizedFilename, 0, $firstDotPos) . substr($normalizedFilename, $lastDotPos);
-            }
-        }
-
-        return $normalizedFilename;
+        return strtoupper($fileName);
     }
 
 

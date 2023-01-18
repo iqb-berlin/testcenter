@@ -45,7 +45,7 @@ class WorkspaceCache {
 
         if (!$flat) {
 
-            return $this->cachedFiles; // TODO! special folderZ
+            return $this->cachedFiles;
         }
 
         $files = [];
