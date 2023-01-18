@@ -9,6 +9,9 @@ layout: default
 * CustomTexts können jetzt (wieder) nicht nur Login-bezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festgelegt werden.
 * Die Verona-Schnittstelle wird jetzt auch in der Version 5 unterstützt
 
+### Sicherheit
+* "Secure Client Initated Renegotiation" nicht mehr möglich
+
 ### UI
 * Kleinere Verbesserungen im Bereich SystemCheck
 * Die Beschriftung "Überwachung starten" lässt sich nun ändern
