@@ -573,46 +573,4 @@ class WorkspaceDAO extends DAO {
 
         return [$unresolvedRelations, $updatedRelations];
     }
-
-
-    public function getRelatingFiles(File $file): array {
-
-        $sql = "select
-                    subject_file.name,
-                    subject_file.type,
-                    subject_file.id,
-                    subject_file.label,
-                    subject_file.description,
-                    subject_file.is_valid,
-                    subject_file.validation_report,
-                    subject_file.size,
-                    subject_file.modification_ts,
-                    subject_file.version_mayor,
-                    subject_file.version_minor,
-                    subject_file.version_patch,
-                    subject_file.version_label,
-                    subject_file.verona_module_id,
-                    subject_file.verona_module_type,
-                    subject_file.verona_version,
-                    subject_file.context_data
-                from files as subject_file
-                inner join file_relations
-                    on file_relations.workspace_id = subject_file.workspace_id
-                       and file_relations.subject_name=subject_file.name
-                       and file_relations.subject_type=subject_file.type
-                left join files as object_file
-                    on file_relations.workspace_id = object_file.workspace_id
-                       and file_relations.object_name=object_file.name
-                       and file_relations.object_type=object_file.type
-                where
-                    subject_file.workspace_id = :ws_id
-                    and object_file.verona_module_id = :verona_module_id";
-
-        $replacements = [
-            ':ws_id' => $this->workspaceId,
-            ':verona_module_id' => $file->getVeronaModuleId()
-        ];
-
-        return $this->fetchFiles($sql, $replacements);
-    }
 }

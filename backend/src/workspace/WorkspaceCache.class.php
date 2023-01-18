@@ -18,6 +18,23 @@ class WorkspaceCache {
         $this->initializeFilesArray();
     }
 
+
+    public function validate(): void {
+
+        foreach ($this->cachedFiles as $fileSet) {
+
+            foreach ($fileSet as $file) {
+
+                /* @var $file File */
+
+                $file->crossValidate($this);
+            }
+        }
+
+        $this->markUnusedItems();
+    }
+
+
     public function getId(): int {
 
         return $this->workspace->getId();
@@ -143,15 +160,12 @@ class WorkspaceCache {
             }
         }
 
-        print_r($relationsMap);
-
         foreach (Workspace::subFolders as $type) {
 
             foreach($this->cachedFiles[$type] as $file) { /* @var $file File */
 
                 if ($file::canBeRelationObject and !isset($relationsMap[$file->getType()][strtoupper($file->getId())])) {
 
-                    echo "\n *** {$file->getType()}/{$file->getId()}";
                     $file->report('warning', "{$file->getType()} is never used");
                 }
             }

@@ -226,29 +226,18 @@ class Workspace {
 
     protected function sortValidUnsortedFiles(array $relativeFilePaths): array {
 
-        $files = $this->unsortedFilesByType($relativeFilePaths);
+        $files = $this->crossValidateUnsortedFiles($relativeFilePaths);
         $filesAfterSorting = [];
-        $workspaceCache = $this->getCacheWithAllFilesFromFs();
 
         foreach ($files as $filesOfAType) {
+
             foreach ($filesOfAType as $localFilePath => $file) {
-
-                /* @var $file File */
-
-                $file->crossValidate($workspaceCache);
 
                 if ($file->isValid()) {
 
-                    $couldBeSorted = $this->sortUnsortedFile($localFilePath, $file);
-
-                    if ($couldBeSorted) {
-
-                        $this->workspaceDAO->storeFile($file);
-                        $this->storeFileMeta($file);
-
-                        $workspaceCache->addFile($file->getType(), $file, true);
-                        $this->updateRelationsOfRelatedFiles($file, $workspaceCache);
-                    }
+                    $this->sortUnsortedFile($localFilePath, $file);
+                    $this->workspaceDAO->storeFile($file);
+                    $this->storeFileMeta($file);
                 }
 
                 $filesAfterSorting[$localFilePath] = $file;
@@ -259,63 +248,23 @@ class Workspace {
     }
 
 
-    protected function unsortedFilesByType(array $localFilePaths): array {
+    protected function crossValidateUnsortedFiles(array $localFilePaths): array {
 
         $files = array_fill_keys(Workspace::subFolders, []);
+
+        $validator = $this->getCacheWithAllFilesFromFs();
 
         foreach ($localFilePaths as $localFilePath) {
 
             $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
+            $validator->addFile($file->getType(), $file, true);
             $files[$file->getType()][$localFilePath] = $file;
         }
 
+        $validator->validate();
+
         return $files;
     }
-
-
-    protected function updateRelationsOfRelatedFiles(File $file, WorkspaceCache $workspaceCache): void {
-
-        $objectId = $file->getVeronaModuleId();
-        if (!$objectId) {
-
-            return;
-        }
-
-        $rFiles = $this->workspaceDAO->getRelatingFiles($file);
-
-        foreach ($rFiles as $fileSet) {
-            foreach ($fileSet as $rFile) {
-
-                /* @var $rFile File */
-                $rFile->load(true);
-                $rFile->crossValidate($workspaceCache);
-                list($ignore, $updatedRelations) = $this->workspaceDAO->storeRelations($rFile);
-                foreach ($updatedRelations as $r) {
-
-                    $file->report('info', "Related {$rFile->getType()} `{$rFile->getId()}` now uses this.");
-                }
-            }
-        }
-    }
-
-
-//    protected function crossValidateUnsortedFiles(array $localFilePaths): array {
-//
-//        $files = array_fill_keys(Workspace::subFolders, []);
-//
-//        $validator = $this->getValidatorWithAllFilesFromFs();
-//
-//        foreach ($localFilePaths as $localFilePath) {
-//
-//            $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
-//            $validator->addFile($file->getType(), $file, true);
-//            $files[$file->getType()][$localFilePath] = $file;
-//        }
-//
-//        $validator->validate();
-//
-//        return $files;
-//    }
 
 
     protected function sortUnsortedFile(string $localFilePath, File $file): bool {
@@ -499,23 +448,11 @@ class Workspace {
             }
         }
 
+        //  1.6
+
+        $workspaceCache->validate();
+
         // 1. Schritt alle Files selbst speichern
-
-        foreach ($workspaceCache->getFiles() as $fileSet) {
-
-            foreach ($fileSet as $file) {
-
-                /* @var $file File */
-
-                $file->crossValidate($workspaceCache);
-            }
-        }
-
-        // 1.5
-
-        $workspaceCache->markUnusedItems();
-
-        // 1.6
 
         foreach ($workspaceCache->getFiles() as $fileSet) {
 
