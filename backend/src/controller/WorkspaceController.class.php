@@ -348,13 +348,13 @@ class WorkspaceController extends Controller {
 
                 case FileRelationshipType::containsUnit:
 
-                    $unitDefinitionFile = $workspace->getFileById('Resource', $unitRelation->getTargetRequest());
+                    $unitDefinitionFile = $workspace->getFileById('Resource', $unitRelation->getTargetId());
                     $res['def'] = $unitDefinitionFile->getContent();
                     break;
 
                 case FileRelationshipType::usesPlayer:
 
-                    $playerFile = $workspace->getFileById('Resource', $unitRelation->getTargetRequest());
+                    $playerFile = $workspace->getFileById('Resource', $unitRelation->getTargetId());
                     $res['player'] = $playerFile->getContent();
                     $res['player_id'] = $playerFile->getVeronaModuleId();
                     break;

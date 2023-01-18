@@ -30,6 +30,6 @@ class FileName {
 
     static function hasRecommendedFormat(string $fileName, string $id, string $version, string $extension): bool {
 
-        return FileName::normalize("$id-$version.$extension", true) == FileName::normalize($fileName, true);
+        return strtoupper("$id-$version.$extension") == $fileName;
     }
 }

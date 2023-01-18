@@ -113,20 +113,20 @@ class TestController extends Controller {
             switch ($unitRelation->getRelationshipType()) {
 
                 case FileRelationshipType::isDefinedBy:
-                    $res['definitionRef'] = $unitRelation->getTargetRequest();
+                    $res['definitionRef'] = $unitRelation->getTargetId();
                     break;
 
                 case FileRelationshipType::usesPlayer:
                     $res['dependencies'][] = [
-                        'name' => $unitRelation->getTargetRequest(),
+                        'name' => $unitRelation->getTargetId(),
                         'type' => 'player'
                     ];
-                    $res['playerId'] = $unitRelation->getTargetRequest();
+                    $res['playerId'] = $unitRelation->getTargetId();
                     break;
 
                 case FileRelationshipType::usesPlayerResource:
                     $res['dependencies'][] = [
-                        'name' => $unitRelation->getTargetRequest(),
+                        'name' => $unitRelation->getTargetId(),
                         'type' => 'package' // TODO naming is very bad. can be a single file as well. should be: 'player-dependency'
                     ];
                     break;

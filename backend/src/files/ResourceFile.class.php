@@ -289,7 +289,7 @@ class ResourceFile extends File {
                     "html"
                 )
             ) {
-                $this->report('warning', "Non-Standard-Filename: `$this->veronaModuleId-{$this->getVersion()}.html` expected.");
+                $this->report('warning', "Non-Standard-Filename: `$this->veronaModuleId-{$this->getVersionMayorMinor()}.html` expected.");
             }
         }
     }

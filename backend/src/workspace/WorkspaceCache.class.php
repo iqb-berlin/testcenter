@@ -7,6 +7,7 @@ class WorkspaceCache {
 
     protected array $cachedFiles = [];
     protected array $duplicates = [];
+    protected array $used = [];
     protected Workspace $workspace;
     protected array $globalIds = []; // type => [id => fileName]
 
@@ -136,18 +137,21 @@ class WorkspaceCache {
                     foreach ($relations as $relation) {
 
                         /* @var FileRelation $relation */
-                        $relationsMap[$relation->getTargetType()][$relation->getTargetRequest()] = $relation;
+                        $relationsMap[$relation->getTargetType()][strtoupper($relation->getTargetId())] = $file->getName();
                     }
                 }
             }
         }
 
+        print_r($relationsMap);
+
         foreach (Workspace::subFolders as $type) {
 
             foreach($this->cachedFiles[$type] as $file) { /* @var $file File */
 
-                if ($file::canBeRelationObject and !isset($relationsMap[$file->getType()][$file->getId()])) {
+                if ($file::canBeRelationObject and !isset($relationsMap[$file->getType()][strtoupper($file->getId())])) {
 
+                    echo "\n *** {$file->getType()}/{$file->getId()}";
                     $file->report('warning', "{$file->getType()} is never used");
                 }
             }

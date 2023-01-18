@@ -499,7 +499,6 @@ class Workspace {
             }
         }
 
-
         // 1. Schritt alle Files selbst speichern
 
         foreach ($workspaceCache->getFiles() as $fileSet) {
@@ -509,6 +508,18 @@ class Workspace {
                 /* @var $file File */
 
                 $file->crossValidate($workspaceCache);
+            }
+        }
+
+        // 1.5
+
+        $workspaceCache->markUnusedItems();
+
+        // 1.6
+
+        foreach ($workspaceCache->getFiles() as $fileSet) {
+
+            foreach ($fileSet as $file) {
 
                 if (!$file->isValid()) {
 
@@ -521,6 +532,7 @@ class Workspace {
                 $typeStats[$file->getType()] += 1;
             }
         }
+
 
         // 2. Schritt erweiterte Daten speichern. Dabei müssen die Dateien bereits in der Db liegen
 
