@@ -10,9 +10,9 @@ class XMLFileTesttakers extends XMLFile {
     const canBeRelationObject = false;
     protected LoginArray $logins;
 
-    public function crossValidate(WorkspaceCache $validator): void {
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-        parent::crossValidate($validator);
+        parent::crossValidate($workspaceCache);
 
         $this->logins = $this->getAllLogins();
         $this->contextData['testtakers'] = count($this->logins->asArray());
@@ -22,10 +22,10 @@ class XMLFileTesttakers extends XMLFile {
         foreach ($this->logins as $login) {
 
             /* @var Login $login */
-            $this->checkIfBookletsArePresent($login, $validator);
+            $this->checkIfBookletsArePresent($login, $workspaceCache);
         }
 
-        $this->checkIfIdsAreUsedInOtherFiles($validator);
+        $this->checkIfIdsAreUsedInOtherFiles($workspaceCache);
     }
 
 

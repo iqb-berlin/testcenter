@@ -87,6 +87,12 @@ class FileData extends DataCollectionTypeSafe {
     }
 
 
+    public function setId(string $newId): void {
+
+        $this->id = $newId;
+    }
+
+
     public function getLabel(): string {
 
         return $this->label;

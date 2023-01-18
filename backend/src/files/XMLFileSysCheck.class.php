@@ -9,12 +9,12 @@ class XMLFileSysCheck extends XMLFile {
     const canBeRelationSubject = true;
     const canBeRelationObject = false;
 
-    public function crossValidate(WorkspaceCache $validator): void {
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-        parent::crossValidate($validator);
+        parent::crossValidate($workspaceCache);
 
         $unitId = $this->getUnitId();
-        $unit = $validator->getUnit($unitId);
+        $unit = $workspaceCache->getUnit($unitId);
 
         if ($unit != null) {
             $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));

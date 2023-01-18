@@ -137,16 +137,12 @@ class File extends FileData {
 
 
     // TODO unit-test
-    public function crossValidate(WorkspaceCache $validator): void {
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-        $duplicates = $validator->findDuplicates($this);
+        if ($duplicateId = $workspaceCache->getDuplicateId($this)) {
 
-        if (count($duplicates)) {
-
-            $duplicateNames = implode(', ', array_map(function(File $file): string {
-                return "`{$file->getName()}`";
-            }, $duplicates));
-            $this->report('error', "Duplicate {$this->getType()}-Id: `{$this->getId()}` ({$duplicateNames})");
+            $this->report('error', "Duplicate {$this->getType()}-Id: `{$this->getId()}`");
+            $this->id = $duplicateId;
         }
     }
 

@@ -28,12 +28,12 @@ class XMLFileUnit extends XMLFile {
         $this->checkRequestedAttachments(); // TODO! move this from constructor to crossValidate?
     }
 
-    public function crossValidate(WorkspaceCache $validator) : void {
+    public function crossValidate(WorkspaceCache $workspaceCache) : void {
 
-        parent::crossValidate($validator);
+        parent::crossValidate($workspaceCache);
 
-        $this->checkIfResourcesExist($validator);
-        $this->getPlayerIfExists($validator);
+        $this->checkIfResourcesExist($workspaceCache);
+        $this->getPlayerIfExists($workspaceCache);
     }
 
 

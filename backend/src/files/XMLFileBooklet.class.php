@@ -9,16 +9,16 @@ class XMLFileBooklet extends XMLFile {
     const canBeRelationSubject = true;
     const canBeRelationObject = true;
 
-    public function crossValidate(WorkspaceCache $validator): void {
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-        parent::crossValidate($validator);
+        parent::crossValidate($workspaceCache);
 
         $bookletPlayers = [];
         $this->contextData['totalSize'] = $this->getSize();
 
         foreach($this->getUnitIds() as $unitId) {
 
-            $unit = $validator->getUnit($unitId);
+            $unit = $workspaceCache->getUnit($unitId);
 
             if ($unit == null) {
                 $this->report('error', "Unit `$unitId` not found");
@@ -29,7 +29,7 @@ class XMLFileBooklet extends XMLFile {
 
             $this->contextData['totalSize'] += $unit->getTotalSize();
 
-            $playerFile = $unit->getPlayerIfExists($validator);
+            $playerFile = $unit->getPlayerIfExists($workspaceCache);
 
             if (!$playerFile) {
 

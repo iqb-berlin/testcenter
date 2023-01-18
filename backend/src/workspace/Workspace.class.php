@@ -472,7 +472,6 @@ class Workspace {
     public function storeAllFiles(): array {
 
         $workspaceCache = $this->getCacheWithAllFilesFromFs();
-//        $workspaceCache->markUnusedItems(); TODO! wann soll das sein?! hier kennen wir die Dateien noch gar nicht alle!
 
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
@@ -626,20 +625,20 @@ class Workspace {
 
     private function getCacheWithAllFilesFromFs(): WorkspaceCache {
 
-        $validator = new WorkspaceCache($this);
+        $workspaceCache = new WorkspaceCache($this);
 
         foreach (Workspace::subFolders as $type) {
 
             $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-            $files = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
+            $files = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern, true);
 
             foreach ($files as $filePath) {
 
                 $file = File::get($filePath, $type, true);
-                $validator->addFile($type, $file);
+                $workspaceCache->addFile($type, $file);
             }
         }
 
-        return $validator;
+        return $workspaceCache;
     }
 }

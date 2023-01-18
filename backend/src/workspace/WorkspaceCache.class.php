@@ -6,7 +6,7 @@ declare(strict_types=1);
 class WorkspaceCache {
 
     protected array $cachedFiles = [];
-    protected array $versionMap = [];
+    protected array $duplicates = [];
     protected Workspace $workspace;
     protected array $globalIds = []; // type => [id => fileName]
 
@@ -44,27 +44,9 @@ class WorkspaceCache {
     }
 
 
-    // TODO unit-test
-    public function findDuplicates(File $ofFile): array {
+    public function getDuplicateId(File $file): ?string {
 
-        $files = [];
-
-        foreach ($this->cachedFiles as $type => $fileList) {
-
-            if (!str_starts_with($type, $ofFile->getType())) {
-                continue;
-            }
-
-            foreach ($fileList as $id => $file) {
-
-                if (($id === $ofFile->getId()) and ($file->getName() !== $ofFile->getName())) {
-
-                    $files[] = $file;
-                }
-            }
-        }
-
-        return $files;
+        return $this->duplicates["{$file->getType()}/{$file->getName()}"] ?? null;
     }
 
 
@@ -120,34 +102,22 @@ class WorkspaceCache {
 
     public function addFile(string $type, File $file, $overwriteAllowed = false): string {
 
-        if (isset($this->cachedFiles[$type][$file->getId()])) {
+        $index = $file->getId();
 
-            $duplicate = $this->cachedFiles[$type][$file->getId()];
+        if (isset($this->cachedFiles[$type][$index])) {
+
+            $duplicate = $this->cachedFiles[$type][$index];
 
             if (!$overwriteAllowed or ($file->getName() !== $duplicate->getName())) {
 
-                $type = $this->getPseudoTypeForDuplicate($type, $file->getId());
+                $index = md5(microtime());
+                $this->duplicates["{$file->getType()}/{$file->getName()}"] = $index;
             }
         }
 
-        $this->cachedFiles[$type][$file->getId()] = $file;
-
-        if ($file->getType() == 'Resource') {
-
-            $this->versionMap[FileName::normalize($file->getId(), true)] = $file->getId();
-        }
+        $this->cachedFiles[$type][$index] = $file;
 
         return "$type/{$file->getId()}";
-    }
-
-
-    protected function getPseudoTypeForDuplicate(string $type, string $id): string {
-
-        $i = 2;
-        while (isset($this->cachedFiles["$type/duplicates/$id/$i"])) {
-            $i++;
-        }
-        return "$type/duplicates/$id/$i";
     }
 
 
