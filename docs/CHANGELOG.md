@@ -11,6 +11,7 @@ layout: default
 
 ### Sicherheit
 * "Secure Client Initated Renegotiation" nicht mehr möglich
+* TLS 1.2 im Datenbank Container
 
 ### UI
 * Kleinere Verbesserungen im Bereich SystemCheck
