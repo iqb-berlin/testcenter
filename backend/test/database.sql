@@ -191,11 +191,10 @@ create table file_relations
     subject_name varchar(120) not null,
     subject_type text check (subject_type in ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource')) not null,
     relationship_type text check (relationship_type in ('hasBooklet', 'containsUnit', 'usesPlayer', 'usesPlayerResource', 'isDefinedBy', 'unknown')) not null,
-    object_request varchar(120) not null,
     object_type text check (object_type in ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource')) not null,
     object_name varchar(120) null,
     constraint file_relations_pk
-        primary key (workspace_id, subject_name, subject_type, relationship_type, object_request),
+        primary key (workspace_id, subject_name, subject_type, relationship_type, object_type, object_name),
     constraint file_relations_files_fk
         foreign key (workspace_id, subject_name, subject_type) references files (workspace_id, name, type)
         on delete cascade
