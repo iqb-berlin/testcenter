@@ -115,7 +115,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $testTakers = [];
 
-        foreach($this->xml->xpath('Group') as $groupElement) {
+        foreach($this->getXml()->xpath('Group') as $groupElement) {
 
             foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
 
@@ -136,7 +136,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xml->xpath('Group/Login[@name]') as $loginElement) {
+        foreach($this->getXml()->xpath('Group/Login[@name]') as $loginElement) {
 
             $loginNames[] = (string) $loginElement['name'];
         }
@@ -155,7 +155,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xml->xpath('Group/Login[@name]') as $loginElement) {
+        foreach($this->getXml()->xpath('Group/Login[@name]') as $loginElement) {
 
             if (!in_array((string) $loginElement['name'], $loginNames)) {
                 $loginNames[] = (string) $loginElement['name'];
@@ -174,7 +174,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $groups = [];
 
-        foreach($this->xml->xpath('Group') as $groupElement) {
+        foreach($this->getXml()->xpath('Group') as $groupElement) {
 
             $groups[(string) $groupElement['id']] = new Group(
                 (string) $groupElement['id'],
@@ -192,7 +192,7 @@ class XMLFileTesttakers extends XMLFile {
             return null;
         }
 
-        foreach($this->xml->xpath("Group[Login[@name='$loginName']]") as $groupElement) {
+        foreach($this->getXml()->xpath("Group[Login[@name='$loginName']]") as $groupElement) {
 
             $groupMembers = new LoginArray();
 
@@ -331,7 +331,7 @@ class XMLFileTesttakers extends XMLFile {
     public function getCustomTexts(): stdClass {
 
         $customTexts = [];
-        foreach ($this->xml->xpath('/Testtakers/CustomTexts/CustomText') as $customTextElement) {
+        foreach ($this->getXml()->xpath('/Testtakers/CustomTexts/CustomText') as $customTextElement) {
 
             $customTexts[(string) $customTextElement['key'] ?? ''] = (string) $customTextElement;
         }

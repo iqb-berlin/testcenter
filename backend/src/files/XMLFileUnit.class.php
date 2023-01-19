@@ -89,7 +89,7 @@ class XMLFileUnit extends XMLFile {
             return '';
         }
 
-        $definition = $this->xml->xpath('/Unit/Definition | /Unit/DefinitionRef');
+        $definition = $this->getXml()->xpath('/Unit/Definition | /Unit/DefinitionRef');
 
         $playerIdRaw = count($definition) ? (string)$definition[0]['player'] : null;
 
@@ -103,14 +103,14 @@ class XMLFileUnit extends XMLFile {
 
     public function getDefinitionRef(): string {
 
-        $definitionRefNodes = $this->xml->xpath('/Unit/DefinitionRef');
+        $definitionRefNodes = $this->getXml()->xpath('/Unit/DefinitionRef');
         return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
     }
 
 
     public function getDefinition(): string {
 
-        $definitionNodes = $this->xml->xpath('/Unit/Definition');
+        $definitionNodes = $this->getXml()->xpath('/Unit/Definition');
         return count($definitionNodes) ? (string) $definitionNodes[0] : '';
     }
 
@@ -121,7 +121,7 @@ class XMLFileUnit extends XMLFile {
             return [];
         }
 
-        $dE = $this->xml->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|/Unit/Dependencies/File[not(@for) or @for="player"]');
+        $dE = $this->getXml()->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|/Unit/Dependencies/File[not(@for) or @for="player"]');
 
         return array_map(
             function($e) { return (string) $e;},
@@ -142,7 +142,7 @@ class XMLFileUnit extends XMLFile {
 
     public function getRequestedAttachments(): array {
 
-        $variables = $this->xml->xpath('/Unit/BaseVariables/Variable[@type="attachment"]');
+        $variables = $this->getXml()->xpath('/Unit/BaseVariables/Variable[@type="attachment"]');
         $requestedAttachments = [];
         foreach ($variables as $variable) {
 

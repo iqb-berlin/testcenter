@@ -562,7 +562,6 @@ class Workspace {
 
             $unit = $this->getFileById('Unit', $uniId);
             /* @var $unit XMLFileUnit */
-            $unit->load();
             $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
         }
         return $requestedAttachments;

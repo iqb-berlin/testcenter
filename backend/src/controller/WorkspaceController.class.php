@@ -296,7 +296,6 @@ class WorkspaceController extends Controller {
         $workspaceController = new Workspace($workspaceId);
         /* @var XMLFileSysCheck $xmlFile */
         $xmlFile = $workspaceController->getFileById('SysCheck', $sysCheckName);
-        $xmlFile->load();
 
         return $response->withJson(new SysCheck([
             'name' => $xmlFile->getId(),
@@ -321,7 +320,6 @@ class WorkspaceController extends Controller {
 
         /* @var XMLFileSysCheck $sysCheck */
         $sysCheck = $workspace->getFileById('SysCheck', $sysCheckName);
-        $sysCheck->load();
 
         $res = [
             'player_id' => '',
@@ -360,8 +358,6 @@ class WorkspaceController extends Controller {
 
         if (!$res['def']) {
 
-            $unit->load();
-
             $unitEmbeddedDefinition = $unit->getDefinition();
             if ($unitEmbeddedDefinition) {
                 $res['def'] = $unitEmbeddedDefinition;
@@ -381,7 +377,6 @@ class WorkspaceController extends Controller {
 
         /* @var XMLFileSysCheck $sysCheck */
         $sysCheck = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
-        $sysCheck->load(); // wg getSaveKey
 
         if (strlen((string) $report->keyPhrase) <= 0) {
 

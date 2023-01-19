@@ -135,7 +135,6 @@ class TestController extends Controller {
 
         if (!isset($res['definitionRef'])) {
 
-            $unitFile->load();
             $res['definition'] = $unitFile->getDefinition();
         }
 

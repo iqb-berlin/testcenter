@@ -52,7 +52,7 @@ class XMLFileBooklet extends XMLFile {
             return [];
         }
 
-        return $this->getUnitIdFromNode($this->xml->Units[0], $useAlias);
+        return $this->getUnitIdFromNode($this->getXml()->Units[0], $useAlias);
     }
 
 

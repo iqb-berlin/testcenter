@@ -13,7 +13,7 @@ class XMLFile extends File {
     protected string $rootTagName = '';
     protected ?array $schema;
 
-    protected SimpleXMLElement $xml;
+    private ?SimpleXMLElement $xml = null;
 
 
     public function __construct(string | FileData $init, bool $isRawXml = false) {
@@ -34,9 +34,13 @@ class XMLFile extends File {
     }
 
 
-    public function load(): void {
+    protected function load(): void {
 
         parent::load();
+
+        if ($this->xml) {
+            return;
+        }
 
         libxml_use_internal_errors(true);
         libxml_clear_errors();
@@ -44,8 +48,6 @@ class XMLFile extends File {
         $xmlElem = simplexml_load_string($this->content);
 
         if ($xmlElem === false) {
-
-            $this->xml = new SimpleXMLElement('<error />');
 
             $this->report('error', "Invalid File");
 
@@ -72,6 +74,12 @@ class XMLFile extends File {
     }
 
 
+    protected function getXML(): SimpleXMLElement {
+
+        $this->load();
+        return $this->xml;
+    }
+
 
     private function readMetadata(): void {
 
@@ -89,7 +97,7 @@ class XMLFile extends File {
 
         // TODO support other ways of defining the schema (schemaLocation)
 
-        $schemaUrl = (string) $this->xml->attributes('xsi', true)->noNamespaceSchemaLocation;
+        $schemaUrl = (string) $this->getXml()->attributes('xsi', true)->noNamespaceSchemaLocation;
 
         if (!$schemaUrl) {
 
@@ -167,7 +175,7 @@ class XMLFile extends File {
 
         foreach ($this::deprecatedElements as $deprecatedElement) {
 
-            foreach ($this->xml->xpath($deprecatedElement) as $ignored) {
+            foreach ($this->getXml()->xpath($deprecatedElement) as $ignored) {
 
                 $this->report('warning', "Element `$deprecatedElement` is deprecated.");
             }
@@ -188,7 +196,7 @@ class XMLFile extends File {
 
     protected function xmlGetNodeContentIfPresent(string $nodePath): string {
 
-        $nodes = $this->xml->xpath($nodePath);
+        $nodes = $this->getXml()->xpath($nodePath);
         return count($nodes) ? (string) $nodes[0] : '';
     }
 

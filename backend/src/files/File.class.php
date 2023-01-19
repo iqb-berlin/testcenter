@@ -191,7 +191,7 @@ class File extends FileData {
     }
 
 
-    public function load(): void {
+    protected function load(): void {
 
         if (!$this->content) {
             // TODO! does it even exist?
