@@ -20,16 +20,21 @@ class XMLFile extends File {
 
         parent::__construct($init);
 
+        if (is_a($init, FileData::class)) {
+
+            return;
+        }
+
         if ($isRawXml) {
 
             $this->content = $init;
         }
 
-        $this->validate();
+        $this->load();
     }
 
 
-    protected function validate(): void {
+    public function load(): void {
 
         parent::load();
 
