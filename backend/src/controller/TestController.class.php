@@ -359,7 +359,8 @@ class TestController extends Controller {
         $testId = (int) $request->getAttribute('test_id');
 
         $lockEvent = RequestBodyParser::getElements($request, [
-            'timeStamp' => null
+            'timeStamp' => null,
+            'message' => ''
         ]);
 
         self::testDAO()->lockTest($testId);

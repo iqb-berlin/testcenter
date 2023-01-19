@@ -1,10 +1,10 @@
 {
   "name": "iqb-testcenter",
-  "version": "13.2.0",
+  "version": "13.2.2",
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
-      "max": 4
+      "max": 5
     },
     "defintionsUrl": "https://raw.githubusercontent.com/iqb-berlin/testcenter-backend"
   },

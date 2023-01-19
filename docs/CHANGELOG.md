@@ -5,8 +5,26 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
+### Neue Fetaures
+* CustomTexts können jetzt (wieder) nicht nur Login-bezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festgelegt werden.
+* Die Verona-Schnittstelle wird jetzt auch in der Version 5 unterstützt
+
+### Sicherheit
+* "Secure Client Initated Renegotiation" nicht mehr möglich
+
 ### UI
-Betsimmte Schaltflächen im Administrations-Interface bekamen angemessenere Beschriftungen.
+* Kleinere Verbesserungen im Bereich SystemCheck
+* Die Beschriftung "Überwachung starten" lässt sich nun ändern
+
+
+## 13.2.2
+### Bug Fixes
+Zu große Antwort-Daten (durch GeoGebra erzeugt) führten zu Fehlern.
+
+## 13.2.1
+### UI
+* Bestimmte Schaltflächen im Administrations-Interface bekamen angemessenere Beschriftungen.
+* Die Eingabefelder (Login, Code-Eingabe, Freigabewort) mit denen SuS konfrontiert werden können, wurden deutlicher als Eingabefelder gestaltet, da SuS sie sonst von den SuS manchmal nicht als solche erkannt wurden.
 
 ## 13.2.0
 ### Performance
