@@ -9,27 +9,26 @@ class ResourceFile extends File {
     const canBeRelationSubject = false;
     const canBeRelationObject = true;
 
-    public function __construct(string | FileData $init, bool $validate = true) {
 
-        parent::__construct($init);
+    public function __construct(FileData|string $init, string $type = null) {
 
-        if (is_a($init, FileData::class)) {
+        parent::__construct($init, $type);
 
-            return;
-        }
+        if (!is_a($init, FileData::class)) {
 
-        if (FileExt::has($this->getPath(), 'HTML')) {
-            $this->readVeronaMetaData();
-            $this->id = $this->getVeronaModuleId() . '-' . $this->versionMayor . '.' . $this->versionMinor;
-        }
-
-        if ($validate) {
             $this->validate();
         }
     }
 
 
-    private function validate() {
+    protected function validate(): void {
+
+        $this->id = strtoupper($this->name);
+
+        if (FileExt::has($this->getPath(), 'HTML')) {
+            $this->readVeronaMetaData();
+            $this->id = strtoupper($this->getVeronaModuleId() . '-' . $this->versionMayor . '.' . $this->versionMinor);
+        }
 
         if ($this->isPackage()) {
             $this->validatePackage();

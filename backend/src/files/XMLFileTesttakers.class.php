@@ -62,16 +62,16 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function checkIfIdsAreUsedInOtherFiles(WorkspaceCache $validator): void {
+    private function checkIfIdsAreUsedInOtherFiles(WorkspaceCache $workspaceCache): void {
 
         $loginList = $this->getAllLoginNames();
         $groupList = array_keys($this->getGroups());
 
-        foreach ($validator->getGlobalIds() as $workspaceId => $sources) {
+        foreach ($workspaceCache->getGlobalIds() as $workspaceId => $sources) {
 
             foreach ($sources as $source => $globalIdsByType) {
 
-                if (($source == $this->getName()) and ($workspaceId == $validator->getId())) {
+                if (($source == $this->getName()) and ($workspaceId == $workspaceCache->getId())) {
                     continue;
                 }
 
@@ -79,14 +79,14 @@ class XMLFileTesttakers extends XMLFile {
                     'login',
                     array_intersect($loginList, array_values($globalIdsByType['login'])),
                     $source,
-                    $validator->getId(),
+                    $workspaceCache->getId(),
                     $workspaceId
                 );
                 $this->reportDuplicates(
                     'group',
                     array_intersect($groupList, array_values($globalIdsByType['group'])),
                     $source,
-                    $validator->getId(),
+                    $workspaceCache->getId(),
                     $workspaceId
                 );
             }

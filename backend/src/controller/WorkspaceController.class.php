@@ -321,10 +321,7 @@ class WorkspaceController extends Controller {
 
         /* @var XMLFileSysCheck $sysCheck */
         $sysCheck = $workspace->getFileById('SysCheck', $sysCheckName);
-        $sysCheck->load(true);
-//        if (($sysCheck == null)) {
-//            throw new HttpNotFoundException($request);
-//        }
+        $sysCheck->load();
 
         $res = [
             'player_id' => '',
@@ -382,22 +379,22 @@ class WorkspaceController extends Controller {
 
         $sysChecksFolder = new SysChecksFolder($workspaceId);
 
-        /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
-        $xmlFile->load();
+        /* @var XMLFileSysCheck $sysCheck */
+        $sysCheck = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
+        $sysCheck->load(); // wg getSaveKey
 
         if (strlen((string) $report->keyPhrase) <= 0) {
 
             throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
         }
 
-        if (strtoupper((string) $report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
+        if (strtoupper((string) $report->keyPhrase) !== strtoupper($sysCheck->getSaveKey())) {
 
             throw new HttpError("Wrong key `$report->keyPhrase`", 400);
         }
 
         $report->checkId = $sysCheckName;
-        $report->checkLabel = $xmlFile->getLabel();
+        $report->checkLabel = $sysCheck->getLabel();
 
         $sysChecksFolder->saveSysCheckReport($report);
 

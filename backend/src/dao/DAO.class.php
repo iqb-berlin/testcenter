@@ -23,7 +23,8 @@ class DAO {
         'meta',
         'unit_data',
         'files',
-        'unit_defs_attachments'
+        'unit_defs_attachments',
+        'file_relations'
     ];
 
     protected $pdoDBhandle = false;

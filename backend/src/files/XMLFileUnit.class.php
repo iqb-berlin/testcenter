@@ -15,23 +15,12 @@ class XMLFileUnit extends XMLFile {
         '/Unit/Dependencies/file'
     ];
 
-    protected string $playerId = '';
-
-    public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
-
-        parent::__construct($init, $validate, $isRawXml);
-
-        if (is_a($init, FileData::class)) {
-            return;
-        }
-
-        $this->checkRequestedAttachments(); // TODO! move this from constructor to crossValidate?
-    }
 
     public function crossValidate(WorkspaceCache $workspaceCache) : void {
 
         parent::crossValidate($workspaceCache);
 
+        $this->checkRequestedAttachments();
         $this->checkIfResourcesExist($workspaceCache);
         $this->getPlayerIfExists($workspaceCache);
     }
@@ -45,7 +34,7 @@ class XMLFileUnit extends XMLFile {
 
         $playerId = $this->readPlayerId();
 
-        $resource = $validator->getResource($playerId, true);
+        $resource = $validator->getResource($playerId);
 
         if ($resource != null) {
             $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));

@@ -16,49 +16,27 @@ class XMLFile extends File {
     protected SimpleXMLElement $xml;
 
 
-    public function __construct(string | FileData $init, bool $validate = false, bool $isRawXml = false) {
+    public function __construct(string | FileData $init, bool $isRawXml = false) {
 
-        if (is_a($init, FileData::class)) {
+        parent::__construct($init);
 
-            parent::__construct($init);
-            return;
+        if ($isRawXml) {
+
+            $this->content = $init;
         }
 
-        if (!$isRawXml) {
-
-            $this->path = $init;
-            $this->load($validate);
-
-        } else {
-
-            $this->load($validate, $init);
-        }
+        $this->validate();
     }
 
 
-    public function load(bool $validate = false, string $overwriteContent = null): void {
+    protected function validate(): void {
+
+        parent::load();
 
         libxml_use_internal_errors(true);
         libxml_clear_errors();
 
-        if (!$overwriteContent) {
-
-            parent::__construct($this->getPath());
-
-            if (!$this->isValid()) {
-
-                libxml_use_internal_errors(false);
-                return;
-            }
-
-            $xmlElem = simplexml_load_file($this->getPath());
-            $this->importLibXmlErrors();
-
-        } else {
-
-            $xmlElem = simplexml_load_string($overwriteContent);
-        }
-
+        $xmlElem = simplexml_load_string($this->content);
 
         if ($xmlElem === false) {
 
@@ -82,11 +60,8 @@ class XMLFile extends File {
 
         $this->readMetadata();
 
-        if ($validate) {
-
-            $this->validateAgainstSchema();
-            $this->warnOnDeprecatedElements();
-        }
+        $this->validateAgainstSchema();
+        $this->warnOnDeprecatedElements();
 
         libxml_use_internal_errors(false);
     }

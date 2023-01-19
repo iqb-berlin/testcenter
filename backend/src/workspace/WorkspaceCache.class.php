@@ -26,7 +26,6 @@ class WorkspaceCache {
             foreach ($fileSet as $file) {
 
                 /* @var $file File */
-
                 $file->crossValidate($this);
             }
         }
@@ -68,22 +67,13 @@ class WorkspaceCache {
     }
 
 
-    public function getResource(string $resourceId, bool $allowSimilarVersion): ?ResourceFile {
+    public function getFile(string $type, string $fileId): ?File {
 
-        if ($allowSimilarVersion or !isset($this->cachedFiles['Resource'][$resourceId])) {
+        return $this->cachedFiles[$type][$fileId] ?? null;
+    }
 
-            try {
 
-                $resource = $this->workspace->getFileById('Resource', $resourceId, $allowSimilarVersion);
-                /* @var $resource ResourceFile */
-                return $resource;
-
-            } catch(HttpError $exception) {
-
-                return null;
-            }
-
-        }
+    public function getResource(string $resourceId): ?ResourceFile {
 
         return $this->cachedFiles['Resource'][$resourceId] ?? null;
     }
@@ -104,17 +94,6 @@ class WorkspaceCache {
     public function getSysCheck(string $sysCheckId): ?XMLFileSysCheck {
 
         return $this->cachedFiles['SysCheck'][$sysCheckId] ?? null;
-    }
-
-
-    private function getFileById(string $type, string $fileId, bool $allowSimilarVersion = false): ?File {
-
-        if (!$allowSimilarVersion and isset($this->cachedFiles[$type][$fileId])) {
-
-            return $this->workspace->getFileById($type, $fileId, $allowSimilarVersion);
-        }
-
-        return $this->cachedFiles[$type][$fileId] ?? null;
     }
 
 
@@ -172,7 +151,7 @@ class WorkspaceCache {
         }
     }
 
-    private function setGlobalIds(): void {
+    public function setGlobalIds(): void {
 
         $this->globalIds = $this->workspace->workspaceDAO->getGlobalIds();
     }

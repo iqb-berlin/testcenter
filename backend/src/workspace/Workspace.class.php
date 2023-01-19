@@ -252,16 +252,16 @@ class Workspace {
 
         $files = array_fill_keys(Workspace::subFolders, []);
 
-        $validator = $this->getCacheWithAllFilesFromFs();
+        $workspaceCache = $this->getCacheWithAllFilesFromFs();
 
         foreach ($localFilePaths as $localFilePath) {
 
-            $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
-            $validator->addFile($file->getType(), $file, true);
+            $file = File::get($this->workspacePath . '/' . $localFilePath);
+            $workspaceCache->addFile($file->getType(), $file, true);
             $files[$file->getType()][$localFilePath] = $file;
         }
 
-        $validator->validate();
+        $workspaceCache->validate();
 
         return $files;
     }
@@ -450,6 +450,7 @@ class Workspace {
 
         //  1.6
 
+        $workspaceCache->setGlobalIds();
         $workspaceCache->validate();
 
         // 1. Schritt alle Files selbst speichern
@@ -553,6 +554,9 @@ class Workspace {
 
         // TODO! geht das beim er erneuten einlesen?
 
+        if (!$booklet->isValid()) {
+            return [];
+        }
 
         $requestedAttachments = [];
         foreach ($booklet->getUnitIds() as $uniId) {
@@ -583,7 +587,7 @@ class Workspace {
 
             foreach ($files as $filePath) {
 
-                $file = File::get($filePath, $type, true);
+                $file = File::get($filePath, $type);
                 $workspaceCache->addFile($type, $file);
             }
         }
