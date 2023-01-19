@@ -390,6 +390,20 @@ class Workspace {
     }
 
 
+    public function getFileByName(string $type, string $fileName): File {
+
+        $file = File::get("$this->workspacePath/$type/$fileName", $type);
+
+        if ($file->isValid()) {
+
+            return $file;
+        }
+
+        throw new HttpError("No $type with name `$fileName` found on workspace `$this->workspaceId`!", 404);
+
+    }
+
+
     public function countFilesOfAllSubFolders(): array {
 
         $result = [];

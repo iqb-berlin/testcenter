@@ -362,7 +362,7 @@ class WorkspaceDAO extends DAO {
         $relations = $this->_("
             select
                 object_type,
-                object_id,
+                object_name,
                 relationship_type
             from
                 file_relations
@@ -378,7 +378,7 @@ class WorkspaceDAO extends DAO {
             function(array $r): FileRelation {
                 return new FileRelation(
                     $r['object_type'],
-                    $r['object_id'],
+                    $r['object_name'],
                     constant("FileRelationshipType::{$r['relationship_type']}")
                 );
             },

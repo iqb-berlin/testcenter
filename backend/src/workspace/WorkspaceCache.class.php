@@ -133,7 +133,7 @@ class WorkspaceCache {
                     foreach ($relations as $relation) {
 
                         /* @var FileRelation $relation */
-                        $relationsMap[$relation->getTargetType()][strtoupper($relation->getTargetId())] = $file->getName();
+                        $relationsMap[$relation->getTargetType()][strtoupper($relation->getTargetName())] = $file->getName();
                     }
                 }
             }
