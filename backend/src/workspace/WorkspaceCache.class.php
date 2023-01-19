@@ -169,4 +169,9 @@ class WorkspaceCache {
             $this->cachedFiles[$type] = [];
         }
     }
+
+    public function addGlobalIdSource(string $fileName, string $type, array $idList): void {
+
+        $this->globalIds[$this->getId()][$fileName][$type] = $idList;
+    }
 }

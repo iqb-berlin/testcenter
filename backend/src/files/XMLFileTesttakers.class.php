@@ -67,6 +67,9 @@ class XMLFileTesttakers extends XMLFile {
         $loginList = $this->getAllLoginNames();
         $groupList = array_keys($this->getGroups());
 
+        $workspaceCache->addGlobalIdSource($this->getName(), 'login', $loginList);
+        $workspaceCache->addGlobalIdSource($this->getName(), 'group', $groupList);
+
         foreach ($workspaceCache->getGlobalIds() as $workspaceId => $sources) {
 
             foreach ($sources as $source => $globalIdsByType) {

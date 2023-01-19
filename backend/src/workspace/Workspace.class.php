@@ -450,7 +450,6 @@ class Workspace {
 
         //  1.6
 
-        $workspaceCache->setGlobalIds();
         $workspaceCache->validate();
 
         // 1. Schritt alle Files selbst speichern
