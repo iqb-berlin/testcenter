@@ -9,7 +9,7 @@ x-env-mysql: &env-mysql
 services:
   traefik-system-test:
     container_name: testcenter-system-test-traefik
-    image: traefik:v2.2
+    image: traefik:v2.9
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
