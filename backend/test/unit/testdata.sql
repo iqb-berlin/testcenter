@@ -99,23 +99,14 @@ insert into meta(category, metaKey, value) values ('cat2', 'keyA', 'valueA');
 insert into meta(category, metaKey, value) values ('cat2', 'keyB', 'valueB');
 insert into meta(category, metaKey, value) values (null, 'key-no-cat', 'value-no-cat');
 
-insert into files(workspace_id, name, id, label, description, type)
-values(1, 'Booklet.xml', 'BOOKLET.SAMPLE-1', 'Sample Booklet Label', 'Desc', 'Booklet');
+insert into files(workspace_id, name, id, label, description, type, modification_ts, is_valid, size)
+values(1, 'Booklet.xml', 'BOOKLET.SAMPLE-1', 'Sample Booklet Label', 'Desc', 'Booklet', '2023-01-16 09:00:00', 1, 195);
 
-insert into files(workspace_id, name, id, label, description, type)
-values(1, 'Booklet-no-test.xml', 'BOOKLET.NO.TEST', 'Booklet without test', 'No test yet', 'Booklet');
+insert into files(workspace_id, name, id, label, description, type, modification_ts, is_valid, size)
+values(1, 'Booklet-no-test.xml', 'BOOKLET.NO.TEST', 'Booklet without test', 'No test yet', 'Booklet', '2023-01-16 09:00:00', 0, 195);
 
-insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
-values(1, 'verona-player-simple-4.0.0.html', 'verona-player-simple-4.0.0.html', 4, 0, 0, 'player', 'verona-player-simple', 'Resource');
+insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type, modification_ts, is_valid, size)
+values(1, 'verona-player-simple-4.0.0.html', 'verona-player-simple-4.0.html', 4, 0, 0, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);
 
-insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
-values(1, 'verona-player-simple-4.0.5.html', 'verona-player-simple-4.0.5.html', 4, 0, 5, 'player', 'verona-player-simple', 'Resource');
-
-insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
-values(1, 'verona-player-simple-4.0.6.html', 'verona-player-simple-4.0.6.html', 4, 0, 6, 'player', 'verona-player-simple', 'Resource');
-
-insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
-values(1, 'missnamed-player-simple-4.1.5.html', 'missnamed-player-simple-4.1.5.html', 4, 1, 5, 'player', 'verona-player-simple', 'Resource');
-
-insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type)
-values(1, 'verona-player-simple-4.1.7.html', 'verona-player-simple-4.1.7.html', 4, 1, 7, 'player', 'verona-player-simple', 'Resource');
+insert into files(workspace_id, name, id, version_mayor, version_minor, version_patch, verona_module_type, verona_module_id, type, modification_ts, is_valid, size)
+values(1, 'missnamed-player-simple-4.1.5.html', 'missnamed-player-simple-4.1', 4, 1, 5, 'player', 'verona-player-simple', 'Resource', '2023-01-16 09:00:00', 1, 195);

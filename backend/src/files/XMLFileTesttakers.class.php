@@ -208,8 +208,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function getLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId)
-            : Login {
+    private function getLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId): Login {
 
         $mode = (string) $loginElement['mode'];
         $name = (string) $loginElement['name'];

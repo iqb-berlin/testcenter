@@ -31,7 +31,7 @@ class FileData extends DataCollectionTypeSafe {
         bool $isValid = true,
         array $validationReport = [],
         array $relations = [],
-        int $modificationTime = 0,
+        int $modificationTime = 1,
         int $size = 0,
         array $contextData = [],
         string $veronaModuleType = "",

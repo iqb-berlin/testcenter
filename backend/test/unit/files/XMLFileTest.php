@@ -18,12 +18,9 @@ class XMLFileTest extends TestCase {
     public function setUp(): void {
 
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/data-collection/ValidationReportEntry.class.php";
         require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
-        require_once "src/helper/FileName.class.php";
         require_once "src/helper/FileTime.class.php";
         require_once "src/helper/JSON.class.php";
         require_once "src/helper/Version.class.php";
@@ -33,6 +30,12 @@ class XMLFileTest extends TestCase {
         require_once "test/unit/mock-classes/ExternalFileMock.php";
 
         VfsForTest::setUp(true);
+    }
+
+
+    private function getErrorString(File $file): string {
+
+        return implode(', ', $file->getValidationReport()['error']);
     }
 
 
@@ -46,7 +49,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRootTagName());
         $this->assertEquals('This a sample booklet for testing/development/showcase purposes.', $xf->getDescription());
-        $this->assertEquals('', $xf->getErrorString());
+        $this->assertArrayNotHasKey('error', $xf->getValidationReport());
     }
 
 
@@ -60,8 +63,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(0, $xf->getSize());
         $this->assertEquals('', $xf->getRootTagName());
         $this->assertEquals('', $xf->getDescription());
-        $this->assertEquals('[error] file does not exist `vfs://root/data/ws_1/Booklet/not-existing.XML`',
-            $xf->getErrorString());
+        $this->assertEquals('File does not exist `vfs://root/data/ws_1/Booklet/not-existing.XML`', $this->getErrorString($xf));
     }
 
 
@@ -78,7 +80,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(59, $xf->getSize());
         $this->assertEquals('a', $xf->getRootTagName());
         $this->assertEquals('', $xf->getDescription());
-        $this->assertEquals('[error] Invalid root-tag: `a`', $xf->getErrorString());
+        $this->assertEquals('Invalid root-tag: `a`', $this->getErrorString($xf));
     }
 
 
@@ -93,7 +95,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
         $this->assertEquals('', $xf->getRootTagName());
         $this->assertEquals('', $xf->getDescription());
-        $this->assertEquals('[error] Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata, [error] Error [5] in line 8: Extra content at the end of the document', $xf->getErrorString());
+        $this->assertEquals('Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 8: Extra content at the end of the document', $this->getErrorString($xf));
     }
 
 
@@ -108,7 +110,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML'), $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRootTagName());
         $this->assertEquals('This a sample booklet for testing/development/showcase purposes.', $xf->getDescription());
-        $this->assertEquals('', $xf->getErrorString());
+        $this->assertArrayNotHasKey('error', $xf->getValidationReport());
     }
 
 
@@ -123,7 +125,7 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(filesize(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml'), $xf->getSize());
         $this->assertEquals('', $xf->getRootTagName());
         $this->assertEquals('', $xf->getDescription());
-        $this->assertEquals('[error] Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata, [error] Error [5] in line 8: Extra content at the end of the document', $xf->getErrorString());
+        $this->assertEquals('Error [76] in line 6: Opening and ending tag mismatch: Testtakers line 2 and Metadata, Error [5] in line 8: Extra content at the end of the document', $this->getErrorString($xf));
     }
 
 
@@ -139,6 +141,6 @@ class XMLFileTest extends TestCase {
         $this->assertEquals(85, $xf->getSize());
         $this->assertEquals('Booklet', $xf->getRootTagName());
         $this->assertEquals('', $xf->getDescription());
-        $this->assertEquals("[error] Error [1871] in line 1: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, Units ).", $xf->getErrorString());
+        $this->assertEquals("Error [1871] in line 2: Element 'Invalid': This element is not expected. Expected is one of ( CustomTexts, BookletConfig, Units ).", $this->getErrorString($xf));
     }
 }

@@ -9,19 +9,9 @@ class ResourceFile extends File {
     const canBeRelationSubject = false;
     const canBeRelationObject = true;
 
-
-    public function __construct(FileData|string $init, string $type = null) {
-
-        parent::__construct($init, $type);
-
-        if (!is_a($init, FileData::class)) {
-
-            $this->validate();
-        }
-    }
-
-
     protected function validate(): void {
+
+        parent::validate();
 
         $this->id = strtoupper($this->name);
 
@@ -280,14 +270,8 @@ class ResourceFile extends File {
         }
 
         if ($this->veronaModuleId and $this->getVersion()) {
-            if (
-                !FileName::hasRecommendedFormat( // !TODO refactor
-                    basename($this->getPath()),
-                    $this->veronaModuleId,
-                    $this->getVersionMayorMinor(),
-                    "html"
-                )
-            ) {
+            $recommendedFilename = "$this->veronaModuleId-{$this->getVersionMayorMinor()}.html";
+            if ($recommendedFilename != $this->name) {
                 $this->report('warning', "Non-Standard-Filename: `$this->veronaModuleId-{$this->getVersionMayorMinor()}.html` expected.");
             }
         }

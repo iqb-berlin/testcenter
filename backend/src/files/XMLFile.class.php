@@ -16,27 +16,9 @@ class XMLFile extends File {
     private ?SimpleXMLElement $xml = null;
 
 
-    public function __construct(string | FileData $init, bool $isRawXml = false) {
+    protected function validate(): void {
 
-        parent::__construct($init);
-
-        if (is_a($init, FileData::class)) {
-
-            return;
-        }
-
-        if ($isRawXml) {
-
-            $this->content = $init;
-        }
-
-        $this->load();
-    }
-
-
-    protected function load(): void {
-
-        parent::load();
+        parent::validate();
 
         if ($this->xml) {
             return;
@@ -49,8 +31,7 @@ class XMLFile extends File {
 
         if ($xmlElem === false) {
 
-            $this->report('error', "Invalid File");
-
+            $this->importLibXmlErrors();
             libxml_use_internal_errors(false);
             return;
         }
@@ -61,12 +42,14 @@ class XMLFile extends File {
         if (!in_array($this->rootTagName, $this::knownRootTags)) {
 
             $this->report('error', "Invalid root-tag: `$this->rootTagName`");
+            $this->importLibXmlErrors();
             libxml_use_internal_errors(false);
             return;
         }
 
         $this->readMetadata();
 
+        $this->importLibXmlErrors();
         $this->validateAgainstSchema();
         $this->warnOnDeprecatedElements();
 
@@ -76,7 +59,7 @@ class XMLFile extends File {
 
     protected function getXML(): SimpleXMLElement {
 
-        $this->load();
+        parent::load();
         return $this->xml;
     }
 
@@ -151,7 +134,7 @@ class XMLFile extends File {
         }
 
         $xmlReader = new XMLReader();
-        $xmlReader->open($this->path);
+        $xmlReader->xml($this->getXML()->asXML());
 
         try {
             $xmlReader->setSchema($schemaFilePath);

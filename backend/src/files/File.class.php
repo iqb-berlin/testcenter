@@ -11,7 +11,7 @@ class File extends FileData {
 
     static function get(string | FileData $init, string $type = null): File {
 
-        if (!$type) {
+        if (!$type and !is_a($init, FileData::class)) {
             $type = File::determineType($init);
         }
 
@@ -24,6 +24,15 @@ class File extends FileData {
             'xml' => new XMLFile($init),
             default => new File($init, $type),
         };
+    }
+
+
+    static function fromString(string $fileContent, string $fileName = 'virtual_file'): File {
+
+        $file = new static(new FileData($fileName));
+        $file->content = $fileContent;
+        $file->validate();
+        return $file;
     }
 
 
@@ -71,19 +80,12 @@ class File extends FileData {
 
         $this->type = $type;
 
-        $this->setFilePath($init);
-
-        $this->id = FileName::normalize($this->getName());
-
-        if (strlen($this->getName()) > 120) {
-            $this->report('error', "Filename too long!");
-        }
-
+        $this->readFileMeta($init);
         $this->load();
     }
 
 
-    public function setFilePath(string $path): void {
+    public function readFileMeta(string $path): void { // TODO! can this be private / merged with load?
 
         $this->path = $path;
 
@@ -92,13 +94,33 @@ class File extends FileData {
             $this->size = 0;
             $this->name = '';
             $this->modificationTime = 0;
-            $this->report('error', "file does not exist `" . dirname($path) . '/'. basename($path) . "`");
+            $this->report('error', "File does not exist `" . dirname($path) . '/'. basename($path) . "`");
 
         } else {
 
             $this->size = filesize($path);
             $this->name = basename($path);
             $this->modificationTime = FileTime::modification($path);
+        }
+
+        $this->id = strtoupper($this->getName());
+    }
+
+
+    protected function load(): void {
+
+        if (!$this->content and $this->path and file_exists($this->path)) {
+            // TODO! does it even exist?
+            $this->content = file_get_contents($this->path);
+            $this->validate();
+        }
+    }
+
+
+    protected function validate(): void {
+
+        if (strlen($this->name) > 120) {
+            $this->report('error', "Filename too long!");
         }
     }
 
@@ -152,12 +174,6 @@ class File extends FileData {
     }
 
 
-    public function getErrorString(): string {
-
-        return implode(", ", $this->validationReport['error']);
-    }
-
-
     public function addRelation(FileRelation $relation): void {
 
         $this->relations[] = $relation;
@@ -190,14 +206,6 @@ class File extends FileData {
         return $output;
     }
 
-
-    protected function load(): void {
-
-        if (!$this->content) {
-            // TODO! does it even exist?
-            $this->content = file_get_contents($this->path);
-        }
-    }
 
 
     // TODO! wird ganz oft aufgerufen bei resource ZB!

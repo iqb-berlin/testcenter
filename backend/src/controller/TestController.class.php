@@ -157,7 +157,7 @@ class TestController extends Controller {
 
         $workspace = new Workspace($authToken->getWorkspaceId());
 
-        $fileId = $allowSimilarVersion ? FileID::normalize($resourceName) : FileName::normalize($resourceName);
+        $fileId = $allowSimilarVersion ? FileID::normalize($resourceName) : strtoupper($resourceName);
 
         $resourceFile = $workspace->getFileById('Resource', $fileId);
 

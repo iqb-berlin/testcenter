@@ -131,12 +131,12 @@ class VersionTest extends TestCase {
 
         $result = Version::guessFromFileName("NO-Version.HtmL");
         $this->assertEquals([
-            'full' => "",
+            'full' => '',
             'major' => 0,
             'minor' => 0,
             'patch' => 0,
-            'label' => "",
-            'module' => ''
+            'label' => '',
+            'module' => 'NO-Version'
         ], $result);
 
         $result = Version::guessFromFileName("whatever-1.2.3-patch.HtmL");

@@ -60,7 +60,7 @@ class XMLFileUnit extends XMLFile {
 
         foreach ($resources as $key => $resourceName) {
 
-            $resourceId = FileName::normalize($resourceName);
+            $resourceId = strtoupper($resourceName);
             $resource = $validator->getResource($resourceId, false);
 
             if ($resource != null) {

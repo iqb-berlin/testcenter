@@ -19,8 +19,6 @@ class XMLFileSysCheckTest extends TestCase {
     public function setUp(): void {
 
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/helper/FileName.class.php";
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/Version.class.php";
         require_once "src/helper/JSON.class.php";
@@ -63,7 +61,7 @@ class XMLFileSysCheckTest extends TestCase {
         $result = $xmlFile->hasSaveKey();
         $this->assertTrue($result);
 
-        $xmlFile = new XMLFileSysCheck("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>", false, true);
+        $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>");
         $result = $xmlFile->hasSaveKey();
         $this->assertFalse($result);
     }
@@ -75,7 +73,7 @@ class XMLFileSysCheckTest extends TestCase {
         $result = $xmlFile->hasUnit();
         $this->assertTrue($result);
 
-        $xmlFile = new XMLFileSysCheck("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>", false, true);
+        $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>");
         $result = $xmlFile->hasUnit();
         $this->assertFalse($result);
     }
@@ -83,11 +81,11 @@ class XMLFileSysCheckTest extends TestCase {
 
     function test_getCustomTexts() {
 
-        $xml = "<SysCheck><Metadata><Id>x</Id></Metadata><Config>"
+        $xml = "<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
             . "<CustomText key='some'>thing</CustomText>"
             . "<CustomText key='any'>way</CustomText>"
             . "</Config></SysCheck>";
-        $xmlFile = new XMLFileSysCheck($xml, false, true);
+        $xmlFile = XMLFileSysCheck::fromString($xml);
         $result = $xmlFile->getCustomTexts();
         $expectation = [['key' => 'some', 'value' => 'thing'], ['key' => 'any', 'value' => 'way']];
         $this->assertEquals($expectation, $result);
@@ -100,13 +98,11 @@ class XMLFileSysCheckTest extends TestCase {
         $result = $xmlFile->getSkipNetwork();
         $this->assertFalse($result);
 
-        $xml = "<SysCheck><Metadata><Id>x</Id></Metadata><Config skipnetwork='true'></Config></SysCheck>";
-        $xmlFile = new XMLFileSysCheck($xml, false, true);
+        $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata><Config skipnetwork='true'></Config></SysCheck>");
         $result = $xmlFile->getSkipNetwork();
         $this->assertTrue($result);
 
-        $xml = "<SysCheck><Metadata><Id>x</Id></Metadata></SysCheck>";
-        $xmlFile = new XMLFileSysCheck($xml, false, true);
+        $xmlFile = XMLFileSysCheck::fromString("<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata></SysCheck>");
         $result = $xmlFile->getSkipNetwork();
         $this->assertFalse($result);
     }
@@ -114,11 +110,11 @@ class XMLFileSysCheckTest extends TestCase {
 
     function test_getQuestions() {
 
-        $xml = "<SysCheck><Metadata><Id>x</Id></Metadata><Config>"
+        $xml = "<SysCheck><Metadata><Id>x</Id><Label>l</Label></Metadata><Config>"
             . '<Q id="1" type="header" prompt="some_title" required="true"/>'
             . '<Q id="2" type="string" prompt="or_so">1#2#3</Q>'
             . "</Config></SysCheck>";
-        $xmlFile = new XMLFileSysCheck($xml, false, true);
+        $xmlFile = XMLFileSysCheck::fromString($xml);
         $result = $xmlFile->getQuestions();
         $expectation = [
             [
@@ -154,10 +150,6 @@ class XMLFileSysCheckTest extends TestCase {
         ];
         $this->assertEquals($expectation, $result);
     }
-
-
-
-
 }
 
 

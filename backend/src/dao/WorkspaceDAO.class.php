@@ -237,69 +237,6 @@ class WorkspaceDAO extends DAO {
     }
 
 
-    public function getFileSimilarVersion(string $fileId, string $type): ?File {
-
-        $version = Version::guessFromFileName($fileId);
-
-        $fileData = $this->_(
-            "select
-                    name,
-                    id,
-                    label,
-                    type,
-                    description,
-                    is_valid,
-                    validation_report,
-                    size,
-                    modification_ts,
-                    version_mayor,
-                    version_minor,
-                    version_patch,
-                    version_label,
-                    verona_module_id,
-                    verona_module_type,
-                    verona_version,
-                    context_data,
-                    (case
-                        when (verona_module_id = :module_id and version_mayor = :version_mayor and version_minor = :version_minor and version_patch = :version_patch and ifnull(version_label, '') = :version_label) then 1
-                        when (workspace_id = :ws_id and type = :type and id = :file_id and verona_module_id != :module_id) then -1 
-                        else 0
-                    end) as match_type
-                from
-                    files
-                where
-                    (workspace_id = :ws_id and type = :type)
-                    and
-                    (
-                        (
-                            (verona_module_id = :module_id)
-                            and
-                            (version_mayor = :version_mayor)
-                            and
-                            (version_minor >= :version_minor)
-                        )
-                        or
-                        (id = :file_id)
-                    )
-                order by match_type desc, version_minor desc, version_patch desc, version_label
-                limit 1
-            ",
-            [
-                ':ws_id' => $this->workspaceId,
-                ':file_id' => $fileId,
-                ':type' => $type,
-                ':version_mayor' => $version['major'],
-                ':version_minor' => $version['minor'],
-                ':version_patch' => $version['patch'],
-                ':version_label' => $version['label'],
-                ':module_id' => $version['module']
-            ]
-        );
-
-        return $fileData ? $this->resultRow2File($fileData, []) : null;
-    }
-
-
     public function updateUnitDefsAttachments(string $bookletName, array $attachments): void {
 
         $this->_(

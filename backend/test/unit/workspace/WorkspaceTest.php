@@ -51,23 +51,22 @@ class WorkspaceTest extends TestCase {
 
         require_once "src/helper/FileSize.class.php";
         require_once "src/helper/Folder.class.php";
-        require_once "src/helper/FileName.class.php";
         require_once "src/helper/FileTime.class.php";
         require_once "src/helper/FileExt.class.php";
+        require_once "src/helper/FileID.class.php";
         require_once "src/helper/Version.class.php";
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/JSON.class.php";
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/exception/HttpError.class.php";
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/data-collection/VeronaModuleMeta.class.php";
-        require_once "src/data-collection/FileSpecialInfo.class.php";
         require_once "src/data-collection/Login.class.php";
         require_once "src/data-collection/LoginArray.class.php";
         require_once "src/data-collection/Group.class.php";
         require_once "src/data-collection/RequestedAttachment.class.php";
         require_once "src/data-collection/FileData.class.php";
+        require_once "src/data-collection/FileRelation.class.php";
+        require_once "src/data-collection/FileRelationshipType.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/ResourceFile.class.php";
         require_once "src/files/XMLFile.class.php";
@@ -75,17 +74,22 @@ class WorkspaceTest extends TestCase {
         require_once "src/files/XMLFileTesttakers.class.php";
         require_once "src/files/XMLFileBooklet.class.php";
         require_once "src/files/XMLFileSysCheck.class.php";
-        require_once "src/workspace/WorkspaceValidator.class.php";
+        require_once "src/workspace/WorkspaceCache.class.php";
+
+        $this->vfs = VfsForTest::setUp();
 
         $this->workspaceDaoMock = Mockery::mock('overload:' . WorkspaceDAO::class);
-        $this->workspaceDaoMock->allows([
-            'getGlobalIds' => VfsForTest::globalIds,
-            'updateLoginSource' => [10, 10],
-            'storeFileMeta' => null,
-            'updateUnitDefsAttachments' => null
-        ]);
-        $this->vfs = VfsForTest::setUp();
-        $this->workspace = new Workspace(1);
+//        $this->workspaceDaoMock
+//            ->expects('getGlobalIds')
+//            ->andReturn(VfsForTest::globalIds);
+//        $this->workspaceDaoMock
+//            ->expects('updateLoginSource')
+//            ->andReturn([10, 10]);
+//        $this->workspaceDaoMock
+//            ->expects('storeFileMeta');
+//        $this->workspaceDaoMock
+//            ->expects('updateUnitDefsAttachments');
+
     }
 
 
@@ -106,35 +110,13 @@ class WorkspaceTest extends TestCase {
         $this->assertEquals($expectation, $workspace1Directories);
     }
 
+
     function test_getWorkspacePath() {
 
-        $result = $this->workspace->getWorkspacePath();
+        $workspace = new Workspace(1);
+        $result = $workspace->getWorkspacePath();
         $expectation = 'vfs://root/data/ws_1';
         $this->assertEquals($expectation, $result);
-    }
-
-    function test_getAllFiles() {
-
-        $result = $this->workspace->getFiles();
-
-        $resultDigest = array_map(function(File $file) { return $file->getName(); }, $result);
-
-        $expectation = [
-            'SAMPLE_UNITCONTENTS.HTM',
-            'sample_resource_package.itcr.zip',
-            'verona-player-simple-4.0.0.html',
-            'SAMPLE_UNIT.XML',
-            'SAMPLE_UNIT2.XML',
-            'SAMPLE_BOOKLET.XML',
-            'SAMPLE_BOOKLET2.XML',
-            'SAMPLE_BOOKLET3.XML',
-            'trash.xml',
-            'SAMPLE_TESTTAKERS.XML',
-            'trash.xml',
-            'SAMPLE_SYSCHECK.XML',
-        ];
-
-        $this->assertEquals($expectation, $resultDigest);
     }
 
 
@@ -145,7 +127,20 @@ class WorkspaceTest extends TestCase {
         $voDataDir->chmod(0444);
         file_put_contents(DATA_DIR . '/ws_1/Resource/somePlayer.HTML', 'player content');
 
-        $result = $this->workspace->deleteFiles([
+        $this->workspaceDaoMock
+            ->expects('getFiles')
+            ->andReturn([
+                'Resource' => [
+                    'verona-player-simple-4.0.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-4.0.0.html')
+                ]
+            ]);
+        $this->workspaceDaoMock
+            ->expects('getBlockedFiles')
+            ->andReturn(['Resource/verona-player-simple-4.0.0.html' => 'Unit/SAMPLE_UNIT2.XML']);
+
+        $workspace = new Workspace(1);
+
+        $result = $workspace->deleteFiles([
             'Resource/verona-player-simple-4.0.0.html',
             'Resource/somePlayer.HTML',
             'SysCheck/SAMPLE_SYSCHECK.XML',
@@ -177,7 +172,20 @@ class WorkspaceTest extends TestCase {
 
     function test_deleteFiles_rejectIfDependencies() {
 
-        $result = $this->workspace->deleteFiles([
+        $this->workspaceDaoMock
+            ->expects('getFiles')
+            ->andReturn([
+                'Resource' => [
+                    'verona-player-simple-4.0.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-4.0.0.html')
+                ]
+            ]);
+        $this->workspaceDaoMock
+            ->expects('getBlockedFiles')
+            ->andReturn(['Resource/verona-player-simple-4.0.0.html' => 'Unit/SAMPLE_UNIT2.XML']);
+
+        $workspace = new Workspace(1);
+
+        $result = $workspace->deleteFiles([
             'Resource/verona-player-simple-4.0.0.html',
         ]);
         $expectation = [
@@ -187,9 +195,41 @@ class WorkspaceTest extends TestCase {
             'was_used' => ['Resource/verona-player-simple-4.0.0.html']
         ];
         $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
+    }
 
+    function test_deleteFiles_rejectIfDependenciesTogetherWithOthers() {
 
-        $result = $this->workspace->deleteFiles([
+        $this->workspaceDaoMock
+            ->expects('getFiles')
+            ->andReturn([
+                'Resource' => [
+                    'verona-player-simple-4.0.0.html' => new ResourceFile(DATA_DIR . '/ws_1/Resource/verona-player-simple-4.0.0.html'),
+                    'SAMPLE_UNITCONTENTS.HTM' => new ResourceFile(DATA_DIR . 'Resource/SAMPLE_UNITCONTENTS.HTM')
+                ],
+                'SysCheck' => [
+                    'SAMPLE_SYSCHECK.XML' => new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML')
+                ],
+                'Testtakers' => [
+                    'SAMPLE_TESTTAKERS.XML' => new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML')
+                ]
+            ]);
+        $this->workspaceDaoMock
+            ->expects('getBlockedFiles')
+            ->andReturn([
+                'Resource/verona-player-simple-4.0.0.html' => 'Unit/SAMPLE_UNIT2.XML',
+                'Resource/SAMPLE_UNITCONTENTS.HTM' => 'Unit/SAMPLE_UNIT.XML'
+            ]);
+        $this->workspaceDaoMock
+            ->expects('deleteLoginSource')
+            ->andReturn(75)
+            ->once();
+        $this->workspaceDaoMock
+            ->expects('deleteFile')
+            ->twice();
+
+        $workspace = new Workspace(1);
+
+        $result = $workspace->deleteFiles([
             'Resource/SAMPLE_UNITCONTENTS.HTM',
             'Resource/verona-player-simple-4.0.0.html',
             'Testtakers/SAMPLE_TESTTAKERS.XML',
@@ -210,9 +250,13 @@ class WorkspaceTest extends TestCase {
         $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
     }
 
+    // TODO! test when everything is deleted
+
 
 
     function test_countFilesOfAllSubFolders() {
+
+        $workspace = new Workspace(1);
 
         $expectation = [
             "Testtakers" => 2,
@@ -222,28 +266,30 @@ class WorkspaceTest extends TestCase {
             "Resource" => 3
         ];
 
-        $result = $this->workspace->countFilesOfAllSubFolders();
+        $result = $workspace->countFilesOfAllSubFolders();
         $this->assertEquals($expectation, $result);
     }
 
 
     function test_importUnsortedFile() {
 
+        $workspace = new Workspace(1);
+
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
         file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
-        $result = $this->workspace->importUnsortedFile('valid.xml');
+        $result = $workspace->importUnsortedFile('valid.xml');
         $this->assertArrayNotHasKey('error', $result["valid.xml"]->getValidationReportSorted(), 'valid file has no errors');
         $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/invalid.xml', self::invalidFile);
-        $result = $this->workspace->importUnsortedFile('invalid.xml');
+        $result = $workspace->importUnsortedFile('invalid.xml');
         $this->assertGreaterThan(0, count($result["invalid.xml"]->getValidationReportSorted()['error']), 'invalid file has error report');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/invalid.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/valid3.xml', self::validFile2);
-        $result = $this->workspace->importUnsortedFile('valid3.xml');
+        $result = $workspace->importUnsortedFile('valid3.xml');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid3.xml'), 'reject on duplicate id if file names are not the same');
         $this->assertStringContainsString(
             '1st valid file',
@@ -254,7 +300,7 @@ class WorkspaceTest extends TestCase {
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid3.xml'), 'cleanup after import');
 
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile2);
-        $result = $this->workspace->importUnsortedFile('valid.xml');
+        $result = $workspace->importUnsortedFile('valid.xml');
         $this->assertStringContainsString(
             '2nd valid file',
             file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
@@ -268,6 +314,8 @@ class WorkspaceTest extends TestCase {
 
     function test_importUnsortedFile_zipWithValidFilesWithDependencies() {
 
+        $workspace = new Workspace(1);
+
         ZIP::$mockArchive = [
             'valid_testtakers.xml' => self::validTesttakers,
             'valid_booklet.xml' => self::validBooklet,
@@ -275,7 +323,7 @@ class WorkspaceTest extends TestCase {
             'valid_unit.xml' => self::validUnit
         ];
 
-        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $result = $workspace->importUnsortedFile("archive.zip");
         $errors = $this->getErrorsFromValidationResult($result);
 
         $this->assertCount(0, $errors);
@@ -292,6 +340,8 @@ class WorkspaceTest extends TestCase {
 
     function test_importUnsortedFile_zip_rejectInvalidUnitAndDependantFiles() {
 
+        $workspace = new Workspace(1);
+
         ZIP::$mockArchive = [
             'valid_testtakers.xml' => self::validTesttakers,
             'valid_booklet.xml' => self::validBooklet,
@@ -299,7 +349,7 @@ class WorkspaceTest extends TestCase {
             'invalid_unit.xml' => 'INVALID'
         ];
 
-        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $result = $workspace->importUnsortedFile("archive.zip");
         $errors = $this->getErrorsFromValidationResult($result);
 
         $this->assertCount(3, $errors);
@@ -307,25 +357,27 @@ class WorkspaceTest extends TestCase {
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip'), 'clean after importing');
         $this->assertFalse(
-            file_exists($this->workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+            file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
             'don\'t import invalid Unit from ZIP'
         );
         $this->assertFalse(
-            file_exists($this->workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+            file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
             'don\'t import Booklet dependant of invalid unit from ZIP'
         );
         $this->assertTrue(
-            file_exists($this->workspace->getWorkspacePath() . '/Resource/P.html'),
+            file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
             'import resource from ZIP'
         );
         $this->assertFalse(
-            file_exists($this->workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+            file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
             'don\'t import Testtakers dependant of invalid unit from ZIP'
         );
     }
 
 
     function test_importUnsortedFile_zip_rejectInvalidBookletAndDependantFiles() {
+
+        $workspace = new Workspace(1);
 
         ZIP::$mockArchive = [
             'valid_testtakers.xml' => self::validTesttakers,
@@ -334,7 +386,7 @@ class WorkspaceTest extends TestCase {
             'valid_unit.xml' => self::validUnit
         ];
 
-        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $result = $workspace->importUnsortedFile("archive.zip");
         $errors = $this->getErrorsFromValidationResult($result);
 
         $this->assertCount(2, $errors);
@@ -361,11 +413,13 @@ class WorkspaceTest extends TestCase {
 
     function test_importUnsortedFile_zip_rejectOnDuplicateId() {
 
+        $workspace = new Workspace(1);
+
         ZIP::$mockArchive = [
             'file_with_used_id.xml' => '<Unit ><Metadata><Id>UNIT.SAMPLE</Id><Label>l</Label></Metadata><Definition player="p">d</Definition></Unit>',
         ];
 
-        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $result = $workspace->importUnsortedFile("archive.zip");
         $errors = $this->getErrorsFromValidationResult($result);
 
         $this->assertCount(1, $errors);
@@ -379,6 +433,8 @@ class WorkspaceTest extends TestCase {
 
 
     function test_importUnsortedFile_zip_handleSubFolders() {
+
+        $workspace = new Workspace(1);
 
         ZIP::$mockArchive = [
             'valid_testtakers.xml' => self::validTesttakers,
@@ -394,29 +450,29 @@ class WorkspaceTest extends TestCase {
             ]
         ];
 
-        $result = $this->workspace->importUnsortedFile("archive.zip");
+        $result = $workspace->importUnsortedFile("archive.zip");
         $errors = $this->getErrorsFromValidationResult($result);
         $this->assertCount(1, $errors);
 
         $this->assertFalse(file_exists(DATA_DIR . '/ws_1/archive.zip_Extract'), 'clean after importing');
         $this->assertFalse(
-            file_exists($this->workspace->getWorkspacePath() . '/Unit/invalid_unit.xml'),
+            file_exists($workspace->getWorkspacePath() . '/Unit/invalid_unit.xml'),
             'don\'t import invalid Unit from ZIP'
         );
         $this->assertTrue(
-            file_exists($this->workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
+            file_exists($workspace->getWorkspacePath() . '/Unit/valid_unit.xml'),
             'import invalid Unit from ZIP'
         );
         $this->assertTrue(
-            file_exists($this->workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
+            file_exists($workspace->getWorkspacePath() . '/Booklet/valid_booklet.xml'),
             'import Booklet dependant of invalid unit from ZIP'
         );
         $this->assertTrue(
-            file_exists($this->workspace->getWorkspacePath() . '/Resource/P.html'),
+            file_exists($workspace->getWorkspacePath() . '/Resource/P.html'),
             'import resource from ZIP'
         );
         $this->assertTrue(
-            file_exists($this->workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
+            file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
             'import Testtakers dependant of invalid unit from ZIP'
         );
     }
@@ -451,6 +507,7 @@ class WorkspaceTest extends TestCase {
                 'verona_module_id' => ''
             ]);
         $workspace = new Workspace(1);
+
         $result = $workspace->getFileById('SysCheck', 'SYSCHECK.SAMPLE');
 
         $this->assertEquals('XMLFileSysCheck', get_class($result));

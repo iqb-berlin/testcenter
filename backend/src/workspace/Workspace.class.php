@@ -82,29 +82,6 @@ class Workspace {
     }
 
 
-//    public function getFiles(): array {
-//
-//        $files = [];
-//
-//        foreach ($this::subFolders as $type) {
-//
-//            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-//            $filePaths = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
-//
-//            foreach ($filePaths as $filePath) {
-//
-//                if (!is_file($filePath)) {
-//                    continue;
-//                }
-//
-//                $files[] = new File($filePath, $type);
-//            }
-//        }
-//
-//        return $files;
-//    }
-
-
     public function deleteFiles(array $filesToDelete): array {
 
         $report = [
@@ -121,7 +98,7 @@ class Workspace {
 
             $pathParts = explode('/', $localFilePath, 2);
 
-            if (count($pathParts) != 2) {
+            if (count($pathParts) != 2) { // TODO! it's always 2!
                 $report['not_allowed'][] = $localFilePath;
                 continue;
             }
@@ -189,8 +166,9 @@ class Workspace {
 
             $this->workspaceDAO->deleteFile($file);
 
-        } catch (Exception) {
+        } catch (Exception $e) {
 
+            echo $e->getMessage();
             return false;
         }
         return true;
@@ -325,7 +303,7 @@ class Workspace {
             return false;
         }
 
-        $file->setFilePath($targetFilePath);
+        $file->readFileMeta($targetFilePath);
 
         return true;
     }
