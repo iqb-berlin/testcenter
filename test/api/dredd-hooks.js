@@ -160,11 +160,24 @@ dreddHooks.beforeEach((transaction, done) => {
   return done();
 });
 
-dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > application/json', async (transaction, done) => {
+
+async function attachUploadFile(transaction, done) {
   try {
     const form = new Multipart();
     form.append('fileforvo', fs.createReadStream(`${sampledataDir}/Unit.xml`, 'utf-8'), { filename: 'SAMPLE_UNIT.XML' });
     transaction.request.body = await streamToString(form.stream());
+    transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
+  } catch (e) {
+    transaction.fail = e;
+  }
+  done();
+}
+
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 201 > application/json', attachUploadFile);
+
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 400', async (transaction, done) => {
+  try {
+    const form = new Multipart();
     transaction.request.headers['Content-Type'] = form.getHeaders()['content-type'];
   } catch (e) {
     transaction.fail = e;
@@ -185,6 +198,11 @@ dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 207 > applica
   }
   done();
 });
+
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 401', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 403', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 404', attachUploadFile);
+dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 410', attachUploadFile);
 
 dreddHooks.before('specs > /workspace/{ws_id}/file > upload file > 413', async (transaction, done) => {
   try {
@@ -211,27 +229,18 @@ dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 2
   done();
 });
 
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=UTF-8', (transaction, done) => {
+async function attachBOM(transaction, done) {
   transaction.expected.body = `\uFEFF${transaction.expected.body}`;
   done();
-});
+}
 
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=UTF-8', (transaction, done) => {
-  transaction.expected.body = `\uFEFF${transaction.expected.body}`;
-  done();
-});
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/log > get report of logs > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get report of item responses > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=UTF-8', attachBOM);
+dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', attachBOM);
 
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=UTF-8', (transaction, done) => {
-  transaction.expected.body = `\uFEFF${transaction.expected.body}`;
-  done();
-});
 
-dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', (transaction, done) => {
-  transaction.expected.body = `\uFEFF${transaction.expected.body}`;
-  done();
-});
-
-dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', async (transaction, done) => {
+async function attachUploadImage(transaction, done) {
   try {
     const form = new Multipart();
     form.append('attachment', Readable.from(['image data']), { filename: 'image.png' });
@@ -242,7 +251,14 @@ dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attac
     transaction.fail = e;
   }
   done();
-});
+}
+
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 201', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 401', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 403', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 404', attachUploadImage);
+dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 410', attachUploadImage);
+
 
 dreddHooks.afterEach((transaction, done) => {
   // die after first failure
