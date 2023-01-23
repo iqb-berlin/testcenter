@@ -313,7 +313,7 @@ pages:
     - test-frontend-unit
     - test-broadcasting-service-unit
     - generate-docs
-  image: ruby:latest
+  image: ruby:3.1
   script:
     - mkdir public
     - cd docs
