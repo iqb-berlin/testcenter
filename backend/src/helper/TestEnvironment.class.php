@@ -82,8 +82,8 @@ class TestEnvironment {
 
         $initDAO->clearDb();
 
-        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
-        $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", true);
+        $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
+        $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", true);
 
         $dbStatus = $initDAO->getDbStatus();
         if ($dbStatus['missing']) {
