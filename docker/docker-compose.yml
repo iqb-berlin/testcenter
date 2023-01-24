@@ -18,7 +18,7 @@ x-env-logging-conf: &env-logging-conf
 services:
   traefik:
     container_name: testcenter-traefik
-    image: traefik:v2.2
+    image: traefik:v2.9
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
