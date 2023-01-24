@@ -7,7 +7,7 @@ class File extends FileData {
     public const canBeRelationSubject = false;
     public const canBeRelationObject = false;
     protected string $name = '';
-    protected string $content = '';
+    protected ?string $content = null;
 
     static function get(string | FileData $init, string $type = null): File {
 
@@ -109,8 +109,8 @@ class File extends FileData {
 
     protected function load(): void {
 
-        if (!$this->content and $this->path and file_exists($this->path)) {
-            // TODO! does it even exist?
+        if (($this->content === null) and $this->path and file_exists($this->path)) {
+
             $this->content = file_get_contents($this->path);
             $this->validate();
         }
