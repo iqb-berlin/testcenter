@@ -88,18 +88,7 @@ class ResourceFile extends File {
             return false;
         }
 
-        // habits where differently back then
-        $contentAttr = $meta->getAttribute('content');
-        $includedVersion = Version::guessFromFileName($contentAttr . '.xxx');
-        $this->veronaModuleId =
-            'verona-player-' .
-            implode(
-                '-',
-                array_diff(
-                    preg_split("/[-_@\W]/", $contentAttr),
-                    ['verona', 'player', 'iqb', $includedVersion['full']]
-                )
-        );
+        $this->veronaModuleId = $meta->getAttribute('content');
 
         list(
             $this->versionMayor,
