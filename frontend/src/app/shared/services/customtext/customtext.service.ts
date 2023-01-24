@@ -45,7 +45,7 @@ export class CustomtextService {
         this.customTexts[k].next(customTextsDefault[k].defaultvalue);
       }
       if(all === true){
-        if(!(k in customTextsDefault)){
+        if(!(k in customTextsDefault) && this.customTexts[k]){
           this.customTexts[k] = new BehaviorSubject<string>(null);
         }
       }
