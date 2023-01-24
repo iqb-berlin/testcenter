@@ -12,11 +12,11 @@ layout: default
 ### Sicherheit
 * "Secure Client Initated Renegotiation" nicht mehr möglich
 * TLS 1.2 im Datenbank Container
+* Neuste Traefik Version
 
 ### UI
 * Kleinere Verbesserungen im Bereich SystemCheck
 * Die Beschriftung "Überwachung starten" lässt sich nun ändern
-
 
 ## 13.2.2
 ### Bug Fixes
