@@ -79,4 +79,5 @@ export class ReportComponent implements OnInit {
       }
     });
   }
+
 }
