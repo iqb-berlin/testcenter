@@ -19,6 +19,22 @@ class WorkspaceCache {
     }
 
 
+    public function loadAllFiles(): void {
+
+        foreach (Workspace::subFolders as $type) {
+
+            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
+            $files = Folder::glob($this->workspace->getOrCreateSubFolderPath($type), $pattern, true);
+
+            foreach ($files as $filePath) {
+
+                $file = File::get($filePath, $type);
+                $this->addFile($type, $file);
+            }
+        }
+    }
+
+
     public function validate(): void {
 
         foreach ($this->cachedFiles as $fileSet) {

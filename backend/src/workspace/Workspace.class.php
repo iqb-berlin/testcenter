@@ -230,7 +230,8 @@ class Workspace {
 
         $files = array_fill_keys(Workspace::subFolders, []);
 
-        $workspaceCache = $this->getCacheWithAllFilesFromFs();
+        $workspaceCache = new WorkspaceCache($this);
+        $workspaceCache->loadAllFiles(); // TODO! read from DB instead
 
         foreach ($localFilePaths as $localFilePath) {
 
@@ -412,7 +413,8 @@ class Workspace {
     // TODO unit-test
     public function storeAllFiles(): array {
 
-        $workspaceCache = $this->getCacheWithAllFilesFromFs();
+        $workspaceCache = new WorkspaceCache($this);
+        $workspaceCache->loadAllFiles();
 
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
@@ -563,25 +565,5 @@ class Workspace {
     public function getFileRelations(File $file): array {
 
         return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
-    }
-
-
-    private function getCacheWithAllFilesFromFs(): WorkspaceCache {
-
-        $workspaceCache = new WorkspaceCache($this);
-
-        foreach (Workspace::subFolders as $type) {
-
-            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-            $files = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern, true);
-
-            foreach ($files as $filePath) {
-
-                $file = File::get($filePath, $type);
-                $workspaceCache->addFile($type, $file);
-            }
-        }
-
-        return $workspaceCache;
     }
 }
