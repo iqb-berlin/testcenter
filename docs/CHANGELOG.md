@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 13.3.0
+## 13.3.1
 ### Neue Fetaures
 * CustomTexts können jetzt (wieder) nicht nur Login-bezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festgelegt werden.
 * Die Verona-Schnittstelle wird jetzt auch in der Version 5 unterstützt
