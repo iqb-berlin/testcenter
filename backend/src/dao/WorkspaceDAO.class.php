@@ -508,4 +508,44 @@ class WorkspaceDAO extends DAO {
 
         return [$unresolvedRelations, $updatedRelations];
     }
+
+    public function getRelatingFiles(File $file): array {
+
+        // TODO make recursive: a player may affect a unit, that a booklet, and that a testtakers file
+
+        $sql = "select
+                    files.name,
+                    files.type,
+                    files.id,
+                    files.label,
+                    files.description,
+                    files.is_valid,
+                    files.validation_report,
+                    files.size,
+                    files.modification_ts,
+                    files.version_mayor,
+                    files.version_minor,
+                    files.version_patch,
+                    files.version_label,
+                    files.verona_module_id,
+                    files.verona_module_type,
+                    files.verona_version,
+                    files.context_data
+                from file_relations
+                     left join files
+                        on file_relations.workspace_id = files.workspace_id
+                            and file_relations.subject_name = files.name
+                            and file_relations.subject_type = files.type
+                where
+                        files.workspace_id = :ws_id
+                        and object_type = :file_type and object_name= :file_name ";
+
+        $replacements = [
+            ':ws_id' => $this->workspaceId,
+            ':file_type' => $file->getType(),
+            ':file_name' => $file->getName()
+        ];
+
+        return $this->fetchFiles($sql, $replacements);
+    }
 }

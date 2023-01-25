@@ -79,6 +79,7 @@ class File extends FileData {
         parent::__construct();
 
         $this->type = $type;
+        $this->id = strtoupper($this->getName());
 
         $this->readFileMeta($init);
         $this->load();
@@ -102,8 +103,6 @@ class File extends FileData {
             $this->name = basename($path);
             $this->modificationTime = FileTime::modification($path);
         }
-
-        $this->id = strtoupper($this->getName());
     }
 
 

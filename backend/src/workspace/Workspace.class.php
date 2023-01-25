@@ -214,6 +214,7 @@ class Workspace {
                     $this->sortUnsortedFile($localFilePath, $file);
                     $this->workspaceDAO->storeFile($file);
                     $this->storeFileMeta($file);
+                    $this->updateRelatedFiles($file);
                 }
 
                 $filesAfterSorting[$localFilePath] = $file;
@@ -229,7 +230,7 @@ class Workspace {
         $files = array_fill_keys(Workspace::subFolders, []);
 
         $workspaceCache = new WorkspaceCache($this);
-        $workspaceCache->loadAllFiles(); // TODO! read from DB instead
+        $workspaceCache->loadAllFiles(); // TODO! read from DB instead, and only affected files
 
         foreach ($localFilePaths as $localFilePath) {
 
@@ -535,8 +536,6 @@ class Workspace {
 
     public function getRequestedAttachments(XMLFileBooklet $booklet): array {
 
-        // TODO! geht das beim er erneuten einlesen?
-
         if (!$booklet->isValid()) {
             return [];
         }
@@ -555,5 +554,20 @@ class Workspace {
     public function getFileRelations(File $file): array {
 
         return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
+    }
+
+
+    private function updateRelatedFiles(File $file): void {
+
+        $relatingFiles = $this->workspaceDAO->getRelatingFiles($file);
+
+        foreach ($relatingFiles as $fileSet) {
+            foreach ($fileSet as $relatingFile) {
+
+                /* @var File $relatingFile */
+
+                $this->storeFileMeta($relatingFile);
+            }
+        }
     }
 }
