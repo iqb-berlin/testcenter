@@ -22,7 +22,7 @@ class File extends FileData {
             'Unit' => new XMLFileUnit($init),
             'Resource' => new ResourceFile($init),
             'xml' => new XMLFile($init),
-            default => new File($init, $type),
+            default => new File($init),
         };
     }
 
@@ -51,7 +51,7 @@ class File extends FileData {
     }
 
 
-    public function __construct(string | FileData $init, string $type = null) {
+    public function __construct(string | FileData $init) {
 
         if (is_a($init, FileData::class)) {
 
@@ -78,10 +78,11 @@ class File extends FileData {
 
         parent::__construct();
 
-        $this->type = $type;
-        $this->id = strtoupper($this->getName());
+
 
         $this->readFileMeta($init);
+        $this->id = strtoupper($this->getName());
+
         $this->load();
     }
 

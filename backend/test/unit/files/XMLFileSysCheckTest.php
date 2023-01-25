@@ -39,7 +39,7 @@ class XMLFileSysCheckTest extends TestCase {
 
     function test_getUnitId() {
 
-        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', true);
+        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
         $expected = 'UNIT.SAMPLE-2';
         $result = $xmlFile->getUnitId();
         $this->assertEquals($expected, $result);
@@ -48,7 +48,7 @@ class XMLFileSysCheckTest extends TestCase {
 
     function test_getSaveKey() {
 
-        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', true);
+        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
         $expected = 'SAVEME';
         $result = $xmlFile->getSaveKey();
         $this->assertEquals($expected, $result);
@@ -57,7 +57,7 @@ class XMLFileSysCheckTest extends TestCase {
 
     function test_hasSaveKey() {
 
-        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', true);
+        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
         $result = $xmlFile->hasSaveKey();
         $this->assertTrue($result);
 
@@ -69,7 +69,7 @@ class XMLFileSysCheckTest extends TestCase {
 
     function test_hasUnit() {
 
-        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', true);
+        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
         $result = $xmlFile->hasUnit();
         $this->assertTrue($result);
 
@@ -94,7 +94,7 @@ class XMLFileSysCheckTest extends TestCase {
 
     function test_getSkipNetwork() {
 
-        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML', true);
+        $xmlFile = new XMLFileSysCheck(DATA_DIR . '/ws_1/SysCheck/SAMPLE_SYSCHECK.XML');
         $result = $xmlFile->getSkipNetwork();
         $this->assertFalse($result);
 

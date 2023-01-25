@@ -101,7 +101,7 @@ class XMLFileTest extends TestCase {
 
     function test_loadFromValid() {
 
-        $xf = new XMLFile(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML', true);
+        $xf = new XMLFile(DATA_DIR . '/ws_1/Booklet/SAMPLE_BOOKLET.XML');
 
         $this->assertEquals('SAMPLE_BOOKLET.XML', $xf->getName());
         $this->assertEquals('BOOKLET.SAMPLE-1', $xf->getId());
@@ -116,7 +116,7 @@ class XMLFileTest extends TestCase {
 
     function test_loadFromBogusAndValidate() {
 
-        $xf = new XMLFile(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml', true);
+        $xf = new XMLFile(DATA_DIR . '/ws_1/Testtakers/testtakers-broken.xml');
 
         $this->assertEquals('testtakers-broken.xml', $xf->getName());
         $this->assertEquals('TESTTAKERS-BROKEN.XML', $xf->getId());
@@ -132,7 +132,7 @@ class XMLFileTest extends TestCase {
     function test_loadFromInvalid() {
 
         file_put_contents(DATA_DIR . "/ws_1/invalid.xml", '<Booklet><Metadata><Id>c</Id><Label>d</Label></Metadata><Invalid></Invalid></Booklet>');
-        $xf = new XMLFile(DATA_DIR . '/ws_1/invalid.xml', true);
+        $xf = new XMLFile(DATA_DIR . '/ws_1/invalid.xml');
 
         $this->assertEquals('invalid.xml', $xf->getName());
         $this->assertEquals('C', $xf->getId());
