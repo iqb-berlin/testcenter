@@ -270,6 +270,10 @@ class WorkspaceTest extends TestCase {
             ->expects('storeRelations')
             ->andReturn([[], []])
             ->twice();
+        $this->workspaceDaoMock
+            ->expects('getRelatingFiles')
+            ->andReturn([]) // TODO add realistic return!
+            ->times(2);
         $workspace = new Workspace(1);
 
         file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
@@ -323,11 +327,14 @@ class WorkspaceTest extends TestCase {
             ->once();
         $this->workspaceDaoMock
             ->expects('updateUnitDefsAttachments')
-            ->with('VALID_BOOKLET.XML', [])
             ->once();
         $this->workspaceDaoMock
             ->expects('updateLoginSource')
             ->once();
+        $this->workspaceDaoMock
+            ->expects('getRelatingFiles')
+            ->andReturn([]) // TODO add realistic return!
+            ->times(4);
         $workspace = new Workspace(1);
 
         ZIP::$mockArchive = [
@@ -360,6 +367,10 @@ class WorkspaceTest extends TestCase {
         $this->workspaceDaoMock
             ->shouldReceive('storeRelations')
             ->never();
+        $this->workspaceDaoMock
+            ->shouldReceive('getRelatingFiles')
+            ->andReturn([])
+            ->once();
         $workspace = new Workspace(1);
 
         ZIP::$mockArchive = [
@@ -404,6 +415,10 @@ class WorkspaceTest extends TestCase {
             ->shouldReceive('storeRelations')
             ->andReturn([[], []])
             ->once();
+        $this->workspaceDaoMock
+            ->expects('getRelatingFiles')
+            ->andReturn([]) // TODO add realistic return!
+            ->times(2);
         $workspace = new Workspace(1);
 
         ZIP::$mockArchive = [
@@ -482,10 +497,14 @@ class WorkspaceTest extends TestCase {
         $this->workspaceDaoMock
             ->expects('updateUnitDefsAttachments')
             ->once()
-            ->withArgs(['VALID_BOOKLET.XML', []]);
+            ->withArgs(['X_BOOKLET', []]);
         $this->workspaceDaoMock
             ->expects('updateLoginSource')
             ->once();
+        $this->workspaceDaoMock
+            ->expects('getRelatingFiles')
+            ->andReturn([]) // TODO add realistic return!
+            ->times(4);
         $workspace = new Workspace(1);
 
         ZIP::$mockArchive = [
