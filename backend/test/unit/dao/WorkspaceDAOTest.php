@@ -62,11 +62,10 @@ class WorkspaceDAOTest extends TestCase {
     }
 
 
-    // TODO! make a test for adding
+    // TODO make a test for adding
     public function test_storeFileMeta_overwrite(): void {
 
         $file = XMLFileBooklet::fromString('<Booklet><Metadata><Id>BOOKLET.SAMPLE-1</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>', 'Booklet.xml');
-//        $file->readFileMeta(REAL_ROOT_DIR . '/sampledata/Booklet.xml');
 
         $this->dbc->storeFile($file);
         $files = $this->dbc->_("select *, 'ignore' as validation_report from files where type = 'Booklet'", [], true);

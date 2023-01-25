@@ -243,9 +243,6 @@ class WorkspaceTest extends TestCase {
         $this->assertEquals($expectation, $result, 'reject deleting, if file was used');
     }
 
-    // TODO! test when everything is deleted
-
-
 
     function test_countFilesOfAllSubFolders() {
 

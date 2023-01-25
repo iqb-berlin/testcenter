@@ -131,7 +131,7 @@ class ResourceFileTest extends TestCase {
         $this->assertArrayNotHasKey('warning', $playerWithVerona4Meta->getValidationReport());
 
 
-        // TODO! verona3.5 format
+        // TODO write test for verona3.5 format
     }
 
 

@@ -76,7 +76,7 @@ class File extends FileData {
             return;
         }
 
-        parent::__construct(); // TODO! whats this?!
+        parent::__construct();
 
         $this->type = $type;
 
@@ -85,7 +85,7 @@ class File extends FileData {
     }
 
 
-    public function readFileMeta(string $path): void { // TODO! can this be private / merged with load?
+    public function readFileMeta(string $path): void { // TODO can this be private / merged with load?
 
         $this->path = $path;
 
@@ -207,8 +207,6 @@ class File extends FileData {
     }
 
 
-
-    // TODO! wird ganz oft aufgerufen bei resource ZB!
     public function getContent(): string {
 
         $this->load();

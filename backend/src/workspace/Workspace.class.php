@@ -98,7 +98,7 @@ class Workspace {
 
             $pathParts = explode('/', $localFilePath, 2);
 
-            if (count($pathParts) != 2) { // TODO! it's always 2!
+            if (count($pathParts) < 2) {
                 $report['not_allowed'][] = $localFilePath;
                 continue;
             }
@@ -355,7 +355,6 @@ class Workspace {
     }
 
 
-    // TODO! wann dürfen auch invalide geholt werden, und wann nicht?
     public function getFileById(string $type, string $fileId): File {
 
         if ($file = $this->workspaceDAO->getFileById($fileId, $type)) {
@@ -380,7 +379,6 @@ class Workspace {
         }
 
         throw new HttpError("No $type with name `$fileName` found on workspace `$this->workspaceId`!", 404);
-
     }
 
 
@@ -419,15 +417,48 @@ class Workspace {
 
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
-            'deleted' => 0,
             'added' => 0
         ];
         $invalidCount = 0;
 
-        // 0. remove all files, which are gone
+        $loginStats['deleted'] = $this->removeVanishedFilesFromDB($workspaceCache);
+
+        $workspaceCache->validate();
+
+        foreach ($workspaceCache->getFiles(true) as $file) {
+
+            /* @var File $file */
+
+            if (!$file->isValid()) {
+
+                $invalidCount++;
+            }
+
+            $this->workspaceDAO->storeFile($file);
+            $typeStats[$file->getType()] += 1;
+        }
+
+        foreach ($workspaceCache->getFiles(true) as $file) {
+
+            $stats = $this->storeFileMeta($file);
+
+            $loginStats['deleted'] += $stats['logins_deleted'];
+            $loginStats['added'] += $stats['logins_added'];
+        }
+
+        return [
+            'valid' => $typeStats,
+            'invalid' => $invalidCount,
+            'logins' => $loginStats
+        ];
+    }
+
+
+    private function removeVanishedFilesFromDB(WorkspaceCache $workspaceCache): int {
 
         $filesInDb = $this->workspaceDAO->getAllFiles();
         $filesInFolder = $workspaceCache->getFiles(true);
+        $deletedLogins = 0;
 
         foreach ($filesInDb as $fileSet) {
 
@@ -438,51 +469,12 @@ class Workspace {
                 if (!isset($filesInFolder[$file->getPath()])) {
 
                     $this->workspaceDAO->deleteFile($file);
-                    $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($file->getName());
+                    $deletedLogins += $this->workspaceDAO->deleteLoginSource($file->getName());
                 }
             }
         }
 
-        //  1.6
-
-        $workspaceCache->validate();
-
-        // 1. Schritt alle Files selbst speichern
-
-        foreach ($workspaceCache->getFiles() as $fileSet) {
-
-            foreach ($fileSet as $file) {
-
-                if (!$file->isValid()) {
-
-                    echo str_pad("\n I: {$file->getType()}/{$file->getId()} [{$file->getName()}]:", 100);
-                    echo implode("\n * ", $file->getValidationReport()['error']);
-                    $invalidCount++;
-                }
-
-                $this->workspaceDAO->storeFile($file);
-                $typeStats[$file->getType()] += 1;
-            }
-        }
-
-
-        // 2. Schritt erweiterte Daten speichern. Dabei müssen die Dateien bereits in der Db liegen
-
-        foreach ($workspaceCache->getFiles() as $fileSet) {
-
-            foreach ($fileSet as $file) {
-
-                $stats = $this->storeFileMeta($file);
-                $loginStats['deleted'] += $stats['logins_deleted'];
-                $loginStats['added'] += $stats['logins_added'];
-            }
-        }
-
-        return [
-            'valid' => $typeStats,
-            'invalid' => $invalidCount,
-            'logins' => $loginStats
-        ];
+        return $deletedLogins;
     }
 
 
@@ -496,7 +488,7 @@ class Workspace {
             'attachments_noted' => 0,
             'resolved_relations' => 0,
             'relations_resolved' => 0,
-            'relations_unresolved' => 0,
+            'relations_unresolved' => 0
         ];
 
         if (!$file->isValid()) {

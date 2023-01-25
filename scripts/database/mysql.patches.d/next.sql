@@ -23,7 +23,6 @@ create table file_relations (
         on delete cascade
 ) default char set=utf8 collate = utf8_german2_ci;
 
--- TODO! set index
 
 create index file_relations_subject_index
     on files (workspace_id, name, type);
