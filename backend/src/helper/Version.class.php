@@ -13,6 +13,13 @@ class Version {
     }
 
 
+    static function asString(int $major, int $minor, int $patch, string $label): ?string {
+
+        $version = implode('-', array_filter(["$major.$minor.$patch", $label]));
+        return ($version == '0.0.0') ? null : $version;
+    }
+
+
     static function getAll(): array {
 
         $composerFile = file_get_contents(ROOT_DIR . '/package.json');
@@ -27,6 +34,10 @@ class Version {
 
 
     static function isCompatible(string $subject, ?string $object = null): bool {
+
+        if (!$object and !$subject) {
+            return true;
+        }
 
         if (!$object) {
             $object = Version::get();
@@ -45,11 +56,13 @@ class Version {
 
 
     static function guessFromFileName(string $fileName): array {
+
         // this regex includes some naming habits from verona 2 to 4 times
-        $regex = "/^(\D+?)[@V-]?((\d+)(\.\d+)?(\.\d+)?(-\S+?)?).\D{3,4}$/";
+        $regex = "/^(\D+?)[@V-]?((\d+)(\.\d+)?(\.\d+)?(-\S+?)?)?(.\D{3,4})?$/";
         $matches = [];
         preg_match($regex, $fileName, $matches);
         return [
+            'module' => $matches[1] ?? '',
             'full' => $matches[2] ?? '',
             'major' => (int) ($matches[3] ?? '0'),
             'minor' => isset($matches[4]) ? ((int) substr($matches[4], 1)) : 0,
@@ -59,9 +72,9 @@ class Version {
     }
 
 
-    static function split(string $object): array {
+    static function split(string $versionString): array {
 
-        $objectVersionParts = preg_split("/[.-]/", $object);
+        $objectVersionParts = preg_split("/[.-]/", $versionString);
 
         return [
             'major' => (int) $objectVersionParts[0],

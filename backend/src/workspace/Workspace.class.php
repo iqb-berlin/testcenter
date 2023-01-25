@@ -33,7 +33,7 @@ class Workspace {
 
         $this->workspaceId = $workspaceId;
         $this->workspacePath = $this->getOrCreateWorkspacePath();
-        $this->workspaceDAO = new WorkspaceDAO();
+        $this->workspaceDAO = new WorkspaceDAO($this->workspaceId, $this->workspacePath);
     }
 
 
@@ -82,29 +82,6 @@ class Workspace {
     }
 
 
-    public function getFiles(): array {
-
-        $files = [];
-
-        foreach ($this::subFolders as $type) {
-
-            $pattern = ($type == 'Resource') ? "*.*" : "*.[xX][mM][lL]";
-            $filePaths = Folder::glob($this->getOrCreateSubFolderPath($type), $pattern);
-
-            foreach ($filePaths as $filePath) {
-
-                if (!is_file($filePath)) {
-                    continue;
-                }
-
-                $files[] = new File($filePath, $type);
-            }
-        }
-
-        return $files;
-    }
-
-
     public function deleteFiles(array $filesToDelete): array {
 
         $report = [
@@ -114,84 +91,86 @@ class Workspace {
             'was_used' => []
         ];
 
-        $validator = new WorkspaceValidator($this);
-        $validator->validate();
-        $allFiles = $validator->getFiles();
+        $cachedFilesToDelete = $this->workspaceDAO->getFiles($filesToDelete, true);
+        $blockedFiles = $this->workspaceDAO->getBlockedFiles(array_merge(...array_values($cachedFilesToDelete)));
 
-        foreach($filesToDelete as $fileToDelete) {
+        foreach($filesToDelete as $localFilePath) {
 
-            $fileToDeletePath = $this->workspacePath . '/' . $fileToDelete;
+            $pathParts = explode('/', $localFilePath, 2);
 
-            if (!file_exists($fileToDeletePath)) {
-
-                $report['did_not_exist'][] = $fileToDelete;
+            if (count($pathParts) < 2) {
+                $report['incorrect_path'][] = $localFilePath;
                 continue;
             }
 
-            // file does not exist in validator means it must be something not validatable like sysCheck-Reports
-            $validatedFile = $allFiles[$fileToDeletePath] ?? null;
+            list($type, $name) = $pathParts;
 
-            if ($validatedFile and !$this->isUnusedFileAndCanBeDeleted($validatedFile, $filesToDelete)) {
+            $cachedFile = $cachedFilesToDelete[$type][$name] ?? null;
 
-                $report['was_used'][] = $fileToDelete;
-                continue;
+            // file does not exist in db means, it must be something not validatable like sysCheck-Reports
+            if ($cachedFile) {
+
+                if (isset($blockedFiles[$localFilePath])) {
+
+                    $report['was_used'][] = $localFilePath;
+                    continue;
+                }
+
+
+                if (!$this->deleteFileFromDb($cachedFile)) {
+
+                    $report['error'][] = $localFilePath;
+                    continue;
+                }
             }
 
-            if ($validatedFile and $this->postProcessFileDeletion($validatedFile)) {
-
-                $report['error'][] = $fileToDelete;
-            }
-
-            if ($this->isPathLegal($fileToDeletePath) and unlink($fileToDeletePath)) {
-
-                $report['deleted'][] = $fileToDelete;
-
-            } else {
-
-                $report['not_allowed'][] = $fileToDelete;
-            }
+            $report[$this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath)][] = $localFilePath;
         }
 
         return $report;
     }
 
 
-    private function postProcessFileDeletion(?File $file): bool {
+    protected function deleteFileFromFs(string $fullPath): string {
+
+        if (!file_exists($fullPath)) {
+
+            return 'did_not_exist';
+        }
+
+        if ($this->isPathLegal($fullPath) and unlink($fullPath)) {
+
+            return 'deleted';
+
+        }
+
+        return'not_allowed';
+    }
+
+
+    private function deleteFileFromDb(?File $file): bool {
 
         try {
 
-            if ($file->getType() == 'Testtakers') {
+            if (is_a($file, XMLFileTesttakers::class)) {
 
-                $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file->getName());
+                $this->workspaceDAO->deleteLoginSource($file->getName());
             }
 
-            if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+            if (is_a($file, ResourceFile::class) and $file->isPackage()) {
 
                 $file->uninstallPackage();
             }
 
-            $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file->getName(), $file->getType());
+            $this->workspaceDAO->deleteFile($file);
 
         } catch (Exception $e) {
 
+            echo $e->getMessage();
             return false;
         }
         return true;
     }
-
-
-    private function isUnusedFileAndCanBeDeleted(File $file, array $allFilesToDelete): bool {
-
-        if (!$file->isUsed()) {
-
-            return true;
-        }
-
-        $usingFiles = array_keys($file->getUsedBy());
-
-        return count(array_intersect($usingFiles, $allFilesToDelete)) === count($usingFiles);
-    }
-
 
 
     protected function isPathLegal(string $path): bool {
@@ -227,14 +206,16 @@ class Workspace {
         $filesAfterSorting = [];
 
         foreach ($files as $filesOfAType) {
+
             foreach ($filesOfAType as $localFilePath => $file) {
 
                 if ($file->isValid()) {
 
                     $this->sortUnsortedFile($localFilePath, $file);
+                    $this->workspaceDAO->storeFile($file);
+                    $this->storeFileMeta($file);
+                    $this->updateRelatedFiles($file);
                 }
-
-                $this->storeFileMeta($file);
 
                 $filesAfterSorting[$localFilePath] = $file;
             }
@@ -248,22 +229,23 @@ class Workspace {
 
         $files = array_fill_keys(Workspace::subFolders, []);
 
-        $validator = new WorkspaceValidator($this);
+        $workspaceCache = new WorkspaceCache($this);
+        $workspaceCache->loadAllFiles(); // TODO! read from DB instead, and only affected files
 
         foreach ($localFilePaths as $localFilePath) {
 
-            $file = File::get($this->workspacePath . '/' . $localFilePath, null, true);
-            $validator->addFile($file->getType(), $file, true);
+            $file = File::get($this->workspacePath . '/' . $localFilePath);
+            $workspaceCache->addFile($file->getType(), $file, true);
             $files[$file->getType()][$localFilePath] = $file;
         }
 
-        $validator->validate();
+        $workspaceCache->validate();
 
         return $files;
     }
 
 
-    protected function sortUnsortedFile(string $localFilePath, File $file): void {
+    protected function sortUnsortedFile(string $localFilePath, File $file): bool {
 
         $targetFolder = $this->workspacePath . '/' . $file->getType();
 
@@ -271,7 +253,7 @@ class Workspace {
             if (!mkdir($targetFolder)) {
 
                 $file->report('error', "Could not create folder: `$targetFolder`.");
-                return;
+                return false;
             }
         }
 
@@ -282,17 +264,34 @@ class Workspace {
 
             if ($oldFile->getId() !== $file->getId()) {
 
-                $file->report('error', "File of name `{$oldFile->getName()}` did already exist.
-                    Overwriting was rejected since new file's ID (`{$file->getId()}`) 
-                    differs from old one (`{$oldFile->getId()}`)."
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+                    . "Overwriting was rejected since new file's ID (`{$file->getId()}`) differs from old one (`{$oldFile->getId()}`)."
                 );
-                return;
+                return false;
+            }
+
+            if ($oldFile->getVeronaModuleId() !== $file->getVeronaModuleId()) {
+
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+                    . "Overwriting was rejected since new file's Verona-Module-ID (`{$file->getVeronaModuleId()}`) differs from old one (`{$oldFile->getVeronaModuleId()}`)."
+                    . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
+                );
+                return false;
+            }
+
+            if (!Version::isCompatible($oldFile->getVersion(), $file->getVersion())) {
+
+                $file->report('error', "File of name `{$oldFile->getName()}` did already exist. "
+                    . "Overwriting was rejected since version conflict between old ({$oldFile->getVersion()}) and new ({$file->getVersion()}) file."
+                    . "Filenames not according to the Verona-standard are a bad idea anyway and and will be forbidden in the future."
+                );
+                return false;
             }
 
             if (!unlink($targetFilePath)) {
 
                 $file->report('error', "Could not delete file: `$targetFolder/$localFilePath`");
-                return;
+                return false;
             }
 
             $file->report('warning', "File of name `{$oldFile->getName()}` did already exist and was overwritten.");
@@ -301,10 +300,12 @@ class Workspace {
         if (!rename($this->workspacePath . '/' . $localFilePath, $targetFilePath)) {
 
             $file->report('error', "Could not move file to `$targetFolder/$localFilePath`");
-            return;
+            return false;
         }
 
-        $file->setFilePath($targetFilePath);
+        $file->readFileMeta($targetFilePath);
+
+        return true;
     }
 
 
@@ -352,61 +353,30 @@ class Workspace {
     }
 
 
-    public function getResource(string $findId, bool $allowSimilarVersion = false): File {
+    public function getFileById(string $type, string $fileId): File {
 
-        $dirToSearch = $this->getOrCreateSubFolderPath('Resource');
+        if ($file = $this->workspaceDAO->getFileById($fileId, $type)) {
 
-        if (file_exists("$dirToSearch/$findId")) {
+            if ($file->isValid()) {
 
-            return File::get("$dirToSearch/$findId", 'Resource');
+                return $file;
+            }
         }
-        return $this->findFileById('Resource', $findId, $allowSimilarVersion);
+
+        throw new HttpError("No $type with id `$fileId` found on workspace `$this->workspaceId`!", 404);
     }
 
 
-    // TODO fetch from DB instead of searching
-    public function findFileById(string $type, string $findId, bool $allowSimilarVersion = false): File {
+    public function getFileByName(string $type, string $fileName): File {
 
-        $dirToSearch = $this->getOrCreateSubFolderPath($type);
-        $bestMatch = null;
-        $version = Version::guessFromFileName($findId)['full'];
+        $file = File::get("$this->workspacePath/$type/$fileName", $type);
 
-        if (file_exists("$dirToSearch/$findId")) {
+        if ($file->isValid()) {
 
-            File::get("$dirToSearch/$findId", $type);
+            return $file;
         }
 
-        foreach (Folder::glob($dirToSearch, "*.*", true) as $fullFilePath) {
-
-            $file = File::get($fullFilePath, $type);
-
-            $compareId = FileName::normalize($file->getId(), false);
-
-            if ($file->isValid() && ($compareId == FileName::normalize($findId, false))) {
-                return $file;
-            }
-
-            if ($allowSimilarVersion and !$bestMatch) {
-
-                $compareIdMajor = FileName::normalize($file->getId(), true);
-
-                if ($file->isValid() && ($compareIdMajor == FileName::normalize($findId, true))) {
-
-                    $compareVersion = Version::guessFromFileName($file->getId())['full'];
-
-                    if (Version::isCompatible($version, $compareVersion)) {
-
-                        $bestMatch = $file;
-                    }
-                }
-            }
-        }
-
-        if ($bestMatch) {
-            return $bestMatch;
-        }
-
-        throw new HttpError("No $type with name `$findId` found on Workspace`$this->workspaceId`!", 404);
+        throw new HttpError("No $type with name `$fileName` found on workspace `$this->workspaceId`!", 404);
     }
 
 
@@ -438,45 +408,40 @@ class Workspace {
 
 
     // TODO unit-test
-    public function storeAllFilesMeta(): array {
+    public function storeAllFiles(): array {
 
-        $validator = new WorkspaceValidator($this);
+        $workspaceCache = new WorkspaceCache($this);
+        $workspaceCache->loadAllFiles();
+
         $typeStats = array_fill_keys(Workspace::subFolders, 0);
         $loginStats = [
-            'deleted' => 0,
             'added' => 0
         ];
         $invalidCount = 0;
 
-        $filesInDb = $this->workspaceDAO->getFileNames($this->workspaceId);
-        $filesInFolder = $validator->getFiles();
+        $loginStats['deleted'] = $this->removeVanishedFilesFromDB($workspaceCache);
 
-        foreach ($filesInDb as $file) {
+        $workspaceCache->validate();
 
-            $fileFullPath = $this->getWorkspacePath() . "/{$file['type']}/{$file['name']}";
+        foreach ($workspaceCache->getFiles(true) as $file) {
 
-            if (!isset($filesInFolder[$fileFullPath])) {
-
-                $this->workspaceDAO->deleteFileMeta($this->workspaceId, $file['name'], $file['type']);
-                $loginStats['deleted'] += $this->workspaceDAO->deleteLoginSource($this->workspaceId, $file['name']);
-            }
-        }
-
-        foreach ($validator->getFiles() as $file /* @var $file File */) {
-
-            $file->crossValidate($validator);
+            /* @var File $file */
 
             if (!$file->isValid()) {
 
                 $invalidCount++;
-                continue;
             }
 
+            $this->workspaceDAO->storeFile($file);
+            $typeStats[$file->getType()] += 1;
+        }
+
+        foreach ($workspaceCache->getFiles(true) as $file) {
+
             $stats = $this->storeFileMeta($file);
+
             $loginStats['deleted'] += $stats['logins_deleted'];
             $loginStats['added'] += $stats['logins_added'];
-
-            $typeStats[$file->getType()] += 1;
         }
 
         return [
@@ -487,40 +452,73 @@ class Workspace {
     }
 
 
+    private function removeVanishedFilesFromDB(WorkspaceCache $workspaceCache): int {
+
+        $filesInDb = $this->workspaceDAO->getAllFiles();
+        $filesInFolder = $workspaceCache->getFiles(true);
+        $deletedLogins = 0;
+
+        foreach ($filesInDb as $fileSet) {
+
+            foreach ($fileSet as $file) {
+
+                /* @var File $file */
+
+                if (!isset($filesInFolder[$file->getPath()])) {
+
+                    $this->workspaceDAO->deleteFile($file);
+                    $deletedLogins += $this->workspaceDAO->deleteLoginSource($file->getName());
+                }
+            }
+        }
+
+        return $deletedLogins;
+    }
+
+
     // TODO unit-test
     public function storeFileMeta(File $file): ?array {
 
         $stats = [
             'logins_deleted' => 0,
-            'logins_added' => 0
+            'logins_added' => 0,
+            'resource_packages_installed' => 0,
+            'attachments_noted' => 0,
+            'resolved_relations' => 0,
+            'relations_resolved' => 0,
+            'relations_unresolved' => 0
         ];
 
         if (!$file->isValid()) {
 
-            return null;
+            return $stats;
         }
 
-        if ($file->getType() == 'Testtakers') {
+        if ($file::canBeRelationSubject) {
+            list($relationsUnresolved) = $this->workspaceDAO->storeRelations($file);
+            $stats['relations_resolved'] = count($file->getRelations()) - count($relationsUnresolved);
+            $stats['relations_unresolved'] = count($relationsUnresolved);
+        }
 
-            /* @var $file XMLFileTesttakers */
-            list($deleted, $added) = $this->workspaceDAO->updateLoginSource($this->getId(), $file->getName(), $file->getAllLogins());
+        if (is_a($file, XMLFileTesttakers::class)) {
+
+            list($deleted, $added) = $this->workspaceDAO->updateLoginSource($file->getName(), $file->getAllLogins());
             $stats['logins_deleted'] = $deleted;
             $stats['logins_added'] = $added;
         }
 
-        if (($file->getType() == 'Resource') and (/* @var ResourceFile $file */ $file->isPackage())) {
+        if (is_a($file, ResourceFile::class) and $file->isPackage()) {
 
             $file->installPackage();
+            $stats['resource_packages_installed'] = 1;
         }
 
-        if ($file->getType() == 'Booklet') {
+        if (is_a($file, XMLFileBooklet::class)) {
 
-            /* @var XMLFileBooklet $file */
             $requestedAttachments = $this->getRequestedAttachments($file);
-            $this->workspaceDAO->updateUnitDefsAttachments($this->workspaceId, $file->getId(), $requestedAttachments);
+            $this->workspaceDAO->updateUnitDefsAttachments($file->getId(), $requestedAttachments);
+            $stats['attachments_noted'] = count($requestedAttachments);
         }
-
-        $this->workspaceDAO->storeFileMeta($this->getId(), $file);
 
         return $stats;
     }
@@ -538,13 +536,38 @@ class Workspace {
 
     public function getRequestedAttachments(XMLFileBooklet $booklet): array {
 
-        $requestedAttachments = [];
-        foreach ($booklet->getUnitIds(false) as $uniId) {
+        if (!$booklet->isValid()) {
+            return [];
+        }
 
-            $unit = $this->findFileById('Unit', $uniId);
+        $requestedAttachments = [];
+        foreach ($booklet->getUnitIds() as $uniId) {
+
+            $unit = $this->getFileById('Unit', $uniId);
             /* @var $unit XMLFileUnit */
             $requestedAttachments = array_merge($requestedAttachments, $unit->getRequestedAttachments());
         }
         return $requestedAttachments;
+    }
+
+
+    public function getFileRelations(File $file): array {
+
+        return $this->workspaceDAO->getFileRelations($file->getName(), $file->getType());
+    }
+
+
+    private function updateRelatedFiles(File $file): void {
+
+        $relatingFiles = $this->workspaceDAO->getRelatingFiles($file);
+
+        foreach ($relatingFiles as $fileSet) {
+            foreach ($fileSet as $relatingFile) {
+
+                /* @var File $relatingFile */
+
+                $this->storeFileMeta($relatingFile);
+            }
+        }
     }
 }

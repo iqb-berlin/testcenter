@@ -23,7 +23,8 @@ class DAO {
         'meta',
         'unit_data',
         'files',
-        'unit_defs_attachments'
+        'unit_defs_attachments',
+        'file_relations'
     ];
 
     protected $pdoDBhandle = false;
@@ -57,7 +58,14 @@ class DAO {
     public function _(string $sql, array $replacements = [], $multiRow = false): ?array {
 
         $sqlStatement = $this->pdoDBhandle->prepare($sql);
-        $sqlStatement->execute($replacements);
+
+        try {
+            $sqlStatement->execute($replacements);
+        } catch (Exception $exception) {
+            $caller = debug_backtrace(!DEBUG_BACKTRACE_PROVIDE_OBJECT|DEBUG_BACKTRACE_IGNORE_ARGS,2)[1]['function'];
+            throw new Exception($exception->getMessage() . " ($caller)");
+        }
+
 
         $this->lastAffectedRows = $sqlStatement->rowCount();
 

@@ -213,7 +213,7 @@ try  {
 
         if (!$installationArguments->skip_read_workspace_files) {
 
-            $stats = $workspace->storeAllFilesMeta();
+            $stats = $workspace->storeAllFiles();
 
             CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
@@ -246,7 +246,7 @@ try  {
 
         if (!$installationArguments->skip_read_workspace_files) {
 
-            $stats = $sampleWorkspace->storeAllFilesMeta();
+            $stats = $sampleWorkspace->storeAllFiles();
         }
 
         CLI::success("Sample content files created.");
@@ -263,9 +263,9 @@ try  {
         $adminId = $initDAO->createAdmin($installationArguments->user_name, $installationArguments->user_password);
         CLI::success("Sys-Admin created: `$installationArguments->user_name`.");
 
+        $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
         foreach ($workspaceIds as $workspaceId) {
 
-            $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
             CLI::p("Workspace `ws_$workspaceId` added to `$installationArguments->user_name`.");
         }
 

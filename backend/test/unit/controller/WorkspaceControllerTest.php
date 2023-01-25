@@ -36,17 +36,19 @@ final class WorkspaceControllerTest extends TestCase {
     ];
 
     private array $callable;
+
     private Report|MockInterface $reportMock;
     private AdminDAO|MockInterface $adminDaoMock;
     private SysChecksFolder|MockInterface $sysChecksFolderMock;
+    private Workspace|MockInterface $workspaceMock;
+    private WorkspaceDAO|MockInterface $workspaceDaoMock;
+    private UploadedFilesHandler|MockInterface $uploadedFilesHandler;
+    private BroadcastService|MockInterface $broadcastingServiceMock;
+
 
     private string $requestMethod = 'GET';
     private int $workspaceId = 1;
     private string $dataIds = 'id1,id2';
-
-    private Workspace|MockInterface $workspaceMock;
-    private WorkspaceDAO|MockInterface $workspaceDaoMock;
-    private UploadedFilesHandler|MockInterface $uploadedFilesHandler;
 
     function setUp(): void {
 
@@ -58,35 +60,30 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "src/controller/Controller.class.php";
         require_once "src/controller/WorkspaceController.class.php";
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/data-collection/PlayerMeta.class.php";
-        require_once "src/data-collection/PlayerMeta.class.php";
+
         require_once "src/data-collection/ReportType.php";
         require_once "src/data-collection/ReportFormat.php";
         require_once "src/data-collection/Login.class.php";
         require_once "src/data-collection/LoginArray.class.php";
         require_once "src/helper/RequestBodyParser.class.php";
         require_once "src/helper/JSON.class.php";
-        require_once "src/helper/FileName.class.php";
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/Version.class.php";
         require_once "src/helper/TimeStamp.class.php";
-        require_once "src/data-collection/FileData.class.php";
         require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/ResourceFile.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileTesttakers.class.php";
         require_once "src/files/XMLFileBooklet.class.php";
+        require_once "src/files/XMLFileUnit.class.php";
 
         $this->callable = [WorkspaceController::class, 'getReport'];
         $this->reportMock = Mockery::mock('overload:' . Report::class);
         $this->adminDaoMock = Mockery::mock(AdminDAO::class);
         $this->sysChecksFolderMock = Mockery::mock(SysChecksFolder::class);
-
         $this->workspaceMock = Mockery::mock('overload:' . Workspace::class);
         $this->broadcastingServiceMock = Mockery::mock('overload:' . BroadcastService::class);
-
         $this->uploadedFilesHandler = Mockery::mock('overload:' . UploadedFilesHandler::class);
 
         define('ROOT_DIR', REAL_ROOT_DIR);
@@ -461,15 +458,15 @@ final class WorkspaceControllerTest extends TestCase {
     function test_postFile() {
 
         $files = [
-            'Booklet.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Booklet.xml'),
-            'Unit2.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus',
-            'Testtakers.xml' => file_get_contents(REAL_ROOT_DIR . '/sampledata/Testtakers.xml')
+            'Booklet.xml' => XMLFileBooklet::fromString(file_get_contents(REAL_ROOT_DIR . '/sampledata/Booklet.xml'), 'Booklet.xml'),
+            'Unit2.xml' => XMLFileUnit::fromString(file_get_contents(REAL_ROOT_DIR . '/sampledata/Unit2.xml') . 'is_bogus', 'Unit2.xml'),
+            'Testtakers.xml' => XMLFileTesttakers::fromString(file_get_contents(REAL_ROOT_DIR . '/sampledata/Testtakers.xml'), 'Testtakers.xml')
         ];
 
-        $filesAsFileObjects = array_reduce(
+        $filesContents = array_reduce(
             array_keys($files),
             function($agg, $fileName) use ($files) {
-                $agg[$fileName] = File::get($fileName, null, false, $files[$fileName]);
+                $agg[$fileName] = $files[$fileName]->getContent();
                 return $agg;
             },
             []
@@ -478,7 +475,7 @@ final class WorkspaceControllerTest extends TestCase {
         $this->workspaceMock
             ->expects('importUnsortedFile')
             ->times(3)
-            ->andReturn($filesAsFileObjects);
+            ->andReturn($files);
 
         $this->workspaceMock
             ->expects('getWorkspacePath')
@@ -488,7 +485,7 @@ final class WorkspaceControllerTest extends TestCase {
         $this->uploadedFilesHandler
             ->expects('handleUploadedFiles')
             ->once()
-            ->andReturn(array_values($files));
+            ->andReturn(array_keys($files));
 
         $this->broadcastingServiceMock
             ->expects('send')
@@ -500,7 +497,7 @@ final class WorkspaceControllerTest extends TestCase {
                 'POST',
                 '/workspace/1/files/',
                 'fileforvo',
-                $files
+                $filesContents
             )->withAttribute('ws_id', 1),
             ResponseCreator::createEmpty()
         );
@@ -509,7 +506,7 @@ final class WorkspaceControllerTest extends TestCase {
 
         $this->assertEquals(207, $response->getStatusCode());
         $this->assertEquals(
-            '{"Booklet.xml":[],"Unit2.xml":{"error":["Invalid File"]},"Testtakers.xml":[]}',
+            '{"Booklet.xml":[],"Unit2.xml":{"error":["Error [5] in line 37: Extra content at the end of the document"]},"Testtakers.xml":[]}',
             $response->getBody()->getContents()
         );
     }

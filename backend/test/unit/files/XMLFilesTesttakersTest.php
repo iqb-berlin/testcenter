@@ -30,7 +30,7 @@ class XMLFilesTesttakersTest extends TestCase {
     private $exampleXML1 = <<<END
 <Testtakers>
   <Metadata>
-    <Id>example</Id>
+    <Description>example</Description>
   </Metadata>
   
   <CustomTexts>
@@ -38,18 +38,16 @@ class XMLFilesTesttakersTest extends TestCase {
     <CustomText key="second_key">second_value</CustomText>
   </CustomTexts>
 
-  <Group name="first_group">
+  <Group id="first_group" label="1st">
     <Login mode="run-hot-return" name="duplicateInSameGroup" pw="one" />
     <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="two" />
     <Login mode="run-hot-return" name="duplicateInDifferentGroup" pw="three" />
     <Login mode="run-hot-return" name="noDuplicate" pw="four" />
   </Group>
 
-  <Group name="second_group">
+  <Group id="second_group" label="2nd">
     <Login mode="run-hot-return" name="duplicateInSameGroup" pw="two" />
     <Login mode="run-hot-return" name="noDuplicateAgain" pw="four" />
-    <Login mode="omit-login-without-name" pw="eight" /> 
-    <Login mode="omit-login-without-name" pw="duplicate-but-still-omitted" /> 
   </Group>
 </Testtakers>
 END;
@@ -72,9 +70,11 @@ END;
         require_once "src/data-collection/Login.class.php";
         require_once "src/data-collection/LoginArray.class.php";
         require_once "src/data-collection/Group.class.php";
-        require_once "src/helper/FileName.class.php";
         require_once "src/helper/FileTime.class.php";
         require_once "src/helper/TimeStamp.class.php";
+        require_once "src/helper/Version.class.php";
+        require_once "src/helper/XMLSchema.class.php";
+        require_once "src/helper/JSON.class.php";
         require_once "test/unit/mock-classes/PasswordMock.php";
     }
 
@@ -113,107 +113,6 @@ END;
         $result = $xmlFile->getLoginsInSameGroup('test-group-monitor', 13);
         $this->assertEquals($expected, $result);
     }
-
-// TODO Fix 13
-//    function test_getLogin() {
-//
-//        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
-//
-//        $result = $xmlFile->getLogin('test', 'user123', 1);
-//        $expected = new PotentialLogin(
-//            'test',
-//            'run-hot-return',
-//            'sample_group',
-//            [
-//                "xxx" => [
-//                    "BOOKLET.SAMPLE-1",
-//                    "BOOKLET.SAMPLE-3",
-//                    "BOOKLET.SAMPLE-2"
-//                ],
-//                "yyy" => [
-//                    "BOOKLET.SAMPLE-1",
-//                    "BOOKLET.SAMPLE-3",
-//                    "BOOKLET.SAMPLE-2"
-//                ]
-//            ],
-//            1,
-//            0,
-//            1583053200,
-//            45,
-//            (object) ['somestr' => 'string']
-//        );
-//        $this->assertEquals($expected, $result, "login with password");
-//
-//        $result = $xmlFile->getLogin('test-no-pw', '', 1);
-//        $expected = new PotentialLogin(
-//            'test-no-pw',
-//            'run-hot-restart',
-//            'passwordless_group',
-//            ['' => ['BOOKLET.SAMPLE-1']],
-//            1,
-//            0,
-//            0,
-//            0,
-//            (object) ['somestr' => 'string']
-//        );
-//        $this->assertEquals($expected, $result, "login without password (attribute omitted)");
-//
-//
-//        $result = $xmlFile->getLogin('test-no-pw-trial', '', 1);
-//        $expected = new PotentialLogin(
-//            'test-no-pw-trial',
-//            'run-trial',
-//            'passwordless_group',
-//            ['' => ['BOOKLET.SAMPLE-1']],
-//            1,
-//            0,
-//            0,
-//            0,
-//            (object) ['somestr' => 'string']
-//        );
-//        $this->assertEquals($expected, $result, "login without password (attribute empty)");
-//
-//
-//        $result = $xmlFile->getLogin('test', 'wrong password', 1);
-//        $this->assertNull($result, "login with wrong password");
-//
-//        $result = $xmlFile->getLogin('test', '', 1);
-//        $this->assertNull($result, "login with no password");
-//
-//
-//        $result = $xmlFile->getLogin('wrong username', '__TEST_LOGIN_PASSWORD__', 1);
-//        $this->assertNull($result, "login with wrong username");
-//
-//
-//        $result = $xmlFile->getLogin('test-no-pw', 'some password', 1);
-//        $expected = new PotentialLogin(
-//            'test-no-pw',
-//            'run-hot-restart',
-//            'passwordless_group',
-//            ['' => ['BOOKLET.SAMPLE-1']],
-//            1,
-//            0,
-//            0,
-//            0,
-//            (object) ['somestr' => 'string']
-//        );
-//        $this->assertEquals($expected, $result, "login with password if none is required (attribute omitted)");
-//
-//
-//        $result = $xmlFile->getLogin('test-no-pw-trial', 'some password', 1);
-//        $expected = new PotentialLogin(
-//            'test-no-pw-trial',
-//            'run-trial',
-//            'passwordless_group',
-//            ['' => ['BOOKLET.SAMPLE-1']],
-//            1,
-//            0,
-//            0,
-//            0,
-//            (object) ['somestr' => 'string']
-//        );
-//        $this->assertEquals($expected, $result, "login with password if none is required (attribute empty)");
-//    }
 
 
     function test_collectBookletsPerCode() {
@@ -330,7 +229,7 @@ END;
     }
 
 
-    function test_getAllTesttakers() {
+    function test_getAllLogins() {
 
         $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
@@ -492,7 +391,7 @@ END;
 
     function test_getDoubleLoginNames() {
 
-        $xmlFile = new XMLFileTesttakers($this->exampleXML1, false, true);
+        $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1);
 
         $expected = ['duplicateInSameGroup', 'duplicateInDifferentGroup'];
 
@@ -504,7 +403,7 @@ END;
 
     function test_getAllLoginNames() {
 
-        $xmlFile = new XMLFileTesttakers($this->exampleXML1, false, true);
+        $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
 
         $expected = [
             'duplicateInSameGroup',
@@ -521,7 +420,7 @@ END;
 
     function test_getCustomTexts() {
 
-        $xmlFile = new XMLFileTesttakers($this->exampleXML1, false, true);
+        $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
 
         $expected = (object) [
             'first_key' => 'first_value',

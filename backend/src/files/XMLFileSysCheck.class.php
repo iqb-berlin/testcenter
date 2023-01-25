@@ -6,17 +6,18 @@ declare(strict_types=1);
 class XMLFileSysCheck extends XMLFile {
 
     const type = 'SysCheck';
-    const canHaveDependencies = false;
+    const canBeRelationSubject = true;
+    const canBeRelationObject = false;
 
-    public function crossValidate(WorkspaceValidator $validator): void {
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-        parent::crossValidate($validator);
+        parent::crossValidate($workspaceCache);
 
         $unitId = $this->getUnitId();
-        $unit = $validator->getUnit($unitId);
+        $unit = $workspaceCache->getUnit($unitId);
 
         if ($unit != null) {
-            $unit->addUsedBy($this);
+            $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
         }
     }
 
@@ -27,7 +28,7 @@ class XMLFileSysCheck extends XMLFile {
             return "";
         }
 
-        $configNode = $this->xml->xpath('/SysCheck/Config[@savekey]');
+        $configNode = $this->getXml()->xpath('/SysCheck/Config[@savekey]');
         return count($configNode) ? strtoupper((string) $configNode[0]['savekey']) : '';
     }
 
@@ -50,7 +51,7 @@ class XMLFileSysCheck extends XMLFile {
             return "";
         }
 
-        $configNode = $this->xml->xpath('/SysCheck/Config[@unit]');
+        $configNode = $this->getXml()->xpath('/SysCheck/Config[@unit]');
         return count($configNode) ? strtoupper((string) $configNode[0]['unit']) : '';
     }
 
@@ -61,7 +62,7 @@ class XMLFileSysCheck extends XMLFile {
             return [];
         }
 
-        $customTextNodes = $this->xml->xpath('/SysCheck/Config/CustomText');
+        $customTextNodes = $this->getXml()->xpath('/SysCheck/Config/CustomText');
         $customTexts = [];
         foreach ($customTextNodes as $customTextNode) {
             $customTexts[] = [
@@ -79,7 +80,7 @@ class XMLFileSysCheck extends XMLFile {
             return false;
         }
 
-        $configNode = $this->xml->xpath('/SysCheck/Config[@skipnetwork]');
+        $configNode = $this->getXml()->xpath('/SysCheck/Config[@skipnetwork]');
         return count($configNode) ? ($configNode[0]['skipnetwork'] == 'true') : false;
     }
 
@@ -91,7 +92,7 @@ class XMLFileSysCheck extends XMLFile {
         }
 
         $questions = [];
-        $questionNodes = $this->xml->xpath('/SysCheck/Config/Q');
+        $questionNodes = $this->getXml()->xpath('/SysCheck/Config/Q');
         foreach($questionNodes as $questionNode) {
             $questions[] = [
                 'id'        => (string) $questionNode['id'],
@@ -132,7 +133,7 @@ class XMLFileSysCheck extends XMLFile {
             return $speedtestParams;
         }
 
-        $node = $this->xml->xpath('/SysCheck/Config/' . ($upload ? 'UploadSpeed' : 'DownloadSpeed'));
+        $node = $this->getXml()->xpath('/SysCheck/Config/' . ($upload ? 'UploadSpeed' : 'DownloadSpeed'));
 
         if (!count($node)) {
             return $speedtestParams;

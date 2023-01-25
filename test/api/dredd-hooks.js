@@ -88,7 +88,6 @@ dreddHooks.beforeEach((transaction, done) => {
           adminToken: 'static:admin:super',
           loginToken: 'static:login:test',
           personToken: 'static:person:sample_group_test_xxx',
-          workspaceMonitorToken: 'static:person:sample_group_test-study-monitor_',
           groupMonitorToken: 'static:person:sample_group_test-group-monitor_'
         });
         break;
@@ -110,8 +109,7 @@ dreddHooks.beforeEach((transaction, done) => {
           adminToken: '__invalid_token__',
           loginToken: '__invalid_token__',
           personToken: '__invalid_token__',
-          workspaceMonitorToken: 'static:person:sample_group_test_xxx',
-          groupMonitorToken: 'static:person:sample_group_test_xxx'
+          groupMonitorToken: '__invalid_token__'
         });
         changeUri(transaction, {
           '/static%3Aperson%3Asample_group_test_xxx/': '/__invalid_token__/'
@@ -122,7 +120,6 @@ dreddHooks.beforeEach((transaction, done) => {
           adminToken: 'static:admin:super',
           loginToken: 'static:login:test',
           personToken: 'static:person:sample_group_test_xxx',
-          workspaceMonitorToken: 'static:person:sample_group_test-study-monitor_',
           groupMonitorToken: 'static:person:sample_group_test-group-monitor_'
         });
         changeUri(transaction, {
@@ -137,7 +134,6 @@ dreddHooks.beforeEach((transaction, done) => {
           adminToken: 'static:admin:expired_user',
           loginToken: 'static:login:test-expired',
           personToken: 'static:person:expired_group_test-expired_xxx',
-          workspaceMonitorToken: 'static:person:expired_group_expired-study-monitor_',
           groupMonitorToken: 'static:person:expired_group_expired-group-monitor_'
         });
         break;
@@ -224,8 +220,7 @@ dreddHooks.beforeValidation('specs > /test/{test_id}/resource/{resource_name} > 
 });
 
 dreddHooks.beforeValidation('specs > /booklet/{booklet_name} > get a booklet > 200 > application/xml', (transaction, done) => {
-  transaction.real.body = '';
-  transaction.expected.body = '';
+  transaction.expected.body = transaction.real.body;
   done();
 });
 
