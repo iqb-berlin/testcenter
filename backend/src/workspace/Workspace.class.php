@@ -124,26 +124,27 @@ class Workspace {
                 }
             }
 
-            $fullPath = $this->workspacePath . '/' . $localFilePath;
-            if (!file_exists($fullPath)) {
-
-                $report['did_not_exist'][] = $localFilePath;
-                continue;
-            }
-
-            if ($this->isPathLegal($fullPath) and unlink($fullPath)) {
-
-                $report['deleted'][] = $localFilePath;
-
-            } else {
-
-                $report['not_allowed'][] = $localFilePath;
-            }
-
-
+            $report[$this->deleteFileFromFs($this->workspacePath . '/' . $localFilePath)][] = $localFilePath;
         }
 
         return $report;
+    }
+
+
+    protected function deleteFileFromFs(string $fullPath): string {
+
+        if (!file_exists($fullPath)) {
+
+            return 'did_not_exist';
+        }
+
+        if ($this->isPathLegal($fullPath) and unlink($fullPath)) {
+
+            return 'deleted';
+
+        }
+
+        return'not_allowed';
     }
 
 
