@@ -4,8 +4,8 @@ layout: default
 
 # Changelog & Upgrade Information
 
-[next from master]
-# Performance
+# [next]
+## Performance
 Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
 sodass Vorgänge wie das Laden eines Tests oder eines Arbeitsbereiches in der Admin-Ansicht
 schneller und vor allem mit wesentlich (bis zu quadratisch) weniger Dateizugriffen auskommt.
@@ -14,16 +14,21 @@ können. Vorangegangene Lasttests hatten eine Grenze bei etwa 5000 gleichzeitige
 Ladevorgängen festgestellt.
 
 ## Sicherheit
-* Es wird eine aktuelle MySQL Version verwendet 
+* Es wird eine aktuelle MySQL Version verwendet
 
-## [next]
+## 13.3.1
 ### Neue Fetaures
 * CustomTexts können jetzt (wieder) nicht nur Login-bezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festgelegt werden.
 * Die Verona-Schnittstelle wird jetzt auch in der Version 5 unterstützt
 
+### Sicherheit
+* "Secure Client Initated Renegotiation" nicht mehr möglich
+* TLS 1.2 im Datenbank Container
+* Neuste Traefik Version
+
 ### UI
 * Kleinere Verbesserungen im Bereich SystemCheck
-
+* Die Beschriftung "Überwachung starten" lässt sich nun ändern
 
 ## 13.2.2
 ### Bug Fixes

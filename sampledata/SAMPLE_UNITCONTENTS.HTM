@@ -1,0 +1,328 @@
+<style>
+  #sample-unit-badge {
+    background: yellow;
+    border: 4px dotted silver;
+    font-family: serif;
+    font-variant-caps: titling-caps;
+    position: fixed;
+    top: -75px;
+    right: -150px;
+    transform: rotate(45deg);
+    width: 300px;
+    transform-origin: left;
+    text-align: center;
+  }
+  label {
+    display: block;
+    padding-bottom: 0.3em
+  }
+</style>
+<div id="sample-unit-badge">Sample Unit</div>
+
+<fieldset>
+  <legend data-cy="legend-about">About</legend>
+  <div id="player-info"></div>
+  <script>
+    document.addEventListener('vopStartCommand', _ => {
+      document.querySelector('#player-info').append(PlayerUI.getPlayerInfoHTML());
+    });
+  </script>
+</fieldset>
+
+<fieldset>
+  <legend data-cy="legend-longContent">Long Content and Form Elements</legend>
+  <div style="display: flex;">
+    <div style="flex: 50%; padding: 2px">
+      <p id="long-content"><b>This is random content to have an example with a lot of content: </b>Lorem ipsum </p>
+      <script>
+        document.addEventListener('vopStartCommand', () => {
+          document.querySelector("#long-content").innerHTML +=
+            Array.from(
+              {length: 750},
+              () => Array.from(
+                {length: 3 + Math.round(Math.random() * 6)},
+                () => String.fromCharCode(97 + Math.round(Math.random() * 25))
+              ).join("")
+            ).join(" ");
+        });
+      </script>
+    </div>
+    <div style="flex: 50%; padding: 2px">
+      <p><b>Every standard HTML-form-elements can be used as items</b></p>
+      <label><input name="required-text-field" required />Required Text field </label>
+      <label><input name="readonly-text-field" value="read-only" readonly />Read-Only Text field </label>
+      <label><input name="text-field" />Text field </label>
+      <label><input type="radio" name="text-field" value="x" />Radio Button with same name as Text field</label>
+      <label><input type="radio" name="text-field" value="y" />Radio Button with same name as Text field</label>
+      <label><input type="number" min="2" max="4" name="number-field" />Number field (between 2 and 4)</label>
+      <label><input type="date" name="date-field" />Date field </label>
+      <label><input type="email" name="email-field" />Email field </label>
+      <label><input type="range" min="1" max="10" name="range-field" />Range field (from 1 to 10)</label>
+      <label><input type="radio" name="radio-group" value="a" required />Radio group: value-A </label>
+      <label><input type="radio" name="radio-group" value="b" />value-B </label>
+      <label><input type="radio" name="radio-group" value="c" />value-C </label>
+      <label><input type="checkbox" name="check-box" />Checkbox </label>
+      <label>
+        Dropdown
+        <select name="select-box">
+          <option value="a">A</option>
+          <option value="b">B</option>
+          <option value="c">C</option>
+        </select>
+      </label>
+      <label>
+        Textbox with suggestions
+        <input list="browsers" name="list-field">
+        <datalist id="browsers">
+          <option value="Internet Explorer">
+          <option value="Firefox">
+          <option value="Chrome">
+          <option value="Opera">
+          <option value="Safari">
+        </datalist>
+      </label>
+      <label>
+        Textarea
+        <textarea name="text-area" style="width: 100%">Type something...</textarea>
+      </label>
+      <label>
+        Multiselect
+        <select name="multi-select" size="4" multiple>
+          <option value="red">Red</option>
+          <option value="green">Green</option>
+          <option value="blue">Blue</option>
+          <option value="yellow">Yellow</option>
+        </select>
+      </label>
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend data-cy="legend-extensibility">Extensibility</legend>
+  <div style="display: flex;">
+    <div style="flex: 50%; padding: 2px">
+      <p><b>The player is easily extensible, </b> in this example with an audio-element.</p>
+      <script>
+        const melody = [["C#3",4], ["B2",4], ["C#3",8], ["F#2",2], ["D3",8], ["C#3",8], ["D3",4], ["C#3",4], ["B2",2], ["C#3",8], ["D3",4], ["C#3",4], ["F#2",4], ["B2",8], ["A2",8], ["B2",4], ["A2",4], ["G2",4], ["B2",4], ["A2",2]];
+
+        const AudioUI = new class {
+          setAudioState = audio => {
+            SoundModule.sheet = melody;
+            if (typeof audio.position !== "undefined") {
+              if (audio.soundOn) {
+                SoundModule.play(audio.position);
+              } else {
+                SoundModule.forward(audio.position);
+              }
+            }
+          }
+
+          toggleAudioButtons = audioState => {
+            PlayerUI.toggleButton('melody-play', !audioState.soundOn);
+            PlayerUI.toggleButton('melody-stop', audioState.soundOn);
+            PlayerUI.toggleButton('melody-rewind', !audioState.soundOn && (audioState.position > 1));
+          }
+
+          updateSoundStateDisplay = audioState => {
+            const elem = document.querySelector('#melody-state');
+            if (!elem) {
+              return;
+            }
+            elem.innerHTML = (audioState.soundOn ? "playing" : "stop") + ` (${audioState.position + 1}/${audioState.length})`;
+          }
+        }
+
+        const SoundModule = new class {
+          sheet = [];
+
+          _soundOn = false;
+          _onHold = false;
+          _position = 0;
+          _context = new AudioContext();
+          _speed = 3;
+          _noteValues = {'C0': 16.35, 'C#0': 17.32, 'Db0': 17.32, 'D0': 18.35, 'D#0': 19.45, 'Eb0': 19.45, 'E0': 20.60, 'F0': 21.83, 'F#0': 23.12, 'Gb0': 23.12, 'G0': 24.50, 'G#0': 25.96, 'Ab0': 25.96, 'A0': 27.50, 'A#0': 29.14, 'Bb0': 29.14, 'B0': 30.87, 'C1': 32.70, 'C#1': 34.65, 'Db1': 34.65, 'D1': 36.71, 'D#1': 38.89, 'Eb1': 38.89, 'E1': 41.20, 'F1': 43.65, 'F#1': 46.25, 'Gb1': 46.25, 'G1': 49.00, 'G#1': 51.91, 'Ab1': 51.91, 'A1': 55.00, 'A#1': 58.27, 'Bb1': 58.27, 'B1': 61.74, 'C2': 65.41, 'C#2': 69.30, 'Db2': 69.30, 'D2': 73.42, 'D#2': 77.78, 'Eb2': 77.78, 'E2': 82.41, 'F2': 87.31, 'F#2': 92.50, 'Gb2': 92.50, 'G2': 98.00, 'G#2': 103.83, 'Ab2': 103.83, 'A2': 110.00, 'A#2': 116.54, 'Bb2': 116.54, 'B2': 123.47, 'C3': 130.81, 'C#3': 138.59, 'Db3': 138.59, 'D3': 146.83, 'D#3': 155.56, 'Eb3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'Gb3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'Ab3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'Bb3': 233.08, 'B3': 246.94, 'C4': 261.63, 'C#4': 277.18, 'Db4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'Eb4': 311.13, 'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'Gb4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'Ab4': 415.30, 'A4': 440.00, 'A#4': 466.16, 'Bb4': 466.16, 'B4': 493.88, 'C5': 523.25, 'C#5': 554.37, 'Db5': 554.37, 'D5': 587.33, 'D#5': 622.25, 'Eb5': 622.25, 'E5': 659.26, 'F5': 698.46, 'F#5': 739.99, 'Gb5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'Ab5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'Bb5': 932.33, 'B5': 987.77, 'C6': 1046.50, 'C#6': 1108.73, 'Db6': 1108.73, 'D6': 1174.66, 'D#6': 1244.51, 'Eb6': 1244.51, 'E6': 1318.51, 'F6': 1396.91, 'F#6': 1479.98, 'Gb6': 1479.98, 'G6': 1567.98, 'G#6': 1661.22, 'Ab6': 1661.22, 'A6': 1760.00, 'A#6': 1864.66, 'Bb6': 1864.66, 'B6': 1975.53, 'C7': 2093.00, 'C#7': 2217.46, 'Db7': 2217.46, 'D7': 2349.32, 'D#7': 2489.02, 'Eb7': 2489.02, 'E7': 2637.02, 'F7': 2793.83, 'F#7': 2959.96, 'Gb7': 2959.96, 'G7': 3135.96, 'G#7': 3322.44, 'Ab7': 3322.44, 'A7': 3520.00, 'A#7': 3729.31, 'Bb7': 3729.31, 'B7': 3951.07, 'C8': 4186.01}
+
+          play = async (newPosition = this._position) => {
+            if (this._soundOn) {
+              return;
+            }
+            this._position = Math.max(0, newPosition);
+            this._soundOn = true;
+            for(this._position; this._position < this.sheet.length; this._position++){
+              try {
+                await this._playNote(...this.sheet[this._position]);
+              } catch (error) {
+                this._soundOn = false;
+                this._position++;
+                return;
+              }
+            }
+            this._position -= 1;
+            this.stop();
+          };
+
+          stop = () => {
+            if (!this._soundOn) {
+              this._onHold = false;
+              return;
+            }
+            this._soundOn = false;
+            this._onHold = true;
+            this._onStateChange();
+          };
+
+          continue = () => {
+            if (!this._soundOn && this._onHold) {
+              this.play();
+            }
+          }
+
+          rewind = () => {
+            if (this._soundOn) {
+              return;
+            }
+            this._soundOn = false;
+            this._position = 0;
+            this._onStateChange();
+          }
+
+          forward = newPosition => {
+            if (!this._soundOn) {
+              this._position = newPosition;
+              this._onStateChange();
+            }
+          }
+
+          getState = () => ({soundOn: this._soundOn, position: this._position, length: this.sheet.length});
+
+          _onStateChange = () => {
+            document.dispatchEvent(new CustomEvent('audioStateChange', {detail: this.getState()}));
+          }
+
+          _playNote = (note, length) => new Promise((resolve, reject) => {
+            setTimeout(
+              () => {
+                if (!this._soundOn) {
+                  reject();
+                }
+                let o = this._context.createOscillator();
+                let g = this._context.createGain();
+                o.type = "sawtooth";
+                o.connect(g);
+                o.frequency.value = this._noteValues[note];
+                g.connect(this._context.destination);
+                o.start(0);
+                g.gain.exponentialRampToValueAtTime(0.00001, this._context.currentTime + this._speed * (1 / length));
+                this._onStateChange();
+                resolve();
+              },
+              1000 * this._speed * (1 / length)
+            );
+          });
+        }
+
+        Unit.presentationProgressFactors['audio'] = {
+          complete: () => SoundModule.getState().length === SoundModule.getState().position + 1,
+          some: () => SoundModule.getState().length > 1
+        }
+        Unit.dataPartsCollectors['audio'] = SoundModule.getState;
+        PlayerUI.presentationReportFactors['audio'] = () => 'Audio has not been played to the end';
+
+        document.addEventListener('audioStateChange', event => {
+          Message.send.vopStateChangedNotification();
+          AudioUI.updateSoundStateDisplay(event.detail);
+          AudioUI.toggleAudioButtons(event.detail);
+        });
+
+        document.addEventListener('vopStartCommand', event => {
+          AudioUI.setAudioState(Unit.selectDataPartFromUnitState(event.detail["unitState"] || {}, 'audio'));
+        });
+
+        document.addEventListener('vopContinueCommand', () => {
+          SoundModule.continue();
+        });
+
+        document.addEventListener('vopStopCommand', () => {
+          SoundModule.stop();
+        });
+
+        document.addEventListener('vopGetStateRequest', data => {
+          if (data.stop) {
+            PlayerUI.togglePlayerRunning(false);
+          }
+        });
+
+        PlayerUI.addEventListener('click', '#melody-play', e => {
+          e.preventDefault();
+          SoundModule.play();
+        });
+        PlayerUI.addEventListener('click', '#melody-stop', e => {
+          e.preventDefault();
+          SoundModule.stop();
+        });
+        PlayerUI.addEventListener('click', '#melody-rewind', e => {
+          e.preventDefault();
+          SoundModule.rewind();
+        });
+      </script>
+      <label>
+        <button id="melody-play" data-sheet=''>
+          Play
+        </button>
+        <button id="melody-stop">Stop</button>
+        <button id="melody-rewind">Rewind</button>
+        <span id="melody-state"></span>
+      </label>
+    </div>
+    <div style="flex: 50%; padding: 2px">
+      <p>
+        <b>Besides form-elements every element with <code>contenteditable</code>-attribute is considered as item
+        and gets tracked!</b>
+      </p>
+      <table style="border-collapse: collapse; width: 100%">
+        <tr>
+          <td style="border: 1px solid silver"><div contenteditable>a</div></td>
+          <td style="border: 1px solid silver"><div contenteditable>b</div></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid silver"><div contenteditable>c</div></td>
+          <td style="border: 1px solid silver"><div contenteditable>d</div></td>
+        </tr>
+      </table>
+      <p>
+        You can use the <code>name</code>- and <code>required</code>-attributes on <code>contenteditable</code>-elements
+        as if they were form-elements.
+      </p>
+      <pre contenteditable required name="editable-named-required" style="background: silver; border-radius: 3px; padding: 2px"></pre>
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend data-cy="legend-logging">Logging</legend>
+  <p><b>You can try out the logging mechanism here.</b></p>
+  <p>Your <code>playerConfig.logPolicy</code> is <code id="log-policy"></code>.</p>
+  <button onclick="Log.rich('sample-log', 'log entry, if mode is rich'); return false"> Write log, if mode is 'rich'</button>
+  <button onclick="Log.lean('sample-log', 'log entry, if mode is lean'); return false"> Write log, if mode is 'lean'</button>
+  <button onclick="Log.debug('log entry, if mode is debug'); return false"> Write log, if mode is 'debug'</button>
+  <p>Logged items:</p>
+  <script>
+    const updateLogView = () => {
+      document.querySelector('#log-policy').innerHTML = playerConfig.logPolicy;
+      document.querySelector('#log-display').innerHTML = '';
+      Log.getAll().forEach(entry => {
+        document.querySelector('#log-display').innerHTML += `<tr><td>${entry.timeStamp}</td>`
+                + `<td>${entry.key}</td><td>${entry.content}</td><td>${entry.sent ? '✓' : ''}</td></td>`;
+      });
+    }
+    document.addEventListener('sent:vopStateChangedNotification', updateLogView);
+    document.addEventListener('updateLog', updateLogView);
+  </script>
+  <table>
+    <thead>
+      <tr><td>timestamp</td><td>key</td><td>content</td><td>sent?</td></tr>
+    </thead>
+    <tbody id="log-display"></tbody>
+  </table>
+</fieldset>
