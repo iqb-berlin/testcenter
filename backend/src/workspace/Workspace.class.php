@@ -99,7 +99,7 @@ class Workspace {
             $pathParts = explode('/', $localFilePath, 2);
 
             if (count($pathParts) < 2) {
-                $report['not_allowed'][] = $localFilePath;
+                $report['incorrect_path'][] = $localFilePath;
                 continue;
             }
 
@@ -161,9 +161,6 @@ class Workspace {
 
                 $file->uninstallPackage();
             }
-
-            // TODO! delete requested attachments
-
 
             $this->workspaceDAO->deleteFile($file);
 
