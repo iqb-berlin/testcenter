@@ -1,4 +1,6 @@
 delete from files;
+delete from unit_defs_attachments;
+delete from logins;
 
 alter table files add is_valid boolean not null;
 alter table files add validation_report text null;
