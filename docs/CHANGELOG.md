@@ -5,6 +5,47 @@ layout: default
 # Changelog & Upgrade Information
 
 # [next]
+## Wichtige Änderungen für Studienersteller: 
+
+### Unit-Defintionen
+
+**Achtung! Diese Änderungen können es unter Umständen nötig machen, ältere Units zu bearbeiten! Wenn die Studien aus
+einem aktuellen IQB-Studio exportiert worden sind, sollte es jedoch kein Problem geben, da dann Kennung und
+Dateinamen immer identisch sind.**
+
+Die Logik der Playerauswahl hat sich geändert.
+In den Unit-Definitions Dateien gibt es im `<Defintion>`- bzw. `<DefintionRef>`-Element 
+das Attribut `player`. Dessen Wert wird nun anders interpretiert, nämlich nicht mehr als Dateiname,
+sondern als Kennung-des Players, wie sie in dessen Metadaten hinterlegt ist.
+
+Zulässig sind folgende Schreibweisen:
+`<Defintion player="verona-player-absurd@1.0>`
+oder
+`<Defintion player="verona-player-absurd-1.0>`
+
+In diesem Beispiel benötigt die Unit einen Player, der die ID `verona-player-absurd` hat und in der 
+Version 1.0 vorliegt, vollkommen unabhängig davon, ob die Datei dazu `verona-player-absurd@1.0.0.html`,
+`absurd-playerV1.0html`, oder ganz anders heißt.
+
+Vorher wäre dazu ein Player aus einer Datei `verona-player-absurd@1.0.html` bzw. 
+`verona-player-absurd-1.0.html`, gesucht worden, egal, was tatsächlich in dieser Datei enthalten gewesen 
+wäre. Dabei gab es gewisse Spielräume bei der Schreibweise der Dateinamen, so konnte 
+`verona-player-absurd@1.0.html` z. B. eine Datei `verona-player-absurd@1.0.1.HTML` auswählen. 
+Die Dateiendung `.html` war optional, daher sehen die ehemaligen Dateiverweise in oft genau aus wie
+die jetzigen Kennungen.
+
+Eine genaue Spezifikation einer Patch-Version ist nicht mehr möglich. Alles, was nach der Kennung kommt, 
+also zum Beispiel eine dritte Versions-nr wird ignoriert.
+
+Ein Arbeitsbereich kann nun, analog zum IBQ-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine 
+Version 1.2.3 und 1.2.4 desselben players.
+
+## Wichtige Änderungen für Administratoren
+
+
+
+
+
 ## Performance
 Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
 sodass Vorgänge wie das Laden eines Tests oder eines Arbeitsbereiches in der Admin-Ansicht
