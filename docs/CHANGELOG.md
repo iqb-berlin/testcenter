@@ -4,10 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
-# [next]
-## Wichtige Änderungen für Studienersteller: 
+## [next]
+### Wichtige Änderungen für Studienersteller: 
 
-### Unit-Defintionen
+#### Unit-Defintionen
 
 **Achtung! Diese Änderungen können es unter Umständen nötig machen, ältere Units zu bearbeiten! Wenn die Studien aus
 einem aktuellen IQB-Studio exportiert worden sind, sollte es jedoch kein Problem geben, da dann Kennung und
@@ -40,11 +40,11 @@ also zum Beispiel eine dritte Versions-nr wird ignoriert.
 Ein Arbeitsbereich kann nun, analog zum IBQ-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine 
 Version 1.2.3 und 1.2.4 desselben players.
 
-## Wichtige Änderungen für Administratoren
+### Wichtige Änderungen für Administratoren
 Es wird nun docker-compose v2 verwendet! Docker-compose-standalone wird nicht mehr länger benötigt,
 dafür das [compose plugin für docker](https://docs.docker.com/compose/install/linux/).
 
-## Performance
+### Performance
 Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
 sodass Vorgänge wie das Laden eines Tests oder eines Arbeitsbereiches in der Admin-Ansicht
 schneller und vor allem mit wesentlich (bis zu quadratisch) weniger Dateizugriffen auskommt.
@@ -52,7 +52,7 @@ Damit sollte die Anwendung mit **wesentlich** mehr gleichzeitigen Benutzern arbe
 können. Vorangegangene Lasttests hatten eine Grenze bei etwa 5000 gleichzeitigen
 Ladevorgängen festgestellt.
 
-## Sicherheit
+### Sicherheit
 * Es wird eine aktuelle MySQL Version verwendet
 
 ## 13.3.1
