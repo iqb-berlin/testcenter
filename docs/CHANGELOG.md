@@ -5,7 +5,7 @@ layout: default
 # Changelog & Upgrade Information
 
 ## 14.0.0
-### Wichtige Änderungen für Studienleitung: 
+### :warning: Wichtige Änderungen für Studienleitungen
 
 #### Unit-Definitionen
 
@@ -40,9 +40,11 @@ also zum Beispiel eine dritte Versions-nr wird ignoriert.
 Ein Arbeitsbereich kann nun, analog zum IQB-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine 
 Version 1.2.3 und 1.2.4 desselben players.
 
-### Wichtige Änderungen für Administratoren
+### :warning: Wichtige Änderungen für Administratoren
 Es wird nun docker-compose v2 verwendet! Docker-compose-standalone wird nicht mehr länger benötigt,
 dafür das [compose plugin für docker](https://docs.docker.com/compose/install/linux/).
+
+**Achtung**: Beim ersten hochfahren braucht der Datenbankcontainer wegen des MySQL-updates sehr lange. MySQL führt selbstständig eine Datenmigration durch. Brechen Sie diesen Vorgang keinesfalls ab, da sonst ihre Datenbank beschädigt wird. :warning:
 
 ### Performance
 Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
