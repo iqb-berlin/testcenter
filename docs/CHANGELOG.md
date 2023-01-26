@@ -5,9 +5,9 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
-### Wichtige Änderungen für Studienersteller: 
+### Wichtige Änderungen für Studienleitung: 
 
-#### Unit-Defintionen
+#### Unit-Definitionen
 
 **Achtung! Diese Änderungen können es unter Umständen nötig machen, ältere Units zu bearbeiten! Wenn die Studien aus
 einem aktuellen IQB-Studio exportiert worden sind, sollte es jedoch kein Problem geben, da dann Kennung und
@@ -16,7 +16,7 @@ Dateinamen immer identisch sind.**
 Die Logik der Playerauswahl hat sich geändert.
 In den Unit-Definitions Dateien gibt es im `<Defintion>`- bzw. `<DefintionRef>`-Element 
 das Attribut `player`. Dessen Wert wird nun anders interpretiert, nämlich nicht mehr als Dateiname,
-sondern als Kennung-des Players, wie sie in dessen Metadaten hinterlegt ist.
+sondern als Kennung des Players, wie sie in dessen Metadaten hinterlegt ist.
 
 Zulässig sind folgende Schreibweisen:
 `<Defintion player="verona-player-absurd@1.0>`
@@ -37,7 +37,7 @@ die jetzigen Kennungen.
 Eine genaue Spezifikation einer Patch-Version ist nicht mehr möglich. Alles, was nach der Kennung kommt, 
 also zum Beispiel eine dritte Versions-nr wird ignoriert.
 
-Ein Arbeitsbereich kann nun, analog zum IBQ-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine 
+Ein Arbeitsbereich kann nun, analog zum IQB-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine 
 Version 1.2.3 und 1.2.4 desselben players.
 
 ### Wichtige Änderungen für Administratoren
