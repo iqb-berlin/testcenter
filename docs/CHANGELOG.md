@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 14.0.0
 ### Wichtige Änderungen für Studienleitung: 
 
 #### Unit-Definitionen
