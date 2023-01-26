@@ -41,10 +41,8 @@ Ein Arbeitsbereich kann nun, analog zum IBQ-Studio immer nur eine patch-version 
 Version 1.2.3 und 1.2.4 desselben players.
 
 ## Wichtige Änderungen für Administratoren
-
-
-
-
+Es wird nun docker-compose v2 verwendet! Docker-compose-standalone wird nicht mehr länger benötigt,
+dafür das [compose plugin für docker](https://docs.docker.com/compose/install/linux/).
 
 ## Performance
 Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
