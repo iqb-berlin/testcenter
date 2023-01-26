@@ -105,10 +105,13 @@ class DAO {
         }
 
         try {
+
             $this->pdoDBhandle->beginTransaction();
             $this->pdoDBhandle->exec(file_get_contents($path));
             $this->pdoDBhandle->commit();
-        } catch (PDOException $e) {
+
+        } catch (\PDOException $e) { // even if the namespacing backslash \ seems to be unnecessary, it has to stay!
+
             if ($this->pdoDBhandle->inTransaction()) {
                 $this->pdoDBhandle->rollBack();
                 throw $e;
