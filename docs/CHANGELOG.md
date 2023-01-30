@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+[next]
+### Bugfixes
+* Kleiner Fehler behoben beim Aufräumen der DB wenn Dateien gelöscht werden
+* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht 
+
 ## 14.0.0
 ### :warning: Wichtige Änderungen für Studienleitungen
 
