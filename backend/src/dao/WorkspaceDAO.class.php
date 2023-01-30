@@ -300,13 +300,18 @@ class WorkspaceDAO extends DAO {
             select
                 object_type,
                 object_name,
-                relationship_type
+                relationship_type,
+                id as object_id
             from
                 file_relations
+                left join files
+                    on file_relations.workspace_id = files.workspace_id
+                       and file_relations.object_name = files.name
+                       and file_relations.object_type = files.type
             where
-                workspace_id = ?
-                and subject_name = ?
-                and subject_type = ?",
+                files.workspace_id = ?
+                    and subject_name = ?
+                    and subject_type = ?",
             [$this->workspaceId, $name, $type],
             true
         );
@@ -316,7 +321,9 @@ class WorkspaceDAO extends DAO {
                 return new FileRelation(
                     $r['object_type'],
                     $r['object_name'],
-                    constant("FileRelationshipType::{$r['relationship_type']}")
+                    constant("FileRelationshipType::{$r['relationship_type']}"),
+                    null,
+                    $r['object_id']
                 );
             },
             $relations
