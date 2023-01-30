@@ -4,6 +4,18 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## next
+
+### Sicherheit
+* Ausschalten der Unterstützung für veraltete TLS-Versionen 1.0 and 1.1
+* Einschränkung der verfügbaren TLS-Cipher-Suiten
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+  - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+
 ## 14.0.0
 ### :warning: Wichtige Änderungen für Studienleitungen
 
