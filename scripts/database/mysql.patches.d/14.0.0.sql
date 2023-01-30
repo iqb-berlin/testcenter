@@ -21,11 +21,6 @@ alter table unit_defs_attachments
 alter table unit_defs_attachments modify column booklet_name varchar(120);
 alter table unit_defs_attachments modify column workspace_id bigint unsigned;
 
-# alter table unit_defs_attachments
-#     add constraint files_fk
-#         foreign key (workspace_id, booklet_name, file_type) references files (workspace_id, id, type)
-#             on delete cascade;
-
 create table file_relations (
     workspace_id bigint unsigned not null,
     subject_name varbinary(120) not null,
