@@ -2,6 +2,8 @@ FROM node:16.19-bullseye as dev
 
 ARG NODE_ENV=development
 
+RUN apt update && apt install -y chromium
+
 WORKDIR /app
 
 COPY frontend/package*.json ./
