@@ -27,12 +27,12 @@ class DAO {
         'file_relations'
     ];
 
-    protected $pdoDBhandle = false;
-    protected $timeUserIsAllowedInMinutes = 600;
-    protected $passwordSalt = 't';
-    protected $insecurePasswords = false;
+    protected ?PDO $pdoDBhandle = null;
+    protected int $timeUserIsAllowedInMinutes = 600;
+    protected string $passwordSalt = 't';
+    protected bool $insecurePasswords = false;
 
-    protected $lastAffectedRows = 0;
+    protected ?int $lastAffectedRows = null;
 
 
     public function __construct() {
@@ -48,14 +48,16 @@ class DAO {
 
     public function __destruct() {
 
-        if ($this->pdoDBhandle !== false) {
+        if ($this->pdoDBhandle !== null) {
             unset($this->pdoDBhandle);
-            $this->pdoDBhandle = false;
+            $this->pdoDBhandle = null;
         }
     }
 
 
     public function _(string $sql, array $replacements = [], $multiRow = false): ?array {
+
+        $this->lastAffectedRows = null;
 
         $sqlStatement = $this->pdoDBhandle->prepare($sql);
 

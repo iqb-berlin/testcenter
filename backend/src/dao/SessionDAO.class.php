@@ -86,55 +86,21 @@ class SessionDAO extends DAO {
      */
     public function getOrCreateLoginSession(string $name, string $password): ?LoginSession {
 
-        $loginSession = $this->getLoginSession($name, $password);
+        $login = $this->getLogin($name, $password);
 
-        if (!$loginSession){
+        if (!$login){
 
             return null;
         }
 
-        if (!$loginSession->getToken()) {
-
-            $loginSession = $this->createLoginSession($loginSession->getLogin());
-        }
-
-        return $loginSession;
+        return $this->createLoginSession($login);
     }
 
 
-    public function createLoginSession(Login $login, bool $allowExpired = false): LoginSession {
+    public function getLogin(string $name, string $password): ?Login {
 
-        if (!$allowExpired) {
-            TimeStamp::checkExpiration($login->getValidFrom(), $login->getValidTo());
-        }
-
-        $loginToken = $this->randomToken('login', $login->getName());
-
-        $this->_(
-            'INSERT INTO login_sessions (token, name, workspace_id, group_name)
-                VALUES(:token, :name, :ws, :group_name)',
-            [
-                ':token' => $loginToken,
-                ':name' => $login->getName(),
-                ':ws' => $login->getWorkspaceId(),
-                ':group_name' => $login->getGroupName()
-            ]
-        );
-
-        return new LoginSession(
-            (int) $this->pdoDBhandle->lastInsertId(),
-            $loginToken,
-            $login
-        );
-    }
-
-
-    public function getLoginSession($name, $password): ?LoginSession {
-
-        $loginSession = $this->_(
-            'SELECT 
-                    login_sessions.id,
-                    login_sessions.token,             
+        $login = $this->_(
+            'select         
                     logins.name,
                     logins.mode,
                     logins.group_name,
@@ -146,10 +112,9 @@ class SessionDAO extends DAO {
                     logins.valid_for,
                     logins.custom_texts,
                     logins.password
-                FROM 
+                from 
                     logins
-                    left join login_sessions on (logins.name = login_sessions.name)
-                WHERE 
+                where 
                     logins.name = :name',
             [
                 ':name' => $name
@@ -157,44 +122,78 @@ class SessionDAO extends DAO {
         );
 
         // we always check one password to not leak the existence of username to time-attacks
-        if (!$loginSession) {
-            $loginSession = ['password' => 'dummy'];
+        if (!$login) {
+            $login = ['password' => 'dummy'];
         }
 
-        if (!Password::verify($password, $loginSession['password'], 't')) {
+        // TODO also use customizable use salt for testees? -> change would break current sessions
+        if (!Password::verify($password, $login['password'], 't')) {
             return null;
         }
 
         TimeStamp::checkExpiration(
-            TimeStamp::fromSQLFormat($loginSession['valid_from']),
-            TimeStamp::fromSQLFormat($loginSession['valid_to'])
+            TimeStamp::fromSQLFormat($login['valid_from']),
+            TimeStamp::fromSQLFormat($login['valid_to'])
         );
 
-        return new LoginSession(
-            (int) $loginSession['id'],
-            $loginSession['token'],
-            new Login(
-                $loginSession['name'],
-                '',
-                $loginSession['mode'],
-                $loginSession['group_name'],
-                $loginSession['group_label'],
-                JSON::decode($loginSession['codes_to_booklets'], true),
-                (int) $loginSession['workspace_id'],
-                TimeStamp::fromSQLFormat($loginSession['valid_to']),
-                TimeStamp::fromSQLFormat($loginSession['valid_from']),
-                (int) $loginSession['valid_for'],
-                JSON::decode($loginSession['custom_texts'])
-            )
+        return new Login(
+            $login['name'],
+            '',
+            $login['mode'],
+            $login['group_name'],
+            $login['group_label'],
+            JSON::decode($login['codes_to_booklets'], true),
+            (int) $login['workspace_id'],
+            TimeStamp::fromSQLFormat($login['valid_to']),
+            TimeStamp::fromSQLFormat($login['valid_from']),
+            (int) $login['valid_for'],
+            JSON::decode($login['custom_texts'])
         );
+    }
+
+
+    public function createLoginSession(Login $login): LoginSession {
+
+        $loginToken = $this->randomToken('login', $login->getName());
+
+        // We don't check for existence of the sessions before inserting it because timing issues occurred: If the same
+        // login was requested two times at the same moment it could happen that it was created twice.
+
+        $this->_(
+            'insert ignore into login_sessions (token, name, workspace_id, group_name)
+                values(:token, :name, :ws, :group_name)',
+            [
+                ':token' => $loginToken,
+                ':name' => $login->getName(),
+                ':ws' => $login->getWorkspaceId(),
+                ':group_name' => $login->getGroupName()
+            ]
+        );
+
+        if ($this->lastAffectedRows) {
+            return new LoginSession(
+                (int) $this->pdoDBhandle->lastInsertId(),
+                $loginToken,
+                $login
+            );
+        }
+
+        // there is no way in mySQL to combine insert & select into one query
+
+        $session = $this->_(
+            'select id, token from login_sessions where name = :name',
+            [':name' => $login->getName()]
+        );
+
+        return new LoginSession((int) $session['id'], $session['token'], $login);
     }
 
 
     public function getLoginSessionByToken(string $loginToken): LoginSession {
 
         $loginSession = $this->_(
-            'SELECT 
-                    login_sessions.id, 
+            'SELECT
+                    login_sessions.id,
                     logins.name,
                     login_sessions.token,
                     logins.mode,
@@ -207,10 +206,10 @@ class SessionDAO extends DAO {
                     logins.valid_for,
                     logins.valid_to,
                     logins.valid_from
-                FROM 
+                FROM
                     logins
                     left join login_sessions on (logins.name = login_sessions.name)
-                WHERE 
+                WHERE
                     login_sessions.token=:token',
             [':token' => $loginToken]
         );
@@ -249,7 +248,7 @@ class SessionDAO extends DAO {
         $logins = [];
 
         $result = $this->_(
-            'SELECT 
+            'SELECT
                     logins.name,
                     logins.mode,
                     logins.group_name,
@@ -261,12 +260,12 @@ class SessionDAO extends DAO {
                     logins.valid_to,
                     logins.valid_from,
                     logins.workspace_id,
-                    login_sessions.id, 
+                    login_sessions.id,
                     login_sessions.token
-                FROM 
+                FROM
                     logins
                     left join login_sessions on (logins.name = login_sessions.name)
-                WHERE 
+                WHERE
                     logins.group_name = :group_name and logins.workspace_id = :workspace_id',
             [
                 ':group_name' => $groupName,
@@ -325,7 +324,7 @@ class SessionDAO extends DAO {
     private function countPersonSessionsOfLogin(LoginSession $loginSession, string $code): int {
 
         $persons = $this->_(
-            'SELECT 
+            'SELECT
                     person_sessions.id
                 FROM logins
                     left join login_sessions on (logins.name = login_sessions.name)
@@ -346,7 +345,7 @@ class SessionDAO extends DAO {
     public function getPersonSession(LoginSession $loginSession, string $code): ?PersonSession {
 
         $person = $this->_(
-            'SELECT 
+            'SELECT
                     person_sessions.id,
                     person_sessions.token,
                     person_sessions.code,

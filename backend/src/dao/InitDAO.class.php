@@ -41,7 +41,7 @@ class InitDAO extends SessionDAO {
             0,
             (object) ['somStr' => 'someLabel']
         );
-        $loginSession = $sessionDAO->createLoginSession($testLogin, true);
+        $loginSession = $sessionDAO->createLoginSession($testLogin);
 
         $personSession = $sessionDAO->getOrCreatePersonSession($loginSession, 'xxx');
         $test = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
@@ -71,7 +71,7 @@ class InitDAO extends SessionDAO {
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
-        $login = $this->createLoginSession($login, true);
+        $login = $this->createLoginSession($login);
         $this->createPersonSession($login, 'xxx', 0,true);
     }
 
@@ -114,7 +114,7 @@ class InitDAO extends SessionDAO {
             1,
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
-        $loginSession = $this->createLoginSession($login, true);
+        $loginSession = $this->createLoginSession($login);
         $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', 0,true);
 
         return $personsSessions;

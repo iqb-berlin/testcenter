@@ -3,6 +3,27 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once "src/dao/DAO.class.php";
+require_once "src/dao/SessionDAO.class.php";
+
+class SessionDAOforTesting extends SessionDAO {
+
+    public function _(string $sql, array $replacements = [], $multiRow = false): ?array {
+
+        return parent::_($this->tweakInsertOrIgnoreStatement($sql), $replacements, $multiRow);
+    }
+
+    // sqlite and mysql differences
+    private function tweakInsertOrIgnoreStatement(string $sql): string {
+
+        if (str_starts_with(strtolower($sql), 'insert ignore')) {
+            $sql = 'insert or ignore' . substr($sql, 13);
+        }
+
+        return $sql;
+    }
+}
+
 
 /**
  * @runTestsInSeparateProcesses
@@ -10,7 +31,7 @@ use PHPUnit\Framework\TestCase;
  */
 class SessionDAOTest extends TestCase {
 
-    private SessionDAO $dbc;
+    private SessionDAOforTesting $dbc;
 
     private LoginSession $testLoginSession;
     private array $testDataLoginSessions;
@@ -40,7 +61,7 @@ class SessionDAOTest extends TestCase {
     function setUp(): void {
 
         DB::connect(new DBConfig(["type" => "temp", "staticTokens" => true]));
-        $this->dbc = new SessionDAO();
+        $this->dbc = new SessionDAOforTesting();
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
 
@@ -506,49 +527,50 @@ class SessionDAOTest extends TestCase {
             $anotherLogin
         );
 
-        $result = $this->dbc->createLoginSession($anotherLogin, true);
+        $result = $this->dbc->createLoginSession($anotherLogin);
 
         $this->assertEquals($expectation, $result);
         $this->assertEquals(7, $this->countTableRows('login_sessions'));
 
+        $resultAfter2ndLogin = $this->dbc->createLoginSession($anotherLogin);
+
+        $this->assertEquals($expectation, $resultAfter2ndLogin);
+        $this->assertEquals(7, $this->countTableRows('login_sessions'));
+    }
+
+
+    public function test_getLogin_okay(): void {
+
+        $result = $this->dbc->getLogin("test", "pw_hash");
+        $this->assertEquals($this->testDataLoginSessions[0]->getLogin(), $result);
+    }
+
+
+    public function test_getLogin_expired(): void {
 
         $this->expectException(HttpError::class);
-        $this->dbc->createLoginSession($anotherLogin, false);
+        $this->dbc->getLogin("test-expired", "pw_hash");
     }
 
 
-    public function test_getLoginSession_okay(): void {
+    public function test_getLogin_wrongPassword(): void {
 
-        $result = $this->dbc->getLoginSession("test", "pw_hash");
-        $this->assertEquals($this->testDataLoginSessions[0], $result);
-    }
-
-
-    public function test_getLoginSession_expired(): void {
-
-        $this->expectException(HttpError::class);
-        $this->dbc->getLoginSession("test-expired", "pw_hash");
-    }
-
-
-    public function test_getLoginSession_wrongPassword(): void {
-
-        $loginSession = $this->dbc->getLoginSession("test", "wrong");
+        $loginSession = $this->dbc->getLogin("test", "wrong");
         $this->assertNull($loginSession);
     }
 
 
-    public function test_getLoginSession_missingPassword(): void {
+    public function test_getLogin_missingPassword(): void {
 
-        $loginSession = $this->dbc->getLoginSession("test", "");
+        $loginSession = $this->dbc->getLogin("test", "");
         $this->assertNull($loginSession);
     }
 
 
-    public function test_getLoginSession_futureUser(): void {
+    public function test_getLogin_futureUser(): void {
 
         $this->expectException(HttpError::class);
-        $this->dbc->getLoginSession("future_user", "pw_hash");
+        $this->dbc->getLogin("future_user", "pw_hash");
     }
 
 

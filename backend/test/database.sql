@@ -16,7 +16,8 @@ CREATE TABLE "login_sessions"
     "workspace_id" bigint(20)  NOT NULL,
     "group_name"   varchar(100) NOT NULL,
     "token"        varchar(50) NOT NULL,
-    CONSTRAINT "fk_login_workspace" FOREIGN KEY ("workspace_id") REFERENCES "workspaces" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT "fk_login_workspace" FOREIGN KEY ("workspace_id") REFERENCES "workspaces" ("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+    constraint "unique_name" unique (name)
 );
 CREATE TABLE "logins"
 (
