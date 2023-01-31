@@ -75,3 +75,9 @@ fix-docker-user:
 # Re-runs the initialization script of the backend to apply new database patches and re-read the data-dir.
 re-init-backend:
 	docker exec -it testcenter-backend php /var/www/backend/initialize.php
+
+# Use this param to only show issues which can be solved by updating
+#--ignore-unfixed
+image-scan:
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
+    --security-checks vuln $(image):$(tag)
