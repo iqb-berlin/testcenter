@@ -5,6 +5,12 @@ layout: default
 # Changelog & Upgrade Information
 
 ## next
+### Verbesserungen
+* Veränderter Anwendungsparameter für Broadcasting-Service
+  - Kann nun mittels BROADCAST_SERVICE_ENABLED an- und abgeschaltet werden
+  - Die zugehörigen URLs werden dynamisch anhand dieses Schalters generiert und
+    tauchen nicht mehr in der Konfigurationsdatei (.env) auf
+* Anwendungsparameter TLS umbenannt in TLS_ENABLED
 
 ### Sicherheit
 * Ausschalten der Unterstützung für veraltete TLS-Versionen 1.0 and 1.1
