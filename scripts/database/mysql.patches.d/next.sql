@@ -27,4 +27,12 @@ where id not in (select firstId from firstIds);
 -- 3.) make name unique in login_session_table
 alter table login_sessions
     add constraint unique_login_session
-        unique (name)
+        unique (name);
+
+-- Prevent creation of two person_sessions for one login_session where only one is allowed
+
+-- TODO migration
+
+alter table person_sessions
+    add constraint unique_person
+        unique (login_sessions_id, name_suffix);

@@ -307,17 +307,10 @@ class SessionDAO extends DAO {
         if (Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
 
             $personNr = $this->countPersonSessionsOfLogin($loginSession, $code) + 1;
-            return $this->createPersonSession($loginSession, $code, $personNr);
+            return $this->createOrUpdatePersonSession($loginSession, $code, $personNr);
         }
 
-        $personSession = $this->getPersonSession($loginSession, $code);
-
-        if ($personSession == null) {
-
-            return $this->createPersonSession($loginSession, $code, 0);
-        }
-
-        return $personSession;
+        return $this->createOrUpdatePersonSession($loginSession, $code, 0);
     }
 
 
@@ -381,7 +374,7 @@ class SessionDAO extends DAO {
     }
 
 
-    public function createPersonSession(LoginSession $loginSession, string $code, int $personNr, bool $allowExpired = false): PersonSession {
+    public function createOrUpdatePersonSession(LoginSession $loginSession, string $code, int $personNr, bool $allowExpired = false): PersonSession {
 
         $login = $loginSession->getLogin();
 
@@ -406,8 +399,8 @@ class SessionDAO extends DAO {
         $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
         $this->_(
-            'INSERT INTO person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
-            VALUES(:token, :code, :login_id, :valid_until, :name_suffix)',
+            'replace into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
+            values(:token, :code, :login_id, :valid_until, :name_suffix)',
             [
                 ':token' => $newPersonToken,
                 ':code' => $code,

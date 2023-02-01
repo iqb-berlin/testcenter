@@ -58,7 +58,7 @@ class SessionController extends Controller {
         if (!$loginSession->getLogin()->isCodeRequired()) {
 
             $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
-            $personSession = self::sessionDAO()->renewPersonToken($personSession);
+//            $personSession = self::sessionDAO()->renewPersonToken($personSession);
             $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
             $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
 
@@ -86,7 +86,7 @@ class SessionController extends Controller {
         ]);
         $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
         $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
-        $personSession = self::sessionDAO()->renewPersonToken($personSession);
+//        $personSession = self::sessionDAO()->renewPersonToken($personSession);
         $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
         return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
     }
