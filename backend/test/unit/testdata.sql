@@ -44,7 +44,7 @@ insert into person_sessions(code, login_sessions_id, valid_until, token, name_su
 values ('xxx', 4, '2030-01-02 10:00:00', 'person-token', 'xxx');
 
 insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
-values ('xxx', 4, '2010-01-02 10:00:00', 'expired-person-token', 'xxx');
+values ('yyy', 4, '2010-01-02 10:00:00', 'expired-person-token', 'yyy');
 
 insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
 values ('', 2, '2000-01-02 10:00:00', 'person-of-expired-login-token', '');

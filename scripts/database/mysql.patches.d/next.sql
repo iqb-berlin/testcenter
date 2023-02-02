@@ -33,6 +33,3 @@ alter table login_sessions
 
 -- TODO migration
 
-alter table person_sessions
-    add constraint unique_person
-        unique (login_sessions_id, name_suffix);

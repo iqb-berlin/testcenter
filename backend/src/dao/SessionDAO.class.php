@@ -299,82 +299,46 @@ class SessionDAO extends DAO {
     }
 
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getOrCreatePersonSession(LoginSession $loginSession, string $code): PersonSession {
-
-        if (Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
-
-            $personNr = $this->countPersonSessionsOfLogin($loginSession, $code) + 1;
-            return $this->createOrUpdatePersonSession($loginSession, $code, $personNr);
-        }
-
-        return $this->createOrUpdatePersonSession($loginSession, $code, 0);
-    }
-
-
-    private function countPersonSessionsOfLogin(LoginSession $loginSession, string $code): int {
-
-        $persons = $this->_(
-            'SELECT
-                    person_sessions.id
-                FROM logins
-                    left join login_sessions on (logins.name = login_sessions.name)
-                    left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
-                WHERE
-                      person_sessions.login_sessions_id=:id
-                  and person_sessions.code=:code',
-            [
-                ':id' => $loginSession->getId(),
-                ':code' => $code
-            ],
-            true
-        );
-        return count($persons);
-    }
-
-
-    public function getPersonSession(LoginSession $loginSession, string $code): ?PersonSession {
-
-        $person = $this->_(
-            'SELECT
-                    person_sessions.id,
-                    person_sessions.token,
-                    person_sessions.code,
-                    person_sessions.valid_until,
-                    person_sessions.name_suffix
-                FROM logins
-                    left join login_sessions on (logins.name = login_sessions.name)
-                    left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
-                WHERE
-                      person_sessions.login_sessions_id=:id
-                  and person_sessions.code=:code',
-            [
-                ':id' => $loginSession->getId(),
-                ':code' => $code
-            ]
-        );
-
-        if ($person == null) {
-
-            return null;
-        }
-
-        return new PersonSession(
-            $loginSession,
-            new Person(
-                (int) $person['id'],
-                $person['token'],
-                $person['code'],
-                $person['name_suffix'] ?? '',
-                TimeStamp::fromSQLFormat($person['valid_until'])
-            )
-        );
-    }
+//    public function getPersonSession(LoginSession $loginSession, string $code): ?PersonSession {
+//
+//        $person = $this->_(
+//            'SELECT
+//                    person_sessions.id,
+//                    person_sessions.token,
+//                    person_sessions.code,
+//                    person_sessions.valid_until,
+//                    person_sessions.name_suffix
+//                FROM logins
+//                    left join login_sessions on (logins.name = login_sessions.name)
+//                    left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
+//                WHERE
+//                      person_sessions.login_sessions_id=:id
+//                  and person_sessions.code=:code',
+//            [
+//                ':id' => $loginSession->getId(),
+//                ':code' => $code
+//            ]
+//        );
+//
+//        if ($person == null) {
+//
+//            return null;
+//        }
+//
+//        return new PersonSession(
+//            $loginSession,
+//            new Person(
+//                (int) $person['id'],
+//                $person['token'],
+//                $person['code'],
+//                $person['name_suffix'] ?? '',
+//                TimeStamp::fromSQLFormat($person['valid_until'])
+//            )
+//        );
+//    }
 
 
-    public function createOrUpdatePersonSession(LoginSession $loginSession, string $code, int $personNr, bool $allowExpired = false): PersonSession {
+    public function createOrUpdatePersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): PersonSession {
 
         $login = $loginSession->getLogin();
 
@@ -386,29 +350,39 @@ class SessionDAO extends DAO {
             TimeStamp::checkExpiration($login->getValidFrom(), $login->getValidTo());
         }
 
-        $nameSuffix = [];
-        if ($code) {
-            $nameSuffix[] = $code;
-        }
-        if ($personNr) {
-            $nameSuffix[] = $personNr;
-        }
-        $nameSuffix = implode('/', $nameSuffix);
-
-        $newPersonToken = $this->randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$nameSuffix");
+        $newPersonToken = $this->randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$code");
         $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
         $this->_(
-            'replace into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
-            values(:token, :code, :login_id, :valid_until, :name_suffix)',
+            "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
+                select
+                    :token,
+                    :code,
+                    :login_id,
+                    :valid_until,
+                    (
+                        select
+                            case
+                                when :multisession and :code != '' then :code || '/' || (count(*) + 1)
+                                when :multisession then (count(*) + 1)
+                                else :code
+                            end
+                        from
+                            person_sessions
+                        where
+                            login_sessions_id=264 and code=:code
+                        )
+                on duplicate key update token=:token",
             [
                 ':token' => $newPersonToken,
                 ':code' => $code,
                 ':login_id' => $loginSession->getId(),
-                ':name_suffix' => $nameSuffix,
-                ':valid_until' => TimeStamp::toSQLFormat($validUntil)
+                ':valid_until' => TimeStamp::toSQLFormat($validUntil),
+                ':multisession' => Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')
             ]
         );
+
+        // there is no way in mySQL to combine insert & select into one query and we need to get the id and the suffix
 
         return new PersonSession(
             $loginSession,
@@ -416,7 +390,9 @@ class SessionDAO extends DAO {
                 (int) $this->pdoDBhandle->lastInsertId(),
                 $newPersonToken,
                 $code,
-                $nameSuffix,
+                $code, // Attention! this is not the generated suffix (like 1 or xxx/1). We assume it is not needed
+                       // except for display, so it's okay to just return only the code. Otherwise we would need one
+                       // more query, te get the person_session.
                 $validUntil
             )
         );

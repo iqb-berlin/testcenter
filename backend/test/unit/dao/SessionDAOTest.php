@@ -53,6 +53,7 @@ class SessionDAOTest extends TestCase {
         require_once "src/data-collection/AccessSet.class.php";
         require_once "src/data-collection/Person.class.php";
         require_once "src/data-collection/PersonSession.class.php";
+        require_once "src/helper/Mode.class.php";
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/dao/DAO.class.php";
         require_once "src/dao/SessionDAO.class.php";
@@ -325,7 +326,16 @@ class SessionDAOTest extends TestCase {
 
     function test_getPersonSession_correctCode() {
 
-        $result = $this->dbc->getPersonSession($this->testDataLoginSessions[3], 'xxx');
+        $result = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'xxx');
+
+        require_once "src/helper/Folder.class.php";
+        require_once "src/helper/CSV.class.php";
+        require_once "src/dao/InitDAO.class.php";
+        $initDAO = new InitDAO();
+        foreach ($initDAO->getDBContentDump() as $table => $content) {
+
+            echo "## $table\n$content\n";
+        }
 
         $this->assertSame(1, $result->getPerson()->getId());
         $this->assertSame('person-token', $result->getPerson()->getToken());
@@ -337,21 +347,21 @@ class SessionDAOTest extends TestCase {
 
     function test_getLoginSessionByToken_wrongCode() {
 
-        $result = $this->dbc->getPersonSession($this->testDataLoginSessions[3], 'not_existing');
+        $result = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'not_existing');
         $this->assertNull($result);
     }
 
 
     function test_getLoginSessionByToken_notExistingLoginSession() {
 
-        $result = $this->dbc->getPersonSession($this->testLoginSession, 'existing_code');
+        $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
         $this->assertNull($result);
     }
 
 
-    function test_createPersonSession_correctCode() {
+    function test_createOrUpdatePersonSession_correctCode() {
 
-        $result = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 0);
+        $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
 
         $this->assertEquals(5, $result->getPerson()->getId());
         $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
@@ -361,14 +371,14 @@ class SessionDAOTest extends TestCase {
     }
 
 
-    function test_createPersonSession_wrongCode() {
+    function test_createOrUpdatePersonSession_wrongCode() {
 
         $this->expectException("HttpError");
-        $this->dbc->createPersonSession($this->testLoginSession, 'wrong_code',0);
+        $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'wrong_code');
     }
 
 
-    function test_createPersonSession_expiredLogin() {
+    function test_createOrUpdatePersonSession_expiredLogin() {
 
         $testLoginSession = new LoginSession(
             1,
@@ -386,11 +396,11 @@ class SessionDAOTest extends TestCase {
         );
 
         $this->expectException("HttpError");
-        $this->dbc->createPersonSession($testLoginSession, 'existing_code', 0);
+        $this->dbc->createOrUpdatePersonSession($testLoginSession, 'existing_code');
     }
 
 
-    function test_createPersonSession_futureLogin() {
+    function test_createOrUpdatePersonSession_futureLogin() {
 
         $testLoginSession = new LoginSession(
             1,
@@ -409,11 +419,11 @@ class SessionDAOTest extends TestCase {
         );
 
         $this->expectException("HttpError");
-        $this->dbc->createPersonSession($testLoginSession, 'existing_code', 0);
+        $this->dbc->createOrUpdatePersonSession($testLoginSession, 'existing_code');
     }
 
 
-    function test_createPersonSession_withValidFor() {
+    function test_createOrUpdatePersonSession_withValidFor() {
 
         TimeStamp::setup('Europe/Berlin', '1/1/2020 12:00');
         $testLoginSession = new LoginSession(
@@ -433,7 +443,7 @@ class SessionDAOTest extends TestCase {
             )
         );
 
-        $result = $this->dbc->createPersonSession($testLoginSession, 'existing_code', 0);
+        $result = $this->dbc->createOrUpdatePersonSession($testLoginSession, 'existing_code');
 
         $this->assertEquals(5, $result->getPerson()->getId());
         $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
@@ -444,16 +454,16 @@ class SessionDAOTest extends TestCase {
     }
 
 
-    function test_getPersonSession_restart() {
-
-        $result1 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 1);
-        $result2 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 2);
-        $this->assertEquals(5, $result1->getPerson()->getId());
-        $this->assertEquals('existing_code/1', $result1->getPerson()->getNameSuffix());
-        $this->assertEquals(6, $result2->getPerson()->getId());
-        $this->assertEquals('existing_code/2', $result2->getPerson()->getNameSuffix());
-        $this->assertEquals(6, $this->countTableRows('person_sessions'));
-    }
+//    function test_getPersonSession_restart() {
+//
+//        $result1 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 1);
+//        $result2 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 2);
+//        $this->assertEquals(5, $result1->getPerson()->getId());
+//        $this->assertEquals('existing_code/1', $result1->getPerson()->getNameSuffix());
+//        $this->assertEquals(6, $result2->getPerson()->getId());
+//        $this->assertEquals('existing_code/2', $result2->getPerson()->getNameSuffix());
+//        $this->assertEquals(6, $this->countTableRows('person_sessions'));
+//    }
 
 
     function test_getPersonSessionByToken_correctToken() {

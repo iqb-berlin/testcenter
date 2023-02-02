@@ -57,8 +57,7 @@ class SessionController extends Controller {
 
         if (!$loginSession->getLogin()->isCodeRequired()) {
 
-            $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
-//            $personSession = self::sessionDAO()->renewPersonToken($personSession);
+            $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
             $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
             $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
 
@@ -85,8 +84,7 @@ class SessionController extends Controller {
             'code' => ''
         ]);
         $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
-        $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
-//        $personSession = self::sessionDAO()->renewPersonToken($personSession);
+        $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
         $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
         return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
     }
@@ -119,7 +117,7 @@ class SessionController extends Controller {
 
             foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
 
-                $memberPersonSession = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code, false);
+                $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code);
 
                 foreach ($booklets as $bookletId) {
 

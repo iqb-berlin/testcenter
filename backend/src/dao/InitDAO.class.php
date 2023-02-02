@@ -43,7 +43,7 @@ class InitDAO extends SessionDAO {
         );
         $loginSession = $sessionDAO->createLoginSession($testLogin);
 
-        $personSession = $sessionDAO->getOrCreatePersonSession($loginSession, 'xxx');
+        $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
         $test = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
         $testDAO->setTestRunning((int) $test['id']);
         $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");

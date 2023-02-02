@@ -147,10 +147,10 @@ class TestEnvironment {
 
     public static function debugVirtualEnvironment(): void {
 
-        $fullState = "# DATA_DIR\n\n";
-        $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), true);
+//        $fullState = "# DATA_DIR\n\n";
+//        $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), true);
 
-        $fullState .= "\n\n# Database\n";
+        $fullState = "\n\n# Database\n";
         $initDAO = new InitDAO();
         foreach ($initDAO->getDBContentDump() as $table => $content) {
 
@@ -161,6 +161,7 @@ class TestEnvironment {
 
             mkdir($tmpDir);
         }
+        print_r($fullState);
         file_put_contents($tmpDir . '/virtual_environment_dump.md', $fullState);
     }
 

@@ -49,6 +49,7 @@ CREATE TABLE "person_sessions"
     "valid_until"       timestamp   NULL DEFAULT NULL,
     "token"             varchar(50) NOT NULL,
     "name_suffix"       varchar(100) NOT NULL,
+    constraint unique_person unique (login_sessions_id, name_suffix),
     CONSTRAINT "fk_person_login" FOREIGN KEY ("login_sessions_id") REFERENCES "login_sessions" ("id") ON DELETE CASCADE ON UPDATE NO ACTION
 );
 CREATE TABLE "test_commands"
