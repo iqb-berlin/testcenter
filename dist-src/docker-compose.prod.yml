@@ -18,3 +18,5 @@ services:
   testcenter-db:
     command:
       - --log_error_verbosity=1
+    volumes:
+      - ./config/my.cnf:/etc/mysql/conf.d/my.cnf:ro
