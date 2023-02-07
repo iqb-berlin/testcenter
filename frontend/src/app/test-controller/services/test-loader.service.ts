@@ -273,7 +273,8 @@ export class TestLoaderService {
   private getBookletFromXml(xmlString: string): Testlet {
     let rootTestlet: Testlet = null;
     const oParser = new DOMParser();
-    const oDOM = oParser.parseFromString(xmlString, 'text/xml');
+    const xmlStringWithOutBom = xmlString.replace(/^\uFEFF/gm, '');
+    const oDOM = oParser.parseFromString(xmlStringWithOutBom, 'text/xml');
 
     if (oDOM.documentElement.nodeName !== 'Booklet') {
       throw Error('Root element fo Booklet should be <Booklet>');
