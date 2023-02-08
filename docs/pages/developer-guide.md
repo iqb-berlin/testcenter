@@ -23,6 +23,7 @@ The source code and therefore the application is separated in three submodules:
   * [Setup] for changes to the infrastructure - container setup, CI script etc.
 
 ## Coding Standards
+Use the .editorconfig-file.
 
 ### Typescript & Javascript
 We are using ESLint with the base or [AirBnB](https://www.npmjs.com/package/eslint-config-airbnb)
@@ -40,14 +41,15 @@ Following mostly [PSR-12](https://www.php-fig.org/psr/psr-12/)
 * Files SHOULD either declare symbols (classes, functions, constants, etc.) or cause side-effects
   (e.g. generate output, change .ini settings, etc.) but SHOULD NOT do both. ([PSR-1](https://www.php-fig.org/psr/psr-1/))
 
-#### Various Rules and hints
-* Always put a white line below function signature and two above!
+#### Various rules and hints
 * Types:
   * **Use native type hinting of modern PHP.**
-  * Use PhpDoc *only* if PHP's  
-  * Don't use both!
-  * There are still no typed arrays in PHP. We use collection-classes to circumvent this.
-* **Never `require` or `include` anywhere**, program uses autoload for all classes from the `classes`-dir.  **Exception**: Unit-tests, where we want to define dependencies explicit in the test-file itself (and nowhere else).
+  * Use PhpDoc *only* where PHP's native type hinting fails (because of the lack of Generics mostly)
+* **Never `require` or `include` anywhere**, program uses autoload for all classes from the `classes`-dir.
+  **Exception**: Unit-tests, where we want to define dependencies explicit in the test-file itself (and nowhere else).
 * **Always throw exceptions in case of error.** They will be globally caught by ErrorHandler.
   When you are in the situation of catching an exception anywhere else it's 99% better not to throw the exception
   (since it's not an exception case most likely) but return false or null or the like.
+
+### SQL
+* Don't use allcaps.
