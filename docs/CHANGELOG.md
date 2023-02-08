@@ -4,10 +4,27 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 14.0.1
+## 14.1.0-rc.1
 ### Bugfixes
-* Kleiner Fehler behoben beim Aufräumen der DB wenn Dateien gelöscht werden
-* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht 
+* Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
+* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
+* Das Löschen von abhängigen Dateien wurde nicht korrekt blockiert.
+* XML-Dateien, die ein BOM enthalten, können trotzdem verwendet werden.
+
+### :warning: Hinweis für Administratoren
+
+Wenn Sie *nicht* unsere update-routine (update.sh) verwenden, müssen Sie selbst dafür sorgen, dass ab jetzt immer die
+auch die MySQL-Config zur Verfügung steht.
+```
+wget -nv -O config/my.cnf https://raw.githubusercontent.com/iqb-berlin/testcenter/14.1.0/scripts/database/my.cnf
+```
+
+## 14.0.1
+
+### Bugfixes
+* Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
+* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
+
 
 ## 14.0.0
 ### :warning: Wichtige Änderungen für Studienleitungen
