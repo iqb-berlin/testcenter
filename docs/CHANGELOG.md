@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 14.1.0-rc.2
+## 14.1.0-rc.3
 ### Bugfixes
 * Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
 * Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
