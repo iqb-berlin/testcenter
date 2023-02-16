@@ -5,8 +5,7 @@
     "verona-player-api-versions": {
       "min": 2,
       "max": 5
-    },
-    "defintionsUrl": "https://raw.githubusercontent.com/iqb-berlin/testcenter-backend"
+    }
   },
   "license": "MIT",
   "repository": {
