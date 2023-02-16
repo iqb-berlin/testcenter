@@ -18,7 +18,7 @@ class ResourceFileTest extends TestCase {
       "id": "verona-player-awesome",
       "name": [
         {
-          "value": "Un Joueur trés Magnifique",
+          "value": "Un lecteur trés magnifique",
           "lang": "fr"
         },
         {
@@ -66,15 +66,11 @@ class ResourceFileTest extends TestCase {
     function setUp(): void {
 
         require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "src/data-collection/ValidationReportEntry.class.php";
-        require_once "src/data-collection/PlayerMeta.class.php";
-        require_once "src/data-collection/FileSpecialInfo.class.php";
         require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileBooklet.class.php";
         require_once "src/files/ResourceFile.class.php";
-        require_once "src/helper/FileName.class.php";
         require_once "src/helper/FileExt.class.php";
         require_once "src/helper/FileTime.class.php";
         require_once "src/helper/Version.class.php";
@@ -87,7 +83,7 @@ class ResourceFileTest extends TestCase {
     function test_readPlayerMeta() {
 
         $playerWithGoodData = $this->createPlayerStubV3(
-            'verona-player-very-good-1.0.0.html',
+            'verona-player-very-good-1.0.html',
             "A Very Good Player",
             [
                 'content' => "verona-player-very-good",
@@ -96,46 +92,46 @@ class ResourceFileTest extends TestCase {
             ]
         );
 
-        $expectation =  new FileSpecialInfo();
-        $expectation->playerId = 'verona-player-very-good';
-        $expectation->label = "A Very Good Player";
-        $expectation->veronaVersion = '1.5.0';
-        $expectation->version = '1.0.0';
-
-        $this->assertEquals($expectation, $playerWithGoodData->getSpecialInfo());
-        $this->assertArrayNotHasKey('error', $playerWithGoodData->getValidationReportSorted());
-        $this->assertCount(1, $playerWithGoodData->getValidationReportSorted()['warning']);
+        $this->assertEquals('verona-player-very-good', $playerWithGoodData->getVeronaModuleId());
+        $this->assertEquals('1.0.0', $playerWithGoodData->getVersion());
+        $this->assertEquals('A Very Good Player', $playerWithGoodData->getLabel());
+        $this->assertEquals('1.5.0', $playerWithGoodData->getVeronaVersion());
+        $this->assertArrayNotHasKey('error', $playerWithGoodData->getValidationReport());
+        $this->assertCount(1, $playerWithGoodData->getValidationReport()['warning']);
 
 
         $playerWithNoData = $this->createPlayerStubV3('nometa.html', "Player Without Meta-Information");
 
-        $expectation = new FileSpecialInfo();
-        $expectation->label = "Player Without Meta-Information";
-        $this->assertEquals($expectation, $playerWithNoData->getSpecialInfo());
-        $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReportSorted());
-        $this->assertArrayHasKey('warning', $playerWithNoData->getValidationReportSorted());
-
-        $playerWithVerona4Meta = $this->createPlayerStubV4('verona-player-awesome-4.0.0.html', $this->fullVerona4MetaData);
-
-        $expectation = new FileSpecialInfo();
-        $expectation->label = "Some Awesome Player";
-        $expectation->description = 'Beschreibung auf Deutsch';
-        $expectation->veronaVersion = '4.0';
-        $expectation->playerId = 'verona-player-awesome';
-
-        $this->assertEquals($expectation, $playerWithVerona4Meta->getSpecialInfo());
-        $this->assertArrayNotHasKey('error', $playerWithVerona4Meta->getValidationReportSorted());
-        $this->assertArrayNotHasKey('warning', $playerWithVerona4Meta->getValidationReportSorted());
+        $this->assertEquals('nometa', $playerWithNoData->getVeronaModuleId());
+        $this->assertEquals('', $playerWithNoData->getVersion());
+        $this->assertEquals("Player Without Meta-Information", $playerWithNoData->getLabel());
+        $this->assertEquals('', $playerWithNoData->getVeronaVersion());
+        $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReport());
+        $this->assertCount(2, $playerWithNoData->getValidationReport()['warning']);
 
 
-        $playerWithNoData = $this->createPlayerStubV3('nometa-1.2.3.html', "Player Without Meta-Information");
+        $playerWithNoData = $this->createPlayerStubV3('nometa-1.2.3.html', "Player Without Meta-Information but version");
 
-        $expectation = new FileSpecialInfo();
-        $expectation->label = "Player Without Meta-Information";
-        $expectation->version = '1.2.3';
-        $this->assertEquals($expectation, $playerWithNoData->getSpecialInfo());
-        $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReportSorted());
-        $this->assertArrayHasKey('warning', $playerWithNoData->getValidationReportSorted());
+        $this->assertEquals('nometa', $playerWithNoData->getVeronaModuleId());
+        $this->assertEquals('1.2.3', $playerWithNoData->getVersion());
+        $this->assertEquals("Player Without Meta-Information but version", $playerWithNoData->getLabel());
+        $this->assertEquals('', $playerWithNoData->getVeronaVersion());
+        $this->assertArrayNotHasKey('error', $playerWithNoData->getValidationReport());
+        $this->assertCount(3, $playerWithNoData->getValidationReport()['warning']);
+
+
+        $playerWithVerona4Meta = $this->createPlayerStubV4('verona-player-awesome-4.0.html', $this->fullVerona4MetaData);
+
+        $this->assertEquals('verona-player-awesome', $playerWithVerona4Meta->getVeronaModuleId());
+        $this->assertEquals('4.0.0', $playerWithVerona4Meta->getVersion());
+        $this->assertEquals('Beschreibung auf Deutsch', $playerWithVerona4Meta->getDescription());
+        $this->assertEquals("Some Awesome Player", $playerWithVerona4Meta->getLabel());
+        $this->assertEquals('4.0', $playerWithVerona4Meta->getVeronaVersion());
+        $this->assertArrayNotHasKey('error', $playerWithVerona4Meta->getValidationReport());
+        $this->assertArrayNotHasKey('warning', $playerWithVerona4Meta->getValidationReport());
+
+
+        // TODO write test for verona3.5 format
     }
 
 

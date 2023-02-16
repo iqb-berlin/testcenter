@@ -96,7 +96,7 @@ CREATE TABLE "unit_data"
 (
     "unit_id"       bigint(20)  NOT NULL,
     "part_id"       varchar(50) NOT NULL,
-    "content"       text        NOT NULL,
+    "content"       longtext    NOT NULL,
     "ts"            bigint(20)  NOT NULL DEFAULT 0,
     "response_type" varchar(50)          DEFAULT NULL,
     PRIMARY KEY ("unit_id", "part_id"),
@@ -128,10 +128,10 @@ CREATE TABLE "units"
 );
 CREATE TABLE "users"
 (
-    "id"            integer   NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id"            integer      NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name"          varchar(50)  NOT NULL,
     "password"      varchar(100) NOT NULL,
-    "email"         varchar(100)          DEFAULT NULL,
+    "email"         varchar(100) DEFAULT NULL,
     "is_superadmin" tinyint(1)   NOT NULL DEFAULT 0
 );
 CREATE TABLE "workspace_users"
@@ -153,7 +153,7 @@ create table files
 (
     "workspace_id"       integer                                                                        not null,
     "name"               varchar(120)                                                                    not null,
-    "id"                 varchar(40)                                                                        null,
+    "id"                 varchar(40)  collate nocase                                                        null,
     "version_mayor"      integer                                                                            null,
     "version_minor"      integer                                                                            null,
     "version_patch"      integer                                                                            null,
@@ -164,6 +164,11 @@ create table files
     "verona_module_type" text check (verona_module_type in ('player', 'schemer', 'editor', ''))             null,
     "verona_version"     varchar(12)                                                                        null,
     "verona_module_id"   varchar(50)                                                                        null,
+    "is_valid"           tinyint(1) NOT NULL DEFAULT 0,
+    "validation_report" text null,
+    "modification_ts" timestamp not null,
+    "size" integer not null,
+    context_data text null,
     constraint files_pk primary key (workspace_id, name, type),
     constraint files_workspaces_id_fk foreign key (workspace_id) references workspaces (id) on delete cascade
 );
@@ -178,6 +183,22 @@ create table unit_defs_attachments
     constraint unit_defs_attachments_pk primary key (booklet_name, unit_name, variable_id, workspace_id)
 );
 
+
+
+create table file_relations
+(
+    workspace_id bigint unsigned not null,
+    subject_name varchar(120) not null,
+    subject_type text check (subject_type in ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource')) not null,
+    relationship_type text check (relationship_type in ('hasBooklet', 'containsUnit', 'usesPlayer', 'usesPlayerResource', 'isDefinedBy', 'unknown')) not null,
+    object_type text check (object_type in ('Testtakers', 'SysCheck', 'Booklet', 'Unit', 'Resource')) not null,
+    object_name varchar(120) null,
+    constraint file_relations_pk
+        primary key (workspace_id, subject_name, subject_type, relationship_type, object_type, object_name),
+    constraint file_relations_files_fk
+        foreign key (workspace_id, subject_name, subject_type) references files (workspace_id, name, type)
+        on delete cascade
+);
 
 create index files_workspace_id_name_index on files (workspace_id, name);
 create index files_id_index on files (id);
@@ -200,4 +221,4 @@ CREATE INDEX "login_sessions_index_fk_logins" ON "login_sessions" ("name");
 CREATE INDEX "login_sessions_index_fk_login_session_login" ON "login_sessions" ("id");
 CREATE INDEX "workspace_users_index_fk_workspace_users_user" ON "workspace_users" ("user_id");
 CREATE INDEX "workspace_users_index_fk_workspace_users_workspace" ON "workspace_users" ("workspace_id");
-
+create index file_relations_subject_index on files (workspace_id, name, type);

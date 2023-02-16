@@ -26,7 +26,7 @@ class WorkspaceController extends Controller {
 
         return $response->withJson([
             "id" => $workspaceId,
-            "name" => self::workspaceDAO()->getWorkspaceName($workspaceId),
+            "name" => self::workspaceDAO($workspaceId)->getWorkspaceName(),
             "role" => self::adminDAO()->getWorkspaceRole($authToken->getToken(), $workspaceId)
         ]);
     }
@@ -151,7 +151,7 @@ class WorkspaceController extends Controller {
         $containsErrors = false;
         foreach ($importedFiles as $localPath => /* @var $file File */ $file) {
 
-            $reports[$localPath] = $file->getValidationReportSorted();
+            $reports[$localPath] = $file->getValidationReport();
             $containsErrors = ($containsErrors or (isset($reports[$localPath]['error']) and count($reports[$localPath]['error'])));
             $loginsAffected = ($loginsAffected or ($file->isValid() and ($file->getType() == 'Testtakers')));
         }
@@ -167,29 +167,24 @@ class WorkspaceController extends Controller {
     public static function getFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int)$request->getAttribute('ws_id');
-        $validator = new WorkspaceValidator(new Workspace($workspaceId));
-        $validator->validate();
-        $fileDigestList = [];
-        foreach ($validator->getFiles() as $file) {
+        $workspace = new Workspace($workspaceId);
 
-            if (!isset($fileDigestList[$file->getType()])) {
-                $fileDigestList[$file->getType()] = [];
-            }
-            $fileDigestList[$file->getType()][] = [
-                'name' => $file->getName(),
-                'size' => $file->getSize(),
-                'modificationTime' => $file->getModificationTime(),
-                'type' => $file->getType(),
-                'id' => $file->getId(),
-                'report' => $file->getValidationReportSorted(),
-                'info' => $file->getSpecialInfo()
-            ];
+        $files = $workspace->workspaceDAO->getAllFiles();
+
+        // TODo change the FE and endpoint to accept it with keys
+        $fileDigestList = [];
+        foreach ($files as $fileType => $fileList) {
+
+            $fileDigestList[$fileType] = array_values($fileList);
         }
 
         return $response->withJson($fileDigestList);
     }
 
 
+    /** TODO since only allowed files are in the five main folders, a better syntax for the body would suit
+     * eg [{"type": "Booklet", "name": "SAMPLE_BOOKLET.XML"}]
+     */
     public static function deleteFiles(Request $request, Response $response): Response {
 
         $workspaceId = (int) $request->getAttribute('ws_id');
@@ -300,7 +295,7 @@ class WorkspaceController extends Controller {
 
         $workspaceController = new Workspace($workspaceId);
         /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $workspaceController->findFileById('SysCheck', $sysCheckName);
+        $xmlFile = $workspaceController->getFileById('SysCheck', $sysCheckName);
 
         return $response->withJson(new SysCheck([
             'name' => $xmlFile->getId(),
@@ -321,46 +316,55 @@ class WorkspaceController extends Controller {
         $workspaceId = (int)$request->getAttribute('ws_id');
         $sysCheckName = $request->getAttribute('sys-check_name');
 
-        $validator = new WorkspaceValidator(new Workspace($workspaceId));
+        $workspace = new Workspace($workspaceId);
 
         /* @var XMLFileSysCheck $sysCheck */
-        $sysCheck = $validator->getSysCheck($sysCheckName);
-        if (($sysCheck == null)) {
-            throw new HttpNotFoundException($request);
-        }
+        $sysCheck = $workspace->getFileById('SysCheck', $sysCheckName);
+
+        $res = [
+            'player_id' => '',
+            'def' => '',
+            'player' => ''
+        ];
 
         if (!$sysCheck->hasUnit()) {
-            return $response->withJson([
-                'player_id' => '',
-                'def' => '',
-                'player' => ''
-            ]);
+            return $response->withJson($res);
         }
 
-        $sysCheck->crossValidate($validator);
-        if (!$sysCheck->isValid()) {
+        $unit = $workspace->getFileById('Unit', $sysCheck->getUnitId());
+        /* @var XMLFileUnit $unit */
+        $unitRelations = $workspace->getFileRelations($unit);
 
-            throw new HttpInternalServerErrorException($request, 'SysCheck is invalid');
+        foreach ($unitRelations as $unitRelation) {
+
+            /* @var FileRelation $unitRelation */
+
+            switch ($unitRelation->getRelationshipType()) {
+
+                case FileRelationshipType::containsUnit:
+
+                    $unitDefinitionFile = $workspace->getFileByName('Resource', $unitRelation->getTargetName());
+                    $res['def'] = $unitDefinitionFile->getContent();
+                    break;
+
+                case FileRelationshipType::usesPlayer:
+
+                    $playerFile = $workspace->getFileByName('Resource', $unitRelation->getTargetName());
+                    $res['player'] = $playerFile->getContent();
+                    $res['player_id'] = $playerFile->getVeronaModuleId();
+                    break;
+            }
         }
 
-        $unit = $validator->getUnit($sysCheck->getUnitId());
-        $unit->crossValidate($validator);
-        if (!$unit->isValid()) {
+        if (!$res['def']) {
 
-            throw new HttpInternalServerErrorException($request, 'Unit is invalid');
+            $unitEmbeddedDefinition = $unit->getDefinition();
+            if ($unitEmbeddedDefinition) {
+                $res['def'] = $unitEmbeddedDefinition;
+            }
         }
 
-        $player = $unit->getPlayerIfExists($validator);
-        if (!$player or !$player->isValid()) {
-
-            throw new HttpInternalServerErrorException($request, 'Player is invalid');
-        }
-
-        return $response->withJson([
-            'player_id' => $unit->getPlayerId(),
-            'def' => $unit->getContent($validator),
-            'player' => $player->getContent()
-        ]);
+        return $response->withJson($res);
     }
 
     public static function putSysCheckReport(Request $request, Response $response): Response {
@@ -371,21 +375,21 @@ class WorkspaceController extends Controller {
 
         $sysChecksFolder = new SysChecksFolder($workspaceId);
 
-        /* @var XMLFileSysCheck $xmlFile */
-        $xmlFile = $sysChecksFolder->findFileById('SysCheck', $sysCheckName);
+        /* @var XMLFileSysCheck $sysCheck */
+        $sysCheck = $sysChecksFolder->getFileById('SysCheck', $sysCheckName);
 
         if (strlen((string) $report->keyPhrase) <= 0) {
 
             throw new HttpBadRequestException($request, "No key `$report->keyPhrase`");
         }
 
-        if (strtoupper((string) $report->keyPhrase) !== strtoupper($xmlFile->getSaveKey())) {
+        if (strtoupper((string) $report->keyPhrase) !== strtoupper($sysCheck->getSaveKey())) {
 
             throw new HttpError("Wrong key `$report->keyPhrase`", 400);
         }
 
         $report->checkId = $sysCheckName;
-        $report->checkLabel = $xmlFile->getLabel();
+        $report->checkLabel = $sysCheck->getLabel();
 
         $sysChecksFolder->saveSysCheckReport($report);
 

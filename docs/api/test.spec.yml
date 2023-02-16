@@ -116,10 +116,12 @@ paths:
         "500":
           description: Server Error
 
-  /test/{test_id}/resource/{resource_name}: # gets manipulated in hooks.file, change summary carefully
+  /test/{test_id}/resource/{resource_id}: # gets manipulated in hooks.file, change summary carefully
     get:
       summary: get resource by name
-      description: retrieves a resource-file by its name (filename without extension)
+      description: Retrieves a resource-file by its id.
+        The file id is, in case of a Verona-Module (like a player), the player's internal id.
+        In case of another resource it's the file name (case _in_sensitive!).
       tags:
         - run test
       parameters:
@@ -135,12 +137,28 @@ paths:
           schema:
             type: integer
         - in: path
-          name: resource_name
-          description: resource_name (filename without extension in case of plaayer, else filename)
-          example: verona-player-simple-4.0.0.html
+          name: resource_id
+          description: "file-id (or, deprecated: file-name)"
+          examples:
+            exact:
+              value: verona-player-simple-4.0
+            fuzzy:
+              value: verona-player-simple-4.0.0.html
           required: true
           schema:
             type: string
+        - in: query
+          name: v
+          description: Tells, if the resource_name is exact of fuzzy. Legacy units contain ids which are not following
+            and exact scheme and look like file-names for player-references for example. Set this parameter to 
+            something else then 'f', to allow interpretation of `resource_id` softer. This is the case when retrieving 
+            players. In this case a request to 'verona-player-whatever.1.2.3.html' can return verona-player-whatever, 
+            version 1.2.x correctly.
+          examples:
+            exact:
+              value: f
+            fuzzy:
+              value: t
       responses:
         "200":
           description: The Resource

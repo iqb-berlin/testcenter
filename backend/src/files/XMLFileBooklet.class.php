@@ -6,49 +6,42 @@ declare(strict_types=1);
 class XMLFileBooklet extends XMLFile {
 
     const type = 'Booklet';
+    const canBeRelationSubject = true;
+    const canBeRelationObject = true;
 
-    protected int $totalSize = 0;
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-
-    public function crossValidate(WorkspaceValidator $validator): void {
-
-        parent::crossValidate($validator);
+        parent::crossValidate($workspaceCache);
 
         $bookletPlayers = [];
-        $this->totalSize = $this->getSize();
+        $this->contextData['totalSize'] = $this->getSize();
 
         foreach($this->getUnitIds() as $unitId) {
 
-            $unit = $validator->getUnit($unitId);
+            $unit = $workspaceCache->getUnit($unitId);
 
             if ($unit == null) {
                 $this->report('error', "Unit `$unitId` not found");
                 continue;
             }
 
-            $unit->addUsedBy($this);
+            $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
 
-            $this->totalSize += $unit->getTotalSize();
+            $this->contextData['totalSize'] += $unit->getTotalSize();
 
-            $playerFile = $unit->getPlayerIfExists($validator);
+            $playerFile = $unit->getPlayerIfExists($workspaceCache);
 
             if (!$playerFile) {
 
-                $this->report('error', "No suitable version of `{$unit->getPlayerId()}` found");
+                $this->report('error', "No suitable version of Player found (Unit `$unitId`).");
             }
 
             if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
 
-                $this->totalSize += $playerFile->getSize();
+                $this->contextData['totalSize'] += $playerFile->getSize();
                 $bookletPlayers[] = $playerFile->getId();
             }
         }
-    }
-
-
-    public function getTotalSize(): int {
-
-        return $this->totalSize;
     }
 
 
@@ -59,7 +52,7 @@ class XMLFileBooklet extends XMLFile {
             return [];
         }
 
-        return $this->getUnitIdFromNode($this->xml->Units[0], $useAlias);
+        return $this->getUnitIdFromNode($this->getXml()->Units[0], $useAlias);
     }
 
 
@@ -82,13 +75,5 @@ class XMLFileBooklet extends XMLFile {
             }
         }
         return $unitIds;
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->totalSize = $this->getTotalSize();
-        return $meta;
     }
 }

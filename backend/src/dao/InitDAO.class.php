@@ -139,17 +139,20 @@ class InitDAO extends SessionDAO {
     }
 
 
-    public function addWorkspaceToAdmin(int $adminId, int $workspaceId): void {
+    public function addWorkspacesToAdmin(int $adminId, array $workspaceIds): void {
 
         $superAdminDAO = new SuperAdminDAO();
         $superAdminDAO->setWorkspaceRightsByUser(
             $adminId,
-            [
-                (object) [
-                    "id" => $workspaceId,
-                    "role" => "RW"
-                ]
-            ]
+            array_map(
+                function(int $wsId) {
+                    return (object) [
+                        "role" => "RW",
+                        "id" => $wsId
+                    ];
+                },
+                $workspaceIds
+            )
         );
     }
 
@@ -302,9 +305,6 @@ class InitDAO extends SessionDAO {
             $isFutureVersion = Version::compare($patch) > 0;
             $shouldBeInstalled = Version::compare($patch, $this->getDBSchemaVersion()) <= 0;
             $forcePatch = ($patch == 'next') && !$lastWasFutureVersion;
-
-             echo "\n ~ $patch ~ " . ($isFutureVersion?'y':'n') . ' ~ ' . ($shouldBeInstalled?'y':'n') . ' ~ ' . ($forcePatch?'y':'n');
-
 
             if (
                 (!$forcePatch) &&

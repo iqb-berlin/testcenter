@@ -90,7 +90,7 @@ class Folder {
 
             if ($entry->isFile()) {
 
-                if (!unlink($entry->getPathname())) {
+                if (!@unlink($entry->getPathname())) {
                     throw new Exception("Could not delete `$entry`.. permission denied");
                 }
 
@@ -106,7 +106,7 @@ class Folder {
     // TODO unit-test
     /**
      * creates missing subdirectories for a missing path,
-     * for example: let /var/www/html/vo_data exist # TODO 13
+     * for example: let /var/www/html/vo_data exist
      * and $filePath be /var/www/html/vo_data/ws_5/Testtakers
      * this functions creates ws_5 and ws_5/Testtakers in /var/www/html/vo_data
      * Note: dont' use paths containing filenames!

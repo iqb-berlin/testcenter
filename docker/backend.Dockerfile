@@ -80,3 +80,6 @@ COPY backend/config/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-p
 COPY backend/phpunit.xml .
 
 COPY backend/test test
+
+# some initialization tets need this
+RUN apt-get update && apt-get install -y jq
