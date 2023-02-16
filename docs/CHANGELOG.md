@@ -10,9 +10,11 @@ layout: default
   neues Booklet geladen wird. 
 * Die Zeitbeschränkung kann nicht mehr durch Click auf das IQB-Logo umgangen werden
 
+### Sicherheit
+* Updates sehr vieler NPM-Pakete, Basis-Images und anderer Komponenten
 
 ## 14.1.0
-### Bugfixes**
+### Bugfixes
 * Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
 * Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
 * Das Löschen von abhängigen Dateien wurde nicht korrekt blockiert.
