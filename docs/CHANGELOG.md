@@ -4,6 +4,95 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.1.0
+### Bugfixes**
+* Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
+* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
+* Das Löschen von abhängigen Dateien wurde nicht korrekt blockiert.
+* XML-Dateien, die ein BOM enthalten, können trotzdem verwendet werden.
+
+### :warning: Hinweis für Administratoren
+
+Wenn Sie *nicht* unsere update-routine (update.sh) verwenden, müssen Sie selbst dafür sorgen, dass ab jetzt immer die
+auch die MySQL-Config zur Verfügung steht.
+```
+wget -nv -O config/my.cnf https://raw.githubusercontent.com/iqb-berlin/testcenter/14.1.0/scripts/database/my.cnf
+```
+
+## 14.0.1
+
+### Bugfixes
+* Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
+* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
+
+
+## 14.0.0
+### :warning: Wichtige Änderungen für Studienleitungen
+
+#### Unit-Definitionen
+
+**Achtung! Diese Änderungen können es unter Umständen nötig machen, ältere Units zu bearbeiten! Wenn die Studien aus
+einem aktuellen IQB-Studio exportiert worden sind, sollte es jedoch kein Problem geben, da dann Kennung und
+Dateinamen immer identisch sind.**
+
+Die Logik der Playerauswahl hat sich geändert.
+In den Unit-Definitions Dateien gibt es im `<Defintion>`- bzw. `<DefintionRef>`-Element 
+das Attribut `player`. Dessen Wert wird nun anders interpretiert, nämlich nicht mehr als Dateiname,
+sondern als Kennung des Players, wie sie in dessen Metadaten hinterlegt ist.
+
+Zulässig sind folgende Schreibweisen:
+`<Defintion player="verona-player-absurd@1.0>`
+oder
+`<Defintion player="verona-player-absurd-1.0>`
+
+In diesem Beispiel benötigt die Unit einen Player, der die ID `verona-player-absurd` hat und in der 
+Version 1.0 vorliegt, vollkommen unabhängig davon, ob die Datei dazu `verona-player-absurd@1.0.0.html`,
+`absurd-playerV1.0html`, oder ganz anders heißt.
+
+Vorher wäre dazu ein Player aus einer Datei `verona-player-absurd@1.0.html` bzw. 
+`verona-player-absurd-1.0.html`, gesucht worden, egal, was tatsächlich in dieser Datei enthalten gewesen 
+wäre. Dabei gab es gewisse Spielräume bei der Schreibweise der Dateinamen, so konnte 
+`verona-player-absurd@1.0.html` z. B. eine Datei `verona-player-absurd@1.0.1.HTML` auswählen. 
+Die Dateiendung `.html` war optional, daher sehen die ehemaligen Dateiverweise in oft genau aus wie
+die jetzigen Kennungen.
+
+Eine genaue Spezifikation einer Patch-Version ist nicht mehr möglich. Alles, was nach der Kennung kommt, 
+also zum Beispiel eine dritte Versions-nr wird ignoriert.
+
+Ein Arbeitsbereich kann nun, analog zum IQB-Studio immer nur eine patch-version eines players enthalten, also nicht zugleich eine 
+Version 1.2.3 und 1.2.4 desselben players.
+
+### :warning: Wichtige Änderungen für Administratoren
+Es wird nun docker-compose v2 verwendet! Docker-compose-standalone wird nicht mehr länger benötigt,
+dafür das [compose plugin für docker](https://docs.docker.com/compose/install/linux/).
+
+**Achtung**: Beim ersten hochfahren braucht der Datenbankcontainer wegen des MySQL-updates sehr lange. MySQL führt selbstständig eine Datenmigration durch. Brechen Sie diesen Vorgang keinesfalls ab, da sonst ihre Datenbank beschädigt wird. :warning:
+
+### Performance
+Diese Version ist vor allem ein großes Upgrade in Sachen Performance: Besonders heikle Flaschenhälse wurden beseitigt,
+sodass Vorgänge wie das Laden eines Tests oder eines Arbeitsbereiches in der Admin-Ansicht
+schneller und vor allem mit wesentlich (bis zu quadratisch) weniger Dateizugriffen auskommt.
+Damit sollte die Anwendung mit **wesentlich** mehr gleichzeitigen Benutzern arbeiten
+können. Vorangegangene Lasttests hatten eine Grenze bei etwa 5000 gleichzeitigen
+Ladevorgängen festgestellt.
+
+### Sicherheit
+* Es wird eine aktuelle MySQL Version verwendet
+
+## 13.3.1
+### Neue Fetaures
+* CustomTexts können jetzt (wieder) nicht nur Login-bezogen in der Testtakers.xml sondern auch Testheft bezogen in der Booklet-XML festgelegt werden.
+* Die Verona-Schnittstelle wird jetzt auch in der Version 5 unterstützt
+
+### Sicherheit
+* "Secure Client Initated Renegotiation" nicht mehr möglich
+* TLS 1.2 im Datenbank Container
+* Neuste Traefik Version
+
+### UI
+* Kleinere Verbesserungen im Bereich SystemCheck
+* Die Beschriftung "Überwachung starten" lässt sich nun ändern
+
 ## 13.2.2
 ### Bug Fixes
 Zu große Antwort-Daten (durch GeoGebra erzeugt) führten zu Fehlern.

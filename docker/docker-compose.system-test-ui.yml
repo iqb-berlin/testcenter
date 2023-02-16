@@ -9,7 +9,7 @@ x-env-mysql: &env-mysql
 services:
   traefik-system-test:
     container_name: testcenter-system-test-traefik
-    image: traefik:v2.2
+    image: traefik:v2.9
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -22,7 +22,7 @@ services:
 
   testcenter-system-test-db:
     container_name: testcenter-system-test-db
-    image: mysql:5.7
+    image: mysql:8.0
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw

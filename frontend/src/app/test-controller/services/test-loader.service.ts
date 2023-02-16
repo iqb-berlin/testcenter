@@ -273,7 +273,8 @@ export class TestLoaderService {
   private getBookletFromXml(xmlString: string): Testlet {
     let rootTestlet: Testlet = null;
     const oParser = new DOMParser();
-    const oDOM = oParser.parseFromString(xmlString, 'text/xml');
+    const xmlStringWithOutBom = xmlString.replace(/^\uFEFF/gm, '');
+    const oDOM = oParser.parseFromString(xmlStringWithOutBom, 'text/xml');
 
     if (oDOM.documentElement.nodeName !== 'Booklet') {
       throw Error('Root element fo Booklet should be <Booklet>');
@@ -293,7 +294,7 @@ export class TestLoaderService {
         const customTexts = TestLoaderService.getChildElements(customTextsElements[0]);
         const customTextsForBooklet = {};
         for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
-          if (customTexts[childIndex].nodeName === 'Text') {
+          if (customTexts[childIndex].nodeName === 'CustomText') {
             const customTextKey = customTexts[childIndex].getAttribute('key');
             if ((typeof customTextKey !== 'undefined') && (customTextKey !== null)) {
               customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent;

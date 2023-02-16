@@ -82,8 +82,8 @@ class TestEnvironment {
 
         $initDAO->clearDb();
 
-        $initDAO->runFile(ROOT_DIR . "/database/mysql.sql");
-        $initDAO->installPatches(ROOT_DIR . "/database/mysql.patches.d", true);
+        $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
+        $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", true);
 
         $dbStatus = $initDAO->getDbStatus();
         if ($dbStatus['missing']) {
@@ -109,12 +109,12 @@ class TestEnvironment {
         $workspaceId = $initDAO->createWorkspace('sample_workspace');
         $workspace = new Workspace($workspaceId);
         $adminId = $initDAO->createAdmin('super', 'user123');
-        $initDAO->addWorkspaceToAdmin($adminId, $workspaceId);
+        $initDAO->addWorkspacesToAdmin($adminId, [$workspaceId]);
 
         $initializer = new WorkspaceInitializer();
         $initializer->cleanWorkspace($workspaceId);
         $initializer->importSampleFiles($workspaceId);
-        $workspace->storeAllFilesMeta();
+        $workspace->storeAllFiles();
 
         $initDAO->createSampleLoginsReviewsLogs();
         $initDAO->createSampleExpiredSessions();

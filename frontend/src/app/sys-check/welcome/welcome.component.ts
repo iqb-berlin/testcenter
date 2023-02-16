@@ -42,6 +42,7 @@ export class WelcomeComponent implements OnInit {
       this.getNavigatorInfo();
       this.getBrowserPluginInfo();
       this.getBrowserRating();
+      this.ds.questionnaireReport.length = 0;
       this.getTime()
         .subscribe(() => {
           const report = Array.from(this.report.values())
