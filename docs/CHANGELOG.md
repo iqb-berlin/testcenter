@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+### Bugfixes
+* Benutzerdefinierte Beschriftungen (CustomTexts) werden korrekt zurückgesetzt, wenn neu eingeloggt bzw. ein 
+  neues Booklet geladen wird. 
+
 ## 14.1.0
 ### Bugfixes**
 * Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
