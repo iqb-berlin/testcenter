@@ -11,6 +11,9 @@
         </p>
       </mat-card-content>
       <mat-card-actions>
+        <button mat-raised-button data-cy="resumeTest-1" color="primary" (click)="continueTest()">
+          {{ 'Test fortsetzen'  | customtext:'login_testResumeButtonLabel' | async}}
+        </button>
         <button mat-raised-button data-cy="endTest-1" color="primary" (click)="terminateTest()">
           {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
         </button>
