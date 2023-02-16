@@ -1,12 +1,5 @@
 {
   "name": "itc-ng",
-  "version": "12.1.0",
-  "iqb": {
-    "verona-player-api-versions": {
-      "min": 2,
-      "max": 4
-    }
-  },
   "license": "MIT",
   "repository": {
     "type": "git",

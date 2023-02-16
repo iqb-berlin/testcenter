@@ -6,7 +6,10 @@ layout: default
 
 ## [next]
 ### Bugfixes
+* Benutzerdefinierte Beschriftungen (CustomTexts) werden korrekt zurückgesetzt, wenn neu eingeloggt bzw. ein 
+  neues Booklet geladen wird. 
 * Die Zeitbeschränkung kann nicht mehr durch Click auf das IQB-Logo umgangen werden
+
 
 ## 14.1.0
 ### Bugfixes**
