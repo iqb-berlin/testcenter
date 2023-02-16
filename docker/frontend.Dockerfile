@@ -1,6 +1,8 @@
-FROM iqbberlin/testcenter-frontend-dev-base:latest as dev
+FROM node:16.19-bullseye as dev
 
 ARG NODE_ENV=development
+
+RUN apt update && apt install -y chromium
 
 WORKDIR /app
 
@@ -27,7 +29,7 @@ FROM dev as builder
 RUN npx ng build --configuration production --output-path=dist --output-hashing all
 
 #===================================
-FROM nginx:1.22.0-alpine as prod
+FROM nginx:1.23 as prod
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY ./frontend/config/nginx.conf /etc/nginx/conf.d/default.conf
