@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TestControllerService } from '../../services/test-controller.service';
 import { UnitNaviButtonData } from '../../interfaces/test-controller.interfaces';
+import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
   selector: 'unit-menu',
@@ -11,7 +12,9 @@ export class UnitMenuComponent implements OnInit {
   menu: Array<string | UnitNaviButtonData[]> = [];
 
   constructor(
-    public tcs: TestControllerService
+    public tcs: TestControllerService,
+
+    private cts: CustomtextService
   ) { }
 
   ngOnInit(): void {
@@ -53,5 +56,6 @@ export class UnitMenuComponent implements OnInit {
 
   terminateTest(): void {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', false, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
+    this.cts.restoreDefault(false);
   }
 }
