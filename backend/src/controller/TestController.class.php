@@ -121,7 +121,7 @@ class TestController extends Controller {
                         'name' => $unitRelation->getTargetName(),
                         'type' => 'player'
                     ];
-                    $res['playerId'] = $unitRelation->getTargetName();
+                    $res['playerId'] = $unitRelation->getTargetId();
                     break;
 
                 case FileRelationshipType::usesPlayerResource:

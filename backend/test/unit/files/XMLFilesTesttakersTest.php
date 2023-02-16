@@ -76,6 +76,7 @@ END;
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/JSON.class.php";
         require_once "test/unit/mock-classes/PasswordMock.php";
+        require_once "test/unit/mock-classes/ExternalFileMock.php";
     }
 
     // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate

@@ -38,7 +38,8 @@ export class BookletService {
   private static parseBookletXml(xmlString: string): Booklet | BookletError {
     try {
       const domParser = new DOMParser();
-      const bookletElement = domParser.parseFromString(xmlString, 'text/xml').documentElement;
+      const xmlStringWithOutBom = xmlString.replace(/^\uFEFF/gm, '');
+      const bookletElement = domParser.parseFromString(xmlStringWithOutBom, 'text/xml').documentElement;
 
       if (bookletElement.nodeName !== 'Booklet') {
         // console.warn('XML-root is not `Booklet`');
