@@ -6,6 +6,8 @@ services:
   testcenter-db:
     command:
       - --log_error_verbosity=1
+    volumes:
+      - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
 
   testcenter-backend:
     image: iqbberlin/testcenter-backend:current-prod

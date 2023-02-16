@@ -16,7 +16,7 @@ const apiUrl = process.env.TC_API_URL || testcenterConfig.testcenterUrl;
 
 const confirmTestConfig = async done => {
   if (!apiUrl) {
-    return done(new Error(cliPrint.get.error('No API Url given!')));
+    throw new Error(cliPrint.get.error('No API Url given!'));
   }
 
   const getStatus = () => new Promise(resolve => {
@@ -41,7 +41,7 @@ const confirmTestConfig = async done => {
     await sleep(5000);
   }
 
-  return done(new Error(cliPrint.get.error(`Could not connect to ${apiUrl}`)));
+  throw new Error(cliPrint.get.error(`Could not connect to ${apiUrl}`));
 };
 
 const prepareSpecsForDredd = done => {
@@ -132,18 +132,16 @@ const runDredd = async done => {
     endpoint: apiUrl,
     path: [`${tmpDir}/transformed.specs.*.yml`],
     hookfiles: ['dredd-hooks.js'],
-    output: [`${tmpDir}/report.html`], // TODO 13
+    output: [`${tmpDir}/report.html`], // TODO do something with it
     reporter: ['html'],
-    names: false
+    names: false, // use sth like this to restrict: only: ['specs > /workspace/{ws_id}/file > upload file > 403']
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
-      done(new Error(cliPrint.get.error(`Dredd Tests: ${err}`)));
+      throw new Error(cliPrint.get.error(`Dredd Tests: ${err}`));
     }
     if (stats.errors + stats.failures > 0) {
-      done(new Error(
-        cliPrint.get.error(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`)
-      ));
+      throw new Error(cliPrint.get.error(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`));
     }
     done();
   });

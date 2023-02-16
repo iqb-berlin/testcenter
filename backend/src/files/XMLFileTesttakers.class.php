@@ -6,30 +6,26 @@ declare(strict_types=1);
 class XMLFileTesttakers extends XMLFile {
 
     const type = 'Testtakers';
-    const canHaveDependencies = false;
+    const canBeRelationSubject = true;
+    const canBeRelationObject = false;
     protected LoginArray $logins;
 
-    public function crossValidate(WorkspaceValidator $validator): void {
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-        parent::crossValidate($validator);
+        parent::crossValidate($workspaceCache);
 
         $this->logins = $this->getAllLogins();
+        $this->contextData['testtakers'] = count($this->logins->asArray());
 
         $this->checkForDuplicateLogins();
 
         foreach ($this->logins as $login) {
 
             /* @var Login $login */
-            $this->checkIfBookletsArePresent($login, $validator);
+            $this->checkIfBookletsArePresent($login, $workspaceCache);
         }
 
-        $this->checkIfIdsAreUsedInOtherFiles($validator);
-    }
-
-
-    public function getLoginCount(): int {
-
-        return isset($this->logins) ? count($this->logins->asArray()) : 0;
+        $this->checkIfIdsAreUsedInOtherFiles($workspaceCache);
     }
 
 
@@ -44,7 +40,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function checkIfBookletsArePresent(Login $testtaker, WorkspaceValidator $validator): void {
+    private function checkIfBookletsArePresent(Login $testtaker, WorkspaceCache $validator): void {
 
         foreach ($testtaker->getBooklets() as $code => $booklets) {
 
@@ -54,8 +50,7 @@ class XMLFileTesttakers extends XMLFile {
 
                 if ($booklet != null) {
 
-                    $booklet->addUsedBy($this);
-
+                    $this->addRelation(new FileRelation($booklet->getType(), $bookletId, FileRelationshipType::hasBooklet, $booklet));
                 }
 
                 if (!$booklet or !$booklet->isValid()) {
@@ -67,16 +62,19 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function checkIfIdsAreUsedInOtherFiles(WorkspaceValidator $validator): void {
+    private function checkIfIdsAreUsedInOtherFiles(WorkspaceCache $workspaceCache): void {
 
         $loginList = $this->getAllLoginNames();
         $groupList = array_keys($this->getGroups());
 
-        foreach ($validator->getGlobalIds() as $workspaceId => $sources) {
+        $workspaceCache->addGlobalIdSource($this->getName(), 'login', $loginList);
+        $workspaceCache->addGlobalIdSource($this->getName(), 'group', $groupList);
+
+        foreach ($workspaceCache->getGlobalIds() as $workspaceId => $sources) {
 
             foreach ($sources as $source => $globalIdsByType) {
 
-                if (($source == $this->getName()) and ($workspaceId == $validator->getId())) {
+                if (($source == $this->getName()) and ($workspaceId == $workspaceCache->getId())) {
                     continue;
                 }
 
@@ -84,14 +82,14 @@ class XMLFileTesttakers extends XMLFile {
                     'login',
                     array_intersect($loginList, array_values($globalIdsByType['login'])),
                     $source,
-                    $validator->getId(),
+                    $workspaceCache->getId(),
                     $workspaceId
                 );
                 $this->reportDuplicates(
                     'group',
                     array_intersect($groupList, array_values($globalIdsByType['group'])),
                     $source,
-                    $validator->getId(),
+                    $workspaceCache->getId(),
                     $workspaceId
                 );
             }
@@ -117,7 +115,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $testTakers = [];
 
-        foreach($this->xml->xpath('Group') as $groupElement) {
+        foreach($this->getXml()->xpath('Group') as $groupElement) {
 
             foreach ($groupElement->xpath('Login[@name]') as $loginElement) {
 
@@ -138,7 +136,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xml->xpath('Group/Login[@name]') as $loginElement) {
+        foreach($this->getXml()->xpath('Group/Login[@name]') as $loginElement) {
 
             $loginNames[] = (string) $loginElement['name'];
         }
@@ -157,7 +155,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $loginNames = [];
 
-        foreach($this->xml->xpath('Group/Login[@name]') as $loginElement) {
+        foreach($this->getXml()->xpath('Group/Login[@name]') as $loginElement) {
 
             if (!in_array((string) $loginElement['name'], $loginNames)) {
                 $loginNames[] = (string) $loginElement['name'];
@@ -176,7 +174,7 @@ class XMLFileTesttakers extends XMLFile {
 
         $groups = [];
 
-        foreach($this->xml->xpath('Group') as $groupElement) {
+        foreach($this->getXml()->xpath('Group') as $groupElement) {
 
             $groups[(string) $groupElement['id']] = new Group(
                 (string) $groupElement['id'],
@@ -194,7 +192,7 @@ class XMLFileTesttakers extends XMLFile {
             return null;
         }
 
-        foreach($this->xml->xpath("Group[Login[@name='$loginName']]") as $groupElement) {
+        foreach($this->getXml()->xpath("Group[Login[@name='$loginName']]") as $groupElement) {
 
             $groupMembers = new LoginArray();
 
@@ -210,8 +208,7 @@ class XMLFileTesttakers extends XMLFile {
     }
 
 
-    private function getLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId)
-            : Login {
+    private function getLogin(SimpleXMLElement $groupElement, SimpleXMLElement $loginElement, int $workspaceId): Login {
 
         $mode = (string) $loginElement['mode'];
         $name = (string) $loginElement['name'];
@@ -333,18 +330,10 @@ class XMLFileTesttakers extends XMLFile {
     public function getCustomTexts(): stdClass {
 
         $customTexts = [];
-        foreach ($this->xml->xpath('/Testtakers/CustomTexts/CustomText') as $customTextElement) {
+        foreach ($this->getXml()->xpath('/Testtakers/CustomTexts/CustomText') as $customTextElement) {
 
             $customTexts[(string) $customTextElement['key'] ?? ''] = (string) $customTextElement;
         }
         return (object) $customTexts;
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->testtakers = $this->getLoginCount();
-        return $meta;
     }
 }

@@ -1,18 +1,18 @@
 # Performs a single task on the whole project using the task-runner
 # Param: task - For available tasks see scripts in see /package.json # TODO make clear wich ones are for task runner and which ones are for local usage
 run-task-runner:
-	docker-compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 		--rm --no-deps \
 		testcenter-task-runner npm run $(task)
 
 # Container must be run at least once!
 sync-npm-files:
-	docker-compose cp testcenter-frontend:/app/package.json frontend/package.json
-	docker-compose cp testcenter-frontend:/app/package-lock.json frontend/package-lock.json
-	docker-compose cp testcenter-frontend:/app/node_modules frontend/node_modules
-	docker-compose cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
-	docker-compose cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
-	docker-compose cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
+	docker compose cp testcenter-frontend:/app/package.json frontend/package.json
+	docker compose cp testcenter-frontend:/app/package-lock.json frontend/package-lock.json
+	docker compose cp testcenter-frontend:/app/node_modules frontend/node_modules
+	docker compose cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
+	docker compose cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
+	docker compose cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
 
 update-docs:
 	make docs-frontend-compodoc

@@ -14,6 +14,14 @@ The source code and therefore the application is separated in three submodules:
 
 * Broadcasting-Service: Additional server component to make websocket-connections between frontend and backend possible 
 
+## Version Control (Git) Usage
+* We generally adhere to the Commit-Message standard formulated [here](https://cbea.ms/git-commit/)
+* In addition to the above rules we use the following prefixes for commit meesages:
+  * [FE] for frontend changes
+  * [BE] for backend changes
+  * [BS] for broadcasting-service changes
+  * [Setup] for changes to the infrastructure - container setup, CI script etc.
+
 ## Coding Standards
 
 ### Typescript & Javascript

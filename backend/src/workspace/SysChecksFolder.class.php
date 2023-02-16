@@ -95,11 +95,16 @@ class SysChecksFolder extends Workspace {
 
         $reports = $this->collectSysCheckReports($checkIds);
 
-        $filesToDelete = array_map(function(SysCheckReportFile $report) {
-            return 'SysCheck/reports/' . $report->getFileName();
-        }, $reports);
+        $deletionReport = [];
 
-        return $this->deleteFiles($filesToDelete);
+        foreach ($reports as $report) {
+
+            /* @var SysCheckReportFile $report */
+            $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
+            $deletionReport[$this->deleteFileFromFs($fullPath)][] = $report->getCheckId();
+        }
+
+        return $deletionReport;
     }
 
 

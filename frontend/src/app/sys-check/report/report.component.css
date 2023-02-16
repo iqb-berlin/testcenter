@@ -13,6 +13,10 @@ table thead td {
   padding-top: 0.4em
 }
 
+ul li {
+  word-break: break-all;
+}
+
 table tr td {
   min-width: 160px
 }

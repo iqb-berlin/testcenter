@@ -6,75 +6,71 @@ declare(strict_types=1);
 class XMLFileUnit extends XMLFile {
 
     const type = 'Unit';
+    const canBeRelationSubject = true;
+    const canBeRelationObject = true;
+
     const deprecatedElements = [
         '/Unit/Definition/@type',
         '/Unit/Metadata/Lastchange',
         '/Unit/Dependencies/file'
     ];
 
-    protected int $totalSize = 0;
-    protected string $playerId = '';
-    private array $dependencies = [];
 
-    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
+    public function crossValidate(WorkspaceCache $workspaceCache) : void {
 
-        parent::__construct($path, $validate, $isRawXml);
+        parent::crossValidate($workspaceCache);
 
         $this->checkRequestedAttachments();
-
-        if ($this->isValid()) {
-            $this->playerId = $this->readPlayerId();
-            $this->dependencies = $this->readDependencies();
-        }
-    }
-
-    public function crossValidate(WorkspaceValidator $validator) : void {
-
-        parent::crossValidate($validator);
-
-        $this->checkIfResourceExists($validator);
-        $this->getPlayerIfExists($validator);
+        $this->checkIfResourcesExist($workspaceCache);
+        $this->getPlayerIfExists($workspaceCache);
     }
 
 
-    public function getPlayerIfExists(WorkspaceValidator $validator): ?ResourceFile {
+    public function getPlayerIfExists(WorkspaceCache $validator): ?ResourceFile {
 
         if (!$this->isValid()) {
             return null;
         }
 
-        $resource = $validator->getResource($this->playerId, true);
+        $playerId = $this->readPlayerId();
+
+        $resource = $validator->getResource($playerId);
 
         if ($resource != null) {
-            $resource->addUsedBy($this);
+            $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));
         } else {
-            $this->report('error', "No suitable version of `{$this->playerId}` found");
+            $this->report('error', "Player not found `$playerId`.");
         }
 
         return $resource;
     }
 
 
-    private function checkIfResourceExists(WorkspaceValidator $validator): void {
+    private function checkIfResourcesExist(WorkspaceCache $validator): void {
 
-        $this->totalSize = $this->size;
+        $this->contextData['totalSize'] = $this->size;
 
         $definitionRef = $this->getDefinitionRef();
 
-        $resources = $this->getResources();
+        $resources = $this->readPlayerDependencies();
 
         if ($definitionRef) {
-            $resources[] = $definitionRef;
+            $resources['definition'] = $definitionRef;
         }
 
-        foreach ($resources as $resourceName) {
+        foreach ($resources as $key => $resourceName) {
 
-            $resourceId = FileName::normalize($resourceName, false);
+            $resourceId = strtoupper($resourceName);
             $resource = $validator->getResource($resourceId, false);
+
             if ($resource != null) {
-                $resource->addUsedBy($this);
-                $this->totalSize += $resource->getSize(); // TODO also for additional resources?
+
+                $relationshipType = ($key === 'definition') ? FileRelationshipType::isDefinedBy : FileRelationshipType::usesPlayerResource;
+                $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
+                $this->contextData['totalSize'] += $resource->getSize();
+
             } else {
+
                 $this->report('error', "Resource `$resourceName` not found");
             }
         }
@@ -83,13 +79,7 @@ class XMLFileUnit extends XMLFile {
 
     public function getTotalSize(): int {
 
-        return $this->totalSize;
-    }
-
-
-    public function getPlayerId(): string {
-
-        return $this->playerId;
+        return $this->contextData['totalSize'];
     }
 
 
@@ -99,87 +89,43 @@ class XMLFileUnit extends XMLFile {
             return '';
         }
 
-        $definition = $this->xml->xpath('/Unit/Definition | /Unit/DefinitionRef');
-        if (count($definition)) {
-            $playerId = strtoupper((string) $definition[0]['player']);
-            if (substr($playerId, -5) != '.HTML') {
-                $playerId = $playerId . '.HTML';
-            }
-            return $playerId;
-        }
+        $definition = $this->getXml()->xpath('/Unit/Definition | /Unit/DefinitionRef');
 
-        return '';
-    }
+        $playerIdRaw = count($definition) ? (string)$definition[0]['player'] : null;
 
-
-    public function getContent(WorkspaceValidator $workspaceValidator): string {
-
-        $this->crossValidate($workspaceValidator);
-        if (!$this->isValid()) {
+        if (!$playerIdRaw) {
             return '';
         }
 
-        $definitionNode = $this->xml->xpath('/Unit/Definition');
-        if (count($definitionNode)) {
-            return (string) $definitionNode[0];
-        }
-
-        $definitionRef = (string) $this->xml->xpath('/Unit/DefinitionRef')[0];
-        $unitContentFile = $workspaceValidator->getResource($definitionRef, true);
-
-        if (!$unitContentFile) {
-            throw new HttpError("Resource not found: `$definitionRef`");
-        }
-
-        return $unitContentFile->getContent();
+        return FileID::normalize($playerIdRaw);
     }
 
 
     public function getDefinitionRef(): string {
 
-        $definitionRefNodes = $this->xml->xpath('/Unit/DefinitionRef');
+        $definitionRefNodes = $this->getXml()->xpath('/Unit/DefinitionRef');
         return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
-    }
-
-
-    public function getResources(): array {
-
-        $resourceNodes = $this->xml->xpath('/Unit/Dependencies/File');
-        return array_map(
-            function(SimpleXMLElement $fileElem) { return (string) $fileElem; },
-            $resourceNodes
-        );
     }
 
 
     public function getDefinition(): string {
 
-        $definitionNodes = $this->xml->xpath('/Unit/Definition');
+        $definitionNodes = $this->getXml()->xpath('/Unit/Definition');
         return count($definitionNodes) ? (string) $definitionNodes[0] : '';
     }
 
 
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->totalSize = $this->getTotalSize();
-        return $meta;
-    }
-
-    public function getDependencies(): array {
-
-        return $this->dependencies;
-    }
-
-    private function readDependencies(): array {
+    private function readPlayerDependencies(): array {
 
         if (!$this->isValid()) {
             return [];
         }
 
+        $dE = $this->getXml()->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|/Unit/Dependencies/File[not(@for) or @for="player"]');
+
         return array_map(
             function($e) { return (string) $e;},
-            $this->xml->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|File[not(@for) or @for="player"]')
+            $dE
         );
     }
 
@@ -189,19 +135,18 @@ class XMLFileUnit extends XMLFile {
         $requestedAttachments = $this->getRequestedAttachments();
         $requestedAttachmentsCount = count($requestedAttachments);
         if ($requestedAttachmentsCount) {
-            $this->report('info', "`{$requestedAttachmentsCount}` attachment(s) requested.");
+            $this->report('info', "`$requestedAttachmentsCount` attachment(s) requested.");
         }
     }
 
 
     public function getRequestedAttachments(): array {
 
-        $variables = $this->xml->xpath('/Unit/BaseVariables/Variable[@type="attachment"]');
+        $variables = $this->getXml()->xpath('/Unit/BaseVariables/Variable[@type="attachment"]');
         $requestedAttachments = [];
         foreach ($variables as $variable) {
 
-            if (!is_a($variable, 'SimpleXMLElement')) {
-
+            if (!is_a($variable, SimpleXMLElement::class)) {
                 continue;
             }
 

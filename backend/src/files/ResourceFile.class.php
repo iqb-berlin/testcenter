@@ -1,38 +1,28 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
 
 class ResourceFile extends File {
 
     const type = 'Resource';
-    protected PlayerMeta $meta;
+    const canBeRelationSubject = false;
+    const canBeRelationObject = true;
 
-    public function __construct(string $path, bool $validate = true) {
+    protected function validate(): void {
 
-        $this->meta = new PlayerMeta([]);
-        parent::__construct($path);
-        if ($validate) {
-            $this->validate();
-        }
-    }
+        parent::validate();
 
+        $this->id = strtoupper($this->name);
 
-    private function validate() {
-
-        if ($this->isPlayer()) {
-            $this->validatePlayer();
+        if (FileExt::has($this->getPath(), 'HTML')) {
+            $this->readVeronaMetaData();
+            $this->id = strtoupper($this->getVeronaModuleId() . '-' . $this->versionMayor . '.' . $this->versionMinor);
         }
 
         if ($this->isPackage()) {
             $this->validatePackage();
         }
-    }
-
-
-    // TODO don't detect by extension, detect by metadata
-    public function isPlayer(): bool {
-
-        return FileExt::has($this->getPath(), 'HTML');
     }
 
 
@@ -43,25 +33,38 @@ class ResourceFile extends File {
 
 
     // player is not it's own class, because player and other resources are stores in the same dir
-    // TODO make player and resource two different types
-    private function validatePlayer() {
+    private function readVeronaMetaData() {
 
-        if (!$this->isValid() or !$this->getContent()) {
-            return;
+        if ($this->isValid() and $this->getContent()) {
+
+            $document = new DOMDocument();
+            $document->loadHTML($this->getContent(), LIBXML_NOERROR);
+
+            if ($metaV4Problem = $this->readVeronaMetadataV4($document)) {
+
+                if (!$this->readVeronaMetadataV35($document)) {
+
+                    if (!$this->readVeronaMetadataV3($document)) {
+
+                        $this->report('warning', $metaV4Problem);
+                    }
+                }
+            }
         }
 
-        $document = new DOMDocument();
-        $document->loadHTML($this->getContent(), LIBXML_NOERROR);
 
-        $metaV4Problem = $this->readPlayerMetadataV4($document);
+        if (!$this->getVersion()) {
 
-        if ($metaV4Problem) {
-            if (!$this->readPlayerMetadataV3($document)) {
-                $this->report('warning', $metaV4Problem);
-            }
-            if (!$this->meta->version) {
-                $this->meta->version = Version::guessFromFileName(basename($this->getPath()))['full'];
-            }
+            list(
+                $this->veronaModuleId,
+                ,
+                $this->versionMayor,
+                $this->versionMinor,
+                $this->versionPatch,
+                $this->versionLabel,
+            ) = array_values(Version::guessFromFileName(basename($this->getPath())));
+
+            $this->report('warning', 'Metadata missing. Version guessed from Filename.');
         }
 
         $this->applyMeta();
@@ -76,31 +79,27 @@ class ResourceFile extends File {
      *
      * @deprecated
      */
-    private function readPlayerMetadataV3(DOMDocument $document): bool {
+    private function readVeronaMetadataV3(DOMDocument $document): bool {
 
-        $this->meta->label = $this->getPlayerTitleV3($document);
+        $this->label = $this->getPlayerTitleV3($document);
 
         $meta = $this->getPlayerMetaElementV3($document);
         if (!$meta or !$meta->getAttribute('content')) {
             return false;
         }
 
-        // habits where differently back then
-        $contentAttr = $meta->getAttribute('content');
-        $includedVersion = Version::guessFromFileName($contentAttr . '.xxx');
-        $this->meta->playerId =
-            'verona-player-' .
-            implode(
-                '-',
-                array_diff(
-                    preg_split("/[-_@\W]/", $contentAttr),
-                    ['verona', 'player', 'iqb', $includedVersion['full']]
-                )
-        );
+        $this->veronaModuleId = $meta->getAttribute('content');
 
-        $this->meta->version = $meta->getAttribute('data-version');
-        $this->meta->veronaVersion = $meta->getAttribute('data-api-version');
-        $this->meta->description = $meta->getAttribute('data-description');
+        list(
+            $this->versionMayor,
+            $this->versionMinor,
+            $this->versionPatch,
+            $this->versionLabel
+        ) = array_values(Version::split($meta->getAttribute('data-version')));
+
+        $this->veronaVersion = $meta->getAttribute('data-api-version');
+        $this->description = $meta->getAttribute('data-description');
+        $this->veronaModuleType = 'player';
 
         $this->report('warning', 'Metadata in meta-tag is deprecated!');
         return true;
@@ -130,7 +129,59 @@ class ResourceFile extends File {
     }
 
 
-    private function readPlayerMetadataV4(DOMDocument $document): ?string {
+
+    /**
+     * This was another temporary way of defining meta-data of a player until in Verona4 a definitive way was defined.
+     * Since we produced a bunch of player-versions including this kind of metadata we should support it as long as
+     * we support Verona3.
+     *
+     * @deprecated
+     */
+    private function readVeronaMetadataV35(DOMDocument $document): bool {
+
+        $metaElem = $this->getPlayerMetaElementV4($document);
+        if (!$metaElem) {
+            return false;
+        }
+        try {
+            $meta = JSON::decode($metaElem->textContent, true);
+        } catch (Exception) {
+            return false;
+        }
+        if ($meta["@context"] !== "https://w3id.org/iqb/verona-modules") {
+            return false;
+        }
+        $this->label = $this->getPreferredTranslationV35($meta['name']);
+        $this->description = $this->getPreferredTranslationV35($meta['description']);
+        $this->veronaModuleId = $meta['@id'];
+        $this->veronaVersion = $meta['apiVersion'];
+        list(
+            $this->versionMayor,
+            $this->versionMinor,
+            $this->versionPatch,
+            $this->versionLabel
+        ) = array_values(Version::split($meta['version']));
+        $this->veronaModuleType = $meta['@type'];
+
+        $this->report('warning', 'Deprecated meta-data-format found!');
+        return true;
+    }
+
+
+    private function getPreferredTranslationV35(?array $multiLangItem): string {
+
+        if (!$multiLangItem or !count($multiLangItem)) {
+            return '';
+        }
+
+        $first = array_keys($multiLangItem)[0];
+        return $multiLangItem['de']
+            ?? $multiLangItem['en']
+            ?? $multiLangItem[$first];
+    }
+
+
+    private function readVeronaMetadataV4(DOMDocument $document): ?string {
 
         $metaElem = $this->getPlayerMetaElementV4($document);
         if (!$metaElem) {
@@ -147,15 +198,22 @@ class ResourceFile extends File {
         if ($meta['$schema'] !== "https://raw.githubusercontent.com/verona-interfaces/metadata/master/verona-module-metadata.json") {
             return "Wrong metadata-schema: {$meta['$schema']}";
         }
-        $this->meta->label = $this->getPreferredTranslation($meta['name']);
-        $this->meta->description = $this->getPreferredTranslation($meta['description']);
-        $this->meta->playerId = $meta['id'];
-        $this->meta->veronaVersion = $meta['specVersion'];
+        $this->label = $this->getPreferredTranslationV4($meta['name']);
+        $this->description = $this->getPreferredTranslationV4($meta['description']);
+        $this->veronaModuleId = $meta['id'];
+        $this->veronaVersion = $meta['specVersion'];
+        list(
+            $this->versionMayor,
+            $this->versionMinor,
+            $this->versionPatch,
+            $this->versionLabel
+        ) = array_values(Version::split($meta['version']));
+        $this->veronaModuleType = $meta['type'];
         return null;
     }
 
 
-    private function getPreferredTranslation(?array $multiLangItem): string {
+    private function getPreferredTranslationV4(?array $multiLangItem): string {
 
         if (!$multiLangItem or !count($multiLangItem)) {
             return '';
@@ -167,8 +225,8 @@ class ResourceFile extends File {
         foreach ($multiLangItem as $entry) {
             if ($entry['lang'] == 'en') return $entry['value'];
         }
-        $first = array_keys($multiLangItem)[0];
-        return $multiLangItem[$first]['value'];
+
+        return $multiLangItem[0]['value'];
     }
 
 
@@ -186,40 +244,24 @@ class ResourceFile extends File {
 
     private function applyMeta(): void {
 
-        if ($this->meta->label) {
+        if (!$this->label and $this->veronaModuleId) {
 
-            $this->label = $this->meta->label;
-
-        } else if ($this->meta->playerId) {
-
-            $this->label = $this->meta->playerId;
-            $this->label .= $this->meta->version ? '-' . $this->meta->version : '';
-            $this->meta->label = $this->label;
-        }
-
-        if ($this->meta->description) {
-
-            $this->description = $this->meta->description;
+            $this->label = $this->veronaModuleId;
+            $this->label .= $this->getVersion() ? '-' . $this->getVersion() : '';
         }
     }
 
 
     private function analyzeMeta(): void {
 
-        if ($this->meta->veronaVersion) {
-            $this->report('info', "Verona-Version: {$this->meta->veronaVersion}");
+        if ($this->veronaVersion) {
+            $this->report('info', "Verona-Version: $this->veronaVersion");
         }
 
-        if ($this->meta->playerId and $this->meta->version) {
-            if (
-                !FileName::hasRecommendedFormat(
-                    basename($this->getPath()),
-                    $this->meta->playerId,
-                    $this->meta->version,
-                    "html"
-                )
-            ) {
-                $this->report('warning', "Non-Standard-Filename: `{$this->meta->playerId}-{$this->meta->version}.html` expected.");
+        if ($this->veronaModuleId and $this->getVersion()) {
+            $recommendedFilename = "$this->veronaModuleId-{$this->getVersionMayorMinor()}.html";
+            if ($recommendedFilename != $this->name) {
+                $this->report('warning', "Non-Standard-Filename: `$this->veronaModuleId-{$this->getVersionMayorMinor()}.html` expected.");
             }
         }
     }
@@ -231,7 +273,6 @@ class ResourceFile extends File {
 
             $meta = ZIP::readMeta($this->getPath());
 
-            $this->meta->description = $meta['comment'] ?? '';
             $this->description = $meta['comment'] ?? '';
 
             $this->report('info', "Contains {$meta['count']} files.");
@@ -248,11 +289,6 @@ class ResourceFile extends File {
         return dirname($this->getPath()) . '/' . basename($this->getName(), '.itcr.zip');
     }
 
-
-    public function getPackageName(): string {
-
-        return basename($this->getName(), '.itcr.zip');
-    }
 
     public function installPackage(): void {
 
@@ -289,24 +325,5 @@ class ResourceFile extends File {
                 unlink($contentsDirName);
             }
         }
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $info = parent::getSpecialInfo();
-        foreach ($this->meta as $key => $value) {
-            $info->$key = $value;
-        }
-        return $info;
-    }
-
-
-    public function getContent(): string {
-
-        if ($this->isValid()) { // does it even exist?
-            return file_get_contents($this->path);
-        }
-        return "";
     }
 }

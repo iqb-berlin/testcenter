@@ -42,9 +42,10 @@ class BookletController extends Controller {
             throw new HttpForbiddenException($request, "Booklet with name `$bookletName` is not allowed for $personToken");
         }
 
-        $bookletName = $request->getAttribute('booklet_name');
-        $bookletsFolder = new BookletsFolder((int) $authToken->getWorkspaceId());
-        $xml = $bookletsFolder->findFileById('Booklet', $bookletName)->xml->asXML();
+        $Workspace = new Workspace($authToken->getWorkspaceId());
+        $booklet = $Workspace->getFileById('Booklet', $bookletName);
+        /* @var $booklet XMLFileBooklet */
+        $xml = $booklet->getContent();
 
         return $response->withHeader('Content-Type', 'application/xml')->write($xml);
     }

@@ -4,47 +4,44 @@ declare(strict_types=1);
 class File extends FileData {
 
     private const type = 'file';
-    public const canHaveDependencies = true;
+    public const canBeRelationSubject = false;
+    public const canBeRelationObject = false;
     protected string $name = '';
-    protected array $validationReport = [];
-    protected ?array $usedBy = [];
-    protected int $modificationTime = 0;
-    protected int $size = 0;
+    protected ?string $content = null;
 
-    static function get(string $path, string $type = null, bool $validate = false, string $content = ''): File {
+    static function get(string | FileData $init, string $type = null): File {
 
-        if (!$type) {
-            $type = File::determineType($path, $content);
+        if (!$type and !is_a($init, FileData::class)) {
+            $type = File::determineType($init);
         }
 
-        $isRawXml = false;
+        return match ($type) {
+            'Testtakers' => new XMLFileTesttakers($init),
+            'SysCheck' => new XMLFileSysCheck($init),
+            'Booklet' => new XMLFileBooklet($init),
+            'Unit' => new XMLFileUnit($init),
+            'Resource' => new ResourceFile($init),
+            'xml' => new XMLFile($init),
+            default => new File($init),
+        };
+    }
 
-        if ($content) {
 
-            $isRawXml = true;
-            $path = $content;
-        }
+    static function fromString(string $fileContent, string $fileName = 'virtual_file'): File {
 
-
-        switch ($type) {
-            case 'Testtakers': return new XMLFileTesttakers($path, $validate, $isRawXml);
-            case 'SysCheck': return new XMLFileSysCheck($path, $validate, $isRawXml);
-            case 'Booklet': return new XMLFileBooklet($path, $validate, $isRawXml);
-            case 'Unit': return new XMLFileUnit($path, $validate, $isRawXml);
-            case 'Resource': return new ResourceFile($path, $validate);
-            case 'xml': return new XMLFile($path, $validate, $isRawXml);
-        }
-
-        return new File($path, $type);
+        $file = new static(new FileData($fileName));
+        $file->content = $fileContent;
+        $file->validate();
+        return $file;
     }
 
 
     // TODO unit-test
-    private static function determineType(string $path, string $content = ''): string {
+    private static function determineType(string $path): string {
 
         if (strtoupper(substr($path, -4)) == '.XML') {
-            $asGenericXmlFile = new XMLFile(empty($content) ? $path : $content, false, !!$content);
-            if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownTypes)) {
+            $asGenericXmlFile = new XMLFile($path);
+            if (!in_array($asGenericXmlFile->rootTagName, XMLFile::knownRootTags)) {
                 return 'xml';
             }
             return $asGenericXmlFile->rootTagName;
@@ -54,19 +51,43 @@ class File extends FileData {
     }
 
 
-    public function __construct(string $path, string $type = null) {
+    public function __construct(string | FileData $init) {
+
+        if (is_a($init, FileData::class)) {
+
+            $this->path = $init->path;
+            $this->type = $init->type;
+            $this->id = $init->id;
+            $this->label = $init->label;
+            $this->description = $init->description;
+            $this->validationReport = $init->validationReport;
+            $this->relations = $init->relations;
+            $this->modificationTime = $init->modificationTime;
+            $this->size = $init->size;
+            $this->name = basename($init->path);
+            $this->contextData = $init->contextData;
+            $this->veronaModuleType = $init->veronaModuleType;
+            $this->veronaModuleId = $init->veronaModuleId;
+            $this->versionMayor = $init->versionMayor;
+            $this->versionMinor = $init->versionMinor;
+            $this->versionPatch = $init->versionPatch;
+            $this->versionLabel = $init->versionLabel;
+            $this->veronaVersion = $init->veronaVersion;
+            return;
+        }
 
         parent::__construct();
-        $this->type = $type;
-        $this->setFilePath($path);
-        $this->id = FileName::normalize($this->getName(), false);
-        if (strlen($this->getName()) > 120) {
-            $this->report('error', "Filename too long!");
-        }
+
+
+
+        $this->readFileMeta($init);
+        $this->id = strtoupper($this->getName());
+
+        $this->load();
     }
 
 
-    public function setFilePath(string $path): void {
+    public function readFileMeta(string $path): void { // TODO can this be private / merged with load?
 
         $this->path = $path;
 
@@ -75,7 +96,7 @@ class File extends FileData {
             $this->size = 0;
             $this->name = '';
             $this->modificationTime = 0;
-            $this->report('error', "file does not exist `" . dirname($path) . '/'. basename($path) . "`");
+            $this->report('error', "File does not exist `" . dirname($path) . '/'. basename($path) . "`");
 
         } else {
 
@@ -86,15 +107,27 @@ class File extends FileData {
     }
 
 
-    public function getType(): string {
+    protected function load(): void {
 
-        return $this->type ?? $this::type;
+        if (($this->content === null) and $this->path and file_exists($this->path)) {
+
+            $this->content = file_get_contents($this->path);
+            $this->validate();
+        }
     }
 
 
-    public function getModificationTime(): int {
+    protected function validate(): void {
 
-        return $this->modificationTime;
+        if (strlen($this->name) > 120) {
+            $this->report('error', "Filename too long!");
+        }
+    }
+
+
+    public function getType(): string {
+
+        return $this->type ?? $this::type;
     }
 
 
@@ -104,112 +137,80 @@ class File extends FileData {
     }
 
 
+    public function getVersion(): string {
+
+        return Version::asString($this->versionMayor, $this->versionMinor, $this->versionPatch, $this->versionLabel) ?? '';
+    }
+
+
+    public function getVersionMayorMinor(): string {
+
+        return "{$this->versionMayor}.{$this->versionMinor}";
+    }
+
+
     public function isValid(): bool {
 
-        return count($this->getErrors()) == 0;
+        return count($this->validationReport['error'] ?? []) == 0;
     }
 
 
     public function report(string $level, string $message): void {
 
-        $this->validationReport[] = new ValidationReportEntry($level, $message);
+        $this->validationReport[$level][] = $message;
     }
 
 
     // TODO unit-test
-    public function crossValidate(WorkspaceValidator $validator): void {
+    public function crossValidate(WorkspaceCache $workspaceCache): void {
 
-        $duplicates = $validator->findDuplicates($this);
+        if ($duplicateId = $workspaceCache->getDuplicateId($this)) {
 
-        if (count($duplicates)) {
+            $origFile = $workspaceCache->getFile($this->getType(), $this->getId());
 
-            $duplicateNames = implode(', ', array_map(function(File $file): string {
-                return "`{$file->getName()}`";
-            }, $duplicates));
-            $this->report('error', "Duplicate {$this->getType()}-Id: `{$this->getId()}` ({$duplicateNames})");
-        }
-    }
-
-    public function getValidationReport(): array {
-
-        return $this->validationReport;
-    }
-
-
-    // TODO maybe store report sorted by level at the first time
-    // TODO unit-test
-    public function getValidationReportSorted(): array {
-
-        return array_reduce(
-            $this->getValidationReport(),
-            function(array $carry, ValidationReportEntry $a) {
-                $carry[$a->level][] = $a->message;
-                return $carry;
-            },
-            []
-        );
-    }
-
-
-    public function getErrors(): array {
-
-        return array_filter($this->validationReport, function(ValidationReportEntry $validationReportEntry): bool {
-            return $validationReportEntry->level == 'error';
-        });
-    }
-
-
-    public function getErrorString(): string {
-
-        return implode(", ", array_map(function (ValidationReportEntry $entry): string {
-            return "[{$entry->level}] {$entry->message}";
-        }, $this->getErrors()));
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $info = new FileSpecialInfo([]);
-        if ($this->getDescription()) {
-            $info->description = $this->getDescription();
-        }
-        if ($this->getLabel()) {
-            $info->label = $this->getLabel();
-        }
-        return $info;
-    }
-
-
-    public function addUsedBy(File $file): void {
-
-        if (!$this::canHaveDependencies) {
-            return;
-        }
-
-        if (!in_array($file, $this->usedBy)) {
-
-            $this->usedBy["{$file->getType()}/{$file->getName()}"] = $file;
+            $this->report('error', "Duplicate {$this->getType()}-Id: `{$this->getId()}` ({$origFile->getName()})");
+            $this->id = $duplicateId;
         }
     }
 
 
-    public function isUsed(): bool {
+    public function addRelation(FileRelation $relation): void {
 
-        return count($this->usedBy) > 0;
+        $this->relations[] = $relation;
     }
 
 
-    public function getUsedBy(): array {
+    public function jsonSerialize(): mixed {
 
-        if (!$this::canHaveDependencies) {
-            return [];
+        $info = [
+            'label' => $this->getLabel(),
+            'description' => $this->getDescription(),
+        ];
+        if ($this->veronaModuleType) {
+            $info['veronaModuleType'] = $this->veronaModuleType;
+            $info['veronaVersion'] = $this->veronaVersion;
+            $info['version'] = $this->getVersion();
         }
 
-        $depending = [];
-        foreach ($this->usedBy as $localPath => /*+ @var File */ $file) {
-            $depending[$localPath] = $file;
-            $depending = array_merge($depending, $file->getUsedBy());
-        }
-        return $depending;
+        $output = [
+            'name' => $this->name,
+            'size' => $this->size,
+            'modificationTime' => $this->modificationTime,
+            'type' => $this->type,
+            'id' => $this->id,
+            'report' => $this->validationReport,
+            'info' => array_merge($info, $this->getContextData()
+            ),
+        ];
+
+        return $output;
+    }
+
+
+    public function getContent(): string {
+
+        $this->load();
+        return $this->content;
     }
 }
+

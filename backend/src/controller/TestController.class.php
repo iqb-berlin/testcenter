@@ -20,8 +20,8 @@ class TestController extends Controller {
             'bookletName' => null
         ]);
 
-        $bookletsFolder = new BookletsFolder($authToken->getWorkspaceId());
-        $bookletLabel = $bookletsFolder->getBookletLabel($body['bookletName']);
+        $Workspace = new Workspace($authToken->getWorkspaceId());
+        $bookletLabel = $Workspace->getFileById('Booklet', $body['bookletName'])->getLabel();
 
         $test = self::testDAO()->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
 
@@ -61,7 +61,7 @@ class TestController extends Controller {
 
         $bookletName = self::testDAO()->getBookletName($testId);
         $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $bookletFile = $workspaceController->findFileById('Booklet', $bookletName);
+        $bookletFile = $workspaceController->getFileById('Booklet', $bookletName);
 
         if (self::testDAO()->isTestLocked($testId)) {
             throw new HttpException($request,"Test #$testId `{$bookletFile->getLabel()}` is locked.", 423);
@@ -70,7 +70,7 @@ class TestController extends Controller {
         return $response->withJson([ // TODO include running, use only one query
             'mode' => $authToken->getMode(),
             'laststate' => self::testDAO()->getTestState($testId),
-            'xml' => $bookletFile->xml->asXML()
+            'xml' => $bookletFile->getContent()
         ]);
     }
 
@@ -83,9 +83,9 @@ class TestController extends Controller {
         $unitAlias = $request->getAttribute('alias');
         $testId = (int) $request->getAttribute('test_id');
 
-        $workspaceController = new Workspace($authToken->getWorkspaceId());
+        $workspace = new Workspace($authToken->getWorkspaceId());
         /* @var $unitFile XMLFileUnit */
-        $unitFile = $workspaceController->findFileById('Unit', $unitName);
+        $unitFile = $workspace->getFileById('Unit', $unitName);
 
         if (!$unitAlias) {
             $unitAlias = $unitName;
@@ -96,40 +96,49 @@ class TestController extends Controller {
         // TODO each part could have a different type
         $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
 
-        $dependencies = [
-            [
-                'name' => $unitFile->getPlayerId(),
-                'type' => 'player'
-            ]
-        ];
 
-        foreach ($unitFile->getDependencies() as $dep) {
-            $dependencies[] = [
-                'name' => $dep,
-                'type' => 'package'
-            ];
-        }
-
-        $unit = [
+        $res = [
             'state' => (object) self::testDAO()->getUnitState($testId, $unitAlias),
             'dataParts' => (object) $unitData['dataParts'],
             'unitStateDataType' => $unitData['dataType'],
-            'playerId' => $unitFile->getPlayerId(),
-            'dependencies' => $dependencies
+            'dependencies' => []
         ];
 
-        $definitionRef = $unitFile->getDefinitionRef();
-        if ($definitionRef) {
-            $unit['definitionRef'] = $definitionRef;
+        $unitRelations = $workspace->getFileRelations($unitFile);
+
+        foreach ($unitRelations as $unitRelation) {
+
+            /* @var FileRelation $unitRelation */
+
+            switch ($unitRelation->getRelationshipType()) {
+
+                case FileRelationshipType::isDefinedBy:
+                    $res['definitionRef'] = $unitRelation->getTargetName();
+                    break;
+
+                case FileRelationshipType::usesPlayer:
+                    $res['dependencies'][] = [
+                        'name' => $unitRelation->getTargetName(),
+                        'type' => 'player'
+                    ];
+                    $res['playerId'] = $unitRelation->getTargetId();
+                    break;
+
+                case FileRelationshipType::usesPlayerResource:
+                    $res['dependencies'][] = [
+                        'name' => $unitRelation->getTargetName(),
+                        'type' => 'package' // TODO naming is very bad. can be a single file as well. should be: 'player-dependency'
+                    ];
+                    break;
+            }
         }
-        $definition = $unitFile->getDefinition();
-        if ($definition) {
-            $unit['definition'] = $definition;
+
+        if (!isset($res['definitionRef'])) {
+
+            $res['definition'] = $unitFile->getDefinition();
         }
 
-
-
-        return $response->withJson($unit);
+        return $response->withJson($res);
     }
 
 
@@ -144,10 +153,13 @@ class TestController extends Controller {
         }
 
         $resourceName = $request->getAttribute('resource_name');
-        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f'; // TODO rename
+        $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f';
 
-        $workspaceController = new Workspace($authToken->getWorkspaceId());
-        $resourceFile = $workspaceController->getResource($resourceName, $allowSimilarVersion);
+        $workspace = new Workspace($authToken->getWorkspaceId());
+
+        $fileId = $allowSimilarVersion ? FileID::normalize($resourceName) : strtoupper($resourceName);
+
+        $resourceFile = $workspace->getFileById('Resource', $fileId);
 
         return $response
             ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
@@ -359,7 +371,8 @@ class TestController extends Controller {
         $testId = (int) $request->getAttribute('test_id');
 
         $lockEvent = RequestBodyParser::getElements($request, [
-            'timeStamp' => null
+            'timeStamp' => null,
+            'message' => ''
         ]);
 
         self::testDAO()->lockTest($testId);

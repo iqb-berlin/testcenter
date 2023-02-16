@@ -11,7 +11,7 @@
           <div [formGroup]="form" class="formList" fxLayout="column" *ngIf="form">
             <div *ngFor="let q of ds.checkConfig?.questions">
               <div [ngSwitch]="q.type" class="formEntry" fxLayout="column" fxLayoutGap="5px">
-                <h3 *ngSwitchCase="'header'">{{ q.prompt }}{{ q.value }}</h3>
+                <h3 *ngSwitchCase="'header'">{{ q.options.length > 0 ? q.options : q.prompt }}</h3>
                 <mat-form-field *ngSwitchCase="'text'">
                   <p>{{q.prompt}}</p>
                   <textarea matInput data-cy="textarea" [formControlName]="q.id" [id]="q.id" cdkTextareaAutosize cdkAutosizeMinRows="2" class="formEntry"></textarea>

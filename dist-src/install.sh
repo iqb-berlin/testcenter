@@ -4,8 +4,8 @@ set -e
 
 APP_NAME='testcenter'
 REPO_URL=iqb-berlin/testcenter
-REQUIRED_PACKAGES=("docker" "docker-compose")
-OPTIONAL_PACKAGES=(make)
+REQUIRED_PACKAGES=("docker -v" "docker compose version")
+OPTIONAL_PACKAGES=("make -v")
 
 declare -A ENV_VARS
 ENV_VARS[HOSTNAME]=localhost
@@ -25,7 +25,7 @@ check_prerequisites() {
   for app in "${REQUIRED_PACKAGES[@]}"
   do
     {
-      $app -v > /dev/null 2>&1
+      $app > /dev/null 2>&1
     } || {
       echo "$app not found, please install before running!"
       exit 1
@@ -34,7 +34,7 @@ check_prerequisites() {
   for app in "${OPTIONAL_PACKAGES[@]}"
   do
     {
-      $app -v > /dev/null 2>&1
+      $app > /dev/null 2>&1
     } || {
       echo "$app not found! It is recommended to have it installed."
       read  -p 'Continue anyway? (y/N): ' -r -n 1 -e CONTINUE
@@ -74,6 +74,7 @@ download_files() {
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/update.sh
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
+  wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/scripts/database/my.cnf
   chmod +x update.sh
   echo "Download done"
 }
@@ -107,7 +108,7 @@ choose_version
 
 read  -p '1. Install directory: ' -e -i "`pwd`/$APP_NAME" TARGET_DIR
 
-if [ $(ls -A $TARGET_DIR 2> /dev/null | wc -l) -gt 0 ]
+if [ "$(ls -A $TARGET_DIR 2> /dev/null | wc -l)" -gt 0 ]
   then
     read -p "You have selected a non empty directory. Continue anyway? (y/N)" -r -n 1 -e CONTINUE
     if [[ ! $CONTINUE =~ ^[yY]$ ]]; then

@@ -3,7 +3,7 @@
 class ResourceFileMock extends ResourceFile {
     /** @noinspection PhpMissingParentConstructorInspection */
     public function __construct(string $name) {
-        $this->id = $name;
+        $this->id = FileID::normalize($name);
         $this->name = $name;
     }
 

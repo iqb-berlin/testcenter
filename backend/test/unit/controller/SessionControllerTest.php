@@ -85,7 +85,7 @@ final class SessionControllerTest extends TestCase {
             ->willReturn('A BOOKLET LABEL READ FROM FILE');
         $mockWorkspace = $this->createMock('Workspace');
         $mockWorkspace
-            ->method('findFileById')
+            ->method('getFileById')
             ->willReturn($mockBooklet);
 
         SessionControllerInjector::injectWorkspace($mockWorkspace, 1);

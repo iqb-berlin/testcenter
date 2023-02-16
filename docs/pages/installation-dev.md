@@ -20,11 +20,12 @@ TODO explain IDEA stuff etc.
 ## Preconditions
 
 Before you follow the instructions below, you need to 
-install [docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods),
-[docker-compose](https://docs.docker.com/compose/install/) and `make`.
+install [Docker](https://docs.docker.com/engine/install/ubuntu/#installation-methods), and `make`.
 We do not explain these applications, this is beyond the scope of this document.
 
-TODO add versions
+* Docker 20
+* [Docker-compose plugin](https://docs.docker.com/compose/install/linux/) 
+* Make 4.3
 
 Although all steps below could be done in another operating system environment, we go for a unix/linux.
 
