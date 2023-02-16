@@ -4,6 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+### Bugfixes
+* Die Zeitbeschränkung kann nicht mehr durch Click auf das IQB-Logo umgangen werden
+
 ## 14.1.0
 ### Bugfixes**
 * Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.

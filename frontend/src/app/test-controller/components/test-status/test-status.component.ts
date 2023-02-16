@@ -52,4 +52,8 @@ export class TestStatusComponent implements OnInit, OnDestroy {
   terminateTest(): void {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', true, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
   }
+
+  continueTest() {
+    this.tcs.setUnitNavigationRequest(this.tcs.currentUnitSequenceId.toString(10));
+  }
 }
