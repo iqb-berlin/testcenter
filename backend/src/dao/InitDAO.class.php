@@ -72,7 +72,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $login = $this->createLoginSession($login);
-        $this->createPersonSession($login, 'xxx', 0,true);
+        $this->createOrUpdatePersonSession($login, 'xxx',true);
     }
 
 
@@ -80,7 +80,7 @@ class InitDAO extends SessionDAO {
 
         $superAdminDAO = new SuperAdminDAO();
         $adminDAO = new AdminDAO();
-        $superAdminDAO->createUser("workspace_admin", "anotherPassword", false);
+        $superAdminDAO->createUser("workspace_admin", "anotherPassword");
         $adminDAO->createAdminToken("workspace_admin", "anotherPassword", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
         $superAdminDAO->createUser("expired_user", "whatever", true);
         $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
@@ -102,7 +102,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2030 12:00')
         );
         $loginSession = $this->createLoginSession($login);
-        $personsSessions['test-group-monitor'] = $this->createPersonSession($loginSession, '', 0);
+        $personsSessions['test-group-monitor'] = $this->createOrUpdatePersonSession($loginSession, '');
 
         $login = new Login(
             'expired-group-monitor',
@@ -115,7 +115,7 @@ class InitDAO extends SessionDAO {
             TimeStamp::fromXMLFormat('1/1/2000 12:00')
         );
         $loginSession = $this->createLoginSession($login);
-        $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', 0,true);
+        $personsSessions['expired-group-monitor'] = $this->createOrUpdatePersonSession($loginSession, '',true);
 
         return $personsSessions;
     }
@@ -157,13 +157,12 @@ class InitDAO extends SessionDAO {
     }
 
 
-    public function clearDb(): array {
+    public function clearDB(): array {
 
         $droppedTables = [];
 
-        if ($this->getDBType() == 'mysql') {
-            $this->_('SET FOREIGN_KEY_CHECKS = 0');
-        }
+        $this->_('SET FOREIGN_KEY_CHECKS = 0');
+
 
        foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
 
@@ -171,13 +170,20 @@ class InitDAO extends SessionDAO {
                 $droppedTables[] = $table;
                 $this->_("drop table $table");
             }
-        }
+       }
 
-        if ($this->getDBType() == 'mysql') {
-            $this->_('SET FOREIGN_KEY_CHECKS = 1');
-        }
+       $this->_('SET FOREIGN_KEY_CHECKS = 1');
 
-        return $droppedTables;
+       return $droppedTables;
+    }
+
+
+    public function cloneDB(string $prodDBName): void {
+
+        foreach (array_reverse($this::tables) as $table) {
+
+            $r = $this->_("create table $table like $prodDBName.$table");
+        }
     }
 
 
@@ -221,7 +227,7 @@ class InitDAO extends SessionDAO {
             $entries = $this->_("SELECT * FROM $table limit 10", [], true);
             return count($entries) ? 'used' : 'empty';
 
-        } catch (Exception $exception) {
+        } catch (Exception) {
 
             return 'missing';
         }
@@ -240,7 +246,7 @@ class InitDAO extends SessionDAO {
     public function importScanImage(int $workspaceId, string $imagePath): void {
 
         $adminDAO = new AdminDAO();
-        $attachment = $adminDAO->getAttachmentById('1:UNIT.SAMPLE:v2');
+        $attachment = $adminDAO->getAttachmentById("$workspaceId:UNIT.SAMPLE:v2");
         AttachmentFiles::importFiles($workspaceId, [$imagePath], $attachment, 'image');
     }
 
@@ -372,7 +378,7 @@ class InitDAO extends SessionDAO {
                 $entries = $this->_("SELECT * FROM $table", [], true);
                 $report[$table] = CSV::build($entries);
 
-            } catch (Exception $exception) {
+            } catch (Exception) {
 
                 $report[$table] = 'not found';
             }

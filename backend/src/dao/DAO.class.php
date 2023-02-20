@@ -6,20 +6,20 @@ declare(strict_types=1);
 class DAO {
 
     const tables = [ // because we use different types of DB is difficult to get table list by command
+        'users',
+        'workspaces',
+        'login_sessions',
+        'person_sessions',
+        'tests',
+        'units',
         'admin_sessions',
         'test_commands',
         'test_logs',
         'test_reviews',
-        'tests',
         'logins',
-        'login_sessions',
-        'person_sessions',
         'unit_logs',
         'unit_reviews',
-        'units',
-        'users',
         'workspace_users',
-        'workspaces',
         'meta',
         'unit_data',
         'files',
@@ -85,7 +85,7 @@ class DAO {
     }
 
 
-    protected function randomToken(string $type, string $name) {
+    protected function randomToken(string $type, string $name): string {
 
         if (DB::getConfig()->staticTokens) {
 
@@ -189,5 +189,17 @@ class DAO {
         }
 
         return $testState;
+    }
+
+
+    public function beginTransaction(): void {
+
+        $this->pdoDBhandle->beginTransaction();
+    }
+
+
+    public function rollBack(): void {
+
+        $this->pdoDBhandle->rollBack();
     }
 }

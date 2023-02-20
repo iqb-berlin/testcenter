@@ -130,7 +130,7 @@ try  {
     if ($installationArguments->overwrite_existing_installation) {
 
         CLI::warning("Clear database");
-        $tablesDropped = $initDAO->clearDb();
+        $tablesDropped = $initDAO->clearDB();
         CLI::p("Tables dropped: " . implode(', ', $tablesDropped));
     }
 

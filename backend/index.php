@@ -17,20 +17,9 @@ try {
     require_once "vendor/autoload.php";
     require_once "autoload.php";
 
+    if (isset($_SERVER['HTTP_TESTMODE'])) {
 
-    $isPreparedForRealDataTest =
-        (getenv('TESTMODE_REAL_DATA', true) == 'yes') ||
-        (getenv('TESTMODE_REAL_DATA') == 'yes');
-    $isTestModeRequested = isset($_SERVER['HTTP_TESTMODE']);
-
-    if ($isTestModeRequested and $isPreparedForRealDataTest) {
-
-        // dangerous: uses the real MySql database and the real data-directory for testing. Data gets erased.
-        TestEnvironment::setUpEnvironmentForRealDataE2ETests();
-
-    } else if ($isTestModeRequested) {
-
-        TestEnvironment::setUpEnvironmentForE2eTests();
+        TestEnvironment::setup($_SERVER['HTTP_TESTMODE']);
 
     } else { // productive
 

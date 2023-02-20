@@ -1,65 +1,53 @@
 <?php
 declare(strict_types=1);
+
+use JetBrains\PhpStorm\NoReturn;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamWrapper;
 
-// TODO unit-tests galore
-
 class TestEnvironment {
-
     const staticDate = 1627545600;
 
-    static function setUpEnvironmentForRealDataE2ETests(): void {
+    public static function setup(string $testMode): void {
+
+        $testMode = in_array($testMode, ['prepare', 'api', 'integration']) ? $testMode : 'api';
+        $resetBeforeCall = $testMode == 'prepare';
+        $resetAfterCall = $testMode == 'api';
 
         try {
 
-            define('DATA_DIR', ROOT_DIR . '/data');
+            // TODO restore last state of test-data-dir when $testMode == 'integration'
+            self::setUpVirtualFilesystem();
 
-            /* @var DBConfig $dbConfig */
-            $dbConfig = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
-            $dbConfig->staticTokens = true;
-            DB::connect($dbConfig);
-
-            TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
+            TimeStamp::setup(null, '@' . self::staticDate);
             BroadcastService::setup('', '');
             XMLSchema::setup(false);
-            FileTime::setup(TestEnvironment::staticDate);
-            TestEnvironment::makeRandomStatic();
+            self::makeRandomStatic();
 
-            TestEnvironment::resetState();
-            TestEnvironment::setUpTestData();
+            self::createTestFiles();
+            self::overwriteModificationDatesVfs();
 
-        } catch (Throwable $exception) {
-
-            TestEnvironment::bailOut($exception);
-        }
-    }
-
-
-    static function setUpEnvironmentForE2eTests(): void {
-
-        try {
-
-            TestEnvironment::setUpVirtualFilesystem();
-
-            DB::connect(new DBConfig([
-                'type' => 'temp',
-                'staticTokens' => true,
-                'insecurePasswords' => true
-            ]));
-
-            TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
-            BroadcastService::setup('', '');
-            XMLSchema::setup(false);
-            TestEnvironment::makeRandomStatic();
+            $config = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
+            /* @var $config DBConfig */
+            $prodDBName = $config->dbname;
+            $config->dbname = 'TMP_' . $config->dbname;
+            $config->staticTokens = true;
+            $config->insecurePasswords = true;
+            DB::connect($config);
 
             $initDAO = new InitDAO();
-            $initDAO->runFile(ROOT_DIR . '/backend/test/database.sql');
 
-            TestEnvironment::setUpTestData();
-            TestEnvironment::overwriteModificationDatesVfs();
-            TestEnvironment::debugVirtualEnvironment();
+            if ($resetBeforeCall) {
+                $initDAO->clearDB();
+                $initDAO->cloneDB($prodDBName);
+                self::createTestData();
+            }
+
+            if ($resetAfterCall) {
+                $initDAO->beginTransaction();
+                register_shutdown_function([self::class, "rollback"]);
+            }
 
         } catch (Throwable $exception) {
 
@@ -68,27 +56,9 @@ class TestEnvironment {
     }
 
 
-    private static function makeRandomStatic(): void {
+    public static function makeRandomStatic(): void {
 
         srand(1);
-    }
-
-
-    private static function resetState(): void {
-
-        Folder::deleteContentsRecursive(DATA_DIR);
-
-        $initDAO = new InitDAO();
-
-        $initDAO->clearDb();
-
-        $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
-        $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", true);
-
-        $dbStatus = $initDAO->getDbStatus();
-        if ($dbStatus['missing']) {
-            throw new Exception("Database reset failed: {$dbStatus['message']}");
-        }
     }
 
 
@@ -102,18 +72,24 @@ class TestEnvironment {
     }
 
 
-    private static function setUpTestData(): void {
+    private static function createTestFiles(): void {
+
+        $initializer = new WorkspaceInitializer();
+        $initializer->importSampleFiles(1);
+        Folder::createPath(DATA_DIR . "/ws_1/UnitAttachments");
+        $initializer->createSampleScanImage("UnitAttachments/lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png", 1);
+    }
+
+    private static function createTestData(): void {
 
         $initDAO = new InitDAO();
 
-        $workspaceId = $initDAO->createWorkspace('sample_workspace');
-        $workspace = new Workspace($workspaceId);
-        $adminId = $initDAO->createAdmin('super', 'user123');
-        $initDAO->addWorkspacesToAdmin($adminId, [$workspaceId]);
+        $initDAO->createWorkspace('sample_workspace');
 
-        $initializer = new WorkspaceInitializer();
-        $initializer->cleanWorkspace($workspaceId);
-        $initializer->importSampleFiles($workspaceId);
+        $adminId = $initDAO->createAdmin('super', 'user123');
+        $initDAO->addWorkspacesToAdmin($adminId, [1]);
+
+        $workspace = new Workspace(1);
         $workspace->storeAllFiles();
 
         $initDAO->createSampleLoginsReviewsLogs();
@@ -121,12 +97,13 @@ class TestEnvironment {
         $initDAO->createSampleWorkspaceAdmins();
         $initDAO->createSampleMetaData();
         $personSessions = $initDAO->createSampleMonitorSessions();
-        $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
+        $groupMonitor = $personSessions['test-group-monitor'];
+        /* @var $groupMonitor PersonSession */
         $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
 
-        $fileName = 'sample_scanned_image.png';
-        $initializer->createSampleScanImage($fileName, $workspaceId);
-        $initDAO->importScanImage($workspaceId, $fileName);
+        $initializer = new WorkspaceInitializer();
+        $initializer->createSampleScanImage('sample_scanned_image.png', 1);
+        $initDAO->importScanImage(1, 'sample_scanned_image.png');
     }
 
 
@@ -145,30 +122,17 @@ class TestEnvironment {
     }
 
 
-    public static function debugVirtualEnvironment(): void {
+    private static function rollback(): void {
 
-//        $fullState = "# DATA_DIR\n\n";
-//        $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), true);
-
-        $fullState = "\n\n# Database\n";
         $initDAO = new InitDAO();
-        foreach ($initDAO->getDBContentDump() as $table => $content) {
-
-            $fullState .= "## $table\n$content\n";
-        }
-        $tmpDir = ROOT_DIR . '/tmp';
-        if (!$tmpDir) {
-
-            mkdir($tmpDir);
-        }
-        print_r($fullState);
-        file_put_contents($tmpDir . '/virtual_environment_dump.md', $fullState);
+        $initDAO->rollBack();
     }
 
 
+    #[NoReturn]
     private static function bailOut(Throwable $exception): void {
 
-        TestEnvironment::debugVirtualEnvironment();
+        // TestEnvironment::debugVirtualEnvironment();
         $errorUniqueId = ErrorHandler::logException($exception, true);
         http_response_code(500);
         header("Error-ID:$errorUniqueId");

@@ -87,6 +87,8 @@ class AttachmentFiles {
 
         $filePath = DATA_DIR . "/ws_$workspaceId/UnitAttachments/$fileName";
 
+        $d = Folder::getContentsRecursive(DATA_DIR);
+
         if (!file_exists($filePath)) {
             throw new HttpError("File not found:`$attachment->attachmentId`", 404);
         }

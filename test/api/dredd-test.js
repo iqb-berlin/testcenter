@@ -20,7 +20,15 @@ const confirmTestConfig = async done => {
   }
 
   const getStatus = () => new Promise(resolve => {
-    request(`${apiUrl}/system/config`, (error, response) => resolve(!response ? -1 : response.statusCode));
+    request(
+      {
+        url: `${apiUrl}/system/config`,
+        headers: {
+          TestMode: 'prepare'
+        }
+      },
+      (error, response) => resolve(!response ? -1 : response.statusCode)
+    );
   });
 
   const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
