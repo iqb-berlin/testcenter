@@ -11,6 +11,10 @@
     "label" : "Schalterbeschriftung für 'Test beenden'",
     "defaultvalue" : "Test beenden"
   },
+  "login_testResumeButtonLabel" : {
+    "label" : "Schalterbeschriftung für 'Test fortsetzen'",
+    "defaultvalue" : "Test fortsetzen"
+  },
   "booklet_warningLeaveTimerBlockTextPrompt" : {
     "label" : "Schalterbeschriftung für 'Zurück zum Test'",
     "defaultvalue" : "Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?"

@@ -26,7 +26,6 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
-
   private checkAndSolveMaxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
@@ -40,6 +39,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       this.tcs.interruptMaxTimer();
       return of(true);
     }
+
     const dialogCDRef = this.confirmDialog.open(ConfirmDialogComponent, {
       width: '500px',
       data: <ConfirmDialogData>{
@@ -104,6 +104,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 
   private notifyNavigationDenied(reasons: VeronaNavigationDeniedReason[], dir: 'Next' | 'Prev'): Observable<boolean> {
+    console.log("navigationdenied ")
     if (this.tcs.testMode.forceNaviRestrictions) {
       this.tcs.notifyNavigationDenied(this.tcs.currentUnitSequenceId, reasons);
 
@@ -147,7 +148,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     }
 
     const target = nextState.url.split('/').pop();
-    if (['route-dispatcher', 'status'].indexOf(target) > -1) { // clicking on the IQB-Logo
+    if (['route-dispatcher'].indexOf(target) > -1) { // clicking on the IQB-Logo
       return true;
     }
 
@@ -162,6 +163,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       newUnit = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
     }
 
+
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
 
     if (forceNavigation) {
@@ -169,6 +171,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return of(true);
     }
 
+    console.log("at the return")
     return this.checkAndSolveCompleteness(newUnit)
       .pipe(
         switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveMaxTime(newUnit)))
