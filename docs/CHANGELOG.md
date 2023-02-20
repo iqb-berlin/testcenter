@@ -4,9 +4,14 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## next
+## [next]
+### Bugfixes
+* Benutzerdefinierte Beschriftungen (CustomTexts) werden korrekt zurückgesetzt, wenn neu eingeloggt bzw. ein 
+  neues Booklet geladen wird. 
+* Die Zeitbeschränkung kann nicht mehr durch Click auf das IQB-Logo umgangen werden
 
 ### Sicherheit
+* Updates sehr vieler NPM-Pakete, Basis-Images und anderer Komponenten
 * Ausschalten der Unterstützung für veraltete TLS-Versionen 1.0 and 1.1
 * Einschränkung der verfügbaren TLS-Cipher-Suiten
   - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
@@ -15,6 +20,28 @@ layout: default
   - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
   - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
   - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+
+## 14.1.0
+### Bugfixes
+* Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
+* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
+* Das Löschen von abhängigen Dateien wurde nicht korrekt blockiert.
+* XML-Dateien, die ein BOM enthalten, können trotzdem verwendet werden.
+
+### :warning: Hinweis für Administratoren
+
+Wenn Sie *nicht* unsere update-routine (update.sh) verwenden, müssen Sie selbst dafür sorgen, dass ab jetzt immer die
+auch die MySQL-Config zur Verfügung steht.
+```
+wget -nv -O config/my.cnf https://raw.githubusercontent.com/iqb-berlin/testcenter/14.1.0/scripts/database/my.cnf
+```
+
+## 14.0.1
+
+### Bugfixes
+* Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
+* Kleiner Fehler behoben beim Laden von Playern, deren Dateiname von der ID abweicht.
+
 
 ## 14.0.0
 ### :warning: Wichtige Änderungen für Studienleitungen

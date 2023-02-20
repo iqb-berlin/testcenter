@@ -78,6 +78,8 @@ final class WorkspaceControllerTest extends TestCase {
         require_once "src/files/XMLFileBooklet.class.php";
         require_once "src/files/XMLFileUnit.class.php";
 
+        XMLSchema::setup(false);
+
         $this->callable = [WorkspaceController::class, 'getReport'];
         $this->reportMock = Mockery::mock('overload:' . Report::class);
         $this->adminDaoMock = Mockery::mock(AdminDAO::class);

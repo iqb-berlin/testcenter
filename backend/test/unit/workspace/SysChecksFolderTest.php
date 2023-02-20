@@ -28,6 +28,7 @@ class SysChecksFolderTest extends TestCase {
         require_once "src/helper/Version.class.php";
         require_once "src/helper/XMLSchema.class.php";
         require_once "src/helper/JSON.class.php";
+        require_once "test/unit/mock-classes/ExternalFileMock.php";
         require_once "src/data-collection/FileData.class.php";
         require_once "src/files/File.class.php";
         require_once "src/files/XMLFile.class.php";

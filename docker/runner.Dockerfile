@@ -1,4 +1,4 @@
-FROM iqbberlin/testcenter-frontend-dev-base:latest
+FROM node:16.19-bullseye
 
 ARG NODE_ENV=development
 
