@@ -30,11 +30,16 @@ layout: default
 
 ### :warning: Hinweis für Administratoren
 
-Wenn Sie *nicht* unsere update-routine (update.sh) verwenden, müssen Sie selbst dafür sorgen, dass ab jetzt immer die
-auch die MySQL-Config zur Verfügung steht.
+Die folgende Hinweise sind nur relevant, falls nicht das Standardsetup samt Update-Mechanismus verwendet wird.
+
+* Die Konfigurationsdatei für die Datenbank muss zur Verfügung stehen.
+Beispielkommando mit wget:
 ```
 wget -nv -O config/my.cnf https://raw.githubusercontent.com/iqb-berlin/testcenter/14.1.0/scripts/database/my.cnf
 ```
+* Der Name der TLS-Konfigurationsdatei wurde angepasst und zusätzliche Sicherheitseinstellungen hinzugefügt.
+Falls der Patch-Mechanismus nicht verwendet wird, kann der Standardinhalt per Hand übertragen werden.
+  ([Pfad zur Standardeinstellung](https://raw.githubusercontent.com/iqb-berlin/testcenter/master/dist-src/tls-config.yml))
 
 ## 14.0.1
 
