@@ -71,7 +71,7 @@ download_files() {
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
-  wget -nv -O config/ssl-config.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/ssl-config.yml
+  wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/tls-config.yml
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/update.sh
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
