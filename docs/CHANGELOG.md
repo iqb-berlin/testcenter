@@ -12,6 +12,8 @@ layout: default
 
 ### Sicherheit
 * Updates sehr vieler NPM-Pakete, Basis-Images und anderer Komponenten
+* CORS wurde aktiviert
+* Verschiedene tls-security-headers hinzugefügt
 
 ## 14.1.0
 ### Bugfixes
