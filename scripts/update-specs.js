@@ -72,7 +72,7 @@ const updateDocs = done => {
   done();
 };
 
-const clearTmpDir = done => {
+exports.clearTmpDir = done => {
   cliPrint.headline('clear tmp dir');
 
   fsExtra.emptyDirSync(tmpDir);
@@ -87,7 +87,7 @@ const clearTmpDir = done => {
  * This places the API-Page and the compiled, Re-Docs-compatible specs into the docs folder.
  */
 exports.updateSpecs = gulp.series(
-  clearTmpDir,
+  exports.clearTmpDir,
   prepareDocsDestinationFolder,
   exports.mergeSpecFiles,
   updateDocs
