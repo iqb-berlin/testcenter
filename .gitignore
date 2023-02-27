@@ -26,6 +26,7 @@
 # backend config (when running locally)
 /backend/config/DBConnectionData.json
 /backend/config/system.json
+/.htaccess
 
 # frontend config
 /frontend/src/environments/environment.ts
@@ -47,6 +48,7 @@
 # tmp
 /tmp
 /docs/dist
+/frontend/.angular
 
 # env
 /.env
@@ -60,4 +62,5 @@
 /e2e/.nyc_output
 /e2e/.coverage
 
-/frontend/.angular
+# additional scripts
+/testcenter-scripts

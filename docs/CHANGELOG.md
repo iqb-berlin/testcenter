@@ -5,6 +5,10 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
+### UI
+* Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
+
+## 14.2.0
 ### Bugfixes
 * Benutzerdefinierte Beschriftungen (CustomTexts) werden korrekt zurückgesetzt, wenn neu eingeloggt bzw. ein 
   neues Booklet geladen wird. 
@@ -12,6 +16,8 @@ layout: default
 
 ### Sicherheit
 * Updates sehr vieler NPM-Pakete, Basis-Images und anderer Komponenten
+* CORS wurde aktiviert
+* Verschiedene tls-security-headers hinzugefügt
 
 ## 14.1.0
 ### Bugfixes
