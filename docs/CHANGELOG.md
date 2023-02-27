@@ -4,6 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+### UI
+* Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
+
 ## 14.2.0
 ### Bugfixes
 * Benutzerdefinierte Beschriftungen (CustomTexts) werden korrekt zurückgesetzt, wenn neu eingeloggt bzw. ein 
