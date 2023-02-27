@@ -244,6 +244,15 @@ class SuperAdminDAO extends DAO {
             throw new HttpError("Workspace with id `$wsId` does not exist!", 400);
         }
 
+        $workspace = $this->_(
+            "SELECT workspaces.id, workspaces.name FROM workspaces WHERE `name` = :ws_name",
+            [':ws_name' => $newName]
+        );
+
+        if ($workspace) {
+            throw new HttpError("Workspace with name `$newName` already exists!", 400);
+        }
+
         $this->_(
             'UPDATE workspaces SET name = :name WHERE id = :id',
             [
