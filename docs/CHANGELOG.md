@@ -6,7 +6,8 @@ layout: default
 
 ## [next]
 ### Bugfixes
-* SysCheck: Units mit externer Definition funktionieren wieder  
+* SysCheck: Units mit externer Definition funktionieren wieder
+* Logins verbleiben nicht mehr in der Datenbank nach dem Löschen eines Workspaces. 
 
 ### UI
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden

@@ -75,6 +75,21 @@ function expect_data_dir_equals() {
   fi
 }
 
+# param 1: expectation
+# param 1: result
+function expect_equals() {
+  differences=$(diff <(echo "$1") <(echo "$2"))
+  if [ "$differences" != "" ]
+  then
+    echo "$result"
+    echo_fail "Expectation '$1' failed"
+    echo "$differences"
+    exit 1
+  else
+    echo_success "Expectation '$1' met"
+  fi
+}
+
 # param 1: sql
 # param 2: expected output
 function expect_sql_to_return() {
