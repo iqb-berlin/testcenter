@@ -260,7 +260,7 @@ class Workspace {
         $targetFilePath = $targetFolder . '/' . basename($localFilePath);
 
         if (file_exists($targetFilePath)) {
-            $oldFile = File::get($targetFilePath);
+            $oldFile = File::get($targetFilePath, $file->getType());
 
             if ($oldFile->getId() !== $file->getId()) {
 
