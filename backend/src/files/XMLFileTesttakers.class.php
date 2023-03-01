@@ -162,7 +162,7 @@ class XMLFileTesttakers extends XMLFile {
     foreach ($this->getXml()->xpath("Group[Login[@name='$loginName']]") as $groupElement) {
       $groupMembers = new LoginArray();
 
-      foreach ($groupElement->xpath("Login[@name!='$loginName'][mode='group-monitor'][Booklet]") as $memberElement) {
+      foreach ($groupElement->xpath("Login[@name!='$loginName'][@mode!='monitor-group'][Booklet]") as $memberElement) {
         $groupMembers->add($this->getLogin($groupElement, $memberElement, $workspaceId));
       }
 
