@@ -457,7 +457,7 @@ class WorkspaceDAO extends DAO {
                         join file_relations
                             on affected_files.object_name = file_relations.object_name
                                 and affected_files.object_type = file_relations.object_type
-                                and file_relations.workspace_id = 6
+                                and file_relations.workspace_id = :ws_id
                 )
                 select distinct
                     affected_files.ancestor as file_local_path,
