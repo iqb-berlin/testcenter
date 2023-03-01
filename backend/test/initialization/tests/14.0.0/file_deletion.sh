@@ -43,17 +43,23 @@ RESPONSE=$(
   curl --location --silent --fail --show-error \
     --request DELETE 'http://localhost/workspace/1/files' \
     --header "AuthToken: $TOKEN" \
-    --data-raw '{"f":["Booklet/SAMPLE_BOOKLET.XML"]}'
+    --data-raw '{"f":[
+      "Resource/SAMPLE_UNITCONTENTS.HTM",
+      "Resource/sample_resource_package.itcr.zip",
+      "Resource/verona-player-simple-4.0.0.html",
+      "Unit/SAMPLE_UNIT.XML",
+      "Unit/SAMPLE_UNIT2.XML"
+    ]}'
 )
 
 expect_table_to_have_rows files 10
 expect_table_to_have_rows logins 10
 expect_table_to_have_rows unit_defs_attachments 3
 expect_data_dir_equals sample_content_present
-expect_equals '{"deleted":[],"did_not_exist":[],"not_allowed":[],"was_used":["Booklet\/SAMPLE_BOOKLET.XML"]}' "$RESPONSE"
+expect_equals '{"deleted":[],"did_not_exist":[],"not_allowed":[],"was_used":["Resource\/SAMPLE_UNITCONTENTS.HTM","Resource\/sample_resource_package.itcr.zip","Resource\/verona-player-simple-4.0.0.html","Unit\/SAMPLE_UNIT.XML","Unit\/SAMPLE_UNIT2.XML"]}' "$RESPONSE"
 
 
-echo_h2 "Together with their dependencies should be deletable"
+echo_h2 "Together with their dependencies they should be deletable"
 
 RESPONSE=$(
   curl --location --silent --fail --show-error \
@@ -80,7 +86,9 @@ expect_table_to_have_rows unit_defs_attachments 0
 expect_data_dir_equals cleared_data_dir
 expect_equals '{"deleted":["Testtakers\/SAMPLE_TESTTAKERS.XML","Booklet\/SAMPLE_BOOKLET.XML","Booklet\/SAMPLE_BOOKLET2.XML","Booklet\/SAMPLE_BOOKLET3.XML","Resource\/SAMPLE_UNITCONTENTS.HTM","Resource\/sample_resource_package.itcr.zip","Resource\/verona-player-simple-4.0.0.html","SysCheck\/SAMPLE_SYSCHECK.XML","Unit\/SAMPLE_UNIT.XML","Unit\/SAMPLE_UNIT2.XML"],"did_not_exist":["Testtakers\/SAMPLE_TESTTAKERS.XML"],"not_allowed":[],"was_used":[]}' "$RESPONSE"
 
-echo_h2 "Delete Workspace and create a 2nd Workspace through re-init"
+
+
+echo "Delete Workspace and create a 2nd Workspace through re-init"
 
 rm -R /var/www/data/ws_1
 
