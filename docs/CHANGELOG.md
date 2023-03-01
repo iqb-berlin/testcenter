@@ -6,7 +6,8 @@ layout: default
 
 ## [next]
 ### Bugfixes
-* SysCheck: Units mit externer Definition funktionieren wieder  
+* SysCheck: Units mit externer Definition funktionieren wieder
+* Zeitanzeige in Demo- und Review-Modus repariert
 
 ### UI
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
