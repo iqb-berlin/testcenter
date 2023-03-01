@@ -29,4 +29,10 @@ REPO_URL=iqb-berlin/testcenter
 source .env
 wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${VERSION}/scripts/database/my.cnf
 
+sed -i 's/TLS=off/TLS_ENABLED=no/' .env
+sed -i 's/TLS=on/TLS_ENABLED=yes/' .env
+sed -i '/BROADCAST_SERVICE_URI_PUSH/d' .env
+sed -i '/BROADCAST_SERVICE_URI_SUBSCRIBE/d' .env
+echo "Updated Broadcast-Service settings in .env"
+
 echo "Patch done"

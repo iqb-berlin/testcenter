@@ -93,8 +93,7 @@ set_tls() {
   read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
   if [[ $TLS =~ ^[yY]$ ]]; then
     printf "The certificates need to be put in config/certs and their file name configured in config/ssl-config.yml.\n"
-    sed -i 's/TLS=off/TLS=on/' .env
-    sed -i 's/ws:/wss:/' .env
+    sed -i 's/TLS_ENABLED=no/TLS_ENABLED=yes/' .env
     sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
   fi
 }
