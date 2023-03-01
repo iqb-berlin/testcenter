@@ -5,6 +5,9 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
+### Bugfixes
+* SysCheck: Units mit externer Definition funktionieren wieder  
+
 ### UI
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
 
