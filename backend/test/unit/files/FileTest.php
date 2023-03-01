@@ -28,6 +28,7 @@ class FileTest extends TestCase {
         require_once "src/files/XMLFile.class.php";
         require_once "src/files/XMLFileBooklet.class.php";
         require_once "src/files/ResourceFile.class.php";
+        require_once "test/unit/mock-classes/ExternalFileMock.php";
 
         VfsForTest::setUp();
     }

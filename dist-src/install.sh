@@ -71,10 +71,11 @@ download_files() {
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
-  wget -nv -O config/ssl-config.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/ssl-config.yml
+  wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/tls-config.yml
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/update.sh
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
+  wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/scripts/database/my.cnf
   chmod +x update.sh
   echo "Download done"
 }
@@ -102,7 +103,7 @@ choose_version
 
 read  -p '1. Install directory: ' -e -i "`pwd`/$APP_NAME" TARGET_DIR
 
-if [ $(ls -A $TARGET_DIR 2> /dev/null | wc -l) -gt 0 ]
+if [ "$(ls -A $TARGET_DIR 2> /dev/null | wc -l)" -gt 0 ]
   then
     read -p "You have selected a non empty directory. Continue anyway? (y/N)" -r -n 1 -e CONTINUE
     if [[ ! $CONTINUE =~ ^[yY]$ ]]; then

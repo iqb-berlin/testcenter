@@ -27,7 +27,7 @@ build-prod-local:
 # Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 run-prod-local:
 	make build-prod-local container=$(service)
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up $(service)
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.local-prod.yml up $(service)
 
 # Stops the application.
 stop:
