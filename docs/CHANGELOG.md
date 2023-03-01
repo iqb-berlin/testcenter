@@ -7,7 +7,9 @@ layout: default
 ## [next]
 ### Bugfixes
 * SysCheck: Units mit externer Definition funktionieren wieder
-* Logins verbleiben nicht mehr in der Datenbank nach dem Löschen eines Workspaces. 
+* Logins verbleiben nicht mehr in der Datenbank nach dem Löschen eines Workspaces.
+* Das Löschen von Dateien, die von anderen verwendetet werden (z. B. Units in einem Booklet), werden wieder korrekt
+  verhindert.
 
 ### UI
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
