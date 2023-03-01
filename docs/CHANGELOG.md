@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 14.3.0
 ### Bugfixes
 * SysCheck: Units mit externer Definition funktionieren wieder
 * Logins verbleiben nicht mehr in der Datenbank nach dem Löschen eines Workspaces.
