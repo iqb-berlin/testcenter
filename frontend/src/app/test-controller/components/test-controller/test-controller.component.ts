@@ -337,6 +337,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         break;
       case MaxTimerDataType.STEP:
         this.timerValue = maxTimerData;
+        this.tcs.maxTimeTimers[maxTimerData.testletId] = maxTimerData.timeLeftSeconds / 60;
         if ((maxTimerData.timeLeftSeconds % 15) === 0) {
           this.tcs.maxTimeTimers[maxTimerData.testletId] = maxTimerData.timeLeftSeconds / 60;
           if (this.tcs.testMode.saveResponses) {
