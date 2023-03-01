@@ -12,7 +12,6 @@ use org\bovigo\vfs\vfsStream;
  */
 class WorkspaceTest extends TestCase {
   private vfsStreamDirectory $vfs;
-  private Workspace $workspace;
   private WorkspaceDAO|MockInterface $workspaceDaoMock;
 
   const validFile = '<Unit ><Metadata><Id>id</Id><Label>l</Label></Metadata><Definition player="p">1st valid file</Definition></Unit>';
@@ -25,13 +24,26 @@ class WorkspaceTest extends TestCase {
     '<Booklet><Metadata><Id>x_booklet</Id><Label>l</Label></Metadata><Units><Unit label="l" id="x_unit" /></Units></Booklet>';
   const validTesttakers =
     '<Testtakers>
-            <Metadata><Description>d</Description></Metadata>
-            <Group id="new_group" label="">
-                <Login name="new_user" mode="run-review">
-                    <Booklet>x_booklet</Booklet>
-                </Login>
-            </Group>
-        </Testtakers>';
+        <Metadata><Description>d</Description></Metadata>
+        <Group id="new_group" label="">
+            <Login name="new_user" mode="run-review">
+                <Booklet>x_booklet</Booklet>
+            </Login>
+        </Group>
+    </Testtakers>';
+
+  const dangerousTesttakers =
+    '<Testtakers>
+      <Metadata><Description>d</Description></Metadata>
+      <Group id="group1" label="">
+        <Login name="monitor_1" mode="monitor-group">
+          <Booklet>x_booklet</Booklet><!-- ignored -->
+        </Login>
+        <Login name="monitor_2" mode="monitor-group">
+          <Booklet>x_booklet</Booklet><!-- ignored -->
+        </Login>
+      </Group>
+    </Testtakers>';
 
   public static function setUpBeforeClass(): void {
     require_once "test/unit/VfsForTest.class.php";
@@ -515,6 +527,32 @@ class WorkspaceTest extends TestCase {
       file_exists($workspace->getWorkspacePath() . '/Testtakers/valid_testtakers.xml'),
       'import Testtakers dependant of invalid unit from ZIP'
     );
+  }
+
+  // regression test for #235
+  function test_importUnsortedFile_multiMonitor() {
+    $this->workspaceDaoMock
+      ->expects('storeFile')
+      ->once();
+    $this->workspaceDaoMock
+      ->expects('storeRelations')
+      ->andReturn([[], []])
+      ->once();
+    $this->workspaceDaoMock
+      ->expects('getRelatingFiles')
+      ->andReturn([]) // TODO add realistic return!
+      ->once();
+    $this->workspaceDaoMock
+      ->expects('updateLoginSource')
+      ->andReturn([2, 2])
+      ->once();
+    $workspace = new Workspace(1);
+    file_put_contents(DATA_DIR . '/ws_1/testtakers.xml', self::dangerousTesttakers);
+
+    $result = $workspace->importUnsortedFile('testtakers.xml');
+    $this->assertArrayNotHasKey('error', $result["testtakers.xml"]->getValidationReport(), 'valid file has no errors');
+    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/testtakers.xml'), 'valid file is imported');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/testtakers.xml'), 'cleanup after import');
   }
 
   private function getErrorsFromValidationResult($result): array {
