@@ -49,8 +49,9 @@ services:
       <<: *env-initdata
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
-      BROADCAST_SERVICE_URI_PUSH: ${BROADCAST_SERVICE_URI_PUSH}
-      BROADCAST_SERVICE_URI_SUBSCRIBE: ${BROADCAST_SERVICE_URI_SUBSCRIBE}
+      BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
+      HOSTNAME: ${HOSTNAME}
+      TLS_ENABLED: ${TLS_ENABLED}
     depends_on:
       - testcenter-db
     logging:
