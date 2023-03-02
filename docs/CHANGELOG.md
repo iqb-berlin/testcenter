@@ -10,6 +10,7 @@ layout: default
 
 ### UI
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
+* Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
 
 ## 14.2.0
 ### Bugfixes
