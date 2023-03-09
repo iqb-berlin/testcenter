@@ -1,0 +1,9 @@
+.
+  |-ws_1
+  |  |-Booklet
+  |  |-Resource
+  |  |-SysCheck
+  |  |  |-reports
+  |  |  |  |-SAMPLE_SYSCHECK-REPORT.JSON
+  |  |-Testtakers
+  |  |-Unit

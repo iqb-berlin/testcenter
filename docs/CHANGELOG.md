@@ -38,8 +38,9 @@ layout: default
 ### :warning: Hinweis für Administratoren
 Falls der Update-Mechanismus nicht verwendet wird, muss das environment-file (.env) entsprechend angepasst werden:
 - `TLS=off` / `TLS=on` muss gegen TLS_ENABLED=no/TLS_ENABLED=yes ersetzt werden.
-- `BROADCAST_SERVICE_URI_PUSH` und `BROADCAST_SERVICE_URI_SUBSCRIBE` können entfernt werden. Stattdessen wird der
+- `BROADCAST_SERVICE_URI_PUSH` und `BROADCAST_SERVICE_URI_SUBSCRIBE` können entfernt werden. Stattdessen wird der 
   Parameter `BROADCAST_SERVICE_ENABLED=true` (=false) verwendet, um zu bestimmen, ob Websocket-Verbdinungen versucht werden sollen.
+
 
 ## 14.2.0
 ### Bugfixes
@@ -52,6 +53,7 @@ Falls der Update-Mechanismus nicht verwendet wird, muss das environment-file (.e
 * CORS wurde aktiviert
 * Verschiedene tls-security-headers hinzugefügt
 
+
 ## 14.1.0
 ### Bugfixes
 * Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
@@ -61,11 +63,16 @@ Falls der Update-Mechanismus nicht verwendet wird, muss das environment-file (.e
 
 ### :warning: Hinweis für Administratoren
 
-Wenn Sie *nicht* unsere update-routine (update.sh) verwenden, müssen Sie selbst dafür sorgen, dass ab jetzt immer die
-auch die MySQL-Config zur Verfügung steht.
+Die folgende Hinweise sind nur relevant, falls nicht das Standardsetup samt Update-Mechanismus verwendet wird.
+
+* Die Konfigurationsdatei für die Datenbank muss zur Verfügung stehen.
+Beispielkommando mit wget:
 ```
 wget -nv -O config/my.cnf https://raw.githubusercontent.com/iqb-berlin/testcenter/14.1.0/scripts/database/my.cnf
 ```
+* Der Name der TLS-Konfigurationsdatei wurde angepasst und zusätzliche Sicherheitseinstellungen hinzugefügt.
+Falls der Patch-Mechanismus nicht verwendet wird, kann der Standardinhalt per Hand übertragen werden.
+  ([Pfad zur Standardeinstellung](https://raw.githubusercontent.com/iqb-berlin/testcenter/master/dist-src/tls-config.yml))
 
 ## 14.0.1
 

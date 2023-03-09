@@ -19,7 +19,7 @@ export class TestModeData {
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
       presetCode: true,
-      showTimeLeft: false,
+      showTimeLeft: true,
       showUnitMenu: false,
       receiveRemoteCommands: false
     },
