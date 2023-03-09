@@ -5,12 +5,41 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
+### UI
+* Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
+
+## 14.3.0
 ### Bugfixes
-* SysCheck: Units mit externer Definition funktionieren wieder  
+* SysCheck: Units mit externer Definition funktionieren wieder
+* Logins verbleiben nicht mehr in der Datenbank nach dem Löschen eines Workspaces.
+* Das Löschen von Dateien, die von anderen verwendetet werden (z. B. Units in einem Booklet), werden wieder korrekt
+  verhindert.
+* Zeitanzeige in Demo- und Review-Modus repariert
 
 ### UI
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
-* Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
+
+### Verbesserungen
+* Veränderter Anwendungsparameter für Broadcasting-Service
+  - Kann nun mittels BROADCAST_SERVICE_ENABLED an- und abgeschaltet werden
+  - Die zugehörigen URLs werden dynamisch anhand dieses Schalters generiert und
+    tauchen nicht mehr in der Konfigurationsdatei (.env) auf
+
+### Sicherheit
+* Ausschalten der Unterstützung für veraltete TLS-Versionen 1.0 and 1.1
+* Einschränkung der verfügbaren TLS-Cipher-Suiten
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+  - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+
+### :warning: Hinweis für Administratoren
+Falls der Update-Mechanismus nicht verwendet wird, muss das environment-file (.env) entsprechend angepasst werden:
+- `TLS=off` / `TLS=on` muss gegen TLS_ENABLED=no/TLS_ENABLED=yes ersetzt werden.
+- `BROADCAST_SERVICE_URI_PUSH` und `BROADCAST_SERVICE_URI_SUBSCRIBE` können entfernt werden. Stattdessen wird der
+  Parameter `BROADCAST_SERVICE_ENABLED=true` (=false) verwendet, um zu bestimmen, ob Websocket-Verbdinungen versucht werden sollen.
 
 ## 14.2.0
 ### Bugfixes
