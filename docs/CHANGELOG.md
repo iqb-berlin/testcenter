@@ -4,6 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+### UI
+* Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
+
 ## 14.3.0
 ### Bugfixes
 * SysCheck: Units mit externer Definition funktionieren wieder
