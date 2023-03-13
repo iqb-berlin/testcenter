@@ -71,9 +71,11 @@ download_files() {
   wget -nv -O Makefile https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/Makefile
   wget -nv -O docker-compose.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/docker/docker-compose.yml
   wget -nv -O docker-compose.prod.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.yml
+  wget -nv -O config/tls-config.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/tls-config.yml
   wget -nv -O docker-compose.prod.tls.yml https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/docker-compose.prod.tls.yml
   wget -nv -O update.sh https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/dist-src/update.sh
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
+  wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/scripts/database/my.cnf
   chmod +x update.sh
   echo "Download done"
 }
@@ -90,14 +92,8 @@ customize_settings() {
 set_tls() {
   read  -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
   if [[ $TLS =~ ^[yY]$ ]]; then
-    touch config/cert_config.yml
-    echo "tls:
-  certificates:
-    - certFile: /certs/certificate.cer
-      keyFile: /certs/private_key.key" > config/cert_config.yml
-    printf "The certificates need to be put in config/certs and their file name configured in config/cert_config.yml.\n"
-    sed -i 's/TLS=off/TLS=on/' .env
-    sed -i 's/ws:/wss:/' .env
+    printf "The certificates need to be put in config/certs and their file name configured in config/ssl-config.yml.\n"
+    sed -i 's/TLS_ENABLED=no/TLS_ENABLED=yes/' .env
     sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
   fi
 }
@@ -107,7 +103,7 @@ choose_version
 
 read  -p '1. Install directory: ' -e -i "`pwd`/$APP_NAME" TARGET_DIR
 
-if [ $(ls -A $TARGET_DIR 2> /dev/null | wc -l) -gt 0 ]
+if [ "$(ls -A $TARGET_DIR 2> /dev/null | wc -l)" -gt 0 ]
   then
     read -p "You have selected a non empty directory. Continue anyway? (y/N)" -r -n 1 -e CONTINUE
     if [[ ! $CONTINUE =~ ^[yY]$ ]]; then

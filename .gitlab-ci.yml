@@ -1,3 +1,12 @@
+include:
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
+gemnasium-dependency_scanning:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "external_pull_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_TAG
+
 image: docker:20.10
 
 variables:
@@ -178,17 +187,17 @@ test-backend-api:
     - docker load -i backend_image.tar
     - make test-backend-api
 
-test-backend-api-mysql:
-  stage: test
-  rules:
-    - if: "$CI_COMMIT_TAG"
-  dependencies:
-    - build-backend
-  script:
-    - apk add make
-    - make init
-    - docker load -i backend_image.tar
-    - make test-backend-api-mysql
+#test-backend-api-mysql:
+#  stage: test
+#  rules:
+#    - if: "$CI_COMMIT_TAG"
+#  dependencies:
+#    - build-backend
+#  script:
+#    - apk add make
+#    - make init
+#    - docker load -i backend_image.tar
+#    - make test-backend-api-mysql
 
 test-backend-initialization:
   stage: test

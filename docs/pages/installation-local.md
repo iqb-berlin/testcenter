@@ -7,6 +7,7 @@ layout: default
 * node 14
 * php 8.1
 * Apache2
+* MySQL 8
 
 # Install node-dependencies
 ```
@@ -36,6 +37,10 @@ php composer.phar install
 cd..
 ```
 
+# Create Database
+* CreateMySQL Database
+* use Configuration from `scripts/database/my.cnf`
+
 # Initialize Backend
 ```
 sudo --user=www-data php backend/initialize.php \
@@ -52,6 +57,21 @@ sudo --user=www-data php backend/initialize.php \
  --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
 ```
 
-# Serve backend
 
 
+# Serve Backend
+
+* use settings from `backend/config/local.php.ini`
+
+## Disable cors
+```
+echo "Header add Access-Control-Allow-Origin \"*\"" > .htaccess
+echo "Header add Access-Control-Allow-Headers \"origin, x-requested-with, content-type, content-length, responseType, options, observe, Access-Control-Allow-Headers, Authorization, X-Requested-With, Accept, authtoken\" > .htaccess
+echo "Header add Access-Control-Allow-Methods \"PUT, GET, POST, DELETE, PATCH, OPTIONS\" > .htaccess
+```
+
+# Run Frontend
+```
+cd frontend
+npm run start
+```

@@ -8,26 +8,24 @@ require_once "src/files/File.class.php";
 require_once "src/files/XMLFile.class.php";
 require_once "src/files/XMLFileTesttakers.class.php";
 
-
 class XMLFileTesttakersExposed extends XMLFileTesttakers {
 
-    public static function collectBookletsPerCode(SimpleXMLElement $element): array {
-        return parent::collectBookletsPerCode($element);
-    }
+  public static function collectBookletsPerCode(SimpleXMLElement $element): array {
+    return parent::collectBookletsPerCode($element);
+  }
 
-    public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
-        return parent::getCodesFromBookletElement($element);
-    }
-};
-
+  public static function getCodesFromBookletElement(SimpleXMLElement $element): array {
+    return parent::getCodesFromBookletElement($element);
+  }
+}
+;
 
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class XMLFilesTesttakersTest extends TestCase {
-
-    private $exampleXML1 = <<<END
+  private $exampleXML1 = <<<END
 <Testtakers>
   <Metadata>
     <Description>example</Description>
@@ -52,72 +50,66 @@ class XMLFilesTesttakersTest extends TestCase {
 </Testtakers>
 END;
 
-    public static function setUpBeforeClass(): void {
+  public static function setUpBeforeClass(): void {
+    require_once "test/unit/VfsForTest.class.php";
+    VfsForTest::setUpBeforeClass();
+    VfsForTest::setUp();
+  }
 
-        require_once "test/unit/VfsForTest.class.php";
-        VfsForTest::setUpBeforeClass();
-        VfsForTest::setUp();
-    }
+  public function setUp(): void {
+    require_once "src/files/File.class.php";
+    require_once "src/files/XMLFile.class.php";
+    require_once "src/files/XMLFileTesttakers.class.php";
+    require_once "src/data-collection/FileData.class.php";
+    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+    require_once "src/data-collection/Login.class.php";
+    require_once "src/data-collection/LoginArray.class.php";
+    require_once "src/data-collection/Group.class.php";
+    require_once "src/helper/FileTime.class.php";
+    require_once "src/helper/TimeStamp.class.php";
+    require_once "src/helper/Version.class.php";
+    require_once "src/helper/XMLSchema.class.php";
+    require_once "src/helper/JSON.class.php";
+    require_once "test/unit/mock-classes/PasswordMock.php";
+    require_once "test/unit/mock-classes/ExternalFileMock.php";
+  }
 
+  // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
 
-    public function setUp(): void {
+  function test_getPersonsInSameGroup() {
+    $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
+    $expected = new LoginArray(
+      new Login(
+        'test',
+        'user123',
+        'run-hot-return',
+        'sample_group',
+        'Primary Sample Group',
+        [
+          "xxx" => [
+            "BOOKLET.SAMPLE-1",
+            "BOOKLET.SAMPLE-3",
+            "BOOKLET.SAMPLE-2"
+          ],
+          "yyy" => [
+            "BOOKLET.SAMPLE-1",
+            "BOOKLET.SAMPLE-3",
+            "BOOKLET.SAMPLE-2"
+          ]
+        ],
+        13,
+        0,
+        1583053200,
+        45,
+        (object) ['somestr' => 'string']
+      )
+    );
+    $result = $xmlFile->getLoginsInSameGroup('test-group-monitor', 13);
+    $this->assertEquals($expected, $result);
+  }
 
-        require_once "src/files/File.class.php";
-        require_once "src/files/XMLFile.class.php";
-        require_once "src/files/XMLFileTesttakers.class.php";
-        require_once "src/data-collection/FileData.class.php";
-        require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-        require_once "src/data-collection/Login.class.php";
-        require_once "src/data-collection/LoginArray.class.php";
-        require_once "src/data-collection/Group.class.php";
-        require_once "src/helper/FileTime.class.php";
-        require_once "src/helper/TimeStamp.class.php";
-        require_once "src/helper/Version.class.php";
-        require_once "src/helper/XMLSchema.class.php";
-        require_once "src/helper/JSON.class.php";
-        require_once "test/unit/mock-classes/PasswordMock.php";
-    }
-
-    // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
-
-
-    function test_getPersonsInSameGroup() {
-
-        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
-        $expected = new LoginArray(
-            new Login(
-                'test',
-                'user123',
-                'run-hot-return',
-                'sample_group',
-                'Primary Sample Group',
-                [
-                    "xxx" => [
-                        "BOOKLET.SAMPLE-1",
-                        "BOOKLET.SAMPLE-3",
-                        "BOOKLET.SAMPLE-2"
-                    ],
-                    "yyy" => [
-                        "BOOKLET.SAMPLE-1",
-                        "BOOKLET.SAMPLE-3",
-                        "BOOKLET.SAMPLE-2"
-                    ]
-                ],
-                13,
-                0,
-                1583053200,
-                45,
-                (object) ['somestr' => 'string']
-            )
-        );
-        $result = $xmlFile->getLoginsInSameGroup('test-group-monitor', 13);
-        $this->assertEquals($expected, $result);
-    }
-
-
-    function test_collectBookletsPerCode() {
-
-        $xml = <<<END
+  function test_collectBookletsPerCode() {
+    $xml = <<<END
 <Login name="someName" password="somePass">
     <Booklet codes="aaa bbb">first_booklet</Booklet>
     <Booklet>second_booklet</Booklet>
@@ -127,30 +119,29 @@ END;
 </Login>
 END;
 
-        $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
+    $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
 
-        //print_r($result);
+    //print_r($result);
 
-        $expected = [
-            'aaa' => [
-                'FIRST_BOOKLET',
-                'SECOND_BOOKLET'
-            ],
-            'bbb' => [
-                'FIRST_BOOKLET',
-                'THIRD_BOOKLET',
-                'SECOND_BOOKLET'
-            ],
-            'ccc' => [
-                'THIRD_BOOKLET',
-                'SECOND_BOOKLET'
-            ]
-        ];
+    $expected = [
+      'aaa' => [
+        'FIRST_BOOKLET',
+        'SECOND_BOOKLET'
+      ],
+      'bbb' => [
+        'FIRST_BOOKLET',
+        'THIRD_BOOKLET',
+        'SECOND_BOOKLET'
+      ],
+      'ccc' => [
+        'THIRD_BOOKLET',
+        'SECOND_BOOKLET'
+      ]
+    ];
 
-        $this->assertEquals($expected, $result, 'code-using and non-code-unsing logins present');
+    $this->assertEquals($expected, $result, 'code-using and non-code-unsing logins present');
 
-
-        $xml = <<<END
+    $xml = <<<END
 <Login name="someName" password="somePass">
     <Booklet>first_booklet</Booklet>
     <Booklet>second_booklet</Booklet>
@@ -158,277 +149,265 @@ END;
 </Login>
 END;
 
-        $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
+    $result = XMLFileTesttakersExposed::collectBookletsPerCode(new SimpleXMLElement($xml));
 
-        //print_r($result);
+    //print_r($result);
 
-        $expected = [
-            '' => [
-                'FIRST_BOOKLET',
-                'SECOND_BOOKLET'
-            ]
-        ];
+    $expected = [
+      '' => [
+        'FIRST_BOOKLET',
+        'SECOND_BOOKLET'
+      ]
+    ];
 
-        $this->assertEquals($expected, $result, 'no code-using booklets present');
-    }
+    $this->assertEquals($expected, $result, 'no code-using booklets present');
+  }
 
+  function test_getCodesFromBookletElement() {
+    $xml = '<Booklet codes="aaa bbb aaa">first_booklet</Booklet>';
+    $expected = ['aaa', 'bbb'];
+    $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
+    $this->assertEquals($expected, $result);
 
-    function test_getCodesFromBookletElement() {
+    $xml = '<Booklet codes="">first_booklet</Booklet>';
+    $expected = [];
+    $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
+    $this->assertEquals($expected, $result);
 
-        $xml = '<Booklet codes="aaa bbb aaa">first_booklet</Booklet>';
-        $expected = ['aaa', 'bbb'];
-        $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
-        $this->assertEquals($expected, $result);
+    $xml = '<Booklet>first_booklet</Booklet>';
+    $expected = [];
+    $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
+    $this->assertEquals($expected, $result);
+  }
 
-        $xml = '<Booklet codes="">first_booklet</Booklet>';
-        $expected = [];
-        $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
-        $this->assertEquals($expected, $result);
+  function test_getGroups() {
+    $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
-        $xml = '<Booklet>first_booklet</Booklet>';
-        $expected = [];
-        $result = XMLFileTesttakersExposed::getCodesFromBookletElement(new SimpleXMLElement($xml));
-        $this->assertEquals($expected, $result);
-    }
+    $expected = [
+      'sample_group' => new Group(
+        'sample_group',
+        'Primary Sample Group'
+      ),
+      'review_group' => new Group(
+        'review_group',
+        'A Group of Reviewers'
+      ),
+      'trial_group' => new Group(
+        'trial_group',
+        'A Group for Trials and Demos'
+      ),
+      'passwordless_group' => new Group(
+        'passwordless_group',
+        'A group of persons without password'
+      ),
+      'expired_group' => new Group(
+        'expired_group',
+        'An already expired group'
+      ),
+      'future_group' => new Group(
+        'future_group',
+        'An not yet active group'
+      ),
+    ];
 
+    $result = $xmlFile->getGroups();
 
-    function test_getGroups() {
+    $this->assertEquals($expected, $result);
+  }
 
-        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
+  function test_getAllLogins() {
+    $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
 
-        $expected = [
-            'sample_group' => new Group(
-                'sample_group',
-                'Primary Sample Group'
-            ),
-            'review_group' => new Group(
-                'review_group',
-                'A Group of Reviewers'
-            ),
-            'trial_group' => new Group(
-                'trial_group',
-                'A Group for Trials and Demos'
-            ),
-            'passwordless_group' => new Group(
-                'passwordless_group',
-                'A group of persons without password'
-            ),
-            'expired_group' => new Group(
-                'expired_group',
-                'An already expired group'
-            ),
-            'future_group' => new Group(
-                'future_group',
-                'An not yet active group'
-            ),
-        ];
+    $expected = new LoginArray(
+      new Login(
+        'test',
+        'user123',
+        'run-hot-return',
+        'sample_group',
+        'Primary Sample Group',
+        [
+          'xxx' => [
+            'BOOKLET.SAMPLE-1',
+            'BOOKLET.SAMPLE-3',
+            'BOOKLET.SAMPLE-2'
+          ],
+          'yyy' => [
+            'BOOKLET.SAMPLE-1',
+            'BOOKLET.SAMPLE-3',
+            'BOOKLET.SAMPLE-2'
+          ]
+        ],
+        -1,
+        0,
+        1583053200,
+        45,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'test-group-monitor',
+        'user123',
+        'monitor-group',
+        'sample_group',
+        'Primary Sample Group',
+        [
+          '' => [
+            'BOOKLET.SAMPLE-1',
+            'BOOKLET.SAMPLE-3',
+            'BOOKLET.SAMPLE-2'
+          ]
+        ],
+        -1,
+        0,
+        1583053200,
+        45,
+        (object) ["somestr" => "string"],
+      ),
+      new Login(
+        'test-review',
+        'user123',
+        'run-review',
+        'review_group',
+        'A Group of Reviewers',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+        -1,
+        0,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'test-trial',
+        'user123',
+        'run-trial',
+        'trial_group',
+        'A Group for Trials and Demos',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+        -1,
+        0,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'test-demo',
+        'user123',
+        'run-demo',
+        'trial_group',
+        'A Group for Trials and Demos',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+        -1,
+        0,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'test-no-pw',
+        '',
+        'run-hot-restart',
+        'passwordless_group',
+        'A group of persons without password',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+        -1,
+        0,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'test-no-pw-trial',
+        '',
+        'run-trial',
+        'passwordless_group',
+        'A group of persons without password',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+        -1,
+        0,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'test-expired',
+        '',
+        'run-hot-restart',
+        'expired_group',
+        'An already expired group',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+        -1,
+        1583087400,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'expired-group-monitor',
+        'user123',
+        'monitor-group',
+        'expired_group',
+        'An already expired group',
+        ['' => ['BOOKLET.SAMPLE-1']],
+        -1,
+        1583087400,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'test-future',
+        '',
+        'run-hot-restart',
+        'future_group',
+        'An not yet active group',
+        ['' => ["BOOKLET.SAMPLE-1"]],
+        -1,
+        0,
+        1900742400,
+        0,
+        (object) ["somestr" => "string"],
+      )
+    );
 
-        $result = $xmlFile->getGroups();
+    $result = $xmlFile->getAllLogins();
 
-        $this->assertEquals($expected, $result);
-    }
+    $this->assertEquals($expected, $result);
+  }
 
+  function test_getDoubleLoginNames() {
+    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1);
 
-    function test_getAllLogins() {
+    $expected = ['duplicateInSameGroup', 'duplicateInDifferentGroup'];
 
-        $xmlFile = new XMLFileTesttakers(DATA_DIR . '/ws_1/Testtakers/SAMPLE_TESTTAKERS.XML');
+    $result = $xmlFile->getDoubleLoginNames();
 
-        $expected = new LoginArray(
-            new Login(
-                'test',
-                'user123',
-                'run-hot-return',
-                'sample_group',
-                'Primary Sample Group',
-                [
-                    'xxx' => [
-                        'BOOKLET.SAMPLE-1',
-                        'BOOKLET.SAMPLE-3',
-                        'BOOKLET.SAMPLE-2'
-                    ],
-                    'yyy' => [
-                        'BOOKLET.SAMPLE-1',
-                        'BOOKLET.SAMPLE-3',
-                        'BOOKLET.SAMPLE-2'
-                    ]
-                ],
-                -1,
-                0,
-                1583053200,
-                45,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'test-group-monitor',
-                'user123',
-                'monitor-group',
-                'sample_group',
-                'Primary Sample Group',
-                [
-                    '' => [
-                        'BOOKLET.SAMPLE-1',
-                        'BOOKLET.SAMPLE-3',
-                        'BOOKLET.SAMPLE-2'
-                    ]
-                ],
-                -1,
-                0,
-                1583053200,
-                45,
-                (object) ["somestr" => "string"],
-            ),
-            new Login(
-                'test-review',
-                'user123',
-                'run-review',
-                'review_group',
-                'A Group of Reviewers',
-                ['' => ["BOOKLET.SAMPLE-1"]],
-                -1,
-                0,
-                0,
-                0,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'test-trial',
-                'user123',
-                'run-trial',
-                'trial_group',
-                'A Group for Trials and Demos',
-                ['' => ["BOOKLET.SAMPLE-1"]],
-                -1,
-                0,
-                0,
-                0,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'test-demo',
-                'user123',
-                'run-demo',
-                'trial_group',
-                'A Group for Trials and Demos',
-                ['' => ["BOOKLET.SAMPLE-1"]],
-                -1,
-                0,
-                0,
-                0,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'test-no-pw',
-                '',
-                'run-hot-restart',
-                'passwordless_group',
-                'A group of persons without password',
-                ['' => ["BOOKLET.SAMPLE-1"]],
-                -1,
-                0,
-                0,
-                0,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'test-no-pw-trial',
-                '',
-                'run-trial',
-                'passwordless_group',
-                'A group of persons without password',
-                ['' => ["BOOKLET.SAMPLE-1"]],
-                -1,
-                0,
-                0,
-                0,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'test-expired',
-                '',
-                'run-hot-restart',
-                'expired_group',
-                'An already expired group',
-                ['' => ["BOOKLET.SAMPLE-1"]],
-                -1,
-                1583087400,
-                0,
-                0,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'expired-group-monitor',
-                'user123',
-                'monitor-group',
-                'expired_group',
-                'An already expired group',
-                ['' => ['BOOKLET.SAMPLE-1']],
-                -1,
-                1583087400,
-                0,
-                0,
-                (object) ["somestr" => "string"]
-            ),
-            new Login(
-                'test-future',
-                '',
-                'run-hot-restart',
-                'future_group',
-                'An not yet active group',
-                ['' => ["BOOKLET.SAMPLE-1"]],
-                -1,
-                0,
-                1900742400,
-                0,
-                (object) ["somestr" => "string"],
-            )
-        );
+    $this->assertEquals($expected, $result);
+  }
 
-        $result = $xmlFile->getAllLogins();
+  function test_getAllLoginNames() {
+    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
 
-        $this->assertEquals($expected, $result);
-    }
+    $expected = [
+      'duplicateInSameGroup',
+      'duplicateInDifferentGroup',
+      'noDuplicate',
+      'noDuplicateAgain'
+    ];
 
+    $result = $xmlFile->getAllLoginNames();
 
-    function test_getDoubleLoginNames() {
+    $this->assertEquals($expected, $result);
+  }
 
-        $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1);
+  function test_getCustomTexts() {
+    $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
 
-        $expected = ['duplicateInSameGroup', 'duplicateInDifferentGroup'];
+    $expected = (object) [
+      'first_key' => 'first_value',
+      'second_key' => 'second_value'
+    ];
 
-        $result = $xmlFile->getDoubleLoginNames();
+    $result = $xmlFile->getCustomTexts();
 
-        $this->assertEquals($expected, $result);
-    }
-
-
-    function test_getAllLoginNames() {
-
-        $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
-
-        $expected = [
-            'duplicateInSameGroup',
-            'duplicateInDifferentGroup',
-            'noDuplicate',
-            'noDuplicateAgain'
-        ];
-
-        $result = $xmlFile->getAllLoginNames();
-
-        $this->assertEquals($expected, $result);
-    }
-
-
-    function test_getCustomTexts() {
-
-        $xmlFile = XMLFileTesttakers::fromString($this->exampleXML1, false, true);
-
-        $expected = (object) [
-            'first_key' => 'first_value',
-            'second_key' => 'second_value'
-        ];
-
-        $result = $xmlFile->getCustomTexts();
-
-        $this->assertEquals($expected, $result);
-    }
+    $this->assertEquals($expected, $result);
+  }
 }
