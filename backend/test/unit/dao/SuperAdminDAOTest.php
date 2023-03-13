@@ -14,18 +14,17 @@ class SuperAdminDAOTest extends TestCase {
 
     function setUp(): void {
 
-        require_once "src/exception/HttpError.class.php"
-        ;
+        require_once "src/exception/HttpError.class.php";
         require_once "src/data-collection/DataCollection.class.php";
         require_once "src/data-collection/DBConfig.class.php";
         require_once "src/helper/DB.class.php";
         require_once "src/helper/Password.class.php";
         require_once "src/dao/DAO.class.php";
         require_once "src/dao/SuperAdminDAO.class.php";
+        require_once "test/unit/TestDB.class.php";
 
-        DB::connect(new DBConfig(["type" => "temp"]));
+        TestDB::setUp();
         $this->dbc = new SuperAdminDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
     }
 

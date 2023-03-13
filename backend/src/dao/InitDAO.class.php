@@ -180,9 +180,13 @@ class InitDAO extends SessionDAO {
 
     public function cloneDB(string $prodDBName): void {
 
-        foreach (array_reverse($this::tables) as $table) {
+        $this->clearDB();
 
-            $r = $this->_("create table $table like $prodDBName.$table");
+        foreach ($this::tables as $table) {
+
+            $creationString = $this->_("show create table $prodDBName.$table")['Create Table'];
+            $this->_($creationString);
+            $this->_("truncate $table"); // to reset auto-increment
         }
     }
 

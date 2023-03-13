@@ -38,10 +38,10 @@ final class AdminDAOTest extends TestCase {
         require_once "src/helper/DB.class.php";
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/helper/Password.class.php";
+        require_once "test/unit/TestDB.class.php";
+        TestDB::setUp();
 
-        DB::connect(new DBConfig(["type" => "temp"]));
         $this->dbc = new AdminDAO();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
     }
 
@@ -120,6 +120,28 @@ final class AdminDAOTest extends TestCase {
 
         // Assert
         $expectedResponseReportData = [
+          [
+            'groupname' => 'sample_group',
+            'loginname' => 'sample_user',
+            'code' => 'xxx',
+            'bookletname' => 'first sample test',
+            'unitname' => 'UNIT.SAMPLE',
+            'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
+            'responses' => [
+              [
+                'id' => "all",
+                'content' => "{\"name\":\"Elias Example\",\"age\":35}",
+                'ts' => 1597903000,
+                'responseType' => 'the-response-type'
+              ],
+              [
+                'id' => "other",
+                'content' => "{\"other\":\"stuff\"}",
+                'ts' => 1597903000,
+                'responseType' => 'the-response-type'
+              ]
+            ]
+          ],
             [
                 'groupname' => 'sample_group',
                 'loginname' => 'sample_user',
@@ -135,29 +157,8 @@ final class AdminDAOTest extends TestCase {
                         'responseType' => 'the-response-type'
                     ]
                 ]
-            ],
-            [
-                'groupname' => 'sample_group',
-                'loginname' => 'sample_user',
-                'code' => 'xxx',
-                'bookletname' => 'first sample test',
-                'unitname' => 'UNIT.SAMPLE',
-                'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
-                'responses' => [
-                    [
-                        'id' => "all",
-                        'content' => "{\"name\":\"Elias Example\",\"age\":35}",
-                        'ts' => 1597903000,
-                        'responseType' => 'the-response-type'
-                    ],
-                    [
-                        'id' => "other",
-                        'content' => "{\"other\":\"stuff\"}",
-                        'ts' => 1597903000,
-                        'responseType' => 'the-response-type'
-                    ]
-                ]
             ]
+
         ];
 
         parent::assertSame($expectedResponseReportData, $actualResponseReportData);
@@ -298,12 +299,12 @@ final class AdminDAOTest extends TestCase {
             'numUnitsMax' => 2,
             'numUnitsTotal' => 2,
             'numUnitsAvg' => 1.0,
-            'lastChange' => 1643014459
+            'lastChange' => 1643011260
         ]];
         $result = $this->dbc->getResultStats(1);
         $this->assertSame($expectation, $result);
 
-        $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server) values ('BOOKLET.SAMPLE-2', 1,  0, 1, 1700000000)");
+        $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20')");
         $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 3)");
 
         $expectation = [[
@@ -313,7 +314,7 @@ final class AdminDAOTest extends TestCase {
             'numUnitsMax' => 2,
             'numUnitsTotal' => 3,
             'numUnitsAvg' => 1.0,
-            'lastChange' => 1700000000
+            'lastChange' => 1699956800
         ]];
         $result = $this->dbc->getResultStats(1);
         $this->assertSame($expectation, $result);
@@ -325,7 +326,7 @@ final class AdminDAOTest extends TestCase {
         $expectation = [
             [
                 'personId' => 1,
-                'timestamp' => 1643014459,
+                'timestamp' => 1643011260,
                 'testId' => 1,
                 'groupName' => 'sample_group',
                 'groupLabel' => 'Sample Group',
@@ -343,7 +344,7 @@ final class AdminDAOTest extends TestCase {
             ],
             [
                 'personId' => 1,
-                'timestamp' => 1643014459,
+                'timestamp' => 1643011260,
                 'testId' => 2,
                 'groupName' => 'sample_group',
                 'groupLabel' => 'Sample Group',

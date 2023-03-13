@@ -26,18 +26,11 @@ class TestEnvironment {
       self::createTestFiles();
       self::overwriteModificationDatesVfs();
 
-      $config = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
-      /* @var $config DBConfig */
-      $prodDBName = $config->dbname;
-      $config->dbname = 'TMP_' . $config->dbname;
-      $config->staticTokens = true;
-      $config->insecurePasswords = true;
-      DB::connect($config);
+      $prodDBName = DB::connectToTestDB();
 
       $initDAO = new InitDAO();
 
       if ($resetBeforeCall) {
-        $initDAO->clearDB();
         $initDAO->cloneDB($prodDBName);
         self::createTestData();
       }

@@ -57,13 +57,13 @@ class SessionDAOTest extends TestCase {
         require_once "src/helper/TimeStamp.class.php";
         require_once "src/dao/DAO.class.php";
         require_once "src/dao/SessionDAO.class.php";
+        require_once "test/unit/TestDB.class.php";
     }
 
     function setUp(): void {
 
-        DB::connect(new DBConfig(["type" => "temp", "staticTokens" => true]));
+        TestDB::setUp();
         $this->dbc = new SessionDAOforTesting();
-        $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
         $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
 
         $this->testLoginSession = new LoginSession(
@@ -327,16 +327,6 @@ class SessionDAOTest extends TestCase {
     function test_getPersonSession_correctCode() {
 
         $result = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'xxx');
-
-        require_once "src/helper/Folder.class.php";
-        require_once "src/helper/CSV.class.php";
-        require_once "src/dao/InitDAO.class.php";
-        $initDAO = new InitDAO();
-        foreach ($initDAO->getDBContentDump() as $table => $content) {
-
-            echo "## $table\n$content\n";
-        }
-
         $this->assertSame(1, $result->getPerson()->getId());
         $this->assertSame('person-token', $result->getPerson()->getToken());
         $this->assertSame('xxx', $result->getPerson()->getCode());
@@ -413,7 +403,7 @@ class SessionDAOTest extends TestCase {
                 "A Group Label",
                 ["existing_code" => ["a booklet"]],
                 1,
-                TimeStamp::fromXMLFormat('1/1/2040 12:00'),
+                TimeStamp::fromXMLFormat('1/1/2032 12:00'),
                 TimeStamp::fromXMLFormat('1/1/2030 12:00')
             )
         );

@@ -6,8 +6,22 @@ class DB {
   private static PDO $pdo;
   private static DBConfig $config;
 
-  static function connect(?DBConfig $config = null): void {
-    self::$config = $config ?? DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
+  static function connect(): void {
+    self::$config = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
+    self::setUpConnection();
+  }
+
+  static function connectToTestDB(): string {
+    self::$config = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
+    $prodDbName = self::$config->dbname;
+    self::$config->dbname = 'TMP_' . self::$config->dbname;
+    self::$config->staticTokens = true;
+    self::$config->insecurePasswords = true;
+    self::setUpConnection();
+    return $prodDbName;
+  }
+
+  private static function setUpConnection(): void {
     self::$pdo = new PDO(
       "mysql:host=" . self::$config->host . ";port=" . self::$config->port . ";dbname=" . self::$config->dbname,
       self::$config->user,
