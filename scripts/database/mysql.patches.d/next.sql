@@ -1,33 +1,41 @@
--- In order to make it impossible two have more than one login of one name,
+-- A) Add missing foreign key
+delete from unit_data where unit_id not in (select id from units);
+
+alter table unit_data
+  add constraint unit_data_units_id_fk
+    foreign key (unit_id) references units (id) on delete cascade;
+
+
+-- B) In order to make it impossible two have more than one login of one name,
 
 -- 1.) link all person_sessions which are linking to duplicate login_sessions to the correct login_session instead
 with
-    replaceIds as (
-        select ls1.name, ls1.id as replaceThis, min(ls2.id) as replaceWith
-        from login_sessions ls1
-             inner join login_sessions ls2 on ls2.name = ls1.name and ls1.id > ls2.id
-        group by ls1.id
-    )
+  replaceIds as (
+    select ls1.name, ls1.id as replaceThis, min(ls2.id) as replaceWith
+    from login_sessions ls1
+      inner join login_sessions ls2 on ls2.name = ls1.name and ls1.id > ls2.id
+    group by ls1.id
+  )
 update
-    person_sessions
+  person_sessions
 set
-    login_sessions_id = (select replaceWith from replaceIds where replaceThis = login_sessions_id)
+  login_sessions_id = (select replaceWith from replaceIds where replaceThis = login_sessions_id)
 where
-        login_sessions_id in (select replaceThis from replaceIds);
+  login_sessions_id in (select replaceThis from replaceIds);
 
 -- 2.) remove those duplicate login_sessions
 with
-    firstIds as (
-        select min(id) as firstId
-        from login_sessions
-    )
+  firstIds as (
+    select min(id) as firstId
+    from login_sessions
+  )
 delete from login_sessions
 where id not in (select firstId from firstIds);
 
 -- 3.) make name unique in login_session_table
 alter table login_sessions
-    add constraint unique_login_session
-        unique (name);
+  add constraint unique_login_session
+    unique (name);
 
 -- Prevent creation of two person_sessions for one login_session where only one is allowed
 
