@@ -56,7 +56,7 @@ require_once(ROOT_DIR . '/backend/autoload.php');
 
 try  {
     $args = CLI::getOpt();
-    $installationArguments = new InstallationArguments($args, true);
+    $installationArguments = new InstallationArguments($args);
 
     $systemVersion = Version::get();
     CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
@@ -66,7 +66,7 @@ try  {
 
         CLI::p("System-Config not file found (`/backend/config/system.json`). Will be created.");
 
-        $sysConf = new SystemConfig($args, true);
+        $sysConf = new SystemConfig($args);
 
         BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
 
@@ -96,7 +96,7 @@ try  {
 
         CLI::p("Database-Config not file found (`/backend/config/DBConnectionData.json`), will be created.");
 
-        $config = new DBConfig($args, true);
+        $config = new DBConfig($args);
         CLI::connectDBWithRetries($config, 5);
 
         CLI::success("Provided arguments OK.");
@@ -118,11 +118,6 @@ try  {
 
     CLI::h2("Database Structure");
     $initDAO = new InitDAO();
-
-    if ($config->type !== "mysql") {
-
-        throw new Exception("Database Type {$config->type} not supported. This script only supports MySQL.");
-    }
 
     $dbStatus = $initDAO->getDbStatus();
     CLI::p("Database status: {$dbStatus['message']}");
