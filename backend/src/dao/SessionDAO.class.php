@@ -141,7 +141,7 @@ class SessionDAO extends DAO {
   }
 
   public function createLoginSession(Login $login): LoginSession {
-    $loginToken = $this->randomToken('login', $login->getName());
+    $loginToken = Token::generate('login', $login->getName());
 
     // We don't check for existence of the sessions before inserting it because timing issues occurred: If the same
     // login was requested two times at the same moment it could happen that it was created twice.
@@ -249,7 +249,8 @@ class SessionDAO extends DAO {
               logins
               left join login_sessions on (logins.name = login_sessions.name)
           where
-              logins.group_name = :group_name and logins.workspace_id = :workspace_id',
+              logins.group_name = :group_name and logins.workspace_id = :workspace_id
+          order by id',
       [
         ':group_name' => $groupName,
         ':workspace_id' => $workspaceId
@@ -281,45 +282,6 @@ class SessionDAO extends DAO {
     return $logins;
   }
 
-
-//    public function getPersonSession(LoginSession $loginSession, string $code): ?PersonSession {
-//
-//        $person = $this->_(
-//            'SELECT
-//                    person_sessions.id,
-//                    person_sessions.token,
-//                    person_sessions.code,
-//                    person_sessions.valid_until,
-//                    person_sessions.name_suffix
-//                FROM logins
-//                    left join login_sessions on (logins.name = login_sessions.name)
-//                    left join person_sessions on (person_sessions.login_sessions_id = login_sessions.id)
-//                WHERE
-//                      person_sessions.login_sessions_id=:id
-//                  and person_sessions.code=:code',
-//            [
-//                ':id' => $loginSession->getId(),
-//                ':code' => $code
-//            ]
-//        );
-//
-//        if ($person == null) {
-//
-//            return null;
-//        }
-//
-//        return new PersonSession(
-//            $loginSession,
-//            new Person(
-//                (int) $person['id'],
-//                $person['token'],
-//                $person['code'],
-//                $person['name_suffix'] ?? '',
-//                TimeStamp::fromSQLFormat($person['valid_until'])
-//            )
-//        );
-//    }
-
   public function createOrUpdatePersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): PersonSession {
     $login = $loginSession->getLogin();
 
@@ -331,7 +293,7 @@ class SessionDAO extends DAO {
       TimeStamp::checkExpiration($login->getValidFrom(), $login->getValidTo());
     }
 
-    $newPersonToken = $this->randomToken('person', "{$login->getGroupName()}_{$login->getName()}_$code");
+    $newPersonToken = Token::generate('person', "{$login->getGroupName()}_{$login->getName()}_$code");
     $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
     $this->_(
@@ -351,7 +313,7 @@ class SessionDAO extends DAO {
                   from
                     person_sessions
                   where
-                    login_sessions_id=264 and code=:code
+                    login_sessions_id=:login_id and code=:code
               )
             on duplicate key update token=:token",
       [
@@ -363,18 +325,32 @@ class SessionDAO extends DAO {
       ]
     );
 
+
     // there is no way in mySQL to combine insert & select into one query and we need to get the id and the suffix
+    $person = $this->_(
+      'select
+              id,
+              token,
+              code,
+              valid_until,
+              name_suffix
+            from
+              person_sessions
+            where
+              token=:token',
+      [
+        ':token' => $newPersonToken
+      ]
+    );
 
     return new PersonSession(
       $loginSession,
       new Person(
-        (int) $this->pdoDBhandle->lastInsertId(),
-        $newPersonToken,
-        $code,
-        $code, // Attention! this is not the generated suffix (like 1 or xxx/1). We assume it is not needed
-        // except for display, so it's okay to just return only the code. Otherwise we would need one
-        // more query, te get the person_session.
-        $validUntil
+        $person['id'],
+        $person['token'],
+        $person['code'],
+        $person['name_suffix'],
+        TimeStamp::fromSQLFormat($person['valid_until'])
       )
     );
   }
@@ -422,7 +398,7 @@ class SessionDAO extends DAO {
         $personSession['token'],
         new Login(
           $personSession['name'],
-          $personSession['password'],
+          '',
           $personSession['mode'],
           $personSession['group_name'],
           $personSession['group_label'],
@@ -510,20 +486,20 @@ class SessionDAO extends DAO {
     return !!$test;
   }
 
-  public function renewPersonToken(PersonSession $personSession): PersonSession {
-    $loginSession = $personSession->getLoginSession();
-    $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_{$personSession->getPerson()->getNameSuffix()}";
-    $newToken = $this->randomToken('person', $tokenName);
-    $this->_(
-      "update person_sessions set token = :token where id = :id",
-      [
-        ':token' => $newToken,
-        ':id' => $personSession->getPerson()->getId()
-      ]
-    );
-
-    return $personSession->withNewToken($newToken);
-  }
+//  public function renewPersonToken(PersonSession $personSession): PersonSession {
+//    $loginSession = $personSession->getLoginSession();
+//    $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_{$personSession->getPerson()->getNameSuffix()}";
+//    $newToken = $this->randomToken('person', $tokenName);
+//    $this->_(
+//      "update person_sessions set token = :token where id = :id",
+//      [
+//        ':token' => $newToken,
+//        ':id' => $personSession->getPerson()->getId()
+//      ]
+//    );
+//
+//    return $personSession->withNewToken($newToken);
+//  }
 
   public function getTestsOfPerson(PersonSession $personSession): array {
     $bookletIds = $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? ''];

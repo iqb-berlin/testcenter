@@ -6,30 +6,12 @@ use PHPUnit\Framework\TestCase;
 require_once "src/dao/DAO.class.php";
 require_once "src/dao/SessionDAO.class.php";
 
-class SessionDAOforTesting extends SessionDAO {
-
-  public function _(string $sql, array $replacements = [], $multiRow = false): ?array {
-    return parent::_($this->tweakInsertOrIgnoreStatement($sql), $replacements, $multiRow);
-  }
-
-  // sqlite and mysql differences
-  private function tweakInsertOrIgnoreStatement(string $sql): string {
-    if (str_starts_with(strtolower($sql), 'insert ignore')) {
-      $sql = 'insert or ignore' . substr($sql, 13);
-    }
-
-    return $sql;
-  }
-}
-
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class SessionDAOTest extends TestCase {
-
-  private SessionDAOforTesting $dbc;
-
+  private SessionDAO $dbc;
   private LoginSession $testLoginSession;
   private array $testDataLoginSessions;
   private PersonSession $testPersonSession;
@@ -58,7 +40,7 @@ class SessionDAOTest extends TestCase {
 
   function setUp(): void {
     TestDB::setUp();
-    $this->dbc = new SessionDAOforTesting();
+    $this->dbc = new SessionDAO();
     $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
 
     $this->testLoginSession = new LoginSession(
@@ -67,7 +49,7 @@ class SessionDAOTest extends TestCase {
       new Login(
         "some_user",
         "some_pass_hash",
-        "run_hot_return",
+        "run-hot-restart",
         "a group name",
         "A Group Label",
         ["existing_code" => ["a booklet"]],
@@ -156,7 +138,7 @@ class SessionDAOTest extends TestCase {
           "Sample Group",
           [],
           1,
-          2209107600,
+          1956646800,
           1893574800,
           0,
           new stdClass()
@@ -170,7 +152,7 @@ class SessionDAOTest extends TestCase {
         'test_token',
         new Login(
           'sample_user',
-          'pw_hash',
+          '',
           'run-hot-return',
           'sample_group',
           'Sample Group',
@@ -296,20 +278,19 @@ class SessionDAOTest extends TestCase {
   function test_getPersonSession_correctCode() {
     $result = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'xxx');
     $this->assertSame(1, $result->getPerson()->getId());
-    $this->assertSame('person-token', $result->getPerson()->getToken());
+    $this->assertSame(
+      'static:person:sample_group_sample_user_xxx',
+      $result->getPerson()->getToken(),
+      'token got updated'
+    );
     $this->assertSame('xxx', $result->getPerson()->getCode());
     $this->assertSame(1893574800, $result->getPerson()->getValidTo());
     $this->assertEquals($this->testDataLoginSessions[3], $result->getLoginSession());
   }
 
   function test_getLoginSessionByToken_wrongCode() {
-    $result = $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'not_existing');
-    $this->assertNull($result);
-  }
-
-  function test_getLoginSessionByToken_notExistingLoginSession() {
-    $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
-    $this->assertNull($result);
+    $this->expectException('HttpError');
+    $this->dbc->createOrUpdatePersonSession($this->testDataLoginSessions[3], 'not_existing');
   }
 
   function test_createOrUpdatePersonSession_correctCode() {
@@ -397,17 +378,15 @@ class SessionDAOTest extends TestCase {
     $this->assertEquals(5, $this->countTableRows('person_sessions'));
   }
 
-
-//    function test_getPersonSession_restart() {
-//
-//        $result1 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 1);
-//        $result2 = $this->dbc->createPersonSession($this->testLoginSession, 'existing_code', 2);
-//        $this->assertEquals(5, $result1->getPerson()->getId());
-//        $this->assertEquals('existing_code/1', $result1->getPerson()->getNameSuffix());
-//        $this->assertEquals(6, $result2->getPerson()->getId());
-//        $this->assertEquals('existing_code/2', $result2->getPerson()->getNameSuffix());
-//        $this->assertEquals(6, $this->countTableRows('person_sessions'));
-//    }
+  function test_createOrUpdatePersonSession_restart() {
+    $result1 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
+    $result2 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
+    $this->assertEquals(5, $result1->getPerson()->getId());
+    $this->assertEquals('existing_code/1', $result1->getPerson()->getNameSuffix());
+    $this->assertEquals(6, $result2->getPerson()->getId());
+    $this->assertEquals('existing_code/2', $result2->getPerson()->getNameSuffix());
+    $this->assertEquals(6, $this->countTableRows('person_sessions'));
+  }
 
   function test_getPersonSessionByToken_correctToken() {
     $result = $this->dbc->getPersonSessionByToken('person-token');
@@ -531,37 +510,37 @@ class SessionDAOTest extends TestCase {
     $this->assertFalse($result);
   }
 
-  public function test_renewPersonToken(): void {
-    $expectation = new PersonSession(
-      new LoginSession(
-        4,
-        'test_token',
-        new Login(
-          'sample_user',
-          'pw_hash',
-          'run-hot-return',
-          'sample_group',
-          'Sample Group',
-          ["xxx" => ["BOOKLET.SAMPLE-1"]],
-          1,
-          1893574800,
-          0,
-          0,
-          (object) []
-        )
-      ),
-      new Person(
-        1,
-        'static:person:sample_group_sample_user_xxx',
-        'xxx',
-        'xxx',
-        1893574800
-      )
-    );
-
-    $result = $this->dbc->renewPersonToken($this->testPersonSession);
-    $this->assertEquals($expectation, $result);
-  }
+//  public function test_renewPersonToken(): void {
+//    $expectation = new PersonSession(
+//      new LoginSession(
+//        4,
+//        'test_token',
+//        new Login(
+//          'sample_user',
+//          '',
+//          'run-hot-return',
+//          'sample_group',
+//          'Sample Group',
+//          ["xxx" => ["BOOKLET.SAMPLE-1"]],
+//          1,
+//          1893574800,
+//          0,
+//          0,
+//          (object) []
+//        )
+//      ),
+//      new Person(
+//        1,
+//        'static:person:sample_group_sample_user_xxx',
+//        'xxx',
+//        'xxx',
+//        1893574800
+//      )
+//    );
+//
+//    $result = $this->dbc->renewPersonToken($this->testPersonSession);
+//    $this->assertEquals($expectation, $result);
+//  }
 
   public function test_ownsTest() {
     $result = $this->dbc->ownsTest('person-token', "1");

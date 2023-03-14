@@ -27,7 +27,7 @@ class AdminDAO extends DAO {
 
     $this->deleteTokensByUser((int) $user['id']);
 
-    $token = $this->randomToken('admin', $username);
+    $token = Token::generate('admin', $username);
 
     $this->storeToken((int) $user['id'], $token, $validTo);
 

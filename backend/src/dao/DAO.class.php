@@ -31,7 +31,6 @@ class DAO {
     protected int $timeUserIsAllowedInMinutes = 600;
     protected string $passwordSalt = 't';
     protected bool $insecurePasswords = false;
-
     protected ?int $lastAffectedRows = null;
 
 
@@ -84,18 +83,6 @@ class DAO {
         return is_bool($result) ? null : $result;
     }
 
-
-    protected function randomToken(string $type, string $name): string {
-
-        if (DB::getConfig()->staticTokens) {
-
-            return substr("static:{$type}:$name", 0, 50);
-        }
-
-        return uniqid('a', true);
-    }
-
-
     /**
      * @codeCoverageIgnore
      */
@@ -107,15 +94,6 @@ class DAO {
         }
 
         $this->pdoDBhandle->exec(file_get_contents($path));
-    }
-
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function getDBType(): string {
-
-        return $this->pdoDBhandle->getAttribute(PDO::ATTR_DRIVER_NAME);
     }
 
 
