@@ -65,6 +65,7 @@ final class SessionControllerTest extends TestCase {
     require_once "src/dao/TestDAO.class.php";
     require_once "src/dao/AdminDAO.class.php";
     require_once "src/workspace/Workspace.class.php";
+    require_once "test/unit/TestDB.class.php";
 
     $mockBooklet = $this->createMock('XMLFileBooklet');
     $mockBooklet
@@ -114,8 +115,7 @@ final class SessionControllerTest extends TestCase {
     }
   }
 
-  public function test_putSessionLogin_loginThatRequiresCode(): void { //!
-
+  public function test_putSessionLogin_loginThatRequiresCode(): void {
     $this->mockSessionDAO([
       'getOrCreateLoginSession' => new LoginSession(
         1,
@@ -129,10 +129,7 @@ final class SessionControllerTest extends TestCase {
           ['aaa' => ['THE_BOOKLET']],
           1
         )
-      ),
-      'renewPersonToken' => function(PersonSession $personSession): PersonSession {
-        return $personSession->withNewToken('new_token');
-      }
+      )
     ]);
 
     $response = SessionController::putSessionLogin(
@@ -196,13 +193,10 @@ final class SessionControllerTest extends TestCase {
 
     $this->mockSessionDAO([
       'getOrCreateLoginSession' => $loginSession,
-      'getOrCreatePersonSession' => new PersonSession(
+      'createOrUpdatePersonSession' => new PersonSession(
         $loginSession,
-        new Person(1, 'person_token', '', '')
+        new Person(1, 'new_token', '', '')
       ),
-      'renewPersonToken' => function(PersonSession $personSession): PersonSession {
-        return $personSession->withNewToken('new_token');
-      },
       'getTestsOfPerson' => [
         new TestData('THE_BOOKLET', 'Label of THE_BOOKLET', 'Description', true, false)
       ]
@@ -267,19 +261,16 @@ final class SessionControllerTest extends TestCase {
             $login
           );
         },
-        'getOrCreatePersonSession' => function(LoginSession $loginSession, string $code): PersonSession {
+        'createOrUpdatePersonSession' => function(LoginSession $loginSession, string $code): PersonSession {
           return new PersonSession(
             $loginSession,
-            new Person(-1, 'person_token', $code, $code)
+            new Person(-1, 'new_token', $code, $code)
           );
         },
         'getLoginsByGroup' => [
           new LoginSession(2, '', $loginTesteeA),
           new LoginSession(3, '', $loginTesteeB)
         ],
-        'renewPersonToken' => function(PersonSession $personSession): PersonSession {
-          return $personSession->withNewToken('new_token');
-        },
         'getTestsOfPerson' => function(PersonSession $personSession): array {
           return array_map(
             function(string $bookletId): TestData {

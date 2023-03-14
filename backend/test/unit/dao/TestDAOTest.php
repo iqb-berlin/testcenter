@@ -2,28 +2,31 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once "src/exception/HttpError.class.php";
-require_once "src/data-collection/DataCollection.class.php";
-require_once "src/helper/DB.class.php";
-require_once "src/data-collection/DBConfig.class.php";
-require_once "src/data-collection/DataCollectionTypeSafe.class.php";
-require_once "src/data-collection/Command.class.php";
-//require_once "src/helper/TimeStamp.class.php";
-require_once "src/dao/DAO.class.php";
-require_once "src/dao/TestDAO.class.php";
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class TestDAOTest extends TestCase {
   private TestDAO $dbc;
 
   function setUp(): void {
-    DB::connect(new DBConfig(["type" => "temp"]));
+    require_once "src/exception/HttpError.class.php";
+    require_once "src/data-collection/DataCollection.class.php";
+    require_once "src/helper/DB.class.php";
+    require_once "src/helper/TimeStamp.class.php";
+    require_once "src/data-collection/DBConfig.class.php";
+    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+    require_once "src/data-collection/Command.class.php";
+    require_once "src/dao/DAO.class.php";
+    require_once "src/dao/TestDAO.class.php";
+    require_once "test/unit/TestDB.class.php";
+
+    TestDB::setUp();
     $this->dbc = new TestDAO();
-    $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
     $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
   function tearDown(): void {
-//        print_r($this->dbc->getDBContentDump());
     unset($this->dbc);
   }
 

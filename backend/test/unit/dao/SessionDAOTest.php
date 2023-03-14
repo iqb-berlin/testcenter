@@ -510,38 +510,6 @@ class SessionDAOTest extends TestCase {
     $this->assertFalse($result);
   }
 
-//  public function test_renewPersonToken(): void {
-//    $expectation = new PersonSession(
-//      new LoginSession(
-//        4,
-//        'test_token',
-//        new Login(
-//          'sample_user',
-//          '',
-//          'run-hot-return',
-//          'sample_group',
-//          'Sample Group',
-//          ["xxx" => ["BOOKLET.SAMPLE-1"]],
-//          1,
-//          1893574800,
-//          0,
-//          0,
-//          (object) []
-//        )
-//      ),
-//      new Person(
-//        1,
-//        'static:person:sample_group_sample_user_xxx',
-//        'xxx',
-//        'xxx',
-//        1893574800
-//      )
-//    );
-//
-//    $result = $this->dbc->renewPersonToken($this->testPersonSession);
-//    $this->assertEquals($expectation, $result);
-//  }
-
   public function test_ownsTest() {
     $result = $this->dbc->ownsTest('person-token', "1");
     $this->assertTrue($result);

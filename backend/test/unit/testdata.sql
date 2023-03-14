@@ -87,7 +87,7 @@ values (2, 'other', '{"other":"stuff"}', 1597903000, 'the-response-type');
 
 
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp)
-values (1, 1, 'COMMAND_C', '[]', 3, '2020-08-20 07:08:40');
+values (1, 1, 'COMMAND_C', '[]', 3, '2020-08-20 07:56:40');
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp)
 values (2, 1, 'COMMAND_A', '["param1"]', 3, '2020-08-20 07:06:40');
 insert into test_commands(id, test_id, keyword, parameter, commander_id, timestamp)

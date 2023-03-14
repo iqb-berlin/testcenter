@@ -17,10 +17,10 @@ class DAOTest extends TestCase {
     require_once "src/helper/JSON.class.php";
     require_once "src/data-collection/DBConfig.class.php";
     require_once "src/dao/DAO.class.php";
+    require_once "test/unit/TestDB.class.php";
 
-    DB::connect(new DBConfig(["type" => "temp"]));
+    TestDB::setUp();
     $this->dbc = new DAO();
-    $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/database.sql');
     $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
   }
 
