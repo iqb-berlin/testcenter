@@ -420,7 +420,7 @@ class TestDAO extends DAO {
             $commands[] = new Command(
                 (int) $line['id'],
                 $line['keyword'],
-                (int) $line['timestamp'],
+                TimeStamp::fromSQLFormat($line['timestamp']),
                 ...JSON::decode($line['parameter'], true)
             );
         }
