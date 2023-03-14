@@ -2,347 +2,306 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-
 class SuperAdminDAO extends DAO {
+  public function getWorkspaces(): array {
+    return $this->_(
+      'select workspaces.id, workspaces.name from workspaces order by workspaces.name',
+      [],
+      true
+    );
+  }
 
+  public function getUsers(): array {
+    return array_map(
+      function($user) {
+        $user['isSuperadmin'] = (bool) $user['isSuperadmin'];
+        return $user;
+      },
+      $this->_(
+        'select users.name, users.id, users.email, users.is_superadmin as "isSuperadmin" from users order by users.name',
+        [],
+        true
+      ));
+  }
 
-    public function getWorkspaces(): array {
-
-        return $this->_(
-            'SELECT workspaces.id, workspaces.name FROM workspaces ORDER BY workspaces.name',
-            [],
-            true
-        );
-    }
-
-
-    public function getUsers(): array {
-
-        return array_map(
-            function($user) {
-                $user['isSuperadmin'] = (bool) $user['isSuperadmin'];
-                return $user;
-            },
-            $this->_(
-            'SELECT users.name, users.id, users.email, users.is_superadmin as "isSuperadmin" FROM users ORDER BY users.name',
-            [],
-            true
-        ));
-    }
-
-
-    public function getUserByName(string $userName): array { // TODO isSuperadmin should be boolean
-
-        $user = $this->_(
-            'SELECT 
+  public function getUserByName(string $userName): array { // TODO isSuperadmin should be boolean
+    $user = $this->_(
+      'select 
                     users.name, 
                     users.id, 
                     users.email, 
                     users.is_superadmin as "isSuperadmin" 
-                FROM users 
-                WHERE users.name=:user_name',
-            [':user_name' => $userName]
-        );
-        if ($user == null) {
-            throw new Exception("User `$userName` does not exist");
-        }
-        return $user;
+                from users 
+                where users.name=:user_name',
+      [':user_name' => $userName]
+    );
+    if ($user == null) {
+      throw new Exception("User `$userName` does not exist");
+    }
+    return $user;
+  }
+
+  // id, name, selected, role
+  public function getWorkspacesByUser(int $userId): array {
+    $userRolesByWorkspace = $this->getMapWorkspaceToRoleByUser($userId);
+
+    $allWorkspaces = $this->_(
+      'select workspaces.id, workspaces.name from workspaces order by workspaces.name',
+      [],
+      true
+    );
+
+    $allWorkspacesWithUsersRole = [];
+    foreach ($allWorkspaces as $workspace) {
+      $allWorkspacesWithUsersRole[] = [
+        'id' => $workspace['id'],
+        'name' => $workspace['name'],
+        'selected' => isset($userRolesByWorkspace[$workspace['id']]),
+        'role' => isset($userRolesByWorkspace[$workspace['id']]) ? $userRolesByWorkspace[$workspace['id']] : ''
+      ];
     }
 
-    // id, name, selected, role
-    public function getWorkspacesByUser(int $userId): array {
+    return $allWorkspacesWithUsersRole;
+  }
 
-        $userRolesByWorkspace = $this->getMapWorkspaceToRoleByUser($userId);
-
-        $allWorkspaces = $this->_(
-            'SELECT workspaces.id, workspaces.name FROM workspaces ORDER BY workspaces.name',
-            [],
-            true
-        );
-
-        $allWorkspacesWithUsersRole = [];
-        foreach ($allWorkspaces as $workspace) {
-            array_push($allWorkspacesWithUsersRole, [
-                'id' => $workspace['id'],
-                'name' => $workspace['name'],
-                'selected' => isset($userRolesByWorkspace[$workspace['id']]),
-                'role' => isset($userRolesByWorkspace[$workspace['id']]) ? $userRolesByWorkspace[$workspace['id']] : ''
-            ]);
-        }
-
-        return $allWorkspacesWithUsersRole;
-    }
-
-
-    public function getMapWorkspaceToRoleByUser(int $userId): array {
-
-        $userWorkspaces = $this->_(
-            'SELECT 
+  public function getMapWorkspaceToRoleByUser(int $userId): array {
+    $userWorkspaces = $this->_(
+      'select 
                 workspace_users.workspace_id as id, 
                 workspace_users.role as role  
-            FROM workspace_users
-                INNER JOIN users ON users.id = workspace_users.user_id
-            WHERE 
+            from workspace_users
+                inner join users on users.id = workspace_users.user_id
+            where 
                 users.id = :user_id',
-            [':user_id' => $userId],
-            true
-        );
+      [':user_id' => $userId],
+      true
+    );
 
-        $mapWorkspaceToRole= [];
-        foreach ($userWorkspaces as $userWorkspace) {
-            $mapWorkspaceToRole[$userWorkspace['id']] = $userWorkspace['role'];
-        }
-        return $mapWorkspaceToRole;
+    $mapWorkspaceToRole = [];
+    foreach ($userWorkspaces as $userWorkspace) {
+      $mapWorkspaceToRole[$userWorkspace['id']] = $userWorkspace['role'];
     }
+    return $mapWorkspaceToRole;
+  }
 
+  public function setWorkspaceRightsByUser(int $userId, array $listOfWorkspaceIdsAndRoles) {
+    $this->_('delete from workspace_users where workspace_users.user_id=:user_id', [':user_id' => $userId]);
 
-    public function setWorkspaceRightsByUser(int $userId, array $listOfWorkspaceIdsAndRoles) {
-
-        $this->_('DELETE FROM workspace_users WHERE workspace_users.user_id=:user_id', [':user_id' => $userId]);
-
-        foreach($listOfWorkspaceIdsAndRoles as $workspaceIdAndRole) {
-
-            if (strlen($workspaceIdAndRole->role) > 0) {
-
-                $this->_(
-                    'INSERT INTO workspace_users (workspace_id, user_id, role) VALUES (:workspaceId, :userId, :role)',
-                    [
-                        ':workspaceId' => $workspaceIdAndRole->id,
-                        ':role' => $workspaceIdAndRole->role,
-                        ':userId' => $userId
-                    ]
-                );
-            }
-        }
-    }
-
-
-    public function setPassword(int $userId, string $password): void {
-
-        Password::validate($password);
-
+    foreach ($listOfWorkspaceIdsAndRoles as $workspaceIdAndRole) {
+      if (strlen($workspaceIdAndRole->role) > 0) {
         $this->_(
-            'UPDATE users SET password = :password WHERE id = :user_id',
-            [
-                ':user_id' => $userId,
-                ':password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords)
-            ]
+          'insert into workspace_users (workspace_id, user_id, role) values (:workspaceId, :userId, :role)',
+          [
+            ':workspaceId' => $workspaceIdAndRole->id,
+            ':role' => $workspaceIdAndRole->role,
+            ':userId' => $userId
+          ]
         );
+      }
+    }
+  }
+
+  public function setPassword(int $userId, string $password): void {
+    Password::validate($password);
+
+    $this->_(
+      'update users set password = :password where id = :user_id',
+      [
+        ':user_id' => $userId,
+        ':password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords)
+      ]
+    );
+  }
+
+  public function checkPassword(int $userId, string $password): bool {
+    $usersOfThisName = $this->_(
+      'select * from users where users.id = :id',
+      [':id' => $userId],
+      true
+    );
+
+    // we always check at least one user to not leak the existence of username to time-attacks
+    $usersOfThisName = (!count($usersOfThisName)) ? ['password' => 'dummy'] : $usersOfThisName;
+
+    foreach ($usersOfThisName as $user) {
+      if (Password::verify($password, $user['password'], $this->passwordSalt)) {
+        return true;
+      }
     }
 
+    return false;
+  }
 
-    public function checkPassword(int $userId, string $password): bool {
+  public function createUser(string $userName, string $password, bool $isSuperadmin = false): array {
+    Password::validate($password);
 
-        $usersOfThisName = $this->_(
-            'SELECT * FROM users WHERE users.id = :id',
-            [':id' => $userId],
-            true
-        );
+    $user = $this->_(
+      'select users.name from users where users.name=:user_name',
+      [':user_name' => $userName]
+    );
 
-        // we always check at least one user to not leak the existence of username to time-attacks
-        $usersOfThisName = (!count($usersOfThisName)) ? ['password' => 'dummy'] : $usersOfThisName;
-
-        foreach ($usersOfThisName as $user) {
-
-            if (Password::verify($password, $user['password'], $this->passwordSalt)) {
-                return true;
-            }
-        }
-
-        return false;
+    if ($user) {
+      throw new HttpError("User with name `$userName` already exists!", 400);
     }
 
+    $this->_(
+      'insert into users (name, password, is_superadmin) values (:user_name, :user_password, :is_superadmin)',
+      [
+        ':user_name' => $userName,
+        ':user_password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords),
+        ':is_superadmin' => $isSuperadmin ? 1 : 0
+      ]
+    );
 
-    public function createUser(string $userName, string $password, bool $isSuperadmin = false): array {
+    return [
+      'id' => $this->pdoDBhandle->lastInsertId(),
+      'name' => $userName,
+      'email' => null,
+      'isSuperadmin' => $isSuperadmin ? 1 : 0
+    ];
+  }
 
-        Password::validate($password);
+  public function deleteUsers(array $userIds): void { // TODO add unit test
 
-        $user = $this->_(
-            'SELECT users.name FROM users WHERE users.name=:user_name',
-            [':user_name' => $userName]
-        );
+    foreach ($userIds as $userId) {
+      $this->_('delete from users where users.id = :user_id', [':user_id' => $userId]);
+    }
+  }
 
-        if($user) {
-            throw new HttpError("User with name `$userName` already exists!", 400);
-        }
+  public function getOrCreateWorkspace(string $name): array {
+    $workspace = $this->_(
+      "select workspaces.id, workspaces.name from workspaces where `name` = :ws_name",
+      [':ws_name' => $name]
+    );
 
-        $this->_(
-            'INSERT INTO users (name, password, is_superadmin) VALUES (:user_name, :user_password, :is_superadmin)',
-            [
-                ':user_name' => $userName,
-                ':user_password' => Password::encrypt($password, $this->passwordSalt, $this->insecurePasswords),
-                ':is_superadmin' => $isSuperadmin ? 1 : 0
-            ]
-        );
-
-        return [
-            'id' => $this->pdoDBhandle->lastInsertId(),
-            'name' => $userName,
-            'email' => null,
-            'isSuperadmin' => $isSuperadmin ? 1 : 0
-        ];
+    if ($workspace != null) {
+      return $workspace;
     }
 
+    return $this->createWorkspace($name);
+  }
 
-    public function deleteUsers(array $userIds): void { // TODO add unit test
+  public function createWorkspace($name): array {
+    $workspace = $this->_(
+      'select workspaces.id from workspaces 
+            where workspaces.name=:ws_name',
+      [':ws_name' => $name]
+    );
 
-        foreach ($userIds as $userId) {
-            $this->_('DELETE FROM users WHERE users.id = :user_id', [':user_id' => $userId]);
-        }
+    if ($workspace) {
+      throw new HttpError("Workspace with name `$name` already exists!", 400);
     }
 
+    $this->_(
+      'insert into workspaces (name) values (:ws_name)',
+      [':ws_name' => $name]
+    );
 
-    public function getOrCreateWorkspace(string $name): array {
+    return [
+      'id' => $this->pdoDBhandle->lastInsertId(),
+      'name' => $name
+    ];
+  }
 
-        $workspace = $this->_(
-            "SELECT workspaces.id, workspaces.name FROM workspaces WHERE `name` = :ws_name",
-            [':ws_name' => $name]
-        );
+  public function setWorkspaceName($wsId, $newName) {
+    $workspace = $this->_(
+      'select workspaces.id from workspaces 
+            where workspaces.id=:ws_id',
+      [':ws_id' => $wsId]
+    );
 
-        if ($workspace != null) {
-
-            return $workspace;
-        }
-
-        return $this->createWorkspace($name);
+    if (!$workspace) {
+      throw new HttpError("Workspace with id `$wsId` does not exist!", 400);
     }
 
+    $workspace = $this->_(
+      "select workspaces.id, workspaces.name from workspaces where `name` = :ws_name",
+      [':ws_name' => $newName]
+    );
 
-    public function createWorkspace($name): array {
-
-        $workspace = $this->_(
-            'SELECT workspaces.id FROM workspaces 
-            WHERE workspaces.name=:ws_name',
-            [':ws_name' => $name]
-        );
-
-        if ($workspace) {
-            throw new HttpError("Workspace with name `$name` already exists!", 400);
-        }
-
-        $this->_(
-            'INSERT INTO workspaces (name) VALUES (:ws_name)',
-            [':ws_name' => $name]
-        );
-
-        return [
-            'id' => $this->pdoDBhandle->lastInsertId(),
-            'name' => $name
-        ];
+    if ($workspace) {
+      throw new HttpError("Workspace with name `$newName` already exists!", 400);
     }
 
+    $this->_(
+      'update workspaces set name = :name where id = :id',
+      [
+        ':name' => $newName,
+        ':id' => $wsId
+      ]
+    );
+  }
 
-    public function setWorkspaceName($wsId, $newName) {
-
-        $workspace = $this->_(
-            'SELECT workspaces.id FROM workspaces 
-            WHERE workspaces.id=:ws_id',
-            [':ws_id' => $wsId]
-        );
-
-        if (!$workspace) {
-            throw new HttpError("Workspace with id `$wsId` does not exist!", 400);
-        }
-
-        $workspace = $this->_(
-            "SELECT workspaces.id, workspaces.name FROM workspaces WHERE `name` = :ws_name",
-            [':ws_name' => $newName]
-        );
-
-        if ($workspace) {
-            throw new HttpError("Workspace with name `$newName` already exists!", 400);
-        }
-
-        $this->_(
-            'UPDATE workspaces SET name = :name WHERE id = :id',
-            [
-                ':name' => $newName,
-                ':id' => $wsId
-            ]
-        );
+  public function deleteWorkspaces(array $wsIds): void {
+    foreach ($wsIds as $wsId) {
+      $this->_(
+        'delete from workspaces
+                where workspaces.id = :ws_id',
+        [':ws_id' => $wsId]
+      );
     }
+    // TODO ROLLBACK if one fails!
+  }
 
+  public function getUsersByWorkspace(int $workspaceId): array {
+    $workspaceRolesPerUser = $this->getMapUserToRoleByWorkspace($workspaceId);
 
-    public function deleteWorkspaces(array $wsIds): void {
+    $allUsers = $this->_('select users.id, users.name from users order by users.name', [], true);
 
-        foreach ($wsIds as $wsId) {
-            $this->_(
-                'DELETE FROM workspaces
-                WHERE workspaces.id = :ws_id',
-                [':ws_id' => $wsId]
-            );
-        }
-        // TODO ROLLBACK if one fails!
+    $allUsersWithTheirRolesOnWorkspace = [];
+    foreach ($allUsers as $user) {
+      $allUsersWithTheirRolesOnWorkspace[] = [
+        'id' => $user['id'],
+        'name' => $user['name'],
+        'selected' => isset($workspaceRolesPerUser[$user['id']]),
+        'role' => isset($workspaceRolesPerUser[$user['id']]) ? $workspaceRolesPerUser[$user['id']] : '',
+      ];
     }
+    return $allUsersWithTheirRolesOnWorkspace;
+  }
 
-
-    public function getUsersByWorkspace(int $workspaceId): array {
-
-        $workspaceRolesPerUser = $this->getMapUserToRoleByWorkspace($workspaceId);
-
-        $allUsers = $this->_('SELECT users.id, users.name FROM users ORDER BY users.name', [], true);
-
-        $allUsersWithTheirRolesOnWorkspace = [];
-        foreach ($allUsers as $user) {
-            array_push($allUsersWithTheirRolesOnWorkspace, [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'selected' => isset($workspaceRolesPerUser[$user['id']]),
-                'role' => isset($workspaceRolesPerUser[$user['id']]) ? $workspaceRolesPerUser[$user['id']] : '',
-            ]);
-        }
-        return $allUsersWithTheirRolesOnWorkspace;
-    }
-
-
-    public function getMapUserToRoleByWorkspace(int $workspaceId) {
-
-        $workspaceUsers = $this->_(
-            'SELECT 
+  public function getMapUserToRoleByWorkspace(int $workspaceId) {
+    $workspaceUsers = $this->_(
+      'select 
                 workspace_users.user_id as id, 
                 workspace_users.role as role 
-            FROM workspace_users
-            WHERE workspace_users.workspace_id=:ws_id',
-            [':ws_id' => $workspaceId],
-            true
-        );
-        $workspaceRolesPerUser = [];
-        foreach ($workspaceUsers as $workspaceUser) {
-            $workspaceRolesPerUser[$workspaceUser['id']] = $workspaceUser['role'];
-        }
-        return $workspaceRolesPerUser;
+            from workspace_users
+            where workspace_users.workspace_id=:ws_id',
+      [':ws_id' => $workspaceId],
+      true
+    );
+    $workspaceRolesPerUser = [];
+    foreach ($workspaceUsers as $workspaceUser) {
+      $workspaceRolesPerUser[$workspaceUser['id']] = $workspaceUser['role'];
     }
+    return $workspaceRolesPerUser;
+  }
 
+  public function setUserRightsForWorkspace(int $wsId, array $listOfUserIdsAndRoles): void {
+    $this->_('delete from workspace_users where workspace_users.workspace_id=:ws_id', [':ws_id' => $wsId]);
 
-    public function setUserRightsForWorkspace(int $wsId, array $listOfUserIdsAndRoles): void {
-
-        $this->_('DELETE FROM workspace_users WHERE workspace_users.workspace_id=:ws_id', [':ws_id' => $wsId]);
-
-        foreach ($listOfUserIdsAndRoles as $userIdAndRole) {
-            if (strlen($userIdAndRole->role) > 0) {
-                $this->_(
-                    'INSERT INTO workspace_users (workspace_id, user_id, role) 
-                    VALUES(:workspaceId, :userId, :role)',
-                    [
-                        ':workspaceId' => $wsId,
-                        ':role' => $userIdAndRole->role,
-                        ':userId' => $userIdAndRole->id
-                    ]
-                );
-            }
-        }
-    }
-
-
-    public function setSuperAdminStatus(int $userId, bool $isSuperAdmin): void {
-
+    foreach ($listOfUserIdsAndRoles as $userIdAndRole) {
+      if (strlen($userIdAndRole->role) > 0) {
         $this->_(
-            'UPDATE users SET is_superadmin = :is_superadmin WHERE id = :user_id',
-            [
-                ':user_id' => $userId,
-                ':is_superadmin' => $isSuperAdmin ? 1 : 0
-            ]
+          'insert into workspace_users (workspace_id, user_id, role) 
+                    values(:workspaceId, :userId, :role)',
+          [
+            ':workspaceId' => $wsId,
+            ':role' => $userIdAndRole->role,
+            ':userId' => $userIdAndRole->id
+          ]
         );
+      }
     }
+  }
 
+  public function setSuperAdminStatus(int $userId, bool $isSuperAdmin): void {
+    $this->_(
+      'update users set is_superadmin = :is_superadmin where id = :user_id',
+      [
+        ':user_id' => $userId,
+        ':is_superadmin' => $isSuperAdmin ? 1 : 0
+      ]
+    );
+  }
 }
