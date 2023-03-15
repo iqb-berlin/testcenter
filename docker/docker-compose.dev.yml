@@ -17,6 +17,7 @@ services:
       - --log_error_verbosity=2
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     networks:
       - testcenter
 
@@ -25,8 +26,6 @@ services:
       context: ..
       dockerfile: docker/backend.Dockerfile
       target: dev
-    environment:
-      TESTMODE_REAL_DATA: false
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
       - ../backend/autoload.php:/var/www/backend/autoload.php

@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-require_once "src/data-collection/DataCollection.class.php";
-require_once "src/data-collection/DataCollectionTypeSafe.class.php";
+
+require_once "test/unit/DataBaseTestCase.class.php";
 
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 final class AdminDAOTest extends TestCase {
-
   private AdminDAO $dbc;
 
   function setUp(): void {
     require_once "src/exception/HttpError.class.php";
+    require_once "src/data-collection/DataCollection.class.php";
+    require_once "src/data-collection/DataCollectionTypeSafe.class.php";
     require_once "src/data-collection/Admin.class.php";
     require_once "src/data-collection/DBConfig.class.php";
     require_once "src/data-collection/Command.class.php";

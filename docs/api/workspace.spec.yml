@@ -380,10 +380,6 @@ paths:
                       veronaModuleType: player
                       veronaVersion: '4.0'
                       version: 4.0.0
-
-
-
-
         "401":
           description: Not authenticated
         "403":
@@ -814,8 +810,8 @@ paths:
                 type: string
               example: |-
                 groupname;loginname;code;bookletname;unitname;priority;reviewtime;entry
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"2021-07-29 10:00:00";"this is a sample unit review"
-                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"2021-07-29 10:00:00";"sample booklet review"
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"UNIT.SAMPLE";"1";"2021-07-29 12:00:00";"this is a sample unit review"
+                "sample_group";"test";"xxx";"BOOKLET.SAMPLE-1";"";"1";"2021-07-29 12:00:00";"sample booklet review"
             application/json:
               schema:
                 $ref: '#/components/schemas/ReviewReport'

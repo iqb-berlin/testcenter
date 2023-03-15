@@ -96,21 +96,28 @@ try  {
 
         CLI::p("Database-Config not file found (`/backend/config/DBConnectionData.json`), will be created.");
 
-        $config = new DBConfig($args);
-        CLI::connectDBWithRetries($config, 5);
+        $config = new DBConfig($args); // TODO create DBConfig from environmetn instead from args
 
-        CLI::success("Provided arguments OK.");
-
-        if (!file_put_contents(ROOT_DIR . '/backend/config/DBConnectionData.json', json_encode(DB::getConfig()))) {
+        if (!file_put_contents(ROOT_DIR . '/backend/config/DBConnectionData.json', json_encode($config))) {
 
             throw new Exception("Could not write file. Check file permissions on `/config/`.");
         }
+
+        try {
+          CLI::connectDBWithRetries(5);
+        } catch (Exception $e) {
+          unlink(ROOT_DIR . '/backend/config/DBConnectionData.json');
+          throw $e;
+        }
+
+        CLI::success("Provided arguments OK.");
+
 
         CLI::p("Database-Config file written.");
 
     } else {
 
-        CLI::connectDBWithRetries(null, 5);
+        CLI::connectDBWithRetries(5);
         $config = DB::getConfig();
         CLI::p("Config file present (and OK).");
     }

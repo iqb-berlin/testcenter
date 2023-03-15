@@ -28,14 +28,14 @@ class CLI {
         "Grey" => "47",
     ];
 
-    static function connectDBWithRetries(?DBConfig $config = null, int $retries = 5): void {
+    static function connectDBWithRetries(int $retries = 5): void {
 
         while ($retries--) {
 
             try {
 
                 CLI::p("Database Connection attempt.");
-                DB::connect($config);
+                DB::connect();
                 CLI::success("Database Connection successful!");
                 return;
 

@@ -11,8 +11,6 @@ class TestEnvironment {
 
   public static function setup(string $testMode): void {
     $testMode = in_array($testMode, ['prepare', 'api', 'integration']) ? $testMode : 'api';
-    $resetBeforeCall = $testMode == 'prepare';
-    $resetAfterCall = $testMode == 'api';
 
     try {
       // TODO restore last state of test-data-dir when $testMode == 'integration'
@@ -26,16 +24,22 @@ class TestEnvironment {
       self::createTestFiles();
       self::overwriteModificationDatesVfs();
 
-      $prodDBName = DB::connectToTestDB();
+      DB::connectToTestDB();
 
-      $initDAO = new InitDAO();
-
-      if ($resetBeforeCall) {
-        $initDAO->cloneDB($prodDBName);
+      if ($testMode == 'prepare') {
+        self::updateDataBaseScheme();
         self::createTestData();
       }
 
-      if ($resetAfterCall) {
+      $initDAO = new InitDAO();
+
+      if ($testMode == 'integration') {
+        $initDAO->clearDB();
+        $initDAO->runFile(ROOT_DIR . '/scripts/database/database.sql');
+        self::createTestData();
+      }
+
+      if ($testMode == 'api') {
         $initDAO->beginTransaction();
         register_shutdown_function([self::class, "rollback"]);
       }
@@ -100,6 +104,20 @@ class TestEnvironment {
         TestEnvironment::overwriteModificationDatesVfs($child);
       }
     }
+  }
+
+  static function updateDataBaseScheme(): void {
+    $initDAO = new InitDAO();
+    $initDAO->clearDB();
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
+    $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", false);
+
+    $scheme = '-- IQB-Testcenter DB ' . Version::get();
+    foreach ($initDAO::tables as $table) {
+      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] .  ";";
+      $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
+    }
+    file_put_contents(ROOT_DIR . '/scripts/database/database.sql', $scheme);
   }
 
   private static function rollback(): void {

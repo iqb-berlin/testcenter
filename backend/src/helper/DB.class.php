@@ -6,19 +6,17 @@ class DB {
   private static PDO $pdo;
   private static DBConfig $config;
 
-  static function connect(): void {
-    self::$config = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
+  static function connect(?DBConfig $config = null): void {
+    self::$config = $config ?? DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
     self::setUpConnection();
   }
 
-  static function connectToTestDB(): string {
-    self::$config = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
-    $prodDbName = self::$config->dbname;
+  static function connectToTestDB(?DBConfig $config = null): void {
+    self::$config = $config ?? DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
     self::$config->dbname = 'TMP_' . self::$config->dbname;
     self::$config->staticTokens = true;
     self::$config->insecurePasswords = true;
     self::setUpConnection();
-    return $prodDbName;
   }
 
   private static function setUpConnection(): void {
@@ -31,17 +29,15 @@ class DB {
 
   static function getConnection(): PDO {
     if (!isset(self::$pdo)) {
-      throw new Exception("DB connection not set up yet");
+      throw new Exception("DB connection not set up yet.");
     }
-
     return self::$pdo;
   }
 
   static function getConfig(): DBConfig {
     if (!isset(self::$config)) {
-      throw new Exception("DB connection not set up yet");
+      throw new Exception("DB config not set up yet.");
     }
-
     return self::$config;
   }
 }
