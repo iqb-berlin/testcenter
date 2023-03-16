@@ -5,8 +5,6 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
 
-require_once "test/unit/DataBaseTestCase.class.php";
-
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
