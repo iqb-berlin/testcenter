@@ -112,7 +112,7 @@ class TestEnvironment {
     $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
     $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", false);
 
-    $scheme = '-- IQB-Testcenter DB ' . Version::get();
+    $scheme = '-- IQB-Testcenter DB --';
     foreach ($initDAO::tables as $table) {
       $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] .  ";";
       $scheme .= "\n" . "truncate $table; -- to reset auto-increment";

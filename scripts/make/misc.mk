@@ -66,6 +66,10 @@ init-ensure-file-rights:
 	chmod -R 0444 scripts/database/my.cnf # mysql does not accept it otherwise
 
 new-version:
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
+ 		--rm --entrypoint="" \
+ 		testcenter-backend \
+ 		php /var/www/backend/test/update-sql-scheme.php
 	make run-task-runner task="new-version $(version)"
 
 fix-docker-user:
