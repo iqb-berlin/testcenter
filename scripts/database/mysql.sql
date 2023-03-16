@@ -1,9 +1,3 @@
-# SET AUTOCOMMIT = 0;
-
-SET time_zone = "+00:00";
-
-
-
 --
 -- Datenbank: `testcenter`
 --

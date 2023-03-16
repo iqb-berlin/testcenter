@@ -411,16 +411,16 @@ class AdminDAO extends DAO {
 
     // TODO: use data class
     return $this->_("
-            SELECT
-				login_sessions.group_name as groupname,
-                login_sessions.name as loginname,
-                person_sessions.name_suffix as code,
-                tests.name as bookletname,
-                units.name as unitname,
-				unit_reviews.priority,
-                unit_reviews.categories,
-				unit_reviews.reviewtime,
-                unit_reviews.entry
+      SELECT
+        login_sessions.group_name as groupname,
+          login_sessions.name as loginname,
+          person_sessions.name_suffix as code,
+          tests.name as bookletname,
+          units.name as unitname,
+          unit_reviews.priority,
+          unit_reviews.categories,
+          unit_reviews.reviewtime,
+          unit_reviews.entry
 			FROM
 			    login_sessions,
 			    person_sessions,
@@ -435,16 +435,16 @@ class AdminDAO extends DAO {
 			    tests.id = units.booklet_id AND
 			    units.id = unit_reviews.unit_id
 			UNION ALL
-            SELECT
-				login_sessions.group_name as groupname,
-                login_sessions.name as loginname,
-                person_sessions.name_suffix as code,
-                tests.name as bookletname,
-                '' as unitname,
-				test_reviews.priority,
-                test_reviews.categories,
-				test_reviews.reviewtime,
-                test_reviews.entry
+        SELECT
+          login_sessions.group_name as groupname,
+          login_sessions.name as loginname,
+          person_sessions.name_suffix as code,
+          tests.name as bookletname,
+          '' as unitname,
+          test_reviews.priority,
+          test_reviews.categories,
+          test_reviews.reviewtime,
+          test_reviews.entry
 			FROM
 			    login_sessions,
 			    person_sessions,
