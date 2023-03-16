@@ -21,15 +21,15 @@ class TestDB {
 
     $initDao = new InitDAO();
 
-    $nextPatchPath = REAL_ROOT_DIR . '/scripts/database/mysql.patches.d/next.sql';
-    $fullSchemePath = REAL_ROOT_DIR . '/scripts/database/database.sql';
+    $nextPatchPath = REAL_ROOT_DIR . '/scripts/database/patches.d/next.sql';
+    $fullSchemePath = REAL_ROOT_DIR . '/scripts/database/full.sql';
     $patchFileChanged = (filemtime($nextPatchPath) > filemtime($fullSchemePath));
     if (!file_exists($nextPatchPath) or $forceRecreate or $patchFileChanged) {
       TestEnvironment::updateDataBaseScheme();
       return;
     }
     $initDao->clearDB();
-    $initDao->runFile(ROOT_DIR . '/scripts/database/database.sql');
+    $initDao->runFile(ROOT_DIR . '/scripts/database/full.sql');
   }
 
 

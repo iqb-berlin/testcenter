@@ -35,7 +35,7 @@ class TestEnvironment {
 
       if ($testMode == 'integration') {
         $initDAO->clearDB();
-        $initDAO->runFile(ROOT_DIR . '/scripts/database/database.sql');
+        $initDAO->runFile(ROOT_DIR . '/scripts/database/full.sql');
         self::createTestData();
       }
 
@@ -109,15 +109,15 @@ class TestEnvironment {
   static function updateDataBaseScheme(): void {
     $initDAO = new InitDAO();
     $initDAO->clearDB();
-    $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
-    $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", false);
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
+    $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", false);
 
     $scheme = '-- IQB-Testcenter DB --';
     foreach ($initDAO::tables as $table) {
       $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] .  ";";
       $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
     }
-    file_put_contents(ROOT_DIR . '/scripts/database/database.sql', $scheme);
+    file_put_contents(ROOT_DIR . '/scripts/database/full.sql', $scheme);
   }
 
   private static function rollback(): void {
