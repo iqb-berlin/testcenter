@@ -3,10 +3,11 @@
 // TODO mock backend responses for networktest to speed up things
 // TODO test sending of a report
 
-import { resetBackendData } from './utils';
+import { resetBackendData, useTestDB } from './utils';
 
 describe('Sys-Check', () => {
   beforeEach(resetBackendData);
+  beforeEach(useTestDB);
   it('should exist', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
     cy.contains('System-Check Auswahl')

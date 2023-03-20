@@ -13,8 +13,14 @@ class TestEnvironment {
     $testMode = in_array($testMode, ['prepare', 'api', 'integration']) ? $testMode : 'api';
 
     try {
-      // TODO restore last state of test-data-dir when $testMode == 'integration'
-      self::setUpVirtualFilesystem();
+
+      if ($testMode !== 'integration') {
+        // integration/system/api tests are run in their own container, so the can use real FS
+        // TODO create test-data-dir analogous to the testDB, use this and get rid of the compose files for system-tests
+        self::setUpVirtualFilesystem();
+      } else {
+        define('DATA_DIR', ROOT_DIR . '/data');
+      }
 
       TimeStamp::setup(null, '@' . self::staticDate);
       BroadcastService::setup('', '');
@@ -22,24 +28,20 @@ class TestEnvironment {
       self::makeRandomStatic();
 
       self::createTestFiles();
-      self::overwriteModificationDatesVfs();
+
+      if ($testMode !== 'integration') {
+        self::overwriteModificationDatesVfs();
+      }
 
       DB::connectToTestDB();
 
       if ($testMode == 'prepare') {
-        self::updateDataBaseScheme();
-        self::createTestData();
-      }
-
-      $initDAO = new InitDAO();
-
-      if ($testMode == 'integration') {
-        $initDAO->clearDB();
-        $initDAO->runFile(ROOT_DIR . '/scripts/database/full.sql');
+        self::buildTestDB();
         self::createTestData();
       }
 
       if ($testMode == 'api') {
+        $initDAO = new InitDAO();
         $initDAO->beginTransaction();
         register_shutdown_function([self::class, "rollback"]);
       }
@@ -106,7 +108,21 @@ class TestEnvironment {
     }
   }
 
-  static function updateDataBaseScheme(): void {
+  static function buildTestDB(): void {
+    $initDAO = new InitDAO();
+    $nextPatchPath = ROOT_DIR . '/scripts/database/patches.d/next.sql';
+    $fullSchemePath = ROOT_DIR . '/scripts/database/full.sql';
+    $patchFileChanged = (filemtime($nextPatchPath) > filemtime($fullSchemePath));
+
+    if (!file_exists($nextPatchPath) or $patchFileChanged) {
+      TestEnvironment::updateDataBaseScheme();
+      return;
+    }
+    $initDAO->clearDB();
+    $initDAO->runFile(ROOT_DIR . '/scripts/database/full.sql');
+  }
+
+  private static function updateDataBaseScheme(): void {
     $initDAO = new InitDAO();
     $initDAO->clearDB();
     $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");

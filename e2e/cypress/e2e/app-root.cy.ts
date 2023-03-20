@@ -1,12 +1,13 @@
 // TODO better selectors
 
 import {
-  insertCredentials, resetBackendData, visitLoginPage
+  insertCredentials, resetBackendData, useTestDB, visitLoginPage
 } from './utils';
 
 describe('App-Root\'s login page', () => {
   beforeEach(cy.clearLocalStorage);
   beforeEach(resetBackendData);
+  beforeEach(useTestDB);
   beforeEach(visitLoginPage);
 
   it('Visits the homepage', () => {

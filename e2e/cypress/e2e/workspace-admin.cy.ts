@@ -1,10 +1,11 @@
 // TODO better selectors
 
 import {
-  deleteDownloadsFolder, loginAdmin
+  deleteDownloadsFolder, loginAdmin, useTestDB
 } from './utils';
 
 describe('Workspace-Admin', () => {
+  beforeEach(useTestDB);
   beforeEach(deleteDownloadsFolder);
   beforeEach(loginAdmin);
 

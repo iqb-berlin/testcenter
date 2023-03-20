@@ -22,6 +22,7 @@ services:
     user: root
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     command:
       - --log_error_verbosity=1
     networks:
@@ -33,7 +34,6 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
       MYSQL_PORT: 3306
-      TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
       SUPERUSER_NAME: super
       SUPERUSER_PASSWORD: user123
       WORKSPACE_NAME: example_workspace
@@ -52,6 +52,7 @@ services:
       - ../package.json:/var/www/package.json
       - ../package-lock.json:/var/www/package-lock.json
       - ../sampledata:/var/www/sampledata
+      - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini # disable xdebug
     depends_on:
       - testcenter-system-test-db
     networks:

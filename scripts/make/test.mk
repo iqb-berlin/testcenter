@@ -71,7 +71,6 @@ test-frontend-integration:
 
 # Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI.
 test-system-headless:
-	TESTMODE_REAL_DATA=yes \
 		docker compose -f docker/docker-compose.system-test-headless.yml up \
 			--abort-on-container-exit \
 			--force-recreate \

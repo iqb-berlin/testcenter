@@ -1,7 +1,7 @@
 <?php
 
 class TestDB {
-  static function setUp(bool $forceRecreate = false): void {
+  static function setUp(): void {
     require_once "src/dao/DAO.class.php";
     require_once "src/dao/SessionDAO.class.php";
     require_once "src/dao/InitDAO.class.php";
@@ -18,18 +18,7 @@ class TestDB {
     }
 
     self::connectWithRetries();
-
-    $initDao = new InitDAO();
-
-    $nextPatchPath = REAL_ROOT_DIR . '/scripts/database/patches.d/next.sql';
-    $fullSchemePath = REAL_ROOT_DIR . '/scripts/database/full.sql';
-    $patchFileChanged = (filemtime($nextPatchPath) > filemtime($fullSchemePath));
-    if (!file_exists($nextPatchPath) or $forceRecreate or $patchFileChanged) {
-      TestEnvironment::updateDataBaseScheme();
-      return;
-    }
-    $initDao->clearDB();
-    $initDao->runFile(ROOT_DIR . '/scripts/database/full.sql');
+    TestEnvironment::buildTestDB();
   }
 
 
