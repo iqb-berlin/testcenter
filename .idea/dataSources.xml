@@ -19,7 +19,7 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:9091/testcenter_db</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:9091/TEST_testcenter_db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="TEST_testcenter_monorepo@localhost" uuid="5989e027-0eb1-4de7-a77b-0ff835b4314e">
