@@ -2,120 +2,101 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-
 class SysChecksFolder extends Workspace {
+  public function findAvailableSysChecks(): array {
+    $sysChecks = [];
 
+    foreach (Folder::glob($this->getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
+      $xFile = new XMLFileSysCheck($fullFilePath);
 
-    public function findAvailableSysChecks(): array {
-
-        $sysChecks = [];
-
-        foreach (Folder::glob($this->getOrCreateSubFolderPath('SysCheck'), "*.[xX][mM][lL]") as $fullFilePath) {
-
-            $xFile = new XMLFileSysCheck($fullFilePath);
-
-            if ($xFile->isValid()) {
-                $sysChecks[] = $xFile;
-            }
-        }
-
-        return $sysChecks;
+      if ($xFile->isValid()) {
+        $sysChecks[] = $xFile;
+      }
     }
 
+    return $sysChecks;
+  }
 
-    // TODO unit test
-    public function getSysCheckReportList(): array {
+  // TODO unit test
+  public function getSysCheckReportList(): array {
+    $allReports = $this->collectSysCheckReports();
 
-        $allReports = $this->collectSysCheckReports();
+    $allReportsByCheckIds = array_reduce($allReports, function($agg, SysCheckReportFile $report) {
+      if (!isset($agg[$report->getCheckId()])) {
+        $agg[$report->getCheckId()] = [$report];
+      } else {
+        $agg[$report->getCheckId()][] = $report;
+      }
+      return $agg;
+    }, []);
 
-        $allReportsByCheckIds = array_reduce($allReports, function($agg, SysCheckReportFile $report) {
-            if (!isset($agg[$report->getCheckId()])) {
-                $agg[$report->getCheckId()] = [$report];
-            } else {
-                $agg[$report->getCheckId()][] = $report;
-            }
-            return $agg;
-        }, []);
+    return array_map(function(array $reportSet, string $checkId) {
+      return [
+        'id' => $checkId,
+        'count' => count($reportSet),
+        'label' => $reportSet[0]->getCheckLabel(),
+        'details' => SysCheckReportFile::getStatistics($reportSet)
+      ];
+    }, $allReportsByCheckIds, array_keys($allReportsByCheckIds));
+  }
 
-        return array_map(function(array $reportSet, string $checkId) {
+  // TODO unit test
+  public function collectSysCheckReports(array $filterCheckIds = null): array {
+    $reportFolderName = $this->getSysCheckReportsPath();
+    $reportDir = opendir($reportFolderName);
+    $reports = [];
 
-            return [
-                'id' => $checkId,
-                'count' => count($reportSet),
-                'label' => $reportSet[0]->getCheckLabel(),
-                'details' => SysCheckReportFile::getStatistics($reportSet)
-            ];
-        }, $allReportsByCheckIds, array_keys($allReportsByCheckIds));
+    while (($reportFileName = readdir($reportDir)) !== false) {
+      $reportFilePath = $reportFolderName . '/' . $reportFileName;
+
+      if (!is_file($reportFilePath) or !(strtoupper(substr($reportFileName, -5)) == '.JSON')) {
+        continue;
+      }
+
+      $report = new SysCheckReportFile($reportFilePath);
+
+      if (($filterCheckIds === null) or (in_array($report->getCheckId(), $filterCheckIds))) {
+        $reports[] = $report;
+      }
     }
 
+    return $reports;
+  }
 
-    // TODO unit test
-    public function collectSysCheckReports(array $filterCheckIds = null): array {
+  private function getSysCheckReportsPath(): string {
+    $sysCheckPath = $this->workspacePath . '/SysCheck';
+    if (!file_exists($sysCheckPath)) {
+      mkdir($sysCheckPath);
+    }
+    $sysCheckReportsPath = $sysCheckPath . '/reports';
+    if (!file_exists($sysCheckReportsPath)) {
+      mkdir($sysCheckReportsPath);
+    }
+    return $sysCheckReportsPath;
+  }
 
-        $reportFolderName = $this->getSysCheckReportsPath();
-        $reportDir = opendir($reportFolderName);
-        $reports = [];
+  // TODO unit test
+  public function deleteSysCheckReports(array $checkIds): array {
+    $reports = $this->collectSysCheckReports($checkIds);
 
-        while (($reportFileName = readdir($reportDir)) !== false) {
+    $deletionReport = [];
 
-            $reportFilePath = $reportFolderName . '/' . $reportFileName;
-
-            if (!is_file($reportFilePath) or !(strtoupper(substr($reportFileName, -5)) == '.JSON')) {
-                continue;
-            }
-
-            $report = new SysCheckReportFile($reportFilePath);
-
-            if (($filterCheckIds === null) or (in_array($report->getCheckId(), $filterCheckIds))) {
-
-                $reports[] = $report;
-            }
-        }
-
-        return $reports;
+    foreach ($reports as $report) {
+      /* @var SysCheckReportFile $report */
+      $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
+      $deletionReport[$this->deleteFileFromFs($fullPath)][] = $report->getCheckId();
     }
 
+    return $deletionReport;
+  }
 
-    private function getSysCheckReportsPath(): string {
+  // TODO unit test
+  public function saveSysCheckReport(SysCheckReport $report): void {
+    $reportFilename = $this->getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
 
-        $sysCheckPath = $this->workspacePath . '/SysCheck';
-        if (!file_exists($sysCheckPath)) {
-            mkdir($sysCheckPath);
-        }
-        $sysCheckReportsPath = $sysCheckPath . '/reports';
-        if (!file_exists($sysCheckReportsPath)) {
-            mkdir($sysCheckReportsPath);
-        }
-        return $sysCheckReportsPath;
+    if (!file_put_contents($reportFilename, json_encode((array) $report))) {
+      throw new Exception("Could not write to file `$reportFilename`");
     }
-
-
-    // TODO unit test
-    public function deleteSysCheckReports(array $checkIds) : array {
-
-        $reports = $this->collectSysCheckReports($checkIds);
-
-        $deletionReport = [];
-
-        foreach ($reports as $report) {
-
-            /* @var SysCheckReportFile $report */
-            $fullPath = "$this->workspacePath/SysCheck/reports/{$report->getFileName()}";
-            $deletionReport[$this->deleteFileFromFs($fullPath)][] = $report->getCheckId();
-        }
-
-        return $deletionReport;
-    }
-
-
-    // TODO unit test
-    public function saveSysCheckReport(SysCheckReport $report): void {
-
-        $reportFilename = $this->getSysCheckReportsPath() . '/' . uniqid('report_', true) . '.json';
-
-        if (!file_put_contents($reportFilename, json_encode((array) $report))) {
-            throw new Exception("Could not write to file `$reportFilename`");
-        }
-    }
+  }
 
 }
