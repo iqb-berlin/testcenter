@@ -35,6 +35,13 @@ try {
   $errorMiddleware = $app->addErrorMiddleware(true, true, true);
   $errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
 
+  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+    http_response_code(500);
+    header('Retry-After:30');
+    echo "Service is restarting";
+    exit;
+  }
+
   $projectPath = Server::getProjectPath();
   if ($projectPath) {
     $app->setBasePath($projectPath);

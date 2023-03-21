@@ -58,6 +58,11 @@ try {
   $systemVersion = Version::get();
   CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
+  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+    throw new Exception("Initialize is already running");
+  }
+  file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
+
   CLI::h2("System-Config");
   if (!file_exists(ROOT_DIR . '/backend/config/system.json')) {
     CLI::p("System-Config not file found (`/backend/config/system.json`). Will be created.");
@@ -259,10 +264,18 @@ try {
   CLI::h1("Ready.");
 
 } catch (Exception $e) {
+
   CLI::error($e->getMessage());
   echo "\n";
   ErrorHandler::logException($e, true);
+  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+    unlink(ROOT_DIR . '/backend/config/init.lock');
+  }
   exit(1);
+}
+
+if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+  unlink(ROOT_DIR . '/backend/config/init.lock');
 }
 
 echo "\n";
