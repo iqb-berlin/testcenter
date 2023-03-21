@@ -48,8 +48,7 @@ check_prerequisites() {
 
 choose_version() {
   latest_version_tag=$(curl -s https://api.github.com/repos/$REPO_URL/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d \" | tr -d , | tr -d " " )
-  echo $latest_version_tag
-  read -p 'Install latest version [Y/n]: ' -r -n 1 -e latest
+  read -p "Install latest version (${latest_version_tag}) [Y/n]: " -r -n 1 -e latest
   if [[ $latest =~ ^[nN]$ ]]; then
     read -p 'Enter version tag: ' -r -e chosen_version_tag
     if ! curl --head --silent --fail --output /dev/null https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/README.md 2> /dev/null;
@@ -58,10 +57,8 @@ choose_version() {
       exit 1
     fi
   else
-    echo "Installing latest"
     chosen_version_tag=$latest_version_tag
   fi
-  echo "Chosen:$chosen_version_tag"
 }
 
 download_files() {
@@ -76,7 +73,6 @@ download_files() {
   wget -nv -O config/nginx.conf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/frontend/config/nginx.conf
   wget -nv -O config/my.cnf https://raw.githubusercontent.com/${REPO_URL}/${chosen_version_tag}/scripts/database/my.cnf
   chmod +x update.sh
-  echo "Download done"
 }
 
 customize_settings() {
