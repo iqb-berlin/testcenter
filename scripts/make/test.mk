@@ -7,7 +7,6 @@ test-backend-unit:
 			--configuration /var/www/backend/phpunit.xml \
 				/var/www/backend/test/unit/.
 
-
 test-backend-unit-coverage:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 	--rm --entrypoint "" \
