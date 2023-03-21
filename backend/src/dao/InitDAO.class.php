@@ -342,4 +342,8 @@ class InitDAO extends SessionDAO {
   public function createSampleMetaData(): void {
     $this->setMeta('appConfig', 'aKey', 'newValue');
   }
+
+  public function checkSQLMode(): bool {
+    return $this->_("select 'a' || 'b'") === 'ab';
+  }
 }

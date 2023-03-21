@@ -117,8 +117,14 @@ try {
     CLI::p("Config file present (and OK).");
   }
 
-  CLI::h2("Database Structure");
+  CLI::h2("Database Settings");
   $initDAO = new InitDAO();
+  if (!$initDAO->checkSQLMode()) {
+    throw new Exception('SQLMode is not set properly. Check the file-rights of config/my.cnf to be 444 and restart.');
+  }
+
+  CLI::h2("Database Structure");
+
 
   $dbStatus = $initDAO->getDbStatus();
   CLI::p("Database status: {$dbStatus['message']}");
