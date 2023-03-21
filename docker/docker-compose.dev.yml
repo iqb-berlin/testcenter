@@ -41,7 +41,7 @@ services:
       - ../package.json:/var/www/package.json
       - ../sampledata:/var/www/sampledata
     ports:
-      - 9092:9003 #xdebug
+      - 9005:9003 #xdebug
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
