@@ -12,6 +12,7 @@ layout: default
 * "Leerzeilen-Problem" gelöst: Unter bestimmten Umständen konnten, wenn z. B. mehrere Sessions eines logins im 
   `hot-run-restart`-Modus gleichzeitig gestartet werden, doppelte Sessions erzeugt werden. Der Effekt waren zusätzliche
   "Leerzeilen" in den Ergebnisdaten.   
+* Startvorgang bricht nicht mehr ab, wenn fehlerhafte XMLs im Workspace liegen.
 
 ## 14.3.0
 ### Bugfixes

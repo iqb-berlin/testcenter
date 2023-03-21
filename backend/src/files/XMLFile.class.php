@@ -29,6 +29,7 @@ class XMLFile extends File {
     if ($xmlElem === false) {
       $this->importLibXmlErrors();
       libxml_use_internal_errors(false);
+      $this->xml = new SimpleXMLElement('<error />');
       return;
     }
 
