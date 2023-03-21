@@ -344,6 +344,7 @@ class InitDAO extends SessionDAO {
   }
 
   public function checkSQLMode(): bool {
-    return $this->_("select 'a' || 'b'")[0] === 'ab';
+    $d = $this->_("select 'a' || 'b' as merged")['merged'];
+    return $d === 'ab';
   }
 }
