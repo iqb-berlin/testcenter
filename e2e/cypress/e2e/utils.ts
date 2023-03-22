@@ -40,9 +40,7 @@ export const login = (username: string, password: string): void => {
 };
 
 export const logoutAdmin = (): void => {
-  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`);
-  // I dont think it is necessary to check for workspaces here
-  cy.get('[data-cy="workspace-1"]')
+  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`)
     .should('exist');
   cy.get('[data-cy="logout"]')
     .click();
@@ -63,13 +61,13 @@ export const loginAdmin = (): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
 };
 
-export const loginAsAdmin = (username = 'super', password = 'user123'): void => {
+export const loginAsAdmin = (username: string, password: string): void => {
   visitLoginPage();
   insertCredentials(username, password);
   cy.get('[data-cy="login-admin"]')
     .click();
-    // I dont think it is necessary to check for workspaces here
-  cy.get('[data-cy="workspace-1"]')
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+  cy.contains(username)
     .should('exist');
 };
 
@@ -88,4 +86,29 @@ export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
     .click();
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/superadmin/users`);
+};
+
+export const addWorkspaceAdmin = (username: string, password: string): void => {
+  //tobhu: Admins durch Users ersetzen
+  cy.get('[data-cy="superadmin-tabs:users"]')
+     .click()
+  cy.get('[data-cy="add-user"]')
+    .click();
+  cy.get('[formcontrolname="name"]')
+    .should ('exist')
+    .type(username);
+  cy.get('[formcontrolname="pw"]')
+    .should ('exist')
+    //Passwort < 7 Zeichen
+    .type('123456')
+    .get('[type="submit"]')
+    .should ('be.disabled')
+  cy.get('[formcontrolname="pw"]')
+    .clear()
+    .type(password)
+    .get('[type="submit"]')
+    .should ('be.enabled')
+    .click();
+  cy.contains(username)
+    .should('exist');
 };
