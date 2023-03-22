@@ -62,12 +62,10 @@ update_files() {
 set_tls() {
   read -p 'Use TLS? [y/N]: ' -r -n 1 -e TLS
   if [[ $TLS =~ ^[yY]$ ]]; then
-    sed -i 's/TLS=off/TLS=on/' .env
-    sed -i 's/ws:/wss:/' .env
+    sed -i 's/TLS_ENABLED=no/TLS_ENABLED=yes/' .env
     sed -i 's/docker-compose.prod.yml/docker-compose.prod.yml -f docker-compose.prod.tls.yml/' Makefile
   else
-    sed -i 's/TLS=on/TLS=off/' .env
-    sed -i 's/wss:/ws:/' .env
+    sed -i 's/TLS_ENABLED=yes/TLS_ENABLED=no/' .env
     sed -i 's/docker-compose.prod.yml -f docker-compose.prod.tls.yml/docker-compose.prod.yml/' Makefile
   fi
 }

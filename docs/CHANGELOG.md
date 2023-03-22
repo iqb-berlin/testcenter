@@ -5,11 +5,42 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
+### UI
+* Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
+
+## 14.3.0
 ### Bugfixes
-* SysCheck: Units mit externer Definition funktionieren wieder  
+* SysCheck: Units mit externer Definition funktionieren wieder
+* Logins verbleiben nicht mehr in der Datenbank nach dem Löschen eines Workspaces.
+* Das Löschen von Dateien, die von anderen verwendetet werden (z. B. Units in einem Booklet), werden wieder korrekt
+  verhindert.
+* Zeitanzeige in Demo- und Review-Modus repariert
 
 ### UI
 * Adminbereich: Arbeitsbereich kann durch Änderung der URl gewechselt werden
+
+### Verbesserungen
+* Veränderter Anwendungsparameter für Broadcasting-Service
+  - Kann nun mittels BROADCAST_SERVICE_ENABLED an- und abgeschaltet werden
+  - Die zugehörigen URLs werden dynamisch anhand dieses Schalters generiert und
+    tauchen nicht mehr in der Konfigurationsdatei (.env) auf
+
+### Sicherheit
+* Ausschalten der Unterstützung für veraltete TLS-Versionen 1.0 and 1.1
+* Einschränkung der verfügbaren TLS-Cipher-Suiten
+  - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+  - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+  - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+
+### :warning: Hinweis für Administratoren
+Falls der Update-Mechanismus nicht verwendet wird, muss das environment-file (.env) entsprechend angepasst werden:
+- `TLS=off` / `TLS=on` muss gegen TLS_ENABLED=no/TLS_ENABLED=yes ersetzt werden.
+- `BROADCAST_SERVICE_URI_PUSH` und `BROADCAST_SERVICE_URI_SUBSCRIBE` können entfernt werden. Stattdessen wird der 
+  Parameter `BROADCAST_SERVICE_ENABLED=true` (=false) verwendet, um zu bestimmen, ob Websocket-Verbdinungen versucht werden sollen.
+
 
 ## 14.2.0
 ### Bugfixes
@@ -22,6 +53,7 @@ layout: default
 * CORS wurde aktiviert
 * Verschiedene tls-security-headers hinzugefügt
 
+
 ## 14.1.0
 ### Bugfixes
 * Kleiner Fehler behoben beim Aufräumen der DB, wenn Dateien gelöscht werden.
@@ -31,11 +63,16 @@ layout: default
 
 ### :warning: Hinweis für Administratoren
 
-Wenn Sie *nicht* unsere update-routine (update.sh) verwenden, müssen Sie selbst dafür sorgen, dass ab jetzt immer die
-auch die MySQL-Config zur Verfügung steht.
+Die folgende Hinweise sind nur relevant, falls nicht das Standardsetup samt Update-Mechanismus verwendet wird.
+
+* Die Konfigurationsdatei für die Datenbank muss zur Verfügung stehen.
+Beispielkommando mit wget:
 ```
 wget -nv -O config/my.cnf https://raw.githubusercontent.com/iqb-berlin/testcenter/14.1.0/scripts/database/my.cnf
 ```
+* Der Name der TLS-Konfigurationsdatei wurde angepasst und zusätzliche Sicherheitseinstellungen hinzugefügt.
+Falls der Patch-Mechanismus nicht verwendet wird, kann der Standardinhalt per Hand übertragen werden.
+  ([Pfad zur Standardeinstellung](https://raw.githubusercontent.com/iqb-berlin/testcenter/master/dist-src/tls-config.yml))
 
 ## 14.0.1
 
