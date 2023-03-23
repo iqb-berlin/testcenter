@@ -4,38 +4,33 @@ declare(strict_types=1);
 // TODO unit test
 
 class Server {
+  static function getUrl(array $senv = null): string {
+    $senv = $senv ?? $_SERVER;
 
-    static function getUrl(array $senv = null): string {
+    $ssl = (!empty($senv['HTTPS']) && $senv['HTTPS'] == 'on');
 
-        $senv = $senv ?? $_SERVER;
+    $sp = strtolower($senv['SERVER_PROTOCOL']);
+    $protocol = $senv['HTTP_X_FORWARDED_PROTO'] ??
+      substr($sp, 0, strpos($sp, '/')) . (($ssl) ? 's' : '');
 
-        $ssl = (!empty($senv['HTTPS']) && $senv['HTTPS'] == 'on');
+    $port = $senv['SERVER_PORT'];
+    $port = ((!$ssl && $port == '80') || ($ssl && $port == '443')) ? '' : ':' . $port;
 
-        $sp = strtolower($senv['SERVER_PROTOCOL']);
-        $protocol = $senv['HTTP_X_FORWARDED_PROTO'] ??
-            substr($sp, 0, strpos($sp, '/')) . (($ssl) ? 's' : '');
+    $host = $senv['HTTP_X_FORWARDED_HOST'] ?? $senv['HTTP_HOST'] ?? ($senv['SERVER_NAME'] . $port);
 
-        $port = $senv['SERVER_PORT'];
-        $port = ((!$ssl && $port == '80') || ($ssl && $port == '443')) ? '' : ':' . $port;
+    $prefix = $senv['HTTP_X_FORWARDED_PREFIX'] ?? '';
 
-        $host = $senv['HTTP_X_FORWARDED_HOST'] ?? $senv['HTTP_HOST'] ?? ($senv['SERVER_NAME'] . $port);
+    $folder = str_replace('/index.php', '', $senv['SCRIPT_NAME']);
 
-        $prefix = $senv['HTTP_X_FORWARDED_PREFIX'] ?? '';
+    return $protocol . '://' . $host . $prefix . $folder;
+  }
 
-        $folder = str_replace('/index.php', '', $senv['SCRIPT_NAME']);
+  static function getProjectPath(array $senv = null): string {
+    $senv = $senv ?? $_SERVER;
 
-        return $protocol . '://' . $host . $prefix . $folder;
-    }
-
-
-    static function getProjectPath(array $senv = null): string {
-
-        $senv = $senv ?? $_SERVER;
-
-        // dirname is quite a strange function
-        $returnPath = substr($senv['PHP_SELF'], -1, 1) === '/' ? $senv['PHP_SELF'] : dirname($senv['PHP_SELF']);
-        $returnPath = substr($returnPath, -1, 1) === '/' ? substr($returnPath, 0, -1) : $returnPath;
-        $returnPath = $returnPath === '.' ? '' : $returnPath;
-        return $returnPath;
-    }
+    // dirname is quite a strange function
+    $returnPath = str_ends_with($senv['PHP_SELF'], '/') ? $senv['PHP_SELF'] : dirname($senv['PHP_SELF']);
+    $returnPath = str_ends_with($returnPath, '/') ? substr($returnPath, 0, -1) : $returnPath;
+    return $returnPath === '.' ? '' : $returnPath;
+  }
 }
