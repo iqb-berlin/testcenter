@@ -7,20 +7,23 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-custom-text',
   template: `
-    <div>{{ctKey}}</div>
-    <div fxLayout="row" fxLayoutAlign="start start">
-      <div fxFlex="40" style="margin: 0 10px 10px 30px">
-        <em>{{ctLabel}}</em>
+    <div class="flex-row"  [style.align-items]="'center'" [style.margin-bottom.px]="10">
+      <div class="flex-column" [style.width.%]="40">
+        <p>{{ctLabel}}</p>
+        <em [style.font-size]="'smaller'">({{ctKey}})</em>
       </div>
-      <mat-form-field fxFlex>
+      <mat-form-field [style.width.%]="50">
         <textarea matInput cdkTextareaAutosize [formControl]="inputControl">
         </textarea>
       </mat-form-field>
-      <button mat-button (click)="setToDefault()" matTooltip="Auf Standard setzen"
-              [disabled]="inputControl.value === ctDefaultValue">
+      <button mat-icon-button matTooltip="Auf Standard setzen"
+              [style.width.%]="10"
+              [disabled]="inputControl.value === ctDefaultValue"
+              (click)="setToDefault()">
         <mat-icon>undo</mat-icon>
       </button>
     </div>
+    <mat-divider></mat-divider>
     `
 })
 

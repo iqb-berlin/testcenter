@@ -1,5 +1,5 @@
-<div class="columnhost" fxLayout="column">
-  <div fxLayout="row" fxLayoutGap="10px">
+<div class="columnhost flex-column">
+  <div class="flex-row" [style.gap.px]="10">
     <button
       mat-raised-button
       (click)="downloadReportsCSV()"
@@ -23,13 +23,13 @@
 
   <mat-table [dataSource]="resultDataSource" matSort>
     <ng-container matColumnDef="selectCheckbox">
-      <mat-header-cell *matHeaderCellDef fxFlex="70px">
+      <mat-header-cell *matHeaderCellDef [style.max-width.px]="70">
         <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
                       [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
         </mat-checkbox>
       </mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex="70px">
+      <mat-cell *matCellDef="let row" [style.max-width.px]="70">
         <mat-checkbox (click)="$event.stopPropagation()"
                       (change)="$event ? tableselectionCheckbox.toggle(row) : null"
                       [checked]="tableselectionCheckbox.isSelected(row)"
@@ -38,31 +38,30 @@
       </mat-cell>
     </ng-container>
 
-    <ng-container matColumnDef="syscheckId">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxFlex="300px">System-Check Id</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxFlex="300px">{{element.id}}</mat-cell>
-    </ng-container>
-
     <ng-container matColumnDef="syscheckLabel">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="start center">System-Check Name</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="start center"> {{element.label}} </mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">System-Check Name</mat-header-cell>
+      <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{element.label}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="number">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Anzahl Berichte</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.count}} </mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Anzahl Berichte</mat-header-cell>
+      <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{element.count}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="details-os">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Betriebssysteme</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayout="column" fxLayoutAlign="center start">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Betriebssysteme</mat-header-cell>
+      <mat-cell *matCellDef="let element" class="flex-column" [style.justify-content]="'center'">
         <div *ngFor="let d of element.details.os | keyvalue">{{d.key}}: {{d.value}}</div>
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="details-browser">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Browser</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayout="column" fxLayoutAlign="center start">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Browser</mat-header-cell>
+      <mat-cell *matCellDef="let element" class="flex-column" [style.justify-content]="'center'">
         <div *ngFor="let d of element.details.browser | keyvalue">{{d.key}}: {{d.value}}</div>
       </mat-cell>
     </ng-container>

@@ -1,13 +1,13 @@
-<form [formGroup]="configForm" fxFlex fxLayout="column" fxLayoutAlign="start stretch">
-  <p>Warnung auf der Startseite</p>
-  <div class="block-ident" fxLayout="column">
-    <mat-form-field>
+<form [formGroup]="configForm" class="flex-column">
+  <h4>Warnung auf der Startseite</h4>
+  <div>
+    <mat-form-field appearance="fill">
       <mat-label>Text</mat-label>
       <textarea matInput formControlName="globalWarningText"
                 cdkTextareaAutosize
                 cdkAutosizeMinRows="1"></textarea>
     </mat-form-field>
-    <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="20px">
+    <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="20">
       <p>Zeige Warnung bis</p>
       <mat-form-field>
         <mat-label>Datum</mat-label>
@@ -16,33 +16,37 @@
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
       <mat-form-field>
-        <mat-select placeholder="Stunde" formControlName="globalWarningExpiredHour">
+        <mat-select placeholder="Uhrzeit" formControlName="globalWarningExpiredHour">
           <mat-option *ngFor="let m of expiredHours | keyvalue" [value]="m.key">
             {{m.value}}
           </mat-option>
         </mat-select>
       </mat-form-field>
-      <p *ngIf="warningIsExpired" class="warning-warning">Zeitpunkt ist in der Vergangenheit.</p>
+      <p *ngIf="warningIsExpired" [style.color]="'darkgoldenrod'">Zeitpunkt ist in der Vergangenheit.</p>
     </div>
   </div>
-  <mat-form-field fxLayout="column">
-    <mat-label>Name der Anwendung</mat-label>
+
+  <h4>Name der Anwendung</h4>
+  <mat-form-field appearance="fill">
     <input matInput formControlName="appTitle" placeholder="Name">
   </mat-form-field>
-  <mat-form-field  fxLayout="column" fxLayoutAlign="start stretch">
-    <mat-label>Html-Inhalt für die Startseite rechts</mat-label>
+
+  <h4>Html-Inhalt für die Startseite rechts</h4>
+  <mat-form-field appearance="fill">
     <textarea matInput formControlName="introHtml"
               cdkTextareaAutosize
               cdkAutosizeMinRows="6"></textarea>
   </mat-form-field>
-  <mat-form-field  fxLayout="column" fxLayoutAlign="start stretch">
-    <mat-label>Html-Inhalt für die Impressum-/Datenschutzseite</mat-label>
+
+  <h4>Html-Inhalt für die Impressum-/Datenschutzseite</h4>
+  <mat-form-field appearance="fill">
     <textarea matInput formControlName="legalNoticeHtml"
               cdkTextareaAutosize
               cdkAutosizeMinRows="6"></textarea>
   </mat-form-field>
-  <label>Logo</label>
-  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+
+  <h4>Logo</h4>
+  <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="10">
     <img class="logo-img" [src]="logoImageBase64" />
     <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
     <button mat-raised-button (click)="hiddenimgfileinput.click()"
@@ -55,17 +59,32 @@
     </button>
     <alert *ngIf="imageError" level="error" [text]="imageError"></alert>
   </div>
-  <mat-form-field fxLayout="column">
-    <mat-label>Hintergrundfarbe Anwendung</mat-label>
-    <input matInput formControlName="backgroundBody" placeholder="Farbe">
-  </mat-form-field>
-  <mat-form-field fxLayout="column">
-    <mat-label>Hintergrundfarbe sekundäre Boxen</mat-label>
-    <input matInput formControlName="backgroundBox" placeholder="Farbe">
-  </mat-form-field>
-  <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
-    <button mat-raised-button color="primary" [disabled]="!dataChanged" (click)="saveData()">
-      Speichern
+
+  <h4>Hintergrundfarbe Anwendung</h4>
+  <mat-form-field appearance="fill">
+    <input matInput formControlName="backgroundBody" placeholder="Farbe" #backgroundInput>
+    <button mat-icon-button matSuffix (click)="backgroundColorInput.click()">
+      <mat-icon>edit</mat-icon>
     </button>
-  </div>
+  </mat-form-field>
+  <input matInput type="color" hidden #backgroundColorInput
+         formControlName="backgroundBody"
+         (change)="backgroundInput.value = $any($event.target).value">
+
+  <h4>Hintergrundfarbe sekundäre Boxen</h4>
+  <mat-form-field appearance="fill">
+    <input matInput formControlName="backgroundBox" placeholder="Farbe" #backgroundBoxInput>
+    <button mat-icon-button matSuffix (click)="backgroundBoxColorInput.click()">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </mat-form-field>
+  <input matInput type="color" hidden #backgroundBoxColorInput
+         formControlName="backgroundBox"
+         (change)="backgroundBoxInput.value = $any($event.target).value">
+
+  <button mat-raised-button color="primary"
+          [style.align-self]="'start'"
+          [disabled]="!dataChanged" (click)="saveData()">
+    Speichern
+  </button>
 </form>

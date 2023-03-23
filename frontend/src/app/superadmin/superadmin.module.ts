@@ -19,8 +19,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { WorkspacesComponent } from './workspaces/workspaces.component';
 import { UsersComponent } from './users/users.component';
 import { SuperadminComponent } from './superadmin.component';
@@ -37,6 +37,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { AppConfigComponent } from './settings/app-config.component';
 import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
 import { EditCustomTextComponent } from './settings/edit-custom-text.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -78,7 +79,8 @@ import { EditCustomTextComponent } from './settings/edit-custom-text.component';
     MatCardModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    FlexLayoutModule
+    MatDividerModule,
+    SharedModule
   ],
   exports: [
     SuperadminComponent

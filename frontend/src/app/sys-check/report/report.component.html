@@ -1,41 +1,45 @@
-<div class="sys-check-body">
-  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-    <mat-card fxFlex="0 0 700px">
-      <mat-card-header>
-        <mat-card-title>Bericht {{ saved ? ' - gespeichert' : ''}}</mat-card-title>
-      </mat-card-header>
+<div class="sys-check-body flex-row-center">
+  <mat-card [style.width.px]="700">
+    <mat-card-header>
+      <mat-card-title>Bericht {{ saved ? ' - gespeichert' : ''}}</mat-card-title>
+    </mat-card-header>
 
-      <mat-card-content>
-        <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">{{'Bitte prüfen Sie die Eingaben (unvollständig):'| customtext:'syscheck_questionsRequiredMessage' | async}}</p>
-        <ul>
-            <li *ngFor="let qd of questionnaireDataWarnings">
-              {{qd.label}}
-            </li>
-        </ul>
-        <h2 *ngIf="ds.environmentReport.length > 0">Computer (Betriebssystem, Browser)</h2>
-        <ul>
-          <li *ngFor="let reportData of ds.environmentReport">
-            {{reportData.label}}: {{reportData.value}}
-          </li>
-        </ul>
-        <h2 *ngIf="ds.networkReport.length > 0">Netzwerk/Internetverbindung</h2>
-        <ul>
-          <li *ngFor="let reportData of ds.networkReport">
-            {{reportData.label}}: {{reportData.value}}
-          </li>
-        </ul>
-        <h2 *ngIf="ds.questionnaireReport.length > 0">Fragen</h2>
-        <ul>
-          <li *ngFor="let reportData of ds.questionnaireReport">
-            {{reportData.label}}: {{reportData.value}}
-          </li>
-        </ul>
-      </mat-card-content>
+    <mat-card-content>
+      <p *ngIf="questionnaireDataWarnings.length > 0" style="color: goldenrod; font-weight: bold">
+        {{'Bitte prüfen Sie die Eingaben (unvollständig):'| customtext:'syscheck_questionsRequiredMessage' | async}}
+      </p>
+      <ul>
+        <li *ngFor="let qd of questionnaireDataWarnings">
+          {{qd.label}}
+        </li>
+      </ul>
+      <h2 *ngIf="ds.environmentReport.length > 0">Computer (Betriebssystem, Browser)</h2>
+      <ul>
+        <li *ngFor="let reportData of ds.environmentReport">
+          {{reportData.label}}: {{reportData.value}}
+        </li>
+      </ul>
+      <h2 *ngIf="ds.networkReport.length > 0">Netzwerk/Internetverbindung</h2>
+      <ul>
+        <li *ngFor="let reportData of ds.networkReport">
+          {{reportData.label}}: {{reportData.value}}
+        </li>
+      </ul>
+      <h2 *ngIf="ds.questionnaireReport.length > 0">Fragen</h2>
+      <ul>
+        <li *ngFor="let reportData of ds.questionnaireReport">
+          {{reportData.label}}: {{reportData.value}}
+        </li>
+      </ul>
+    </mat-card-content>
 
-      <mat-card-actions>
-        <button mat-raised-button color="primary" [disabled]="saved" (click)="saveReport()" class="save_button">Bericht senden</button>
-        <button mat-raised-button [routerLink]="['/r/check-starter']" class="save_button">{{saved ? 'Zurück' : 'System-Check Abbrechen'}}</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" [disabled]="saved" (click)="saveReport()" class="save_button">
+        Bericht senden
+      </button>
+      <button mat-raised-button [routerLink]="['/r/check-starter']" class="save_button">
+        {{saved ? 'Zurück' : 'System-Check Abbrechen'}}
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>

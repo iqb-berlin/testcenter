@@ -1,39 +1,34 @@
-<div class="unit-check-body" fxLayout="row" fxLayoutAlign="start stretch">
-  <div *ngIf="!errorText" id="unit-title" fxLayout="column" fxLayoutAlign="center center">
-    <p>{{'Bitte prüfen Sie die folgenden Aufgaben-Elemente'| customtext:'syscheck_unitPrompt' | async}}</p>
-  </div>
+<div *ngIf="!errorText" class="unit-title">
+  <h2>{{'Bitte prüfen Sie die folgenden Aufgaben-Elemente'| customtext:'syscheck_unitPrompt' | async}}</h2>
+  <mat-divider></mat-divider>
+</div>
 
-  <div id="iFrameHost" *ngIf="!errorText"></div>
+<div id="iFrameHost" *ngIf="!errorText"></div>
 
-  <div id="pageNav" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
-    <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="pageList.length > 1">
-      <mat-button-toggle-group *ngFor="let p of pageList">
-        <mat-button-toggle *ngIf="p.type === '#previous'" (click)="gotoPage(p.type)" [disabled]="p.disabled">
-          <i class="material-icons">chevron_left</i>
-        </mat-button-toggle>
-        <mat-button-toggle *ngIf="p.type === '#next'" (click)="gotoPage(p.type)" [disabled]="p.disabled">
-          <i class="material-icons">chevron_right</i>
-        </mat-button-toggle>
+<div id="pageNav" class="flex-row">
+  <div *ngIf="pageList.length > 1" class="flex-row">
+    <mat-button-toggle-group *ngFor="let p of pageList">
+      <mat-button-toggle *ngIf="p.type === '#previous'" (click)="gotoPage(p.type)" [disabled]="p.disabled">
+        <i class="material-icons">chevron_left</i>
+      </mat-button-toggle>
+      <mat-button-toggle *ngIf="p.type === '#next'" (click)="gotoPage(p.type)" [disabled]="p.disabled">
+        <i class="material-icons">chevron_right</i>
+      </mat-button-toggle>
 
-        <mat-button-toggle
-          *ngIf="p.type === '#goto'"
-          (click)="gotoPage(p.type, p.index)"
-          [disabled]="p.disabled"
-          [checked]="currentPage === p.index"
-        >
-          {{ p.index }}
-        </mat-button-toggle>
+      <mat-button-toggle *ngIf="p.type === '#goto'"
+                         (click)="gotoPage(p.type, p.index)"
+                         [disabled]="p.disabled"
+                         [checked]="currentPage === p.index">
+        {{ p.index }}
+      </mat-button-toggle>
 
-      </mat-button-toggle-group>
-    </div>
+    </mat-button-toggle-group>
   </div>
 </div>
 
-<div *ngIf="errorText" fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <mat-card fxFlex="0 0 700px">
-    <mat-card-title>Fehler!</mat-card-title>
-    <mat-card-content>
-      <alert level="error" [text]="errorText"></alert>
-    </mat-card-content>
-  </mat-card>
-</div>
+<mat-card *ngIf="errorText" [style.width.px]="700" [style.margin]="'auto'">
+  <mat-card-title>Fehler!</mat-card-title>
+  <mat-card-content>
+    <alert level="error" [text]="errorText"></alert>
+  </mat-card-content>
+</mat-card>

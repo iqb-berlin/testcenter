@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
-import { FlexModule } from '@angular/flex-layout';
 import { MatSortModule } from '@angular/material/sort';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,7 +38,6 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
     MatChipsModule,
     MatIconModule,
     MatBadgeModule,
-    FlexModule,
     MatSortModule,
     MatMenuModule,
     MatButtonModule,

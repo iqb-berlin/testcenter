@@ -141,3 +141,30 @@ mat-button-toggle-group {
 .mat-button-toggle-checked .mat-button-toggle-button {
   background-color: var(--accent);
 }
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-row-center {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.flex-row-wrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.flex-column {
+  display: flex !important;
+  flex-direction: column;
+}
+
+.table-header {
+  font-size: larger;
+  font-weight: bold;
+}

@@ -1,5 +1,5 @@
-<div fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <mat-card fxFlex="0 2 500px">
+<div class="flex-row-wrap" [style.justify-content]="'center'">
+  <mat-card>
     <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>
@@ -19,10 +19,11 @@
           Bitte klicken Sie auf den Schalter, um den Check zu starten!
         </p>
       </span>
-      <div fxLayout="column" fxLayoutGap="10px" *ngIf="checkConfigList?.length > 0">
-        <button mat-raised-button color="primary" (click)="buttonStartCheck(c)"
-                *ngFor="let c of checkConfigList">
-          <div fxLayout="column">
+      <div *ngIf="checkConfigList?.length > 0" class="flex-column" [style.gap.px]="10">
+        <button *ngFor="let c of checkConfigList"
+                mat-raised-button color="primary"
+                (click)="buttonStartCheck(c)">
+          <div>
             <p class="check-title">{{c.label}}</p>
             <p class="check-description">{{c.description}}</p>
           </div>
@@ -31,7 +32,7 @@
     </mat-card-content>
     <mat-card-actions>
       <button [routerLink]="['/']" mat-raised-button color="primary">
-        <i class="material-icons">arrow_back</i> zurück zur Startseite
+        <mat-icon>arrow_back</mat-icon> zurück zur Startseite
       </button>
     </mat-card-actions>
   </mat-card>
