@@ -33,12 +33,6 @@ export const insertCredentials = (username: string, password = ''): void => {
   }
 };
 
-export const login = (username: string, password: string): void => {
-  resetBackendData();
-  visitLoginPage();
-  insertCredentials(username, password);
-};
-
 export const logoutAdmin = (): void => {
   cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`)
     .should('exist');
@@ -48,12 +42,7 @@ export const logoutAdmin = (): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
 };
 
-export const loginAdmin = (): void => {
-  login('super', 'user123');
-  cy.get('[data-cy="login-admin"]')
-    .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+export const openSampleWorkspace = (): void => {
   cy.get('[data-cy="workspace-1"]')
     .should('exist')
     .click();
@@ -61,7 +50,7 @@ export const loginAdmin = (): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
 };
 
-export const loginAsAdmin = (username: string, password: string): void => {
+export const loginAdmin = (username: string, password: string): void => {
   visitLoginPage();
   insertCredentials(username, password);
   cy.get('[data-cy="login-admin"]')
@@ -73,13 +62,13 @@ export const loginAsAdmin = (username: string, password: string): void => {
 
 export const logout = (): void => {
   cy.url().then($url => {
-    if($url.includes(`${Cypress.config().baseUrl}/#/r/admin-starter`)) {
+    if ($url.includes(`${Cypress.config().baseUrl}/#/r/admin-starter`)) {
       cy.get('[data-cy="logout"]')
         .click();
-    } else  {
-      cy.log("Not logged in... doing nothing.")
+    } else {
+      cy.log('Not logged in... doing nothing.');
     }
-  })
+  });
 };
 
 export const clickSuperadmin = (): void => {
@@ -89,25 +78,24 @@ export const clickSuperadmin = (): void => {
 };
 
 export const addWorkspaceAdmin = (username: string, password: string): void => {
-  //tobhu: Admins durch Users ersetzen
   cy.get('[data-cy="superadmin-tabs:users"]')
-     .click()
+    .click();
   cy.get('[data-cy="add-user"]')
     .click();
   cy.get('[formcontrolname="name"]')
-    .should ('exist')
+    .should('exist')
     .type(username);
   cy.get('[formcontrolname="pw"]')
-    .should ('exist')
-    //Passwort < 7 Zeichen
+    .should('exist')
+    // password < 7 characters
     .type('123456')
     .get('[type="submit"]')
-    .should ('be.disabled')
+    .should('be.disabled');
   cy.get('[formcontrolname="pw"]')
     .clear()
     .type(password)
     .get('[type="submit"]')
-    .should ('be.enabled')
+    .should('be.enabled')
     .click();
   cy.contains(username)
     .should('exist');
