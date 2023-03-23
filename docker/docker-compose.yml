@@ -45,8 +45,7 @@ services:
     container_name: testcenter-backend
     image: iqbberlin/testcenter-backend:current
     environment:
-      <<: *env-mysql
-      <<: *env-initdata
+      <<: [ *env-mysql, *env-initdata ]
       MYSQL_HOST: testcenter-db
       MYSQL_PORT: 3306
       BROADCAST_SERVICE_ENABLED: ${BROADCAST_SERVICE_ENABLED}
