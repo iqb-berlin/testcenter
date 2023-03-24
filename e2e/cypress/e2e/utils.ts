@@ -100,3 +100,39 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
   cy.contains(username)
     .should('exist');
 };
+
+export const deleteFilesSampleWorkspace = (): void => {
+  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-2"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-3"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-UNIT.SAMPLE-2"]')
+    .click();
+  cy.get('[data-cy="delete-files"]')
+    .click();
+  cy.get('[data-cy="dialog-confirm"]')
+    .click();
+  cy.wait(1000);
+  cy.contains('Teilnehmerlisten')
+    .should('not.exist');
+  cy.contains('Testhefte')
+    .should('not.exist');
+  cy.contains('System-Check-Definitionen')
+    .should('not.exist');
+  cy.contains('Ressourcen')
+    .should('not.exist');
+};
