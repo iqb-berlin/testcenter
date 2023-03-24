@@ -7,17 +7,15 @@ const SuperAdminName = 'super';
 const SuperAdminPassword = 'user123';
 const newSuperAdminPassword = 'user123!';
 const WorkspaceAdminName = 'workspace_admin';
-const WorkspaceAdminPw = 'anotherPassword';
-const newWorkspaceAdminPw = 'anotherPasswordNew';
+const WorkspaceAdminPassword = 'anotherPassword';
+const newWorkspaceAdminPassword = 'anotherPasswordNew';
 // #######################################################################################
 
 describe('Usermanagement (user-tab)', () => {
-  beforeEach(() => {
-    resetBackendData();
-    logout();
-    loginAdmin(SuperAdminName, SuperAdminPassword);
-    clickSuperadmin();
-  });
+  beforeEach(resetBackendData);
+  beforeEach(logout);
+  beforeEach(() => loginAdmin(SuperAdminName, SuperAdminPassword));
+  beforeEach(clickSuperadmin);
 
   it('should be that all user buttons are present', () => {
     cy.get('[data-cy="superadmin-tabs:users"]')
@@ -73,15 +71,16 @@ describe('Usermanagement (user-tab)', () => {
       .type(SuperAdminPassword)
       .get('[data-cy="confirm-password-form"] [type="submit"]')
       .click();
+    cy.wait(1000);
     logoutAdmin();
-    loginAdmin(WorkspaceAdminName, WorkspaceAdminPw);
+    loginAdmin(WorkspaceAdminName, WorkspaceAdminPassword);
     cy.get('[data-cy="goto-superadmin"]')
       .should('exist');
   });
 
   it('should not be a workspace visible for the workspace admin yet', () => {
     logoutAdmin();
-    loginAdmin(WorkspaceAdminName, WorkspaceAdminPw);
+    loginAdmin(WorkspaceAdminName, WorkspaceAdminPassword);
     cy.contains('sample_workspace')
       .should('not.exist');
   });
@@ -96,7 +95,7 @@ describe('Usermanagement (user-tab)', () => {
       .get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginAdmin(WorkspaceAdminName, WorkspaceAdminPw);
+    loginAdmin(WorkspaceAdminName, WorkspaceAdminPassword);
     cy.contains('sample_workspace')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
@@ -116,7 +115,7 @@ describe('Usermanagement (user-tab)', () => {
       .get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginAdmin(WorkspaceAdminName, WorkspaceAdminPw);
+    loginAdmin(WorkspaceAdminName, WorkspaceAdminPassword);
     cy.contains('sample_workspace')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
@@ -126,17 +125,17 @@ describe('Usermanagement (user-tab)', () => {
       .should('be.enabled');
   });
 
-  it('Should be possible to change the password of a existing workspaceadmin', () => {
+  it('should be possible to change the password of a existing workspaceadmin', () => {
     cy.contains('workspace_admin')
       .click()
       .get('[data-cy="change-password"]')
       .click()
       .get('[formcontrolname="pw"]')
-      .type(newWorkspaceAdminPw)
+      .type(newWorkspaceAdminPassword)
       .get('[type="submit"]')
       .click();
     logoutAdmin();
-    insertCredentials(WorkspaceAdminName, newWorkspaceAdminPw);
+    insertCredentials(WorkspaceAdminName, newWorkspaceAdminPassword);
     cy.get('[data-cy="login-admin"]')
       .click();
     cy.contains('Status: Angemeldet als "workspace_admin"')
@@ -174,12 +173,10 @@ describe('Usermanagement (user-tab)', () => {
 });
 
 describe('Management Workspaces (workspace-tab)', () => {
-  beforeEach(() => {
-    resetBackendData();
-    logout();
-    loginAdmin(SuperAdminName, SuperAdminPassword);
-    clickSuperadmin();
-  });
+  beforeEach(resetBackendData);
+  beforeEach(logout);
+  beforeEach(() => loginAdmin(SuperAdminName, SuperAdminPassword));
+  beforeEach(clickSuperadmin);
 
   it('should be all buttons are visible and sample_workspace is installed in Tab:Workspaces', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
@@ -197,7 +194,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .should('exist');
   });
 
-  it('Should be possible to add a new workspace', () => {
+  it('should be possible to add a new workspace', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.get('[data-cy="add-workspace"]')
@@ -220,7 +217,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .should('exist');
   });
 
-  it('Should be possible to change users RO access rights on workspace tab', () => {
+  it('should be possible to change users RO access rights on workspace tab', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -232,7 +229,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginAdmin(WorkspaceAdminName, WorkspaceAdminPw);
+    loginAdmin(WorkspaceAdminName, WorkspaceAdminPassword);
     cy.contains('sample_workspace')
       .should('exist')
       .click();
@@ -242,7 +239,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .should('be.disabled');
   });
 
-  it('Should be possible to change users RW access rights on workspace tab', () => {
+  it('should be possible to change users RW access rights on workspace tab', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -254,7 +251,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .get('[data-cy="save"]')
       .click();
     logoutAdmin();
-    loginAdmin(WorkspaceAdminName, WorkspaceAdminPw);
+    loginAdmin(WorkspaceAdminName, WorkspaceAdminPassword);
     cy.contains('sample_workspace')
       .should('exist')
       .click();
@@ -295,7 +292,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .should('exist');
   });
 
-  it('Should be possible to delete a workspace', () => {
+  it('should be possible to delete a workspace', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .click();
     cy.contains('sample_workspace')
@@ -322,16 +319,14 @@ describe('Management Workspaces (workspace-tab)', () => {
 });
 
 describe('Settings (setting-tab)', () => {
-  beforeEach(() => {
-    resetBackendData();
-    logout();
-    loginAdmin(SuperAdminName, SuperAdminPassword);
-    clickSuperadmin();
-    cy.get('[data-cy="superadmin-tabs:settings"]')
-      .click();
-  });
+  beforeEach(resetBackendData);
+  beforeEach(logout);
+  beforeEach(() => loginAdmin(SuperAdminName, SuperAdminPassword));
+  beforeEach(clickSuperadmin);
 
   it('should be all settings functions visible', () => {
+    cy.get('[data-cy="superadmin-tabs:settings"]')
+      .click();
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/superadmin/settings`);
     cy.contains('Testheft')
@@ -349,6 +344,8 @@ describe('Settings (setting-tab)', () => {
   });
 
   it('should be possible to set a message for maintenance works', () => {
+    cy.get('[data-cy="superadmin-tabs:settings"]')
+      .click();
     cy.get('[formcontrolname="globalWarningText"]')
       .should('exist')
       .type('Maintenance works');
