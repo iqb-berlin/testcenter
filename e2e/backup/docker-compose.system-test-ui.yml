@@ -1,5 +1,5 @@
 # Compose file for development of cypress-tests. Can use x-forwarding to run cypress in UI mode on your (Linus-) machine!
-version: '3.7'
+version: '3.9'
 
 services:
   testcenter-system-test-frontend:
