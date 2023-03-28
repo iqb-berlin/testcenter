@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+
 // TODO unit tests !
 
 use Slim\Exception\HttpBadRequestException;
@@ -9,177 +10,155 @@ use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 use Slim\Exception\HttpException;
 
-
 class SessionController extends Controller {
+  protected static array $_workspaces = [];
 
-    protected static array $_workspaces = [];
+  /**
+   * @codeCoverageIgnore
+   */
+  public static function putSessionAdmin(Request $request, Response $response): Response {
+    $body = RequestBodyParser::getElements($request, [
+      "name" => null,
+      "password" => null
+    ]);
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function putSessionAdmin(Request $request, Response $response): Response {
+    $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
 
-        $body = RequestBodyParser::getElements($request, [
-            "name" => null,
-            "password" => null
-        ]);
+    $admin = self::adminDAO()->getAdmin($token);
+    $workspaces = self::adminDAO()->getWorkspaces($token);
+    $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
 
-        $token = self::adminDAO()->createAdminToken($body['name'], $body['password']);
+    self::adminDAO()->refreshAdminToken($token);
 
-        $admin = self::adminDAO()->getAdmin($token);
-        $workspaces = self::adminDAO()->getWorkspaces($token);
-        $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
-
-        self::adminDAO()->refreshAdminToken($token);
-
-        if (!$accessSet->hasAccessType('workspaceAdmin') and !$accessSet->hasAccessType('superAdmin')) {
-
-            throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
-        }
-
-        return $response->withJson($accessSet);
+    if (!$accessSet->hasAccessType('workspaceAdmin') and !$accessSet->hasAccessType('superAdmin')) {
+      throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
     }
 
+    return $response->withJson($accessSet);
+  }
 
-    public static function putSessionLogin(Request $request, Response $response): Response {
+  public static function putSessionLogin(Request $request, Response $response): Response {
+    $body = RequestBodyParser::getElements($request, [
+      "name" => null,
+      "password" => ''
+    ]);
 
-        $body = RequestBodyParser::getElements($request, [
-            "name" => null,
-            "password" => ''
-        ]);
+    $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
 
-        $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
-
-        if (!$loginSession) {
-            $shortPw = Password::shorten($body['password']);
-            throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `{$shortPw}`.");
-        }
-
-        if (!$loginSession->getLogin()->isCodeRequired()) {
-
-            $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
-            $personSession = self::sessionDAO()->renewPersonToken($personSession);
-            $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-            $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
-
-            if ($loginSession->getLogin()->getMode() == 'monitor-group') {
-
-                self::registerGroup($loginSession);
-            }
-
-        } else {
-
-            $accessSet = AccessSet::createFromLoginSession($loginSession);
-        }
-
-        return $response->withJson($accessSet);
+    if (!$loginSession) {
+      $shortPw = Password::shorten($body['password']);
+      throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `$shortPw`.");
     }
 
+    if (!$loginSession->getLogin()->isCodeRequired()) {
+      $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
+      $personSession = self::sessionDAO()->renewPersonToken($personSession);
+      $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
 
-    /**
-     * @codeCoverageIgnore
-     */
-    public static function putSessionPerson(Request $request, Response $response): Response {
+      if ($loginSession->getLogin()->getMode() == 'monitor-group') {
+        self::registerGroup($loginSession);
+      }
 
-        $body = RequestBodyParser::getElements($request, [
-            'code' => ''
-        ]);
-        $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
-        $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
-        $personSession = self::sessionDAO()->renewPersonToken($personSession);
-        $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-        return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
+    } else {
+      $accessSet = AccessSet::createFromLoginSession($loginSession);
     }
 
+    return $response->withJson($accessSet);
+  }
 
-    private static function registerGroup(LoginSession $login): void {
+  /**
+   * @codeCoverageIgnore
+   */
+  public static function putSessionPerson(Request $request, Response $response): Response {
+    $body = RequestBodyParser::getElements($request, [
+      'code' => ''
+    ]);
+    $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
+    $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
+    $personSession = self::sessionDAO()->renewPersonToken($personSession);
+    $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+    return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
+  }
 
-        if (!$login->getLogin()->getMode() == 'monitor-group') {
-            return;
-        }
-
-        $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
-        $bookletFiles = [];
-
-        $members = self::sessionDAO()->getLoginsByGroup($login->getLogin()->getGroupName(), $login->getLogin()->getWorkspaceId());
-
-        foreach ($members as $member) { /* @var $member LoginSession */
-
-                if (Mode::hasCapability($member->getLogin()->getMode(), 'alwaysNewSession')) {
-                    continue;
-                }
-
-                if (!Mode::hasCapability($member->getLogin()->getMode(),'monitorable')) {
-                    continue;
-                }
-
-                if (!$member->getToken()) {
-                    $member = SessionController::sessionDAO()->createLoginSession($member->getLogin());
-                }
-
-            foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
-
-                $memberPersonSession = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code, false);
-
-                foreach ($booklets as $bookletId) {
-
-                    if (!isset($bookletLabels[$bookletId])) {
-                        $bookletFile = $workspace->getFileById('Booklet', $bookletId);
-                        /* @var $bookletFile XMLFileBooklet */
-                        $bookletFiles[$bookletId] = $bookletFile;
-                    }
-                    $test = self::testDAO()->getOrCreateTest(
-                        $memberPersonSession->getPerson()->getId(),
-                        $bookletId,
-                        $bookletFiles[$bookletId]->getLabel()
-                    );
-                    $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
-                    $sessionMessage->setTestState([], $bookletId);
-                    BroadcastService::sessionChange($sessionMessage);
-                }
-            }
-        }
+  private static function registerGroup(LoginSession $login): void {
+    if (!$login->getLogin()->getMode() == 'monitor-group') {
+      return;
     }
 
+    $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
+    $bookletFiles = [];
 
-    private static function getWorkspace(int $workspaceId): Workspace {
+    $members = self::sessionDAO()->getLoginsByGroup($login->getLogin()->getGroupName(), $login->getLogin()->getWorkspaceId());
 
-        if (!isset(self::$_workspaces[$workspaceId])) {
+    foreach ($members as $member) {
+      /* @var $member LoginSession */
 
-            self::$_workspaces[$workspaceId] = new Workspace($workspaceId);
+      if (Mode::hasCapability($member->getLogin()->getMode(), 'alwaysNewSession')) {
+        continue;
+      }
+
+      if (!Mode::hasCapability($member->getLogin()->getMode(), 'monitorable')) {
+        continue;
+      }
+
+      if (!$member->getToken()) {
+        $member = SessionController::sessionDAO()->createLoginSession($member->getLogin());
+      }
+
+      foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
+        $memberPersonSession = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code);
+
+        foreach ($booklets as $bookletId) {
+          if (!isset($bookletLabels[$bookletId])) {
+            $bookletFile = $workspace->getFileById('Booklet', $bookletId);
+            /* @var $bookletFile XMLFileBooklet */
+            $bookletFiles[$bookletId] = $bookletFile;
+          }
+          $test = self::testDAO()->getOrCreateTest(
+            $memberPersonSession->getPerson()->getId(),
+            $bookletId,
+            $bookletFiles[$bookletId]->getLabel()
+          );
+          $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
+          $sessionMessage->setTestState([], $bookletId);
+          BroadcastService::sessionChange($sessionMessage);
         }
+      }
+    }
+  }
 
-        return self::$_workspaces[$workspaceId];
+  private static function getWorkspace(int $workspaceId): Workspace {
+    if (!isset(self::$_workspaces[$workspaceId])) {
+      self::$_workspaces[$workspaceId] = new Workspace($workspaceId);
     }
 
+    return self::$_workspaces[$workspaceId];
+  }
 
-    public static function getSession(Request $request, Response $response): Response {
+  public static function getSession(Request $request, Response $response): Response {
+    $authToken = self::authToken($request);
 
-        $authToken = self::authToken($request);
-
-        if ($authToken->getType() == "login") {
-
-            $loginSession = self::sessionDAO()->getLoginSessionByToken($authToken->getToken());
-            return $response->withJson(AccessSet::createFromLoginSession($loginSession));
-        }
-
-        if ($authToken->getType() == "person") {
-
-            $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
-            $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-            $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
-            return $response->withJson($accessSet);
-        }
-
-        if ($authToken->getType() == "admin") {
-
-            $admin = self::adminDAO()->getAdmin($authToken->getToken());
-            $workspaces = self::adminDAO()->getWorkspaces($authToken->getToken());
-            $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
-            self::adminDAO()->refreshAdminToken($authToken->getToken());
-            return $response->withJson($accessSet);
-        }
-
-        throw new HttpUnauthorizedException($request);
+    if ($authToken->getType() == "login") {
+      $loginSession = self::sessionDAO()->getLoginSessionByToken($authToken->getToken());
+      return $response->withJson(AccessSet::createFromLoginSession($loginSession));
     }
+
+    if ($authToken->getType() == "person") {
+      $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+      $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
+      return $response->withJson($accessSet);
+    }
+
+    if ($authToken->getType() == "admin") {
+      $admin = self::adminDAO()->getAdmin($authToken->getToken());
+      $workspaces = self::adminDAO()->getWorkspaces($authToken->getToken());
+      $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
+      self::adminDAO()->refreshAdminToken($authToken->getToken());
+      return $response->withJson($accessSet);
+    }
+
+    throw new HttpUnauthorizedException($request);
+  }
 }
