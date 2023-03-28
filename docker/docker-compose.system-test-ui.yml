@@ -1,5 +1,5 @@
 # Compose file for development of cypress-tests.
-version: '3.7'
+version: '3.9'
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
