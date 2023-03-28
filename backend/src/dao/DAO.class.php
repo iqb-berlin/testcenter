@@ -27,7 +27,7 @@ class DAO {
 
   protected ?PDO $pdoDBhandle = null;
   protected int $timeUserIsAllowedInMinutes = 600;
-  protected string $passwordSalt = 't';
+  protected ?string $passwordSalt = 't';
   protected bool $insecurePasswords = false;
   protected ?int $lastAffectedRows = null;
 
@@ -90,7 +90,7 @@ class DAO {
       $result = $this->_("select `value` from meta where metaKey = 'dbSchemaVersion'");
       return $result['value'] ?? '0.0.0-no-entry';
 
-    } catch (Exception $exception) {
+    } catch (Exception) {
       return '0.0.0-no-table';
     }
   }

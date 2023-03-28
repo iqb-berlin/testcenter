@@ -5,14 +5,16 @@ run-task-runner:
 		--rm --no-deps \
 		testcenter-task-runner npm run $(task)
 
+# Copies files from the containers to local. This is useful for development in an IDE environment.
 # Container must be run at least once!
-sync-npm-files:
-	docker compose cp testcenter-frontend:/app/package.json frontend/package.json
-	docker compose cp testcenter-frontend:/app/package-lock.json frontend/package-lock.json
-	docker compose cp testcenter-frontend:/app/node_modules frontend/node_modules
-	docker compose cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
-	docker compose cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
-	docker compose cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
+sync-package-files:
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package.json frontend/package.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/package-lock.json frontend/package-lock.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-frontend:/app/node_modules frontend/node_modules
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package.json broadcasting-service/package.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/package-lock.json broadcasting-service/package-lock.json
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-broadcasting-service:/app/node_modules broadcasting-service/node_modules
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml cp testcenter-backend:/var/www/backend/vendor backend/vendor
 
 update-docs:
 	make docs-frontend-compodoc

@@ -486,21 +486,6 @@ class SessionDAO extends DAO {
     return !!$test;
   }
 
-//  public function renewPersonToken(PersonSession $personSession): PersonSession {
-//    $loginSession = $personSession->getLoginSession();
-//    $tokenName = "{$loginSession->getLogin()->getGroupName()}_{$loginSession->getLogin()->getName()}_{$personSession->getPerson()->getNameSuffix()}";
-//    $newToken = $this->randomToken('person', $tokenName);
-//    $this->_(
-//      "update person_sessions set token = :token where id = :id",
-//      [
-//        ':token' => $newToken,
-//        ':id' => $personSession->getPerson()->getId()
-//      ]
-//    );
-//
-//    return $personSession->withNewToken($newToken);
-//  }
-
   public function getTestsOfPerson(PersonSession $personSession): array {
     $bookletIds = $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? ''];
     $placeHolder = implode(', ', array_fill(0, count($bookletIds), '?'));
