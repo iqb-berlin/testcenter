@@ -7,7 +7,6 @@
     "issues": "https://github.com/iqb-berlin/testcenter/issues",
     "docs": "https://iqb-berlin.github.io/testcenter/"
   },
-  "readme": "README.md",
   "license": "MIT",
   "require": {
     "php": "8.1.6",
@@ -25,7 +24,8 @@
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
     "ext-zip": "*",
-    "slim/http": "^1.2"
+    "slim/http": "^1.2",
+    "ext-redis": "*"
   },
   "suggest": {
     "ext-apache": "*"

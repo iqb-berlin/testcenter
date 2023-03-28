@@ -512,4 +512,40 @@ class WorkspaceDAO extends DAO {
 
     return $this->fetchFiles($sql, $replacements);
   }
+
+    public function getBookletResourcePaths(string $bookletFileName): array {
+      return array_reduce(
+        $this->_(
+          "select distinct
+            files.id,
+            files.type,
+            files.name
+          from file_relations as bookletContainsUnit
+            left join file_relations as unitNeedsResource
+              on bookletContainsUnit.workspace_id = unitNeedsResource.workspace_id
+                and bookletContainsUnit.object_name = unitNeedsResource.subject_name
+                and bookletContainsUnit.object_type = unitNeedsResource.subject_type
+                and unitNeedsResource.relationship_type in('isDefinedBy', 'usesPlayer')
+                and bookletContainsUnit.relationship_type = 'containsUnit'
+            left join files
+              on files.type = unitNeedsResource.object_type
+                and files.name = unitNeedsResource.object_name
+                and files.workspace_id = unitNeedsResource.workspace_id
+            where
+              bookletContainsUnit.subject_name = :booklet_file_name
+              and files.workspace_id = :ws_id
+              and files.is_valid = 1",
+            [
+              ':ws_id' => $this->workspaceId,
+              ':booklet_file_name' => $bookletFileName
+            ],
+          true
+        ),
+        function(array $agg, array $item): array {
+          $agg[$item['id']] = "ws_$this->workspaceId/{$item['type']}/{$item['name']}";
+          return $agg;
+        },
+        []
+      );
+    }
 }

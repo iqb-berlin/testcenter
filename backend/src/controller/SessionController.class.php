@@ -52,6 +52,9 @@ class SessionController extends Controller {
 
     if (!$loginSession->getLogin()->isCodeRequired()) {
       $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
+
+      FastAuthService::removeAuthentication($personSession);
+
       $personSession = self::sessionDAO()->renewPersonToken($personSession);
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
       $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
@@ -59,6 +62,7 @@ class SessionController extends Controller {
       if ($loginSession->getLogin()->getMode() == 'monitor-group') {
         self::registerGroup($loginSession);
       }
+      FastAuthService::storeAuthentication($personSession);
 
     } else {
       $accessSet = AccessSet::createFromLoginSession($loginSession);
@@ -76,8 +80,11 @@ class SessionController extends Controller {
     ]);
     $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
     $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
+    FastAuthService::removeAuthentication($personSession);
     $personSession = self::sessionDAO()->renewPersonToken($personSession);
     $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+    FastAuthService::storeAuthentication($personSession);
+
     return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
   }
 

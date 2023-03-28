@@ -159,4 +159,43 @@ export class BackendService {
         })
       );
   }
+
+  getResourceFast(path: string): Observable<LoadingFile> {
+    const fsURl = this.serverUrl.replace('/api', '/fs');
+    console.log('fastload', path);
+    return this.http
+      .get(
+        `${fsURl}${path}`,
+        {
+          responseType: 'text',
+          reportProgress: true,
+          observe: 'events'
+        }
+      )
+      .pipe(
+        map((event: HttpEvent<any>) => {
+          switch (event.type) {
+            case HttpEventType.ResponseHeader:
+              return { progress: 0 };
+
+            case HttpEventType.DownloadProgress:
+              if (!event.total) { // happens if file is huge because browser switches to chunked loading
+                return <LoadingFile>{ progress: 'UNKNOWN' };
+              }
+              return { progress: Math.round(100 * (event.loaded / event.total)) };
+
+            case HttpEventType.Response:
+              if (!event.body.length) {
+                // this might happen when file is so large, that memory size get exhausted
+                throw new Error(`Empty response for  '${path}'. Most likely the browsers memory was exhausted.`);
+              }
+              return { content: event.body };
+
+            default:
+              return null;
+          }
+        }),
+        filter(progressOfContent => progressOfContent != null)
+      );
+  }
 }

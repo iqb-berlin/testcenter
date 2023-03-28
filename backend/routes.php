@@ -220,3 +220,5 @@ $app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
 $app->get('/{auth_token}/resource/{resource_name}', [TestController::class, 'getResource']);
 
 $app->get('/{auth_token}/resource/{package_name}/[{path:.*}]', [TestController::class, 'getResourceFromPackage']);
+
+$app->get('/xxxx', [SessionController::class, 'test']);

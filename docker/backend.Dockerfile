@@ -27,6 +27,8 @@ FROM php:${PHP_VERSION}-apache-bullseye AS base
 RUN apt-get update && apt-get install -y libzip-dev
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip
+RUN pecl install igbinary && docker-php-ext-enable igbinary
+RUN pecl install redis && docker-php-ext-enable redis
 
 RUN a2enmod rewrite
 RUN a2enmod headers

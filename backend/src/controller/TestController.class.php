@@ -56,8 +56,8 @@ class TestController extends Controller {
     $testId = (int) $request->getAttribute('test_id');
 
     $bookletName = self::testDAO()->getBookletName($testId);
-    $workspaceController = new Workspace($authToken->getWorkspaceId());
-    $bookletFile = $workspaceController->getFileById('Booklet', $bookletName);
+    $workspace = new Workspace($authToken->getWorkspaceId());
+    $bookletFile = $workspace->getFileById('Booklet', $bookletName);
 
     if (self::testDAO()->isTestLocked($testId)) {
       throw new HttpException($request, "Test #$testId `{$bookletFile->getLabel()}` is locked.", 423);
@@ -66,7 +66,8 @@ class TestController extends Controller {
     return $response->withJson([ // TODO include running, use only one query
       'mode' => $authToken->getMode(),
       'laststate' => self::testDAO()->getTestState($testId),
-      'xml' => $bookletFile->getContent()
+      'xml' => $bookletFile->getContent(),
+      'resources' => $workspace->getBookletResources($bookletFile->getName())
     ]);
   }
 

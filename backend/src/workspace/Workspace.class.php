@@ -468,4 +468,8 @@ class Workspace {
       }
     }
   }
+
+  public function getBookletResources(string $bookletId): array {
+    return $this->workspaceDAO->getBookletResourcePaths($bookletId);
+  }
 }
