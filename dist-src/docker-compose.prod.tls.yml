@@ -1,6 +1,6 @@
 #  Compose file for production environment. Images are NOT locally built but
 #  downloaded from Docker-Hub. For certificate setup refer to the README.
-version: '3.7'
+version: '3.9'
 
 services:
 
