@@ -5,6 +5,9 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
+
+### Verbesserungen
+* Localstorage muss nach Update des Testcenters nicht mehr gelöscht werden
 ### UI
 * Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
 

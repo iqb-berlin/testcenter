@@ -21,7 +21,7 @@ export class RouteDispatcherActivateGuard implements CanActivate {
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.token) {
+      if (authData.claims) {
         if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
           this.router.navigate(['/r/admin-starter']);
         } else if (authData.flags.indexOf('codeRequired') >= 0) {
