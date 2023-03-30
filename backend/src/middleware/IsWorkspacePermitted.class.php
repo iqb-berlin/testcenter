@@ -11,46 +11,37 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteContext;
 
 class IsWorkspacePermitted {
+  private string $_necessaryRole;
 
+  function __construct(string $necessaryRole = '') {
+    $this->_necessaryRole = $necessaryRole;
+  }
 
-    private string $_necessaryRole = "";
+  function __invoke(Request $request, RequestHandler $handler): ResponseInterface {
+    $routeContext = RouteContext::fromRequest($request);
+    $route = $routeContext->getRoute();
+    $params = $route->getArguments();
 
-
-    function __construct(string $necessaryRole = '') {
-
-        $this->_necessaryRole = $necessaryRole;
+    if (!isset($params['ws_id']) or ((int) $params['ws_id'] < 1)) {
+      throw new HttpNotFoundException($request, "No valid workspace: `{$params['ws_id']}`");
     }
 
+    /* @var $authToken AuthToken */
+    $authToken = $request->getAttribute('AuthToken');
 
-    function __invoke(Request $request, RequestHandler $handler): ResponseInterface {
+    $adminDAO = new AdminDAO();
 
-        $routeContext = RouteContext::fromRequest($request);
-        $route = $routeContext->getRoute();
-        $params = $route->getArguments();
-
-        if (!isset($params['ws_id']) or ((int) $params['ws_id'] < 1)) {
-
-            throw new HttpNotFoundException($request, "No valid workspace: `{$params['ws_id']}`");
-        }
-
-        /* @var $authToken AuthToken */
-        $authToken = $request->getAttribute('AuthToken');
-
-        $adminDAO = new AdminDAO();
-
-        if (!$adminDAO->hasAdminAccessToWorkspace($authToken->getToken(), (int) $params['ws_id'])) {
-
-            throw new HttpNotFoundException($request,"Workspace `{$params['ws_id']}` not found.");
-        }
-
-        $userRoleOnWorkspace = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
-
-        if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Mode::withChildren($userRoleOnWorkspace)))) {
-
-            throw new HttpForbiddenException($request,"Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");
-        }
-
-        return $handler->handle($request);
-
+    if (!$adminDAO->hasAdminAccessToWorkspace($authToken->getToken(), (int) $params['ws_id'])) {
+      throw new HttpNotFoundException($request, "Workspace `{$params['ws_id']}` not found.");
     }
+
+    $userRoleOnWorkspace = $adminDAO->getWorkspaceRole($authToken->getToken(), (int) $params['ws_id']);
+
+    if ($this->_necessaryRole and (!in_array($this->_necessaryRole, Mode::withChildren($userRoleOnWorkspace)))) {
+      throw new HttpForbiddenException($request, "Access Denied: Role `{$this->_necessaryRole}` on workspace `ws_{$params['ws_id']}`, needed. Only `{$userRoleOnWorkspace}` provided.");
+    }
+
+    return $handler->handle($request);
+
+  }
 }
