@@ -85,8 +85,8 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="SAMPLE_SYSCHECK.XML"]')
       .should('not.exist');
-    const filepath = '../../../sampledata/SysCheck.xml';
-    cy.get('.sidebar > input:nth-child(2)').attachFile(filepath);
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/SysCheck.xml', { force: true });
     cy.wait(1500);
     cy.reload(true);
     cy.get('mat-table >mat-row button >span')
@@ -97,17 +97,21 @@ describe('Workspace-Admin', () => {
   it('should only be possible to upload a file with dependencies, if the dependent file already exists', () => {
     deleteFilesSampleWorkspace();
     // Try to load a file before the dependent file is loaded
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Unit.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Unit.xml', { force: true })
       .wait(1500)
       .reload(true);
     cy.contains('Unit.xml')
       .should('not.exist');
     // try to load a file after the dependent file is loaded
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/verona-player-simple-4.0.0.html')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/verona-player-simple-4.0.0.html', { force: true })
       .wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/sample_resource_package.itcr.zip')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/sample_resource_package.itcr.zip', { force: true })
       .wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/SAMPLE_UNITCONTENTS.HTM')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true })
       .wait(1000);
     cy.reload(true);
     cy.contains('verona-player-simple-4.0.0.html')
@@ -116,9 +120,11 @@ describe('Workspace-Admin', () => {
       .should('exist');
     cy.contains('SAMPLE_UNITCONTENTS.HTM')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Unit.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Unit.xml', { force: true })
       .wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Unit2.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Unit2.xml', { force: true })
       .wait(1000);
     cy.reload(true);
     cy.contains('Unit.xml')
@@ -126,13 +132,17 @@ describe('Workspace-Admin', () => {
     cy.contains('Unit2.xml')
       .should('exist');
     // Try to load all other files in the right order
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/SysCheck.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/SysCheck.xml', { force: true })
       .wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Booklet.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Booklet.xml', { force: true })
       .wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Booklet2.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Booklet2.xml', { force: true })
       .wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Booklet3.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Booklet3.xml', { force: true })
       .wait(1000);
     cy.reload(true);
     cy.contains('Booklet.xml')
@@ -141,7 +151,8 @@ describe('Workspace-Admin', () => {
       .should('exist');
     cy.contains('Booklet3.xml')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Testtakers.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Testtakers.xml', { force: true })
       .wait(1000);
     cy.reload(true);
     cy.contains('Testtakers.xml')
@@ -160,7 +171,8 @@ describe('Workspace-Admin', () => {
       .click();
     cy.wait(1000);
     // load a prepared Booklet-File from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)').attachFile('Booklet_sameTestlets.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('cypress/fixtures/Booklet_sameTestlets.xml', { force: true })
       .wait(1500);
     cy.contains('testletId')
       .should('exist');
@@ -181,7 +193,8 @@ describe('Workspace-Admin', () => {
       .click();
     cy.wait(1000);
     // load a prepared Booklet-File from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)').attachFile('Booklet_sameUnitIDs.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('cypress/fixtures/Booklet_sameUnitIDs.xml', { force: true })
       .wait(1500);
     cy.contains('unitId')
       .should('exist');
@@ -202,7 +215,8 @@ describe('Workspace-Admin', () => {
       .click();
     cy.wait(1000);
     // load a prepared Booklet-File from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)').attachFile('Booklet_sameUnitIDs_Alias.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('cypress/fixtures/Booklet_sameUnitIDs_Alias.xml', { force: true })
       .wait(1500);
     cy.reload(true);
     cy.contains('Booklet_sameUnitIDs_Alias.xml')
@@ -220,10 +234,12 @@ describe('Workspace-Admin', () => {
     cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Booklet.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Booklet.xml', { force: true })
       .wait(1000);
     // load a the same booklet file again
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Booklet.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Booklet.xml', { force: true })
       .wait(1000);
     cy.contains('overwritten')
       .should('exist');
@@ -240,10 +256,12 @@ describe('Workspace-Admin', () => {
     cy.get('[data-cy="dialog-confirm"]')
       .click();
     cy.wait(1000);
-    cy.get('.sidebar > input:nth-child(2)').attachFile('../../../sampledata/Booklet.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('../sampledata/Booklet.xml', { force: true })
       .wait(1000);
     // load a prepared Booklet with same name, but different ID and Testletnames from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)').attachFile('Booklet.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('cypress/fixtures/Booklet.xml', { force: true })
       .wait(1000);
     cy.contains('did already exist')
       .should('exist');
@@ -261,10 +279,12 @@ describe('Workspace-Admin', () => {
       .click();
     cy.wait(1000);
     // load a prepared Booklet with different name and same Booklet-ID from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)').attachFile('Booklet.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('cypress/fixtures/Booklet.xml', { force: true })
       .wait(1000);
     // load a prepared Booklet with different name and same Booklet-ID from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)').attachFile('Booklet_sameBookletID.xml')
+    cy.get('.sidebar > input:nth-child(2)')
+      .selectFile('cypress/fixtures/Booklet_sameBookletID.xml', { force: true })
       .wait(1000);
     cy.contains('Duplicate Booklet-Id')
       .should('exist');
