@@ -4,102 +4,93 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-
 final class ReportFormatTest extends TestCase {
+  static function setUpBeforeClass(): void {
+    require_once "src/data-collection/ReportFormat.php";
+  }
 
-    static function setUpBeforeClass(): void {
+  /**
+   * @throws Exception
+   */
+  function test__construct(): void {
+    // Arrange
+    $validReportFormatValue = ReportFormat::JSON;
 
-        require_once "src/data-collection/ReportFormat.php";
-    }
+    // Act
+    $reportFormat = new ReportFormat($validReportFormatValue);
+    $actualReportFormatValue = $reportFormat->getValue();
 
-    /**
-     * @throws Exception
-     */
-    function test__construct(): void {
+    // Assert
+    parent::assertTrue(ReportFormat::isValid($validReportFormatValue));
+    parent::assertSame($validReportFormatValue, $actualReportFormatValue);
+  }
 
-        // Arrange
-        $validReportFormatValue = ReportFormat::JSON;
+  /**
+   * @throws Exception
+   */
+  function test__constructThrowsInvalidArgumentException(): void {
+    // Arrange
+    $invalidReportFormatValue = "unknown report format";
+    $expectedMessage = "/^Report format value is invalid!/i";
 
-        // Act
-        $reportFormat = new ReportFormat($validReportFormatValue);
-        $actualReportFormatValue = $reportFormat->getValue();
+    // Assert
+    parent::assertFalse(ReportFormat::isValid($invalidReportFormatValue));
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessageMatches($expectedMessage);
 
-        // Assert
-        parent::assertTrue(ReportFormat::isValid($validReportFormatValue));
-        parent::assertSame($validReportFormatValue, $actualReportFormatValue);
-    }
+    // Act
+    new ReportFormat($invalidReportFormatValue);
+  }
 
-    /**
-     * @throws Exception
-     */
-    function test__constructThrowsInvalidArgumentException(): void {
+  /**
+   * @throws Exception
+   */
+  function testGetValue(): void {
+    // Arrange
+    $validReportFormatValue = ReportFormat::CSV;
 
-        // Arrange
-        $invalidReportFormatValue = "unknown report format";
-        $expectedMessage = "/^Report format value is invalid!/i";
+    // Act
+    $reportFormat = new ReportFormat($validReportFormatValue);
+    $actualReportFormatValue = $reportFormat->getValue();
 
-        // Assert
-        parent::assertFalse(ReportFormat::isValid($invalidReportFormatValue));
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches($expectedMessage);
+    // Assert
+    parent::assertSame($validReportFormatValue, $actualReportFormatValue);
+  }
 
-        // Act
-        new ReportFormat($invalidReportFormatValue);
-    }
+  function testToArray(): void {
+    // Arrange
+    $expectedReportFormats = [
+      'CSV' => 'csv',
+      'JSON' => 'json'
+    ];
 
-    /**
-     * @throws Exception
-     */
-    function testGetValue(): void {
+    // Act
+    $actualReportFormats = ReportFormat::toArray();
 
-        // Arrange
-        $validReportFormatValue = ReportFormat::CSV;
+    // Assert
+    parent::assertEquals($expectedReportFormats, $actualReportFormats);
+  }
 
-        // Act
-        $reportFormat = new ReportFormat($validReportFormatValue);
-        $actualReportFormatValue = $reportFormat->getValue();
+  function testIsValidReturnsTrue(): void {
+    // Arrange
+    $validReportFormatValue = ReportFormat::JSON;
 
-        // Assert
-        parent::assertSame($validReportFormatValue, $actualReportFormatValue);
-    }
+    // Act
+    $actualReportFormatIsValid = ReportFormat::isValid($validReportFormatValue);
 
-    function testToArray(): void {
+    // Assert
+    parent::assertTrue($actualReportFormatIsValid);
+  }
 
-        // Arrange
-        $expectedReportFormats = [
-            'CSV' => 'csv',
-            'JSON' => 'json'
-        ];
+  function testIsValidReturnsFalse(): void {
+    // Arrange
+    $invalidReportFormatValue = "unknown report format";
 
-        // Act
-        $actualReportFormats = ReportFormat::toArray();
+    // Act
+    $actualReportFormatIsValid = ReportFormat::isValid($invalidReportFormatValue);
 
-        // Assert
-        parent::assertEquals($expectedReportFormats, $actualReportFormats);
-    }
-
-    function testIsValidReturnsTrue(): void {
-
-        // Arrange
-        $validReportFormatValue = ReportFormat::JSON;
-
-        // Act
-        $actualReportFormatIsValid = ReportFormat::isValid($validReportFormatValue);
-
-        // Assert
-        parent::assertTrue($actualReportFormatIsValid);
-    }
-
-    function testIsValidReturnsFalse(): void {
-
-        // Arrange
-        $invalidReportFormatValue = "unknown report format";
-
-        // Act
-        $actualReportFormatIsValid = ReportFormat::isValid($invalidReportFormatValue);
-
-        // Assert
-        parent::assertFalse($actualReportFormatIsValid);
-    }
+    // Assert
+    parent::assertFalse($actualReportFormatIsValid);
+  }
 
 }

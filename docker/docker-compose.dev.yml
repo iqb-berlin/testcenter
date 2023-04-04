@@ -29,6 +29,7 @@ services:
       TESTMODE_REAL_DATA: false
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
+      - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
       - ../backend/autoload.php:/var/www/backend/autoload.php
       - ../backend/index.php:/var/www/backend/index.php
       - ../backend/initialize.php:/var/www/backend/initialize.php
