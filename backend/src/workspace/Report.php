@@ -285,7 +285,7 @@ class Report {
             $offset = array_search('categories', array_keys($review));
             $transformedReviewData[] =
                 array_slice($review, 0, $offset) +
-                $this->fillCategories($categoryKeys, explode(" ", $review['categories'])) +
+                $this->fillCategories($categoryKeys, explode(" ", $review['categories'] ?? '')) +
                 array_slice($review, $offset + 1, null);
         }
 

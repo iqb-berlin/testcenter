@@ -27,7 +27,7 @@ paths:
             text/plain;charset=utf-8:
               schema:
                 type: string
-              example: "EWWpx3egVMpJH/9="
+              example: "lrOI/JLFOAPBOHt="
         "406":
           description: bad package size
         "500":

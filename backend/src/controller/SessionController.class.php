@@ -51,8 +51,7 @@ class SessionController extends Controller {
     }
 
     if (!$loginSession->getLogin()->isCodeRequired()) {
-      $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, '');
-      $personSession = self::sessionDAO()->renewPersonToken($personSession);
+      $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
       $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
 
@@ -67,19 +66,19 @@ class SessionController extends Controller {
     return $response->withJson($accessSet);
   }
 
-  /**
-   * @codeCoverageIgnore
-   */
-  public static function putSessionPerson(Request $request, Response $response): Response {
-    $body = RequestBodyParser::getElements($request, [
-      'code' => ''
-    ]);
-    $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
-    $personSession = self::sessionDAO()->getOrCreatePersonSession($loginSession, $body['code']);
-    $personSession = self::sessionDAO()->renewPersonToken($personSession);
-    $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-    return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
-  }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public static function putSessionPerson(Request $request, Response $response): Response {
+      $body = RequestBodyParser::getElements($request, [
+        'code' => ''
+      ]);
+      $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
+      $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
+      $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
+      return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
+    }
 
   private static function registerGroup(LoginSession $login): void {
     if (!$login->getLogin()->getMode() == 'monitor-group') {
@@ -107,7 +106,7 @@ class SessionController extends Controller {
       }
 
       foreach ($member->getLogin()->getBooklets() as $code => $booklets) {
-        $memberPersonSession = SessionController::sessionDAO()->getOrCreatePersonSession($member, $code);
+        $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code);
 
         foreach ($booklets as $bookletId) {
           if (!isset($bookletLabels[$bookletId])) {

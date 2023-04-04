@@ -1,12 +1,13 @@
 // TODO better selectors
 // TODO get rid of sleeps
 
-import { login } from './utils';
+import { login, useTestDB } from './utils';
 import 'cypress-iframe';
 import inViewport from '../support/inViewport';
 
 xdescribe('Test-Controller', () => {
   before(() => { chai.use(inViewport); });
+  beforeEach(useTestDB);
   beforeEach(() => login('test', 'user123'));
 
   it('Should start a sample booklet and click through the unit tabs', () => {

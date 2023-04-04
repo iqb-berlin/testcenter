@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 class DAO {
   const tables = [ // because we use different types of DB is difficult to get table list by command
+    'users',
+    'workspaces',
+    'login_sessions',
+    'person_sessions',
+    'tests',
+    'units',
     'admin_sessions',
     'test_commands',
     'test_logs',
     'test_reviews',
-    'tests',
     'logins',
-    'login_sessions',
-    'person_sessions',
     'unit_logs',
     'unit_reviews',
-    'units',
-    'users',
     'workspace_users',
-    'workspaces',
     'meta',
     'unit_data',
     'files',
@@ -25,12 +25,11 @@ class DAO {
     'file_relations'
   ];
 
-  protected bool|PDO $pdoDBhandle = false;
+  protected ?PDO $pdoDBhandle = null;
   protected int $timeUserIsAllowedInMinutes = 600;
   protected ?string $passwordSalt = 't';
   protected bool $insecurePasswords = false;
-
-  protected int $lastAffectedRows = 0;
+  protected ?int $lastAffectedRows = null;
 
   public function __construct() {
     $this->pdoDBhandle = DB::getConnection();
@@ -42,13 +41,15 @@ class DAO {
   }
 
   public function __destruct() {
-    if ($this->pdoDBhandle !== false) {
+    if ($this->pdoDBhandle !== null) {
       unset($this->pdoDBhandle);
-      $this->pdoDBhandle = false;
+      $this->pdoDBhandle = null;
     }
   }
 
   public function _(string $sql, array $replacements = [], $multiRow = false): ?array {
+    $this->lastAffectedRows = null;
+
     $sqlStatement = $this->pdoDBhandle->prepare($sql);
 
     try {
@@ -73,14 +74,6 @@ class DAO {
     return is_bool($result) ? null : $result;
   }
 
-  protected function randomToken(string $type, string $name): string {
-    if (DB::getConfig()->staticTokens) {
-      return substr("static:$type:$name", 0, 50);
-    }
-
-    return uniqid('a', true);
-  }
-
   /**
    * @codeCoverageIgnore
    */
@@ -90,13 +83,6 @@ class DAO {
     }
 
     $this->pdoDBhandle->exec(file_get_contents($path));
-  }
-
-  /**
-   * @codeCoverageIgnore
-   */
-  public function getDBType(): string {
-    return $this->pdoDBhandle->getAttribute(PDO::ATTR_DRIVER_NAME);
   }
 
   public function getDBSchemaVersion(): string {
@@ -158,5 +144,13 @@ class DAO {
     }
 
     return $testState;
+  }
+
+  public function beginTransaction(): void {
+    $this->pdoDBhandle->beginTransaction();
+  }
+
+  public function rollBack(): void {
+    $this->pdoDBhandle->rollBack();
   }
 }

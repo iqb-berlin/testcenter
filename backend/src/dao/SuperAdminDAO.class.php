@@ -25,15 +25,14 @@ class SuperAdminDAO extends DAO {
   }
 
   public function getUserByName(string $userName): array { // TODO isSuperadmin should be boolean
-
     $user = $this->_(
       'select 
-                users.name, 
-                users.id, 
-                users.email, 
-                users.is_superadmin as "isSuperadmin" 
-            from users 
-            where users.name=:user_name',
+                    users.name, 
+                    users.id, 
+                    users.email, 
+                    users.is_superadmin as "isSuperadmin" 
+                from users 
+                where users.name=:user_name',
       [':user_name' => $userName]
     );
     if ($user == null) {
@@ -86,10 +85,7 @@ class SuperAdminDAO extends DAO {
   }
 
   public function setWorkspaceRightsByUser(int $userId, array $listOfWorkspaceIdsAndRoles) {
-    $this->_(
-      'delete from workspace_users where workspace_users.user_id=:user_id',
-      [':user_id' => $userId]
-    );
+    $this->_('delete from workspace_users where workspace_users.user_id=:user_id', [':user_id' => $userId]);
 
     foreach ($listOfWorkspaceIdsAndRoles as $workspaceIdAndRole) {
       if (strlen($workspaceIdAndRole->role) > 0) {
@@ -259,13 +255,13 @@ class SuperAdminDAO extends DAO {
         'id' => $user['id'],
         'name' => $user['name'],
         'selected' => isset($workspaceRolesPerUser[$user['id']]),
-        'role' => isset($workspaceRolesPerUser[$user['id']]) ? $workspaceRolesPerUser[$user['id']] : '',
+        'role' => $workspaceRolesPerUser[$user['id']] ?? '',
       ];
     }
     return $allUsersWithTheirRolesOnWorkspace;
   }
 
-  public function getMapUserToRoleByWorkspace(int $workspaceId) {
+  public function getMapUserToRoleByWorkspace(int $workspaceId): array {
     $workspaceUsers = $this->_(
       'select 
                 workspace_users.user_id as id, 

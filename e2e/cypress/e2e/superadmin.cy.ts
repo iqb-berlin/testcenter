@@ -1,11 +1,12 @@
 // TODO better selectors
 
 import {
-  clickSuperadmin, insertCredentials, loginAsAdmin, logout, logoutAdmin, resetBackendData, visitLoginPage
+  clickSuperadmin, insertCredentials, loginAsAdmin, logout, logoutAdmin, resetBackendData, useTestDB, visitLoginPage
 } from './utils';
 
 describe('Superadmin', () => {
   beforeEach(resetBackendData);
+  beforeEach(useTestDB);
   beforeEach(logout);
   beforeEach(() => loginAsAdmin());
   beforeEach(clickSuperadmin);
@@ -40,6 +41,8 @@ describe('Superadmin', () => {
       .should('be.disabled')
       .get('[data-cy="delete-files"]')
       .should('be.disabled');
+    cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
+      .should('exist'); // make sure files call happened before continuing
   });
 
   it('Should change the password of a existing user', () => {
@@ -53,8 +56,10 @@ describe('Superadmin', () => {
       .click();
     logoutAdmin();
     insertCredentials('workspace_admin', 'newPassword');
+    cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForSessionsCall');
     cy.get('[data-cy="login-admin"]')
       .click();
+    cy.wait('@waitForSessionsCall');
     cy.contains('Status: Angemeldet als "workspace_admin"')
       .should('exist');
   });
@@ -63,7 +68,7 @@ describe('Superadmin', () => {
     cy.contains('workspace_admin')
       .should('exist')
       .click()
-      .get('[data-cy="workspace-role-ro"]')
+      .get('[data-cy="workspace-role-rw"]')
       .should('exist')
       .click()
       .get('[data-cy="save"]')
@@ -82,6 +87,8 @@ describe('Superadmin', () => {
       .should('be.enabled')
       .get('[data-cy="delete-files"]')
       .should('be.enabled');
+    cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
+      .should('exist'); // make sure files call happened before continuing
   });
 
   it('Should delete an admin by clicking on the name', () => {
@@ -93,9 +100,7 @@ describe('Superadmin', () => {
       .should('exist')
       .click();
     cy.contains('workspace_admin')
-      .should('not.exist')
-    cy.get('[data-cy="logo"]')
-      .click();
+      .should('not.exist');
   });
 
   it('Should create new super admin', () => {
@@ -126,8 +131,10 @@ describe('Superadmin', () => {
       .type('newSuper')
       .get('[formcontrolname="pw"]')
       .type('user123');
+    cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForSessionsCall');
     cy.contains('Weiter als Admin')
       .click();
+    cy.wait('@waitForSessionsCall');
     cy.contains('Verwaltung von Testinhalten')
       .should('exist');
     cy.contains('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen')
@@ -167,8 +174,10 @@ describe('Superadmin', () => {
       .click();
     logoutAdmin();
     insertCredentials('workspace_admin', 'anotherPassword');
+    cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForSessionsCall');
     cy.get('[data-cy="login-admin"]')
       .click();
+    cy.wait('@waitForSessionsCall');
     cy.contains('Verwaltung von Testinhalten')
       .should('exist');
     cy.contains('Verwaltung von Nutzerrechten und von grundsätzlichen Systemeinstellungen')
@@ -245,7 +254,7 @@ describe('Superadmin', () => {
       .should('exist')
       .click();
     cy.contains('workspace_admin')
-      .should('not.exist')
+      .should('not.exist');
   });
 
   it('Should delete a workspace', () => {
@@ -282,6 +291,8 @@ describe('Superadmin', () => {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/superadmin/settings`);
     cy.get('[data-cy="superadmin-tabs:users"]')
       .click();
+    cy.get('[data-cy="add-user"]')
+      .should('exist');
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/superadmin/users`);
   });
 
@@ -298,6 +309,8 @@ describe('Superadmin', () => {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/results`);
     cy.get('[data-cy="Dateien"]')
       .click();
+    cy.get('[data-cy="upload-files"]')
+      .should('exist');
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
   });
 });
