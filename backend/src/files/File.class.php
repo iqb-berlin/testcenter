@@ -165,7 +165,7 @@ class File extends FileData {
       ),
     ];
   }
-
+  
   public function getContent(): string {
     $this->load();
     return $this->content;
