@@ -126,17 +126,12 @@ class CLI {
     CLI::printColored($text, "Red", null, true);
   }
 
+  static function success(string $text): void {
+    CLI::printColored($text, "Green");
+  }
 
-    static function success(string $text): void {
-
-
-        CLI::printColored($text, "Green");
-    }
-
-
-    static private function printColored(string $text, string $fg, string $bg = null, bool $bold = false): void {
-
-        $colorString = ($bold ? '1' : '0') . ';' . CLI::foreground[$fg] . ($bg ? ';' . CLI::background[$bg] : '');
-        echo "\n\e[{$colorString}m{$text}\e[0m";
-    }
+  static private function printColored(string $text, string $fg, string $bg = null, bool $bold = false): void {
+    $colorString = ($bold ? '1' : '0') . ';' . CLI::foreground[$fg] . ($bg ? ';' . CLI::background[$bg] : '');
+    echo "\n\e[{$colorString}m$text\e[0m";
+  }
 }
