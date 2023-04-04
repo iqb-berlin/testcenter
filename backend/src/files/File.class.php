@@ -118,7 +118,7 @@ class File extends FileData {
   }
 
   public function getVersionMayorMinor(): string {
-    return "{$this->versionMayor}.{$this->versionMinor}";
+    return "$this->versionMayor.$this->versionMinor";
   }
 
   public function isValid(): bool {
@@ -154,7 +154,7 @@ class File extends FileData {
       $info['version'] = $this->getVersion();
     }
 
-    $output = [
+    return [
       'name' => $this->name,
       'size' => $this->size,
       'modificationTime' => $this->modificationTime,
@@ -164,10 +164,8 @@ class File extends FileData {
       'info' => array_merge($info, $this->getContextData()
       ),
     ];
-
-    return $output;
   }
-
+  
   public function getContent(): string {
     $this->load();
     return $this->content;

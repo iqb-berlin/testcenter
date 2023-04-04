@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 class WorkspaceDAO extends DAO {
-
   private int $workspaceId;
   private string $workspacePath;
 

@@ -57,7 +57,7 @@ class SuperAdminDAO extends DAO {
         'id' => $workspace['id'],
         'name' => $workspace['name'],
         'selected' => isset($userRolesByWorkspace[$workspace['id']]),
-        'role' => isset($userRolesByWorkspace[$workspace['id']]) ? $userRolesByWorkspace[$workspace['id']] : ''
+        'role' => $userRolesByWorkspace[$workspace['id']] ?? ''
       ];
     }
 
@@ -164,7 +164,10 @@ class SuperAdminDAO extends DAO {
   public function deleteUsers(array $userIds): void { // TODO add unit test
 
     foreach ($userIds as $userId) {
-      $this->_('delete from users where users.id = :user_id', [':user_id' => $userId]);
+      $this->_(
+        'delete from users where users.id = :user_id',
+        [':user_id' => $userId]
+      );
     }
   }
 
@@ -183,8 +186,7 @@ class SuperAdminDAO extends DAO {
 
   public function createWorkspace($name): array {
     $workspace = $this->_(
-      'select workspaces.id from workspaces 
-            where workspaces.name=:ws_name',
+      'select workspaces.id from workspaces where workspaces.name=:ws_name',
       [':ws_name' => $name]
     );
 
@@ -205,8 +207,7 @@ class SuperAdminDAO extends DAO {
 
   public function setWorkspaceName($wsId, $newName) {
     $workspace = $this->_(
-      'select workspaces.id from workspaces 
-            where workspaces.id=:ws_id',
+      'select workspaces.id from workspaces where workspaces.id=:ws_id',
       [':ws_id' => $wsId]
     );
 
@@ -254,13 +255,13 @@ class SuperAdminDAO extends DAO {
         'id' => $user['id'],
         'name' => $user['name'],
         'selected' => isset($workspaceRolesPerUser[$user['id']]),
-        'role' => isset($workspaceRolesPerUser[$user['id']]) ? $workspaceRolesPerUser[$user['id']] : '',
+        'role' => $workspaceRolesPerUser[$user['id']] ?? '',
       ];
     }
     return $allUsersWithTheirRolesOnWorkspace;
   }
 
-  public function getMapUserToRoleByWorkspace(int $workspaceId) {
+  public function getMapUserToRoleByWorkspace(int $workspaceId): array {
     $workspaceUsers = $this->_(
       'select 
                 workspace_users.user_id as id, 

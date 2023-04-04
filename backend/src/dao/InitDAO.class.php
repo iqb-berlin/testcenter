@@ -330,7 +330,6 @@ class InitDAO extends SessionDAO {
       try {
         $entries = $this->_("SELECT * FROM $table", [], true);
         $report[$table] = CSV::build($entries);
-
       } catch (Exception) {
         $report[$table] = 'not found';
       }

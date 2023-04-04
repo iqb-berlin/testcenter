@@ -4,104 +4,95 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-
 final class ReportTypeTest extends TestCase {
+  static function setUpBeforeClass(): void {
+    require_once "src/data-collection/ReportType.php";
+  }
 
-    static function setUpBeforeClass(): void {
+  /**
+   * @throws Exception
+   */
+  function test__construct(): void {
+    // Arrange
+    $validReportTypeValue = ReportType::SYSTEM_CHECK;
 
-        require_once "src/data-collection/ReportType.php";
-    }
+    // Act
+    $reportType = new ReportType($validReportTypeValue);
+    $actualReportTypeValue = $reportType->getValue();
 
-    /**
-     * @throws Exception
-     */
-    function test__construct(): void {
+    // Assert
+    parent::assertTrue(ReportType::isValid($validReportTypeValue));
+    parent::assertSame($validReportTypeValue, $actualReportTypeValue);
+  }
 
-        // Arrange
-        $validReportTypeValue = ReportType::SYSTEM_CHECK;
+  /**
+   * @throws Exception
+   */
+  function test__constructThrowsInvalidArgumentException(): void {
+    // Arrange
+    $invalidReportTypeValue = "unknown report type";
+    $expectedMessage = "/^Report type value is invalid!/i";
 
-        // Act
-        $reportType = new ReportType($validReportTypeValue);
-        $actualReportTypeValue = $reportType->getValue();
+    // Assert
+    parent::assertFalse(ReportType::isValid($invalidReportTypeValue));
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessageMatches($expectedMessage);
 
-        // Assert
-        parent::assertTrue(ReportType::isValid($validReportTypeValue));
-        parent::assertSame($validReportTypeValue, $actualReportTypeValue);
-    }
+    // Act
+    new ReportType($invalidReportTypeValue);
+  }
 
-    /**
-     * @throws Exception
-     */
-    function test__constructThrowsInvalidArgumentException(): void {
+  function testIsValidReturnsTrue(): void {
+    // Arrange
+    $validReportTypeValue = ReportType::REVIEW;
 
-        // Arrange
-        $invalidReportTypeValue = "unknown report type";
-        $expectedMessage = "/^Report type value is invalid!/i";
+    // Act
+    $actualReportTypeIsValid = ReportType::isValid($validReportTypeValue);
 
-        // Assert
-        parent::assertFalse(ReportType::isValid($invalidReportTypeValue));
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches($expectedMessage);
+    // Assert
+    parent::assertTrue($actualReportTypeIsValid);
+  }
 
-        // Act
-        new ReportType($invalidReportTypeValue);
-    }
+  function testIsValidReturnsFalse(): void {
+    // Arrange
+    $invalidReportTypeValue = "unknown report type";
 
-    function testIsValidReturnsTrue(): void {
+    // Act
+    $actualReportTypeIsValid = ReportType::isValid($invalidReportTypeValue);
 
-        // Arrange
-        $validReportTypeValue = ReportType::REVIEW;
+    // Assert
+    parent::assertFalse($actualReportTypeIsValid);
+  }
 
-        // Act
-        $actualReportTypeIsValid = ReportType::isValid($validReportTypeValue);
+  function testToArray(): void {
+    // Arrange
+    $expectedReportTypes = [
+      'LOG' => 'log',
+      'RESPONSE' => 'response',
+      'REVIEW' => 'review',
+      'SYSTEM_CHECK' => 'sys-check'
+    ];
 
-        // Assert
-        parent::assertTrue($actualReportTypeIsValid);
-    }
+    // Act
+    $actualReportTypes = ReportType::toArray();
 
-    function testIsValidReturnsFalse(): void {
+    // Assert
+    parent::assertEquals($expectedReportTypes, $actualReportTypes);
+  }
 
-        // Arrange
-        $invalidReportTypeValue = "unknown report type";
+  /**
+   * @throws Exception
+   */
+  function testGetValue(): void {
+    // Arrange
+    $validReportTypeValue = ReportType::RESPONSE;
 
-        // Act
-        $actualReportTypeIsValid = ReportType::isValid($invalidReportTypeValue);
+    // Act
+    $reportType = new ReportType($validReportTypeValue);
+    $actualReportTypeValue = $reportType->getValue();
 
-        // Assert
-        parent::assertFalse($actualReportTypeIsValid);
-    }
-
-    function testToArray(): void {
-
-        // Arrange
-        $expectedReportTypes = [
-            'LOG' => 'log',
-            'RESPONSE' => 'response',
-            'REVIEW' => 'review',
-            'SYSTEM_CHECK' => 'sys-check'
-        ];
-
-        // Act
-        $actualReportTypes = ReportType::toArray();
-
-        // Assert
-        parent::assertEquals($expectedReportTypes, $actualReportTypes);
-    }
-
-    /**
-     * @throws Exception
-     */
-    function testGetValue(): void {
-
-        // Arrange
-        $validReportTypeValue = ReportType::RESPONSE;
-
-        // Act
-        $reportType = new ReportType($validReportTypeValue);
-        $actualReportTypeValue = $reportType->getValue();
-
-        // Assert
-        parent::assertSame($validReportTypeValue, $actualReportTypeValue);
-    }
+    // Assert
+    parent::assertSame($validReportTypeValue, $actualReportTypeValue);
+  }
 
 }

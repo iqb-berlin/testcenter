@@ -2,133 +2,115 @@
 
 use PHPUnit\Framework\TestCase;
 
-
 /**
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class PasswordTest extends TestCase {
+  public function setUp(): void {
+    require_once "src/helper/Password.class.php";
+    require_once "src/exception/HttpError.class.php";
+  }
 
-    public function setUp(): void {
+  function test_encrypt_normal() {
+    $password = "some_password";
+    $pepper = "whatever";
 
-        require_once "src/helper/Password.class.php";
-        require_once "src/exception/HttpError.class.php";
-    }
+    $exampleHash = '$2y$10$b8ltS296rsG2hQQDwwc8g.Q86MRR1vieRY/gkMXMq4D0KzivMIjpa';
 
-    function test_encrypt_normal() {
+    $hash = Password::encrypt($password, $pepper);
 
-        $password = "some_password";
-        $pepper= "whatever";
+    $this->assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
+    $this->assertEquals(strlen($exampleHash), strlen($hash));
+  }
 
-        $exampleHash = '$2y$10$b8ltS296rsG2hQQDwwc8g.Q86MRR1vieRY/gkMXMq4D0KzivMIjpa';
+  function test_encrypt_insecure() {
+    $password = "some_password";
+    $salt = "whatever";
 
-        $hash = Password::encrypt($password, $pepper);
+    $exampleHash = '$2y$04$cvGHNrOpxrf1S7UrGViiV.xJeyAtCakbi76ThVjO3bF9M1klQzVKS';
 
-        $this->assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
-        $this->assertEquals(strlen($exampleHash), strlen($hash));
-    }
+    $hash = Password::encrypt($password, $salt, true);
 
+    $this->assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
+    $this->assertEquals(strlen($exampleHash), strlen($hash));
+  }
 
-    function test_encrypt_insecure() {
+  function test_validate_too_short() {
+    $this->expectException('HttpError');
+    Password::validate('ts');
+  }
 
-        $password = "some_password";
-        $salt = "whatever";
+  function test_validate_too_long() {
+    $this->expectException('HttpError');
+    Password::validate(str_repeat('x', 61));
+  }
 
-        $exampleHash = '$2y$04$cvGHNrOpxrf1S7UrGViiV.xJeyAtCakbi76ThVjO3bF9M1klQzVKS';
+  function test_validate() {
+    $this->expectNotToPerformAssertions();
+    Password::validate(str_repeat('x', 30));
+  }
 
-        $hash = Password::encrypt($password, $salt, true);
+  function test_verify_normal() {
+    $password = "some_password";
+    $wrongPassword = "wrong_password";
+    $pepper = "whatever";
+    $wrongPepper = "wrong_pepper";
+    $hash = Password::encrypt($password, $pepper);
+    $wrongHash = "Wrong_hash";
 
-        $this->assertEquals(substr($exampleHash, 0, 7), substr($hash, 0, 7));
-        $this->assertEquals(strlen($exampleHash), strlen($hash));
-    }
+    $result = Password::verify($password, $hash, $pepper);
+    $this->assertTrue($result);
 
+    $result = Password::verify($wrongPassword, $hash, $pepper);
+    $this->assertFalse($result);
 
-    function test_validate_too_short() {
+    $result = Password::verify($password, $hash, $wrongPepper);
+    $this->assertFalse($result);
 
-        $this->expectException('HttpError');
-        Password::validate('ts');
-    }
+    $result = Password::verify($password, $wrongHash, $pepper);
+    $this->assertFalse($result);
+  }
 
+  function test_verify_legacy() {
+    $password = "some_password";
+    $wrongPassword = "wrong_password";
+    $salt = "whatever";
+    $wrongSalt = "wrong_pepper";
+    $hash = '4084d373341366b4a4ddf782007181f501ea9767';
+    $wrongHash = "wrong_hash";
 
-    function test_validate_too_long() {
+    $result = Password::verify($password, $hash, $salt);
+    $this->assertTrue($result);
 
-        $this->expectException('HttpError');
-        Password::validate(str_repeat('x', 61));
-    }
+    $result = Password::verify($wrongPassword, $hash, $salt);
+    $this->assertFalse($result);
 
+    $result = Password::verify($password, $hash, $wrongSalt);
+    $this->assertFalse($result);
 
-    function test_validate() {
+    $result = Password::verify($password, $wrongHash, $salt);
+    $this->assertFalse($result);
+  }
 
-        $this->expectNotToPerformAssertions();
-        Password::validate(str_repeat('x', 30));
-    }
+  function test_verify_insecure() {
+    $password = "some_password";
+    $wrongPassword = "wrong_password";
+    $pepper = "whatever";
+    $wrongPepper = "wrong_pepper";
+    $hash = Password::encrypt($password, $pepper, true);
+    $wrongHash = "Wrong_hash";
 
+    $result = Password::verify($password, $hash, $pepper);
+    $this->assertTrue($result);
 
-    function test_verify_normal() {
+    $result = Password::verify($wrongPassword, $hash, $pepper);
+    $this->assertFalse($result);
 
-        $password = "some_password";
-        $wrongPassword = "wrong_password";
-        $pepper = "whatever";
-        $wrongPepper = "wrong_pepper";
-        $hash = Password::encrypt($password, $pepper);
-        $wrongHash = "Wrong_hash";
+    $result = Password::verify($password, $hash, $wrongPepper);
+    $this->assertFalse($result);
 
-        $result = Password::verify($password, $hash, $pepper);
-        $this->assertTrue($result);
-
-        $result = Password::verify($wrongPassword, $hash, $pepper);
-        $this->assertFalse($result);
-
-        $result = Password::verify($password, $hash, $wrongPepper);
-        $this->assertFalse($result);
-
-        $result = Password::verify($password, $wrongHash, $pepper);
-        $this->assertFalse($result);
-    }
-
-
-    function test_verify_legacy() {
-
-        $password = "some_password";
-        $wrongPassword = "wrong_password";
-        $salt = "whatever";
-        $wrongSalt = "wrong_pepper";
-        $hash = '4084d373341366b4a4ddf782007181f501ea9767';
-        $wrongHash = "wrong_hash";
-
-        $result = Password::verify($password, $hash, $salt);
-        $this->assertTrue($result);
-
-        $result = Password::verify($wrongPassword, $hash, $salt);
-        $this->assertFalse($result);
-
-        $result = Password::verify($password, $hash, $wrongSalt);
-        $this->assertFalse($result);
-
-        $result = Password::verify($password, $wrongHash, $salt);
-        $this->assertFalse($result);
-    }
-
-
-    function test_verify_insecure() {
-
-        $password = "some_password";
-        $wrongPassword = "wrong_password";
-        $pepper = "whatever";
-        $wrongPepper = "wrong_pepper";
-        $hash = Password::encrypt($password, $pepper, true);
-        $wrongHash = "Wrong_hash";
-
-        $result = Password::verify($password, $hash, $pepper);
-        $this->assertTrue($result);
-
-        $result = Password::verify($wrongPassword, $hash, $pepper);
-        $this->assertFalse($result);
-
-        $result = Password::verify($password, $hash, $wrongPepper);
-        $this->assertFalse($result);
-
-        $result = Password::verify($password, $wrongHash, $pepper);
-        $this->assertFalse($result);
-    }
+    $result = Password::verify($password, $wrongHash, $pepper);
+    $this->assertFalse($result);
+  }
 }

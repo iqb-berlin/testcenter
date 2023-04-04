@@ -1,6 +1,6 @@
 # Compose file for local development and testing. Images are built from
 # local directories which need to be cloned from the repository.
-version: '3.7'
+version: '3.9'
 
 services:
   traefik:
@@ -26,8 +26,11 @@ services:
       context: ..
       dockerfile: docker/backend.Dockerfile
       target: dev
+    environment:
+      TESTMODE_REAL_DATA: false
     volumes:
       - ../backend/.htaccess:/var/www/backend/.htaccess
+      - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
       - ../backend/autoload.php:/var/www/backend/autoload.php
       - ../backend/index.php:/var/www/backend/index.php
       - ../backend/initialize.php:/var/www/backend/initialize.php
@@ -40,6 +43,7 @@ services:
       - ../docs/dist:/docs/dist
       - ../package.json:/var/www/package.json
       - ../sampledata:/var/www/sampledata
+      - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
     ports:
       - 9005:9003 #xdebug
     extra_hosts:

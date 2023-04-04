@@ -11,7 +11,7 @@ test-backend-unit-coverage:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
 	--rm --entrypoint "" \
 	testcenter-backend \
-		php -dxdebug.mode='debug,coverage' /var/www/backend/vendor/phpunit/phpunit/phpunit \
+		php -dxdebug.mode='coverage' /var/www/backend/vendor/phpunit/phpunit/phpunit \
 			--bootstrap /var/www/backend/test/unit/bootstrap.php \
 			--configuration /var/www/backend/phpunit.xml \
 			--coverage-html /docs/dist/test-coverage-backend-unit \
