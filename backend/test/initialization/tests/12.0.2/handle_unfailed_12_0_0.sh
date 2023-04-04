@@ -29,7 +29,7 @@ echo "INSERT INTO units (name, booklet_id, laststate, responses, responsetype, r
 
 echo_h2 "The bogus patch should work, because there is no problematic data";
 fake_version 12.0.0
-cp backend/test/initialization/data/broken-12.0.0-patch.sql database/mysql.patches.d/12.0.0.sql
+cp backend/test/initialization/data/broken-12.0.0-patch.sql database/patches.d/12.0.0.sql
 php backend/initialize.php \
 --user_name "" \
 --workspace "" \
@@ -40,7 +40,7 @@ expect_table_to_have_rows unit_data 2
 expect_table_to_have_rows units 2
 expect_sql_to_return "select column_name from information_schema.columns WHERE table_name='units'" '[["id"],["name"],["booklet_id"],["laststate"]]'
 expect_sql_to_return "select content from unit_data order by unit_id" '[["old responses"],["old responses"]]'
-rm database/mysql.patches.d/12.0.0.sql
+rm database/patches.d/12.0.0.sql
 
 
 echo_h2 "Assume further usage of the testcenter"

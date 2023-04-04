@@ -13,7 +13,7 @@ export const resetBackendData = (): void => {
   // this resets the DB because in system-test TESTMODE_REAL_DATA is true
   cy.request({
     url: `${Cypress.env('TC_API_URL')}/version`,
-    headers: { TestMode: 'True' }
+    headers: { TestMode: 'prepare' }
   })
     .its('status').should('eq', 200);
   // sometimes DB isn't ready even after the endpoint returned 200
@@ -33,9 +33,16 @@ export const insertCredentials = (username: string, password = ''): void => {
   }
 };
 
+export const login = (username: string, password: string): void => {
+  resetBackendData();
+  visitLoginPage();
+  insertCredentials(username, password);
+};
+
 export const logoutAdmin = (): void => {
-  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`)
-    .should('exist');
+  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`);
+  cy.get('[data-cy="workspace-1"]')
+    .should('exist'); // make sure call returned
   cy.get('[data-cy="logout"]')
     .click();
   cy.url()
@@ -135,4 +142,10 @@ export const deleteFilesSampleWorkspace = (): void => {
     .should('not.exist');
   cy.contains('Ressourcen')
     .should('not.exist');
+};
+
+export const useTestDB = () : void => {
+  cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/.*`), req => {
+    req.headers.TestMode = 'integration';
+  }).as('testMode');
 };

@@ -1,177 +1,153 @@
 <?php
 declare(strict_types=1);
+
+use JetBrains\PhpStorm\NoReturn;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamContent;
 use org\bovigo\vfs\vfsStreamWrapper;
 
-// TODO unit-tests galore
-
 class TestEnvironment {
+  const staticDate = 1627545600;
 
-    const staticDate = 1627545600;
+  public static function setup(string $testMode): void {
+    $testMode = in_array($testMode, ['prepare', 'api', 'integration']) ? $testMode : 'api';
 
-    static function setUpEnvironmentForRealDataE2ETests(): void {
+    try {
 
-        try {
+      if ($testMode !== 'integration') {
+        // integration/system/api tests are run in their own container, so the can use real FS
+        // TODO create test-data-dir analogous to the testDB, use this and get rid of the compose files for system-tests
+        self::setUpVirtualFilesystem();
+      } else {
+        define('DATA_DIR', ROOT_DIR . '/data');
+      }
 
-            define('DATA_DIR', ROOT_DIR . '/data');
+      TimeStamp::setup(null, '@' . self::staticDate);
+      BroadcastService::setup('', '');
+      XMLSchema::setup(false);
+      self::makeRandomStatic();
 
-            /* @var DBConfig $dbConfig */
-            $dbConfig = DBConfig::fromFile(ROOT_DIR . '/backend/config/DBConnectionData.json');
-            $dbConfig->staticTokens = true;
-            DB::connect($dbConfig);
+      self::createTestFiles();
 
-            TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
-            BroadcastService::setup('', '');
-            XMLSchema::setup(false);
-            FileTime::setup(TestEnvironment::staticDate);
-            TestEnvironment::makeRandomStatic();
+      if ($testMode !== 'integration') {
+        self::overwriteModificationDatesVfs();
+      }
 
-            TestEnvironment::resetState();
-            TestEnvironment::setUpTestData();
+      DB::connectToTestDB();
 
-        } catch (Throwable $exception) {
+      if ($testMode == 'prepare') {
+        self::buildTestDB();
+        self::createTestData();
+      }
 
-            TestEnvironment::bailOut($exception);
-        }
-    }
-
-
-    static function setUpEnvironmentForE2eTests(): void {
-
-        try {
-
-            TestEnvironment::setUpVirtualFilesystem();
-
-            DB::connect(new DBConfig([
-                'type' => 'temp',
-                'staticTokens' => true,
-                'insecurePasswords' => true
-            ]));
-
-            TimeStamp::setup(null, '@' . TestEnvironment::staticDate);
-            BroadcastService::setup('', '');
-            XMLSchema::setup(false);
-            TestEnvironment::makeRandomStatic();
-
-            $initDAO = new InitDAO();
-            $initDAO->runFile(ROOT_DIR . '/backend/test/database.sql');
-
-            TestEnvironment::setUpTestData();
-            TestEnvironment::overwriteModificationDatesVfs();
-            TestEnvironment::debugVirtualEnvironment();
-
-        } catch (Throwable $exception) {
-
-            TestEnvironment::bailOut($exception);
-        }
-    }
-
-
-    private static function makeRandomStatic(): void {
-
-        srand(1);
-    }
-
-
-    private static function resetState(): void {
-
-        Folder::deleteContentsRecursive(DATA_DIR);
-
+      if ($testMode == 'api') {
         $initDAO = new InitDAO();
+        $initDAO->beginTransaction();
+        register_shutdown_function([self::class, "rollback"]);
+      }
 
-        $initDAO->clearDb();
-
-        $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
-        $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", true);
-
-        $dbStatus = $initDAO->getDbStatus();
-        if ($dbStatus['missing']) {
-            throw new Exception("Database reset failed: {$dbStatus['message']}");
-        }
+    } catch (Throwable $exception) {
+      TestEnvironment::bailOut($exception);
     }
+  }
 
+  public static function makeRandomStatic(): void {
+    srand(1);
+  }
 
-    private static function setUpVirtualFilesystem(): void {
+  private static function setUpVirtualFilesystem(): void {
+    $vfs = vfsStream::setup('root', 0777);
+    vfsStream::newDirectory('data', 0777)->at($vfs);
+    vfsStream::newDirectory('data/ws_1', 0777)->at($vfs);
 
-        $vfs = vfsStream::setup('root', 0777);
-        vfsStream::newDirectory('data', 0777)->at($vfs);
-        vfsStream::newDirectory('data/ws_1', 0777)->at($vfs);
+    define('DATA_DIR', vfsStream::url('root/data'));
+  }
 
-        define('DATA_DIR', vfsStream::url('root/data'));
+  private static function createTestFiles(): void {
+    $initializer = new WorkspaceInitializer();
+    $initializer->importSampleFiles(1);
+    Folder::createPath(DATA_DIR . "/ws_1/UnitAttachments");
+    $initializer->createSampleScanImage("UnitAttachments/lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png", 1);
+  }
+
+  private static function createTestData(): void {
+    $initDAO = new InitDAO();
+
+    $initDAO->createWorkspace('sample_workspace');
+
+    $adminId = $initDAO->createAdmin('super', 'user123');
+    $initDAO->addWorkspacesToAdmin($adminId, [1]);
+
+    $workspace = new Workspace(1);
+    $workspace->storeAllFiles();
+
+    $initDAO->createSampleLoginsReviewsLogs();
+    $initDAO->createSampleExpiredSessions();
+    $initDAO->createSampleWorkspaceAdmins();
+    $initDAO->createSampleMetaData();
+    $personSessions = $initDAO->createSampleMonitorSessions();
+    $groupMonitor = $personSessions['test-group-monitor'];
+    /* @var $groupMonitor PersonSession */
+    $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
+
+    $initializer = new WorkspaceInitializer();
+    $initializer->createSampleScanImage('sample_scanned_image.png', 1);
+    $initDAO->importScanImage(1, 'sample_scanned_image.png');
+  }
+
+  public static function overwriteModificationDatesVfs(vfsStreamContent $dir = null): void {
+    if (!$dir) {
+      $dir = vfsStreamWrapper::getRoot()->getChild('data');
     }
-
-
-    private static function setUpTestData(): void {
-
-        $initDAO = new InitDAO();
-
-        $workspaceId = $initDAO->createWorkspace('sample_workspace');
-        $workspace = new Workspace($workspaceId);
-        $adminId = $initDAO->createAdmin('super', 'user123');
-        $initDAO->addWorkspacesToAdmin($adminId, [$workspaceId]);
-
-        $initializer = new WorkspaceInitializer();
-        $initializer->cleanWorkspace($workspaceId);
-        $initializer->importSampleFiles($workspaceId);
-        $workspace->storeAllFiles();
-
-        $initDAO->createSampleLoginsReviewsLogs();
-        $initDAO->createSampleExpiredSessions();
-        $initDAO->createSampleWorkspaceAdmins();
-        $initDAO->createSampleMetaData();
-        $personSessions = $initDAO->createSampleMonitorSessions();
-        $groupMonitor = $personSessions['test-group-monitor']; /* @var $groupMonitor PersonSession */
-        $initDAO->createSampleCommands($groupMonitor->getPerson()->getId());
-
-        $fileName = 'sample_scanned_image.png';
-        $initializer->createSampleScanImage($fileName, $workspaceId);
-        $initDAO->importScanImage($workspaceId, $fileName);
+    $dir->lastModified(TestEnvironment::staticDate);
+    foreach ($dir->getChildren() as $child) {
+      $child->lastModified(TestEnvironment::staticDate);
+      if (is_dir($child->url())) {
+        TestEnvironment::overwriteModificationDatesVfs($child);
+      }
     }
+  }
 
+  static function buildTestDB(): void {
+    $initDAO = new InitDAO();
+    $nextPatchPath = ROOT_DIR . '/scripts/database/patches.d/next.sql';
+    $fullSchemePath = ROOT_DIR . '/scripts/database/full.sql';
+    $patchFileChanged = (filemtime($nextPatchPath) > filemtime($fullSchemePath));
 
-    public static function overwriteModificationDatesVfs(vfsStreamContent $dir = null): void {
-
-        if (!$dir) {
-            $dir = vfsStreamWrapper::getRoot()->getChild('data');
-        }
-        $dir->lastModified(TestEnvironment::staticDate);
-        foreach ($dir->getChildren() as $child) {
-            $child->lastModified(TestEnvironment::staticDate);
-            if (is_dir($child->url())) {
-                TestEnvironment::overwriteModificationDatesVfs($child);
-            }
-        }
+    if (!file_exists($nextPatchPath) or $patchFileChanged) {
+      TestEnvironment::updateDataBaseScheme();
+      return;
     }
+    $initDAO->clearDB();
+    $initDAO->runFile(ROOT_DIR . '/scripts/database/full.sql');
+  }
 
+  private static function updateDataBaseScheme(): void {
+    $initDAO = new InitDAO();
+    $initDAO->clearDB();
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
+    $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", false);
 
-    public static function debugVirtualEnvironment(): void {
-
-        $fullState = "# DATA_DIR\n\n";
-        $fullState .= print_r(Folder::getContentsRecursive(DATA_DIR), true);
-
-        $fullState .= "\n\n# Database\n";
-        $initDAO = new InitDAO();
-        foreach ($initDAO->getDBContentDump() as $table => $content) {
-
-            $fullState .= "## $table\n$content\n";
-        }
-        $tmpDir = ROOT_DIR . '/tmp';
-        if (!$tmpDir) {
-
-            mkdir($tmpDir);
-        }
-        file_put_contents($tmpDir . '/virtual_environment_dump.md', $fullState);
+    $scheme = '-- IQB-Testcenter DB --';
+    foreach ($initDAO::tables as $table) {
+      $scheme .= "\n\n" . $initDAO->_("show create table $table")['Create Table'] .  ";";
+      $scheme .= "\n" . "truncate $table; -- to reset auto-increment";
     }
+    file_put_contents(ROOT_DIR . '/scripts/database/full.sql', $scheme);
+  }
 
+  private static function rollback(): void {
+    $initDAO = new InitDAO();
+    $initDAO->rollBack();
+  }
 
-    private static function bailOut(Throwable $exception): void {
-
-        TestEnvironment::debugVirtualEnvironment();
-        $errorUniqueId = ErrorHandler::logException($exception, true);
-        http_response_code(500);
-        header("Error-ID:$errorUniqueId");
-        echo "Could not create environment: " . $exception->getMessage();
-        exit(1);
-    }
+  #[NoReturn]
+  private static function bailOut(Throwable $exception): void {
+    // TestEnvironment::debugVirtualEnvironment();
+    $errorUniqueId = ErrorHandler::logException($exception, true);
+    http_response_code(500);
+    header("Error-ID:$errorUniqueId");
+    echo "Could not create environment: " . $exception->getMessage();
+    exit(1);
+  }
 }

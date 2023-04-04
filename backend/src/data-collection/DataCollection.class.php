@@ -13,56 +13,44 @@ declare(strict_types=1);
  */
 
 abstract class DataCollection implements JsonSerializable {
-
-
-    static function fromFile(string $path = null): DataCollection {
-
-        if (!file_exists($path)) {
-            throw new Exception("JSON file not found: `$path`");
-        }
-
-        $initData = JSON::decode(file_get_contents($path), true);
-
-        $class = get_called_class();
-
-        return new $class($initData);
+  static function fromFile(string $path = null): DataCollection {
+    if (!file_exists($path)) {
+      throw new Exception("JSON file not found: `$path`");
     }
 
+    $initData = JSON::decode(file_get_contents($path), true);
 
-    function __construct($initData, bool $allowAdditionalInitData = false) {
+    $class = get_called_class();
 
-        $class = get_called_class();
+    return new $class($initData);
+  }
 
-        foreach ($initData as $key => $value) {
-            if (property_exists($this, $key)) {
+  function __construct($initData) {
+    $class = get_called_class();
 
-                $isEmptyString = (($value === "") and is_string($this->$key));
-                $this->$key = ($isEmptyString or $value) ? $value : $this->$key;
-            } else if (!$allowAdditionalInitData) {
-                throw new Exception("$class creation error:`$key` is unknown in `" . get_class($this) . "`.");
-            }
-        }
-
-        foreach ($this as $key => $value) {
-
-            if ($value === null) {
-                throw new Exception("$class creation error: `$key` shall not be null after creation.");
-            }
-        }
+    foreach ($initData as $key => $value) {
+      if (property_exists($this, $key)) {
+        $isEmptyString = (($value === "") and is_string($this->$key));
+        $this->$key = ($isEmptyString or $value) ? $value : $this->$key;
+      }
     }
 
-
-    public function jsonSerialize(): mixed {
-
-        $jsonData = [];
-
-        foreach ($this as $key => $value) {
-
-            if (substr($key,0 ,1) != '_') {
-                $jsonData[$key] = $value;
-            }
-        }
-
-        return $jsonData;
+    foreach ($this as $key => $value) {
+      if ($value === null) {
+        throw new Exception("$class creation error: `$key` shall not be null after creation.");
+      }
     }
+  }
+
+  public function jsonSerialize(): mixed {
+    $jsonData = [];
+
+    foreach ($this as $key => $value) {
+      if (substr($key, 0, 1) != '_') {
+        $jsonData[$key] = $value;
+      }
+    }
+
+    return $jsonData;
+  }
 }

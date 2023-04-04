@@ -76,7 +76,7 @@ dreddHooks.beforeEach((transaction, done) => {
     }
 
     // use virtual environment
-    transaction.request.headers.TestMode = true;
+    transaction.request.headers.TestMode = 'api';
 
     // inject login credentials if necessary
     switch (transaction.expected.statusCode) {
@@ -156,7 +156,6 @@ dreddHooks.beforeEach((transaction, done) => {
   return done();
 });
 
-
 async function attachUploadFile(transaction, done) {
   try {
     const form = new Multipart();
@@ -234,7 +233,6 @@ dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/response > get re
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/review > get report of item reviews > 200 > text/csv;charset=UTF-8', attachBOM);
 dreddHooks.beforeValidation('specs > /workspace/{ws_id}/report/sys-check > get report of system checks > 200 > text/csv;charset=UTF-8', attachBOM);
 
-
 async function attachUploadImage(transaction, done) {
   try {
     const form = new Multipart();
@@ -253,7 +251,6 @@ dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attac
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 403', attachUploadImage);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 404', attachUploadImage);
 dreddHooks.before('specs > /attachment/{attachment_id}/file > upload a new attachment-file > 410', attachUploadImage);
-
 
 dreddHooks.afterEach((transaction, done) => {
   // die after first failure

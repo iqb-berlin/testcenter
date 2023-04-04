@@ -1,15 +1,15 @@
+// TODO better selectors
+
 import {
-  deleteDownloadsFolder, loginAdmin, resetBackendData, openSampleWorkspace, deleteFilesSampleWorkspace
+  deleteDownloadsFolder, loginAdmin, useTestDB, openSampleWorkspace, deleteFilesSampleWorkspace
 } from './utils';
 
-// ########################## Credentials #################################################
 const SuperAdminName = 'super';
 const SuperAdminPassword = 'user123';
-// #######################################################################################
 
 describe('Workspace-Admin', () => {
   beforeEach(deleteDownloadsFolder);
-  beforeEach(resetBackendData);
+  beforeEach(useTestDB);
   beforeEach(() => loginAdmin(SuperAdminName, SuperAdminPassword));
   beforeEach(openSampleWorkspace);
 

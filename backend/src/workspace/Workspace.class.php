@@ -17,6 +17,9 @@ class Workspace {
     foreach (Folder::glob(DATA_DIR, 'ws_*') as $workspaceDir) {
       $workspaceFolderNameParts = explode('_', $workspaceDir);
       $workspaceId = (int) array_pop($workspaceFolderNameParts);
+      if (!$workspaceId) {
+        continue;
+      }
       $workspaces[$workspaceId] = new $class($workspaceId);
     }
 

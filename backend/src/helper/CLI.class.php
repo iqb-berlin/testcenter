@@ -26,14 +26,13 @@ class CLI {
     "Grey" => "47",
   ];
 
-  static function connectDBWithRetries(?DBConfig $config = null, int $retries = 5): void {
+  static function connectDBWithRetries(int $retries = 5): void {
     while ($retries--) {
       try {
-        CLI::p("Database Connection attempt.");
-        DB::connect($config);
-        CLI::success("Database Connection successful!");
-        return;
-
+          CLI::p("Database Connection attempt.");
+          DB::connect();
+          CLI::success("Database Connection successful!");
+          return;
       } catch (Throwable) {
         CLI::warning("Database Connection failed! Retry: $retries attempts left.");
         usleep(20 * 1000000); // give database container time to come up

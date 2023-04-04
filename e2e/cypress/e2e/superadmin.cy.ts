@@ -1,18 +1,19 @@
+// TODO better selectors
+
 import {
-  addWorkspaceAdmin, clickSuperadmin, insertCredentials, loginAdmin, logout, logoutAdmin, resetBackendData
+  clickSuperadmin, insertCredentials, useTestDB, logout, logoutAdmin, resetBackendData, visitLoginPage
 } from './utils';
 
-// ########################## Credentials #################################################
 const SuperAdminName = 'super';
 const SuperAdminPassword = 'user123';
 const newSuperAdminPassword = 'user123!';
 const WorkspaceAdminName = 'workspace_admin';
 const WorkspaceAdminPassword = 'anotherPassword';
 const newWorkspaceAdminPassword = 'anotherPasswordNew';
-// #######################################################################################
 
 describe('Usermanagement (user-tab)', () => {
   beforeEach(resetBackendData);
+  beforeEach(useTestDB);
   beforeEach(logout);
   beforeEach(() => loginAdmin(SuperAdminName, SuperAdminPassword));
   beforeEach(clickSuperadmin);
@@ -103,6 +104,8 @@ describe('Usermanagement (user-tab)', () => {
       .should('be.disabled')
       .get('[data-cy="delete-files"]')
       .should('be.disabled');
+    cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
+      .should('exist'); // make sure files call happened before continuing
   });
 
   it('should be possible to change privileges of existing workspace_admin to read-write', () => {

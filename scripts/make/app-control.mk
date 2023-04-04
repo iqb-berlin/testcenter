@@ -15,7 +15,7 @@ build:
 # Hint: Stop local webserver before, to free port 80
 # Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 run:
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up $(service)
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --abort-on-container-exit $(service)
 
 # Build all images of the project or a specified one as prod-images.
 # Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
@@ -27,7 +27,7 @@ build-prod-local:
 # Param: (optional) service - Only build a specified service, eg `service=testcenter-backend`
 run-prod-local:
 	make build-prod-local container=$(service)
-	docker compose -f docker/docker-compose.yml -f docker/docker-compose.local-prod.yml up $(service)
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.local-prod.yml up --abort-on-container-exit $(service)
 
 # Stops the application.
 stop:

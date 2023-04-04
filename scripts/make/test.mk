@@ -1,33 +1,26 @@
 test-backend-unit:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		--rm --no-deps --entrypoint "" \
-		testcenter-backend \
-		php -dxdebug.mode=coverage vendor/phpunit/phpunit/phpunit \
-		--bootstrap test/unit/bootstrap.php \
-		--configuration phpunit.xml \
-		test/unit/.
+	--rm --entrypoint "" \
+	testcenter-backend \
+		php -dxdebug.mode='debug' /var/www/backend/vendor/phpunit/phpunit/phpunit \
+			--bootstrap /var/www/backend/test/unit/bootstrap.php \
+			--configuration /var/www/backend/phpunit.xml \
+				/var/www/backend/test/unit/.
 
 test-backend-unit-coverage:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml run \
-		--rm --no-deps --entrypoint "" \
-		testcenter-backend \
-		php -dxdebug.mode=coverage vendor/phpunit/phpunit/phpunit \
-		--bootstrap test/unit/bootstrap.php \
-		--configuration phpunit.xml \
-		--coverage-html /docs/dist/test-coverage-backend-unit \
-		test/unit/.
+	--rm --entrypoint "" \
+	testcenter-backend \
+		php -dxdebug.mode='coverage' /var/www/backend/vendor/phpunit/phpunit/phpunit \
+			--bootstrap /var/www/backend/test/unit/bootstrap.php \
+			--configuration /var/www/backend/phpunit.xml \
+			--coverage-html /docs/dist/test-coverage-backend-unit \
+				/var/www/backend/test/unit/.
 
-# Performs Api-Tests against in-memory DB (sqlite, for performance)
+# Performs Api-Tests
 test-backend-api:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up -d testcenter-db testcenter-backend
 	make run-task-runner task=backend:api-test
-
-# Performs Api-Tests against MySql (takes a long time, run manually when needed)
-test-backend-api-mysql:
-	make stop # TODO this should be able to run while the testcenter runs ins dev-mode
-	TESTMODE_REAL_DATA=yes TEST_NAME=plus/installation-and-e2e \
-		docker compose -f docker/docker-compose.initialization-test.yml --profile=dredd_test_against_mysql up \
-		--force-recreate --renew-anon-volumes --abort-on-container-exit
 
 # Performs a tests suite from the initialization tests.
 # Param test - (All files in backend/test/initialization/tests for are available tests.)
@@ -77,7 +70,6 @@ test-frontend-integration:
 
 # Performs some e2e tests with CyPress against real MySql-DB and real backend on CLI.
 test-system-headless:
-	TESTMODE_REAL_DATA=yes \
 		docker compose -f docker/docker-compose.system-test-headless.yml up \
 			--abort-on-container-exit \
 			--force-recreate \
