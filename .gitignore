@@ -15,6 +15,7 @@
 
 # data-dir
 /data
+/data-TEST
 
 # backend-dependencies
 /backend/vendor

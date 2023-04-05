@@ -64,7 +64,7 @@
     <input matInput formControlName="backgroundBox" placeholder="Farbe">
   </mat-form-field>
   <div fxLayout="row" fxLayoutGap="30px" fxLayoutAlign="start start">
-    <button mat-raised-button color="primary" [disabled]="!dataChanged" (click)="saveData()">
+    <button mat-raised-button data-cy="Settings:Submit-ApplicationConfiguration" color="primary" [disabled]="!dataChanged" (click)="saveData()">
       Speichern
     </button>
   </div>
