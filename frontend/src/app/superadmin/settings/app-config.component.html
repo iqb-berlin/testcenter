@@ -83,6 +83,7 @@
          (change)="backgroundBoxInput.value = $any($event.target).value">
 
   <button mat-raised-button color="primary"
+          data-cy="Settings:Submit-ApplicationConfiguration"
           [style.align-self]="'start'"
           [disabled]="!dataChanged" (click)="saveData()">
     Speichern
