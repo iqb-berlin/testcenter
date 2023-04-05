@@ -1,7 +1,8 @@
 // TODO better selectors
+// TODO remove waits!
 
 import {
-  deleteDownloadsFolder, loginAdmin, useTestDB, openSampleWorkspace, deleteFilesSampleWorkspace
+  deleteDownloadsFolder, loginAdmin, useTestDB, openSampleWorkspace, deleteFilesSampleWorkspace, resetBackendData
 } from './utils';
 
 const SuperAdminName = 'super';
@@ -9,6 +10,7 @@ const SuperAdminPassword = 'user123';
 
 describe('Workspace-Admin', () => {
   beforeEach(deleteDownloadsFolder);
+  beforeEach(resetBackendData);
   beforeEach(useTestDB);
   beforeEach(() => loginAdmin(SuperAdminName, SuperAdminPassword));
   beforeEach(openSampleWorkspace);
@@ -87,7 +89,8 @@ describe('Workspace-Admin', () => {
       .should('not.exist');
     cy.get('.sidebar > input:nth-child(2)')
       .selectFile('../sampledata/SysCheck.xml', { force: true });
-    cy.wait(1500);
+    cy.contains('Erfolgreich hochgeladen')
+      .should('exist');
     cy.reload(true);
     cy.get('mat-table >mat-row button >span')
       .contains('SysCheck.xml')

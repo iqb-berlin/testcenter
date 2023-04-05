@@ -13,39 +13,37 @@ class TestEnvironment {
     $testMode = in_array($testMode, ['prepare', 'api', 'integration']) ? $testMode : 'api';
 
     try {
-
-      if ($testMode !== 'integration') {
-        // integration/system/api tests are run in their own container, so the can use real FS
-        // TODO create test-data-dir analogous to the testDB, use this and get rid of the compose files for system-tests
-        self::setUpVirtualFilesystem();
-      } else {
-        define('DATA_DIR', ROOT_DIR . '/data');
-      }
-
       TimeStamp::setup(null, '@' . self::staticDate);
       BroadcastService::setup('', '');
       XMLSchema::setup(false);
       self::makeRandomStatic();
-
-      self::createTestFiles();
-
-      if ($testMode !== 'integration') {
-        self::overwriteModificationDatesVfs();
-      }
-
       DB::connectToTestDB();
 
+      if ($testMode == 'integration') {
+        // this is called every single call from integration tests
+        self::setUpTestDataDir(false);
+      }
+
       if ($testMode == 'prepare') {
+        // this is called once before the api tests (dredd) and one time before each integration test (cypress)
+        self::setUpTestDataDir(true);
+        self::createTestFiles();
+        self::overwriteModificationDatesTestDataDir();
         self::buildTestDB();
         self::createTestData();
       }
 
       if ($testMode == 'api') {
+        // api tests can use vfs for more speed
+        self::setUpVirtualFilesystem();
+        self::createTestFiles();
+        self::overwriteModificationDatesVfs();
+        // in api-tests every call is atomic and the test db gets restored afterwards
+        // the test db must be set up before with $testMode == 'prepare'
         $initDAO = new InitDAO();
         $initDAO->beginTransaction();
         register_shutdown_function([self::class, "rollback"]);
       }
-
     } catch (Throwable $exception) {
       TestEnvironment::bailOut($exception);
     }
@@ -149,5 +147,27 @@ class TestEnvironment {
     header("Error-ID:$errorUniqueId");
     echo "Could not create environment: " . $exception->getMessage();
     exit(1);
+  }
+
+  private static function setUpTestDataDir(bool $reset): void {
+    define('DATA_DIR', ROOT_DIR . '/data-TEST');
+    if (!$reset) {
+      return;
+    }
+    Folder::createPath(DATA_DIR);
+    Folder::deleteContentsRecursive(DATA_DIR);
+  }
+
+  private static function overwriteModificationDatesTestDataDir(?string $dir = DATA_DIR): void {
+    touch($dir,TestEnvironment::staticDate);
+    foreach (new DirectoryIterator($dir) as $child) {
+      if ($child->isDot() or $child->isLink()) {
+        continue;
+      }
+      touch($child->getPathname(), TestEnvironment::staticDate);
+      if ($child->isDir()) {
+        self::overwriteModificationDatesTestDataDir($child->getPathname());
+      }
+    }
   }
 }

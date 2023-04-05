@@ -1,13 +1,18 @@
+import Chainable = Cypress.Chainable;
+
 export const deleteDownloadsFolder = (): void => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   cy.task('deleteFolder', downloadsFolder);
 };
 
-export const visitLoginPage = (): void => {
-  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/*` }).as('waitForConfig');
-  cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
-  cy.wait('@waitForConfig');
-};
+export const visitLoginPage = (): Chainable => cy.url()
+  .then(url => {
+    if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
+      cy.intercept({ url: new RegExp(`${Cypress.env('TC_API_URL')}/(system/config|sys-checks)`) }).as('waitForConfig');
+      cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
+      cy.wait('@waitForConfig');
+    }
+  });
 
 export const resetBackendData = (): void => {
   // this resets the DB because in system-test TESTMODE_REAL_DATA is true
@@ -60,22 +65,14 @@ export const openSampleWorkspace = (): void => {
 export const loginAdmin = (username: string, password: string): void => {
   visitLoginPage();
   insertCredentials(username, password);
+  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session/admin` }).as('waitForPutSession');
+  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
     .click();
+  cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
   cy.contains(username)
     .should('exist');
-};
-
-export const logout = (): void => {
-  cy.url().then($url => {
-    if ($url.includes(`${Cypress.config().baseUrl}/#/r/admin-starter`)) {
-      cy.get('[data-cy="logout"]')
-        .click();
-    } else {
-      cy.log('Not logged in... doing nothing.');
-    }
-  });
 };
 
 export const clickSuperadmin = (): void => {
