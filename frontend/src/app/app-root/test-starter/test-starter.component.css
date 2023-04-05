@@ -15,10 +15,14 @@ div.booklet_status {
   margin-bottom: 18px;
 }
 
-mat-card {
-  margin: 10px;
+.mat-card {
+  width: 400px;
 }
 
-.mat-card-box {
+.status-card {
   background-color: var(--tc-box-background)
+}
+
+.mat-card-content a {
+  display: block;
 }

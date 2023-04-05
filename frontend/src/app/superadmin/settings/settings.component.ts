@@ -2,25 +2,21 @@ import { Component } from '@angular/core';
 
 @Component({
   template: `
-    <div fxLayout="column" fxLayoutAlign="start stretch">
-      <div fxLayout="row" class="settings-group">
-        <div fxFlex="20">
-          <mat-label>Text-Ersetzungen</mat-label>
-        </div>
-        <div fxFlex="78">
-          <app-custom-texts></app-custom-texts>
-        </div>
+    <div [style.display]="'grid'" [style.grid-template-columns]="'20% 80%'" [style.row-gap.px]="10"
+         [style.padding.px]="10">
+      <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
+        Text-Ersetzungen
+      </h3>
+      <div [style.grid-row]="'1 / 2'" [style.grid-column]="'2 / 3'">
+        <app-custom-texts></app-custom-texts>
       </div>
-      <div fxLayout="row" class="settings-group">
-        <div fxFlex="20">
-          <mat-label>Konfiguration der Anwendung</mat-label>
-        </div>
-        <div fxFlex="78">
-          <app-app-config></app-app-config>
-        </div>
+      <h3 [style.grid-row]="'2 / 3'" [style.grid-column]="'1 / 2'">
+        Konfiguration der Anwendung
+      </h3>
+      <div [style.grid-row]="'2 / 3'" [style.grid-column]="'2 / 3'">
+        <app-app-config></app-app-config>
       </div>
     </div>
-  `,
-  styles: ['.settings-group {margin-top: 10px;}']
+  `
 })
 export class SettingsComponent {}

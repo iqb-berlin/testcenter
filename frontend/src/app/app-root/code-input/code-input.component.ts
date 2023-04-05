@@ -12,10 +12,9 @@ import { BackendService } from '../../backend.service';
 @Component({
   templateUrl: './code-input.component.html',
   styles: [
-    'mat-card {margin: 10px;}',
-    '.mat-card-box {background-color: var(--tc-box-background)}',
-    '.mat-card {display: flex; justify-content: flex-start; flex-direction: column; flex-wrap: wrap}',
-    '.mat-card-content {flex-grow: 1; overflow: auto}'
+    '.mat-card {width: 400px;}',
+    '.status-card {background-color: var(--tc-box-background)}',
+    '.login-buttons {justify-content: space-between; margin-left: 8px;}'
   ]
 })
 export class CodeInputComponent implements OnInit {

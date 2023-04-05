@@ -8,8 +8,7 @@ import { MainDataService } from '../../shared/shared.module';
 @Component({
   templateUrl: './admin-starter.component.html',
   styles: [
-    'mat-card {margin: 10px;}',
-    '.mat-card-box {background-color: var(--tc-box-background)}'
+    '.status-card {background-color: var(--tc-box-background)}'
   ]
 })
 

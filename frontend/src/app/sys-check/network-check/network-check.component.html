@@ -1,6 +1,6 @@
 <div class="sys-check-body">
-  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-    <mat-card fxFlex="0 0 700px">
+  <div class="flex-row-wrap" [style.justify-content]="'center'">
+    <mat-card [style.flex-basis.px]="700">
       <mat-card-header>
         <mat-card-title>
           Netzwerk
@@ -8,7 +8,6 @@
         </mat-card-title>
         <mat-card-subtitle>
           {{ds.networkCheckStatus.message}}
-
           <span *ngIf="ds.networkCheckStatus.done && (networkRating.overallRating !== 'N/A')">
             <span [ngSwitch]="networkRating.overallRating">Ihre Verbindung zum Testserver ist
               <span *ngSwitchCase="'insufficient'" style="color: red; font-weight: bold;">unzureichend</span>
@@ -21,9 +20,8 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div fxLayout="row">
-
-          <div fxFlex="50%">
+        <div class="flex-row">
+          <div [style.width.%]="50">
             <h4>
               <span style="font-weight: normal">Geschwindigkeit Download: </span>
               <span *ngIf="ds.networkCheckStatus.avgDownloadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(ds.networkCheckStatus.avgDownloadSpeedBytesPerSecond, true, false)}}/s</span>
@@ -32,7 +30,7 @@
             <tc-speed-chart #downloadChart></tc-speed-chart>
           </div>
 
-          <div fxFlex="50%">
+          <div [style.width.%]="50">
             <h4>
               <span style="font-weight: normal">Geschwindigkeit Upload: </span>
               <span *ngIf="ds.networkCheckStatus.avgUploadSpeedBytesPerSecond >= 0">&#8960; {{humanReadableBytes(ds.networkCheckStatus.avgUploadSpeedBytesPerSecond, true)}}/s</span>
@@ -40,7 +38,6 @@
             </h4>
             <tc-speed-chart #uploadChart></tc-speed-chart>
           </div>
-
         </div>
       </mat-card-content>
       <mat-card-actions>

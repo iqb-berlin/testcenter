@@ -1,33 +1,36 @@
-<div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">
-
-  <div class="objectlist" fxLayout="column" fxFlex="50">
-    <div fxLayout="row">
-      <button mat-raised-button (click)="addObject()" matTooltip="Administrator:in hinzufügen" matTooltipPosition="below" data-cy="add-user">
+<div class="flex-row" [style.justify-content]="'space-between'">
+  <div class="flex-column" [style.width.%]="50">
+    <div class="flex-row">
+      <button mat-raised-button matTooltip="Administrator:in hinzufügen" matTooltipPosition="below" data-cy="add-user"
+              (click)="addObject()">
         <mat-icon>add</mat-icon>
       </button>
-      <button mat-raised-button (click)="deleteObject()"
-              matTooltip="Markierte Administrator:in löschen" matTooltipPosition="below" data-cy="delete-user">
+      <button mat-raised-button data-cy="delete-user"
+              matTooltip="Markierte Administrator:in löschen" matTooltipPosition="below"
+              (click)="deleteObject()">
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-raised-button (click)="changePassword()"
-              matTooltip="Kennwort ändern" matTooltipPosition="below" data-cy="change-password">
+      <button mat-raised-button data-cy="change-password"
+              matTooltip="Kennwort ändern" matTooltipPosition="below"
+              (click)="changePassword()">
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-raised-button (click)="changeSuperadminStatus()"
-              matTooltip="Superadmin-Status ändern" matTooltipPosition="below" data-cy="change-superadmin">
+      <button mat-raised-button data-cy="change-superadmin"
+              matTooltip="Superadmin-Status ändern" matTooltipPosition="below"
+              (click)="changeSuperadminStatus()">
         <mat-icon>edit</mat-icon>
       </button>
     </div>
 
     <mat-table [dataSource]="objectsDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef fxFlex="70px" data-cy="check-all">
+        <mat-header-cell *matHeaderCellDef data-cy="check-all">
           <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
                         [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
           </mat-checkbox>
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" fxFlex="70px" data-cy="check-user">
+        <mat-cell *matCellDef="let row" data-cy="check-user">
           <mat-checkbox (click)="$event.stopPropagation()"
                         (change)="$event ? tableselectionCheckbox.toggle(row) : null"
                         [checked]="tableselectionCheckbox.isSelected(row)"
@@ -37,7 +40,7 @@
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Name</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Name</mat-header-cell>
         <mat-cell *matCellDef="let element"> {{element.name}} {{element.isSuperadmin ? '*' : ''}}</mat-cell>
       </ng-container>
 
@@ -47,15 +50,13 @@
     </mat-table>
   </div>
 
-
-  <div fxLayout="column" fxFlex="40">
-
+  <div class="flex-column" [style.width.%]="40">
     <div *ngIf="selectedUser < 0">
       <div>Zugriffsrechte für Arbeitsbereich(e):</div>
       <div>Bitte links Administrator:in wählen</div>
     </div>
 
-    <div *ngIf="selectedUser > 0" fxLayout="row" fxLayoutAlign="space-between center">
+    <div *ngIf="selectedUser > 0" class="flex-row" [style.justify-content]="'space-between'">
       <div>Zugriffsrechte für {{ selectedUserName }}:</div>
       <button mat-raised-button (click)="saveWorkspaces()" matTooltip="Speichern"
               matTooltipPosition="above" [disabled]="!pendingWorkspaceChanges" data-cy="save">
@@ -65,8 +66,8 @@
 
     <mat-table [dataSource]="WorkspacelistDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW</mat-header-cell>
-        <mat-cell *matCellDef="let row" fxFlex="100px">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">RO | RW</mat-header-cell>
+        <mat-cell *matCellDef="let row">
           <mat-checkbox (change)="selectWorkspace(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO" data-cy="workspace-role-ro">
           </mat-checkbox>
           <mat-checkbox (change)="selectWorkspace(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW" data-cy="workspace-role-rw">
@@ -75,7 +76,7 @@
       </ng-container>
 
       <ng-container matColumnDef="label">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Arbeitsbereich</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Arbeitsbereich</mat-header-cell>
         <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
       </ng-container>
 

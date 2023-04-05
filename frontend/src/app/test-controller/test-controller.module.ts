@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -40,7 +39,6 @@ export { TestControllerService } from './services/test-controller.service';
     CommonModule,
     TestControllerRoutingModule,
     MatProgressSpinnerModule,
-    FlexLayoutModule,
     MatTooltipModule,
     MatSnackBarModule,
     MatCheckboxModule,

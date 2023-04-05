@@ -1,30 +1,25 @@
-<div fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <mat-card fxFlex="0 0 400px" fxLayout="column">
+<div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
+  <mat-card class="flex-column" [style.flex-basis.px]="400">
     <mat-card-title>Verwaltung</mat-card-title>
     <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>
     <mat-card-content>
-      <div fxLayoutGap="10px" fxLayout="column">
+      <div class="flex-column" [style.gap.px]="10">
         <p *ngIf="workspaces.length === 0">
           Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
         </p>
-        <button
-          mat-raised-button color="primary"
-          (click)="buttonGotoWorkspaceAdmin(ws)"
-          [attr.data-cy]="'workspace-' + ws.id"
-          *ngFor="let ws of workspaces"
-        >
-          {{ws.label}}
+        <button *ngFor="let workspace of workspaces"
+                mat-raised-button color="primary"
+                [attr.data-cy]="'workspace-' + workspace.id"
+                (click)="buttonGotoWorkspaceAdmin(workspace)">
+          {{workspace.label}}
         </button>
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button
-        mat-raised-button
-        color="primary"
-        *ngIf="isSuperAdmin"
-        [routerLink]="['/superadmin']"
-        data-cy='goto-superadmin'
-      >
+      <button *ngIf="isSuperAdmin"
+              mat-raised-button color="primary"
+              [routerLink]="['/superadmin']"
+              data-cy='goto-superadmin'>
         Systemverwaltung
       </button>
       <button mat-raised-button data-cy="logout" (click)="resetLogin()">
@@ -33,7 +28,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card fxFlex="0 0 400px" class="mat-card-box">
+  <mat-card class="status-card" [style.flex-basis.px]="400">
     <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>

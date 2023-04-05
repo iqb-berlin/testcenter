@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { FlexModule } from '@angular/flex-layout';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -36,7 +35,6 @@ import { AttachmentTitlePipe } from './pipes/attachment-title.pipe';
     AttachmentManagerRoutingModule,
     MatTooltipModule,
     MatIconModule,
-    FlexModule,
     MatButtonModule,
     MatSelectModule,
     MatSidenavModule,

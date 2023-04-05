@@ -20,7 +20,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
@@ -72,7 +71,6 @@ import { RetryInterceptor } from './retry.interceptor';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    FlexLayoutModule,
     ReactiveFormsModule,
     HttpClientModule,
     RouterModule,
