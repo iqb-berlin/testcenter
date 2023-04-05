@@ -40,255 +40,248 @@
  *
  */
 
-
 if (php_sapi_name() !== 'cli') {
-
-    header('HTTP/1.0 403 Forbidden');
-    echo "This is only for usage from command line.";
-    exit(1);
+  header('HTTP/1.0 403 Forbidden');
+  echo "This is only for usage from command line.";
+  exit(1);
 }
 
 define('ROOT_DIR', realpath(__DIR__ . '/..'));
 define('DATA_DIR', ROOT_DIR . '/data');
 
-
 require_once(ROOT_DIR . '/backend/autoload.php');
 
-try  {
-    $args = CLI::getOpt();
-    $installationArguments = new InstallationArguments($args, true);
+try {
+  $args = CLI::getOpt();
+  $installationArguments = new InstallationArguments($args);
 
-    $systemVersion = Version::get();
-    CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
+  $systemVersion = Version::get();
+  CLI::h1("IQB TESTCENTER BACKEND $systemVersion");
 
-    CLI::h2("System-Config");
-    if (!file_exists(ROOT_DIR . '/backend/config/system.json')) {
+  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+    throw new Exception("Initialize is already running");
+  }
+  file_put_contents(ROOT_DIR . '/backend/config/init.lock', '.');
 
-        CLI::p("System-Config not file found (`/backend/config/system.json`). Will be created.");
+  CLI::h2("System-Config");
+  if (!file_exists(ROOT_DIR . '/backend/config/system.json')) {
+    CLI::p("System-Config not file found (`/backend/config/system.json`). Will be created.");
 
-        $sysConf = new SystemConfig($args, true);
+    $sysConf = new SystemConfig($args);
 
-        BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
+    BroadcastService::setup($sysConf->broadcastServiceUriPush, $sysConf->broadcastServiceUriSubscribe);
 
-        CLI::success("Provided arguments OK.");
+    CLI::success("Provided arguments OK.");
 
-        if (!file_exists(ROOT_DIR . '/backend/config')) {
-            mkdir(ROOT_DIR . '/backend/config');
-            file_put_contents(ROOT_DIR . '/backend/config/readme.md', "#backend-config\nthis directory persists config setting for the testcenter-backend");
-        }
-
-        if (!file_put_contents(ROOT_DIR . '/backend/config/system.json', json_encode($sysConf))) {
-
-            throw new Exception("Could not write file `/backend/config/system.json`. Check file permissions on `/config/`.");
-        }
-
-        CLI::p("System-Config file written.");
-
-    } else {
-
-        $config = SystemConfig::fromFile(ROOT_DIR . '/backend/config/system.json');
-        BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
-        CLI::p("Config file present.");
+    if (!file_exists(ROOT_DIR . '/backend/config')) {
+      mkdir(ROOT_DIR . '/backend/config');
+      file_put_contents(ROOT_DIR . '/backend/config/readme.md', "#backend-config\nthis directory persists config setting for the testcenter-backend");
     }
 
-    CLI::h2("Database config");
-    if (!file_exists(ROOT_DIR . '/backend/config/DBConnectionData.json')) {
-
-        CLI::p("Database-Config not file found (`/backend/config/DBConnectionData.json`), will be created.");
-
-        $config = new DBConfig($args, true);
-        CLI::connectDBWithRetries($config, 5);
-
-        CLI::success("Provided arguments OK.");
-
-        if (!file_put_contents(ROOT_DIR . '/backend/config/DBConnectionData.json', json_encode(DB::getConfig()))) {
-
-            throw new Exception("Could not write file. Check file permissions on `/config/`.");
-        }
-
-        CLI::p("Database-Config file written.");
-
-    } else {
-
-        CLI::connectDBWithRetries(null, 5);
-        $config = DB::getConfig();
-        CLI::p("Config file present (and OK).");
+    if (!file_put_contents(ROOT_DIR . '/backend/config/system.json', json_encode($sysConf))) {
+      throw new Exception("Could not write file `/backend/config/system.json`. Check file permissions on `/config/`.");
     }
 
+    CLI::p("System-Config file written.");
 
-    CLI::h2("Database Structure");
-    $initDAO = new InitDAO();
+  } else {
+    $config = SystemConfig::fromFile(ROOT_DIR . '/backend/config/system.json');
+    BroadcastService::setup($config->broadcastServiceUriPush, $config->broadcastServiceUriSubscribe);
+    CLI::p("Config file present.");
+  }
 
-    if ($config->type !== "mysql") {
+  CLI::h2("Database config");
+  if (!file_exists(ROOT_DIR . '/backend/config/DBConnectionData.json')) {
+    CLI::p("Database-Config not file found (`/backend/config/DBConnectionData.json`), will be created.");
 
-        throw new Exception("Database Type {$config->type} not supported. This script only supports MySQL.");
+    $config = new DBConfig($args); // TODO create DBConfig from environmetn instead from args
+
+    if (!file_put_contents(ROOT_DIR . '/backend/config/DBConnectionData.json', json_encode($config))) {
+      throw new Exception("Could not write file. Check file permissions on `/config/`.");
     }
 
-    $dbStatus = $initDAO->getDbStatus();
-    CLI::p("Database status: {$dbStatus['message']}");
-
-    if ($installationArguments->overwrite_existing_installation) {
-
-        CLI::warning("Clear database");
-        $tablesDropped = $initDAO->clearDb();
-        CLI::p("Tables dropped: " . implode(', ', $tablesDropped));
+    try {
+      CLI::connectDBWithRetries(5);
+    } catch (Exception $e) {
+      unlink(ROOT_DIR . '/backend/config/DBConnectionData.json');
+      throw $e;
     }
 
-    if ($installationArguments->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
+    CLI::success("Provided arguments OK.");
 
-        CLI::p("Install basic database structure");
-        $initDAO->runFile(ROOT_DIR . "/scripts/database/mysql.sql");
+    CLI::p("Database-Config file written.");
+
+  } else {
+    CLI::connectDBWithRetries(5);
+    $config = DB::getConfig();
+    CLI::p("Config file present (and OK).");
+  }
+
+  CLI::h2("Database Settings");
+  $initDAO = new InitDAO();
+  if (!$initDAO->checkSQLMode()) {
+    throw new Exception('SQLMode is not set properly. Check the file-rights of config/my.cnf to be 444 and restart.');
+  }
+
+  CLI::h2("Database Structure");
+
+
+  $dbStatus = $initDAO->getDbStatus();
+  CLI::p("Database status: {$dbStatus['message']}");
+
+  if ($installationArguments->overwrite_existing_installation) {
+    CLI::warning("Clear database");
+    $tablesDropped = $initDAO->clearDB();
+    CLI::p("Tables dropped: " . implode(', ', $tablesDropped));
+  }
+
+  if ($installationArguments->overwrite_existing_installation or ($dbStatus['tables'] == 'empty')) {
+    CLI::p("Install basic database structure");
+    $initDAO->runFile(ROOT_DIR . "/scripts/database/base.sql");
+  }
+
+  $dbSchemaVersion = $initDAO->getDBSchemaVersion();
+  $isCurrentVersion = Version::compare($dbSchemaVersion); // 1 : System is older than DB!, -1 : DB is outdated
+  CLI::p("Database schema version is $dbSchemaVersion, system version is $systemVersion");
+  if ($isCurrentVersion >= 0) {
+    echo ": O.K.";
+
+  } else {
+    CLI::p("Install patches if necessary");
+    $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
+    $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/patches.d", $allowFailing);
+    foreach ($patchInstallReport['patches'] as $patch) {
+      if (isset($patchInstallReport['errors'][$patch])) {
+        CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
+
+      } else {
+        CLI::success("* $patch: installed successfully.");
+      }
     }
-
-    $dbSchemaVersion = $initDAO->getDBSchemaVersion();
-    $isCurrentVersion = Version::compare($dbSchemaVersion); // 1 : System is older than DB!, -1 : DB is outdated
-    CLI::p("Database schema version is $dbSchemaVersion, system version is $systemVersion");
-    if ($isCurrentVersion >= 0) {
-
-       echo ": O.K.";
-
-    } else {
-
-        CLI::p("Install patches if necessary");
-        $allowFailing = (in_array($dbSchemaVersion, ['0.0.0-no-table', '0.0.0-no-value']));
-        $patchInstallReport = $initDAO->installPatches(ROOT_DIR . "/scripts/database/mysql.patches.d", $allowFailing);
-        foreach ($patchInstallReport['patches'] as $patch) {
-
-          if (isset($patchInstallReport['errors'][$patch])) {
-
-              CLI::warning("* $patch: {$patchInstallReport['errors'][$patch]}");
-
-          } else {
-
-              CLI::success("* $patch: installed successfully.");
-          }
-        }
-        if (count($patchInstallReport['errors']) and !$allowFailing) {
-
-          throw new Exception('Installing database patches failed.');
-        }
+    if (count($patchInstallReport['errors']) and !$allowFailing) {
+      throw new Exception('Installing database patches failed.');
     }
+  }
 
-    $newDbStatus = $initDAO->getDbStatus();
-    if (!($newDbStatus['tables'] == 'complete') and !$installationArguments->skip_db_integrity_check) {
+  $newDbStatus = $initDAO->getDbStatus();
+  if (!($newDbStatus['tables'] == 'complete') and !$installationArguments->skip_db_integrity_check) {
+    throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
+  }
+  $initDAO->setDBSchemaVersion($systemVersion);
+  CLI::success("DB passed integrity check.");
 
-        throw new Exception("Database integrity check failed: {$newDbStatus['message']}");
-    }
-    $initDAO->setDBSchemaVersion($systemVersion);
-    CLI::success("DB passed integrity check.");
+  CLI::h2("Workspaces");
 
-    CLI::h2("Workspaces");
+  if (!file_exists(DATA_DIR)) {
+    mkdir(DATA_DIR);
+    CLI::success("Data-Directory created: `" . DATA_DIR . "`");
+  }
 
-    if (!file_exists(DATA_DIR)) {
-        mkdir(DATA_DIR);
-        CLI::success("Data-Directory created: `". DATA_DIR . "`");
-    }
+  $initializer = new WorkspaceInitializer();
 
-    $initializer = new WorkspaceInitializer();
-
-    if ($installationArguments->overwrite_existing_installation) {
-
-        foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
-            $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function ($carry, $item) {
-                return $carry + $item;
-            }, 0);
-
-            $initializer->cleanWorkspace($workspace->getId());
-            CLI::warning("Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.");
-
-            Folder::deleteContentsRecursive($workspace->getWorkspacePath());
-        }
-    }
-
-    $workspaceIds = [];
-
+  if ($installationArguments->overwrite_existing_installation) {
     foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
+      $filesInWorkspace = array_reduce($workspace->countFilesOfAllSubFolders(), function($carry, $item) {
+        return $carry + $item;
+      }, 0);
 
-        $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
-        $workspaceIds[] = $workspaceData['id'];
-        CLI::h3("Workspace `{$workspaceData['name']}`");
-        if (isset($workspaceData['restored'])) {
-            CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
-        }
+      $initializer->cleanWorkspace($workspace->getId());
+      CLI::warning("Workspace-folder `ws_{$workspace->getId()}` was DELETED. It contained {$filesInWorkspace} files.");
 
-        if (!$installationArguments->skip_read_workspace_files) {
+      Folder::deleteContentsRecursive($workspace->getWorkspacePath());
+    }
+  }
 
-            $stats = $workspace->storeAllFiles();
+  $workspaceIds = [];
 
-            CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
-
-            $statsString = implode(
-                ", ",
-                array_filter(
-                    array_map(
-                        function($key, $value) { return $value ? "$key: $value" : null; },
-                        array_keys($stats['valid']),
-                        array_values($stats['valid']),
-                    )
-                )
-            );
-            CLI::p("Files found: " . $statsString);
-
-            if ($stats['invalid']) {
-                CLI::warning("Invalid files found: {$stats['invalid']}");
-            }
-        }
+  foreach (Workspace::getAll() as /* @var $workspace Workspace */ $workspace) {
+    $workspaceData = $initDAO->createWorkspaceIfMissing($workspace);
+    $workspaceIds[] = $workspaceData['id'];
+    CLI::h3("Workspace `{$workspaceData['name']}`");
+    if (isset($workspaceData['restored'])) {
+      CLI::warning("Orphaned workspace-folder found `ws_{$workspaceData['id']}` and restored in DB.");
     }
 
-    if (!count($workspaceIds) and $installationArguments->workspace) {
+    if (!$installationArguments->skip_read_workspace_files) {
+      $stats = $workspace->storeAllFiles();
 
-        $sampleWorkspaceId = $initDAO->createWorkspace($installationArguments->workspace);
-        $sampleWorkspace = new Workspace($sampleWorkspaceId);
+      CLI::p("Logins updated: -{$stats['logins']['deleted']} / +{$stats['logins']['added']}");
 
-        CLI::success("Sample Workspace `{$installationArguments->workspace}` as `ws_{$sampleWorkspaceId}` created");
+      $statsString = implode(
+        ", ",
+        array_filter(
+          array_map(
+            function($key, $value) {
+              return $value ? "$key: $value" : null;
+            },
+            array_keys($stats['valid']),
+            array_values($stats['valid']),
+          )
+        )
+      );
+      CLI::p("Files found: " . $statsString);
 
-        $initializer->importSampleFiles($sampleWorkspaceId);
+      if ($stats['invalid']) {
+        CLI::warning("Invalid files found: {$stats['invalid']}");
+      }
+    }
+  }
 
-        if (!$installationArguments->skip_read_workspace_files) {
+  if (!count($workspaceIds) and $installationArguments->workspace) {
+    $sampleWorkspaceId = $initDAO->createWorkspace($installationArguments->workspace);
+    $sampleWorkspace = new Workspace($sampleWorkspaceId);
 
-            $stats = $sampleWorkspace->storeAllFiles();
-        }
+    CLI::success("Sample Workspace `{$installationArguments->workspace}` as `ws_{$sampleWorkspaceId}` created");
 
-        CLI::success("Sample content files created.");
+    $initializer->importSampleFiles($sampleWorkspaceId);
 
-        $workspaceIds[] = $sampleWorkspaceId;
+    if (!$installationArguments->skip_read_workspace_files) {
+      $stats = $sampleWorkspace->storeAllFiles();
     }
 
-    CLI::h2("Sys-Admin");
+    CLI::success("Sample content files created.");
 
-    if (!$initDAO->adminExists() and $installationArguments->user_name) {
+    $workspaceIds[] = $sampleWorkspaceId;
+  }
 
-        CLI::warning("No Sys-Admin found.");
+  CLI::h2("Sys-Admin");
 
-        $adminId = $initDAO->createAdmin($installationArguments->user_name, $installationArguments->user_password);
-        CLI::success("Sys-Admin created: `$installationArguments->user_name`.");
+  if (!$initDAO->adminExists() and $installationArguments->user_name) {
+    CLI::warning("No Sys-Admin found.");
 
-        $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
-        foreach ($workspaceIds as $workspaceId) {
+    $adminId = $initDAO->createAdmin($installationArguments->user_name, $installationArguments->user_password);
+    CLI::success("Sys-Admin created: `$installationArguments->user_name`.");
 
-            CLI::p("Workspace `ws_$workspaceId` added to `$installationArguments->user_name`.");
-        }
-
-    } else {
-
-        CLI::p("At least one Sys-Admin found; nothing to do.");
+    $initDAO->addWorkspacesToAdmin($adminId, $workspaceIds);
+    foreach ($workspaceIds as $workspaceId) {
+      CLI::p("Workspace `ws_$workspaceId` added to `$installationArguments->user_name`.");
     }
 
+  } else {
+    CLI::p("At least one Sys-Admin found; nothing to do.");
+  }
 
-    $bsStatus = BroadcastService::getStatus();
-    if ($bsStatus == 'online') {
-        CLI::h2("Flashing Broadcasting-Service");
-        BroadcastService::send('system/clean');
-    }
+  $bsStatus = BroadcastService::getStatus();
+  if ($bsStatus == 'online') {
+    CLI::h2("Flashing Broadcasting-Service");
+    BroadcastService::send('system/clean');
+  }
 
-    CLI::h1("Ready.");
+  CLI::h1("Ready.");
 
 } catch (Exception $e) {
 
-    CLI::error($e->getMessage());
-    echo "\n";
-    ErrorHandler::logException($e, true);
-    exit(1);
+  CLI::error($e->getMessage());
+  echo "\n";
+  ErrorHandler::logException($e, true);
+  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+    unlink(ROOT_DIR . '/backend/config/init.lock');
+  }
+  exit(1);
+}
+
+if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+  unlink(ROOT_DIR . '/backend/config/init.lock');
 }
 
 echo "\n";

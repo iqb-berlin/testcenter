@@ -38,7 +38,8 @@ cd..
 ```
 
 # Create Database
-* CreateMySQL Database
+* Create a MySQL Database
+* Create a second MySQL Database with the same name, but prefixed with `TEST_`.
 * use Configuration from `scripts/database/my.cnf`
 
 # Initialize Backend
@@ -56,8 +57,6 @@ sudo --user=www-data php backend/initialize.php \
  --broadcastServiceUriPush=(address of broadcast service to push for the backend) \
  --broadcastServiceUriSubscribe=(address of broadcast service to subscribe to from frontend)
 ```
-
-
 
 # Serve Backend
 

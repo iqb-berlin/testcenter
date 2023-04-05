@@ -32,6 +32,7 @@ services:
       - --log_error_verbosity=1
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     ports:
       - "9091:3306"
       - "22:22"
@@ -45,7 +46,6 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
       MYSQL_PORT: 3306
-      TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
       SUPERUSER_NAME: super
       SUPERUSER_PASSWORD: user123
       WORKSPACE_NAME: example_workspace
@@ -61,12 +61,15 @@ services:
       - ../definitions:/var/www/definitions
       - ../docs/dist:/docs/dist
       - ../package.json:/var/www/package.json
+      - ../scripts:/var/www/scripts
       - ../sampledata:/var/www/sampledata
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
+    ports:
+      - 9005:9003 #xdebug
     networks:
       - testcenter-system-test
     depends_on:

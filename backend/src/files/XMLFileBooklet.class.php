@@ -2,78 +2,65 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-
 class XMLFileBooklet extends XMLFile {
+  const type = 'Booklet';
+  const canBeRelationSubject = true;
+  const canBeRelationObject = true;
 
-    const type = 'Booklet';
-    const canBeRelationSubject = true;
-    const canBeRelationObject = true;
+  public function crossValidate(WorkspaceCache $workspaceCache): void {
+    parent::crossValidate($workspaceCache);
 
-    public function crossValidate(WorkspaceCache $workspaceCache): void {
+    $bookletPlayers = [];
+    $this->contextData['totalSize'] = $this->getSize();
 
-        parent::crossValidate($workspaceCache);
+    foreach ($this->getUnitIds() as $unitId) {
+      $unit = $workspaceCache->getUnit($unitId);
 
-        $bookletPlayers = [];
-        $this->contextData['totalSize'] = $this->getSize();
+      if ($unit == null) {
+        $this->report('error', "Unit `$unitId` not found");
+        continue;
+      }
 
-        foreach($this->getUnitIds() as $unitId) {
+      $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
 
-            $unit = $workspaceCache->getUnit($unitId);
+      $this->contextData['totalSize'] += $unit->getTotalSize();
 
-            if ($unit == null) {
-                $this->report('error', "Unit `$unitId` not found");
-                continue;
-            }
+      $playerFile = $unit->getPlayerIfExists($workspaceCache);
 
-            $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
+      if (!$playerFile) {
+        $this->report('error', "No suitable version of Player found (Unit `$unitId`).");
+      }
 
-            $this->contextData['totalSize'] += $unit->getTotalSize();
+      if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
+        $this->contextData['totalSize'] += $playerFile->getSize();
+        $bookletPlayers[] = $playerFile->getId();
+      }
+    }
+  }
 
-            $playerFile = $unit->getPlayerIfExists($workspaceCache);
-
-            if (!$playerFile) {
-
-                $this->report('error', "No suitable version of Player found (Unit `$unitId`).");
-            }
-
-            if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
-
-                $this->contextData['totalSize'] += $playerFile->getSize();
-                $bookletPlayers[] = $playerFile->getId();
-            }
-        }
+  // TODO unit-test $useAlias
+  public function getUnitIds(bool $useAlias = false): array {
+    if (!$this->isValid()) {
+      return [];
     }
 
+    return $this->getUnitIdFromNode($this->getXml()->Units[0], $useAlias);
+  }
 
-    // TODO unit-test $useAlias
-    public function getUnitIds(bool $useAlias = false): array {
+  private function getUnitIdFromNode(SimpleXMLElement $node, bool $useAlias = false): array {
+    $unitIds = [];
+    foreach ($node->children() as $element) {
+      if ($element->getName() == 'Unit') {
+        $id = strtoupper((string) $element['id']);
+        $alias = (string) $element['alias'];
+        $unitIds[] = ($useAlias and $alias) ? $alias : $id;
 
-        if (!$this->isValid()) {
-            return [];
+      } else {
+        foreach ($this->getUnitIdFromNode($element, $useAlias) as $id) {
+          $unitIds[] = $id;
         }
-
-        return $this->getUnitIdFromNode($this->getXml()->Units[0], $useAlias);
+      }
     }
-
-
-    private function getUnitIdFromNode(SimpleXMLElement $node, bool $useAlias = false): array {
-
-        $unitIds = [];
-        foreach($node->children() as $element) {
-
-            if ($element->getName() == 'Unit') {
-
-                $id = strtoupper((string) $element['id']);
-                $alias = (string) $element['alias'];
-                $unitIds[] = ($useAlias and $alias) ? $alias : $id;
-
-            } else {
-
-                foreach($this->getUnitIdFromNode($element, $useAlias) as $id) {
-                    $unitIds[] = $id;
-                }
-            }
-        }
-        return $unitIds;
-    }
+    return $unitIds;
+  }
 }

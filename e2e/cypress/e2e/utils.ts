@@ -1,19 +1,24 @@
+import Chainable = Cypress.Chainable;
+
 export const deleteDownloadsFolder = (): void => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   cy.task('deleteFolder', downloadsFolder);
 };
 
-export const visitLoginPage = (): void => {
-  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/*` }).as('waitForConfig');
-  cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
-  cy.wait('@waitForConfig');
-};
+export const visitLoginPage = (): Chainable => cy.url()
+  .then(url => {
+    if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
+      cy.intercept({ url: new RegExp(`${Cypress.env('TC_API_URL')}/(system/config|sys-checks)`) }).as('waitForConfig');
+      cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
+      cy.wait('@waitForConfig');
+    }
+  });
 
 export const resetBackendData = (): void => {
   // this resets the DB because in system-test TESTMODE_REAL_DATA is true
   cy.request({
     url: `${Cypress.env('TC_API_URL')}/version`,
-    headers: { TestMode: 'True' }
+    headers: { TestMode: 'prepare' }
   })
     .its('status').should('eq', 200);
   // sometimes DB isn't ready even after the endpoint returned 200
@@ -41,21 +46,15 @@ export const login = (username: string, password: string): void => {
 
 export const logoutAdmin = (): void => {
   cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`);
-  // I dont think it is necessary to check for workspaces here
   cy.get('[data-cy="workspace-1"]')
-    .should('exist');
+    .should('exist'); // make sure call returned
   cy.get('[data-cy="logout"]')
     .click();
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
 };
 
-export const loginAdmin = (): void => {
-  login('super', 'user123');
-  cy.get('[data-cy="login-admin"]')
-    .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+export const openSampleWorkspace = (): void => {
   cy.get('[data-cy="workspace-1"]')
     .should('exist')
     .click();
@@ -63,29 +62,87 @@ export const loginAdmin = (): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
 };
 
-export const loginAsAdmin = (username = 'super', password = 'user123'): void => {
+export const loginAdmin = (username: string, password: string): void => {
   visitLoginPage();
   insertCredentials(username, password);
+  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session/admin` }).as('waitForPutSession');
+  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
     .click();
-    // I dont think it is necessary to check for workspaces here
-  cy.get('[data-cy="workspace-1"]')
+  cy.wait(['@waitForPutSession', '@waitForGetSession']);
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+  cy.contains(username)
     .should('exist');
-};
-
-export const logout = (): void => {
-  cy.url().then($url => {
-    if($url.includes(`${Cypress.config().baseUrl}/#/r/admin-starter`)) {
-      cy.get('[data-cy="logout"]')
-        .click();
-    } else  {
-      cy.log("Not logged in... doing nothing.")
-    }
-  })
 };
 
 export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
     .click();
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/superadmin/users`);
+};
+
+export const addWorkspaceAdmin = (username: string, password: string): void => {
+  cy.get('[data-cy="superadmin-tabs:users"]')
+    .click();
+  cy.get('[data-cy="add-user"]')
+    .click();
+  cy.get('[formcontrolname="name"]')
+    .should('exist')
+    .type(username);
+  cy.get('[formcontrolname="pw"]')
+    .should('exist')
+    // password < 7 characters
+    .type('123456')
+    .get('[type="submit"]')
+    .should('be.disabled');
+  cy.get('[formcontrolname="pw"]')
+    .clear()
+    .type(password)
+    .get('[type="submit"]')
+    .should('be.enabled')
+    .click();
+  cy.contains(username)
+    .should('exist');
+};
+
+export const deleteFilesSampleWorkspace = (): void => {
+  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-2"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-3"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-UNIT.SAMPLE-2"]')
+    .click();
+  cy.get('[data-cy="delete-files"]')
+    .click();
+  cy.get('[data-cy="dialog-confirm"]')
+    .click();
+  cy.wait(1000);
+  cy.contains('Teilnehmerlisten')
+    .should('not.exist');
+  cy.contains('Testhefte')
+    .should('not.exist');
+  cy.contains('System-Check-Definitionen')
+    .should('not.exist');
+  cy.contains('Ressourcen')
+    .should('not.exist');
+};
+
+export const useTestDB = () : void => {
+  cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/.*`), req => {
+    req.headers.TestMode = 'integration';
+  }).as('testMode');
 };

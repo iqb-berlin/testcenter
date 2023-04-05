@@ -38,9 +38,9 @@ class InitDAO extends SessionDAO {
       0,
       (object) ['somStr' => 'someLabel']
     );
-    $loginSession = $sessionDAO->createLoginSession($testLogin, true);
+    $loginSession = $sessionDAO->createLoginSession($testLogin);
 
-    $personSession = $sessionDAO->getOrCreatePersonSession($loginSession, 'xxx');
+    $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
     $test = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
     $testDAO->setTestRunning((int) $test['id']);
     $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
@@ -66,14 +66,14 @@ class InitDAO extends SessionDAO {
       1,
       TimeStamp::fromXMLFormat('1/1/2000 12:00')
     );
-    $login = $this->createLoginSession($login, true);
-    $this->createPersonSession($login, 'xxx', 0, true);
+    $login = $this->createLoginSession($login);
+    $this->createOrUpdatePersonSession($login, 'xxx', true);
   }
 
   public function createSampleWorkspaceAdmins(): void {
     $superAdminDAO = new SuperAdminDAO();
     $adminDAO = new AdminDAO();
-    $superAdminDAO->createUser("workspace_admin", "anotherPassword", false);
+    $superAdminDAO->createUser("workspace_admin", "anotherPassword");
     $adminDAO->createAdminToken("workspace_admin", "anotherPassword", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
     $superAdminDAO->createUser("expired_user", "whatever", true);
     $adminDAO->createAdminToken("expired_user", "whatever", TimeStamp::fromXMLFormat('1/1/2000 12:00'));
@@ -93,7 +93,7 @@ class InitDAO extends SessionDAO {
       TimeStamp::fromXMLFormat('1/1/2030 12:00')
     );
     $loginSession = $this->createLoginSession($login);
-    $personsSessions['test-group-monitor'] = $this->createPersonSession($loginSession, '', 0);
+    $personsSessions['test-group-monitor'] = $this->createOrUpdatePersonSession($loginSession, '');
 
     $login = new Login(
       'expired-group-monitor',
@@ -105,8 +105,8 @@ class InitDAO extends SessionDAO {
       1,
       TimeStamp::fromXMLFormat('1/1/2000 12:00')
     );
-    $loginSession = $this->createLoginSession($login, true);
-    $personsSessions['expired-group-monitor'] = $this->createPersonSession($loginSession, '', 0, true);
+    $loginSession = $this->createLoginSession($login);
+    $personsSessions['expired-group-monitor'] = $this->createOrUpdatePersonSession($loginSession, '', true);
 
     return $personsSessions;
   }
@@ -141,12 +141,10 @@ class InitDAO extends SessionDAO {
     );
   }
 
-  public function clearDb(): array {
+  public function clearDB(): array {
     $droppedTables = [];
 
-    if ($this->getDBType() == 'mysql') {
-      $this->_('SET FOREIGN_KEY_CHECKS = 0');
-    }
+    $this->_('SET FOREIGN_KEY_CHECKS = 0');
 
     foreach (array_merge($this::legacyTableNames, $this::tables) as $table) {
       if ($this->getTableStatus($table) !== 'missing') {
@@ -155,11 +153,19 @@ class InitDAO extends SessionDAO {
       }
     }
 
-    if ($this->getDBType() == 'mysql') {
-      $this->_('SET FOREIGN_KEY_CHECKS = 1');
-    }
+    $this->_('SET FOREIGN_KEY_CHECKS = 1');
 
     return $droppedTables;
+  }
+
+  public function cloneDB(string $prodDBName): void {
+    $this->clearDB();
+
+    foreach ($this::tables as $table) {
+      $creationString = $this->_("show create table $prodDBName.$table")['Create Table'];
+      $this->_($creationString);
+      $this->_("truncate $table"); // to reset auto-increment
+    }
   }
 
   // TODO unit-test
@@ -197,7 +203,7 @@ class InitDAO extends SessionDAO {
       $entries = $this->_("SELECT * FROM $table limit 10", [], true);
       return count($entries) ? 'used' : 'empty';
 
-    } catch (Exception $exception) {
+    } catch (Exception) {
       return 'missing';
     }
   }
@@ -211,7 +217,7 @@ class InitDAO extends SessionDAO {
 
   public function importScanImage(int $workspaceId, string $imagePath): void {
     $adminDAO = new AdminDAO();
-    $attachment = $adminDAO->getAttachmentById('1:UNIT.SAMPLE:v2');
+    $attachment = $adminDAO->getAttachmentById("$workspaceId:UNIT.SAMPLE:v2");
     AttachmentFiles::importFiles($workspaceId, [$imagePath], $attachment, 'image');
   }
 
@@ -324,8 +330,7 @@ class InitDAO extends SessionDAO {
       try {
         $entries = $this->_("SELECT * FROM $table", [], true);
         $report[$table] = CSV::build($entries);
-
-      } catch (Exception $exception) {
+      } catch (Exception) {
         $report[$table] = 'not found';
       }
     }
@@ -335,5 +340,10 @@ class InitDAO extends SessionDAO {
 
   public function createSampleMetaData(): void {
     $this->setMeta('appConfig', 'aKey', 'newValue');
+  }
+
+  public function checkSQLMode(): bool {
+    $d = $this->_("select 'a' || 'b' as merged")['merged'];
+    return $d === 'ab';
   }
 }

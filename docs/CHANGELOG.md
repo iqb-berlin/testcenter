@@ -5,8 +5,17 @@ layout: default
 # Changelog & Upgrade Information
 
 ## [next]
+
+### Verbesserungen
+* Localstorage muss nach Update des Testcenters nicht mehr gelöscht werden
 ### UI
 * Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
+
+### Bugfixes
+* "Leerzeilen-Problem" gelöst: Unter bestimmten Umständen konnten, wenn z. B. mehrere Sessions eines logins im 
+  `hot-run-restart`-Modus gleichzeitig gestartet werden, doppelte Sessions erzeugt werden. Der Effekt waren zusätzliche
+  "Leerzeilen" in den Ergebnisdaten.   
+* Startvorgang bricht nicht mehr ab, wenn fehlerhafte XMLs im Workspace liegen.
 
 ## 14.3.0
 ### Bugfixes

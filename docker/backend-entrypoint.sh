@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if [ "$TLS_ENABLED" = "yes" ] || [ "$TLS_ENABLED" = "true" ]
   then
     echo "TLS enabled"

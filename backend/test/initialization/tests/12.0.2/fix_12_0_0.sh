@@ -34,7 +34,7 @@ echo "INSERT INTO units (name, booklet_id, laststate, responses, responsetype, r
 
 echo_h2 "do the bogus update";
 fake_version 12.0.0
-cp backend/test/initialization/data/broken-12.0.0-patch.sql database/mysql.patches.d/12.0.0.sql
+cp backend/test/initialization/data/broken-12.0.0-patch.sql database/patches.d/12.0.0.sql
 php backend/initialize.php \
 --user_name "" \
 --workspace "" \
@@ -43,7 +43,7 @@ php backend/initialize.php \
 expect_init_script_failed
 expect_table_to_have_rows unit_data 0 # second part of the patch failed
 expect_table_to_have_rows units 2
-rm database/mysql.patches.d/12.0.0.sql
+rm database/patches.d/12.0.0.sql
 
 
 echo_h2 "In the mean time the testcenter could be used!"
