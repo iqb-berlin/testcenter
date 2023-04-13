@@ -75,6 +75,16 @@ export const loginAdmin = (username: string, password: string): void => {
     .should('exist');
 };
 
+export const loginUser = (username: string, password: string): void => {
+  visitLoginPage();
+  insertCredentials(username, password);
+  cy.get('[data-cy="login-user"]')
+    .click();
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+  cy.contains(username)
+    .should('exist');
+};
+
 export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
     .click();

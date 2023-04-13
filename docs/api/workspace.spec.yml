@@ -340,6 +340,66 @@ paths:
                       label: A sample unit
                       description: This is an Unit
                       totalSize: 1806
+                  - name: CY_SAMPLE_UNIT100.XML
+                    size: 1394
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE-100
+                    report:
+                      warning:
+                        - Element `/Unit/Definition/@type` is deprecated.
+                    info:
+                      label: A sample unit
+                      description: This is an Unit
+                      totalSize: 1806
+                  - name: CY_SAMPLE_UNIT101.XML
+                    size: 1394
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE-101
+                    report:
+                      warning:
+                        - Element `/Unit/Definition/@type` is deprecated.
+                    info:
+                      label: A sample unit
+                      description: This is an Unit
+                      totalSize: 1806
+                - name: CY_SAMPLE_UNIT102.XML
+                    size: 1394
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE-102
+                    report:
+                      warning:
+                        - Element `/Unit/Definition/@type` is deprecated.
+                    info:
+                      label: A sample unit
+                      description: This is an Unit
+                      totalSize: 1806
+                - name: CY_SAMPLE_UNIT103.XML
+                    size: 1394
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE-103
+                    report:
+                      warning:
+                        - Element `/Unit/Definition/@type` is deprecated.
+                    info:
+                      label: A sample unit
+                      description: This is an Unit
+                      totalSize: 1806
+                - name: CY_SAMPLE_UNIT104.XML
+                    size: 1394
+                    modificationTime: 1673525827
+                    type: Unit
+                    id: UNIT.SAMPLE-104
+                    report:
+                      warning:
+                        - Element `/Unit/Definition/@type` is deprecated.
+                    info:
+                      label: A sample unit
+                      description: This is an Unit
+                      totalSize: 1806
                 Resource:
                   - name: SAMPLE_UNITCONTENTS.HTM
                     size: 14195

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/14.3.0/definitions/vo_Testtakers.xsd">
+
+  <Metadata>
+    <Description>Logins für die Cypress Controller-Tests</Description>
+  </Metadata>
+
+  <CustomTexts>
+    <CustomText key="app_title">TEST TESTCENTER</CustomText>
+  </CustomTexts>
+
+  <Group id="rundemo" label="RunDemo">
+    <Login mode="run-demo" name="Test_Demo_Ctrl" pw="123">
+      <Booklet>rundemo</Booklet>
+    </Login>
+  </Group>
+</Testtakers>
