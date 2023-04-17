@@ -197,8 +197,11 @@ describe('Navigation-& Testlet-Restrictions', () => {
 
   it('should be possible to go back to the booklet view and check out', () => {
     cy.get('[data-cy="logo"]')
+      .should('exist')
       .click();
-    cy.wait(waitLoadCompleted);
+    cy.wait(1000);
+    cy.url()
+      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
     cy.get('[data-cy="logout"]')
       .should('exist')
       .click();

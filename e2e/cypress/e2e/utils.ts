@@ -116,29 +116,21 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
 };
 
 export const deleteFilesSampleWorkspace = (): void => {
-  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+  cy.get('[data-cy="files-checkAll-Testtakers"]')
     .click();
-  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
+  cy.get('[data-cy="files-checkAll-Booklet"]')
     .click();
-  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-2"]')
+  cy.get('[data-cy="files-checkAll-SysCheck"]')
     .click();
-  cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-3"]')
+  cy.get('[data-cy="files-checkAll-Resource"]')
     .click();
-  cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
-    .click();
-  cy.get('[data-cy="files-checkbox-SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP"]')
-    .click();
-  cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
-    .click();
-  cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
-    .click();
-  cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
-    .click();
-  cy.get('[data-cy="files-checkbox-UNIT.SAMPLE-2"]')
+  cy.get('[data-cy="files-checkAll-Unit"]')
     .click();
   cy.get('[data-cy="delete-files"]')
+    .should('exist')
     .click();
   cy.get('[data-cy="dialog-confirm"]')
+    .should('exist')
     .click();
   cy.wait(1000);
   cy.contains('Teilnehmerlisten')
