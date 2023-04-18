@@ -5,24 +5,28 @@ declare(strict_types=1);
 
 class WorkspaceInitializer {
   const sampleDataPaths = [
-    "sampledata/Booklet.xml" => "Booklet/SAMPLE_BOOKLET.XML",
-    "sampledata/Booklet2.xml" => "Booklet/SAMPLE_BOOKLET2.XML",
-    "sampledata/Booklet3.xml" => "Booklet/SAMPLE_BOOKLET3.XML",
-    "sampledata/CY_BKL_Mode_Demo.xml" => "Booklet/CY_BKL_Mode_Demo.xml",
-    "sampledata/Testtakers.xml" => "Testtakers/SAMPLE_TESTTAKERS.XML",
-    "sampledata/CY_ControllerTest_Logins.xml" => "Testtakers/CY_ControllerTest_Logins.xml",    
-    "sampledata/SysCheck.xml" => "SysCheck/SAMPLE_SYSCHECK.XML",
-    "sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",
-    "sampledata/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
-    "sampledata/Unit2.xml" => "Unit/SAMPLE_UNIT2.XML",
-    "sampledata/CY_Unit100.xml" => "Unit/CY_SAMPLE_UNIT100.XML",
-    "sampledata/CY_Unit101.xml" => "Unit/CY_SAMPLE_UNIT101.XML",
-    "sampledata/CY_Unit102.xml" => "Unit/CY_SAMPLE_UNIT102.XML",
-    "sampledata/CY_Unit103.xml" => "Unit/CY_SAMPLE_UNIT103.XML",
-    "sampledata/CY_Unit104.xml" => "Unit/CY_SAMPLE_UNIT104.XML",
-    "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON",
-    "sampledata/sample_resource_package.itcr.zip" => "Resource/sample_resource_package.itcr.zip",
-    "sampledata/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html"
+    "default" => [
+      "sampledata/Booklet.xml" => "Booklet/SAMPLE_BOOKLET.XML",
+      "sampledata/Booklet2.xml" => "Booklet/SAMPLE_BOOKLET2.XML",
+      "sampledata/Booklet3.xml" => "Booklet/SAMPLE_BOOKLET3.XML",
+      "sampledata/Testtakers.xml" => "Testtakers/SAMPLE_TESTTAKERS.XML",
+      "sampledata/SysCheck.xml" => "SysCheck/SAMPLE_SYSCHECK.XML",
+      "sampledata/Unit.xml" => "Unit/SAMPLE_UNIT.XML",
+      "sampledata/introduction-unit.htm" => "Resource/SAMPLE_UNITCONTENTS.HTM",
+      "sampledata/Unit2.xml" => "Unit/SAMPLE_UNIT2.XML",
+      "sampledata/SysCheck-Report.json" => "SysCheck/reports/SAMPLE_SYSCHECK-REPORT.JSON",
+      "sampledata/sample_resource_package.itcr.zip" => "Resource/sample_resource_package.itcr.zip",
+      "sampledata/verona-player-simple-4.0.0.html" => "Resource/verona-player-simple-4.0.0.html",
+    ],
+    "system-test" => [
+      "sampledata/system-test/CY_BKL_Mode_Demo.xml" => "Booklet/CY_BKL_Mode_Demo.xml",
+      "sampledata/system-test/CY_ControllerTest_Logins.xml" => "Testtakers/CY_ControllerTest_Logins.xml",
+      "sampledata/system-test/CY_Unit100.xml" => "Unit/CY_SAMPLE_UNIT100.XML",
+      "sampledata/system-test/CY_Unit101.xml" => "Unit/CY_SAMPLE_UNIT101.XML",
+      "sampledata/system-test/CY_Unit102.xml" => "Unit/CY_SAMPLE_UNIT102.XML",
+      "sampledata/system-test/CY_Unit103.xml" => "Unit/CY_SAMPLE_UNIT103.XML",
+      "sampledata/system-test/CY_Unit104.xml" => "Unit/CY_SAMPLE_UNIT104.XML",
+    ]
   ];
 
   private function importSampleFile(int $workspaceId, string $source, string $target): void {
@@ -41,9 +45,11 @@ class WorkspaceInitializer {
     }
   }
 
-  public function importSampleFiles(int $workspaceId): void {
-    foreach ($this::sampleDataPaths as $source => $target) {
-      $this->importSampleFile($workspaceId, $source, $target);
+  public function importSampleFiles(int $workspaceId, array $sampleDataCategories = ['default']): void {
+    foreach ($sampleDataCategories as $sampleDataCategory) {
+      foreach (self::sampleDataPaths[$sampleDataCategory] as $source => $target) {
+        $this->importSampleFile($workspaceId, $source, $target);
+      }
     }
   }
 
