@@ -110,9 +110,9 @@ class TestEnvironment {
     $initDAO = new InitDAO();
     $nextPatchPath = ROOT_DIR . '/scripts/database/patches.d/next.sql';
     $fullSchemePath = ROOT_DIR . '/scripts/database/full.sql';
-    $patchFileChanged = (filemtime($nextPatchPath) > filemtime($fullSchemePath));
+    $patchFileChanged = (file_exists($nextPatchPath) and (filemtime($nextPatchPath) > filemtime($fullSchemePath)));
 
-    if (!file_exists($nextPatchPath) or $patchFileChanged) {
+    if (!file_exists($fullSchemePath) or $patchFileChanged) {
       TestEnvironment::updateDataBaseScheme();
       return;
     }

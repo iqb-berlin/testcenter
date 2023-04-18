@@ -1,288 +1,249 @@
--- IQB-Testcenter DB 14.3.0
+-- IQB-Testcenter DB --
 
-create table `users` (
-  `id` bigint unsigned not null auto_increment,
-  `name` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  `password` varchar(100) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  `email` varchar(100) character set utf8mb3 collate utf8mb3_german2_ci default null,
-  `is_superadmin` tinyint(1) not null default '0',
-  primary key (`id`)
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `is_superadmin` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate users; -- to reset auto-increment
 
-create table `workspaces` (
-  `id` bigint unsigned not null auto_increment,
-  `name` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  primary key (`id`)
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `workspaces` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate workspaces; -- to reset auto-increment
 
-create table `login_sessions` (
-  `id` bigint unsigned not null auto_increment,
-  `name` varchar(50) character set utf8mb3 collate utf8mb3_bin not null,
-  `workspace_id` bigint unsigned not null,
-  `token` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  `group_name` varchar(100) collate utf8mb3_german2_ci not null,
-  primary key (`id`),
-  unique key `unique_login_session` (`name`),
-  key `index_fk_login_workspace` (`workspace_id`) using btree,
-  key `index_fk_logins` (`name`),
-  key `index_fk_login_session_login` (`id`),
-  key `login_sessions_token_index` (`token`),
-  constraint `fk_login_workspace` foreign key (`workspace_id`) references `workspaces` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `login_sessions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `workspace_id` bigint unsigned NOT NULL,
+  `token` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `group_name` varchar(100) COLLATE utf8mb3_german2_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_login_session` (`name`),
+  KEY `index_fk_login_workspace` (`workspace_id`) USING BTREE,
+  KEY `index_fk_logins` (`name`),
+  KEY `index_fk_login_session_login` (`id`),
+  KEY `login_sessions_token_index` (`token`),
+  CONSTRAINT `fk_login_workspace` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate login_sessions; -- to reset auto-increment
 
-create table `person_sessions` (
-  `id` bigint unsigned not null auto_increment,
-  `code` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  `login_sessions_id` bigint unsigned not null,
-  `valid_until` timestamp null default null,
-  `token` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  `name_suffix` varchar(100) collate utf8mb3_german2_ci default null,
-  primary key (`id`),
-  unique key `person_sessions_id_uindex` (`id`),
-  unique key `unique_person_session_token` (`token`),
-  unique key `unique_person_session` (`login_sessions_id`, `name_suffix`),
-  key `index_fk_person_login` (`login_sessions_id`) using btree,
-  key `person_sessions_token_index` (`token`),
-  constraint `fk_person_login` foreign key (`login_sessions_id`) references `login_sessions` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `person_sessions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `login_sessions_id` bigint unsigned NOT NULL,
+  `valid_until` timestamp NULL DEFAULT NULL,
+  `token` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `name_suffix` varchar(100) COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `person_sessions_id_uindex` (`id`),
+  UNIQUE KEY `unique_person_session_token` (`token`),
+  UNIQUE KEY `unique_person_session` (`login_sessions_id`,`name_suffix`),
+  KEY `index_fk_person_login` (`login_sessions_id`) USING BTREE,
+  KEY `person_sessions_token_index` (`token`),
+  CONSTRAINT `fk_person_login` FOREIGN KEY (`login_sessions_id`) REFERENCES `login_sessions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate person_sessions; -- to reset auto-increment
 
-create table `tests` (
-  `id` bigint unsigned not null auto_increment,
-  `name` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  `person_id` bigint unsigned not null,
-  `laststate` text character set utf8mb3 collate utf8mb3_german2_ci,
-  `locked` tinyint(1) not null default '0',
-  `label` varchar(100) character set utf8mb3 collate utf8mb3_german2_ci default null,
-  `running` tinyint(1) not null default '0',
-  `timestamp_server` timestamp null default current_timestamp,
-  primary key (`id`),
-  key `index_fk_booklet_person` (`person_id`) using btree,
-  constraint `fk_booklet_person` foreign key (`person_id`) references `person_sessions` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `tests` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `person_id` bigint unsigned NOT NULL,
+  `laststate` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  `locked` tinyint(1) NOT NULL DEFAULT '0',
+  `label` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `running` tinyint(1) NOT NULL DEFAULT '0',
+  `timestamp_server` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `index_fk_booklet_person` (`person_id`) USING BTREE,
+  CONSTRAINT `fk_booklet_person` FOREIGN KEY (`person_id`) REFERENCES `person_sessions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate tests; -- to reset auto-increment
 
-create table `units` (
-  `id` bigint unsigned not null auto_increment,
-  `name` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci not null,
-  `booklet_id` bigint unsigned not null,
-  `laststate` text character set utf8mb3 collate utf8mb3_german2_ci,
-  primary key (`id`),
-  key `index_fk_unit_booklet` (`booklet_id`) using btree,
-  constraint `fk_unit_booklet` foreign key (`booklet_id`) references `tests` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `units` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
+  `booklet_id` bigint unsigned NOT NULL,
+  `laststate` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  PRIMARY KEY (`id`),
+  KEY `index_fk_unit_booklet` (`booklet_id`) USING BTREE,
+  CONSTRAINT `fk_unit_booklet` FOREIGN KEY (`booklet_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate units; -- to reset auto-increment
 
-create table `admin_sessions` (
-  `token` varchar(50) collate utf8mb3_german2_ci not null,
-  `user_id` bigint unsigned not null,
-  `valid_until` timestamp not null on update current_timestamp,
-  primary key (`token`),
-  key `index_fk_users_admintokens` (`user_id`) using btree,
-  constraint `fk_users_admintokens` foreign key (`user_id`) references `users` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `admin_sessions` (
+  `token` varchar(50) COLLATE utf8mb3_german2_ci NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `valid_until` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`token`),
+  KEY `index_fk_users_admintokens` (`user_id`) USING BTREE,
+  CONSTRAINT `fk_users_admintokens` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate admin_sessions; -- to reset auto-increment
 
-create table `test_commands` (
-  `id` bigint unsigned not null,
-  `test_id` bigint unsigned not null,
-  `keyword` varchar(50) not null,
+CREATE TABLE `test_commands` (
+  `id` bigint unsigned NOT NULL,
+  `test_id` bigint unsigned NOT NULL,
+  `keyword` varchar(50) NOT NULL,
   `parameter` text,
-  `commander_id` bigint unsigned default null,
-  `timestamp` timestamp not null,
-  `executed` tinyint(1) default '0',
-  primary key (`id`, `test_id`),
-  unique key `test_commands_id_uindex` (`id`, `test_id`),
-  key `test_commands_person_sessions_id_fk` (`commander_id`),
-  key `test_commands_tests_id_fk` (`test_id`),
-  constraint `test_commands_person_sessions_id_fk` foreign key (`commander_id`) references `person_sessions` (`id`) on delete set null,
-  constraint `test_commands_tests_id_fk` foreign key (`test_id`) references `tests` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb4
-  collate = utf8mb4_0900_ai_ci;
+  `commander_id` bigint unsigned DEFAULT NULL,
+  `timestamp` timestamp NOT NULL,
+  `executed` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`,`test_id`),
+  UNIQUE KEY `test_commands_id_uindex` (`id`,`test_id`),
+  KEY `test_commands_person_sessions_id_fk` (`commander_id`),
+  KEY `test_commands_tests_id_fk` (`test_id`),
+  CONSTRAINT `test_commands_person_sessions_id_fk` FOREIGN KEY (`commander_id`) REFERENCES `person_sessions` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `test_commands_tests_id_fk` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 truncate test_commands; -- to reset auto-increment
 
-create table `test_logs` (
-  `booklet_id` bigint unsigned not null,
-  `timestamp` bigint not null default '0',
-  `logentry` text character set utf8mb3 collate utf8mb3_german2_ci,
-  `timestamp_server` timestamp null default current_timestamp,
-  key `index_fk_log_booklet` (`booklet_id`) using btree,
-  constraint `fk_log_booklet` foreign key (`booklet_id`) references `tests` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `test_logs` (
+  `booklet_id` bigint unsigned NOT NULL,
+  `timestamp` bigint NOT NULL DEFAULT '0',
+  `logentry` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  `timestamp_server` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `index_fk_log_booklet` (`booklet_id`) USING BTREE,
+  CONSTRAINT `fk_log_booklet` FOREIGN KEY (`booklet_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate test_logs; -- to reset auto-increment
 
-create table `test_reviews` (
-  `booklet_id` bigint unsigned not null,
-  `reviewtime` timestamp not null default current_timestamp on update current_timestamp,
-  `priority` tinyint(1) not null default '0',
-  `categories` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci default null,
-  `entry` text character set utf8mb3 collate utf8mb3_german2_ci,
-  key `index_fk_review_booklet` (`booklet_id`) using btree,
-  constraint `fk_review_booklet` foreign key (`booklet_id`) references `tests` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `test_reviews` (
+  `booklet_id` bigint unsigned NOT NULL,
+  `reviewtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `priority` tinyint(1) NOT NULL DEFAULT '0',
+  `categories` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `entry` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  KEY `index_fk_review_booklet` (`booklet_id`) USING BTREE,
+  CONSTRAINT `fk_review_booklet` FOREIGN KEY (`booklet_id`) REFERENCES `tests` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate test_reviews; -- to reset auto-increment
 
-create table `logins` (
-  `name` varchar(50) character set utf8mb3 collate utf8mb3_bin not null,
-  `password` varchar(100) collate utf8mb3_german2_ci not null,
-  `mode` varchar(20) collate utf8mb3_german2_ci not null,
-  `workspace_id` bigint unsigned default null,
-  `codes_to_booklets` text collate utf8mb3_german2_ci,
-  `source` varbinary(120) not null,
-  `valid_from` timestamp null default null,
-  `valid_to` timestamp null default null,
-  `valid_for` int default null,
-  `group_name` varchar(100) collate utf8mb3_german2_ci default null,
-  `group_label` text collate utf8mb3_german2_ci,
-  `custom_texts` text collate utf8mb3_german2_ci,
-  primary key (`name`),
-  key `logins_workspaces_id_fk` (`workspace_id`),
-  constraint `logins_workspaces_id_fk` foreign key (`workspace_id`) references `workspaces` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `logins` (
+  `name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NOT NULL,
+  `password` varchar(100) COLLATE utf8mb3_german2_ci NOT NULL,
+  `mode` varchar(20) COLLATE utf8mb3_german2_ci NOT NULL,
+  `workspace_id` bigint unsigned DEFAULT NULL,
+  `codes_to_booklets` text COLLATE utf8mb3_german2_ci,
+  `source` varbinary(120) NOT NULL,
+  `valid_from` timestamp NULL DEFAULT NULL,
+  `valid_to` timestamp NULL DEFAULT NULL,
+  `valid_for` int DEFAULT NULL,
+  `group_name` varchar(100) COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `group_label` text COLLATE utf8mb3_german2_ci,
+  `custom_texts` text COLLATE utf8mb3_german2_ci,
+  PRIMARY KEY (`name`),
+  KEY `logins_workspaces_id_fk` (`workspace_id`),
+  CONSTRAINT `logins_workspaces_id_fk` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate logins; -- to reset auto-increment
 
-create table `unit_logs` (
-  `unit_id` bigint unsigned not null,
-  `timestamp` bigint not null default '0',
-  `logentry` text character set utf8mb3 collate utf8mb3_german2_ci,
-  key `index_fk_log_unit` (`unit_id`) using btree,
-  constraint `fk_log_unit` foreign key (`unit_id`) references `units` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `unit_logs` (
+  `unit_id` bigint unsigned NOT NULL,
+  `timestamp` bigint NOT NULL DEFAULT '0',
+  `logentry` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  KEY `index_fk_log_unit` (`unit_id`) USING BTREE,
+  CONSTRAINT `fk_log_unit` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate unit_logs; -- to reset auto-increment
 
-create table `unit_reviews` (
-  `unit_id` bigint unsigned not null,
-  `reviewtime` timestamp not null default current_timestamp on update current_timestamp,
-  `priority` tinyint(1) not null default '0',
-  `categories` varchar(50) character set utf8mb3 collate utf8mb3_german2_ci default null,
-  `entry` text character set utf8mb3 collate utf8mb3_german2_ci,
-  key `index_fk_review_unit` (`unit_id`) using btree,
-  constraint `fk_review_unit` foreign key (`unit_id`) references `units` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `unit_reviews` (
+  `unit_id` bigint unsigned NOT NULL,
+  `reviewtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `priority` tinyint(1) NOT NULL DEFAULT '0',
+  `categories` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `entry` text CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci,
+  KEY `index_fk_review_unit` (`unit_id`) USING BTREE,
+  CONSTRAINT `fk_review_unit` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate unit_reviews; -- to reset auto-increment
 
-create table `workspace_users` (
-  `workspace_id` bigint unsigned not null,
-  `user_id` bigint unsigned not null,
-  `role` varchar(10) character set utf8mb3 collate utf8mb3_german2_ci not null default 'RW',
-  primary key (`workspace_id`, `user_id`),
-  key `index_fk_workspace_users_user` (`user_id`) using btree,
-  key `index_fk_workspace_users_workspace` (`workspace_id`) using btree,
-  constraint `fk_workspace_users_user` foreign key (`user_id`) references `users` (`id`) on delete cascade,
-  constraint `fk_workspace_users_workspace` foreign key (`workspace_id`) references `workspaces` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `workspace_users` (
+  `workspace_id` bigint unsigned NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `role` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL DEFAULT 'RW',
+  PRIMARY KEY (`workspace_id`,`user_id`),
+  KEY `index_fk_workspace_users_user` (`user_id`) USING BTREE,
+  KEY `index_fk_workspace_users_workspace` (`workspace_id`) USING BTREE,
+  CONSTRAINT `fk_workspace_users_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_workspace_users_workspace` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate workspace_users; -- to reset auto-increment
 
-create table `meta` (
-  `metaKey` varchar(100) not null,
+CREATE TABLE `meta` (
+  `metaKey` varchar(100) NOT NULL,
   `value` mediumblob,
-  `category` varchar(30) default null,
-  unique key `meta_pk` (`metaKey`, `category`),
-  unique key `meta_metaKey_category_uindex` (`metaKey`, `category`)
-) engine = InnoDB
-  default charset = utf8mb4
-  collate = utf8mb4_0900_ai_ci;
+  `category` varchar(30) DEFAULT NULL,
+  UNIQUE KEY `meta_pk` (`metaKey`,`category`),
+  UNIQUE KEY `meta_metaKey_category_uindex` (`metaKey`,`category`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 truncate meta; -- to reset auto-increment
 
-create table `unit_data` (
-  `unit_id` bigint unsigned not null,
-  `part_id` varchar(50) not null,
+CREATE TABLE `unit_data` (
+  `unit_id` bigint unsigned NOT NULL,
+  `part_id` varchar(50) NOT NULL,
   `content` longtext,
-  `ts` bigint not null default '0',
-  `response_type` varchar(50) default null,
-  primary key (`unit_id`, `part_id`),
-  constraint `unit_data_units_id_fk` foreign key (`unit_id`) references `units` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb4
-  collate = utf8mb4_0900_ai_ci;
+  `ts` bigint NOT NULL DEFAULT '0',
+  `response_type` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`unit_id`,`part_id`),
+  CONSTRAINT `unit_data_units_id_fk` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 truncate unit_data; -- to reset auto-increment
 
-create table `files` (
-  `workspace_id` bigint unsigned not null,
-  `name` varbinary(120) not null,
-  `id` varchar(120) collate utf8mb3_german2_ci not null,
-  `version_mayor` int default null,
-  `version_minor` int default null,
-  `version_patch` int default null,
-  `version_label` text collate utf8mb3_german2_ci,
-  `label` text collate utf8mb3_german2_ci,
-  `description` text collate utf8mb3_german2_ci,
-  `type` enum ('Testtakers','SysCheck','Booklet','Unit','Resource') collate utf8mb3_german2_ci not null,
-  `verona_module_type` enum ('player','schemer','editor','') collate utf8mb3_german2_ci default null,
-  `verona_version` varchar(12) collate utf8mb3_german2_ci default null,
-  `verona_module_id` varchar(50) collate utf8mb3_german2_ci default null,
-  `is_valid` tinyint(1) not null,
-  `validation_report` text collate utf8mb3_german2_ci,
-  `modification_ts` timestamp not null,
-  `size` int not null,
-  `context_data` text collate utf8mb3_german2_ci,
-  primary key (`workspace_id`, `name`, `type`),
-  unique key `unique_id` (`workspace_id`, `id`, `type`),
-  key `files_workspace_id_name_index` (`workspace_id`, `name`),
-  key `files_id_index` (`id`),
-  key `file_relations_subject_index` (`workspace_id`, `name`, `type`),
-  constraint `files_workspaces_id_fk` foreign key (`workspace_id`) references `workspaces` (`id`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `files` (
+  `workspace_id` bigint unsigned NOT NULL,
+  `name` varbinary(120) NOT NULL,
+  `id` varchar(120) COLLATE utf8mb3_german2_ci NOT NULL,
+  `version_mayor` int DEFAULT NULL,
+  `version_minor` int DEFAULT NULL,
+  `version_patch` int DEFAULT NULL,
+  `version_label` text COLLATE utf8mb3_german2_ci,
+  `label` text COLLATE utf8mb3_german2_ci,
+  `description` text COLLATE utf8mb3_german2_ci,
+  `type` enum('Testtakers','SysCheck','Booklet','Unit','Resource') COLLATE utf8mb3_german2_ci NOT NULL,
+  `verona_module_type` enum('player','schemer','editor','') COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `verona_version` varchar(12) COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `verona_module_id` varchar(50) COLLATE utf8mb3_german2_ci DEFAULT NULL,
+  `is_valid` tinyint(1) NOT NULL,
+  `validation_report` text COLLATE utf8mb3_german2_ci,
+  `modification_ts` timestamp NOT NULL,
+  `size` int NOT NULL,
+  `context_data` text COLLATE utf8mb3_german2_ci,
+  PRIMARY KEY (`workspace_id`,`name`,`type`),
+  UNIQUE KEY `unique_id` (`workspace_id`,`id`,`type`),
+  KEY `files_workspace_id_name_index` (`workspace_id`,`name`),
+  KEY `files_id_index` (`id`),
+  KEY `file_relations_subject_index` (`workspace_id`,`name`,`type`),
+  CONSTRAINT `files_workspaces_id_fk` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate files; -- to reset auto-increment
 
-create table `unit_defs_attachments` (
-  `workspace_id` bigint unsigned not null,
-  `unit_name` varchar(120) collate utf8mb3_german2_ci not null,
-  `booklet_name` varchar(120) collate utf8mb3_german2_ci not null,
-  `attachment_type` enum ('capture-image') collate utf8mb3_german2_ci not null,
-  `variable_id` varchar(100) collate utf8mb3_german2_ci not null,
-  `file_type` enum ('Testtakers','SysCheck','Booklet','Unit','Resource') collate utf8mb3_german2_ci generated always as (_utf8mb4'Booklet') stored,
-  primary key (`booklet_name`, `unit_name`, `variable_id`, `workspace_id`),
-  key `files_fk` (`workspace_id`, `booklet_name`, `file_type`),
-  constraint `files_fk` foreign key (`workspace_id`, `booklet_name`, `file_type`) references `files` (`workspace_id`, `id`, `type`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `unit_defs_attachments` (
+  `workspace_id` bigint unsigned NOT NULL,
+  `unit_name` varchar(120) COLLATE utf8mb3_german2_ci NOT NULL,
+  `booklet_name` varchar(120) COLLATE utf8mb3_german2_ci NOT NULL,
+  `attachment_type` enum('capture-image') COLLATE utf8mb3_german2_ci NOT NULL,
+  `variable_id` varchar(100) COLLATE utf8mb3_german2_ci NOT NULL,
+  `file_type` enum('Testtakers','SysCheck','Booklet','Unit','Resource') COLLATE utf8mb3_german2_ci GENERATED ALWAYS AS (_utf8mb4'Booklet') STORED,
+  PRIMARY KEY (`booklet_name`,`unit_name`,`variable_id`,`workspace_id`),
+  KEY `files_fk` (`workspace_id`,`booklet_name`,`file_type`),
+  CONSTRAINT `files_fk` FOREIGN KEY (`workspace_id`, `booklet_name`, `file_type`) REFERENCES `files` (`workspace_id`, `id`, `type`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate unit_defs_attachments; -- to reset auto-increment
 
-create table `file_relations` (
-  `workspace_id` bigint unsigned not null,
-  `subject_name` varbinary(120) not null,
-  `subject_type` enum ('Testtakers','SysCheck','Booklet','Unit','Resource') collate utf8mb3_german2_ci not null,
-  `relationship_type` enum ('hasBooklet','containsUnit','usesPlayer','usesPlayerResource','isDefinedBy','unknown') collate utf8mb3_german2_ci not null,
-  `object_type` enum ('Testtakers','SysCheck','Booklet','Unit','Resource') collate utf8mb3_german2_ci not null,
-  `object_name` varbinary(120) default null,
-  unique key `unique_combination` (`workspace_id`, `subject_name`, `subject_type`, `relationship_type`, `object_type`,
-                                   `object_name`),
-  constraint `file_relations_files_fk` foreign key (`workspace_id`, `subject_name`, `subject_type`) references `files` (`workspace_id`, `name`, `type`) on delete cascade
-) engine = InnoDB
-  default charset = utf8mb3
-  collate = utf8mb3_german2_ci;
+CREATE TABLE `file_relations` (
+  `workspace_id` bigint unsigned NOT NULL,
+  `subject_name` varbinary(120) NOT NULL,
+  `subject_type` enum('Testtakers','SysCheck','Booklet','Unit','Resource') COLLATE utf8mb3_german2_ci NOT NULL,
+  `relationship_type` enum('hasBooklet','containsUnit','usesPlayer','usesPlayerResource','isDefinedBy','unknown') COLLATE utf8mb3_german2_ci NOT NULL,
+  `object_type` enum('Testtakers','SysCheck','Booklet','Unit','Resource') COLLATE utf8mb3_german2_ci NOT NULL,
+  `object_name` varbinary(120) DEFAULT NULL,
+  UNIQUE KEY `unique_combination` (`workspace_id`,`subject_name`,`subject_type`,`relationship_type`,`object_type`,`object_name`),
+  CONSTRAINT `file_relations_files_fk` FOREIGN KEY (`workspace_id`, `subject_name`, `subject_type`) REFERENCES `files` (`workspace_id`, `name`, `type`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_german2_ci;
 truncate file_relations; -- to reset auto-increment
