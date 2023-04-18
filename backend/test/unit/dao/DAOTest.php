@@ -29,6 +29,7 @@ class DAOTest extends TestCase {
   }
 
   function test_getDBSchemaVersion() {
+    $this->dbc->_("delete from meta where metaKey = 'dbSchemaVersion'");
     $result = $this->dbc->getDBSchemaVersion();
     $this->assertEquals('0.0.0-no-entry', $result, 'No entry in meta table');
 
