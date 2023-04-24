@@ -4,10 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 14.4.0-rc.1
+## 14.4.0
 
 ### Verbesserungen
 * Localstorage muss nach Update des Testcenters nicht mehr gelöscht werden
+
 ### UI
 * Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
 
