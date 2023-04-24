@@ -84,6 +84,7 @@ services:
     volumes:
       - ../e2e/cypress:/app/cypress
       - ../e2e/cypress.e2e.config.js:/app/cypress.config.js
+      - ../sampledata:/sampledata
     depends_on:
       - testcenter-system-test-frontend
     networks:
