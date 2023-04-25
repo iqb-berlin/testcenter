@@ -15,17 +15,10 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   files: Array<File> = [];
   disableClearButton = true;
 
-  @Input()
-  fileAlias: string;
-
-  @Input()
-  folderName: string;
-
-  @Input()
-  folder: string;
-
-  @Output()
-  uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
+  @Input() fileAlias: string;
+  @Input() folderName: string;
+  @Input() folder: string;
+  @Output() uploadCompleteEvent = new EventEmitter<IqbFilesUploadQueueComponent>();
 
   add(file: File): void {
     this.files.push(file);
@@ -52,7 +45,7 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
     let countcomplete = 0;
     this.fileUploads.forEach(fileUpload => {
       if ((fileUpload.status === UploadStatus.ok) || (fileUpload.status === UploadStatus.error)) {
-        countcomplete = countcomplete + 1;
+        countcomplete += 1;
       } else if (fileUpload.status === UploadStatus.busy) {
         someoneisbusy = true;
       } else if (fileUpload.status === UploadStatus.ready) {
@@ -63,6 +56,6 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
     if (countcomplete === this.fileUploads.length && !someoneisbusy && this.fileUploads.length > 0) {
       this.uploadCompleteEvent.emit();
       this.disableClearButton = false;
-    };
+    }
   }
 }

@@ -17,9 +17,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     public workspaceDataService: WorkspaceDataService,
     private router: Router
   ) {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => {
-      return false;
-    };
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   navLinks = [

@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { SysCheckInfo, AuthData, AppError, AccessObject } from './app.interfaces';
+import { SysCheckInfo, AuthData, AppError } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
 @Injectable({

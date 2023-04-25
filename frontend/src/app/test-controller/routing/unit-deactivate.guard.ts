@@ -26,6 +26,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     private snackBar: MatSnackBar,
     private router: Router
   ) {}
+
   private checkAndSolveMaxTime(newUnit: UnitControllerData): Observable<boolean> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
