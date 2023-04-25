@@ -50,6 +50,9 @@ class AdminDAO extends DAO {
       }
     }
 
+    // obfuscate the time taken even more
+    usleep(rand(000000, 100000));
+
     // generic error message to not expose too much information to attackers
     $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
     throw new HttpError("Invalid Password `$shortPW` or unknown user `$userName`.", 400);

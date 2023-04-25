@@ -16,6 +16,6 @@ class Token {
       return substr("static:$type:$name", 0, 50 - strlen($suffix)) . $suffix;
     }
 
-    return uniqid('a', true);
+    return Random::string(24, true);
   }
 }
