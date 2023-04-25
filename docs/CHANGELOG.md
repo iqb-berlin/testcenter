@@ -4,8 +4,13 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 14.4.0
+## [next]
+### Sicherheit
+* Unzureichende Entropie bei Session-Tokens beseitigt
+* Enumerierung von Admin-Benutzernamen durch timing-attacks erschwert
 
+
+## 14.4.0
 ### Verbesserungen
 * Localstorage muss nach Update des Testcenters nicht mehr gelöscht werden
 
