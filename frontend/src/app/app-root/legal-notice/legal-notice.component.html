@@ -1,14 +1,14 @@
 <div class="root-body">
-  <div fxLayout="row" fxLayoutAlign="center start">
-    <mat-card fxFlex="0 0 500px">
+  <div class="flex-row" [style.justify-content]="'center'">
+    <mat-card>
       <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
       <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
 
       <mat-card-content>
         <div [innerHTML]="mds.appConfig?.trustedLegalNoticeHtml"></div>
         <status-card></status-card>
-        <p style="margin-bottom: 0;"><b>Angaben zu dieser Web-Anwendung:</b></p>
-        <ul style="margin: 0;">
+        <b>Angaben zu dieser Web-Anwendung:</b>
+        <ul>
           <li>Version {{mds.appConfig?.version}}</li>
           <li>Live-Modus: {{mds.appConfig?.broadcastingService}}</li>
           <li>
@@ -19,7 +19,9 @@
         </ul>
       </mat-card-content>
       <mat-card-actions>
-        <button [routerLink]="['/']" mat-raised-button color="primary"><i class="material-icons">arrow_back</i> zurück zur Startseite</button>
+        <button [routerLink]="['/']" mat-raised-button color="primary">
+          <mat-icon>arrow_back</mat-icon> zurück zur Startseite
+        </button>
       </mat-card-actions>
     </mat-card>
   </div>

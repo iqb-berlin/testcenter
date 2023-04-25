@@ -4,7 +4,7 @@
 # b) we definitely don't want to include the anonymous volumes for data and db from dev here
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
-version: '3.7'
+version: '3.9'
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
@@ -13,7 +13,7 @@ x-env-mysql: &env-mysql
 
 services:
   testcenter-system-test-db:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: testcenter-system-test-db
     environment:
       <<: *env-mysql
@@ -22,6 +22,7 @@ services:
     user: root
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     command:
       - --log_error_verbosity=1
     networks:
@@ -33,7 +34,6 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
       MYSQL_PORT: 3306
-      TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
       SUPERUSER_NAME: super
       SUPERUSER_PASSWORD: user123
       WORKSPACE_NAME: example_workspace
@@ -52,6 +52,8 @@ services:
       - ../package.json:/var/www/package.json
       - ../package-lock.json:/var/www/package-lock.json
       - ../sampledata:/var/www/sampledata
+      - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
+      - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini # disable xdebug
     depends_on:
       - testcenter-system-test-db
     networks:
@@ -61,7 +63,6 @@ services:
     container_name: testcenter-system-test-frontend
     image: iqbberlin/testcenter-frontend:current
     volumes:
-      - ../docs/dist:/docs/dist
       - ../frontend/src:/app/src
       - ../frontend/angular.json:/app/angular.json
     command: "npx ng serve --configuration e2e --disable-host-check --host 0.0.0.0"

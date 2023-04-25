@@ -4,7 +4,7 @@
 # b) we definitely don't want to include the anonymous volumes for data and db from dev here
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
-version: '3.7'
+version: '3.9'
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
@@ -14,7 +14,7 @@ x-env-mysql: &env-mysql
 services:
   traefik-system-test:
     container_name: testcenter-system-test-traefik
-    image: traefik:v2.2
+    image: traefik:v2.9
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -26,7 +26,7 @@ services:
       - testcenter-system-test
 
   testcenter-system-test-db:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: testcenter-system-test-db
     environment:
       <<: *env-mysql

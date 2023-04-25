@@ -1,17 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { from, Subscription } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { BackendService } from '../../backend.service';
 import { MainDataService } from '../../shared/shared.module';
-import { AuthAccessKeyType, AuthData, BookletData } from '../../app.interfaces';
+import { AccessObject, AuthData } from '../../app.interfaces';
 
 @Component({
   templateUrl: './test-starter.component.html',
   styleUrls: ['./test-starter.component.css']
 })
 export class TestStarterComponent implements OnInit, OnDestroy {
-  booklets: BookletData[] = [];
+  booklets: AccessObject[] = [];
   bookletCount = 0;
   private getBookletDataSubscription: Subscription | null = null;
 
@@ -38,31 +37,14 @@ export class TestStarterComponent implements OnInit, OnDestroy {
         this.mds.setAuthData();
         this.mds.stopLoadingAnimation();
       }
-      if (authData.access[AuthAccessKeyType.TEST]) {
-        this.booklets = [];
-        if (this.getBookletDataSubscription !== null) {
-          this.getBookletDataSubscription.unsubscribe();
-        }
-        this.getBookletDataSubscription = from(authData.access[AuthAccessKeyType.TEST])
-          .pipe(
-            concatMap(bookletId => this.bs.getBookletData(bookletId))
-          ).subscribe({
-            next: bData => {
-              this.booklets.push(bData);
-              if (!(bData as BookletData).locked) {
-                this.bookletCount += 1;
-              }
-            },
-            complete: () => {
-              this.mds.stopLoadingAnimation();
-            }
-          });
-      }
+      this.booklets = authData.claims.test;
+      this.bookletCount = authData.claims.test.length;
       this.mds.setAuthData(authData);
+      this.mds.stopLoadingAnimation();
     });
   }
 
-  startTest(b: BookletData): void {
+  startTest(b: AccessObject): void {
     this.bs.startTest(b.id).subscribe(testId => {
       if (typeof testId === 'number') {
         this.reloadTestList();

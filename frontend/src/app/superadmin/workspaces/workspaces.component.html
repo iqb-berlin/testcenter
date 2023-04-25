@@ -1,11 +1,11 @@
-<div class="columnhost" fxLayout="row" fxLayoutAlign="space-between start">
-  <div class="objectlist" fxLayout="column" fxFlex="50">
-    <div fxLayout="row">
+<div class="flex-row" [style.justify-content]="'space-between'">
+  <div class="flex-column" [style.width.%]="50">
+    <div class="flex-row">
       <button
         mat-raised-button
         (click)="addObject()"
         matTooltip="Arbeitsbereich hinzufügen"
-        matTooltipPosition="above"
+        matTooltipPosition="below"
         data-cy="add-workspace"
         >
           <mat-icon>add</mat-icon>
@@ -14,7 +14,7 @@
         mat-raised-button
         (click)="deleteObject()"
         matTooltip="Markierte/n Arbeitsbereich/e löschen"
-        matTooltipPosition="above"
+        matTooltipPosition="below"
         data-cy="delete-workspace"
       >
         <mat-icon>delete</mat-icon>
@@ -23,7 +23,7 @@
         mat-raised-button
         (click)="changeObject()"
         matTooltip="Arbeitsbereich umbenennen"
-        matTooltipPosition="above"
+        matTooltipPosition="below"
         data-cy="rename-workspace"
       >
         <mat-icon>edit</mat-icon>
@@ -32,13 +32,13 @@
 
     <mat-table [dataSource]="objectsDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef fxFlex="70px">
+        <mat-header-cell *matHeaderCellDef>
           <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
                         [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
           </mat-checkbox>
         </mat-header-cell>
-        <mat-cell *matCellDef="let row" fxFlex="70px">
+        <mat-cell *matCellDef="let row">
           <mat-checkbox (click)="$event.stopPropagation()"
                         (change)="$event ? tableselectionCheckbox.toggle(row) : null"
                         [checked]="tableselectionCheckbox.isSelected(row)">
@@ -47,8 +47,8 @@
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Name</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -57,15 +57,13 @@
     </mat-table>
   </div>
 
-  <!-- ============================================= -->
-  <div fxLayout="column" fxFlex="40">
-
+  <div class="flex-column" [style.width.%]="40">
     <div *ngIf="selectedWorkspaceId == 0">
       <div>Zugriffsberechtigte für Arbeitsbereich:</div>
       <div>Bitte links einen Arbeitsbereich wählen</div>
     </div>
 
-    <div *ngIf="selectedWorkspaceId > 0" fxLayout="row" fxLayoutAlign="space-between center">
+    <div *ngIf="selectedWorkspaceId > 0" class="flex-row" [style.justify-content]="'space-between'">
       <div>Zugriffsrechte für "{{ selectedWorkspaceName }}":</div>
         <button mat-raised-button (click)="saveUsers()" matTooltip="Speichern"
             matTooltipPosition="above" [disabled]="!pendingUserChanges" data-cy="save">
@@ -75,8 +73,8 @@
 
     <mat-table [dataSource]="UserlistDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>RO | RW</mat-header-cell>
-        <mat-cell *matCellDef="let row" fxFlex="100px">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">RO | RW</mat-header-cell>
+        <mat-cell *matCellDef="let row">
           <mat-checkbox (change)="selectUser(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO" data-cy="workspace-role-ro">
           </mat-checkbox>
           <mat-checkbox (change)="selectUser(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW" data-cy="workspace-role-rw">
@@ -85,7 +83,7 @@
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Nutzer </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Admins</mat-header-cell>
         <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
       </ng-container>
 

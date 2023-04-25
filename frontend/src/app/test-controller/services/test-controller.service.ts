@@ -344,12 +344,15 @@ export class TestControllerService {
     }
   }
 
-  startMaxTimer(testletId: string, timeLeftMinutes: number): void {
+  startMaxTimer(testlet: Testlet): void {
+    const timeLeftMinutes = (testlet.id in this.maxTimeTimers) ?
+      Math.min(this.maxTimeTimers[testlet.id], testlet.maxTimeLeft) :
+      testlet.maxTimeLeft;
     if (this.maxTimeIntervalSubscription !== null) {
       this.maxTimeIntervalSubscription.unsubscribe();
     }
-    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testletId, MaxTimerDataType.STARTED));
-    this.currentMaxTimerTestletId = testletId;
+    this.maxTimeTimer$.next(new MaxTimerData(timeLeftMinutes, testlet.id, MaxTimerDataType.STARTED));
+    this.currentMaxTimerTestletId = testlet.id;
     this.maxTimeIntervalSubscription = interval(1000)
       .pipe(
         takeUntil(
@@ -358,11 +361,11 @@ export class TestControllerService {
         map(val => (timeLeftMinutes * 60) - val - 1)
       ).subscribe(
         val => {
-          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testletId, MaxTimerDataType.STEP));
+          this.maxTimeTimer$.next(new MaxTimerData(val / 60, testlet.id, MaxTimerDataType.STEP));
         },
         e => console.log('maxTime onError: %s', e),
         () => {
-          this.maxTimeTimer$.next(new MaxTimerData(0, testletId, MaxTimerDataType.ENDED));
+          this.maxTimeTimer$.next(new MaxTimerData(0, testlet.id, MaxTimerDataType.ENDED));
           this.currentMaxTimerTestletId = '';
         }
       );
@@ -400,9 +403,13 @@ export class TestControllerService {
     }
 
     const oldTestStatus = this.testStatus$.getValue();
-    this.testStatus$.next(TestControllerState.TERMINATED); // last state that will and can be logged
+    this.testStatus$.next(
+      (oldTestStatus === TestControllerState.PAUSED) ?
+        TestControllerState.TERMINATED_PAUSED :
+        TestControllerState.TERMINATED
+    ); // last state that will and can be logged
 
-    this.router.navigate(['/r/test-starter'], { state: { force } })
+    this.router.navigate(['/'], { state: { force } })
       .then(navigationSuccessful => {
         if (!(navigationSuccessful || force)) {
           this.testStatus$.next(oldTestStatus); // navigation was denied, test continues
@@ -456,7 +463,8 @@ export class TestControllerService {
             {
               state: { force },
               // eslint-disable-next-line no-bitwise
-              queryParams: targetIsCurrent ? { t: Date.now() >> 11 } : {}
+              queryParams: targetIsCurrent ? { reload: Date.now() >> 11 } : {}
+              //  unit shall be reloaded even if we are there already there
             }
           )
             .then(navOk => {

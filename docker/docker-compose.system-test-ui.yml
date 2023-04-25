@@ -1,5 +1,5 @@
 # Compose file for development of cypress-tests.
-version: '3.7'
+version: '3.9'
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
@@ -9,7 +9,7 @@ x-env-mysql: &env-mysql
 services:
   traefik-system-test:
     container_name: testcenter-system-test-traefik
-    image: traefik:v2.2
+    image: traefik:v2.9
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -22,7 +22,7 @@ services:
 
   testcenter-system-test-db:
     container_name: testcenter-system-test-db
-    image: mysql:5.7
+    image: mysql:8.0
     environment:
       <<: *env-mysql
       MYSQL_ROOT_PASSWORD: testcenter_root_pw
@@ -32,6 +32,7 @@ services:
       - --log_error_verbosity=1
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - ../scripts/database/000-create-test-db.sh:/docker-entrypoint-initdb.d/000-create-test-db.sh
     ports:
       - "9091:3306"
       - "22:22"
@@ -45,7 +46,6 @@ services:
       <<: *env-mysql
       MYSQL_HOST: testcenter-system-test-db
       MYSQL_PORT: 3306
-      TESTMODE_REAL_DATA: ${TESTMODE_REAL_DATA-false}
       SUPERUSER_NAME: super
       SUPERUSER_PASSWORD: user123
       WORKSPACE_NAME: example_workspace
@@ -61,12 +61,15 @@ services:
       - ../definitions:/var/www/definitions
       - ../docs/dist:/docs/dist
       - ../package.json:/var/www/package.json
+      - ../scripts:/var/www/scripts
       - ../sampledata:/var/www/sampledata
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix"
+    ports:
+      - 9005:9003 #xdebug
     networks:
       - testcenter-system-test
     depends_on:
@@ -83,7 +86,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
     volumes:
-      - ../docs/dist:/docs/dist
       - ../frontend/src:/app/src
     networks:
       - testcenter-system-test

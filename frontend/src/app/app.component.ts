@@ -79,7 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.mainDataService.appConfig.applyBackgroundColors();
         this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
 
-        const authData = MainDataService.getAuthData();
+        const authData = this.mainDataService.getAuthData();
         if (authData) {
           this.customtextService.addCustomTexts(authData.customTexts);
         }

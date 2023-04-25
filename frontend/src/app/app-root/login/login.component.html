@@ -1,25 +1,21 @@
-<div fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <form [formGroup]="loginForm" (ngSubmit)="login()">
-    <mat-card fxFlex="0 0 400px">
+<div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
+  <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
+    <mat-card>
       <mat-card-title>Anmelden</mat-card-title>
       <mat-card-content *ngIf="mainDataService.appConfig">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-label>Anmeldename</mat-label>
           <input matInput formControlName="name" (keyup.enter)="pw.focus()" (keyup)="clearWarning()">
         </mat-form-field>
-        <mat-form-field>
+        <mat-form-field appearance="outline">
           <mat-label>Kennwort</mat-label>
           <input matInput #pw [type]="showPassword ? 'text' : 'password'" formControlName="pw" (keyup)="clearWarning()">
-          <mat-icon
-            id="toggle-show-password"
-            (click)="showPassword = !showPassword"
-            [style]="!showPassword ? 'color:silver' : ''"
-            matSuffix
-          >
-            visibility
-          </mat-icon>
+          <button mat-icon-button matSuffix type="button"
+                  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="showPassword"
+                  (click)="showPassword = !showPassword">
+            <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+          </button>
         </mat-form-field>
-
         <alert level="error" *ngIf="problemText" [text]="problemText"></alert>
         <alert *ngIf="mainDataService.globalWarning" level="warning" [text]="mainDataService.globalWarning"></alert>
       </mat-card-content>
@@ -27,14 +23,22 @@
         <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
       </mat-card-content>
       <mat-card-actions>
-        <button data-cy="login-user" mat-raised-button type="submit" [disabled]="!loginForm.get('name').valid" color="primary">Weiter</button>
-        <div fxFlex></div>
-        <button data-cy="login-admin" id="admin" mat-raised-button type="button" [disabled]="loginForm.invalid" color="secondary" (click)="this.login('admin')">Weiter als Admin</button>
+        <div class="flex-row login-buttons">
+          <button mat-raised-button type="submit" color="primary" data-cy="login-user"
+                  [disabled]="!loginForm.get('name').valid">
+            Weiter
+          </button>
+          <button mat-raised-button type="button" id="admin" data-cy="login-admin"
+                  [disabled]="loginForm.invalid"
+                  (click)="this.login('admin')">
+            Weiter als Admin
+          </button>
+        </div>
       </mat-card-actions>
     </mat-card>
   </form>
 
-  <mat-card fxFlex="0 0 400px" class="mat-card-box">
+  <mat-card class="status-card">
     <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>
@@ -42,9 +46,12 @@
       <status-card></status-card>
     </mat-card-content>
     <mat-card-actions>
-      <a *ngIf="this.mainDataService.sysCheckAvailable" [routerLink]="['/r/check-starter']" mat-raised-button color="primary">System-Check</a>
+      <a *ngIf="this.mainDataService.sysCheckAvailable" mat-raised-button color="primary"
+         [routerLink]="['/r/check-starter']">
+        System-Check
+      </a>
       <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
     </mat-card-actions>
   </mat-card>
-  <div id="version-number">IQB-Testcenter Version {{mainDataService.appConfig?.version}}</div>
+  <div class="version-label">IQB-Testcenter Version {{mainDataService.appConfig?.version}}</div>
 </div>

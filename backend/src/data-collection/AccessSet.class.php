@@ -1,6 +1,7 @@
 <?php
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
+// TODO add unit-tests
 
 class AccessSet extends DataCollectionTypeSafe {
 
@@ -8,23 +9,26 @@ class AccessSet extends DataCollectionTypeSafe {
         'test',
         'superAdmin',
         'workspaceAdmin',
-        'testGroupMonitor'
+        'testGroupMonitor',
+        'attachmentManager'
     ];
 
-    protected $token;
-    protected $displayName;
-    protected $customTexts;
-    protected $flags;
-    protected $access;
+    protected string $token;
+    protected string $displayName;
+    protected object $customTexts;
+    protected array $flags;
+    protected object $claims;
 
 
-    // TODO add unit-test
-    static function createFromPersonSession(PersonSession $loginWithPerson): AccessSet {
+    static function createFromPersonSession(PersonSession $loginWithPerson, TestData ...$tests): AccessSet {
 
         $login = $loginWithPerson->getLoginSession()->getLogin();
 
-        $displayName = "{$login->getGroupLabel()}/{$login->getName()}";
-        $displayName .= $loginWithPerson->getPerson()->getNameSuffix() ? '/' . $loginWithPerson->getPerson()->getNameSuffix() : '';
+        $displayName = self::getDisplayName(
+            $login->getGroupLabel(),
+            $login->getName(),
+            $loginWithPerson->getPerson()->getNameSuffix()
+        );
 
         $accessSet = new AccessSet(
             $loginWithPerson->getPerson()->getToken(),
@@ -33,16 +37,56 @@ class AccessSet extends DataCollectionTypeSafe {
             $login->getCustomTexts() ?? new stdClass()
         );
 
-        switch ($login->getMode()) {
+        $accessSet->addTests(...$tests);
 
-            case "monitor-group":
-                $accessSet->addAccessObjects('testGroupMonitor', $login->getGroupName());
-                break;
+        if ($login->getMode() == "monitor-group") {
+            if (str_starts_with($login->getGroupName(), 'experimental')) {
+                $accessSet->addAccessObjects(
+                    'attachmentManager',
+                    new AccessObject(
+                        $login->getGroupName(),
+                        'attachmentManager',
+                        $login->getGroupLabel()
+                    )
+                );
+            }
+            $accessSet->addAccessObjects(
+                'testGroupMonitor',
+                new AccessObject(
+                    $login->getGroupName(),
+                    'testGroupMonitor',
+                    $login->getGroupLabel()
+                )
+            );
+        }
 
-            default:
-                $personsBooklets = $login->getBooklets()[$loginWithPerson->getPerson()->getCode()] ?? [];
-                $accessSet->addAccessObjects('test', ...$personsBooklets);
-                break;
+        return $accessSet;
+    }
+
+
+    static function createFromAdminToken(Admin $admin, WorkspaceData ...$workspaces): AccessSet {
+
+        $accessSet = new AccessSet(
+            $admin->getToken(),
+            $admin->getName()
+        );
+
+        $accessObjects = array_map(
+            function(WorkspaceData $workspace): AccessObject {
+                return new AccessObject(
+                    (string) $workspace->getId(),
+                    'workspaceAdmin',
+                    $workspace->getName(),
+                    [ "mode" => $workspace->getMode()]
+                );
+            },
+            $workspaces
+        );
+
+        $accessSet->addAccessObjects('workspaceAdmin', ...$accessObjects);
+
+        if ($admin->isSuperadmin()) {
+            $accessSet->addAccessObjects('superAdmin');
         }
 
         return $accessSet;
@@ -73,35 +117,71 @@ class AccessSet extends DataCollectionTypeSafe {
             return (string) $flag;
         }, $flags);
 
-        $this->access = new stdClass();
+        $this->claims = (object) [];
 
         $this->customTexts = $customTexts ?? (object) [];
     }
 
 
-    public function addAccessObjects(string $type, string ...$accessObjects): AccessSet {
+    function jsonSerialize(): mixed {
+        $json = parent::jsonSerialize();
+        $deprecatedFormat = (object) [];
+        foreach ($this->claims as $accessType => $accessObjectList) {
+
+            $deprecatedFormat->$accessType = [];
+
+            foreach ($accessObjectList as $accessObject) {
+
+                /* @var $accessObject AccessObject */
+                $deprecatedFormat->$accessType[] = $accessObject->getId();
+            }
+        }
+        $json['access'] = $deprecatedFormat;
+        return $json;
+    }
+
+
+    static function getDisplayName(string $groupLabel, string $loginName, ?string $nameSuffix): string {
+
+        $displayName = "$groupLabel/$loginName";
+        $displayName .= $nameSuffix ? '/' . $nameSuffix : '';
+        return $displayName;
+    }
+
+
+    public function hasAccessType(string $type): bool {
+
+        return isset($this->claims->$type);
+    }
+
+
+    private function addAccessObjects(string $type, AccessObject ...$accessObjects) {
 
         if (!in_array($type, $this::$accessObjectTypes)) {
 
             throw new Exception("AccessObject type `$type` is not valid.");
         }
 
-        $this->access->$type = $accessObjects;
-
-        return $this;
+        $this->claims->$type = $accessObjects;
     }
 
 
-    public function hasAccess(string $type, string $id = null): bool {
+    private function addTests(TestData ...$testsOfPerson): void {
 
-        if (!$id) {
-            return isset($this->access->$type);
-        }
-
-        if (!isset($this->access->$type)) {
-            return false;
-        }
-
-        return in_array($id, $this->access->$type);
+        $bookletsData = array_map(
+            function (TestData $testData): AccessObject {
+                return new AccessObject(
+                    $testData->getBookletId(),
+                    'test',
+                    $testData->getLabel(),
+                    [
+                        'locked' => $testData->isLocked(),
+                        'running' => $testData->isRunning()
+                    ]
+                );
+            },
+            $testsOfPerson
+        );
+        $this->addAccessObjects('test', ...$bookletsData);
     }
 }

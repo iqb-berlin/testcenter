@@ -1,32 +1,33 @@
-<div class="status-body">
-  <div fxLayout="row wrap" fxLayoutAlign="center stretch" [ngSwitch]="(tcs.testStatus$ | async)">
+<div [ngSwitch]="(tcs.testStatus$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
+  <mat-card class="mat-card-box" *ngSwitchDefault>
+    <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
+    <mat-card-content>
+      <p><b>Angemeldet als "{{loginName}}"</b></p>
+      <p><b>{{tcs.testMode.modeLabel}}</b></p>
+      <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
+        <b>Der Test ist aktiv.</b>
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button data-cy="resumeTest-1" color="primary" (click)="continueTest()">
+        {{ 'Test fortsetzen'  | customtext:'login_testResumeButtonLabel' | async}}
+      </button>
+      <button mat-raised-button data-cy="endTest-1" color="primary" (click)="terminateTest()">
+        {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
+      </button>
+    </mat-card-actions>
+  </mat-card>
 
-    <mat-card fxFlex="0 0 400px" fxLayout="column" class="mat-card-box" *ngSwitchDefault>
-      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
-      <mat-card-content>
-        <p><b>Angemeldet als "{{loginName}}"</b></p>
-        <p><b>{{tcs.testMode.modeLabel}}</b></p>
-        <p *ngIf="(tcs.testStatus$ | async) === tcs.testStatusEnum.RUNNING" style="color: chocolate">
-          <b>Der Test ist aktiv.</b>
-        </p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button data-cy="endTest-1" color="primary" (click)="terminateTest()">
-          {{ 'Test beenden'  | customtext:'login_testEndButtonLabel' | async}}
-        </button>
-      </mat-card-actions>
-    </mat-card>
-
-    <mat-card fxFlex="0 0 400px" fxLayout="column" class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.PAUSED">
-      <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
-      <mat-card-content>
-        <p><b>Angemeldet als "{{loginName}}"</b></p>
-        <p><b>{{tcs.testMode.modeLabel}}</b></p>
-        <p style="color: chocolate">
-          <b>{{ 'Testpause' | customtext:'booklet_pausedmessage' | async }} </b>
-        </p>
-      </mat-card-content>
-    </mat-card>
+  <mat-card class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.PAUSED">
+    <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
+    <mat-card-content>
+      <p><b>Angemeldet als "{{loginName}}"</b></p>
+      <p><b>{{tcs.testMode.modeLabel}}</b></p>
+      <p style="color: chocolate">
+        <b>{{ 'Testpause' | customtext:'booklet_pausedmessage' | async }} </b>
+      </p>
+    </mat-card-content>
+  </mat-card>
 
 
     <error
@@ -44,18 +45,16 @@
     </error>
 
 
-    <mat-card *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
-      <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>
-      <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
-      <mat-card-content fxLayout="column">
-        <mat-progress-bar
-          color="primary"
-          mode="determinate"
-          [value]="tcs.totalLoadingProgress">
-        </mat-progress-bar>
-        {{tcs.totalLoadingProgress.toFixed(2)}}%
-      </mat-card-content>
-    </mat-card>
-
-  </div>
+  <mat-card *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
+    <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>
+    <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
+    <mat-card-content>
+      <mat-progress-bar
+        color="primary"
+        mode="determinate"
+        [value]="tcs.totalLoadingProgress">
+      </mat-progress-bar>
+      {{tcs.totalLoadingProgress.toFixed(2)}}%
+    </mat-card-content>
+  </mat-card>
 </div>

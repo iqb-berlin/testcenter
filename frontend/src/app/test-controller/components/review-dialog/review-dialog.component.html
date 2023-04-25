@@ -1,19 +1,19 @@
 <form [formGroup]="reviewForm">
   <p mat-dialog-title>Kommentar geben</p>
 
-  <mat-dialog-content fxLayout="column">
-    <div fxLayout="row" fxLayoutGap="60px">
-      <div fxLayout="column" fxLayoutGap="10px">
+  <mat-dialog-content>
+    <div class="flex-row" [style.gap.px]="60">
+      <div class="flex-column">
         <p>
           Sie sind angemeldet als <b>"{{data.loginname}}"</b>.
           Bitte geben Sie Ihren Namen ein, damit eine Zuordnung möglich ist.
         </p>
-        <mat-form-field fxLayout="row">
+        <mat-form-field>
           <input matInput formControlName="sender" placeholder="Mein Name">
         </mat-form-field>
 
-        <mat-radio-group formControlName="target" fxLayout="column" fxLayoutGap="4px">
-          <label><h4 style="margin-bottom: 5px">Der Kommentar wird gegeben für:</h4></label>
+        <mat-radio-group formControlName="target">
+          <label>Der Kommentar wird gegeben für:</label>
           <mat-radio-button value="b" [matTooltip]="data.bookletname">
             aktuelles Testheft "{{ data.bookletname }}"
           </mat-radio-button>
@@ -21,30 +21,28 @@
             aktuelle Aufgabe/Seite "{{ data.unitTitle }}"
           </mat-radio-button>
         </mat-radio-group>
-        <div fxLayout="column">
-          <label><h4 style="margin-bottom: 5px">Priorität</h4></label>
-          <mat-radio-group formControlName="priority" fxLayout="column" fxLayoutGap="5px">
+        <div>
+          <label>Priorität</label>
+          <mat-radio-group formControlName="priority">
             <mat-radio-button value="1">dringend/kritisch</mat-radio-button>
             <mat-radio-button value="2">mittelfristig</mat-radio-button>
             <mat-radio-button value="3">optional</mat-radio-button>
           </mat-radio-group>
         </div>
-        <div fxLayout="column">
-          <label><h4 style="margin-bottom: 5px">Kategorie</h4></label>
-          <mat-checkbox formControlName="tech">Technisches</mat-checkbox>
-          <mat-checkbox formControlName="content">Inhaltliches</mat-checkbox>
-          <mat-checkbox formControlName="design">Gestaltung</mat-checkbox>
-        </div>
+        <ul>
+          <label>Kategorie</label>
+          <li><mat-checkbox formControlName="tech">Technisches</mat-checkbox></li>
+          <li><mat-checkbox formControlName="content">Inhaltliches</mat-checkbox></li>
+          <li><mat-checkbox formControlName="design">Gestaltung</mat-checkbox></li>
+        </ul>
       </div>
 
-      <div fxFlex="0 0 45%" fxLayout="column">
-        <mat-form-field fxFlex appearance="fill">
-          <mat-label>Kommentar</mat-label>
-          <textarea matInput fxFlex formControlName="entry"
-                    style="resize: none;"
-                    rows="28"></textarea>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="fill" [style.width.%]="100">
+        <mat-label>Kommentar</mat-label>
+        <textarea matInput formControlName="entry"
+                  style="resize: none;"
+                  rows="28"></textarea>
+      </mat-form-field>
     </div>
   </mat-dialog-content>
 

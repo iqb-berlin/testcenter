@@ -2,25 +2,21 @@ import { Component } from '@angular/core';
 
 @Component({
   template: `
-    <div fxLayout="column" fxLayoutAlign="start stretch" class="admin-tab-content">
-      <div fxLayout="row" class="div-row">
-        <div fxFlex="30">
-          <mat-label>Text-Ersetzungen</mat-label>
-        </div>
-        <div fxFlex="68">
-          <app-custom-texts></app-custom-texts>
-        </div>
+    <div [style.display]="'grid'" [style.grid-template-columns]="'20% 80%'" [style.row-gap.px]="10"
+         [style.padding.px]="10">
+      <h3 [style.grid-row]="'1 / 2'" [style.grid-column]="'1 / 2'">
+        Text-Ersetzungen
+      </h3>
+      <div [style.grid-row]="'1 / 2'" [style.grid-column]="'2 / 3'">
+        <app-custom-texts></app-custom-texts>
       </div>
-      <div fxLayout="row" class="div-row">
-        <div fxFlex="30">
-          <mat-label>Konfiguration der Anwendung</mat-label>
-        </div>
-        <div fxFlex="68">
-          <app-app-config></app-app-config>
-        </div>
+      <h3 [style.grid-row]="'2 / 3'" [style.grid-column]="'1 / 2'">
+        Konfiguration der Anwendung
+      </h3>
+      <div [style.grid-row]="'2 / 3'" [style.grid-column]="'2 / 3'">
+        <app-app-config></app-app-config>
       </div>
     </div>
-  `,
-  styles: ['.div-row {border-color: gray; border-width: 0 0 1px 0; border-style: solid; margin-top: 10px}']
+  `
 })
 export class SettingsComponent {}

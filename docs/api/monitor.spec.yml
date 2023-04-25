@@ -1,0 +1,237 @@
+openapi: 3.0.0
+
+info:
+    title: ""
+    version: "%%%VERSION%%%"
+
+paths:
+
+  /monitor/group/{group_name}:
+    get:
+      deprecated: true
+      summary: get a group
+      description: "Retrieves Information about a (testtakers-)group. It has to be in the same workspace as the
+       requesting user, who has to have in mode `monitor-group`."
+      tags:
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+        - in: path
+          name: group_name
+          description: name (id) of a group
+          example: "sample_group"
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: return group data
+          content:
+            application/json:
+              example:
+                label: Primary Sample Group
+                name: sample_group
+
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "404":
+          description: Group not found
+        "500":
+          description: Server Error
+
+  /monitor/test-sessions:
+    get:
+      summary: get TestSessions of a group
+      description: "Retrieves all running test sessions from group of a group-monitor.
+        Returns also an URL to a websocket to subscribe to this information if available.
+        Sessions for Persons of this group which are not created right now get created."
+      tags:
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+
+      responses:
+        "200":
+          description: return group data
+          content:
+            application/json:
+              example:
+              - personId: 1
+                groupName: sample_group
+                personLabel: test/xxx
+                groupLabel: Sample group
+                mode: run-hot-return
+                testId: 1
+                testState:
+                  "CURRENT_UNIT_ID": "1"
+                bookletName: BOOKLET.SAMPLE-1
+                unitName: UNIT.SAMPLE
+                unitState:
+                  PRESENTATIONCOMPLETE: "yes"
+                timestamp: 1596455898
+              - personId: 1
+                groupName: "sample_group"
+                personLabel: "test/xxx"
+                groupLabel: "Sample group"
+                mode: "run-hot-return"
+                testId: 2,
+                testState:
+                  status: "locked"
+                bookletName: "BOOKLET.SAMPLE-2"
+                unitState: []
+                timestamp: 1606736826
+              - personId: 3
+                groupName: sample_group
+                personLabel: test-group-monitor
+                groupLabel: Sample group
+                mode: monitor-group
+                testId: -1
+                testState: []
+                unitState: []
+                timestamp: 1596455898
+
+
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /monitor/command:
+    put:
+      summary: send command
+      description: "Send a monitor command to a set of running tests"
+      tags:
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyword:
+                  type: string
+                arguments:
+                  type: array
+                  items:
+                    type: string
+                timestamp:
+                  type: number
+                  description: when the command was given
+                testIds:
+                  items:
+                    type: integer
+            example:
+              keyword: 'MY-COMMAND'
+              arguments: ['arg1', 'arg2']
+              timestamp: 1597906980
+              testIds: [1]
+
+      responses:
+        "201":
+          description: command sent
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /monitor/group/{group_name}/tests/unlock:
+    post:
+      summary: unlock a bunch of tests
+      description: "Unlocks a bunch of running tests"
+      tags:
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+        - in: path
+          name: group_name
+          description: name (id) of a group
+          example: "sample_group"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: number
+            example:
+              - 2
+      responses:
+        "200":
+          description: tests unlocked
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /monitor/group/{group_name}/tests/lock:
+    post:
+      summary: Lock a bunch of tests
+      description: "Locks a bunch of running tests"
+      tags:
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor
+          example: "g:user000000000.0000000000"
+        - in: path
+          name: group_name
+          description: name (id) of a group
+          example: "sample_group"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: number
+            example:
+              - 2
+      responses:
+        "200":
+          description: tests unlocked
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error

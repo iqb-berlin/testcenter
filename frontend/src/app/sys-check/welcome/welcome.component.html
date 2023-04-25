@@ -1,7 +1,6 @@
 <div class="sys-check-body">
-  <div fxLayout="row wrap" fxLayoutAlign="center stretch">
-
-    <mat-card fxFlex="0 0 400px">
+  <div class="flex-row-wrap" [style.justify-content]="'center'">
+    <mat-card [style.flex-basis.px]="400">
       <mat-card-title>{{ ds.loadConfigComplete ? ds.checkConfig?.label : 'Bitte warten' }}</mat-card-title>
       <mat-card-content *ngIf="ds.loadConfigComplete">
         <p>{{'Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.'| customtext:'syscheck_intro' | async}}
@@ -14,9 +13,9 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card fxFlex="0 0 400px" *ngIf="ds.loadConfigComplete">
+    <mat-card *ngIf="ds.loadConfigComplete" [style.flex-basis.px]="400">
       <mat-card-content>
-        <table fxFlex="100%">
+        <table>
           <tbody>
           <tr *ngFor="let ed of ds.environmentReport">
             <td>{{ed.label}}: </td>

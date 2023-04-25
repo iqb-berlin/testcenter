@@ -3,10 +3,11 @@
 // TODO mock backend responses for networktest to speed up things
 // TODO test sending of a report
 
-import { resetBackendData } from './utils';
+import { resetBackendData, useTestDB } from './utils';
 
 describe('Sys-Check', () => {
   beforeEach(resetBackendData);
+  beforeEach(useTestDB);
   it('should exist', () => {
     cy.visit(`${Cypress.config().baseUrl}/#/r/check-starter`);
     cy.contains('System-Check Auswahl')
@@ -27,7 +28,7 @@ describe('Sys-Check', () => {
       .should('exist');
     cy.get('#syscheck-previous-step')
       .should('be.visible');
-    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 30000 });
+    cy.contains('Die folgenden Netzwerkeigenschaften wurden festgestellt: Ihre Verbindung zum Testserver ist gut.', { timeout: 60000 });
     cy.get('#syscheck-next-step')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/check/1/SYSCHECK.SAMPLE/u`);

@@ -1,12 +1,11 @@
 {
   "name": "iqb-testcenter",
-  "version": "13.0.0-alpha",
+  "version": "14.4.0",
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
-      "max": 4
-    },
-    "defintionsUrl": "https://raw.githubusercontent.com/iqb-berlin/testcenter-backend"
+      "max": 5
+    }
   },
   "license": "MIT",
   "repository": {
@@ -18,9 +17,7 @@
     "lint": "npx eslint frontend/src/**/*.ts frontend/src/**/*.js broadcasting-service/src/**/*.ts scripts/**/*.js",
     "backend:update-specs": "npx gulp --gulpfile=./scripts/update-specs.js updateSpecs",
     "backend:api-test": "node_modules/.bin/gulp --gulpfile=./test/api/dredd-test.js runDreddTest",
-    "frontend:compodoc": "npx compodoc -p frontend/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
     "frontend:update-compodoc": "npx compodoc -p frontend/tsconfig.compodoc.json -d ./docs/dist/compodoc-frontend",
-    "broadcasting-service:compodoc": "npx compodoc -p broadcasting-service/tsconfig.doc.json -s -d ./docs/compodoc-frontend",
     "broadcasting-service:update-compodoc": "npx compodoc -p broadcasting-service/tsconfig.compodoc.json -d ./docs/dist/compodoc-broadcasting-service",
     "create-docs": "npx gulp --gulpfile=./scripts/create-docs.js createDocs",
     "create-interfaces": "npx gulp --gulpfile=./scripts/create-interfaces.js createInterfaces",

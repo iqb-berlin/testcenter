@@ -48,7 +48,7 @@
     <mat-icon
       class="unit-badge"
       *ngIf="testSession.timeLeft && (testSession.timeLeft[current.parent.id] !== undefined)"
-      matBadge="{{testSession.timeLeft[current.parent.id].toString()}}"
+      matBadge="{{testSession.timeLeft[current.parent.id] | number: '1.0-0'}}"
       matBadgeColor="accent"
       [matTooltip]="'Verbleibende Zeit' | customtext:'gm_timeleft_tooltip' | async"
     >schedule

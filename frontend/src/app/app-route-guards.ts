@@ -6,24 +6,29 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MainDataService } from './shared/shared.module';
-import { AuthAccessKeyType, AuthData, AuthFlagType } from './app.interfaces';
+import { AuthData } from './app.interfaces';
 import { BackendService } from './backend.service';
+
+// TODO put classes in separate files and clean up absurd if-ceptions
 
 @Injectable()
 export class RouteDispatcherActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.token) {
-        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
+      if (authData.claims) {
+        if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
           this.router.navigate(['/r/admin-starter']);
-        } else if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
+        } else if (authData.flags.indexOf('codeRequired') >= 0) {
           this.router.navigate(['/r/code-input']);
-        } else if (authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
+        } else if (authData.claims.testGroupMonitor) {
           this.router.navigate(['/r/monitor-starter']);
-        } else if (authData.access[AuthAccessKeyType.TEST]) {
+        } else if (authData.claims.test) {
           this.router.navigate(['/r/test-starter'], this.router.getCurrentNavigation().extras);
         } else {
           this.router.navigate(['/r/login', '']);
@@ -71,13 +76,16 @@ export class DirectLoginActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class CodeInputComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
       if (authData.flags) {
-        if (authData.flags.indexOf(AuthFlagType.CODE_REQUIRED) >= 0) {
+        if (authData.flags.indexOf('codeRequired') >= 0) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -95,13 +103,16 @@ export class CodeInputComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class AdminComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]) {
+      if (authData.claims) {
+        if (authData.claims.workspaceAdmin) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -119,13 +130,16 @@ export class AdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN] || authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
+      if (authData.claims) {
+        if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -143,13 +157,16 @@ export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class SuperAdminComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
+      if (authData.claims) {
+        if (authData.claims.superAdmin) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -167,13 +184,16 @@ export class SuperAdminComponentActivateGuard implements CanActivate {
   providedIn: 'root'
 })
 export class TestComponentActivateGuard implements CanActivate {
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
     if (authData) {
-      if (authData.access) {
-        if (authData.access[AuthAccessKeyType.TEST]) {
+      if (authData.claims) {
+        if (authData.claims.test) {
           return true;
         }
         this.router.navigate(['/r']);
@@ -192,13 +212,14 @@ export class TestComponentActivateGuard implements CanActivate {
 })
 export class GroupMonitorActivateGuard implements CanActivate {
   constructor(
-    private router: Router
+    private router: Router,
+    private mainDataService: MainDataService
   ) {}
 
   canActivate(): boolean {
-    const authData = MainDataService.getAuthData();
+    const authData = this.mainDataService.getAuthData();
 
-    if (authData && authData.access && authData.access[AuthAccessKeyType.TEST_GROUP_MONITOR]) {
+    if (authData && authData.claims && authData.claims.testGroupMonitor) {
       return true;
     }
     this.router.navigate(['/r']);

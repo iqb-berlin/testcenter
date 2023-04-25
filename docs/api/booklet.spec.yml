@@ -1,0 +1,79 @@
+openapi: 3.0.0
+
+info:
+  title: ""
+  version: "%%%VERSION%%%"
+
+paths:
+
+  /booklet/{booklet_name}:
+    get:
+      summary: get a booklet
+      description: "Retrieves a Booklet-XML"
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user containing a personToken
+          example: "p:user000000000.test0000000"
+        - in: path
+          name: booklet_name
+          description: id of a executed test
+          example: "BOOKLET.SAMPLE-1"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "A Booklet-XML (see: https://github.com/iqb-berlin/testcenter-backend/blob/master/definitions/vo_Booklet.xsd)"
+          content:
+            application/xml:
+              example:
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><Booklet..."
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
+
+  /booklet/{booklet_name}/data:
+    get:
+      deprecated: true
+      summary: get status of a booklet
+      description: "Retrieves a booklet - in this context that does not mean the booklet-file's content but status
+        information about this booklet in regard of a given login: Is there a running test for this booklet etc."
+      tags:
+        - run test
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for test-user containing a personToken
+          example: "p:user000000000.test0000000"
+        - in: path
+          name: booklet_name
+          description: id of a executed test
+          example: "BOOKLET.SAMPLE-1"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: an object containing information about booklet
+          content:
+            application/json:
+              example:
+                running: true
+                locked: false
+                label: "Booklet's little label"
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error

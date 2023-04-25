@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import {
-  BookletError, CommandResponse, GroupData, TestSessionData
-} from './group-monitor.interfaces';
+import { BookletError, CommandResponse, TestSessionData } from './group-monitor.interfaces';
 import { WebsocketBackendService } from '../shared/shared.module';
 import { AppError } from '../app.interfaces';
 
@@ -38,17 +36,6 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
           return of(generalError);
         })
       );
-  }
-
-  getGroupData(groupName: string): Observable<GroupData> {
-    // TODO error-handling: interceptor should have interfered and moved to error-page ...
-    // https://github.com/iqb-berlin/testcenter-frontend/issues/53
-    return this.http
-      .get<GroupData>(`${this.serverUrl}monitor/group/${groupName}`)
-      .pipe(catchError(() => of(<GroupData>{
-        name: 'error',
-        label: 'error'
-      })));
   }
 
   command(keyword: string, args: string[], testIds: number[]): Observable<CommandResponse> {

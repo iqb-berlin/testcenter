@@ -22,12 +22,12 @@ export interface CustomTextDataGroup {
 @Component({
   selector: 'app-custom-texts',
   template: `
-    <form [formGroup]="customTextsForm" fxFlex fxLayout="column" fxLayoutAlign="start stretch">
+    <form [formGroup]="customTextsForm">
       <mat-accordion>
         <mat-expansion-panel *ngFor="let ctGroup of customTextGroups | keyvalue">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              {{ctGroup.value.label}}
+              <h4>{{ctGroup.value.label}}</h4>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <app-custom-text *ngFor="let ct of ctGroup.value.texts"

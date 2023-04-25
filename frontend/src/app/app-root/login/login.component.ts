@@ -9,16 +9,11 @@ import { BackendService } from '../../backend.service';
 @Component({
   templateUrl: './login.component.html',
   styles: [
-    'mat-card {margin: 10px;}',
-    '.mat-card-box {background: var(--tc-box-background)}',
-    '#toggle-show-password {cursor: pointer}',
+    '.status-card {background: var(--tc-box-background)}',
     '.mat-form-field {display: block}',
-    '.mat-card {display: flex; justify-content: flex-start; flex-direction: column; flex-wrap: wrap}',
-    '.mat-card-content {flex-grow: 1; overflow: auto}',
-    '#admin {margin-right: 0}',
-    '#version-number {' +
-      'position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); color: black; padding: 1px 3px' +
-    '}'
+    '.mat-card {width: 400px;}',
+    '.login-buttons {justify-content: space-between; margin-left: 8px;}',
+    '.version-label {position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); padding: 1px 3px}'
   ]
 })
 

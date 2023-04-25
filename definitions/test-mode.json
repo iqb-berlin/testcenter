@@ -30,7 +30,7 @@
   "RUN-HOT-RETURN": {
     "label": "Durchführung Test/Befragung",
     "config": {
-      "alwaysNewSession": true,
+      "alwaysNewSession": false,
       "canReview": false,
       "saveResponses": true,
       "forceTimeRestrictions": true,

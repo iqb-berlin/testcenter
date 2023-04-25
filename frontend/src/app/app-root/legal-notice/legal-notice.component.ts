@@ -4,7 +4,8 @@ import { MainDataService } from '../../shared/shared.module';
 @Component({
   templateUrl: './legal-notice.component.html',
   styles: [
-    'mat-card {margin: 10px}'
+    'mat-card {width: 500px;}',
+    'ul {margin-top: 0;}'
   ]
 })
 export class LegalNoticeComponent implements OnInit {

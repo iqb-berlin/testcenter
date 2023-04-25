@@ -16,3 +16,7 @@
   white-space: normal;
   line-height: 16px;
 }
+
+.mat-card {
+  width: 500px;
+}

@@ -49,13 +49,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   unitNavigationTarget = UnitNavigationTarget;
   unitNavigationList: UnitNaviButtonData[] = [];
   debugPane = false;
-  sidebarOpen = false;
   unitScreenHeader: string = '';
 
   @ViewChild('navButtons') navButtons: ElementRef;
 
   constructor(
-    public mds: MainDataService,
+    public mainDataService: MainDataService,
     public tcs: TestControllerService,
     private bs: BackendService,
     private reviewDialog: MatDialog,
@@ -70,9 +69,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.progressVisualEnabled = false;
+      this.mainDataService.progressVisualEnabled = false;
 
-      this.subscriptions.errorReporting = this.mds.appError$
+      this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
 
@@ -80,7 +79,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .pipe(distinctUntilChanged())
         .subscribe(status => this.logTestControllerStatusChange(status));
 
-      this.subscriptions.appWindowHasFocus = this.mds.appWindowHasFocus$
+      this.subscriptions.appWindowHasFocus = this.mainDataService.appWindowHasFocus$
         .subscribe(hasFocus => {
           this.tcs.windowFocusState$.next(hasFocus ? WindowFocusState.HOST : WindowFocusState.UNKNOWN);
         });
@@ -173,7 +172,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.tcs.rootTestlet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 5000 });
     } else {
-      const authData = MainDataService.getAuthData();
+      const authData = this.mainDataService.getAuthData();
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
         data: <ReviewDialogData>{
           loginname: authData.displayName,
@@ -257,8 +256,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         }
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
-          this.tcs.interruptMaxTimer();
-
+          this.tcs.cancelMaxTimer();
           const targetUnit = this.tcs.rootTestlet.getUnitAt(parseInt(gotoTarget, 10));
           if (targetUnit) {
             targetUnit.codeRequiringTestlets
@@ -318,13 +316,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         break;
       case MaxTimerDataType.INTERRUPTED:
-        this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, this.tcs.maxTimeTimers[maxTimerData.testletId]);
         this.timerValue = null;
         break;
       case MaxTimerDataType.STEP:
         this.timerValue = maxTimerData;
+        this.tcs.maxTimeTimers[maxTimerData.testletId] = maxTimerData.timeLeftSeconds / 60;
         if ((maxTimerData.timeLeftSeconds % 15) === 0) {
-          this.tcs.maxTimeTimers[maxTimerData.testletId] = Math.round(maxTimerData.timeLeftSeconds / 60);
+          this.tcs.maxTimeTimers[maxTimerData.testletId] = maxTimerData.timeLeftSeconds / 60;
           if (this.tcs.testMode.saveResponses) {
             this.bs.updateTestState(
               this.tcs.testId,
@@ -347,7 +345,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private refreshUnitMenu(): void {
-    this.sidebarOpen = false;
     this.unitNavigationList = [];
     if (!this.tcs.rootTestlet) {
       return;
@@ -370,10 +367,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           .scrollIntoView({ inline: 'center' });
       }, 50);
     }
-  }
-
-  toggleSidebar(): void {
-    this.sidebarOpen = !this.sidebarOpen;
   }
 
   private setUnitScreenHeader(): void {
@@ -405,7 +398,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
     this.tls.reset();
 
-    this.mds.progressVisualEnabled = true;
+    this.mainDataService.progressVisualEnabled = true;
   }
 
   @HostListener('window:unload', ['$event'])

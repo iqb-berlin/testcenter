@@ -7,7 +7,7 @@ import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
 import {
-  CustomtextService, MainDataService, BookletConfig, TestMode
+  CustomtextService, BookletConfig, TestMode
 } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
@@ -18,7 +18,6 @@ import {
 } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
-import { LocalStorage } from '../utils/local-storage.util';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +41,6 @@ export class TestLoaderService {
     this.reset();
 
     this.tcs.testStatus$.next(TestControllerState.LOADING);
-    LocalStorage.setTestId(this.tcs.testId);
 
     const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
     this.tcs.testMode = new TestMode(testData.mode);
@@ -78,7 +76,10 @@ export class TestLoaderService {
   private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
     this.tcs.resumeTargetUnitSequenceId =
       this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[TestStateKey.CURRENT_UNIT_ID]) || 1;
-    if (lastState[TestStateKey.CONTROLLER] && (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)) {
+    if (
+      (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
+      (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
+    ) {
       this.tcs.testStatus$.next(TestControllerState.PAUSED);
       this.tcs.setUnitNavigationRequest(UnitNavigationTarget.PAUSE);
       return;
@@ -268,7 +269,8 @@ export class TestLoaderService {
   private getBookletFromXml(xmlString: string): Testlet {
     let rootTestlet: Testlet = null;
     const oParser = new DOMParser();
-    const oDOM = oParser.parseFromString(xmlString, 'text/xml');
+    const xmlStringWithOutBom = xmlString.replace(/^\uFEFF/gm, '');
+    const oDOM = oParser.parseFromString(xmlStringWithOutBom, 'text/xml');
 
     if (oDOM.documentElement.nodeName !== 'Booklet') {
       throw Error('Root element fo Booklet should be <Booklet>');
@@ -288,7 +290,7 @@ export class TestLoaderService {
         const customTexts = TestLoaderService.getChildElements(customTextsElements[0]);
         const customTextsForBooklet = {};
         for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
-          if (customTexts[childIndex].nodeName === 'Text') {
+          if (customTexts[childIndex].nodeName === 'CustomText') {
             const customTextKey = customTexts[childIndex].getAttribute('key');
             if ((typeof customTextKey !== 'undefined') && (customTextKey !== null)) {
               customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent;
@@ -301,7 +303,7 @@ export class TestLoaderService {
       const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
       this.tcs.bookletConfig = new BookletConfig();
-      this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig());
+      // this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig()); // TODO ! ?
       if (bookletConfigElements.length > 0) {
         this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
       }

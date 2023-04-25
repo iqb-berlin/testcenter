@@ -45,34 +45,23 @@
   margin-top: 0.1em
 }
 
-#unit-title {
-  position: absolute;
-  width: 100%;
-  top: 0;
-  height: 39px;
-  font-size: 1.5em;
+.unit-title h2 {
+  font-weight: normal;
+  text-align: center;
   background-color: white;
-  border-bottom: solid 1px black;
-  white-space: nowrap;
-  text-overflow: clip;
-  overflow: hidden;
+  margin: 0;
+  padding: 5px;
 }
 
 .is-waiting #iframe-host,
-.is-waiting #unit-title {
+.is-waiting .unit-title {
   visibility: hidden;
 }
 
-#page-navigation {
+.page-navigation {
   position: absolute;
   width: 100%;
   height: 45px;
   bottom: 0;
-  padding: 0 16px;
   font-size: 1.2em;
-}
-
-#page-navigation-prompt {
-  padding-right: 8px;
-  color: white;
 }

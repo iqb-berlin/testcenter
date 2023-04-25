@@ -1,6 +1,6 @@
 #  Compose file for production environment. Images are NOT locally built but
 #  downloaded from Docker-Hub. For certificate setup refer to the README.
-version: '3.7'
+version: '3.9'
 
 services:
 
@@ -12,21 +12,27 @@ services:
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
-      - "--providers.file.directory=/"
+      - "--entrypoints.websecure.http.tls.options=default@file"
+      - "--providers.file.filename=/ssl-config.yml"
     ports:
-      - "443:443"
+      - "${TLS_PORT}:443"
     volumes:
       - ./config/certs/:/certs/
-      - ./config/cert_config.yml:/cert_config.yml
+      - ./config/ssl-config.yml:/ssl-config.yml
 
   testcenter-backend:
     labels:
       - "traefik.http.routers.testcenter-backend.tls=true"
+      - "traefik.http.middlewares.tls-security-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.tls-security-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers, tls-security-headers"
 
   testcenter-frontend:
     labels:
       - "traefik.http.routers.testcenter-frontend.tls=true"
+      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers, tls-security-headers"
 
   testcenter-broadcasting-service:
     labels:
       - "traefik.http.routers.testcenter-broadcasting-service.tls=true"
+      - "traefik.http.routers.testcenter-broadcasting-service.middlewares=testcenter-broadcasting-service-stripprefix, security-headers, tls-security-headers"

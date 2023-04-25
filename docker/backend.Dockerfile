@@ -2,6 +2,7 @@ ARG PHP_VERSION=8.1.6
 
 FROM php:${PHP_VERSION} AS backend-composer
 
+# PHP zip extension needs the following packages
 RUN apt-get update && apt-get install -y \
   zlib1g-dev \
   libzip-dev \
@@ -14,7 +15,7 @@ COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 COPY backend/composer.json .
 COPY backend/composer.lock .
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 RUN composer install
 
 VOLUME /vendor
@@ -76,7 +77,10 @@ RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 COPY backend/config/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-# configure phpunit
+# Add testing code
 COPY backend/phpunit.xml .
-
 COPY backend/test test
+
+# some initialization tests need this
+# jq - JSON parser for bash
+RUN apt-get update && apt-get install -y jq

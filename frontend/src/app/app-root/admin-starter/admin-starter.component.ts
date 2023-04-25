@@ -1,21 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { from, Subscription } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { BackendService } from '../../backend.service';
-import { AuthAccessKeyType, AuthData, WorkspaceData } from '../../app.interfaces';
+import { AccessObject } from '../../app.interfaces';
 import { MainDataService } from '../../shared/shared.module';
 
 @Component({
   templateUrl: './admin-starter.component.html',
   styles: [
-    'mat-card {margin: 10px;}',
-    '.mat-card-box {background-color: var(--tc-box-background)}'
+    '.status-card {background-color: var(--tc-box-background)}'
   ]
 })
 
 export class AdminStarterComponent implements OnInit, OnDestroy {
-  workspaces: WorkspaceData[] = [];
+  workspaces: AccessObject[] = [];
   isSuperAdmin = false;
   private getWorkspaceDataSubscription: Subscription | null = null;
 
@@ -34,43 +32,15 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
           this.getWorkspaceDataSubscription.unsubscribe();
         }
 
-        if (typeof authDataUntyped !== 'number') {
-          const authData = authDataUntyped as AuthData;
-          if (authData) {
-            if (authData.token) {
-              if (authData.access[AuthAccessKeyType.SUPER_ADMIN]) {
-                this.isSuperAdmin = true;
-              }
-              if (authData.access[AuthAccessKeyType.WORKSPACE_ADMIN]) {
-                this.workspaces = [];
-                this.getWorkspaceDataSubscription = from(authData.access[AuthAccessKeyType.WORKSPACE_ADMIN])
-                  .pipe(
-                    concatMap(workspaceId => this.backendService.getWorkspace(workspaceId))
-                  ).subscribe(
-                    wsData => this.workspaces.push(wsData),
-                    () => this.mainDataService.stopLoadingAnimation(),
-                    () => this.mainDataService.stopLoadingAnimation()
-                  );
-              } else {
-                this.mainDataService.stopLoadingAnimation();
-              }
-              this.mainDataService.setAuthData(authData);
-            } else {
-              this.mainDataService.setAuthData();
-              this.mainDataService.stopLoadingAnimation();
-            }
-          } else {
-            this.mainDataService.setAuthData();
-            this.mainDataService.stopLoadingAnimation();
-          }
-        } else {
-          this.mainDataService.stopLoadingAnimation();
-        }
+        this.workspaces = authDataUntyped.claims.workspaceAdmin;
+        this.isSuperAdmin = typeof authDataUntyped.claims.superAdmin !== 'undefined';
+
+        this.mainDataService.stopLoadingAnimation();
       });
     });
   }
 
-  buttonGotoWorkspaceAdmin(ws: WorkspaceData): void {
+  buttonGotoWorkspaceAdmin(ws: AccessObject): void {
     this.router.navigateByUrl(`/admin/${ws.id.toString()}/files`);
   }
 

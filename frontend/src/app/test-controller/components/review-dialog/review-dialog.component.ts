@@ -4,7 +4,13 @@ import { Component, Inject } from '@angular/core';
 import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 
 @Component({
-  templateUrl: './review-dialog.component.html'
+  templateUrl: './review-dialog.component.html',
+  styles: [
+    '.mat-radio-group {display: flex; flex-direction: column;}',
+    '.mat-radio-button {margin: 5px;}',
+    'label {display: block; margin: 10px 0 5px 0; font-weight: bold;}',
+    'ul {list-style-type: none; padding: 0;}'
+  ]
 })
 export class ReviewDialogComponent {
   reviewForm = new FormGroup({

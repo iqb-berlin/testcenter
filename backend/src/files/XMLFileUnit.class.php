@@ -2,178 +2,137 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-
 class XMLFileUnit extends XMLFile {
+  const type = 'Unit';
+  const canBeRelationSubject = true;
+  const canBeRelationObject = true;
 
-    const type = 'Unit';
-    const deprecatedElements = ['/Unit/Definition/@type', '/Unit/Metadata/Lastchange'];
+  const deprecatedElements = [
+    '/Unit/Definition/@type',
+    '/Unit/Metadata/Lastchange',
+    '/Unit/Dependencies/file'
+  ];
 
-    protected int $totalSize = 0;
-    protected string $playerId = '';
-    private array $dependencies = [];
+  public function crossValidate(WorkspaceCache $workspaceCache): void {
+    parent::crossValidate($workspaceCache);
 
-    public function __construct(string $path, bool $validate = false, bool $isRawXml = false) {
+    $this->checkRequestedAttachments();
+    $this->checkIfResourcesExist($workspaceCache);
+    $this->getPlayerIfExists($workspaceCache);
+  }
 
-        parent::__construct($path, $validate, $isRawXml);
-
-        if ($this->isValid()) {
-            $this->playerId = $this->readPlayerId();
-            $this->dependencies = $this->readDependencies();
-        }
+  public function getPlayerIfExists(WorkspaceCache $validator): ?ResourceFile {
+    if (!$this->isValid()) {
+      return null;
     }
 
-    public function crossValidate(WorkspaceValidator $validator) : void {
+    $playerId = $this->readPlayerId();
 
-        parent::crossValidate($validator);
+    $resource = $validator->getResource($playerId);
 
-        $this->checkIfResourceExists($validator);
-        $this->getPlayerIfExists($validator);
+    if ($resource != null) {
+      $this->addRelation(new FileRelation($resource->getType(), $playerId, FileRelationshipType::usesPlayer, $resource));
+    } else {
+      $this->report('error', "Player not found `$playerId`.");
     }
 
+    return $resource;
+  }
 
-    public function getPlayerIfExists(WorkspaceValidator $validator): ?ResourceFile {
+  private function checkIfResourcesExist(WorkspaceCache $validator): void {
+    $this->contextData['totalSize'] = $this->size;
 
-        if (!$this->isValid()) {
-            return null;
-        }
+    $definitionRef = $this->getDefinitionRef();
 
-        $resource = $validator->getResource($this->playerId, true);
+    $resources = $this->readPlayerDependencies();
 
-        if ($resource != null) {
-            $resource->addUsedBy($this);
-        } else {
-            $this->report('error', "No suitable version of `{$this->playerId}` found");
-        }
-
-        return $resource;
+    if ($definitionRef) {
+      $resources['definition'] = $definitionRef;
     }
 
+    foreach ($resources as $key => $resourceName) {
+      $resourceId = strtoupper($resourceName);
+      $resource = $validator->getResource($resourceId, false);
 
-    private function checkIfResourceExists(WorkspaceValidator $validator): void {
+      if ($resource != null) {
+        $relationshipType = ($key === 'definition') ? FileRelationshipType::isDefinedBy : FileRelationshipType::usesPlayerResource;
+        $this->addRelation(new FileRelation($resource->getType(), $resourceName, $relationshipType, $resource));
+        $this->contextData['totalSize'] += $resource->getSize();
 
-        $this->totalSize = $this->size;
+      } else {
+        $this->report('error', "Resource `$resourceName` not found");
+      }
+    }
+  }
 
-        $definitionRef = $this->getDefinitionRef();
+  public function getTotalSize(): int {
+    return $this->contextData['totalSize'];
+  }
 
-        $resources = $this->getResources();
-
-        if ($definitionRef) {
-            $resources[] = $definitionRef;
-        }
-
-        foreach ($resources as $resourceName) {
-
-            $resourceId = FileName::normalize($resourceName, false);
-            $resource = $validator->getResource($resourceId, false);
-            if ($resource != null) {
-                $resource->addUsedBy($this);
-                $this->totalSize += $resource->getSize(); // TODO also for additional resources?
-            } else {
-                $this->report('error', "Resource `$resourceName` not found");
-            }
-        }
+  public function readPlayerId(): string {
+    if (!$this->isValid()) {
+      return '';
     }
 
+    $definition = $this->getXml()->xpath('/Unit/Definition | /Unit/DefinitionRef');
 
-    public function getTotalSize(): int {
+    $playerIdRaw = count($definition) ? (string) $definition[0]['player'] : null;
 
-        return $this->totalSize;
+    if (!$playerIdRaw) {
+      return '';
     }
 
+    return FileID::normalize($playerIdRaw);
+  }
 
-    public function getPlayerId(): string {
+  public function getDefinitionRef(): string {
+    $definitionRefNodes = $this->getXml()->xpath('/Unit/DefinitionRef');
+    return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
+  }
 
-        return $this->playerId;
+  public function getDefinition(): string {
+    $definitionNodes = $this->getXml()->xpath('/Unit/Definition');
+    return count($definitionNodes) ? (string) $definitionNodes[0] : '';
+  }
+
+  private function readPlayerDependencies(): array {
+    if (!$this->isValid()) {
+      return [];
     }
 
+    $dE = $this->getXml()->xpath('/Unit/Dependencies/file[not(@for) or @for="player"]|/Unit/Dependencies/File[not(@for) or @for="player"]');
 
-    public function readPlayerId(): string {
+    return array_map(
+      function($e) {
+        return (string) $e;
+      },
+      $dE
+    );
+  }
 
-        if (!$this->isValid()) {
-            return '';
-        }
+  private function checkRequestedAttachments(): void {
+    $requestedAttachments = $this->getRequestedAttachments();
+    $requestedAttachmentsCount = count($requestedAttachments);
+    if ($requestedAttachmentsCount) {
+      $this->report('info', "`$requestedAttachmentsCount` attachment(s) requested.");
+    }
+  }
 
-        $definition = $this->xml->xpath('/Unit/Definition | /Unit/DefinitionRef');
-        if (count($definition)) {
-            $playerId = strtoupper((string) $definition[0]['player']);
-            if (substr($playerId, -5) != '.HTML') {
-                $playerId = $playerId . '.HTML';
-            }
-            return $playerId;
-        }
+  public function getRequestedAttachments(): array {
+    $variables = $this->getXml()->xpath('/Unit/BaseVariables/Variable[@type="attachment"]');
+    $requestedAttachments = [];
+    foreach ($variables as $variable) {
+      if (!is_a($variable, SimpleXMLElement::class)) {
+        continue;
+      }
 
-        return '';
+      $requestedAttachments[] = new RequestedAttachment(
+        $this->getId(),
+        (string) $variable['format'],
+        (string) $variable['id']
+      );
     }
 
-
-    public function getContent(WorkspaceValidator $workspaceValidator): string {
-
-        $this->crossValidate($workspaceValidator);
-        if (!$this->isValid()) {
-            return '';
-        }
-
-        $definitionNode = $this->xml->xpath('/Unit/Definition');
-        if (count($definitionNode)) {
-            return (string) $definitionNode[0];
-        }
-
-        $definitionRef = (string) $this->xml->xpath('/Unit/DefinitionRef')[0];
-        $unitContentFile = $workspaceValidator->getResource($definitionRef, true);
-
-        if (!$unitContentFile) {
-            throw new HttpError("Resource not found: `$definitionRef`");
-        }
-
-        return $unitContentFile->getContent();
-    }
-
-
-    public function getDefinitionRef(): string {
-
-        $definitionRefNodes = $this->xml->xpath('/Unit/DefinitionRef');
-        return count($definitionRefNodes) ? (string) $definitionRefNodes[0] : '';
-    }
-
-
-    public function getResources(): array {
-
-        $resourceNodes = $this->xml->xpath('/Unit/Dependencies/File');
-        return array_map(
-            function(SimpleXMLElement $fileElem) { return (string) $fileElem; },
-            $resourceNodes
-        );
-    }
-
-
-    public function getDefinition(): string {
-
-        $definitionNodes = $this->xml->xpath('/Unit/Definition');
-        return count($definitionNodes) ? (string) $definitionNodes[0] : '';
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->totalSize = $this->getTotalSize();
-        return $meta;
-    }
-
-    public function getDependencies(): array {
-
-        return $this->dependencies;
-    }
-
-    private function readDependencies(): array {
-
-        if (!$this->isValid()) {
-            return [];
-        }
-
-        return array_map(
-            function($e) { return (string) $e;},
-            $this->xml->xpath('/Unit/Dependencies/File[not(@for) or @for="player"]')
-        );
-    }
+    return $requestedAttachments;
+  }
 }

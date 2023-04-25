@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../shared/shared.module';
-import { BackendService } from './backend.service';
 import { WorkspaceDataService } from './workspacedata.service';
 
 @Component({
@@ -14,10 +13,14 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private backendService: BackendService,
     public mainDataService: MainDataService,
-    public workspaceDataService: WorkspaceDataService
-  ) { }
+    public workspaceDataService: WorkspaceDataService,
+    private router: Router
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => {
+      return false;
+    };
+  }
 
   navLinks = [
     { path: 'files', label: 'Dateien' },
@@ -30,13 +33,12 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       this.mainDataService.appSubTitle$.next('');
       this.routingSubscription = this.route.params.subscribe((params: Params) => {
         this.workspaceDataService.workspaceID = params.ws;
-        this.backendService.getWorkspace(params.ws).subscribe(workspaceData => {
-          this.workspaceDataService.wsName = workspaceData.name;
-          this.workspaceDataService.wsRole = workspaceData.role;
-          this.mainDataService.appSubTitle$.next(
-            `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
-          );
-        });
+        const workspace = this.mainDataService.getAccessObject('workspaceAdmin', params.ws);
+        this.workspaceDataService.wsName = workspace.label;
+        this.workspaceDataService.wsRole = workspace.flags.mode;
+        this.mainDataService.appSubTitle$.next(
+          `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
+        );
       });
     });
   }

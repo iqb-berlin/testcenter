@@ -5,7 +5,7 @@
       <ng-container *ngFor="let type of fileTypes">
         <mat-expansion-panel [expanded]="true" *ngIf="files && files[type]">
           <mat-expansion-panel-header>
-            <mat-panel-title>{{typeLabels[type]}}</mat-panel-title>
+            <mat-panel-title class="table-header">{{typeLabels[type]}}</mat-panel-title>
             <mat-panel-description>
               <span>{{files[type].data.length}} Datei{{files[type].data.length === 1 ? '' : 'en'}}</span>
               <span *ngIf="fileStats.invalid[type]">, davon {{fileStats.invalid[type]}} Fehlerhaft</span>

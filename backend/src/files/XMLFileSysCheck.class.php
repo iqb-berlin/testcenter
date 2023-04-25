@@ -2,153 +2,133 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-
 class XMLFileSysCheck extends XMLFile {
+  const type = 'SysCheck';
+  const canBeRelationSubject = true;
+  const canBeRelationObject = false;
 
-    const type = 'SysCheck';
-    const canHaveDependencies = false;
+  public function crossValidate(WorkspaceCache $workspaceCache): void {
+    parent::crossValidate($workspaceCache);
 
-    public function crossValidate(WorkspaceValidator $validator): void {
+    $unitId = $this->getUnitId();
+    $unit = $workspaceCache->getUnit($unitId);
 
-        parent::crossValidate($validator);
+    if ($unit != null) {
+      $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
+    }
+  }
 
-        $unitId = $this->getUnitId();
-        $unit = $validator->getUnit($unitId);
-
-        if ($unit != null) {
-            $unit->addUsedBy($this);
-        }
+  public function getSaveKey() {
+    if (!$this->isValid()) {
+      return "";
     }
 
+    $configNode = $this->getXml()->xpath('/SysCheck/Config[@savekey]');
+    return count($configNode) ? strtoupper((string) $configNode[0]['savekey']) : '';
+  }
 
-    public function getSaveKey() {
+  public function hasSaveKey(): bool {
+    return strlen($this->getSaveKey()) > 0;
+  }
 
-        if (!$this->isValid()) {
-            return "";
-        }
+  public function hasUnit(): bool {
+    return strlen($this->getUnitId()) > 0;
+  }
 
-        $configNode = $this->xml->xpath('/SysCheck/Config[@savekey]');
-        return count($configNode) ? strtoupper((string) $configNode[0]['savekey']) : '';
+  public function getUnitId(): string {
+    if (!$this->isValid()) {
+      return "";
     }
 
+    $configNode = $this->getXml()->xpath('/SysCheck/Config[@unit]');
+    return count($configNode) ? strtoupper((string) $configNode[0]['unit']) : '';
+  }
 
-    public function hasSaveKey(): bool {
-
-        return strlen($this->getSaveKey()) > 0;
+  public function getCustomTexts(): array {
+    if (!$this->isValid()) {
+      return [];
     }
 
+    $customTextNodes = $this->getXml()->xpath('/SysCheck/Config/CustomText');
+    $customTexts = [];
+    foreach ($customTextNodes as $customTextNode) {
+      $customTexts[] = [
+        'key' => (string) $customTextNode['key'],
+        'value' => (string) $customTextNode
+      ];
+    }
+    return $customTexts;
+  }
 
-    public function hasUnit(): bool {
-
-        return strlen($this->getUnitId()) > 0;
+  public function getSkipNetwork(): bool {
+    if (!$this->isValid()) {
+      return false;
     }
 
+    $configNode = $this->getXml()->xpath('/SysCheck/Config[@skipnetwork]');
+    return count($configNode) ? ($configNode[0]['skipnetwork'] == 'true') : false;
+  }
 
-    public function getUnitId(): string {
-
-        if (!$this->isValid()) {
-            return "";
-        }
-
-        $configNode = $this->xml->xpath('/SysCheck/Config[@unit]');
-        return count($configNode) ? strtoupper((string) $configNode[0]['unit']) : '';
+  public function getQuestions(): array {
+    if (!$this->isValid()) {
+      return [];
     }
 
+    $questions = [];
+    $questionNodes = $this->getXml()->xpath('/SysCheck/Config/Q');
+    foreach ($questionNodes as $questionNode) {
+      $questions[] = [
+        'id' => (string) $questionNode['id'],
+        'type' => (string) $questionNode['type'],
+        'prompt' => (string) $questionNode['prompt'],
+        'required' => (boolean) $questionNode['required'],
+        'options' => strlen((string) $questionNode) ? explode('#', (string) $questionNode) : []
+      ];
+    }
+    return $questions;
+  }
 
-    public function getCustomTexts(): array {
+  public function getSpeedtestUploadParams(): array {
+    return $this->getSpeedParams(true);
+  }
 
-        if (!$this->isValid()) {
-            return [];
-        }
+  public function getSpeedtestDownloadParams(): array {
+    return $this->getSpeedParams(false);
+  }
 
-        $customTextNodes = $this->xml->xpath('/SysCheck/Config/CustomText');
-        $customTexts = [];
-        foreach ($customTextNodes as $customTextNode) {
-            $customTexts[] = [
-                'key' => (string) $customTextNode['key'],
-                'value' => (string) $customTextNode
-            ];
-        }
-        return $customTexts;
+  private function getSpeedParams(bool $upload = false) {
+    $speedtestParams = [
+      'min' => 0,
+      'good' => 0,
+      'maxDevianceBytesPerSecond' => 0,
+      'maxErrorsPerSequence' => 0,
+      'maxSequenceRepetitions' => 0,
+      'sequenceSizes' => []
+    ];
+
+    if (!$this->isValid()) {
+      return $speedtestParams;
     }
 
+    $node = $this->getXml()->xpath('/SysCheck/Config/' . ($upload ? 'UploadSpeed' : 'DownloadSpeed'));
 
-    public function getSkipNetwork(): bool {
-
-        if (!$this->isValid()) {
-            return false;
-        }
-
-        $configNode = $this->xml->xpath('/SysCheck/Config[@skipnetwork]');
-        return count($configNode) ? ($configNode[0]['skipnetwork'] == 'true') : false;
+    if (!count($node)) {
+      return $speedtestParams;
     }
 
-
-    public function getQuestions(): array {
-
-        if (!$this->isValid()) {
-            return [];
-        }
-
-        $questions = [];
-        $questionNodes = $this->xml->xpath('/SysCheck/Config/Q');
-        foreach($questionNodes as $questionNode) {
-            $questions[] = [
-                'id'        => (string) $questionNode['id'],
-                'type'      => (string) $questionNode['type'],
-                'prompt'    => (string) $questionNode['prompt'],
-                'required'  => (boolean) $questionNode['required'],
-                'options'   => strlen((string) $questionNode) ? explode('#', (string) $questionNode) : []
-            ];
-        }
-        return $questions;
+    foreach ($speedtestParams as $param => $default) {
+      $speedtestParams[$param] = (int) $node[0][$param] ?? $default;
     }
 
-
-    public function getSpeedtestUploadParams(): array {
-
-        return $this->getSpeedParams(true);
+    if ((string) $node[0]) {
+      $speedtestParams['sequenceSizes'] = array_map(
+        function($str) {
+          return trim($str);
+        },
+        explode(',', (string) $node[0])
+      );
     }
 
-
-    public function getSpeedtestDownloadParams(): array {
-
-        return $this->getSpeedParams(false);
-    }
-
-
-    private function getSpeedParams(bool $upload = false) {
-
-        $speedtestParams = [
-            'min' => 0,
-            'good' => 0,
-            'maxDevianceBytesPerSecond' => 0,
-            'maxErrorsPerSequence' => 0,
-            'maxSequenceRepetitions' => 0,
-            'sequenceSizes' => []
-        ];
-
-        if (!$this->isValid()) {
-            return $speedtestParams;
-        }
-
-        $node = $this->xml->xpath('/SysCheck/Config/' . ($upload ? 'UploadSpeed' : 'DownloadSpeed'));
-
-        if (!count($node)) {
-            return $speedtestParams;
-        }
-
-        foreach ($speedtestParams as $param => $default) {
-            $speedtestParams[$param] = (int) $node[0][$param] ?? $default;
-        }
-
-        if ((string) $node[0]) {
-            $speedtestParams['sequenceSizes'] = array_map(
-                function($str) { return trim($str); },
-                explode(',', (string) $node[0])
-            );
-        }
-
-        return $speedtestParams;
-    }
+    return $speedtestParams;
+  }
 }

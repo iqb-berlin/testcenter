@@ -4,7 +4,7 @@
 # b) we definitely don't want to include the anonymous volumes for data and db from dev here
 # TODO move traefik-stuff from docker-compose.yml to separate file, so we can inherit from that instead of having a copy here
 
-version: '3.7'
+version: '3.9'
 
 x-env-mysql: &env-mysql
   MYSQL_DATABASE: testcenter_db
@@ -14,7 +14,7 @@ x-env-mysql: &env-mysql
 services:
 
   testcenter-initialization-test-db:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: testcenter-initialization-test-db
     environment:
       <<: *env-mysql
@@ -50,12 +50,13 @@ services:
       - ../backend/index.php:/var/www/backend/index.php
       - ../backend/initialize.php:/var/www/backend/initialize.php
       - ../backend/routes.php:/var/www/backend/routes.php
-      - ../backend/src:/var/www/backend/srcmake test
+      - ../backend/src:/var/www/backend/src
       - ../backend/test:/var/www/backend/test
       - ../definitions:/var/www/definitions
       - ../docs:/docs
       - ../package.json:/var/www/package.original.json
       - ../sampledata:/var/www/sampledata
+      - ../scripts/database:/var/www/scripts/database
     depends_on:
       - testcenter-initialization-test-db
     networks:

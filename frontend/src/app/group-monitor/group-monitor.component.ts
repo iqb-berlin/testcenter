@@ -15,9 +15,8 @@ import {
 } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import {
-  GroupData,
-  TestViewDisplayOptions,
-  TestViewDisplayOptionKey, Selected, TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
+  TestViewDisplayOptions, TestViewDisplayOptionKey, Selected,
+  TestSession, TestSessionSetStats, CommandResponse, UIMessage, isBooklet
 } from './group-monitor.interfaces';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
 import { BookletUtil } from './booklet/booklet.util';
@@ -25,13 +24,16 @@ import { BookletUtil } from './booklet/booklet.util';
 @Component({
   selector: 'app-group-monitor',
   templateUrl: './group-monitor.component.html',
-  styleUrls: ['./group-monitor.component.css']
+  styleUrls: [
+    '../../monitor-layout.css',
+    './group-monitor.component.css'
+  ]
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
   connectionStatus$: Observable<ConnectionStatus>;
 
-  ownGroup$: Observable<GroupData>;
   private ownGroupName = '';
+  groupLabel = '';
 
   selectedElement: Selected;
   markedElement: Selected;
@@ -69,7 +71,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [
       this.route.params.subscribe(params => {
-        this.ownGroup$ = this.bs.getGroupData(params['group-name']);
+        this.groupLabel = this.mds.getAccessObject('testGroupMonitor', params['group-name']).label;
         this.ownGroupName = params['group-name'];
         this.tsm.connect(params['group-name']);
       }),
@@ -133,6 +135,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
   trackSession = (index: number, session: TestSession): number => session.data.testId;
 
   setTableSorting(sort: Sort): void {

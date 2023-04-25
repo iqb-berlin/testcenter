@@ -1,32 +1,55 @@
-<div class="columnhost" fxLayout="column">
-  <div fxLayout="row">
-    <button mat-raised-button (click)="downloadResponsesCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above" data-cy="download-responses">
+<div class="columnhost flex-column">
+  <div class="flex-row">
+    <button
+      mat-raised-button
+      (click)="downloadResponsesCSV()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Download markierte Gruppen als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-responses"
+    >
       <mat-icon>cloud_download</mat-icon>Antworten
     </button>
-    <button mat-raised-button (click)="downloadLogsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above" data-cy="download-logs">
+    <button
+      mat-raised-button (click)="downloadLogsCSV()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Download markierte Gruppen als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-logs"
+    >
       <mat-icon>cloud_download</mat-icon>Logs
     </button>
-    <button mat-raised-button (click)="downloadReviewsCSV()" [disabled]="!tableselectionCheckbox.hasValue()"
-        matTooltip="Download markierte Gruppen als CSV für Excel" matTooltipPosition="above" data-cy="download-comments">
+    <button
+      mat-raised-button
+      (click)="downloadReviewsCSV()"
+      [disabled]="!tableselectionCheckbox.hasValue()"
+      matTooltip="Download markierte Gruppen als CSV für Excel"
+      matTooltipPosition="below"
+      data-cy="download-comments"
+    >
       <mat-icon>cloud_download</mat-icon>Kommentare
     </button>
-    <button mat-raised-button (click)="deleteData()" [disabled]="!tableselectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"
-        matTooltip="Löschen Ergebnisdaten aus der Datenbank für markierte Gruppen" matTooltipPosition="above" data-cy="delete-files">
+    <button
+      mat-raised-button
+      (click)="deleteData()"
+      [disabled]="!tableselectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"
+      matTooltip="Löschen Ergebnisdaten aus der Datenbank für markierte Gruppen"
+      matTooltipPosition="below"
+      data-cy="delete-files"
+    >
       <mat-icon>delete</mat-icon>
     </button>
   </div>
 
   <mat-table [dataSource]="resultDataSource" matSort>
     <ng-container matColumnDef="selectCheckbox">
-      <mat-header-cell *matHeaderCellDef fxFlex="70px">
+      <mat-header-cell *matHeaderCellDef [style.max-width.px]="70">
         <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
                       [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
         </mat-checkbox>
       </mat-header-cell>
-      <mat-cell *matCellDef="let row" fxFlex="70px">
+      <mat-cell *matCellDef="let row" [style.max-width.px]="70">
         <mat-checkbox (click)="$event.stopPropagation()"
                       (change)="$event ? tableselectionCheckbox.toggle(row) : null"
                       [checked]="tableselectionCheckbox.isSelected(row)"
@@ -36,33 +59,38 @@
     </ng-container>
 
     <ng-container matColumnDef="groupName">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxFlex="300px">Login-Gruppe</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxFlex="300px">{{element.groupName}}</mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Login-Gruppe</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{element.groupName}}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="bookletsStarted">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Testhefte gestartet</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center"> {{element.bookletsStarted}} </mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Testhefte gestartet</mat-header-cell>
+      <mat-cell *matCellDef="let element" [style.justify-content]="'center'"> {{element.bookletsStarted}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="numUnitsMin">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben min</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.numUnitsMin}} </mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Aufgaben min</mat-header-cell>
+      <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{element.numUnitsMin}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="numUnitsMax">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben max</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.numUnitsMax}} </mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Aufgaben max</mat-header-cell>
+      <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{element.numUnitsMax}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="numUnitsAvg">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Aufgaben Mittelwert</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">{{element.numUnitsAvg | number:'1.1-1'}} </mat-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Aufgaben Mittelwert</mat-header-cell>
+      <mat-cell *matCellDef="let element" [style.justify-content]="'center'">{{element.numUnitsAvg | number:'1.1-1'}} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="lastChange">
-      <mat-header-cell *matHeaderCellDef mat-sort-header fxLayoutAlign="center center">Letzte Änderung</mat-header-cell>
-      <mat-cell *matCellDef="let element" fxLayoutAlign="center center">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header"
+                       [style.justify-content]="'center'">Letzte Änderung</mat-header-cell>
+      <mat-cell *matCellDef="let element" [style.justify-content]="'center'">
         <span *ngIf="element.lastChange !== '0'">{{element.lastChange * 1000 | date:'dd.MM.yyyy HH:mm'}}</span>
       </mat-cell>
     </ng-container>

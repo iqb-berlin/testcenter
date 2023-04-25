@@ -6,7 +6,8 @@ const YAML = require('yamljs');
 const request = require('request');
 const cliPrint = require('../../scripts/helper/cli-print');
 const jsonTransform = require('../../scripts/helper/json-transformer');
-const testcenterConfig = require('./config/dredd_test_config.json'); // TODO use the same source as environment.ts and don't check it in
+// TODO use the same source as environment.ts instead of /config/dredd_test_config.json and don't check it in
+const testcenterConfig = require('./config/dredd_test_config.json');
 const { mergeSpecFiles, clearTmpDir } = require('../../scripts/update-specs');
 
 const tmpDir = fs.realpathSync(`${__dirname}'/../../tmp`);
@@ -15,14 +16,22 @@ const apiUrl = process.env.TC_API_URL || testcenterConfig.testcenterUrl;
 
 const confirmTestConfig = async done => {
   if (!apiUrl) {
-    return done(new Error(cliPrint.get.error('No API Url given!')));
+    throw new Error(cliPrint.get.error('No API Url given!'));
   }
 
-  const getStatus = () => new Promise(resolve =>
-    request(`${apiUrl}/system/config`, (error, response) => resolve(!response ? -1 : response.statusCode))
-  );
+  const getStatus = () => new Promise(resolve => {
+    request(
+      {
+        url: `${apiUrl}/system/config`,
+        headers: {
+          TestMode: 'prepare'
+        }
+      },
+      (error, response) => resolve(!response ? -1 : response.statusCode)
+    );
+  });
 
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
   cliPrint.headline(`Running Dredd tests against API: ${apiUrl}`);
 
@@ -40,7 +49,7 @@ const confirmTestConfig = async done => {
     await sleep(5000);
   }
 
-  return done(new Error(cliPrint.get.error(`Could not connect to ${apiUrl}`)));
+  throw new Error(cliPrint.get.error(`Could not connect to ${apiUrl}`));
 };
 
 const prepareSpecsForDredd = done => {
@@ -96,6 +105,7 @@ const prepareSpecsForDredd = done => {
     'items > \\$ref$': resolveReference,
     deprecated: null,
     'properties > .*? > format': null,
+    'schema > format': null,
     '^(paths > [^> ]+ > [^> ]+) > tags$': null
   };
 
@@ -130,18 +140,16 @@ const runDredd = async done => {
     endpoint: apiUrl,
     path: [`${tmpDir}/transformed.specs.*.yml`],
     hookfiles: ['dredd-hooks.js'],
-    output: [`${tmpDir}/report.html`], // TODO 13
+    output: [`${tmpDir}/report.html`], // TODO do something with it
     reporter: ['html'],
-    names: false
+    names: false, // use sth like this to restrict: only: ['specs > /workspace/{ws_id}/file > upload file > 403']
   }).run((err, stats) => {
     console.log(stats);
     if (err) {
-      done(new Error(cliPrint.get.error(`Dredd Tests: ${err}`)));
+      throw new Error(cliPrint.get.error(`Dredd Tests: ${err}`));
     }
     if (stats.errors + stats.failures > 0) {
-      done(new Error(
-        cliPrint.get.error(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`)
-      ));
+      throw new Error(cliPrint.get.error(`Dredd Tests: ${stats.failures} failed and ${stats.errors} finished with error.`));
     }
     done();
   });

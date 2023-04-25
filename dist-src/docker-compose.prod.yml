@@ -1,7 +1,7 @@
 #  Compose file for production environment. Images are NOT locally built but
 #  downloaded from Docker-Hub. This is the non-TLS variant using unencrypted
 #  communication.
-version: '3.7'
+version: '3.9'
 
 services:
   testcenter-backend:
@@ -9,6 +9,8 @@ services:
 
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:${VERSION}
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:${VERSION}
@@ -16,3 +18,5 @@ services:
   testcenter-db:
     command:
       - --log_error_verbosity=1
+    volumes:
+      - ./config/my.cnf:/etc/mysql/conf.d/my.cnf:ro

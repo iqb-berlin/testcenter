@@ -1,36 +1,48 @@
-<div fxLayout="row wrap" fxLayoutAlign="center stretch">
-  <mat-card fxFlex="0 0 400px" fxLayout="column">
+<div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
+  <mat-card>
     <mat-card-title>Testdurchführung überwachen</mat-card-title>
     <mat-card-content>
-      <div fxLayoutGap="10px" fxLayout="column">
-
+      <div class="flex-column" [style.gap.px]="10">
         <p *ngIf="problemText" style="color: chocolate"><b>{{ problemText }}</b></p>
 
-        <p *ngIf="!accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR] || accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR].length === 0">
+        <p *ngIf="!accessObjects.testGroupMonitor || accessObjects.testGroupMonitor.length === 0">
           Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
         </p>
 
-        <button mat-raised-button color="primary" (click)="buttonGotoMonitor(accessObject)"
-                *ngFor="let accessObject of accessObjects[AuthAccessKeyType.TEST_GROUP_MONITOR]">
-          <span class="booklet_title">{{accessObject.name}}</span>
-          <span class="booklet_status">Überwachung starten</span>
+        <button *ngFor="let accessObject of accessObjects.testGroupMonitor"
+                mat-raised-button color="primary"
+                (click)="buttonGotoMonitor(accessObject)">
+          <span class="booklet_title">{{accessObject.label}}</span>
+          <span class="booklet_status">{{'gm_selection_text' | customtext: 'gm_selection_text' | async}}</span>
         </button>
+
+        <ng-container *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">
+          <h4>Aufgaben-Anhänge Verwalten</h4>
+          <button *ngFor="let accessObject of accessObjects.attachmentManager"
+                  mat-raised-button color="primary"
+                  (click)="buttonGotoAttachmentManager(accessObject)">
+            <span class="booklet_title">{{accessObject.label}}</span>
+            <span class="booklet_status">Anhänge Verwalten</span>
+          </button>
+        </ng-container>
 
         <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
 
-        <button mat-raised-button color="primary" (click)="startTest(b)" [disabled]="b.locked"
-                *ngFor="let b of accessObjects[AuthAccessKeyType.TEST]">
+        <button *ngFor="let b of accessObjects.test"
+                mat-raised-button color="primary"
+                [disabled]="!!b.flags.locked"
+                (click)="startTest(b)">
           <span class="booklet_title">{{b.label}}</span>
-          <span class="booklet_status">{{b.locked ? 'gesperrt' : (b.running ? 'Fortsetzen' : 'Ansehen')}}</span>
+          <span class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Ansehen')}}</span>
         </button>
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button data-cy="logout" color="foreground" (click)="resetLogin()">Neu anmelden</button>
+      <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
     </mat-card-actions>
   </mat-card>
 
-  <mat-card fxFlex="0 0 400px" class="mat-card-box">
+  <mat-card class="status-card">
     <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>

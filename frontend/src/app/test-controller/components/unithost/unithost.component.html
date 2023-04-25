@@ -1,19 +1,12 @@
-<div
-    [class]="{
-      'unit-host': true,
+<div [class]="{
       'with-header': tcs.bookletConfig.unit_screenheader !== 'OFF',
       'with-title': tcs.bookletConfig.unit_title === 'ON',
       'with-footer': tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM',
-      'is-waiting': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length || codeRequiringTestlets.length
-  }"
->
-  <div
-    *ngIf="tcs.bookletConfig.unit_title === 'ON'"
-    id="unit-title"
-    fxLayout="column"
-    fxLayoutAlign="center center"
-  >
-    <p>{{currentUnit?.unitDef?.title}}</p>
+      'is-waiting': currentUnit?.unitDef?.locked || (unitsLoading$ | async).length || codeRequiringTestlets.length}">
+  <div *ngIf="tcs.bookletConfig.unit_title === 'ON'"
+       class="unit-title">
+    <h2 >{{currentUnit?.unitDef?.title}}</h2>
+    <mat-divider></mat-divider>
   </div>
 
   <div id="iframe-host">
@@ -40,8 +33,7 @@
 
         <mat-card-content *ngIf="codeRequiringTestlets.length">
           <ng-container *ngFor="let testlet of codeRequiringTestlets">
-            <mat-form-field style="display: block">
-              <mat-label>{{testlet.title || ('Block ' + (testlet.sequenceId + 1))}}</mat-label>
+            <mat-form-field appearance="outline" style="display: block" >
               <input
                 matInput
                 type="text"
@@ -49,6 +41,7 @@
                 style="text-transform:uppercase"
                 (keydown)="onKeydownInClearCodeInput($event)"
                 data-cy="unlockUnit"
+                matTooltip="{{codeRequiringTestlets.length > 1 ? testlet.title || ('Block ' + (testlet.sequenceId + 1)) : undefined}}"
               >
               <mat-hint align="start" *ngIf="testlet.codePrompt">{{testlet.codePrompt}}</mat-hint>
               <mat-hint *ngIf="!testlet.codePrompt">
@@ -96,7 +89,7 @@
             *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
             mat-raised-button
             [disabled]="tcs.currentUnitSequenceId === 0"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück" fxFlex="none"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)" matTooltip="Zurück"
           >
             <i class="material-icons">chevron_left</i>
           </button>
@@ -104,7 +97,7 @@
             *ngIf="tcs.bookletConfig.unit_navibuttons === 'OFF'"
             mat-raised-button
             [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
-            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter" fxFlex="none"
+            (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)" matTooltip="Weiter"
           >
             <i class="material-icons">chevron_right</i>
           </button>
@@ -113,45 +106,28 @@
     </div>
   </ng-container>
 
-  <div
-    id="page-navigation"
-    fxLayout="row"
-    fxLayoutAlign="end center"
-    fxLayoutGap="10px"
-    *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM'"
-  >
-    <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="knownPages && knownPages.length && (knownPages.length > 1)">
-      <div id="page-navigation-prompt">
+  <div *ngIf="tcs.bookletConfig.page_navibuttons === 'SEPARATE_BOTTOM' &&
+              knownPages && knownPages.length && (knownPages.length > 1)"
+       class="page-navigation">
+    <div [style.float]="'right'" [style.padding-top.px]="4" [style.padding-right.px]="15">
+      <span [style.color]="'white'" [style.padding-right.px]="8">
         {{ ''  | customtext:'login_pagesNaviPrompt' | async}}
-      </div>
+      </span>
 
       <mat-button-toggle-group>
-        <mat-button-toggle
-          [disabled]="currentPageIndex <= 0"
-          (click)="gotoPage(knownPages[currentPageIndex - 1].id);"
-          fxLayout="row"
-          fxLayoutAlign="center center"
-        >
+        <mat-button-toggle [disabled]="currentPageIndex <= 0"
+                           (click)="gotoPage(knownPages[currentPageIndex - 1].id);">
           <i class="material-icons">chevron_left</i>
         </mat-button-toggle>
-
-        <mat-button-toggle
-          *ngFor="let page of knownPages; let index = index"
-          fxLayout="column"
-          (click)="gotoPage(page.id)"
-          [matTooltip]="page.label"
-          [checked]="currentPageIndex === index"
-          [attr.data-cy]="'page-navigation-' + index"
-        >
+        <mat-button-toggle *ngFor="let page of knownPages; let index = index"
+                           [matTooltip]="page.label"
+                           [checked]="currentPageIndex === index"
+                           [attr.data-cy]="'page-navigation-' + index"
+                           (click)="gotoPage(page.id)">
           {{ index + 1 }}
         </mat-button-toggle>
-
-        <mat-button-toggle
-          [disabled]="currentPageIndex >= knownPages.length - 1"
-          (click)="gotoPage(knownPages[currentPageIndex + 1].id);"
-          fxLayout="row"
-          fxLayoutAlign="center center"
-        >
+        <mat-button-toggle [disabled]="currentPageIndex >= knownPages.length - 1"
+                           (click)="gotoPage(knownPages[currentPageIndex + 1].id);">
           <i class="material-icons">chevron_right</i>
         </mat-button-toggle>
       </mat-button-toggle-group>

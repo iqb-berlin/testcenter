@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -35,7 +34,6 @@ import { SysCheckDataService } from './sys-check-data.service';
 @NgModule({
   imports: [
     CommonModule,
-    FlexLayoutModule,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,

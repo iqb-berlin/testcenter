@@ -2,92 +2,65 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 declare(strict_types=1);
 
-
 class XMLFileBooklet extends XMLFile {
+  const type = 'Booklet';
+  const canBeRelationSubject = true;
+  const canBeRelationObject = true;
 
-    const type = 'Booklet';
+  public function crossValidate(WorkspaceCache $workspaceCache): void {
+    parent::crossValidate($workspaceCache);
 
-    protected int $totalSize = 0;
+    $bookletPlayers = [];
+    $this->contextData['totalSize'] = $this->getSize();
 
+    foreach ($this->getUnitIds() as $unitId) {
+      $unit = $workspaceCache->getUnit($unitId);
 
-    public function crossValidate(WorkspaceValidator $validator): void {
+      if ($unit == null) {
+        $this->report('error', "Unit `$unitId` not found");
+        continue;
+      }
 
-        parent::crossValidate($validator);
+      $this->addRelation(new FileRelation($unit->getType(), $unitId, FileRelationshipType::containsUnit, $unit));
 
-        $bookletPlayers = [];
-        $this->totalSize = $this->getSize();
+      $this->contextData['totalSize'] += $unit->getTotalSize();
 
-        foreach($this->getAllUnitIds() as $unitId) {
+      $playerFile = $unit->getPlayerIfExists($workspaceCache);
 
-            $unit = $validator->getUnit($unitId);
+      if (!$playerFile) {
+        $this->report('error', "No suitable version of Player found (Unit `$unitId`).");
+      }
 
-            if ($unit == null) {
-                $this->report('error', "Unit `$unitId` not found");
-                continue;
-            }
+      if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
+        $this->contextData['totalSize'] += $playerFile->getSize();
+        $bookletPlayers[] = $playerFile->getId();
+      }
+    }
+  }
 
-            $unit->addUsedBy($this);
+  // TODO unit-test $useAlias
+  public function getUnitIds(bool $useAlias = false): array {
+    if (!$this->isValid()) {
+      return [];
+    }
 
-            $this->totalSize += $unit->getTotalSize();
+    return $this->getUnitIdFromNode($this->getXml()->Units[0], $useAlias);
+  }
 
-            $playerFile = $unit->getPlayerIfExists($validator);
+  private function getUnitIdFromNode(SimpleXMLElement $node, bool $useAlias = false): array {
+    $unitIds = [];
+    foreach ($node->children() as $element) {
+      if ($element->getName() == 'Unit') {
+        $id = strtoupper((string) $element['id']);
+        $alias = (string) $element['alias'];
+        $unitIds[] = ($useAlias and $alias) ? $alias : $id;
 
-            if (!$playerFile) {
-
-                $this->report('error', "No suitable version of `{$unit->getPlayerId()}` found");
-            }
-
-            if ($playerFile and !in_array($playerFile->getId(), $bookletPlayers)) {
-
-                $this->totalSize += $playerFile->getSize();
-                $bookletPlayers[] = $playerFile->getId();
-            }
+      } else {
+        foreach ($this->getUnitIdFromNode($element, $useAlias) as $id) {
+          $unitIds[] = $id;
         }
+      }
     }
-
-
-    public function getTotalSize(): int {
-
-        return $this->totalSize;
-    }
-
-
-    protected function getAllUnitIds() {
-
-        $allUnitIds = [];
-        if ($this->isValid() and ($this->xml != false) and ($this->rootTagName == 'Booklet')) {
-            $unitsNode = $this->xml->Units[0];
-            if (isset($unitsNode)) {
-                $allUnitIds = $this->getUnitIds($unitsNode);
-            }
-        }
-        return $allUnitIds;
-    }
-
-
-    private function getUnitIds(SimpleXMLElement $node): array {
-
-        $unitIds = [];
-        foreach($node->children() as $element) {
-            if ($element->getName() == 'Unit') {
-                $idAttr = (string) $element['id'];
-                if (isset($idAttr)) {
-                    array_push($unitIds, strtoupper($idAttr));
-                }
-            } else {
-                foreach($this->getUnitIds($element) as $id) {
-                    array_push($unitIds, $id);
-                }
-            }
-        }
-        return $unitIds;
-    }
-
-
-    public function getSpecialInfo(): FileSpecialInfo {
-
-        $meta = parent::getSpecialInfo();
-        $meta->totalSize = $this->getTotalSize();
-        return $meta;
-    }
+    return $unitIds;
+  }
 }

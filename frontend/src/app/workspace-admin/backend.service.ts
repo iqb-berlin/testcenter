@@ -14,7 +14,7 @@ import {
 import {
   FileDeletionReport, UploadReport, UploadResponse, UploadStatus
 } from './files/files.interfaces';
-import { AppError, WorkspaceData } from '../app.interfaces';
+import { AppError } from '../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -26,9 +26,10 @@ export class BackendService {
   ) {
   }
 
-  getWorkspace(workspaceId: string): Observable<WorkspaceData> {
-    return this.http.get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`);
-  }
+  // TODO! can be removed?
+  // getWorkspace(workspaceId: string): Observable<WorkspaceData> {
+  //   return this.http.get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`);
+  // }
 
   getFiles(workspaceId: string): Observable<GetFileResponseData> {
     return this.http.get<GetFileResponseData>(`${this.serverUrl}workspace/${workspaceId}/files`);
