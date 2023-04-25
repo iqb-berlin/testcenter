@@ -70,10 +70,17 @@ services:
       testcenter:
 
   testcenter-files-service:
+    build:
+      context: ..
+      dockerfile: docker/files-service.Dockerfile
+      args:
+        ENABLED_MODULES: lua
     container_name: testcenter-files-service
-    image: iqbberlin/testcenter-files-service:current
     volumes:
-      - testcenter_backend_vo_data:/usr/share/nginx/html
+      - testcenter_backend_vo_data:/var/www/html/
+      - ../scripts/files-service/nginx.conf:/etc/nginx/nginx.conf # customized conf mainly because of logging
+      - ../scripts/files-service/site.conf:/etc/nginx/sites-enabled/default # overwrite default!
+      - ../scripts/files-service/auth.lua:/auth.lua
     depends_on:
       - traefik
       - testcenter-backend
