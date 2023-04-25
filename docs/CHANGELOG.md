@@ -6,6 +6,8 @@ layout: default
 
 ## [next]
 ### Sicherheit
+* Softwareupdate: Aktuelle Versionen von PHP und Apache
+* Information Disclosure: Backend-Calls liefern die Versionen von PHP Apache nicht mehr aus
 * Unzureichende Entropie bei Session-Tokens beseitigt
 * Enumerierung von Admin-Benutzernamen durch timing-attacks erschwert
 
