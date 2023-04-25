@@ -4,6 +4,13 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+
+### Sicherheit
+* Softwareupdate: Aktuelle Versionen von PHP und Apache
+* Information Disclosure: Backend-Calls liefern die Versionen von PHP Apache nicht mehr aus
+
+
 ## 14.4.0-rc.1
 
 ### Verbesserungen
