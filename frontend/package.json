@@ -16,6 +16,13 @@
     "update-compodoc": "npx compodoc -p tsconfig.doc.json -d ./docs/compodoc"
   },
   "private": true,
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari major versions",
+    "firefox esr",
+    "not dead"
+  ],
   "dependencies": {
     "@angular/animations": "~14.2.12",
     "@angular/cdk": "^14.2.7",
@@ -28,6 +35,8 @@
     "@angular/platform-browser": "~14.2.12",
     "@angular/platform-browser-dynamic": "~14.2.12",
     "@angular/router": "~14.2.12",
+    "browserlist": "^1.0.1",
+    "browserslist-useragent": "^4.0.0",
     "core-js": "^3.24.0",
     "fibers": "^5.0.2",
     "html-webpack-plugin": "^5.5.0",
