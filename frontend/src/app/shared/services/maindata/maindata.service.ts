@@ -78,7 +78,7 @@ export class MainDataService {
     if (storageEntry) {
       localStorage.removeItem(localStorageAuthDataKey);
     }
-    this._authData$.next(MainDataService.getAuthData());
+    this._authData$.next(this.getAuthData());
   }
   // TODO ! remove
   // setTestConfig(testConfig: KeyValuePairs = null): void {

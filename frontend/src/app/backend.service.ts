@@ -3,12 +3,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import {
-  SysCheckInfo,
-  AuthData,
-  WorkspaceData,
-  BookletData, AppError, AccessObject
-} from './app.interfaces';
+import { SysCheckInfo, AuthData, AppError, AccessObject } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
 @Injectable({
@@ -28,47 +23,8 @@ export class BackendService {
     return this.http.put<AuthData>(`${this.serverUrl}session/person`, { code });
   }
 
-  getWorkspace(workspaceId: string): Observable<WorkspaceData> {
-    return this.http.get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`);
-  }
-
-  getGroupData(groupName: string): Observable<AccessObject> {
-    // TODO find consistent terminology. in XSD they are called name & label
-    // and likewise (mostly) in newer BE-versions
-    interface NameAndLabel {
-      name: string;
-      label: string;
-    }
-
-    return this.http
-      .get<NameAndLabel>(`${this.serverUrl}monitor/group/${groupName}`)
-      .pipe(map((r: NameAndLabel): AccessObject => ({ id: r.name, name: r.label })))
-      .pipe(catchError(() => {
-        console.warn(`get group data failed for ${groupName}`);
-        return of(<AccessObject>{
-          id: groupName,
-          name: groupName
-        });
-      }));
-  }
-
-  getSessionData(): Observable<AuthData | number> {
-    return this.http
-      .get<AuthData>(`${this.serverUrl}session`)
-      .pipe(
-        catchError((err: AppError) => of(err.code))
-      );
-  }
-
-  getBookletData(bookletId: string): Observable<BookletData> {
-    return this.http
-      .get<BookletData>(`${this.serverUrl}booklet/${bookletId}/data`)
-      .pipe(
-        map(bData => {
-          bData.id = bookletId;
-          return bData;
-        })
-      );
+  getSessionData(): Observable<AuthData> {
+    return this.http.get<AuthData>(`${this.serverUrl}session`);
   }
 
   startTest(bookletName: string): Observable<string | number> {

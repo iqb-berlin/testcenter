@@ -16,7 +16,7 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-    "types": ["cypress"],
+    "types": ["cypress", "jasmine"],
     "lib": [
       "es2017",
       "dom"
