@@ -1,5 +1,5 @@
 import {
-  loginAdmin, openSampleWorkspace, loginUser, resetBackendData
+  loginAdmin, openSampleWorkspace, loginUser, resetBackendData, useTestDB
 } from '../utils';
 
 // ########################## User Credentials #################################################
@@ -24,8 +24,9 @@ let endTime: number;
 let elapsed: number;
 
 describe('Navigation-& Testlet-Restrictions', () => {
-  before(resetBackendData);
-  before(() => loginUser(UserName, UserPassword));
+  beforeEach(resetBackendData);
+  beforeEach(useTestDB);
+  beforeEach(() => loginUser(UserName, UserPassword));
 
   it('should be possible to choose a demo-mode booklet', () => {
     cy.get('[data-cy="booklet-RUNDEMO"]')
