@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 
 import { MaxTimerDataType, NavigationLeaveRestrictionValue } from '../interfaces/test-controller.interfaces';
+import UAParser from 'ua-parser-js';
 
 export class TestletContentElement {
   readonly sequenceId: number;
@@ -279,13 +280,12 @@ export class EnvironmentData {
   }
 
   constructor() {
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    const UAParser = window['UAParser']();
+    const UserAgentParser = new UAParser();
 
-    this.browserVersion = UAParser.browser.version;
-    this.browserName = UAParser.browser.name;
-    this.osName = `${UAParser.os.name} ${UAParser.os.version}`;
-    this.device = Object.values(UAParser.device)
+    this.browserVersion = UserAgentParser.getBrowser().version;
+    this.browserName = UserAgentParser.getBrowser().name;
+    this.osName = `${UserAgentParser.getOS().name} ${UserAgentParser.getOS().version}`;
+    this.device = Object.values(UserAgentParser.getDevice())
       .filter(elem => elem)
       .join(' ');
 

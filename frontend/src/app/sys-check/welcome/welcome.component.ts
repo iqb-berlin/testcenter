@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import UAParser from 'ua-parser-js';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
 import { BackendService } from '../backend.service';
@@ -12,6 +13,9 @@ import { BackendService } from '../backend.service';
 export class WelcomeComponent implements OnInit {
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
 
+  // TODO discuss if sysCheck should show a warning.
+  // if yes: replace this with browserlist-stuff like in login-component
+  // if not: remove it
   private rating = {
     browser: {
       Chrome: 79,
@@ -35,8 +39,6 @@ export class WelcomeComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.ds.setNewCurrentStep('w');
-      this.getBrowserFromUserAgent(); // fallback if UAParser does not work
-      this.getOSFromUserAgent(); // fallback if UAParser does not work
       this.getScreenData();
       this.getFromUAParser();
       this.getNavigatorInfo();
@@ -53,38 +55,8 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  private getBrowserFromUserAgent() {
-    const userAgent = window.navigator.userAgent;
-    // eslint-disable-next-line max-len
-    const regex = /(MSIE|Trident|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari(?!.+Edge)|(?!AppleWebKit.+)Chrome(?!.+Edge)|(?!AppleWebKit.+Chrome.+Safari.+)Edge|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/;
-    // credit due to: https://gist.github.com/ticky/3909462#gistcomment-2245669
-    const deviceInfoSplits = regex.exec(userAgent);
-    const helperRegex = /[^.]*/;
-    const browserInfo = helperRegex.exec(deviceInfoSplits[0]);
-    const browserInfoSplits = browserInfo[0].split('/');
-    this.report.set('Browser', {
-      id: 'browser',
-      type: 'environment',
-      label: 'Browser',
-      value: browserInfoSplits[0],
-      warning: false
-    });
-    this.report.set('Browser-Version', {
-      id: 'browser-version',
-      type: 'environment',
-      label: 'Browser-Version',
-      value: browserInfoSplits[1],
-      warning: false
-    });
-  }
-
   private getFromUAParser() {
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    if (typeof window['UAParser'] === 'undefined') {
-      return;
-    }
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    const uaInfos = window['UAParser']();
+    const uaInfos = new UAParser().getResult();
     [
       ['cpu', 'architecture', 'CPU-Architektur'],
       ['device', 'model', 'Gerätemodell'],
@@ -149,41 +121,6 @@ export class WelcomeComponent implements OnInit {
       type: 'environment',
       label: 'Browser-Plugins',
       value: pluginNames.join(', '),
-      warning: false
-    });
-  }
-
-  private getOSFromUserAgent() {
-    const userAgent = window.navigator.userAgent;
-    let osName;
-    if (userAgent.indexOf('Windows') !== -1) {
-      if (userAgent.indexOf('Windows NT 10.0') !== -1) {
-        osName = 'Windows 10';
-      } else if (userAgent.indexOf('Windows NT 6.2') !== -1) {
-        osName = 'Windows 8';
-      } else if (userAgent.indexOf('Windows NT 6.1') !== -1) {
-        osName = 'Windows 7';
-      } else if (userAgent.indexOf('Windows NT 6.0') !== -1) {
-        osName = 'Windows Vista';
-      } else if (userAgent.indexOf('Windows NT 5.1') !== -1) {
-        osName = 'Windows XP';
-      } else if (userAgent.indexOf('Windows NT 5.0') !== -1) {
-        osName = 'Windows 2000';
-      } else {
-        osName = 'Windows, unbekannte Version';
-      }
-    } else if (userAgent.indexOf('Mac') !== -1) {
-      osName = 'Mac/iOS';
-    } else if (userAgent.indexOf('Linux') !== -1) {
-      osName = 'Linux';
-    } else {
-      osName = window.navigator.platform;
-    }
-    this.report.set('Betriebsystem', {
-      id: 'os',
-      type: 'environment',
-      label: 'Betriebsystem',
-      value: osName,
       warning: false
     });
   }
