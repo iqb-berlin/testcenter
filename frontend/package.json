@@ -20,8 +20,8 @@
     "last 2 Chrome versions",
     "last 2 Firefox versions",
     "last 2 Safari major versions",
-    "firefox esr",
-    "not dead"
+    "last 2 iOS major versions",
+    "firefox esr"
   ],
   "dependencies": {
     "@angular/animations": "~14.2.12",
@@ -36,7 +36,6 @@
     "@angular/platform-browser-dynamic": "~14.2.12",
     "@angular/router": "~14.2.12",
     "@types/ua-parser-js": "^0.7.36",
-    "browserlist": "^1.0.1",
     "browserslist-useragent": "^4.0.0",
     "core-js": "^3.24.0",
     "fibers": "^5.0.2",
@@ -45,7 +44,7 @@
     "qr-scanner": "1.4.1",
     "rxjs": "^7.5.6",
     "tslib": "^2.4.0",
-    "ua-parser-js": "^0.7.23",
+    "ua-parser-js": "^1.0.35",
     "web-animations-js": "^2.3.2",
     "zone.js": "~0.11.7"
   },

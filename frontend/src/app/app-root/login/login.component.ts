@@ -3,11 +3,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { matchesUA } from 'browserslist-useragent';
+import UAParser from 'ua-parser-js';
 import { MainDataService } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
-import browserlistJson from '../../../../browserslist.json';
-import UAParser from 'ua-parser-js';
+import browsersJson from '../../../../../definitions/browsers.json';
 
 @Component({
   templateUrl: './login.component.html',
@@ -96,10 +96,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.browserWarning =
       matchesUA(
         window.navigator.userAgent,
-        { path: 'dontleavemeemtpy!', browsers: browserlistJson.browsers }
+        { path: 'dontleavemeemtpy!', browsers: browsersJson.browsers }
       ) ?
         undefined :
-        [browser.name, browser.version]
+        [browser.name, browser.version];
   }
 
   ngOnDestroy(): void {

@@ -7,6 +7,8 @@
 const fs = require('fs');
 const gulp = require('gulp');
 const cliPrint = require('./helper/cli-print');
+const packageJSON = require('../frontend/package.json');
+const browserslist = require('browserslist');
 
 const commonDir = fs.realpathSync(`${__dirname}'/../common`);
 const definitionsDir = fs.realpathSync(`${__dirname}'/../definitions`);
@@ -97,7 +99,18 @@ exports.testModeData = done => {
   done();
 };
 
+// the package.json contains rules like "latest 2 versions". this resolves this to actual browser versions
+exports.compileBrowserlist = done => fs.writeFile(
+  `${definitionsDir}/browsers.json`,
+  JSON.stringify({
+    comment: 'This is automatically generated from the rules in fronted/package.json. Do not change by hand.',
+    browsers: browserslist(packageJSON.browserslist)
+  }),
+  done
+);
+
 exports.createInterfaces = gulp.series(
   exports.bookletConfigData,
-  exports.testModeData
+  exports.testModeData,
+  exports.compileBrowserlist
 );
