@@ -2,9 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { matchesUA } from 'browserslist-useragent';
 import { MainDataService } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 import { BackendService } from '../../backend.service';
+import browserlistJson from '../../../../browserslist.json';
+import UAParser from 'ua-parser-js';
 
 @Component({
   templateUrl: './login.component.html',
@@ -23,6 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   returnTo = '';
   problemText = '';
   showPassword = false;
+  browserWarning: string[];
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -41,6 +45,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.mainDataService.appSubTitle$.next('Bitte anmelden');
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
+    this.checkBrowser();
   }
 
   login(loginType: 'admin' | 'login' = 'login'): void {
@@ -84,6 +89,17 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   clearWarning(): void {
     this.problemText = '';
+  }
+
+  private checkBrowser() {
+    const browser = new UAParser().getBrowser();
+    this.browserWarning =
+      matchesUA(
+        window.navigator.userAgent,
+        { path: 'dontleavemeemtpy!', browsers: browserlistJson.browsers }
+      ) ?
+        undefined :
+        [browser.name, browser.version]
   }
 
   ngOnDestroy(): void {

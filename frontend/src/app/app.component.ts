@@ -7,9 +7,6 @@ import { ActivatedRoute } from '@angular/router';
 import { CustomtextService, MainDataService } from './shared/shared.module';
 import { BackendService } from './backend.service';
 import { AppConfig } from './shared/classes/app.config';
-import { matchesUA } from 'browserslist-useragent';
-import browserlistJson from '../../browserslist.json';
-import { AppError } from './app.interfaces';
 
 @Component({
   selector: 'tc-root',
@@ -91,8 +88,6 @@ export class AppComponent implements OnInit, OnDestroy {
       this.backendService.getSysCheckInfo().subscribe(sysCheckConfigs => {
         this.mainDataService.sysCheckAvailable = !!sysCheckConfigs;
       });
-
-      this.checkBrowser();
     });
   }
 
@@ -140,21 +135,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     if (this.appTitleSubscription !== null) {
       this.appTitleSubscription.unsubscribe();
-    }
-  }
-
-  private checkBrowser() {
-    const isOkay = matchesUA(
-      window.navigator.userAgent,
-      { path: 'dontleavemeemtpy', browsers: browserlistJson.browsers }
-    );
-    console.log(isOkay);
-    if (!isOkay) {
-      this.mainDataService.appError$.next(new AppError({
-        label: 'Veralteter Browser',
-        description: 'Diese Browser is xxx',
-        type: 'warning'
-      }));
     }
   }
 }

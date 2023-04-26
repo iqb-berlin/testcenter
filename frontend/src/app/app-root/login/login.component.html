@@ -17,7 +17,18 @@
           </button>
         </mat-form-field>
         <alert level="error" *ngIf="problemText" [text]="problemText"></alert>
-        <alert *ngIf="mainDataService.globalWarning" level="warning" [text]="mainDataService.globalWarning"></alert>
+        <alert
+          *ngIf="mainDataService.globalWarning"
+          level="warning"
+          [text]="mainDataService.globalWarning"
+        ></alert>
+        <alert
+          *ngIf="browserWarning"
+          level="warning"
+          customtext="login_unsupportedBrowser"
+          text="Sie verwenden einen Browser, der nicht offiziell unterstützt wird."
+          [replacements]="browserWarning"
+        ></alert>
       </mat-card-content>
       <mat-card-content *ngIf="!mainDataService.appConfig">
         <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
