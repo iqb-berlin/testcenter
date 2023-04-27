@@ -11,6 +11,8 @@ layout: default
 * Unzureichende Entropie bei Session-Tokens beseitigt
 * Enumerierung von Admin-Benutzernamen durch timing-attacks erschwert
 
+### Bugfixes
+* Es werden *keine* Einträge in der Workspace-Übersicht "Ergebnisse/Anworten" mehr durch Testdurchgänge im Demomode erzeugt. 
 
 ## 14.4.0
 ### Verbesserungen

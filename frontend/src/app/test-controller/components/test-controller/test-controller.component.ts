@@ -420,6 +420,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   @HostListener('window:unload', ['$event'])
   unloadHandler(): void {
+    if (!this.tcs.testMode.saveResponses) {
+      return;
+    }
     if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
       this.bs.notifyDyingTest(this.tcs.testId);
     }
