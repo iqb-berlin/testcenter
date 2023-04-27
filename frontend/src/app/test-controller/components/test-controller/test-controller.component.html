@@ -23,7 +23,8 @@
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId <= 1"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
-       matTooltip="Zurück">
+       matTooltip="Zurück"
+       data-cy="unit-navigation-backward">       
       <i class="material-icons">chevron_left</i>
     </a>
     <a mat-flat-button
@@ -31,7 +32,8 @@
        [style.border-radius]="0"
        [disabled]="tcs.currentUnitSequenceId <= 1"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
-       matTooltip="Zurück">
+       matTooltip="Zurück"
+       data-cy="unit-navigation-backward">
       <i class="material-icons">chevron_left</i>
     </a>
 
@@ -49,7 +51,8 @@
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
-       matTooltip="Weiter">
+       matTooltip="Weiter"
+       data-cy="unit-navigation-forward">
       <i class="material-icons">chevron_right</i>
     </a>
     <a mat-flat-button
@@ -57,7 +60,8 @@
        [style.border-radius]="0"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
-       matTooltip="Weiter">
+       matTooltip="Weiter"
+       data-cy="unit-navigation-forward">
       <i class="material-icons">chevron_right</i>
     </a>
   </div>
@@ -73,7 +77,8 @@
     mat-button
     (click)="unitMenu.toggle(true)"
     *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
-    matTooltip="Zur Aufgabenliste">
+    matTooltip="Zur Aufgabenliste"
+    data-cy="unit-menu">
     <mat-icon>menu</mat-icon>
   </button>
 </div>

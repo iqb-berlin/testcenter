@@ -10,7 +10,7 @@ class TestEnvironment {
   const staticDate = 1627545600;
 
   public static function setup(string $testMode): void {
-    $testMode = in_array($testMode, ['prepare', 'api', 'integration']) ? $testMode : 'api';
+    $testMode = in_array($testMode, ['prepare', 'api', 'integration', 'prepare-integration']) ? $testMode : 'api';
 
     try {
       TimeStamp::setup(null, '@' . self::staticDate);
@@ -24,10 +24,10 @@ class TestEnvironment {
         self::setUpTestDataDir(false);
       }
 
-      if ($testMode == 'prepare') {
+      if (in_array($testMode, ['prepare-integration', 'prepare'])) {
         // this is called once before the api tests (dredd) and one time before each integration test (cypress)
         self::setUpTestDataDir(true);
-        self::createTestFiles();
+        self::createTestFiles($testMode == 'prepare-integration');
         self::overwriteModificationDatesTestDataDir();
         self::buildTestDB();
         self::createTestData();
@@ -36,7 +36,7 @@ class TestEnvironment {
       if ($testMode == 'api') {
         // api tests can use vfs for more speed
         self::setUpVirtualFilesystem();
-        self::createTestFiles();
+        self::createTestFiles(false);
         self::overwriteModificationDatesVfs();
         // in api-tests every call is atomic and the test db gets restored afterwards
         // the test db must be set up before with $testMode == 'prepare'
@@ -61,9 +61,13 @@ class TestEnvironment {
     define('DATA_DIR', vfsStream::url('root/data'));
   }
 
-  private static function createTestFiles(): void {
+  private static function createTestFiles(bool $includeSystemTestFiles): void {
     $initializer = new WorkspaceInitializer();
-    $initializer->importSampleFiles(1);
+    $sampleFilesCategories = ['default'];
+    if ($includeSystemTestFiles) {
+      $sampleFilesCategories[] = "system-test";
+    }
+    $initializer->importSampleFiles(1, $sampleFilesCategories);
     Folder::createPath(DATA_DIR . "/ws_1/UnitAttachments");
     $initializer->createSampleScanImage("UnitAttachments/lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png", 1);
   }

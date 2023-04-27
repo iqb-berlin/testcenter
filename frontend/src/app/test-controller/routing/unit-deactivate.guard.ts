@@ -125,7 +125,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       }));
     }
     const reasonTexts = {
-      presentationIncomplete: 'Es wurde nicht alles gesehen/abgespielt.',
+      presentationIncomplete: 'Es wurde nicht alles gesehen oder abgespielt.',
       responsesIncomplete: 'Es wurde nicht alles bearbeitet.'
     };
     this.snackBar.open(
