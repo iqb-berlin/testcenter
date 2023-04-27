@@ -3,9 +3,7 @@ import { Injectable, Inject, SkipSelf } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import {
-  IdAndName, IdLabelSelectedData, IdRoleData, UserData
-} from './superadmin.interfaces';
+import { IdAndName, IdRoleData, UserData } from './superadmin.interfaces';
 import { AppError, KeyValuePairs } from '../app.interfaces';
 import { AppSettings } from '../shared/shared.module';
 
@@ -21,70 +19,45 @@ export class BackendService {
   }
 
   getUsers(): Observable<UserData[]> {
-    return this.http
-      .get<UserData[]>(`${this.serverUrl}users`)
-      .pipe(catchError((err: AppError) => {
-        console.warn(`getUsers Api-Error: ${err.code} ${err.description} `);
-        return [];
-      }));
+    return this.http.get<UserData[]>(`${this.serverUrl}users`);
   }
 
   addUser(name: string, password: string): Observable<boolean> {
-    return this.http
-      .put<boolean>(`${this.serverUrl}user`, { n: name, p: password });
+    return this.http.put<boolean>(`${this.serverUrl}user`, { n: name, p: password });
   }
 
   changePassword(userId: number, password: string): Observable<boolean> {
-    return this.http
-      .patch<boolean>(`${this.serverUrl}user/${userId}/password`, { p: password });
+    return this.http.patch<boolean>(`${this.serverUrl}user/${userId}/password`, { p: password });
   }
 
-  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<number> {
+  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<boolean> {
     return this.http
       .patch(`${this.serverUrl}user/${userId}/super-admin/${changeToSuperUser ? 'on' : 'off'}`, { p: password })
       .pipe(
-        map(() => 0),
+        map(() => true),
         catchError((err: AppError) => {
-          console.warn(`setSuperUserStatus Api-Error: ${err.code} ${err.description} `);
-          return of(err.code);
+          if (err.code === 403) {
+            return of(false);
+          }
+          throw AppError;
         })
       );
   }
 
   deleteUsers(users: string[]): Observable<boolean> {
-    return this.http
-      .request<boolean>('delete', `${this.serverUrl}users`, { body: { u: users } })
-      .pipe(catchError((err: AppError) => {
-        console.warn(`deleteUsers Api-Error: ${err.code} ${err.description} `);
-        return of(false);
-      }));
+    return this.http.request<boolean>('delete', `${this.serverUrl}users`, { body: { u: users } });
   }
 
   getWorkspacesByUser(userId: number): Observable<IdRoleData[]> {
-    return this.http
-      .get<IdLabelSelectedData[]>(`${this.serverUrl}user/${userId}/workspaces`)
-      .pipe(catchError((err: AppError) => {
-        console.warn(`getWorkspacesByUser Api-Error: ${err.code} ${err.description} `);
-        return [];
-      }));
+    return this.http.get<IdRoleData[]>(`${this.serverUrl}user/${userId}/workspaces`);
   }
 
   setWorkspacesByUser(userId: number, accessTo: IdRoleData[]): Observable<boolean> {
-    return this.http
-      .patch<boolean>(`${this.serverUrl}user/${userId}/workspaces`, { ws: accessTo })
-      .pipe(catchError((err: AppError) => {
-        console.warn(`setWorkspacesByUser Api-Error: ${err.code} ${err.description}`);
-        return of(false);
-      }));
+    return this.http.patch<boolean>(`${this.serverUrl}user/${userId}/workspaces`, { ws: accessTo });
   }
 
   addWorkspace(name: string): Observable<boolean> {
-    return this.http
-      .put<boolean>(`${this.serverUrl}workspace`, { name })
-      .pipe(catchError((err: AppError) => {
-        console.warn(`addWorkspace Api-Error: ${err.code} ${err.description} `);
-        return of(false);
-      }));
+    return this.http.put<boolean>(`${this.serverUrl}workspace`, { name });
   }
 
   renameWorkspace(workspaceId: number, wsName: string): Observable<boolean> {

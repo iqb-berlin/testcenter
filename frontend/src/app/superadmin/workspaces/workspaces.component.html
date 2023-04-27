@@ -30,18 +30,18 @@
       </button>
     </div>
 
-    <mat-table [dataSource]="objectsDatasource" matSort>
+    <mat-table [dataSource]="workspaces" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef>
           <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
-                        [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
+                        [checked]="tableSelectionCheckbox.hasValue() && isAllSelected()"
+                        [indeterminate]="tableSelectionCheckbox.hasValue() && !isAllSelected()">
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
           <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? tableselectionCheckbox.toggle(row) : null"
-                        [checked]="tableselectionCheckbox.isSelected(row)">
+                        (change)="$event ? tableSelectionCheckbox.toggle(row) : null"
+                        [checked]="tableSelectionCheckbox.isSelected(row)">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
@@ -53,7 +53,7 @@
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"
-        [style.background]="tableselectionRow.isSelected(row) ? 'lightblue' : ''"></mat-row>
+        [style.background]="tableSelectionRow.isSelected(row) ? 'lightblue' : ''"></mat-row>
     </mat-table>
   </div>
 
@@ -71,7 +71,7 @@
         </button>
     </div>
 
-    <mat-table [dataSource]="UserlistDatasource" matSort>
+    <mat-table [dataSource]="userListDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">RO | RW</mat-header-cell>
         <mat-cell *matCellDef="let row">
