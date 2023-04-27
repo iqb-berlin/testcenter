@@ -24,9 +24,12 @@ let endTime: number;
 let elapsed: number;
 
 describe('Navigation-& Testlet-Restrictions', () => {
-  beforeEach(resetBackendData);
+  before(resetBackendData);
   beforeEach(useTestDB);
-  beforeEach(() => loginUser(UserName, UserPassword));
+  before(() => {
+    useTestDB();
+    loginUser(UserName, UserPassword);
+  });
 
   it('should be possible to choose a demo-mode booklet', () => {
     cy.get('[data-cy="booklet-RUNDEMO"]')
