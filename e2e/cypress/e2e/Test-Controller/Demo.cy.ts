@@ -1,23 +1,9 @@
 import {
-  loginAdmin, openSampleWorkspace, loginUser, resetBackendData, useTestDB
+  loginSuperAdmin, openSampleWorkspace, loginTestTaker, resetBackendData, logoutTestTaker,
+  useTestDB, credentialsControllerTest, visitLoginPage
 } from '../utils';
 
-// ########################## User Credentials #################################################
-const SuperAdminName = 'super';
-const SuperAdminPassword = 'user123';
-
-// Credentials Logins(Declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:RunDemo)
-const UserName = 'Test_Demo_Ctrl';
-const UserPassword = '123';
-
-// Credentials Booklet(Declared in Sampledata/CY_BKL_Mode_Demo.xml-->Testlet Restriction)
-const RestrTime = 60000;
-const BookletLoadTime = 1000;
-
-// some variables for cypress wait times
-const waitSnackbarBlockTimeFinished = 6000;
-const waitSnackbarNavigationPrevented = 4000;
-const waitLoadCompleted = 1000;
+const waitSnackBarDisplayed = 10000;
 
 let startTime: number;
 let endTime: number;
@@ -28,60 +14,56 @@ describe('Navigation-& Testlet-Restrictions', () => {
   beforeEach(useTestDB);
   before(() => {
     useTestDB();
-    loginUser(UserName, UserPassword);
+    visitLoginPage();
+    loginTestTaker();
   });
 
   it('should be possible to choose a demo-mode booklet', () => {
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist')
       .click();
-    cy.wait(BookletLoadTime);
-    // check for an exact match
     cy.contains(/^Startseite$/)
       .should('exist');
   });
 
   it('should be no unit menu is visible', () => {
-    cy.wait(waitLoadCompleted);
     cy.get('[data-cy="unit-menu"]')
       .should('not.exist');
   });
 
-  it('should ask for a password for the restricted area and the password should already be filled in', () => {
+  it('should be possible to enter the block. The password should already be filled in', () => {
     cy.get('[mattooltip="Weiter"]')
       .should('exist')
       .click();
-    cy.wait(waitLoadCompleted);
+    cy.contains('Aufgabenblock')
+      .should('exist');
     cy.get('[data-cy="unlockUnit"]')
       .should('have.value', 'HASE');
-  });
-
-  it('should be possible to enter the block and see the first unit.', () => {
     // Time restricted area has been entered. Start the timer
     cy.contains('OK').then(() => {
       startTime = new Date().getTime();
     })
       .click();
-    // check for an exact match
     cy.contains(/^Aufgabe1$/)
       .should('exist');
-    // check time restriction
-    cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/, { timeout: 2000 })
+    cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
       .should('exist');
-    // wait until the message for time is finished is no longer displayed
-    cy.wait(waitSnackbarBlockTimeFinished);
+    // wait until the message is no longer displayed
+    cy.contains('Bearbeitungszeit', { timeout: waitSnackBarDisplayed })
+      .should('not.exist');
   });
 
   it('should be possible to navigate to next unit without responses/presentation complete but with a message', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     // set a different timeout for snack-bars, because the snack-bar will only be visible for a few seconds
-    cy.contains(/.*abgespielt.*bearbeitet.*/, { timeout: 2000 })
+    cy.contains(/.*abgespielt.*bearbeitet.*/)
       .should('exist');
+    // wait until the message is no longer displayed
+    cy.contains('abgespielt', { timeout: waitSnackBarDisplayed })
+      .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
-    // wait until the snack-bar for navigation prevented is no longer displayed
-    cy.wait(waitSnackbarNavigationPrevented);
     cy.get('[data-cy="unit-navigation-backward"]')
       .should('exist')
       .click();
@@ -93,18 +75,25 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.get('[data-cy="page-navigation-1"]')
       .should('exist')
       .click();
-    cy.wait(waitLoadCompleted);
+    cy.get('iframe')
+      .its('0.contentDocument.body')
+      .should('be.visible')
+      .then(cy.wrap)
+      .contains('Presentation complete')
+      .should('exist');
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     // set a different timeout for snack-bars, because the snack-bar will only be visible for a few seconds
-    cy.contains(/.*bearbeitet.*/, { timeout: 2000 })
+    cy.contains(/.*bearbeitet.*/)
       .should('exist');
-    cy.contains(/.*abgespielt.*/, { timeout: 2000 })
+    cy.contains(/.*abgespielt.*/)
+      .should('not.exist');
+    // wait until the message is no longer displayed
+    cy.contains('bearbeitet', { timeout: waitSnackBarDisplayed })
       .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
-    // wait until the snack-bar for navigation prevented is no longer displayed
-    cy.wait(waitSnackbarNavigationPrevented);
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
     cy.contains(/^Aufgabe1$/)
@@ -112,8 +101,6 @@ describe('Navigation-& Testlet-Restrictions', () => {
   });
 
   it('should be possible to navigate to the next unit when required fields have been filled', () => {
-    cy.wait(waitLoadCompleted);
-    // click the required field
     cy.get('iframe')
       .its('0.contentDocument.body')
       .should('be.visible')
@@ -122,11 +109,11 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .should('exist')
       .click()
       .should('be.checked');
-    cy.wait(waitLoadCompleted);
+    cy.wait(1000);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     // set a different timeout for snack-bars, because the snack-bar will only be visible for a few seconds
-    cy.contains(/.*bearbeitet.*/, { timeout: 2000 })
+    cy.contains(/.*bearbeitet.*/, { timeout: waitSnackBarDisplayed })
       .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
@@ -135,7 +122,6 @@ describe('Navigation-& Testlet-Restrictions', () => {
   it('should be possible to navigate backwards and verify that the last answer is there', () => {
     cy.get('[data-cy="unit-navigation-backward"]')
       .click();
-    cy.wait(waitLoadCompleted);
     // click the required field
     cy.get('iframe')
       .its('0.contentDocument.body')
@@ -149,46 +135,47 @@ describe('Navigation-& Testlet-Restrictions', () => {
     // Wait for remaining time of restricted area
     endTime = new Date().getTime();
     elapsed = endTime - startTime;
-    cy.wait(RestrTime - elapsed);
-    cy.contains(/^Die Bearbeitung des Abschnittes ist beendet.$/, { timeout: 2000 })
+    cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
+    cy.contains(/^Die Bearbeitung des Abschnittes ist beendet.$/)
       .should('exist');
-    cy.wait(waitLoadCompleted);
+    // wait until the message is no longer displayed
+    cy.contains('Bearbeitung', { timeout: waitSnackBarDisplayed })
+      .should('not.exist');
   });
 
   it('should be possible to start the booklet again after exiting the test', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.wait(waitLoadCompleted);
     cy.contains(/^Aufgabe2$/)
       .should('exist');
     cy.get('[data-cy="logo"]')
       .click();
-    cy.wait(waitLoadCompleted);
+    cy.url()
+      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist')
       .contains('Fortsetzen')
       .click();
-    cy.wait(BookletLoadTime);
+    cy.contains('Bearbeitung', { timeout: waitSnackBarDisplayed })
+      .should('not.exist');
     cy.contains('Startseite')
       .should('exist');
   });
 
   it('should be no longer exists the last answers', () => {
-    cy.wait(waitLoadCompleted);
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
-    cy.wait(waitLoadCompleted);
     cy.get('[data-cy="unlockUnit"]');
     cy.contains('OK')
       .click();
-    cy.wait(waitLoadCompleted);
     cy.contains(/^Aufgabe1$/)
       .should('exist');
     // check time restriction
-    cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/, { timeout: 2000 })
+    cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
       .should('exist');
-    // wait until the message for time is finished is no longer displayed
-    cy.wait(waitSnackbarBlockTimeFinished);
+    // wait until the message is no longer displayed
+    cy.contains('Bearbeitungszeit', { timeout: waitSnackBarDisplayed })
+      .should('not.exist');
     cy.contains('Aufgabe1')
       .should('exist');
     cy.get('iframe')
@@ -200,26 +187,16 @@ describe('Navigation-& Testlet-Restrictions', () => {
   });
 
   it('should be possible to go back to the booklet view and check out', () => {
-    cy.get('[data-cy="logo"]')
-      .should('exist')
-      .click();
-    cy.wait(1000);
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-    cy.get('[data-cy="logout"]')
-      .should('exist')
-      .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+    logoutTestTaker();
   });
 
   it('should be no answer file in demo-mode', () => {
-    loginAdmin(SuperAdminName, SuperAdminPassword);
+    loginSuperAdmin();
     openSampleWorkspace();
-    cy.wait(waitLoadCompleted);
     cy.get('[data-cy="Ergebnisse/Antworten"]')
+      .should('exist')
       .click();
-    cy.wait(waitLoadCompleted);
+    cy.wait(2000);
     cy.contains('rundemo')
       .should('not.exist');
   });
