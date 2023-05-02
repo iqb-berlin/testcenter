@@ -275,7 +275,8 @@ final class AdminDAOTest extends TestCase {
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
 
-    $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20')");
+    $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
+    $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
     $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 3)");
 
     $expectation = [[
