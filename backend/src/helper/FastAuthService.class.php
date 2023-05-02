@@ -17,13 +17,15 @@ class FastAuthService {
   static function storeAuthentication(PersonSession $personSession): void {
     self::connect();
     self::$redis->set(
-      $personSession->getPerson()->getToken(),
+      $personSession->getLoginSession()->getGroupToken(),
       $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
-      $personSession->getPerson()->getValidTo() ? $personSession->getPerson()->getValidTo() - time() : 365*24*60*60
+      $personSession->getLoginSession()->getLogin()->getValidTo()
+        ? $personSession->getLoginSession()->getLogin()->getValidTo() - time()
+        : 24*60*60
     );
   }
 
-  public static function removeAuthentication(PersonSession $personSession) {
+  public static function removeAuthentication(PersonSession $personSession): void {
     self::connect();
     self::$redis->del($personSession->getPerson()->getToken());
   }

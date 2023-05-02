@@ -25,6 +25,7 @@ export interface AuthData {
   customTexts: KeyValuePairs;
   flags: AuthFlagType[];
   claims: { [key in AuthAccessType]: AccessObject[] };
+  groupToken: string | null;
 }
 
 export interface KeyValuePairs {

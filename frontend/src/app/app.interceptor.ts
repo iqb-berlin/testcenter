@@ -36,6 +36,11 @@ export class AuthInterceptor implements HttpInterceptor {
       }
     }
 
+    const groupToken = authData?.groupToken ?? '';
+    if (request.url.substr(0, 3) === '/fs') {
+      tokenStr = groupToken;
+    }
+
     const requestA = request.clone({
       setHeaders: {
         AuthToken: tokenStr

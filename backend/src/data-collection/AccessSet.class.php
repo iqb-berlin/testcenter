@@ -18,6 +18,7 @@ class AccessSet extends DataCollectionTypeSafe {
     protected object $customTexts;
     protected array $flags;
     protected object $claims;
+    protected ?string $groupToken;
 
 
     static function createFromPersonSession(PersonSession $loginWithPerson, TestData ...$tests): AccessSet {
@@ -36,6 +37,8 @@ class AccessSet extends DataCollectionTypeSafe {
             [],
             $login->getCustomTexts() ?? new stdClass()
         );
+
+        $accessSet->groupToken = $loginWithPerson->getLoginSession()->getGroupToken();
 
         $accessSet->addTests(...$tests);
 
@@ -99,7 +102,8 @@ class AccessSet extends DataCollectionTypeSafe {
             $loginSession->getToken(),
             "{$loginSession->getLogin()->getGroupLabel()}/{$loginSession->getLogin()->getName()}",
             $loginSession->getLogin()->isCodeRequired() ? ['codeRequired'] : [],
-            $loginSession->getLogin()->getCustomTexts()
+            $loginSession->getLogin()->getCustomTexts(),
+            $loginSession->getGroupToken()
         );
     }
 
@@ -108,7 +112,8 @@ class AccessSet extends DataCollectionTypeSafe {
         string $token,
         string $displayName,
         array $flags = [],
-        stdClass $customTexts = null
+        stdClass $customTexts = null,
+        ?string $groupToken = null
     ) {
 
         $this->token = $token;
@@ -120,6 +125,8 @@ class AccessSet extends DataCollectionTypeSafe {
         $this->claims = (object) [];
 
         $this->customTexts = $customTexts ?? (object) [];
+
+        $this->groupToken = $groupToken;
     }
 
 

@@ -4,6 +4,8 @@ version: '3.9'
 
 services:
   testcenter-db:
+    ports:
+      - "9091:3306"
     command:
       - --log_error_verbosity=1
     volumes:
