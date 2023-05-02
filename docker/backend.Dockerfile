@@ -77,8 +77,6 @@ WORKDIR /var/www/backend
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
-COPY backend/config/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
 # Add testing code
 COPY backend/phpunit.xml .
 COPY backend/test test
