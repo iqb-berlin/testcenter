@@ -103,7 +103,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         statusMessage = 'Daten/Objekt nicht gefunden.';
         break;
       case 410:
-        statusMessage = 'Anmeldung abgelaufen oder noch nicht nötig. Bitte erneut anmelden!';
+        statusMessage = 'Anmeldung abgelaufen oder noch nicht gültig. Bitte erneut anmelden!';
         errorType = 'session';
         // ignoreError = true;
         break;

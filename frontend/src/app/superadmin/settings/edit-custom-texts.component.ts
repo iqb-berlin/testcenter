@@ -107,8 +107,8 @@ export class EditCustomTextsComponent {
   }
 
   saveData():void {
-    this.backendService.setCustomTexts(this.changedData).subscribe(isOk => {
-      if (isOk !== false) {
+    this.backendService.setCustomTexts(this.changedData)
+      .subscribe(() => {
         this.snackBar.open(
           'Textersetzungen gespeichert', 'Info', { duration: 3000 }
         );
@@ -117,12 +117,6 @@ export class EditCustomTextsComponent {
           this.mainDataService.appConfig.customTexts[ctKey] = this.changedData[ctKey];
         });
         this.customtextService.addCustomTexts(this.changedData);
-      } else {
-        this.snackBar.open('Konnte Textersetzungen nicht speichern', 'Fehler', { duration: 3000 });
-      }
-    },
-    () => {
-      this.snackBar.open('Konnte Textersetzungen nicht speichern', 'Fehler', { duration: 3000 });
-    });
+      });
   }
 }

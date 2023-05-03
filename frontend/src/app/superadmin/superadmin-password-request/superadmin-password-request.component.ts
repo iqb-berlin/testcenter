@@ -8,8 +8,10 @@ import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 export class SuperadminPasswordRequestComponent {
   passwordform = new FormGroup({
-    pw: new FormControl('', [Validators.required, Validators.minLength(3)])
+    pw: new FormControl('', [Validators.required, Validators.minLength(7)])
   });
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: string) { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: string
+  ) {}
 }

@@ -1,6 +1,6 @@
 <mat-card class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
   <mat-card-title>
-    <alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
+    <alert text="{{ error.description ?? error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
     <button
       mat-icon-button
       class="main-alert-close-button"

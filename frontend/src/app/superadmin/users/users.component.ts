@@ -96,53 +96,37 @@ export class UsersComponent implements OnInit {
           type: MessageType.error
         }
       });
-    } else {
-      const userObject = <UserData>selectedRows[0];
-      const confirmDialogRef = this.confirmDialog.open(ConfirmDialogComponent, {
-        width: '400px',
-        data: <ConfirmDialogData>{
-          title: 'Ändern des Superadmin-Status',
-          content:
-            `Für "${userObject.name}" den Status auf "${userObject.isSuperadmin ? 'NICHT ' : ''}Superadmin" setzen?`,
-          confirmbuttonlabel: 'Status ändern',
-          showcancel: true
-        }
-      });
-
-      confirmDialogRef.afterClosed().subscribe(result => {
-        if ((typeof result !== 'undefined') && (result !== false)) {
-          const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
-            width: '600px',
-            data: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}`
-          });
-
-          passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
-            if (!afterClosedResult) {
-              return;
-            }
-            this.bs.setSuperUserStatus(
-              selectedRows[0].id,
-              !userObject.isSuperadmin,
-              (<FormGroup>afterClosedResult).get('pw').value
-            )
-              .subscribe(
-                isOKay => {
-                  if (isOKay) {
-                    this.snackBar.open('Status geändert', '', { duration: 1000 });
-                    this.updateObjectList();
-                  } else {
-                    this.snackBar.open(
-                      'Konnte Status nicht ändern (falsches Kennwort?)',
-                      'Fehler',
-                      { duration: 5000 }
-                    );
-                  }
-                }
-              );
-          });
-        }
-      });
+      return;
     }
+
+    const userObject = <UserData>selectedRows[0];
+    const passwdDialogRef = this.superadminPasswordDialog.open(SuperadminPasswordRequestComponent, {
+      width: '600px',
+      data: `Superadmin-Status ${userObject.isSuperadmin ? 'entziehen' : 'setzen'}`
+    });
+
+    passwdDialogRef.afterClosed().subscribe(afterClosedResult => {
+      if (!afterClosedResult) {
+        return;
+      }
+      this.bs.setSuperUserStatus(
+        selectedRows[0].id,
+        !userObject.isSuperadmin,
+        (<FormGroup>afterClosedResult).get('pw').value
+      )
+        .subscribe(isOKay => {
+          if (isOKay) {
+            this.snackBar.open('Status geändert', '', { duration: 1000 });
+            this.updateObjectList();
+          } else {
+            this.snackBar.open(
+              'Konnte Status nicht ändern (falsches Kennwort?)',
+              'Fehler',
+              { duration: 5000 }
+            );
+          }
+        });
+    });
   }
 
   changePassword(): void {

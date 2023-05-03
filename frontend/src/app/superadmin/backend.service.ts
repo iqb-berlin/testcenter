@@ -52,74 +52,39 @@ export class BackendService {
     return this.http.get<IdRoleData[]>(`${this.serverUrl}user/${userId}/workspaces`);
   }
 
-  setWorkspacesByUser(userId: number, accessTo: IdRoleData[]): Observable<boolean> {
-    return this.http.patch<boolean>(`${this.serverUrl}user/${userId}/workspaces`, { ws: accessTo });
+  setWorkspacesByUser(userId: number, accessTo: IdRoleData[]): Observable<void> {
+    return this.http.patch<void>(`${this.serverUrl}user/${userId}/workspaces`, { ws: accessTo });
   }
 
-  addWorkspace(name: string): Observable<boolean> {
-    return this.http.put<boolean>(`${this.serverUrl}workspace`, { name });
+  addWorkspace(name: string): Observable<void> {
+    return this.http.put<void>(`${this.serverUrl}workspace`, { name });
   }
 
-  renameWorkspace(workspaceId: number, wsName: string): Observable<boolean> {
-    return this.http
-      .patch<boolean>(`${this.serverUrl}workspace/${workspaceId}`, { name: wsName })
-      .pipe(catchError((err: AppError) => {
-        console.warn(`renameWorkspace Api-Error: ${err.code} ${err.description} `);
-        return of(false);
-      }));
+  renameWorkspace(workspaceId: number, wsName: string): Observable<void> {
+    return this.http.patch<void>(`${this.serverUrl}workspace/${workspaceId}`, { name: wsName });
   }
 
-  deleteWorkspaces(workspaces: number[]): Observable<boolean> {
-    return this.http
-      .request<boolean>('delete', `${this.serverUrl}workspaces`, { body: { ws: workspaces } })
-      .pipe(catchError((err: AppError) => {
-        console.warn(`deleteWorkspaces Api-Error: ${err.code} ${err.description} `);
-        return of(false);
-      }));
+  deleteWorkspaces(workspaces: number[]): Observable<void> {
+    return this.http.request<void>('delete', `${this.serverUrl}workspaces`, { body: { ws: workspaces } });
   }
 
   getUsersByWorkspace(workspaceId: number): Observable<IdRoleData[]> {
-    return this.http
-      .get<IdRoleData[]>(`${this.serverUrl}workspace/${workspaceId}/users`)
-      .pipe(catchError((err: AppError) => {
-        console.warn(`getUsersByWorkspace Api-Error: ${err.code} ${err.description} `);
-        return [];
-      }));
+    return this.http.get<IdRoleData[]>(`${this.serverUrl}workspace/${workspaceId}/users`);
   }
 
-  setUsersByWorkspace(workspaceId: number, accessing: IdRoleData[]): Observable<boolean> {
-    return this.http
-      .patch<boolean>(`${this.serverUrl}workspace/${workspaceId}/users`, { u: accessing })
-      .pipe(catchError((err: AppError) => {
-        console.warn(`setUsersByWorkspace Api-Error: ${err.code} ${err.description}`);
-        return of(false);
-      }));
+  setUsersByWorkspace(workspaceId: number, accessing: IdRoleData[]): Observable<void> {
+    return this.http.patch<void>(`${this.serverUrl}workspace/${workspaceId}/users`, { u: accessing });
   }
 
   getWorkspaces(): Observable<IdAndName[]> {
-    return this.http
-      .get<IdAndName[]>(`${this.serverUrl}workspaces`)
-      .pipe(catchError((err: AppError) => {
-        console.warn(`getWorkspaces Api-Error: ${err.code} ${err.description}`);
-        return [];
-      }));
+    return this.http.get<IdAndName[]>(`${this.serverUrl}workspaces`);
   }
 
-  setAppConfig(newConfig: AppSettings): Observable<boolean> {
-    return this.http
-      .patch<boolean>(`${this.serverUrl}system/config/app`, newConfig)
-      .pipe(catchError((err: AppError) => {
-        console.warn(`setAppConfig Api-Error: ${err.code} ${err.description}`);
-        return of(false);
-      }));
+  setAppConfig(newConfig: AppSettings): Observable<void> {
+    return this.http.patch<void>(`${this.serverUrl}system/config/app`, newConfig);
   }
 
-  setCustomTexts(newCustomTexts: KeyValuePairs): Observable<boolean> {
-    return this.http
-      .patch<boolean>(`${this.serverUrl}system/config/custom-texts`, newCustomTexts)
-      .pipe(catchError((err: AppError) => {
-        console.warn(`setCustomTexts Api-Error: ${err.code} ${err.description}`);
-        return of(false);
-      }));
+  setCustomTexts(newCustomTexts: KeyValuePairs): Observable<void> {
+    return this.http.patch<void>(`${this.serverUrl}system/config/custom-texts`, newCustomTexts);
   }
 }

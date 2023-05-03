@@ -115,26 +115,23 @@ export class WorkspacesComponent implements OnInit {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-        if (typeof result !== 'undefined') {
-          if (result !== false) {
-            this.mainDataService.showLoadingAnimation();
-            this.backendService.renameWorkspace(
-              selectedRows[0].id,
-              (<FormGroup>result).get('name').value
-            )
-              .subscribe(
-                respOk => {
-                  if (respOk !== false) {
-                    this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
-                    this.updateWorkspaceList();
-                  } else {
-                    this.mainDataService.stopLoadingAnimation();
-                    this.snackBar.open('Konnte Arbeitsbereich nicht ändern', 'Fehler', { duration: 2000 });
-                  }
-                }
-              );
-          }
+        if (!result) {
+          return;
         }
+
+        const newName = (<FormGroup>result).get('name').value;
+        if (this.workspaceNameExists(newName)) {
+          this.snackBar.open('Arbeitsbereich mit diesem namen bereits vorhanden!', 'Fehler', { duration: 1000 });
+          return;
+        }
+
+        this.backendService.renameWorkspace(selectedRows[0].id, newName)
+          .subscribe(
+            respOk => {
+              this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
+              this.updateWorkspaceList();
+            }
+          );
       });
     }
   }
@@ -174,18 +171,10 @@ export class WorkspacesComponent implements OnInit {
         if (result !== false) {
           const workspacesToDelete = [];
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
-          this.mainDataService.showLoadingAnimation();
-          this.backendService.deleteWorkspaces(workspacesToDelete).subscribe(
-            respOk => {
-              if (respOk !== false) {
-                this.snackBar.open('Arbeitsbereich/e gelöscht', '', { duration: 1000 });
-                this.updateWorkspaceList();
-              } else {
-                this.mainDataService.stopLoadingAnimation();
-                this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', { duration: 1000 });
-              }
-            }
-          );
+          this.backendService.deleteWorkspaces(workspacesToDelete)
+            .subscribe(() => {
+              this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', { duration: 1000 });
+            });
         }
       });
     }
@@ -194,11 +183,10 @@ export class WorkspacesComponent implements OnInit {
   updateUserList(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.mainDataService.showLoadingAnimation();
-      this.backendService.getUsersByWorkspace(this.selectedWorkspaceId).subscribe(dataresponse => {
-        this.userListDatasource = new MatTableDataSource(dataresponse);
-        this.mainDataService.stopLoadingAnimation();
-      });
+      this.backendService.getUsersByWorkspace(this.selectedWorkspaceId)
+        .subscribe(dataresponse => {
+          this.userListDatasource = new MatTableDataSource(dataresponse);
+        });
     } else {
       this.userListDatasource = null;
     }
@@ -216,17 +204,10 @@ export class WorkspacesComponent implements OnInit {
   saveUsers():void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.mainDataService.showLoadingAnimation();
-      this.backendService.setUsersByWorkspace(this.selectedWorkspaceId, this.userListDatasource.data).subscribe(
-        respOk => {
-          this.mainDataService.stopLoadingAnimation();
-          if (respOk !== false) {
-            this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
-          } else {
-            this.snackBar.open('Konnte Zugriffsrechte nicht ändern', 'Fehler', { duration: 2000 });
-          }
-        }
-      );
+      this.backendService.setUsersByWorkspace(this.selectedWorkspaceId, this.userListDatasource.data)
+        .subscribe(() => {
+          this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
+        });
     } else {
       this.userListDatasource = null;
     }

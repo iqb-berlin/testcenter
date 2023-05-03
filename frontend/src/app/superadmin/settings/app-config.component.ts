@@ -103,8 +103,8 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       backgroundBox: this.configForm.get('backgroundBox').value,
       mainLogo: this.logoImageBase64
     };
-    this.backendService.setAppConfig(appConfig).subscribe(isOk => {
-      if (isOk !== false) {
+    this.backendService.setAppConfig(appConfig)
+      .subscribe(() => {
         this.snackBar.open(
           'Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 }
         );
@@ -113,13 +113,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         this.mainDataService.appConfig.applyBackgroundColors();
         this.mainDataService.appTitle$.next(appConfig.appTitle);
         this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
-      } else {
-        this.snackBar.open('Konnte Konfigurationsdaten der Anwendung nicht speichern', 'Fehler', { duration: 3000 });
-      }
-    },
-    () => {
-      this.snackBar.open('Konnte Konfigurationsdaten der Anwendung nicht speichern', 'Fehler', { duration: 3000 });
-    });
+      });
   }
 
   imgFileChange(fileInput: any): void {
