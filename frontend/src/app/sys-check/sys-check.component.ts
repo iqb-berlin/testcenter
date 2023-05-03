@@ -42,15 +42,8 @@ export class SysCheckComponent implements OnInit {
             }
             if (checkConfig.hasUnit) {
               this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name)
-                .subscribe((unitAndPlayer: UnitAndPlayerContainer | boolean) => {
-                  if (unitAndPlayer !== false && (unitAndPlayer as UnitAndPlayerContainer).player.length > 0) {
-                    this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer;
-                  } else {
-                    console.error('Konnte Unit-Player nicht laden');
-                    this.ds.checkConfig.hasUnit = false;
-                    // this.ds.unitReport.push({id: 'UNIT-PLAYER-ERROR', type: 'unit/player',
-                    // label: 'loading error', value: 'Error', warning: true});
-                  }
+                .subscribe((unitAndPlayer: UnitAndPlayerContainer) => {
+                  this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer;
                   this.completeConfig();
                 });
             } else {

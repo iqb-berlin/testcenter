@@ -43,13 +43,9 @@ export class ReportComponent implements OnInit {
               questionnaire: this.ds.questionnaireReport,
               unit: []
             }
-          ).subscribe((saveReportResult: boolean) => {
-            if (saveReportResult) {
-              this.snackBar.open('Bericht gespeichert.', '', { duration: 3000 });
-              this.saved = true;
-            } else {
-              this.snackBar.open('Konnte Bericht nicht speichern.', '', { duration: 3000 });
-            }
+          ).subscribe(() => {
+            this.snackBar.open('Bericht gespeichert.', '', { duration: 3000 });
+            this.saved = true;
           });
         }
       }

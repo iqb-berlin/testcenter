@@ -21,53 +21,23 @@ export class BackendService {
   ) {}
 
   getCheckConfigData(workspaceId: number, sysCheckName: string): Observable<CheckConfig> {
-    return this.http
-      .get<CheckConfig>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}`)
-      .pipe(
-        catchError(() => {
-          const myreturn: CheckConfig = null;
-          return of(myreturn);
-        })
-      );
+    return this.http.get<CheckConfig>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}`);
   }
 
-  saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<boolean> {
-    return this.http
-      .put(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/report`, { ...sysCheckReport })
-      .pipe(
-        map(() => true),
-        catchError((err: AppError) => {
-          console.warn(`saveReport Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
-      );
+  saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<void> {
+    return this.http.put<void>(
+      `${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/report`,
+      { ...sysCheckReport }
+    );
   }
 
   getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer | boolean> {
-    const startingTime = BackendService.getMostPreciseTimestampBrowserCanProvide();
     return this.http
-      .get<UnitAndPlayerContainer>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckId}/unit-and-player`)
-      .pipe(
-        map(data => {
-          data.duration = BackendService.getMostPreciseTimestampBrowserCanProvide() - startingTime;
-          return data;
-        }),
-        catchError((err: AppError) => {
-          console.warn(`getUnitAndPlayer Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
-      );
+      .get<UnitAndPlayerContainer>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckId}/unit-and-player`);
   }
 
   getServerTime(): Observable<ServerTime> {
-    return this.http
-      .get<ServerTime>(`${this.serverUrl}system/time`)
-      .pipe(
-        catchError((err: AppError) => {
-          console.warn(`Could not get Time from Server: ${err.code} ${err.description} `);
-          return of(null);
-        })
-      );
+    return this.http.get<ServerTime>(`${this.serverUrl}system/time`);
   }
 
   benchmarkDownloadRequest(requestedDownloadSize: number): Promise<NetworkRequestTestResult> {
