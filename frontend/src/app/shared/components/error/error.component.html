@@ -1,6 +1,6 @@
 <mat-card class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
   <mat-card-title>
-    <alert text="{{ error.description ?? error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
+    <alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
     <button
       mat-icon-button
       class="main-alert-close-button"
@@ -19,6 +19,9 @@
         <p>{{error.description}}</p>
         <p>{{error.details}}</p>
         <p><b>Error-Id:</b> {{error.errorId}}</p>
+        <p *ngFor="let item of additionalReport | keyvalue">
+          <b>{{item.key}}:</b>{{item.value}}
+        </p>
       </div>
     </div>
   </mat-card-content>

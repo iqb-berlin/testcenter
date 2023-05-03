@@ -30,19 +30,20 @@
   </mat-card>
 
 
-    <error
-      fxFlex="0 0 400px"
-      fxLayout="column"
-      *ngSwitchCase="tcs.testStatusEnum.ERROR"
-      [onClose]="terminateTest.bind(this)"
-      [closeCaption]="'Test beenden' | customtext:'login_testEndButtonLabel' | async"
-    >
-      <p><b>Angemeldet als "{{loginName}}"</b></p>
-      <p><b>{{tcs.testMode.modeLabel}}</b></p>
-      <p style="color: chocolate">
-        <b>{{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }} </b>
-      </p>
-    </error>
+  <error
+    *ngSwitchCase="tcs.testStatusEnum.ERROR"
+    [onClose]="terminateTest.bind(this)"
+    [closeCaption]="'Test beenden' | customtext:'login_testEndButtonLabel' | async"
+    [additionalReport]="{
+      login: loginName,
+      booklet: tcs.rootTestlet.title,
+      mode: tcs.testMode.modeLabel
+    }"
+  >
+    <p style="white-space: pre-wrap">
+      {{ 'Es ist ein Fehler aufgetreten.' | customtext:'booklet_errormessage' | async }}
+    </p>
+  </error>
 
 
   <mat-card *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">

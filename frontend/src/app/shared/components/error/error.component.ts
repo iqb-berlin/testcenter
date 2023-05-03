@@ -15,6 +15,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   @Input() onBeforeClose: () => void;
   @Input() onClose: () => void;
   @Input() closeCaption: string;
+  @Input() additionalReport: { [key: string]: string };
   error: AppError;
   errorDetailsOpen = false;
   defaultCloseCaption: string;

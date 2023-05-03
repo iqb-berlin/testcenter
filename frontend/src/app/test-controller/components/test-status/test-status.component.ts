@@ -50,6 +50,7 @@ export class TestStatusComponent implements OnInit, OnDestroy {
     this.cts.restoreDefault(false);
   }
 
+
   continueTest() {
     this.tcs.setUnitNavigationRequest(this.tcs.currentUnitSequenceId.toString(10));
   }
