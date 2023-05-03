@@ -115,6 +115,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           this.refreshUnitMenu();
           this.setUnitScreenHeader();
         });
+
+      this.addConsoleWarning();
     });
   }
 
@@ -406,5 +408,15 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
       this.bs.notifyDyingTest(this.tcs.testId);
     }
+  }
+
+  private addConsoleWarning(): void {
+    const consoleWarning = this.cts.getCustomText('booklet_console_warning');
+    console.log(consoleWarning);
+    if (!consoleWarning) {
+      return;
+    }
+    console.clear();
+    console.log(`%c${consoleWarning}`, 'font-size: 250%; background: yellow; color: red; display:block; border: 3px solid red; border-radius: 10px; padding: 0.5em;');
   }
 }
