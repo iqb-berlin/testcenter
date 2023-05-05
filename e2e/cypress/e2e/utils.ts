@@ -4,10 +4,7 @@ export const userData = {
   SuperAdminName: 'super',
   SuperAdminPassword: 'user123',
   WorkspaceAdminName: 'workspace_admin',
-  WorkspaceAdminPassword: 'anotherPassword',
-  // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:RunDemo
-  TesttakerName: 'Test_Demo_Ctrl',
-  TesttakerPassword: '123'
+  WorkspaceAdminPassword: 'anotherPassword'
 };
 
 export const credentialsControllerTest = {
@@ -128,13 +125,13 @@ export const loginWorkspaceAdmin = (): void => {
     .should('exist');
 };
 
-export const loginTestTaker = (): void => {
-  insertCredentials(userData.TesttakerName, userData.TesttakerPassword);
+export const loginTestTaker = (name: string, password: string): void => {
+  insertCredentials(name, password);
   cy.get('[data-cy="login-user"]')
     .should('exist')
     .click();
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-  cy.contains(userData.TesttakerName)
+  cy.contains(name)
     .should('exist');
 };
 

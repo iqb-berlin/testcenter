@@ -3,7 +3,10 @@ import {
   useTestDB, credentialsControllerTest, visitLoginPage
 } from '../utils';
 
-const waitSnackBarDisplayed = 10000;
+const waitMaxSnackBarDisplayed = 10000;
+// declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:RunDemo
+const TesttakerName = 'Test_Demo_Ctrl';
+const TesttakerPassword = '123';
 
 let startTime: number;
 let endTime: number;
@@ -15,7 +18,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
   before(() => {
     useTestDB();
     visitLoginPage();
-    loginTestTaker();
+    loginTestTaker(TesttakerName, TesttakerPassword);
   });
 
   it('should be possible to choose a demo-mode booklet', () => {
@@ -49,7 +52,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
       .should('exist');
     // wait until the message is no longer displayed
-    cy.contains('Bearbeitungszeit', { timeout: waitSnackBarDisplayed })
+    cy.contains('Bearbeitungszeit', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
   });
 
@@ -60,7 +63,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.contains(/.*abgespielt.*bearbeitet.*/)
       .should('exist');
     // wait until the message is no longer displayed
-    cy.contains('abgespielt', { timeout: waitSnackBarDisplayed })
+    cy.contains('abgespielt', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
@@ -90,7 +93,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.contains(/.*abgespielt.*/)
       .should('not.exist');
     // wait until the message is no longer displayed
-    cy.contains('bearbeitet', { timeout: waitSnackBarDisplayed })
+    cy.contains('bearbeitet', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
@@ -113,7 +116,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.get('[data-cy="unit-navigation-forward"]')
       .click();
     // set a different timeout for snack-bars, because the snack-bar will only be visible for a few seconds
-    cy.contains(/.*bearbeitet.*/, { timeout: waitSnackBarDisplayed })
+    cy.contains(/.*bearbeitet.*/, { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
@@ -139,7 +142,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.contains(/^Die Bearbeitung des Abschnittes ist beendet.$/)
       .should('exist');
     // wait until the message is no longer displayed
-    cy.contains('Bearbeitung', { timeout: waitSnackBarDisplayed })
+    cy.contains('Bearbeitung', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
   });
 
@@ -156,7 +159,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .should('exist')
       .contains('Fortsetzen')
       .click();
-    cy.contains('Bearbeitung', { timeout: waitSnackBarDisplayed })
+    cy.contains('Bearbeitung', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
     cy.contains('Startseite')
       .should('exist');
@@ -174,7 +177,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
       .should('exist');
     // wait until the message is no longer displayed
-    cy.contains('Bearbeitungszeit', { timeout: waitSnackBarDisplayed })
+    cy.contains('Bearbeitungszeit', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
     cy.contains('Aufgabe1')
       .should('exist');

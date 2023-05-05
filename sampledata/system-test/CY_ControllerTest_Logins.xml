@@ -9,9 +9,16 @@
     <CustomText key="app_title">TEST TESTCENTER</CustomText>
   </CustomTexts>
 
+  <Group id="runrev" label="RunReview">
+    <Login mode="run-review" name="Test_Review_Ctrl" pw="123">
+      <Booklet>runreview</Booklet>
+    </Login>
+  </Group>
+
   <Group id="rundemo" label="RunDemo">
     <Login mode="run-demo" name="Test_Demo_Ctrl" pw="123">
       <Booklet>rundemo</Booklet>
     </Login>
   </Group>
+
 </Testtakers>
