@@ -73,7 +73,7 @@ paths:
             type: string
         - in: path
           name: attachment_file_id
-          example: image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png
+          example: image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png
           required: true
           schema:
             type: string
@@ -113,7 +113,7 @@ paths:
             type: string
         - in: path
           name: attachment_file_id
-          example: image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png
+          example: image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png
           required: true
           schema:
             type: string
@@ -152,7 +152,7 @@ paths:
                     "attachmentType": "capture-image",
                     "dataType": "image",
                     "attachmentFileIds": [
-                      "image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png"
+                      "image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png"
                     ],
                     "lastModified": 1627545600000,
                     "testLabel": "sample_booklet_label",
@@ -210,7 +210,7 @@ paths:
                   "attachmentType": "capture-image",
                   "dataType": "image",
                   "attachmentFileIds": [
-                    "image:lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png"
+                    "image:h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png"
                   ],
                   "lastModified": 1627545600000,
                   "testLabel": "sample_booklet_label",
