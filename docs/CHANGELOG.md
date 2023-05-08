@@ -4,10 +4,20 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 14.4.0-rc.1
+## [next]
+### Sicherheit
+* Softwareupdate: Aktuelle Versionen von PHP und Apache
+* Information Disclosure: Backend-Calls liefern die Versionen von PHP Apache nicht mehr aus
+* Unzureichende Entropie bei Session-Tokens beseitigt
+* Enumerierung von Admin-Benutzernamen durch timing-attacks erschwert
 
+### Bugfixes
+* Es werden *keine* Einträge in der Workspace-Übersicht "Ergebnisse/Anworten" mehr durch Testdurchgänge im Demomode erzeugt. 
+
+## 14.4.0
 ### Verbesserungen
 * Localstorage muss nach Update des Testcenters nicht mehr gelöscht werden
+
 ### UI
 * Super-Adminbereich: Arbeitsbereiche können durch Namensänderungen nicht mehr denselben Namen tragen
 
