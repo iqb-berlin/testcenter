@@ -7,6 +7,7 @@ import {
   AccessObject, AppError, AuthAccessType, AuthData
 } from '../../../app.interfaces';
 import { AppConfig } from '../../classes/app.config';
+import { BackendService } from '../../../backend.service';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 
@@ -47,7 +48,8 @@ export class MainDataService {
   }
 
   constructor(
-    private cts: CustomtextService
+    private cts: CustomtextService,
+    private bs: BackendService
   ) {
     this.appError$.subscribe(error => console.log({ error }));
   }
@@ -89,4 +91,12 @@ export class MainDataService {
   //   }
   //   this._authData$.next(MainDataService.getAuthData());
   // }
+
+  relaodPage(): void {
+    // this.mainDataService.resetAuthData();
+    // eslint-disable-next-line no-restricted-globals
+    this.bs.clearCache();
+    this.showLoadingAnimation();
+    setTimeout(() => { window.location.href = '/'; }, 100);
+  }
 }

@@ -51,4 +51,8 @@ export class BackendService {
         catchError(() => of([]))
       );
   }
+
+  clearCache(): Observable<void> {
+    return this.http.post<void>(`${this.serverUrl}clear-cache`, {});
+  }
 }

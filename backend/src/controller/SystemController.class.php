@@ -153,4 +153,9 @@ class SystemController extends Controller {
     BroadcastService::send('system/clean');
     return $response->withStatus(200);
   }
+
+  public static function postClearCache(Request $request, Response $response): Response {
+    return $response
+      ->withHeader('Clear-Site-Data', '"*"');
+  }
 }

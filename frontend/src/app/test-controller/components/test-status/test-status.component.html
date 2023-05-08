@@ -32,8 +32,8 @@
 
   <error
     *ngSwitchCase="tcs.testStatusEnum.ERROR"
-    [onClose]="terminateTest.bind(this)"
-    [closeCaption]="'Test beenden' | customtext:'login_testEndButtonLabel' | async"
+    [onClose]="relaodPage.bind(this)"
+    [closeCaption]="'Neu Laden' | customtext:'booklet_reload' | async"
     [additionalReport]="{
       login: loginName,
       booklet: tcs.rootTestlet.title,

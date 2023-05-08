@@ -45,11 +45,14 @@ export class TestStatusComponent implements OnInit, OnDestroy {
     this.appErrorSubscription.unsubscribe();
   }
 
+  relaodPage(): void {
+    this.mainDataService.relaodPage();
+  }
+
   terminateTest(): void {
     this.tcs.terminateTest('BOOKLETLOCKEDbyTESTEE', true, this.tcs.bookletConfig.lock_test_on_termination === 'ON');
     this.cts.restoreDefault(false);
   }
-
 
   continueTest() {
     this.tcs.setUnitNavigationRequest(this.tcs.currentUnitSequenceId.toString(10));
