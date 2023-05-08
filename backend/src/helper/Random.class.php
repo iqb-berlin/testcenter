@@ -4,12 +4,12 @@ declare(strict_types=1);
 // TODO unit-test
 
 class Random {
-  private const allowedChars = "ABCDEFGHIJKLOMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz0123456789_-";
+  public const charset_default = "abcdefghijklmnopqrstuvwxyz0123456789_-";
 
-  static function string(int $size, bool $cryptoSafe): string {
+  static function string(int $size, bool $cryptoSafe, string $charSet = self::charset_default): string {
     $fileName = '';
-    while ($size-- > 1) {
-      $fileName .= substr(self::allowedChars, self::int(0, strlen(self::allowedChars) - 1, $cryptoSafe), 1);
+    while ($size-- > 0) {
+      $fileName .= substr($charSet, self::int(0, strlen($charSet) - 1, $cryptoSafe), 1);
     }
     return $fileName;
   }

@@ -22,6 +22,11 @@ The source code and therefore the application is separated in three submodules:
   * [BS] for broadcasting-service changes
   * [Setup] for changes to the infrastructure - container setup, CI script etc.
 
+## Debugging
+Xdebug is baked in the dev-container. install a Xdebug-browser extension like this 
+https://github.com/lhall-adexos/xdebug-ext, set up "IDEA" as IDE-key, and
+it should work out of the box with IDEA.
+
 ## Coding Standards
 Use the .editorconfig-file.
 

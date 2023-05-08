@@ -294,63 +294,68 @@ class SessionDAO extends DAO {
     }
 
     $newPersonToken = Token::generate('person', "{$login->getGroupName()}_{$login->getName()}_$code");
+
+    $suffix = [];
+    if ($code) {
+      $suffix[] = $code;
+    }
+    if (Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+      $suffix[] = Random::string(8, false);
+    }
+    $suffix = implode('/', $suffix);
+
+    if (!Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+      $personSession = $this->_('
+        select id, valid_until from person_sessions where login_sessions_id = :lsi and name_suffix = :suffix',
+        [
+          ':lsi' => $loginSession->getId(),
+          ':suffix' => $suffix
+        ]
+      );
+      if ($personSession) {
+        $this->_(
+          'update person_sessions set token=:token where login_sessions_id = :lsi and name_suffix = :suffix',
+          [
+            ':lsi' => $loginSession->getId(),
+            ':suffix' => $suffix,
+            ':token' => $newPersonToken
+          ]
+        );
+        return new PersonSession(
+          $loginSession,
+          new Person(
+            $personSession['id'],
+            $newPersonToken,
+            $code,
+            $suffix,
+            TimeStamp::fromSQLFormat($personSession['valid_until'])
+          )
+        );
+      }
+    }
+
     $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
     $this->_(
       "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
-            select
-              :token,
-              :code,
-              :login_id,
-              :valid_until,
-              (
-                select
-                  case
-                    when :multisession and :code != '' then :code || '/' || (count(*) + 1)
-                    when :multisession then (count(*) + 1)
-                    else :code
-                  end
-                  from
-                    person_sessions
-                  where
-                    login_sessions_id=:login_id and code=:code
-              )
-            on duplicate key update token=:token",
+            values (:token, :code, :login_id, :valid_until, :suffix)",
       [
         ':token' => $newPersonToken,
         ':code' => $code,
         ':login_id' => $loginSession->getId(),
         ':valid_until' => TimeStamp::toSQLFormat($validUntil),
-        ':multisession' => Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')
-      ]
-    );
-
-
-    // there is no way in mySQL to combine insert & select into one query and we need to get the id and the suffix
-    $person = $this->_(
-      'select
-              id,
-              token,
-              code,
-              valid_until,
-              name_suffix
-            from
-              person_sessions
-            where
-              token=:token',
-      [
-        ':token' => $newPersonToken
+        ':suffix' => $suffix
       ]
     );
 
     return new PersonSession(
       $loginSession,
       new Person(
-        $person['id'],
-        $person['token'],
-        $person['code'],
-        $person['name_suffix'],
-        TimeStamp::fromSQLFormat($person['valid_until'])
+        (int) $this->pdoDBhandle->lastInsertId(),
+        $newPersonToken,
+        $code,
+        $suffix,
+        $validUntil
       )
     );
   }

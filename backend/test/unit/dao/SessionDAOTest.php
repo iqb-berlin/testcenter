@@ -32,6 +32,7 @@ class SessionDAOTest extends TestCase {
     require_once "src/data-collection/Person.class.php";
     require_once "src/data-collection/PersonSession.class.php";
     require_once "src/helper/Mode.class.php";
+    require_once "src/helper/Random.class.php";
     require_once "src/helper/TimeStamp.class.php";
     require_once "src/dao/DAO.class.php";
     require_once "src/dao/SessionDAO.class.php";
@@ -40,6 +41,7 @@ class SessionDAOTest extends TestCase {
 
   function setUp(): void {
     TestDB::setUp();
+    TestEnvironment::makeRandomStatic();
     $this->dbc = new SessionDAO();
     $this->dbc->runFile(REAL_ROOT_DIR . '/backend/test/unit/testdata.sql');
 
@@ -382,9 +384,9 @@ class SessionDAOTest extends TestCase {
     $result1 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
     $result2 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
     $this->assertEquals(5, $result1->getPerson()->getId());
-    $this->assertEquals('existing_code/1', $result1->getPerson()->getNameSuffix());
+    $this->assertEquals('existing_code/h5ki-bd-', $result1->getPerson()->getNameSuffix());
     $this->assertEquals(6, $result2->getPerson()->getId());
-    $this->assertEquals('existing_code/2', $result2->getPerson()->getNameSuffix());
+    $this->assertEquals('existing_code/va4dg-jc', $result2->getPerson()->getNameSuffix());
     $this->assertEquals(6, $this->countTableRows('person_sessions'));
   }
 

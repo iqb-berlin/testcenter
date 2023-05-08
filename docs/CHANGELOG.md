@@ -12,7 +12,14 @@ layout: default
 * Enumerierung von Admin-Benutzernamen durch timing-attacks erschwert
 
 ### Bugfixes
-* Es werden *keine* Einträge in der Workspace-Übersicht "Ergebnisse/Anworten" mehr durch Testdurchgänge im Demomode erzeugt. 
+* *Schwerer Fehler behoben*: Mehr als 15-20 Anmeldungen gleichzeitig mit einem Login im Modus `hot-run-restart` führten
+  in der Version 14.4.0 zu Fehlern.
+* Es werden *keine* Einträge in der Workspace-Übersicht "Ergebnisse/Antworten" mehr durch Testdurchgänge im Demomode erzeugt. 
+
+### Verbesserungen
+* Personen die sich mit ein und selben Login im Modus `hot-run-restart` angemeldet haben, erhalten nun keine 
+  fortlaufende Nummer mehr als Bezeichner (in den Ergebnisdaten), sondern einen Code. Ein Fortlaufender bezeichner hat
+  sich als technisch nicht verlässlich möglich erweisen, wenn Anmeldungen gleichzeitig vorn statten gehen.
 
 ## 14.4.0
 ### Verbesserungen

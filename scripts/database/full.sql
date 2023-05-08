@@ -42,7 +42,6 @@ CREATE TABLE `person_sessions` (
   `name_suffix` varchar(100) COLLATE utf8mb3_german2_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `person_sessions_id_uindex` (`id`),
-  UNIQUE KEY `unique_person_session_token` (`token`),
   UNIQUE KEY `unique_person_session` (`login_sessions_id`,`name_suffix`),
   KEY `index_fk_person_login` (`login_sessions_id`) USING BTREE,
   KEY `person_sessions_token_index` (`token`),
