@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 14.5.0
 ### Sicherheit
 * Softwareupdate: Aktuelle Versionen von PHP und Apache
 * Information Disclosure: Backend-Calls liefern die Versionen von PHP Apache nicht mehr aus
