@@ -31,7 +31,6 @@
       <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-text-template" />
       <path value="$PROJECT_DIR$/backend/vendor/phar-io/version" />
       <path value="$PROJECT_DIR$/backend/vendor/phpspec/prophecy" />
-      <path value="$PROJECT_DIR$/backend/vendor/doctrine/instantiator" />
       <path value="$PROJECT_DIR$/backend/vendor/hamcrest/hamcrest-php" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/global-state" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/comparator" />
@@ -44,7 +43,6 @@
       <path value="$PROJECT_DIR$/backend/vendor/webmozart/assert" />
       <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/reflection-docblock" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/cli-parser" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/resource-operations" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/diff" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/object-enumerator" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/exporter" />
