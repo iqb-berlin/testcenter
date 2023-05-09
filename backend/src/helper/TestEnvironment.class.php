@@ -69,7 +69,7 @@ class TestEnvironment {
     }
     $initializer->importSampleFiles(1, $sampleFilesCategories);
     Folder::createPath(DATA_DIR . "/ws_1/UnitAttachments");
-    $initializer->createSampleScanImage("UnitAttachments/lrOI-JLFOAPBOHt8GZyT_lRTL8qcdNy.png", 1);
+    $initializer->createSampleScanImage("UnitAttachments/h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png", 1);
   }
 
   private static function createTestData(): void {

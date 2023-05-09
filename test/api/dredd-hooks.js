@@ -78,6 +78,9 @@ dreddHooks.beforeEach((transaction, done) => {
     // use virtual environment
     transaction.request.headers.TestMode = 'api';
 
+    // start debugging session
+    transaction.request.uri += '?XDEBUG_SESSION_START=IDEA';
+
     // inject login credentials if necessary
     switch (transaction.expected.statusCode) {
       case '200':

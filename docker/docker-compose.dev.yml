@@ -45,9 +45,9 @@ services:
       - ../sampledata:/var/www/sampledata
       - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
       # Uncomment the following lines to enable xdebug
-      # - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-      #    ports:
-      #      - 9005:9003
+      - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    ports:
+      - 9005:9003
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:

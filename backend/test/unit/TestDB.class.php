@@ -22,17 +22,18 @@ class TestDB {
   }
 
 
-  private static function connectWithRetries(int $retries = 5): void {
+  private static function connectWithRetries(int $retries = 1): void {
     while ($retries--) {
       try {
-        DB::connectToTestDB(self::readDBConfigFromEnvironment());
+        $config = self::readDBConfigFromEnvironment();
+        DB::connectToTestDB($config);
         return;
       } catch (Throwable $t) {
-        echo "\n Database Connection failed! Retry: $retries attempts left.";
+        echo "\n Database Connection failed! Retry: $retries attempts left."  . print_r($config, true);
         usleep(20 * 1000000); // give database container time to come up
       }
     }
-    throw new Exception('DB-connection failed');
+    throw new Exception('DB-connection failed: ' . print_r($config, true));
   }
 
   // when unit tests run in uninitialized container (like in CI)

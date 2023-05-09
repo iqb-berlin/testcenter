@@ -31,7 +31,6 @@
       <path value="$PROJECT_DIR$/backend/vendor/phpunit/php-text-template" />
       <path value="$PROJECT_DIR$/backend/vendor/phar-io/version" />
       <path value="$PROJECT_DIR$/backend/vendor/phpspec/prophecy" />
-      <path value="$PROJECT_DIR$/backend/vendor/doctrine/instantiator" />
       <path value="$PROJECT_DIR$/backend/vendor/hamcrest/hamcrest-php" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/global-state" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/comparator" />
@@ -44,7 +43,6 @@
       <path value="$PROJECT_DIR$/backend/vendor/webmozart/assert" />
       <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/reflection-docblock" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/cli-parser" />
-      <path value="$PROJECT_DIR$/backend/vendor/sebastian/resource-operations" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/diff" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/object-enumerator" />
       <path value="$PROJECT_DIR$/backend/vendor/sebastian/exporter" />
@@ -61,7 +59,6 @@
   </component>
   <component name="PhpProjectServersManager">
     <servers>
-      <server host="localhost" id="adca86ab-feb0-4b8f-ab37-4238e82d075b" name="localhost" />
       <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" use_path_mappings="true">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$/backend" remote-root="/var/www/backend" />

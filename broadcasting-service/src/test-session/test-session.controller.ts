@@ -19,7 +19,7 @@ export class TestSessionController {
       throw new HttpException('not session data', 400);
     }
 
-    this.logger.log('/push/session-change', JSON.stringify(request.body));
+    // this.logger.log('/push/session-change', JSON.stringify(request.body));
     this.dataService.applySessionChange(request.body);
   }
 
