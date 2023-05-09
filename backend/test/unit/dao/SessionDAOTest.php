@@ -298,11 +298,11 @@ class SessionDAOTest extends TestCase {
   function test_createOrUpdatePersonSession_correctCode() {
     $result = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
 
-    $this->assertEquals(5, $result->getPerson()->getId());
+    $this->assertEquals(6, $result->getPerson()->getId());
     $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
     $this->assertEquals('existing_code', $result->getPerson()->getCode());
     $this->assertEquals(1893495600, $result->getPerson()->getValidTo());
-    $this->assertEquals(5, $this->countTableRows('person_sessions'));
+    $this->assertEquals(6, $this->countTableRows('person_sessions'));
   }
 
   function test_createOrUpdatePersonSession_wrongCode() {
@@ -372,22 +372,22 @@ class SessionDAOTest extends TestCase {
 
     $result = $this->dbc->createOrUpdatePersonSession($testLoginSession, 'existing_code');
 
-    $this->assertEquals(5, $result->getPerson()->getId());
+    $this->assertEquals(6, $result->getPerson()->getId());
     $this->assertEquals('static:person:a group name_some_user_existing_code', $result->getPerson()->getToken());
     $this->assertEquals('existing_code', $result->getPerson()->getCode());
     $this->assertEquals(1577877000, $result->getPerson()->getValidTo()); // 1577877000 = 1/1/2020 12:10 GMT+1
     $this->assertEquals($testLoginSession, $result->getLoginSession());
-    $this->assertEquals(5, $this->countTableRows('person_sessions'));
+    $this->assertEquals(6, $this->countTableRows('person_sessions'));
   }
 
   function test_createOrUpdatePersonSession_restart() {
     $result1 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
     $result2 = $this->dbc->createOrUpdatePersonSession($this->testLoginSession, 'existing_code');
-    $this->assertEquals(5, $result1->getPerson()->getId());
+    $this->assertEquals(6, $result1->getPerson()->getId());
     $this->assertEquals('existing_code/h5ki-bd-', $result1->getPerson()->getNameSuffix());
-    $this->assertEquals(6, $result2->getPerson()->getId());
+    $this->assertEquals(7, $result2->getPerson()->getId());
     $this->assertEquals('existing_code/va4dg-jc', $result2->getPerson()->getNameSuffix());
-    $this->assertEquals(6, $this->countTableRows('person_sessions'));
+    $this->assertEquals(7, $this->countTableRows('person_sessions'));
   }
 
   function test_getPersonSessionByToken_correctToken() {
@@ -440,7 +440,7 @@ class SessionDAOTest extends TestCase {
     );
 
     $expectation = new LoginSession(
-      7,
+      8,
       'static:login:another_one',
       $anotherLogin
     );
@@ -448,12 +448,12 @@ class SessionDAOTest extends TestCase {
     $result = $this->dbc->createLoginSession($anotherLogin);
 
     $this->assertEquals($expectation, $result);
-    $this->assertEquals(7, $this->countTableRows('login_sessions'));
+    $this->assertEquals(8, $this->countTableRows('login_sessions'));
 
     $resultAfter2ndLogin = $this->dbc->createLoginSession($anotherLogin);
 
     $this->assertEquals($expectation, $resultAfter2ndLogin);
-    $this->assertEquals(7, $this->countTableRows('login_sessions'));
+    $this->assertEquals(8, $this->countTableRows('login_sessions'));
   }
 
   public function test_getLogin_okay(): void {

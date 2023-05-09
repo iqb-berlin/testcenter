@@ -306,25 +306,24 @@ class AdminDAO extends DAO {
 
     // TODO: use data class
     $data = $this->_(<<<EOT
-            select
-                login_sessions.group_name as groupname,
-                login_sessions.name as loginname,
-                person_sessions.name_suffix as code,
-                tests.name as bookletname,
-                units.name as unitname,
-                units.laststate,
-                units.id as unit_id
-            from
-                login_sessions
-                inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
-                inner join tests on person_sessions.id = tests.person_id
-                inner join units on tests.id = units.booklet_id
-            where
-                login_sessions.workspace_id = ?
-                and login_sessions.group_name in ($groupsPlaceholders)
-                and tests.id is not null
-
-            EOT,
+      select
+        login_sessions.group_name as groupname,
+        login_sessions.name as loginname,
+        person_sessions.name_suffix as code,
+        tests.name as bookletname,
+        units.name as unitname,
+        units.laststate,
+        units.id as unit_id
+      from
+        login_sessions
+          inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
+          inner join tests on person_sessions.id = tests.person_id
+          inner join units on tests.id = units.booklet_id
+      where
+        login_sessions.workspace_id = ?
+          and login_sessions.group_name in ($groupsPlaceholders)
+          and tests.id is not null
+      EOT,
       $bindParams,
       true
     );
@@ -363,7 +362,7 @@ class AdminDAO extends DAO {
     // TODO: use data class
     return $this->_("
         SELECT
-				    login_sessions.group_name as groupname,
+			login_sessions.group_name as groupname,
             login_sessions.name as loginname,
             person_sessions.name_suffix as code,
             tests.name as bookletname,
@@ -487,9 +486,15 @@ class AdminDAO extends DAO {
           left join person_sessions on person_sessions.id = tests.person_id
           inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
           left join units on units.booklet_id = tests.id
+          left join unit_reviews on units.id = unit_reviews.unit_id
+          left join test_reviews on tests.id = test_reviews.booklet_id
         where
           login_sessions.workspace_id = :workspaceId
-          and tests.laststate is not null
+          and (
+            tests.laststate is not null
+              or unit_reviews.entry is not null
+              or test_reviews.entry is not null
+          )
           and tests.running = 1
           group by tests.name, person_sessions.id, login_sessions.group_name
       ) as byGroup
