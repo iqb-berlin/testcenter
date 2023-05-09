@@ -1,5 +1,17 @@
 import Chainable = Cypress.Chainable;
 
+export const userData = {
+  SuperAdminName: 'super',
+  SuperAdminPassword: 'user123',
+  WorkspaceAdminName: 'workspace_admin',
+  WorkspaceAdminPassword: 'anotherPassword'
+};
+
+export const credentialsControllerTest = {
+  // Restriction Time: Declared in Sampledata/CY_BKL_Mode_Demo.xml
+  DemoRestrTime: 60000
+};
+
 export const deleteDownloadsFolder = (): void => {
   const downloadsFolder = Cypress.config('downloadsFolder');
   cy.task('deleteFolder', downloadsFolder);
@@ -38,17 +50,42 @@ export const insertCredentials = (username: string, password = ''): void => {
   }
 };
 
-export const login = (username: string, password: string): void => {
-  resetBackendData();
-  visitLoginPage();
-  insertCredentials(username, password);
-};
+export const logout = (): Chainable => cy.url()
+  .then(url => {
+    if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
+      cy.get('[data-cy="logo"]')
+        .should('exist')
+        .click();
+      cy.get('[data-cy="logout"]')
+        .should('exist')
+        .click();
+      cy.url()
+        .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+    }
+  });
 
 export const logoutAdmin = (): void => {
-  cy.visit(`${Cypress.config().baseUrl}/#/r/admin-starter`);
+  cy.get('[data-cy="logo"]')
+    .should('exist')
+    .click();
+  cy.url()
+    .should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
   cy.get('[data-cy="workspace-1"]')
     .should('exist'); // make sure call returned
   cy.get('[data-cy="logout"]')
+    .click();
+  cy.url()
+    .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
+};
+
+export const logoutTestTaker = (): void => {
+  cy.get('[data-cy="logo"]')
+    .should('exist')
+    .click();
+  cy.url()
+    .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+  cy.get('[data-cy="logout"]')
+    .should('exist')
     .click();
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
@@ -62,37 +99,52 @@ export const openSampleWorkspace = (): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
 };
 
-export const loginAdmin = (username: string, password: string): void => {
-  visitLoginPage();
-  insertCredentials(username, password);
+export const loginSuperAdmin = (): void => {
+  insertCredentials(userData.SuperAdminName, userData.SuperAdminPassword);
   cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session/admin` }).as('waitForPutSession');
   cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
   cy.get('[data-cy="login-admin"]')
+    .should('exist')
     .click();
   cy.wait(['@waitForPutSession', '@waitForGetSession']);
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
-  cy.contains(username)
+  cy.contains(userData.SuperAdminName)
     .should('exist');
 };
 
-export const loginUser = (username: string, password: string): void => {
-  visitLoginPage();
-  insertCredentials(username, password);
+export const loginWorkspaceAdmin = (): void => {
+  insertCredentials(userData.WorkspaceAdminName, userData.WorkspaceAdminPassword);
+  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session/admin` }).as('waitForPutSession');
+  cy.intercept({ url: `${Cypress.env('TC_API_URL')}/session` }).as('waitForGetSession');
+  cy.get('[data-cy="login-admin"]')
+    .should('exist')
+    .click();
+  cy.wait(['@waitForPutSession', '@waitForGetSession']);
+  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
+  cy.contains(userData.WorkspaceAdminName)
+    .should('exist');
+};
+
+export const loginTestTaker = (name: string, password: string): void => {
+  insertCredentials(name, password);
   cy.get('[data-cy="login-user"]')
+    .should('exist')
     .click();
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-  cy.contains(username)
+  cy.contains(name)
     .should('exist');
 };
 
 export const clickSuperadmin = (): void => {
   cy.contains('Systemverwaltung')
+    .should('exist')
     .click();
   cy.url().should('eq', `${Cypress.config().baseUrl}/#/superadmin/users`);
 };
 
 export const addWorkspaceAdmin = (username: string, password: string): void => {
   cy.get('[data-cy="superadmin-tabs:users"]')
+    .should('exist')
     .click();
   cy.get('[data-cy="add-user"]')
     .click();
@@ -117,22 +169,30 @@ export const addWorkspaceAdmin = (username: string, password: string): void => {
 
 export const deleteFilesSampleWorkspace = (): void => {
   cy.get('[data-cy="files-checkAll-Testtakers"]')
+    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-Booklet"]')
+    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-SysCheck"]')
+    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-Resource"]')
+    .should('exist')
     .click();
   cy.get('[data-cy="files-checkAll-Unit"]')
+    .should('exist')
     .click();
   cy.get('[data-cy="delete-files"]')
+    .should('exist')
     .should('exist')
     .click();
   cy.get('[data-cy="dialog-confirm"]')
     .should('exist')
+    .should('exist')
     .click();
-  cy.wait(1000);
+  cy.contains('erfolgreich gelöscht.')
+    .should('exist');
   cy.contains('Teilnehmerlisten')
     .should('not.exist');
   cy.contains('Testhefte')
