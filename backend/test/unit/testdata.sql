@@ -40,6 +40,9 @@ values ('future_user', 1, 'sample_group', 'future_token');
 insert into login_sessions (name, workspace_id, group_name, token)
 values ('session_of_deleted_login', 1, 'sample_group', 'deleted_login_token');
 
+insert into login_sessions (name, workspace_id, group_name, token)
+values ('test-review', 1, 'review_group', 'nice_token');
+
 insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
 values ('xxx', 4, '2030-01-02 10:00:00', 'person-token', 'xxx');
 
@@ -52,17 +55,26 @@ values ('', 2, '2000-01-02 10:00:00', 'person-of-expired-login-token', '');
 insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
 values ('', 5, '2032-01-02 10:00:00', 'person-of-future-login-token', '');
 
+insert into person_sessions(code, login_sessions_id, valid_until, token, name_suffix)
+values ('', 7, '2032-01-02 10:00:00', 'person-of-review-group-token', '');
+
 insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
 values ('first sample test', 1, '{"CURRENT_UNIT_ID":"UNIT_1"}', 0, 'first test label', 1, '2022-01-24 09:01:00');
 
 insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
 values ('BOOKLET.SAMPLE-1', 1, '', 0, 'second test label', 1, '2022-01-24 09:01:00');
 
+insert into tests (name, person_id, laststate, locked, label, running, timestamp_server)
+values ('BOOKLET.SAMPLE-1', 5, null, 0, 'review test label', 1, '2022-01-24 09:01:00');
+
 insert into units (name, booklet_id, laststate)
 values ('UNIT_1', 1, '{"SOME_STATE":"WHATEVER"}');
 
 insert into units (name, booklet_id, laststate)
 values ('UNIT.SAMPLE', 1, '{"PRESENTATIONCOMPLETE":"yes"}');
+
+insert into units (name, booklet_id, laststate)
+values ('UNIT_1', 3, null);
 
 insert into unit_logs (unit_id, logentry, timestamp)
 values (2, 'sample unit log', '1597903000');
@@ -71,10 +83,10 @@ insert into test_logs (booklet_id, logentry, timestamp)
 values (1, 'sample log entry', 1597903000);
 
 insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
-values (1, '2030-01-01 12:00:00', 1, '', 'sample booklet review');
+values (3, '2030-01-01 12:00:00', 1, '', 'sample booklet review');
 
 insert into unit_reviews (unit_id, reviewtime, priority, categories, entry)
-values (2, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review');
+values (3, '2030-01-01 12:00:00', 1, '', 'this is a sample unit review');
 
 insert into unit_data (unit_id, part_id, content, ts, response_type)
 values (1, 'all', '{"name":"Sam Sample","age":34}', 1597903000, 'the-response-type');
