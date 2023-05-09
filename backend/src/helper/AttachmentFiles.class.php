@@ -14,7 +14,7 @@ class AttachmentFiles {
     foreach ($uploadedFiles as $originalFileName) {
       $dst = "$workspacePath/UnitAttachments/";
       Folder::createPath($dst);
-      $attachmentCode = self::randomString();
+      $attachmentCode = Random::string(32, false);
       $extension = FileExt::get($originalFileName);
       $attachmentFileId = "$type:$attachmentCode.$extension";
       copy("$workspacePath/$originalFileName", "$dst/$attachmentCode.$extension");
@@ -94,12 +94,4 @@ class AttachmentFiles {
     ]);
   }
 
-  private static function randomString(int $size = 32): string {
-    $fileName = '';
-    $allowedChars = "ABCDEFGHIJKLOMNOPQRSTUVWXZabcdefghijklmnopqrstuvwxyz0123456789_-";
-    while ($size-- > 1) {
-      $fileName .= substr($allowedChars, rand(0, strlen($allowedChars) - 1), 1);
-    }
-    return $fileName;
-  }
 }

@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.1.6
+ARG PHP_VERSION=8.2.5
 
 FROM php:${PHP_VERSION} AS backend-composer
 
@@ -33,8 +33,10 @@ RUN a2enmod headers
 RUN a2dissite 000-default
 COPY backend/config/vhost.conf /etc/apache2/sites-available
 RUN a2ensite vhost
-RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf \
-  && a2enconf servername
+RUN echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf
+COPY backend/config/security.conf /etc/apache2/conf-available
+RUN a2enconf servername
+RUN a2enconf security
 
 COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
@@ -74,8 +76,6 @@ FROM prod as dev
 WORKDIR /var/www/backend
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug
-
-COPY backend/config/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Add testing code
 COPY backend/phpunit.xml .
