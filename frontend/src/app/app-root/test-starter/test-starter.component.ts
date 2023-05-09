@@ -34,7 +34,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
       }
       const authData = authDataUntyped as AuthData;
       if (!authData || !authData.token) {
-        this.mds.setAuthData();
+        this.mds.logOut();
         this.mds.stopLoadingAnimation();
       }
       this.booklets = authData.claims.test;
@@ -55,8 +55,7 @@ export class TestStarterComponent implements OnInit, OnDestroy {
   }
 
   resetLogin(): void {
-    this.mds.setAuthData();
-    this.router.navigate(['/']);
+    this.mds.logOut();
   }
 
   ngOnDestroy(): void {

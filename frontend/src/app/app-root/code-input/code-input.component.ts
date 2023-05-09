@@ -77,7 +77,6 @@ export class CodeInputComponent implements OnInit {
   }
 
   resetLogin(): void {
-    this.mds.setAuthData();
-    this.router.navigate(['/']);
+    this.mds.logOut();
   }
 }
