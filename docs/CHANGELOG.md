@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.5.1
+### Bugfixes
+* Gruppen im Modus `run-review` werden in der Workspace-Übersicht "Ergebnisse/Antworten" wieder angezeigt, 
+  wenn es reviews gibt. 
+
 ## 14.5.0
 ### Sicherheit
 * Softwareupdate: Aktuelle Versionen von PHP und Apache
