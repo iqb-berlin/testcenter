@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+### Bugfixes
+* Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
+  ohne dass die Seite neu geladen wurde. Dies ist behoeben.
+
 ## 14.5.1
 ### Bugfixes
 * Gruppen im Modus `run-review` werden in der Workspace-Übersicht "Ergebnisse/Antworten" wieder angezeigt, 
