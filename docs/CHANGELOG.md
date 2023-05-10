@@ -4,6 +4,13 @@ layout: default
 
 # Changelog & Upgrade Information
 
+[next]
+### Sicherheit
+* Sitzungen werden beim LogOut auch serverseitig deaktiviert
+
+### Bugfixes
+* Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
+
 ## 14.5.1
 ### Bugfixes
 * Gruppen im Modus `run-review` werden in der Workspace-Übersicht "Ergebnisse/Antworten" wieder angezeigt, 
