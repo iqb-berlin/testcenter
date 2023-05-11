@@ -33,7 +33,6 @@ export class WorkspacesComponent implements OnInit {
 
   constructor(
     private backendService: BackendService,
-    private mainDataService: MainDataService,
     private newWorkspaceDialog: MatDialog,
     private editworkspaceDialog: MatDialog,
     private deleteConfirmDialog: MatDialog,
@@ -56,7 +55,6 @@ export class WorkspacesComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mainDataService.showLoadingAnimation();
       this.updateWorkspaceList();
     });
   }

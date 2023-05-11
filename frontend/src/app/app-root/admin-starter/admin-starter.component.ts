@@ -26,7 +26,6 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.mainDataService.appSubTitle$.next('Verwaltung: Bitte Arbeitsbereich wählen');
-      this.mainDataService.showLoadingAnimation();
       this.backendService.getSessionData().subscribe(authDataUntyped => {
         if (this.getWorkspaceDataSubscription !== null) {
           this.getWorkspaceDataSubscription.unsubscribe();
@@ -34,8 +33,6 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
 
         this.workspaces = authDataUntyped.claims.workspaceAdmin;
         this.isSuperAdmin = typeof authDataUntyped.claims.superAdmin !== 'undefined';
-
-        this.mainDataService.stopLoadingAnimation();
       });
     });
   }

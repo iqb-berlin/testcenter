@@ -21,7 +21,6 @@ export class MainDataService {
     return this._authData$.asObservable();
   }
 
-  spinnerOn = false;
   progressVisualEnabled = true;
   appConfig: AppConfig = null;
   sysCheckAvailable = false;
@@ -52,14 +51,6 @@ export class MainDataService {
     private bs: BackendService
   ) {
     this.appError$.subscribe(error => console.log({ error }));
-  }
-
-  showLoadingAnimation(): void {
-    this.spinnerOn = true;
-  }
-
-  stopLoadingAnimation(): void {
-    this.spinnerOn = false;
   }
 
   setAuthData(authData: AuthData = null): void {
@@ -96,7 +87,6 @@ export class MainDataService {
     // this.mainDataService.resetAuthData();
     // eslint-disable-next-line no-restricted-globals
     this.bs.clearCache();
-    this.showLoadingAnimation();
     setTimeout(() => { window.location.href = '/'; }, 100);
   }
 }

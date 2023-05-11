@@ -77,7 +77,6 @@ export class FilesComponent implements OnInit {
   ngOnInit(): void {
     // this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
     setTimeout(() => {
-      this.mds.showLoadingAnimation();
       this.updateFileList();
     });
   }
@@ -118,7 +117,6 @@ export class FilesComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          this.mds.showLoadingAnimation();
           this.bs.deleteFiles(this.wds.workspaceID, filesToDelete)
             .subscribe((fileDeletionReport: FileDeletionReport) => {
               const message = [];
@@ -152,7 +150,6 @@ export class FilesComponent implements OnInit {
   updateFileList(empty = false): void {
     if (empty) {
       this.files = {};
-      this.mds.stopLoadingAnimation();
     } else {
       this.bs.getFiles(this.wds.workspaceID)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
@@ -164,7 +161,6 @@ export class FilesComponent implements OnInit {
             });
           this.fileStats = FilesComponent.getStats(fileList);
           this.setTableSorting(this.lastSort);
-          this.mds.stopLoadingAnimation();
         });
     }
   }
@@ -225,10 +221,8 @@ export class FilesComponent implements OnInit {
   }
 
   download(file: IQBFile): void {
-    this.mds.showLoadingAnimation();
     this.bs.getFile(this.wds.workspaceID, file.type, file.name)
       .subscribe((fileData: Blob) => {
-        this.mds.stopLoadingAnimation();
         FileService.saveBlobToFile(fileData as Blob, file.name);
       });
   }

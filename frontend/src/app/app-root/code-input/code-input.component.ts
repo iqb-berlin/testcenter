@@ -55,7 +55,6 @@ export class CodeInputComponent implements OnInit {
         }
       });
     } else {
-      this.mds.showLoadingAnimation();
       this.problemText = '';
       this.bs.codeLogin(codeData.code).subscribe({
         next: authData => {
@@ -70,8 +69,7 @@ export class CodeInputComponent implements OnInit {
             this.problemText = 'Problem bei der Anmeldung.';
             throw error;
           }
-        },
-        complete: () => this.mds.stopLoadingAnimation()
+        }
       });
     }
   }

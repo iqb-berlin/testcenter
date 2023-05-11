@@ -7,7 +7,7 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType, MainDataService
+  MessageDialogData, MessageType
 } from '../../shared/shared.module';
 import { IdRoleData, UserData } from '../superadmin.interfaces';
 import {
@@ -37,7 +37,6 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private bs: BackendService,
-    private mds: MainDataService,
     private newuserDialog: MatDialog,
     private newpasswordDialog: MatDialog,
     private confirmDialog: MatDialog,
@@ -73,7 +72,6 @@ export class UsersComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (typeof result !== 'undefined') {
         if (result !== false) {
-          // this.mds.showLoadingAnimation();
           this.bs
             .addUser((<FormGroup>result).get('name').value, (<FormGroup>result).get('pw').value)
             .subscribe(() => this.updateObjectList());

@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ConfirmDialogComponent, ConfirmDialogData, MainDataService } from '../../shared/shared.module';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
@@ -22,7 +22,6 @@ export class SyscheckComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
-    private mds: MainDataService,
     private bs: BackendService,
     private deleteConfirmDialog: MatDialog,
     public wds: WorkspaceDataService,
@@ -32,7 +31,6 @@ export class SyscheckComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mds.showLoadingAnimation();
       this.updateTable();
     });
   }
@@ -43,7 +41,6 @@ export class SyscheckComponent implements OnInit {
       .subscribe((resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
-        this.mds.stopLoadingAnimation();
       });
   }
 
@@ -101,7 +98,6 @@ export class SyscheckComponent implements OnInit {
           if (result === false) {
             return;
           }
-          this.mds.showLoadingAnimation();
           this.bs.deleteSysCheckReports(this.wds.workspaceID, selectedReports).subscribe(fileDeletionReport => {
             const message = [];
             if (fileDeletionReport.deleted.length > 0) {

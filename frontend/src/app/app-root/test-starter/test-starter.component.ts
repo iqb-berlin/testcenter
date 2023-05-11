@@ -26,21 +26,17 @@ export class TestStarterComponent implements OnInit, OnDestroy {
 
   private reloadTestList(): void {
     this.mds.appSubTitle$.next('Testauswahl');
-    this.mds.showLoadingAnimation();
     this.bs.getSessionData().subscribe(authDataUntyped => {
       if (typeof authDataUntyped === 'number') {
-        this.mds.stopLoadingAnimation();
         return;
       }
       const authData = authDataUntyped as AuthData;
       if (!authData || !authData.token) {
         this.mds.setAuthData();
-        this.mds.stopLoadingAnimation();
       }
       this.booklets = authData.claims.test;
       this.bookletCount = authData.claims.test.length;
       this.mds.setAuthData(authData);
-      this.mds.stopLoadingAnimation();
     });
   }
 

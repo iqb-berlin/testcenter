@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ConfirmDialogComponent, ConfirmDialogData, MainDataService } from '../../shared/shared.module';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, ResultData } from '../workspace.interfaces';
@@ -27,14 +27,12 @@ export class ResultsComponent implements OnInit {
   constructor(
     private backendService: BackendService,
     private deleteConfirmDialog: MatDialog,
-    private mainDataService: MainDataService,
     public workspaceDataService: WorkspaceDataService,
     public snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mainDataService.showLoadingAnimation();
       this.updateTable();
     });
   }
@@ -45,7 +43,6 @@ export class ResultsComponent implements OnInit {
       (resultData: ResultData[]) => {
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
         this.resultDataSource.sort = this.sort;
-        this.mainDataService.stopLoadingAnimation();
       }
     );
   }
@@ -117,7 +114,6 @@ export class ResultsComponent implements OnInit {
           if (result !== false) {
             return;
           }
-          this.mainDataService.showLoadingAnimation();
           this.backendService.deleteResponses(this.workspaceDataService.workspaceID, selectedGroups)
             .subscribe(() => {
               this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });

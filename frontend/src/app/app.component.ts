@@ -41,7 +41,6 @@ export class AppComponent implements OnInit, OnDestroy {
         const disableGlobalErrorDisplay = 'disableGlobalErrorDisplay' in routeData; // some modules have their own error handling
         if (err && !disableGlobalErrorDisplay) {
           this.showError = true;
-          this.mainDataService.spinnerOn = false;
         }
       });
       this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$])

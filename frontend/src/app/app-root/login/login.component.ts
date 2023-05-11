@@ -41,7 +41,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.mainDataService.stopLoadingAnimation();
     this.mainDataService.appSubTitle$.next('Bitte anmelden');
     this.routingSubscription = this.route.params
       .subscribe(params => { this.returnTo = params.returnTo; });
@@ -51,11 +50,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   login(loginType: 'admin' | 'login' = 'login'): void {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name;
-    this.mainDataService.showLoadingAnimation();
     this.problemText = '';
     this.backendService.login(loginType, loginData.name, loginData.pw).subscribe({
       next: authData => {
-        this.mainDataService.stopLoadingAnimation();
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);
         if (this.returnTo) {
@@ -69,7 +66,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       },
       error: error => {
-        this.mainDataService.stopLoadingAnimation();
         if (error.code === 400) {
           this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
         } else if (error.code === 401) {
