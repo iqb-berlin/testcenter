@@ -67,13 +67,9 @@
     "label" : "Nachricht, dass für die Bearbeitung eines Abschnittes noch 5 min Zeit sind",
     "defaultvalue" : "Du hast noch 5 Minuten Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt."
   },
-  "booklet_msgSoonTimeOver1Minute" : {
-    "label" : "Nachricht, dass für die Bearbeitung eines Abschnittes noch 1 min Zeit ist",
-    "defaultvalue" : "Du hast noch 1 Minute Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt."
-  },
-  "booklet_msgTimerStarted" : {
-    "label" : "Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde",
-    "defaultvalue" : "Die Bearbeitungszeit für diesen Abschnitt hat begonnen: "
+  "booklet_msgSoonTimeOver" : {
+    "label" : "Nachricht, dass für die Bearbeitung eines Abschnittes noch x min Zeit ist",
+    "defaultvalue" : "Du hast noch %s Minute(n) Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt."
   },
   "booklet_msgTimerCancelled" : {
     "label" : "Nachricht, dass die Bearbeitung eines Abschnittes mit Timer abgebrochen wurde",
