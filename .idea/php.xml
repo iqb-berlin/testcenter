@@ -55,6 +55,8 @@
       <path value="$PROJECT_DIR$/backend/vendor/phpdocumentor/reflection-common" />
       <path value="$PROJECT_DIR$/backend/vendor/composer" />
       <path value="$PROJECT_DIR$/backend/vendor/tecnickcom/tcpdf" />
+      <path value="$PROJECT_DIR$/backend/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/backend/vendor/sebastian/resource-operations" />
     </include_path>
   </component>
   <component name="PhpProjectServersManager">
