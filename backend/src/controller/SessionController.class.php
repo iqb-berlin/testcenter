@@ -44,8 +44,8 @@ class SessionController extends Controller {
     $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
 
     if (!$loginSession) {
-      $shortPw = Password::shorten($body['password']);
-      throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `$shortPw`.");
+      $userName = htmlspecialchars($body['name']);
+      throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
     }
 
     if (!$loginSession->getLogin()->isCodeRequired()) {
