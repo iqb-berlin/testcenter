@@ -7,6 +7,7 @@ const waitMaxSnackBarDisplayed = 10000;
 // declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:RunDemo
 const TesttakerName = 'Test_Demo_Ctrl';
 const TesttakerPassword = '123';
+const mode = 'demo';
 
 let startTime: number;
 let endTime: number;
@@ -144,13 +145,12 @@ describe('Navigation-& Testlet-Restrictions', () => {
     // wait until the message is no longer displayed
     cy.contains('Bearbeitung', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
+    // Aufgabe1 is visible, because the block is in demo-mode not blocked
+    cy.contains(/^Aufgabe1$/)
+      .should('exist');
   });
 
   it('should be possible to start the booklet again after exiting the test', () => {
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .click();
-    cy.contains(/^Aufgabe2$/)
-      .should('exist');
     cy.get('[data-cy="logo"]')
       .click();
     cy.url()
@@ -159,9 +159,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .should('exist')
       .contains('Fortsetzen')
       .click();
-    cy.contains('Bearbeitung', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
-    cy.contains('Startseite')
+    cy.get('[data-cy="unit-navigation-forward"]')
       .should('exist');
   });
 
@@ -173,7 +171,8 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .click();
     cy.contains(/^Aufgabe1$/)
       .should('exist');
-    // check time restriction
+    cy.contains('0:')
+      .should('exist');
     cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
       .should('exist');
     // wait until the message is no longer displayed
@@ -190,7 +189,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
   });
 
   it('should be possible to go back to the booklet view and check out', () => {
-    logoutTestTaker();
+    logoutTestTaker(mode);
   });
 
   it('should be no answer file in demo-mode', () => {

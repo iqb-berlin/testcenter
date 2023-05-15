@@ -78,10 +78,17 @@ export const logoutAdmin = (): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
 };
 
-export const logoutTestTaker = (): void => {
+export const logoutTestTaker = (mode: string): void => {
   cy.get('[data-cy="logo"]')
     .should('exist')
     .click();
+  if (mode === 'review' || mode === 'demo') {
+    cy.contains('Test beenden')
+      .should('not.exist');
+  } else {
+    cy.contains('Test beenden')
+      .should('exist');
+  }
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
   cy.get('[data-cy="logout"]')
