@@ -645,4 +645,8 @@ class AdminDAO extends DAO {
     }
     return $attachmentData;
   }
+
+    public function deleteAdminSession(AuthToken $authToken): void {
+      $this->_('delete from admin_sessions where token =:token',[':token' => $authToken->getToken()]);
+    }
 }

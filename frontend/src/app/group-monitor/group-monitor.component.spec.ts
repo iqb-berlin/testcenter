@@ -29,6 +29,7 @@ import {
   unitTestExampleSessions,
   unitTestCommandResponse
 } from './unit-test-example-data.spec';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 class MockMatDialog {
   open(): { afterClosed: () => Observable<{ action: boolean }> } {
@@ -95,7 +96,8 @@ describe('GroupMonitorComponent', () => {
         MatRadioModule,
         MatCheckboxModule,
         MatTableModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        HttpClientTestingModule
       ],
       providers: [
         { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },

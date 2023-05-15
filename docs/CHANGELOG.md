@@ -4,10 +4,16 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+
+[next]
+### Sicherheit
+* Sitzungen werden beim LogOut auch serverseitig deaktiviert
+
 ### Bugfixes
+* Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
 * Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
   ohne dass die Seite neu geladen wurde. Dies ist behoeben.
+
 
 ## 14.5.1
 ### Bugfixes

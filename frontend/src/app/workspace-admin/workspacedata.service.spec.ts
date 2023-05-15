@@ -3,6 +3,7 @@ import { TestBed, inject } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { WorkspaceDataService } from './workspacedata.service';
 import { BackendService } from './backend.service';
 
@@ -24,7 +25,8 @@ describe('WorkspaceDataService', () => {
     TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        HttpClientTestingModule
       ],
       providers: [
         WorkspaceDataService,

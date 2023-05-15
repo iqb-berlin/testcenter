@@ -85,6 +85,7 @@ dreddHooks.beforeEach((transaction, done) => {
     switch (transaction.expected.statusCode) {
       case '200':
       case '201':
+      case '205':
       case '207':
       case '413':
         changeAuthToken(transaction, {

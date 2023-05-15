@@ -158,4 +158,19 @@ class SessionController extends Controller {
 
     throw new HttpUnauthorizedException($request);
   }
+
+  public static function deleteSession(Request $request, Response $response): Response {
+    $authToken = self::authToken($request);
+
+    if ($authToken->getType() == "person") {
+      self::sessionDAO()->deletePersonToken($authToken);
+    }
+
+    if ($authToken->getType() == "admin") {
+      self::adminDAO()->deleteAdminSession($authToken);
+    }
+
+    // nothing to do for login-sessions; they have constant token as they are only the first step of 2f-auth
+    return $response->withStatus(205);
+  }
 }
