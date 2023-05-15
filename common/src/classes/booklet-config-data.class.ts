@@ -13,7 +13,7 @@ export class BookletConfigData {
   unit_screenheader: 'OFF' | 'WITH_UNIT_TITLE' | 'WITH_BOOKLET_TITLE' | 'WITH_BLOCK_TITLE' | 'EMPTY' = 'EMPTY';
   unit_title: 'OFF' | 'ON' = 'ON';
   unit_show_time_left: 'OFF' | 'ON' = 'OFF';
-  unit_time_left_warnings: '10' | '5,1' | '10,5,1' | '' = '5,1';
+  unit_time_left_warnings: '10' | '5,1' | '10,5,1' | '5,4,3,2,1' | '' = '5,1';
   show_end_button_in_player: 'OFF' | 'ALWAYS' | 'ONLY_LAST_UNIT' = 'OFF';
   restore_current_page_on_return: 'OFF' | 'ON' = 'OFF';
   allow_player_to_terminate_test: 'OFF' | 'LAST_UNIT' | 'ON' = 'ON';

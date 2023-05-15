@@ -118,6 +118,7 @@
     "options": {
       "5,1": "Es wird bei 5 und bei 1 verbleibenden Minuten gewarnt.",
       "10,5,1": "Es wird bei 10, 5 und bei 1 verbleibenden Minuten gewarnt.",
+      "5,4,3,2,1": "Es wird in den letzten 5 Minuten jede Minute gewarnt.",
       "10": "Es wird bei 10 verbleibenden Minuten gewarnt.",
       "": "Es gibt keine Warnungen"
     },
