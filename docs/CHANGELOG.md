@@ -4,8 +4,12 @@ layout: default
 
 # Changelog & Upgrade Information
 
-
 [next]
+### Neue Features
+* Es kann nun gesteuert werden, wann beim Bearbeiten von zeitbeschränkten Blocks Warnungen angezeigt werden sollen. 
+  Der Standart ist weiterhin bei noch 5 und bei noch einer verbleibenden Minute.
+  Hierfür gibt es nun den Booklet-Parameter `unit_time_left_warnings` und den Customtext-Token `booklet_msgTimerStarted`
+
 ### Sicherheit
 * Sitzungen werden beim Log-Out auch serverseitig deaktiviert.
 * Kleine eventuell für XSS-Angriffe nutzbare Sicherheitsheitslücke behoben.  

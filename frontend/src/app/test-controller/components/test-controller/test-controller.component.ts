@@ -290,6 +290,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private handleMaxTimer(maxTimerData: MaxTimerData): void {
+    const minute = maxTimerData.timeLeftSeconds / 60;
     switch (maxTimerData.type) {
       case MaxTimerDataType.STARTED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
@@ -351,10 +352,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             );
           }
         }
-        if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', { duration: 5000 });
-        } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', { duration: 5000 });
+        if (this.tcs.timerWarningPoints.includes(minute)) {
+          const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));
+          this.snackBar.open(text, '', { duration: 5000 });
         }
         break;
       default:

@@ -41,6 +41,7 @@ export class TestControllerService {
   currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
   maxTimeTimers: KeyValuePairNumber = {};
+  timerWarningPoints: number[] = [];
 
   currentUnitDbKey = '';
   currentUnitTitle = '';
@@ -159,6 +160,7 @@ export class TestControllerService {
     this.unitPresentationProgressStates = {};
     this.unitDefinitionTypes = {};
     this.unitStateDataTypes = {};
+    this.timerWarningPoints = [];
   }
 
   // uppercase and add extension if not part
