@@ -6,6 +6,13 @@ layout: default
 
 
 [next]
+## Änderungen
+* Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
+  mitgesteuert. Wenn vor dieser Änderung beispielsweise alle Teilnehmer in den zweiten Block geschoben worden sind,
+  starteten Teilnehmer, die die Studie später nachholten bei block zwei. Da dieses Verhalten bei Nachhol-Sitzungen
+  hinderlich war, wurde es nun geändert. Noch nicht gestartete Tests sind gar nicht anwählbar, gesperrte Tests sind es,
+  werden aber nicht automatisch mitselektiert, damit sie anwählen und wieder entsperren kann.
+
 ### Sicherheit
 * Sitzungen werden beim LogOut auch serverseitig deaktiviert
 
@@ -13,7 +20,6 @@ layout: default
 * Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
 * Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
   ohne dass die Seite neu geladen wurde. Dies ist behoeben.
-
 
 ## 14.5.1
 ### Bugfixes
