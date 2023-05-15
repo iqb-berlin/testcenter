@@ -60,9 +60,9 @@ replacements:
 |booklet_msgNavigationDeniedText_responsesIncomplete|Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet worden ist.|Es müssen erst alle Teilaufgaben bearbeitet werden.|
 |booklet_msgNavigationDeniedTitle|Titel der Nachricht, dass nicht weitergeblättert werden kann, solange die Aufgabe nicht vollständig bearbeitet / gesehen worden ist.|Aufgabe darf nicht verlassen werden|
 |booklet_msgSoonTimeOver|Nachricht, dass für die Bearbeitung eines Abschnittes noch x min Zeit ist|Du hast noch %s Minute(n) Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.|
-|booklet_msgSoonTimeOver5Minutes|Nachricht, dass für die Bearbeitung eines Abschnittes noch 5 min Zeit sind|Du hast noch 5 Minuten Zeit für die Bearbeitung der Aufgaben in diesem Abschnitt.|
 |booklet_msgTimeOver|Nachricht, dass die Bearbeitungszeit für einen Abschnitt abgelaufen ist.|Die Bearbeitung des Abschnittes ist beendet.|
 |booklet_msgTimerCancelled|Nachricht, dass die Bearbeitung eines Abschnittes mit Timer abgebrochen wurde|Die Bearbeitung des Abschnittes wurde abgebrochen.|
+|booklet_msgTimerStarted|Nachricht, dass der Timer für die Bearbeitung eines Abschnittes gestartet wurde|Die Bearbeitungszeit für diesen Abschnitt hat begonnen: |
 |booklet_pausedmessage|Nachricht an die Testperson, wenn der Test vom System unterbrochen wurde|Der Test wurde kurz angehalten.|
 |booklet_tasklisttitle|Titel für die Auflistung der Aufgaben (Schalter)|Aufgaben|
 |booklet_unitLoading|Untertitel des Ladebalkens, xxx% geladen|geladen|

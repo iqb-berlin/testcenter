@@ -117,7 +117,7 @@ Festlegung, ob im obersten Seitenbereich bei einer festgelegten Maximalzeit für
  * "ON" - Die verbleibende Zeit wird angezeigt.
 
 ### unit_time_left_warnings
-Konfiguriert, bei wie vielen verbleibenden Minuten im zeitbeschränkten Block eine Warnung angezeigt werden soll. Beliebige Weerte sind möglich, zum Beispiel: 10,5,1. Das würde bedeuten, bei 10, 5 und bei einer verbleibenden Minute wird eine Warnung angezeigt
+Konfiguriert, bei wie vielen verbleibenden Minuten im zeitbeschränkten Block eine Warnung angezeigt werden soll. Beliebige Werte sind möglich. Der Wert "10,5,1" würde zum Beispiel bedeuten, dass bei zehn, fünf und bei einer verbleibenden Minute jeweils eine Warnung angezeigt wird. Wird der Parameter angegeben, aber leer gelassen oder enthält keine Zahlen, so werden keine Warnungen dieser Art angezeigt.
  * **5,1**
 
 ### show_end_button_in_player

@@ -50,7 +50,8 @@ export class TestLoaderService {
       this.tcs.timerWarningPoints =
         this.tcs.bookletConfig.unit_time_left_warnings
           .split(',')
-          .map(x => parseInt(x, 10));
+          .map(x => parseInt(x, 10))
+          .filter(x => !Number.isNaN(x));
 
       await this.loadUnits();
       this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
