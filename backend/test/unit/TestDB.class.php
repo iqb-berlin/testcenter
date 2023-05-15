@@ -29,7 +29,7 @@ class TestDB {
         DB::connectToTestDB($config);
         return;
       } catch (Throwable $t) {
-        echo "\n Database Connection failed! Retry: $retries attempts left.");
+        echo "\n Database Connection failed! Retry: $retries attempts left.";
         usleep(50 * 1000000); // give database container time to come up
       }
     }
