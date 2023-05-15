@@ -20,6 +20,7 @@ layout: default
 * Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
 * Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
   ohne dass die Seite neu geladen wurde. Dies ist behoeben.
+* Nachrichten im Seiten-panel des Gruppen-Monitors verschwinden wieder nach einiger Zeit.
 
 ## 14.5.1
 ### Bugfixes
