@@ -33,9 +33,11 @@ exports.bookletConfigData = done => {
   Object.keys(definition)
     .forEach(configParameter => {
       const line = `  ${configParameter}: ${
-        Object.keys(definition[configParameter].options)
-          .map(option => `'${option}'`)
-          .join(' | ')
+        (definition[configParameter].options && Object.keys(definition[configParameter].options).length)
+          ? Object.keys(definition[configParameter].options)
+            .map(option => `'${option}'`)
+            .join(' | ')
+          : 'string'
       } = '${definition[configParameter].defaultvalue}';`;
       output.push(line);
     });
