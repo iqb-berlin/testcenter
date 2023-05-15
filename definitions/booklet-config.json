@@ -114,14 +114,7 @@
     "defaultvalue": "OFF"
   },
   "unit_time_left_warnings": {
-    "label": "Konfiguert, bei wievieln verbleibenden Minuten im zeitbeschränkten Block eine Warnung angezeigt werden soll.",
-    "options": {
-      "5,1": "Es wird bei 5 und bei 1 verbleibenden Minuten gewarnt.",
-      "10,5,1": "Es wird bei 10, 5 und bei 1 verbleibenden Minuten gewarnt.",
-      "5,4,3,2,1": "Es wird in den letzten 5 Minuten jede Minute gewarnt.",
-      "10": "Es wird bei 10 verbleibenden Minuten gewarnt.",
-      "": "Es gibt keine Warnungen"
-    },
+    "label": "Konfiguriert, bei wie vielen verbleibenden Minuten im zeitbeschränkten Block eine Warnung angezeigt werden soll. Beliebige Weerte sind möglich, zum Beispiel: 10,5,1. Das würde bedeuten, bei 10, 5 und bei einer verbleibenden Minute wird eine Warnung angezeigt",
     "defaultvalue": "5,1"
   },
   "show_end_button_in_player": {
