@@ -4,7 +4,6 @@ layout: default
 
 # Changelog & Upgrade Information
 
-
 [next]
 ## Änderungen
 * Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
@@ -12,6 +11,12 @@ layout: default
   starteten Teilnehmer, die die Studie später nachholten bei block zwei. Da dieses Verhalten bei Nachhol-Sitzungen
   hinderlich war, wurde es nun geändert. Noch nicht gestartete Tests sind gar nicht anwählbar, gesperrte Tests sind es,
   werden aber nicht automatisch mitselektiert, damit sie anwählen und wieder entsperren kann.
+
+### Neue Features
+* Es kann nun gesteuert werden, wann beim Bearbeiten von zeitbeschränkten Blocks Warnungen angezeigt werden sollen. 
+  Der Standart ist weiterhin bei noch 5 und bei noch einer verbleibenden Minute.
+  Hierfür gibt es nun den Booklet-Parameter `unit_time_left_warnings` und den Customtext-Token `booklet_msgTimerStarted`
+
 
 ### Sicherheit
 * Sitzungen werden beim LogOut auch serverseitig deaktiviert
