@@ -14,6 +14,7 @@ import { MessageDialogComponent } from './components/message-dialog/message-dial
 import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
+import { BackendService } from './services/backend.service';
 
 @NgModule({
   imports: [
@@ -45,6 +46,9 @@ import { AlertComponent } from './components/alert/alert.component';
     BytesPipe,
     CustomtextPipe,
     AlertComponent
+  ],
+  providers: [
+    BackendService
   ]
 })
 export class SharedModule {}

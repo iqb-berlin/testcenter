@@ -90,8 +90,31 @@ paths:
           description: Session Expired
         "500":
           description: Server Error
-
-
+    delete:
+      summary: delete a session
+      description: Performs a logout
+      tags:
+        - session management
+      parameters:
+        - in: header
+          name: AuthToken
+          examples:
+            personToken:
+              description: auth-token for person
+              value: "p:0000000000000.00000000000"
+            loginToken:
+              description: auth-token for login (part I of 2-factor authorization only)
+              value: "l:user000000000.test0000000"
+            adminToken:
+              description: auth-token for admin
+              value: "a:user000000000.rw00000000"
+      responses:
+        "205":
+          description: OK, killed session
+        "401":
+          description: No token qualifies for authentication
+        "500":
+          description: Server Error
   /session/admin:
     put:
       summary: Start Admin Session

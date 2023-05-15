@@ -532,4 +532,9 @@ class SessionDAO extends DAO {
       $tests
     );
   }
+
+  public function deletePersonToken(AuthToken $authToken): void {
+    // we can not delete the session entirely, because this would delete the whole response data.
+    $this->_("update person_sessions set token=null where token = :token", [':token' => $authToken->getToken()]);
+  }
 }
