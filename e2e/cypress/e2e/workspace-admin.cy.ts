@@ -388,7 +388,7 @@ describe('Workspace-Admin', () => {
   it('should download the responses of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.get('[data-cy="results-checkbox"]')
+    cy.get('[data-cy="results-checkbox0"]')
       .click();
     cy.get('[data-cy="download-responses"]')
       .click();
@@ -399,7 +399,7 @@ describe('Workspace-Admin', () => {
   it('should download the logs of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.get('[data-cy="results-checkbox"]')
+    cy.get('[data-cy="results-checkbox0"]')
       .click();
     cy.get('[data-cy="download-logs"]')
       .click();
@@ -410,7 +410,7 @@ describe('Workspace-Admin', () => {
   it('should delete the results of a group', () => {
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .click();
-    cy.get('[data-cy="results-checkbox"]')
+    cy.get('[data-cy="results-checkbox0"]')
       .click();
     cy.get('[data-cy="delete-files"]')
       .click();
