@@ -105,6 +105,12 @@ h2 {
 .pending .unit,
 .locked .unit {
   background: #333333;
+  cursor: default;
+}
+
+.locked .testlet,
+.pending .testlet{
+  cursor: default;
 }
 
 .unit.restriction {

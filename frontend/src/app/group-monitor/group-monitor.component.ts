@@ -86,7 +86,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       }),
       this.tsm.commandResponses$
         .pipe(switchMap(() => interval(7000)))
-        .subscribe(() => this.messages.shift())
+        .subscribe(() => { this.messages.shift(); })
     ];
 
     this.connectionStatus$ = this.bs.connectionStatus$;

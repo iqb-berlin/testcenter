@@ -5,19 +5,28 @@ layout: default
 # Changelog & Upgrade Information
 
 [next]
+## Änderungen
+* Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
+  mitgesteuert. Wenn vor dieser Änderung beispielsweise alle Teilnehmer in den zweiten Block geschoben worden sind,
+  starteten Teilnehmer, die die Studie später nachholten bei block zwei. Da dieses Verhalten bei Nachhol-Sitzungen
+  hinderlich war, wurde es nun geändert. Noch nicht gestartete Tests sind gar nicht anwählbar, gesperrte Tests sind es,
+  werden aber nicht automatisch mitselektiert, damit sie anwählen und wieder entsperren kann.
+
 ### Neue Features
 * Es kann nun gesteuert werden, wann beim Bearbeiten von zeitbeschränkten Blocks Warnungen angezeigt werden sollen. 
   Der Standart ist weiterhin bei noch 5 und bei noch einer verbleibenden Minute.
   Hierfür gibt es nun den Booklet-Parameter `unit_time_left_warnings` und den Customtext-Token `booklet_msgTimerStarted`
 
+
 ### Sicherheit
-* Sitzungen werden beim LogOut auch serverseitig deaktiviert
+* Sitzungen werden beim Log-Out auch serverseitig deaktiviert.
+* Kleine eventuell für XSS-Angriffe nutzbare Sicherheitsheitslücke behoben.  
 
 ### Bugfixes
 * Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
 * Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
-  ohne dass die Seite neu geladen wurde. Dies ist behoeben.
-
+  ohne dass die Seite neu geladen wurde. Dies ist behoben.
+* Nachrichten im Seiten-panel des Gruppen-Monitors verschwinden wieder nach einiger Zeit.
 
 ## 14.5.1
 ### Bugfixes
