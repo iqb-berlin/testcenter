@@ -38,35 +38,41 @@ export class TestSessionComponent {
 
   hasState = TestSessionUtil.hasState;
 
-  getTestletType = (testletOrUnit: Unit|Testlet): 'testlet'|'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
+  // eslint-disable-next-line class-methods-use-this
+  getTestletType = (testletOrUnit: Unit | Testlet): 'testlet' | 'unit' => (isUnit(testletOrUnit) ? 'unit' : 'testlet');
 
-  trackUnits = (index: number, testlet: Testlet|Unit): string => testlet.id || index.toString();
+  // eslint-disable-next-line class-methods-use-this
+  trackUnits = (index: number, testlet: Testlet | Unit): string => testlet.id || index.toString();
 
-  mark(testletOrNull: Testlet|null = null): void {
+  mark(testletOrNull: Testlet | null = null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {
+      return;
+    }
+    if (['pending', 'locked'].includes(this.testSession.state)) {
       return;
     }
     this.marked = this.asSelectionObject(testletOrNull);
     this.markedElement$.emit(this.marked);
   }
 
-  isSelected(testletOrNull: Testlet|null = null): boolean {
+  isSelected(testletOrNull: Testlet | null = null): boolean {
     return testletOrNull &&
       (this.selected?.element?.blockId === testletOrNull.blockId) &&
       (this.selected?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
-  isSelectedHere(testletOrNull: Testlet|null = null): boolean {
+  isSelectedHere(testletOrNull: Testlet | null = null): boolean {
     return this.isSelected(testletOrNull) && (this.selected.originSession.data.testId === this.testSession.data.testId);
   }
 
-  isMarked(testletOrNull: Testlet|null = null): boolean {
+  isMarked(testletOrNull: Testlet | null = null): boolean {
     return testletOrNull &&
+      (!['pending', 'locked'].includes(this.testSession.state)) &&
       (this.marked?.element?.blockId === testletOrNull.blockId) &&
       (this.marked?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
-  select($event: Event, testletOrNull: Testlet|null): void {
+  select($event: Event, testletOrNull: Testlet | null): void {
     if ((testletOrNull != null) && !testletOrNull.blockId) {
       return;
     }
@@ -74,7 +80,7 @@ export class TestSessionComponent {
     this.applySelection(testletOrNull);
   }
 
-  deselect($event: MouseEvent|null): void {
+  deselect($event: MouseEvent | null): void {
     if ($event && ($event.currentTarget === $event.target)) {
       this.applySelection();
     }
@@ -97,12 +103,15 @@ export class TestSessionComponent {
     this.checked$.emit($event.checked);
   }
 
-  private applySelection(testletOrNull: Testlet|null = null, inversion = false): void {
+  private applySelection(testletOrNull: Testlet | null = null, inversion = false): void {
+    if (['pending', 'locked'].includes(this.testSession.state)) {
+      return;
+    }
     this.selected = this.asSelectionObject(testletOrNull, inversion);
     this.selectedElement$.emit(this.selected);
   }
 
-  private asSelectionObject(testletOrNull: Testlet|null = null, inversion = false): Selected {
+  private asSelectionObject(testletOrNull: Testlet | null = null, inversion = false): Selected {
     return {
       element: testletOrNull,
       originSession: this.testSession,
