@@ -3,9 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import {
-  Subscription
-} from 'rxjs';
+import { Subscription, merge, combineLatest } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
@@ -48,7 +46,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
-  unitNavigationList: UnitNaviButtonData[] = [];
+  unitNavigationList: Array<UnitNaviButtonData | string> = [];
   debugPane = false;
   unitScreenHeader: string = '';
 
@@ -127,8 +125,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
         .subscribe(maxTimerEvent => this.handleMaxTimer(maxTimerEvent));
 
-      this.subscriptions.currentUnit = this.tcs.currentUnitSequenceId$
-        .subscribe(() => {
+      this.subscriptions.currentUnit = combineLatest([this.tcs.currentUnitSequenceId$, this.tcs.testStructureChanges$])
+        .subscribe(c => {
           this.refreshUnitMenu();
           this.setUnitScreenHeader();
         });
@@ -366,23 +364,28 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (!this.tcs.rootTestlet) {
       return;
     }
+    let previousBlockLabel: string = null;
     const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
     for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
       const unitData = this.tcs.rootTestlet.getUnitAt(sequenceId);
+
+      const isLockedByTimer = unitData.unitDef.locked;
+      const isLockedByBlock = this.tcs.getIsUnitLockedByCode(sequenceId, unitData);
+
+      const blockLabel = unitData.testletLabel || '';
+      if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
+        this.unitNavigationList.push(blockLabel);
+      }
+      previousBlockLabel = blockLabel;
+
       this.unitNavigationList.push({
         sequenceId,
         shortLabel: unitData.unitDef.naviButtonLabel,
         longLabel: unitData.unitDef.title,
         testletLabel: unitData.testletLabel,
-        disabled: unitData.unitDef.locked,
+        disabled: isLockedByTimer || isLockedByBlock,
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
-    }
-    if (this.navButtons) {
-      setTimeout(() => {
-        this.navButtons.nativeElement.querySelector('.current-unit')
-          .scrollIntoView({ inline: 'center' });
-      }, 50);
     }
   }
 

@@ -29,6 +29,8 @@ export class TestControllerService {
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
 
+  testStructureChanges$ = new BehaviorSubject<void>(null);
+
   totalLoadingProgress = 0;
 
   clearCodeTestlets: string[] = [];
@@ -286,6 +288,7 @@ export class TestControllerService {
   addClearedCodeTestlet(testletId: string): void {
     if (this.clearCodeTestlets.indexOf(testletId) < 0) {
       this.clearCodeTestlets.push(testletId);
+      this.testStructureChanges$.next();
       if (this.testMode.saveResponses) {
         this.bs.updateTestState(
           this.testId,
@@ -302,6 +305,18 @@ export class TestControllerService {
   getUnclearedTestlets(unit: UnitControllerData): Testlet[] {
     return unit.codeRequiringTestlets
       .filter(testlet => !this.clearCodeTestlets.includes(testlet.id));
+  }
+
+  getIsUnitLockedByCode(sequenceId: number, unit: UnitControllerData): boolean {
+    const unclearedTestlets = this.getUnclearedTestlets(unit);
+    if (!unclearedTestlets.length) {
+      return false;
+    }
+    const firstSequenceIdInLockedBlock = unclearedTestlets
+      .reduce((acc, item) => (acc.sequenceId < item.sequenceId ? acc : item))
+      .children
+      .filter(child => !!child.sequenceId)[0].sequenceId;
+    return sequenceId !== firstSequenceIdInLockedBlock;
   }
 
   updateUnitStatePresentationProgress(unitDbKey: string, unitSeqId: number, presentationProgress: string): void {
