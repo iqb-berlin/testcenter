@@ -70,7 +70,8 @@
     mat-button
     (click)="showReviewDialog()"
     *ngIf="tcs.testMode.canReview"
-    matTooltip="Kommentar senden">
+    matTooltip="Kommentar senden"
+    data-cy="send-comments">
     <mat-icon>rate_review</mat-icon>
   </button>
   <button

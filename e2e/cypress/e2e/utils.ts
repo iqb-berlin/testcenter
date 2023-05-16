@@ -215,3 +215,23 @@ export const useTestDB = () : void => {
     req.headers.TestMode = 'integration';
   }).as('testMode');
 };
+
+export const readTestResultFiles = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+  const splitCSV = str => str.split('\n')
+    .map(row => row.split(';').map(cell => cell.replace(/^"/, '').replace(/"$/, '')));
+
+  if (fileType === 'responses') {
+    return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
+      .should('exist')
+      .then(splitCSV);
+  }
+  if (fileType === 'reviews') {
+    return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
+      .should('exist')
+      .then(splitCSV);
+  }
+
+  return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
+    .should('exist')
+    .then(splitCSV);
+};
