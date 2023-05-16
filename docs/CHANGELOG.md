@@ -11,12 +11,13 @@ layout: default
   Hierfür gibt es nun den Booklet-Parameter `unit_time_left_warnings` und den Customtext-Token `booklet_msgTimerStarted`
 
 ### Sicherheit
-* Sitzungen werden beim LogOut auch serverseitig deaktiviert
+* Sitzungen werden beim Log-Out auch serverseitig deaktiviert.
+* Kleine eventuell für XSS-Angriffe nutzbare Sicherheitsheitslücke behoben.  
 
 ### Bugfixes
 * Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
 * Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
-  ohne dass die Seite neu geladen wurde. Dies ist behoeben.
+  ohne dass die Seite neu geladen wurde. Dies ist behoben.
 
 
 ## 14.5.1
