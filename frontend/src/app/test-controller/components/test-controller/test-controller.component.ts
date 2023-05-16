@@ -311,8 +311,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
           this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-          const nextUnlockedUSId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
-          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10), true);
+          const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
+          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10) ?? UnitNavigationTarget.END, true);
         }
         break;
       case MaxTimerDataType.CANCELLED:
@@ -369,9 +369,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
       const unitData = this.tcs.rootTestlet.getUnitAt(sequenceId);
 
-      const isLockedByTimer = unitData.unitDef.locked;
-      const isLockedByBlock = this.tcs.getIsUnitLockedByCode(sequenceId, unitData);
-
       const blockLabel = unitData.testletLabel || '';
       if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
         this.unitNavigationList.push(blockLabel);
@@ -383,7 +380,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         shortLabel: unitData.unitDef.naviButtonLabel,
         longLabel: unitData.unitDef.title,
         testletLabel: unitData.testletLabel,
-        disabled: isLockedByTimer || isLockedByBlock,
+        disabled: this.tcs.getUnitIsLocked(unitData),
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
     }

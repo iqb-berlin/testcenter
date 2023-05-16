@@ -285,7 +285,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.currentUnit.unitDef.locked) {
+    if (this.currentUnit.unitDef.lockedByTime) {
       return;
     }
 

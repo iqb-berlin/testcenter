@@ -36,6 +36,17 @@ export class UnitActivateGuard implements CanActivate {
       console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
       return false;
     }
+    if (this.tcs.getUnitIsLocked(newUnit)) {
+      // a unitId of a locked unit was inserted
+      const previousUnlockedUnit = this.tcs.getNextUnlockedUnitSequenceId(newUnit.unitDef.sequenceId, true);
+      if (!previousUnlockedUnit) {
+        return false;
+      }
+      if (previousUnlockedUnit !== targetUnitSequenceId) {
+        this.router.navigate([`/t/${this.tcs.testId}/u/${previousUnlockedUnit}`]);
+        return false;
+      }
+    }
     return true;
   }
 }

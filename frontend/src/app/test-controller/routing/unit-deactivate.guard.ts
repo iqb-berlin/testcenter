@@ -76,7 +76,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
-    if (unit.unitDef.locked) {
+    if (unit.unitDef.lockedByTime) {
       return [];
     }
     const reasons: VeronaNavigationDeniedReason[] = [];
