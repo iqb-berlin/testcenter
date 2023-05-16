@@ -19,7 +19,7 @@ export class TestModeData {
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
       presetCode: true,
-      showTimeLeft: true,
+      showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false
     },
@@ -35,7 +35,7 @@ export class TestModeData {
       receiveRemoteCommands: false
     },
     'RUN-HOT-RETURN': {
-      alwaysNewSession: true,
+      alwaysNewSession: false,
       canReview: false,
       saveResponses: true,
       forceTimeRestrictions: true,

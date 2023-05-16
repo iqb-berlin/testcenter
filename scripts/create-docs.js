@@ -16,7 +16,7 @@ const definitionsDir = `${rootPath}/definitions`;
  * Creates documentation about super-states. To make the abundance of possible state-combinations of a running test
  * manageable for users (of the GM for example) they get boiled down to a defined set of so called super-states.
  *
- * See the result and read more: https://iqb-berlin.github.io/testcenter/dist/booklet-config
+ * See the result and read more: https://iqb-berlin.github.io/testcenter/pages/booklet-config
  * Read more in user's manual (german):
  * https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/Booklet%E2%80%90Xml#Konfiguration
  *
@@ -49,9 +49,9 @@ exports.testSessionSuperStates = done => {
   `;
   });
 
-  const template = fs.readFileSync(`${docsDir}/test-session-super-states.html`).toString();
+  const template = fs.readFileSync(`${docsDir}/src/test-session-super-states.html`).toString();
   const output = template.replace('%%%CONTENT%%%', content);
-  fs.writeFileSync(`${docsDir}/dist/test-session-super-states.html`, output);
+  fs.writeFileSync(`${docsDir}/pages/test-session-super-states.html`, output);
   done();
 };
 
@@ -59,7 +59,7 @@ exports.testSessionSuperStates = done => {
  * Creates documentation about booklet-configurations. Booklet-parameters are various configuration parameters for
  * adjusting the behaviour during a test execution.
  *
- * See the result and read more: https://iqb-berlin.github.io/testcenter/dist/booklet-config
+ * See the result and read more: https://iqb-berlin.github.io/testcenter/pages/booklet-config
  * Read more in user's manual (german):
  * https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/Booklet%E2%80%90Xml#Konfiguration
  *
@@ -72,16 +72,20 @@ exports.bookletConfig = done => {
 
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/booklet-config.json`).toString());
 
-  let output = fs.readFileSync(`${docsDir}/pages/booklet-config.md`, 'utf8').toString();
+  let output = fs.readFileSync(`${docsDir}/src/booklet-config.md`, 'utf8').toString();
 
   Object.keys(definition)
     .forEach(configParameter => {
-      output += `\n#### \`${configParameter}\`\n${definition[configParameter].label}\n`;
-      Object.keys(definition[configParameter].options)
-        .forEach(value => {
-          const isDefault = (value === definition[configParameter].defaultvalue) ? '(default)' : '';
-          output += ` * "${value}" ${isDefault} ${definition[configParameter].options[value]}\n`;
-        });
+      output += `\n### ${configParameter}\n${definition[configParameter].label}\n`;
+      if (definition[configParameter].options && Object.keys(definition[configParameter].options).length) {
+        Object.keys(definition[configParameter].options)
+          .forEach(value => {
+            const isDefault = (value === definition[configParameter].defaultvalue) ? '**' : '';
+            output += ` * ${isDefault}"${value}" - ${definition[configParameter].options[value]}${isDefault}\n`;
+          });
+      } else {
+        output += ` * **${definition[configParameter].defaultvalue}**\n`;
+      }
     });
 
   fs.writeFileSync(`${docsDir}/pages/booklet-config.md`, output, 'utf8');
@@ -91,7 +95,7 @@ exports.bookletConfig = done => {
 /**
  * Creates documentation about the available modes of test-execution.
  *
- * See result and read more: https://iqb-berlin.github.io/testcenter/dist/test-mode
+ * See result and read more: https://iqb-berlin.github.io/testcenter/pages/test-mode
  * Read more in user's manual (german):
  * https://github.com/iqb-berlin/iqb-berlin.github.io/wiki/Login:-Modi-der-Testdurchf%C3%BChrung
  *
@@ -105,7 +109,7 @@ exports.testMode = done => {
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/test-mode.json`).toString());
   const modeOptions = JSON.parse(fs.readFileSync(`${definitionsDir}/mode-options.json`).toString());
 
-  let output = fs.readFileSync(`${docsDir}/pages/test-mode.md`, 'utf8').toString();
+  let output = fs.readFileSync(`${docsDir}/src/test-mode.md`, 'utf8').toString();
 
   let tableHeader1 = '|  | ';
   let tableHeader2 = '| :------------- |';
@@ -141,7 +145,7 @@ exports.testMode = done => {
 exports.customTexts = done => {
   cliPrint.headline('customTexts: Writing Markdown documentation');
   const definition = JSON.parse(fs.readFileSync(`${definitionsDir}/custom-texts.json`).toString());
-  let output = fs.readFileSync(`${docsDir}/pages/custom-texts.md`, 'utf8').toString();
+  let output = fs.readFileSync(`${docsDir}/src/custom-texts.md`, 'utf8').toString();
   output += '### List of possible replacements\n\n';
   output += '| Key       | Used for     | Default     |\n';
   output += '| :------------- | :---------- | :----------- |\n';
@@ -156,9 +160,6 @@ exports.customTexts = done => {
   done();
 };
 
-const copyPages = async () => gulp.src(`${docsDir}/pages/*`)
-  .pipe(gulp.dest(`${docsDir}/dist`));
-
 const copyReadme = done => {
   const output = fs.readFileSync(`${rootPath}/README.md`, 'utf8').toString();
   const prefix = '---\nlayout: default\n---\n';
@@ -168,7 +169,6 @@ const copyReadme = done => {
 
 exports.createDocs = gulp.series(
   copyReadme,
-  copyPages,
   exports.testSessionSuperStates,
   exports.bookletConfig,
   exports.testMode,
