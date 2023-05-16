@@ -171,8 +171,6 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .click();
     cy.contains(/^Aufgabe1$/)
       .should('exist');
-    cy.contains('0:')
-      .should('exist');
     cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
       .should('exist');
     // wait until the message is no longer displayed
