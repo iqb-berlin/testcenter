@@ -49,7 +49,7 @@ export class UnitDef extends TestletContentElement {
   }
 }
 
-export class UnitControllerData {
+export class UnitWithContext {
   unitDef: UnitDef = null;
   codeRequiringTestlets: Testlet[] = [];
   maxTimerRequiringTestlet: Testlet = null;
@@ -97,8 +97,8 @@ export class Testlet extends TestletContentElement {
   // first looking for the unit, then on the way back adding restrictions
   // TODO this very ineffective function is called quite often, so ...
   // ...instead of enrich the unit with the parental data, collect it beforehand
-  getUnitAt(sequenceId: number, isEntryPoint = true): UnitControllerData | null {
-    let myreturn: UnitControllerData = null;
+  getUnitAt(sequenceId: number, isEntryPoint = true): UnitWithContext | null {
+    let myreturn: UnitWithContext = null;
     for (let i = 0; i < this.children.length; i++) {
       const tce = this.children[i];
       if (tce instanceof Testlet) {
@@ -109,7 +109,7 @@ export class Testlet extends TestletContentElement {
         }
       } else if (tce instanceof UnitDef) {
         if (tce.sequenceId === sequenceId) {
-          myreturn = new UnitControllerData(tce);
+          myreturn = new UnitWithContext(tce);
           break;
         }
       }

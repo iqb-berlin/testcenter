@@ -6,7 +6,7 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { MainDataService } from '../../shared/shared.module';
-import { UnitControllerData } from '../classes/test-controller.classes';
+import { UnitWithContext } from '../classes/test-controller.classes';
 import { TestControllerService } from '../services/test-controller.service';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class UnitActivateGuard implements CanActivate {
       this.router.navigate([`/t/${testId}`]);
       return false;
     }
-    const newUnit: UnitControllerData = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+    const newUnit: UnitWithContext = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
     if (!newUnit) {
       // a unit-nr was entered in the URl which does not exist
       console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);

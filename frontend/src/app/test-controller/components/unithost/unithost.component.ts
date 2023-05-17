@@ -21,7 +21,7 @@ import { MainDataService } from '../../../shared/shared.module';
 import {
   VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
 } from '../../interfaces/verona.interfaces';
-import { Testlet, UnitControllerData } from '../../classes/test-controller.classes';
+import { Testlet, UnitWithContext } from '../../classes/test-controller.classes';
 
 @Component({
   templateUrl: './unithost.component.html',
@@ -44,7 +44,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[];
 
-  currentUnit: UnitControllerData;
+  currentUnit: UnitWithContext;
   currentPageIndex: number;
   unitNavigationTarget = UnitNavigationTarget;
 
