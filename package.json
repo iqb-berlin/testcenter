@@ -1,6 +1,6 @@
 {
   "name": "iqb-testcenter",
-  "version": "14.5.1",
+  "version": "14.6.0",
   "iqb": {
     "verona-player-api-versions": {
       "min": 2,
