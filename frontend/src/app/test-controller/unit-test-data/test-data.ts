@@ -496,12 +496,12 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       playerId: 'a-player'
     }),
     testlet({
-      codePrompt: '',
-      codeToEnter: '',
+      codePrompt: 'please enter something',
+      codeToEnter: 'i_am_locked',
       id: 'first_block',
-      maxTimeLeft: 0,
+      maxTimeLeft: 5,
       sequenceId: 0,
-      title: '',
+      title: 'label of first block',
       children: [
         unit({
           sequenceId: 2,
