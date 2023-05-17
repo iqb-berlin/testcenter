@@ -4,6 +4,11 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+### Neue Features
+* Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
+  Gruppen-Monitor. Weitere Funktionen sind geplant. 
+
 ## 14.6.0
 ### Änderungen
 * Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 

@@ -37,13 +37,12 @@ class MonitorController extends Controller {
   public static function getTestSessions(Request $request, Response $response): Response {
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
-
-    // currently a group-monitor can always only monitor it's own group
-    $groupNames = [$authToken->getGroup()];
+    $groupName = $request->getAttribute('group_name');
+    $groupNames = $groupName ? [$groupName] : array_keys($request->getAttribute('groups'));
 
     $sessionChangeMessages = self::adminDAO()->getTestSessions($authToken->getWorkspaceId(), $groupNames);
 
-    $bsUrl = BroadcastService::registerChannel('monitor', ["groups" => [$authToken->getGroup()]]);
+    $bsUrl = BroadcastService::registerChannel('monitor', ["groups" => $groupNames]);
 
     if ($bsUrl !== null) {
       foreach ($sessionChangeMessages as $sessionChangeMessage) {

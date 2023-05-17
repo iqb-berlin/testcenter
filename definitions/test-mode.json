@@ -27,6 +27,20 @@
       "receiveRemoteCommands": false
     }
   },
+  "MONITOR-STUDY": {
+    "label": "Studien-Monitor (Demo)",
+    "config": {
+      "alwaysNewSession": false,
+      "canReview": false,
+      "saveResponses": false,
+      "forceTimeRestrictions": false,
+      "forceNaviRestrictions": false,
+      "presetCode": true,
+      "showTimeLeft": true,
+      "showUnitMenu": false,
+      "receiveRemoteCommands": false
+    }
+  },
   "RUN-HOT-RETURN": {
     "label": "Durchführung Test/Befragung",
     "config": {

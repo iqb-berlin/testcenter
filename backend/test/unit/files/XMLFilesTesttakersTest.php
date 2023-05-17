@@ -208,6 +208,10 @@ END;
         'future_group',
         'An not yet active group'
       ),
+      'study_group' => new Group(
+        'study_group',
+        "A group for the study monitor"
+      )
     ];
 
     $result = $xmlFile->getGroups();
@@ -260,6 +264,19 @@ END;
         0,
         1583053200,
         45,
+        (object) ["somestr" => "string"],
+      ),
+      new Login (
+        'test-study-monitor',
+        'user123',
+        'monitor-study',
+        'study_group',
+        'A group for the study monitor',
+        ['' => []],
+        -1,
+        0,
+        0,
+        0,
         (object) ["somestr" => "string"],
       ),
       new Login(
@@ -347,6 +364,19 @@ END;
         'expired_group',
         'An already expired group',
         ['' => ['BOOKLET.SAMPLE-1']],
+        -1,
+        1583087400,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'expired-study-monitor',
+        'user123',
+        'monitor-study',
+        'expired_group',
+        'An already expired group',
+        ['' => []],
         -1,
         1583087400,
         0,

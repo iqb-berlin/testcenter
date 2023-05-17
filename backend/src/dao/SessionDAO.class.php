@@ -227,11 +227,18 @@ class SessionDAO extends DAO {
     );
   }
 
-  public function getLoginsByGroup(string $groupName, int $workspaceId): array {
+  public function getLoginSessions(array $filters = []): array {
     $logins = [];
 
-    $result = $this->_(
-      'select
+    $replacements = [];
+    $filterSQL = [];
+    foreach ($filters as $filter => $filterValue) {
+      $filterName = ':' . str_replace('.', '_', $filter);
+      $replacements[$filterName] = $filterValue;
+      $filterSQL[] = "$filter = $filterName";
+    }
+    $filterSQL = implode(' and ', $filterSQL);
+    $sql = "select
               logins.name,
               logins.mode,
               logins.group_name,
@@ -249,14 +256,10 @@ class SessionDAO extends DAO {
               logins
               left join login_sessions on (logins.name = login_sessions.name)
           where
-              logins.group_name = :group_name and logins.workspace_id = :workspace_id
-          order by id',
-      [
-        ':group_name' => $groupName,
-        ':workspace_id' => $workspaceId
-      ],
-      true
-    );
+              $filterSQL
+          order by id";
+
+    $result = $this->_($sql, $replacements,true);
 
     foreach ($result as $row) {
       $logins[] =
@@ -493,25 +496,29 @@ class SessionDAO extends DAO {
 
   public function getTestsOfPerson(PersonSession $personSession): array {
     $bookletIds = $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? ''];
+    if (!count($bookletIds)) {
+      return [];
+    }
     $placeHolder = implode(', ', array_fill(0, count($bookletIds), '?'));
-    $tests = $this->_("
-                select
-                  tests.person_id,
-                  tests.id,
-                  tests.locked,
-                  tests.running,
-                  files.name,
-                  files.id as bookletId,
-                  files.label as testLabel,
-                  files.description
-                from files
-                  left outer join tests on files.id = tests.name and tests.person_id = ?
-                where
-                  files.workspace_id = ?
-                  and files.type = 'Booklet'
-                  and files.id in ($placeHolder)
-                order by
-                  files.label",
+    $sql = "select
+              tests.person_id,
+              tests.id,
+              tests.locked,
+              tests.running,
+              files.name,
+              files.id as bookletId,
+              files.label as testLabel,
+              files.description
+            from files
+              left outer join tests on files.id = tests.name and tests.person_id = ?
+            where
+              files.workspace_id = ?
+              and files.type = 'Booklet'
+              and files.id in ($placeHolder)
+            order by
+              files.label";
+    $tests = $this->_(
+      $sql,
       [
         $personSession->getLoginSession()->getId(),
         $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
@@ -536,5 +543,55 @@ class SessionDAO extends DAO {
   public function deletePersonToken(AuthToken $authToken): void {
     // we can not delete the session entirely, because this would delete the whole response data.
     $this->_("update person_sessions set token=null where token = :token", [':token' => $authToken->getToken()]);
+  }
+
+  public function getGroupMonitors(PersonSession $personSession): array {
+    switch ($personSession->getLoginSession()->getLogin()->getMode()) {
+      default: return [];
+      case 'monitor-group':
+        return [
+          new Group(
+            $personSession->getLoginSession()->getLogin()->getGroupName(),
+            $personSession->getLoginSession()->getLogin()->getGroupLabel()
+          )
+        ];
+      case 'monitor-study':
+        return $this->getGroups($personSession->getLoginSession()->getLogin()->getWorkspaceId());
+    }
+  }
+
+  public function getGroups(int $workspaceId): array {
+    $sql =
+      'select
+        group_name,
+        group_label
+      from
+        logins
+      where
+        workspace_id = :ws_id
+      group by group_name, group_label
+      order by group_label';
+
+    return array_reduce(
+      $this->_($sql, [':ws_id' => $workspaceId], true),
+      function(array $agg, array $row): array {
+        $agg[$row['group_name']] = new Group($row['group_name'], $row['group_label']);
+        return $agg;
+      },
+      []
+    );
+  }
+
+  public function getDependantSessions(LoginSession $login): array {
+    return match ($login->getLogin()->getMode()) {
+      'monitor-group' => $this->getLoginSessions([
+        'logins.workspace_id' => $login->getLogin()->getWorkspaceId(),
+        'logins.group_name' => $login->getLogin()->getGroupName()
+      ]),
+      'monitor-study' => $this->getLoginSessions([
+        'logins.workspace_id' => $login->getLogin()->getWorkspaceId()
+      ]),
+      default => [],
+    };
   }
 }
