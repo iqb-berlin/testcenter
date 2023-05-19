@@ -17,5 +17,21 @@ describe('Testlet class', () => {
       expect(rootTestlet.getSequenceIdByUnitAlias('u5')).toEqual(5);
       expect(rootTestlet.getSequenceIdByUnitAlias('i_dont_exist')).toEqual(0);
     });
+
+    it('getUnitAt', () => {
+      expect(rootTestlet.getUnitAt(0)).toBeNull();
+      expect(rootTestlet.getUnitAt(1)).toEqual(jasmine.objectContaining({
+        unitDef: rootTestlet.children[0],
+        codeRequiringTestlets: [],
+        maxTimerRequiringTestlet: null,
+        testletLabel: ''
+      }));
+      expect(rootTestlet.getUnitAt(2)).toEqual(jasmine.objectContaining({
+        unitDef: rootTestlet.children[1].children[0],
+        codeRequiringTestlets: [rootTestlet.children[1]],
+        maxTimerRequiringTestlet: rootTestlet.children[1],
+        testletLabel: 'label of first block'
+      }));
+    });
   });
 });
