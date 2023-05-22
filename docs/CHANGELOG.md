@@ -4,6 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## Next
+### Änderungen
+* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur Testheft-Übersicht weitergeleitet. Stattdessen wird das Testheft direkt gestartet.
+
 ## 14.6.0
 ### Änderungen
 * Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
