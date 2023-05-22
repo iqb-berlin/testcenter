@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               }
             });
           } else {
-            if(authData.flags[0] != "codeRequired" && loginType == 'login'){
+            if(!authData.flags.includes("codeRequired") && loginType == 'login'){
               if(authData.claims.test.length == 1){
                 this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
                   if (typeof testId === 'number') {
