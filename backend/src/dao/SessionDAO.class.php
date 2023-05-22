@@ -561,21 +561,29 @@ class SessionDAO extends DAO {
   }
 
   public function getGroups(int $workspaceId): array {
+    $modeSelector = "mode in ('" . implode("', '", Mode::getByCapability('monitorable')) . "')";
     $sql =
-      'select
+      "select
         group_name,
-        group_label
+        group_label,
+        valid_from,
+        valid_to
       from
         logins
       where
         workspace_id = :ws_id
-      group by group_name, group_label
-      order by group_label';
+        and $modeSelector
+      group by group_name, group_label, valid_from, valid_to
+      order by group_label";
 
     return array_reduce(
       $this->_($sql, [':ws_id' => $workspaceId], true),
       function(array $agg, array $row): array {
-        $agg[$row['group_name']] = new Group($row['group_name'], $row['group_label']);
+        $expiration = TimeStamp::isExpired(
+          TimeStamp::fromSQLFormat($row['valid_from']),
+          TimeStamp::fromSQLFormat($row['valid_to'])
+        );
+        $agg[$row['group_name']] = new Group($row['group_name'], $row['group_label'], $expiration);
         return $agg;
       },
       []

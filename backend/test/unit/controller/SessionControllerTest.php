@@ -11,6 +11,8 @@ require_once "src/data-collection/AccessObject.class.php";
 require_once "src/data-collection/TestData.class.php";
 require_once "src/data-collection/WorkspaceData.class.php";
 require_once "src/data-collection/Group.class.php";
+require_once "src/data-collection/ExpirationState.class.php";
+require_once "src/data-collection/ExpirationStateType.enum.php";
 require_once "src/controller/Controller.class.php";
 require_once "src/controller/SessionController.class.php";
 

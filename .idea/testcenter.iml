@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/sampledata" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/backend/test/unit" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/backend/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/frontend/node_modules" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.github" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/docs" />
@@ -20,7 +21,9 @@
       <excludeFolder url="file://$MODULE_DIR$/broadcasting-service/dist" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/dist" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/tmp" />
     </content>
+    <content url="file://$MODULE_DIR$/frontend/node_modules" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

@@ -135,7 +135,6 @@
       <extension name="pdo_ibm" enabled="false" />
       <extension name="pspell" enabled="false" />
       <extension name="pthreads" enabled="false" />
-      <extension name="radius" enabled="false" />
       <extension name="rar" enabled="false" />
       <extension name="recode" enabled="false" />
       <extension name="redis" enabled="false" />

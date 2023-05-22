@@ -37,6 +37,8 @@ class SessionDAOTest extends TestCase {
     require_once "src/dao/DAO.class.php";
     require_once "src/dao/SessionDAO.class.php";
     require_once "test/unit/TestDB.class.php";
+    require_once "src/data-collection/ExpirationState.class.php";
+    require_once "src/data-collection/ExpirationStateType.enum.php";
   }
 
   function setUp(): void {

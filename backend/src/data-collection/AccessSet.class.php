@@ -166,7 +166,15 @@ class AccessSet extends DataCollectionTypeSafe {
 
   private function addGroupMonitors(Group ...$groups): void {
     $groupMonitors = array_map(
-      function(Group $group) { return new AccessObject($group->getName(), 'testGroupMonitor', $group->getLabel()); },
+      function(Group $group) {
+        $flags = [];
+        if ($group->_expired->type == ExpirationStateType::Expired) {
+          $flags['expired'] = $group->_expired->timestamp * 1000;
+        } else if ($group->_expired->type == ExpirationStateType::Scheduled) {
+          $flags['scheduled'] = $group->_expired->timestamp * 1000;
+        };
+        return new AccessObject($group->name, 'testGroupMonitor', $group->label, $flags);
+      },
       $groups
     );
     $this->addAccessObjects('testGroupMonitor', ...$groupMonitors);
