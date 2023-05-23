@@ -15,6 +15,8 @@ export interface AccessObject {
   flags: {
     locked?: boolean;
     running?: boolean;
+    scheduled?: number;
+    expired?: number;
     mode: 'RW' | 'RO'
   };
 }
@@ -64,4 +66,11 @@ export interface HttpRetryPolicy {
 export interface AppModuleSettings {
   httpRetryPolicy: HttpRetryPolicyNames;
   disableGlobalErrorDisplay?: true;
+}
+
+export interface StarterButton {
+  title: string;
+  status: string;
+  disabled: boolean;
+  accessObject: AccessObject;
 }

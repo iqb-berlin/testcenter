@@ -28,6 +28,8 @@ final class AdminDAOTest extends TestCase {
     require_once "src/data-collection/LoginSession.class.php";
     require_once "src/data-collection/Group.class.php";
     require_once "src/data-collection/WorkspaceData.class.php";
+    require_once "src/data-collection/ExpirationState.class.php";
+    require_once "src/data-collection/ExpirationStateType.enum.php";
     require_once "src/dao/DAO.class.php";
     require_once "src/dao/AdminDAO.class.php";
     require_once "src/helper/Mode.class.php";
