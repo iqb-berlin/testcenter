@@ -3,25 +3,13 @@
 declare(strict_types=1);
 
 class Group extends DataCollectionTypeSafe {
+  readonly string $label;
+  readonly string $name;
+  readonly ExpirationState $_expired;
 
-    protected $label = '';
-    protected $name = '';
-
-    function __construct(string $name, string $label) {
-
-        $this->label = $label;
-        $this->name = $name;
-    }
-
-
-    public function getLabel(): string {
-
-        return $this->label;
-    }
-
-
-    public function getName(): string {
-
-        return $this->name;
-    }
+  function __construct(string $name, string $label, ExpirationState $expired = new ExpirationState(ExpirationStateType::None)) {
+    $this->label = $label;
+    $this->name = $name;
+    $this->_expired = $expired;
+  }
 }

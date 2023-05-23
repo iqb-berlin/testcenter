@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, combineLatest, Observable, of, Subject, zip
+  BehaviorSubject, combineLatest, Observable, Subject, zip
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import {
@@ -98,7 +98,7 @@ export class TestSessionManager {
     this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._commandResponses$ = new Subject<CommandResponse>();
 
-    this.monitor$ = this.bs.observeSessionsMonitor()
+    this.monitor$ = this.bs.observeSessionsMonitor(groupName)
       .pipe(
         switchMap(sessions => zip(...sessions
           .map(session => this.bookletService.getBooklet(session.bookletName)

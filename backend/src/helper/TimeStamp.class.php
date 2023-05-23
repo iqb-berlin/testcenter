@@ -6,6 +6,7 @@ declare(strict_types=1);
 class TimeStamp {
   private static string $now = 'now';
   private static string $timeZone = 'Europe/Berlin';
+  private static string $format = 'd/m/Y H:i';
 
   static public function setup(?string $timezone = null, ?string $now = null): void {
     self::$timeZone = $timezone ?? 'Europe/Berlin';
@@ -41,34 +42,50 @@ class TimeStamp {
   }
 
   static public function checkExpiration(int $validFromTimestamp = 0, int $validToTimestamp = 0): void {
-    $timeZone = new DateTimeZone(self::$timeZone);
-    $format = "d/m/Y H:i";
-    $now = new DateTime(self::$now, $timeZone);
-
-    if ($validToTimestamp > 0) {
-      $validTo = new DateTime("now", $timeZone);
-      $validTo->setTimestamp($validToTimestamp);
-      if ($validTo < $now) {
+    switch (self::isExpired($validFromTimestamp, $validToTimestamp)->type) {
+      case ExpirationStateType::Expired:
+        $validTo = self::asDateTime($validToTimestamp);
         throw new HttpError(
-          "Testing Period for this login is over since {$validTo->format($format)}",
+          "Testing Period for this login is over since {$validTo->format(self::$format)}",
           410,
           "test period expired"
         );
+      case ExpirationStateType::Scheduled:
+        $validFrom = self::asDateTime($validFromTimestamp);
+        throw new HttpError(
+          "Testing Period for this login has not yet started and will begin at {$validFrom->format(self::$format)}",
+          401,
+          "test period not started"
+        );
+    }
+  }
+
+  static private function asDateTime(int $timestamp): DateTime {
+    $timeZone = new DateTimeZone(self::$timeZone);
+    $dateTime = new DateTime("now", $timeZone);
+    $dateTime->setTimestamp($timestamp);
+    return $dateTime;
+  }
+
+  static public function isExpired(int $validFromTimestamp = 0, int $validToTimestamp = 0): ExpirationState {
+    $timeZone = new DateTimeZone(self::$timeZone);
+    $now = new DateTime(self::$now, $timeZone);
+
+    if ($validToTimestamp > 0) {
+      $validTo = self::asDateTime($validToTimestamp);
+      if ($validTo < $now) {
+        return new ExpirationState(ExpirationStateType::Expired, $validToTimestamp);
       }
     }
 
     if ($validFromTimestamp > 0) {
-      $validFrom = new DateTime("now", $timeZone);
-      $validFrom->setTimestamp($validFromTimestamp);
-
+      $validFrom = self::asDateTime($validFromTimestamp);
       if ($validFrom > $now) {
-        throw new HttpError(
-          "Testing Period for this login has not yet started and will begin at {$validFrom->format($format)}",
-          401,
-          "test period not started"
-        );
+        return new ExpirationState(ExpirationStateType::Scheduled, $validFromTimestamp);
       }
     }
+
+    return new ExpirationState(ExpirationStateType::None);
   }
 
   static public function fromSQLFormat(?string $sqlFormatTimestamp): int {

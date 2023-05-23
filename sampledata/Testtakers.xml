@@ -20,6 +20,11 @@
     <Login mode="monitor-group" name="test-group-monitor" pw="user123"/>
   </Group>
 
+  <Group id="study_group" label="A group for the study monitor">
+    <!-- the study monitor has access to all other groups on the workspace -->
+    <Login mode="monitor-study" name="test-study-monitor" pw="user123"/>
+  </Group>
+
   <Group id="review_group" label="A Group of Reviewers">
     <Login mode="run-review" name="test-review" pw="user123">
       <Booklet>BOOKLET.SAMPLE-1</Booklet>
@@ -49,6 +54,7 @@
       <Booklet>BOOKLET.SAMPLE-1</Booklet>
     </Login>
     <Login mode="monitor-group" name="expired-group-monitor" pw="user123"/>
+    <Login mode="monitor-study" name="expired-study-monitor" pw="user123"/>
   </Group>
 
   <Group id="future_group" validFrom="26/3/2030 9:00" label="An not yet active group">

@@ -108,6 +108,31 @@ class InitDAO extends SessionDAO {
     $loginSession = $this->createLoginSession($login);
     $personsSessions['expired-group-monitor'] = $this->createOrUpdatePersonSession($loginSession, '', true);
 
+    $login = new Login(
+      'test-study-monitor',
+      'user123',
+      'monitor-study',
+      'study_group',
+      "A group for the study monitor",
+      [],
+      1
+    );
+    $loginSession = $this->createLoginSession($login);
+    $personsSessions['test-study-monitor'] = $this->createOrUpdatePersonSession($loginSession, '');
+
+    $login = new Login(
+      'expired-study-monitor',
+      'user123',
+      'monitor-study',
+      'expired_group',
+      'expired_group',
+      ['' => ['']],
+      1,
+      TimeStamp::fromXMLFormat('1/1/2000 12:00')
+    );
+    $loginSession = $this->createLoginSession($login);
+    $personsSessions['expired-study-monitor'] = $this->createOrUpdatePersonSession($loginSession, '', true);
+
     return $personsSessions;
   }
 

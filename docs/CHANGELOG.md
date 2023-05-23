@@ -4,9 +4,15 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## Next
+## [next]
 ### Änderungen
-* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur Testheft-Übersicht weitergeleitet. Stattdessen wird das Testheft direkt gestartet.
+* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur Testheft-Übersicht weitergeleitet. 
+  Stattdessen wird das Testheft direkt gestartet.
+
+### Neue Features
+* Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
+  Gruppen-Monitor. Weitere Funktionen sind geplant. 
+
 
 ## 14.6.0
 ### Änderungen

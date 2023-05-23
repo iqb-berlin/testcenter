@@ -15,4 +15,10 @@
     </Login>
   </Group>
 
+  <Group id="runrev" label="RunReview">
+    <Login mode="run-review" name="Test_Review_Ctrl" pw="123">
+      <Booklet>runreview</Booklet>
+    </Login>
+  </Group>
+
 </Testtakers>
