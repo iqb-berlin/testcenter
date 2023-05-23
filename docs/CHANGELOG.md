@@ -4,6 +4,10 @@ layout: default
 
 # Changelog & Upgrade Information
 
+##[next]
+### Verbesserungen
+* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem Request durchgeführt. Dies führt auch dazu, dass man nun eine Unit xml und die dazugehörige voud Datei gleichzeitig hochladen kann. Dadurch wurde allerdings auch die Möglichkeit entfernt den Upload einzelner Dateien abzubrechen.
+
 ## 14.6.0
 ### Änderungen
 * Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
