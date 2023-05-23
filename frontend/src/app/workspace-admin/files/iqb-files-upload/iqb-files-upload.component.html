@@ -1,8 +1,7 @@
 <div class="mat-body">
   <ng-container *ngIf="status == 1">
-    <div class="subheading-2">
+    <div class="subheading-2" *ngFor="let file of files">
       {{file.name}}
-      <mat-icon class="cancel" (click)="remove()">cancel</mat-icon>
     </div>
     <div>
       <mat-progress-bar class="upload-progress-bar" [value]="progressPercentage"></mat-progress-bar>

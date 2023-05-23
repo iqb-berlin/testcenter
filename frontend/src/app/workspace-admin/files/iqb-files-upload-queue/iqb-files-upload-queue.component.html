@@ -4,9 +4,7 @@
   </mat-card-header>
 
   <iqb-files-upload
-    *ngFor="let file of files; let i = index"
-    [file]="file"
-    [id]="i"
+    [files]="files"
     [fileAlias]="fileAlias"
     [folderName]="folderName"
     [folder]="folder"
