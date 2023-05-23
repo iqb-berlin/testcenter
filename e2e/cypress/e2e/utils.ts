@@ -78,10 +78,17 @@ export const logoutAdmin = (): void => {
     .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
 };
 
-export const logoutTestTaker = (): void => {
+export const logoutTestTaker = (mode: string): void => {
   cy.get('[data-cy="logo"]')
     .should('exist')
     .click();
+  if (mode === 'review' || mode === 'demo') {
+    cy.contains('Test beenden')
+      .should('not.exist');
+  } else {
+    cy.contains('Test beenden')
+      .should('exist');
+  }
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
   cy.get('[data-cy="logout"]')
@@ -207,4 +214,24 @@ export const useTestDB = () : void => {
   cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/.*`), req => {
     req.headers.TestMode = 'integration';
   }).as('testMode');
+};
+
+export const readTestResultFiles = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+  const splitCSV = str => str.split('\n')
+    .map(row => row.split(';').map(cell => cell.replace(/^"/, '').replace(/"$/, '')));
+
+  if (fileType === 'responses') {
+    return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
+      .should('exist')
+      .then(splitCSV);
+  }
+  if (fileType === 'reviews') {
+    return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
+      .should('exist')
+      .then(splitCSV);
+  }
+
+  return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
+    .should('exist')
+    .then(splitCSV);
 };

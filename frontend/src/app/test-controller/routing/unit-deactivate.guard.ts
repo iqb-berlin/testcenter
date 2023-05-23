@@ -12,7 +12,7 @@ import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService
 } from '../../shared/shared.module';
 import { NavigationLeaveRestrictionValue, TestControllerState } from '../interfaces/test-controller.interfaces';
-import { UnitControllerData } from '../classes/test-controller.classes';
+import { UnitWithContext } from '../classes/test-controller.classes';
 import { UnithostComponent } from '../components/unithost/unithost.component';
 import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
@@ -27,7 +27,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     private router: Router
   ) {}
 
-  private checkAndSolveMaxTime(newUnit: UnitControllerData): Observable<boolean> {
+  private checkAndSolveMaxTime(newUnit: UnitWithContext): Observable<boolean> {
     if (!this.tcs.currentMaxTimerTestletId) { // leaving unit is not in a timed block
       return of(true);
     }
@@ -65,7 +65,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       );
   }
 
-  private checkAndSolveCompleteness(newUnit: UnitControllerData): Observable<boolean> {
+  private checkAndSolveCompleteness(newUnit: UnitWithContext): Observable<boolean> {
     const direction = (!newUnit || this.tcs.currentUnitSequenceId < newUnit.unitDef.sequenceId) ? 'Next' : 'Prev';
     const reasons = this.checkCompleteness(direction);
     if (!reasons.length) {
@@ -76,7 +76,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
     const unit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
-    if (unit.unitDef.locked) {
+    if (unit.unitDef.lockedByTime) {
       return [];
     }
     const reasons: VeronaNavigationDeniedReason[] = [];
@@ -157,7 +157,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return true;
     }
 
-    let newUnit: UnitControllerData = null;
+    let newUnit: UnitWithContext = null;
     if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
       const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
       newUnit = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);

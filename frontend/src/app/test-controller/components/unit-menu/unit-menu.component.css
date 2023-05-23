@@ -32,6 +32,10 @@ a {
   overflow: hidden;
 }
 
+a.current[disabled="true"] {
+  color: black !important;
+}
+
 a:last-of-type {
   margin-bottom: 0;
 }

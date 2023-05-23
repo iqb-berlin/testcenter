@@ -26,7 +26,7 @@ export const unit = (params: NonFunctionProperties<UnitDef>): UnitDef => {
     params.naviButtonLabel,
     params.navigationLeaveRestrictions
   );
-  unitInstance.locked = params.locked;
+  unitInstance.lockedByTime = params.lockedByTime;
   unitInstance.playerId = params.playerId;
   return unitInstance;
 };
