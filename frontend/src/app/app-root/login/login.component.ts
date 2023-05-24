@@ -77,14 +77,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             if(!authData.flags.includes("codeRequired") && loginType == 'login'){
               if(authData.claims.test.length == 1){
                 this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
-                  if (typeof testId === 'number') {
-                    this.router.navigate(['/r']);
-                  } else {
-                    this.router.navigate(['/t', testId]);
-                  }
+                  this.router.navigate(['/t', testId]);
                 });
               }
-
             } else {
               this.router.navigate(['/r']);
             }
