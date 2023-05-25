@@ -9,11 +9,12 @@ use org\bovigo\vfs\vfsStreamWrapper;
 class TestEnvironment {
   const staticDate = 1627545600;
 
-  public static function setup(string $testMode): void {
+  public static function setup(string $testMode, ?string $testClock = null): void {
     $testMode = in_array($testMode, ['prepare', 'api', 'integration', 'prepare-integration']) ? $testMode : 'api';
+    $testClock = $testClock ?? self::staticDate;
 
     try {
-      TimeStamp::setup(null, '@' . self::staticDate);
+      TimeStamp::setup(null, '@' . (int) $testClock);
       BroadcastService::setup('', '');
       XMLSchema::setup(false);
       self::makeRandomStatic();
