@@ -36,7 +36,7 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:9091/iqb_tba_testcenter</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:9091/TEST_iqb_tba_testcenter</jdbc-url>
     </data-source>
   </component>
 </project>

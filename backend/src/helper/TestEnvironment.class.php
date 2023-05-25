@@ -63,25 +63,26 @@ class TestEnvironment {
 
   private static function createTestFiles(bool $includeSystemTestFiles): void {
     $initializer = new WorkspaceInitializer();
-    $sampleFilesCategories = ['default'];
-    if ($includeSystemTestFiles) {
-      $sampleFilesCategories[] = "system-test";
-    }
-    $initializer->importSampleFiles(1, $sampleFilesCategories);
+    $initializer->importSampleFiles(1, 'default');
     Folder::createPath(DATA_DIR . "/ws_1/UnitAttachments");
     $initializer->createSampleScanImage("UnitAttachments/h5ki-bd-va4dg-jc2to2mp_6tga4teiw.png", 1);
+    if ($includeSystemTestFiles) {
+      $initializer->importSampleFiles(1, 'system-test');
+      $initializer->importSampleFiles(2, 'default');
+    }
   }
 
   private static function createTestData(): void {
     $initDAO = new InitDAO();
 
     $initDAO->createWorkspace('sample_workspace');
+    $initDAO->createWorkspace('second_workspace');
 
     $adminId = $initDAO->createAdmin('super', 'user123');
-    $initDAO->addWorkspacesToAdmin($adminId, [1]);
+    $initDAO->addWorkspacesToAdmin($adminId, [1, 2]);
 
-    $workspace = new Workspace(1);
-    $workspace->storeAllFiles();
+    (new Workspace(1))->storeAllFiles();
+    (new Workspace(2))->storeAllFiles();
 
     $initDAO->createSampleLoginsReviewsLogs();
     $initDAO->createSampleExpiredSessions();
