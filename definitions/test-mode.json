@@ -22,7 +22,7 @@
       "forceTimeRestrictions": false,
       "forceNaviRestrictions": false,
       "presetCode": true,
-      "showTimeLeft": true,
+      "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false
     }
@@ -36,7 +36,7 @@
       "forceTimeRestrictions": false,
       "forceNaviRestrictions": false,
       "presetCode": true,
-      "showTimeLeft": true,
+      "showTimeLeft": false,
       "showUnitMenu": false,
       "receiveRemoteCommands": false
     }

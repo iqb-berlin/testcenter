@@ -30,7 +30,7 @@ export class TestModeData {
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
       presetCode: true,
-      showTimeLeft: true,
+      showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false
     },
@@ -41,7 +41,7 @@ export class TestModeData {
       forceTimeRestrictions: false,
       forceNaviRestrictions: false,
       presetCode: true,
-      showTimeLeft: true,
+      showTimeLeft: false,
       showUnitMenu: false,
       receiveRemoteCommands: false
     },
