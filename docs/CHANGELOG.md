@@ -9,6 +9,10 @@ layout: default
 * Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
   Gruppen-Monitor. Weitere Funktionen sind geplant. 
 
+### Sicherheit
+* Content-Security-Policy hinzugefügt.
+* Unischere Abhängihkeiten im Broadcasting Service entfernt
+
 ## 14.6.0
 ### Änderungen
 * Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
