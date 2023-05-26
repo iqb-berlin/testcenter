@@ -96,7 +96,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
         this.iFrameItemplayer.setAttribute('class', 'unitHost');
         this.iFrameHostElement.appendChild(this.iFrameItemplayer);
         this.iFrameItemplayer.setAttribute('srcdoc', this.ds.unitAndPlayerContainer.player);
