@@ -58,6 +58,9 @@ class XMLFileTesttakers extends XMLFile {
 
     foreach ($workspaceCache->getGlobalIds() as $workspaceId => $sources) {
       foreach ($sources as $source => $globalIdsByType) {
+        if ($source == '/name/') {
+          continue;
+        }
         if (($source == $this->getName()) and ($workspaceId == $workspaceCache->getId())) {
           continue;
         }
@@ -67,22 +70,31 @@ class XMLFileTesttakers extends XMLFile {
           array_intersect($loginList, array_values($globalIdsByType['login'])),
           $source,
           $workspaceCache->getId(),
-          $workspaceId
+          $workspaceId,
+          $sources['/name/']
         );
         $this->reportDuplicates(
           'group',
           array_intersect($groupList, array_values($globalIdsByType['group'])),
           $source,
           $workspaceCache->getId(),
-          $workspaceId
+          $workspaceId,
+          $sources['/name/']
         );
       }
     }
   }
 
-  private function reportDuplicates(string $type, array $duplicates, string $otherFileName, int $thisWsId, int $otherWsId) {
+  private function reportDuplicates(
+    string $type,
+    array $duplicates,
+    string $otherFileName,
+    int $thisWsId,
+    int $otherWsId,
+    string $workspaceName
+  ): void {
     foreach ($duplicates as $duplicate) {
-      $location = ($thisWsId !== $otherWsId) ? "on workspace $otherWsId " : '';
+      $location = ($thisWsId !== $otherWsId) ? "on workspace `$workspaceName` " : '';
       $location .= "in file `$otherFileName`";
       $this->report('error', "Duplicate $type: `$duplicate` - also $location");
     }
