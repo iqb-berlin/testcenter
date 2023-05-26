@@ -73,6 +73,8 @@ class WorkspaceTest extends TestCase {
     require_once "src/data-collection/FileData.class.php";
     require_once "src/data-collection/FileRelation.class.php";
     require_once "src/data-collection/FileRelationshipType.class.php";
+    require_once "src/data-collection/ExpirationState.class.php";
+    require_once "src/data-collection/ExpirationStateType.enum.php";
     require_once "src/files/File.class.php";
     require_once "src/files/ResourceFile.class.php";
     require_once "src/files/XMLFile.class.php";

@@ -51,11 +51,10 @@ class SessionController extends Controller {
     if (!$loginSession->getLogin()->isCodeRequired()) {
       $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
+      $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
 
-      if ($loginSession->getLogin()->getMode() == 'monitor-group') {
-        self::registerGroup($loginSession);
-      }
+      self::registerDependantSessions($loginSession);
 
     } else {
       $accessSet = AccessSet::createFromLoginSession($loginSession);
@@ -78,15 +77,11 @@ class SessionController extends Controller {
       return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
     }
 
-  private static function registerGroup(LoginSession $login): void {
-    if (!$login->getLogin()->getMode() == 'monitor-group') {
-      return;
-    }
+  private static function registerDependantSessions(LoginSession $login): void {
+    $members = self::sessionDAO()->getDependantSessions($login);
 
     $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
     $bookletFiles = [];
-
-    $members = self::sessionDAO()->getLoginsByGroup($login->getLogin()->getGroupName(), $login->getLogin()->getWorkspaceId());
 
     foreach ($members as $member) {
       /* @var $member LoginSession */
@@ -144,7 +139,8 @@ class SessionController extends Controller {
     if ($authToken->getType() == "person") {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
+      $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
       return $response->withJson($accessSet);
     }
 

@@ -4,9 +4,15 @@ layout: default
 
 # Changelog & Upgrade Information
 
-##[next]
-### Verbesserungen
-* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem Request durchgeführt. Dies führt auch dazu, dass man nun eine Unit xml und die dazugehörige voud Datei gleichzeitig hochladen kann. Dadurch wurde allerdings auch die Möglichkeit entfernt den Upload einzelner Dateien abzubrechen.
+## [next]
+### Bugfixes
+* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem Request durchgeführt. Dies führt auch dazu, dass man nun z. B. eine Unit-xml und die dazugehörige 
+  voud-Datei gleichzeitig hochladen kann.
+
+### Neue Features
+* Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
+  Gruppen-Monitor. Weitere Funktionen sind geplant. 
+
 
 ## 14.6.0
 ### Änderungen

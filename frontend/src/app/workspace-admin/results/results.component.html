@@ -49,11 +49,11 @@
                       [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
         </mat-checkbox>
       </mat-header-cell>
-      <mat-cell *matCellDef="let row" [style.max-width.px]="70">
+      <mat-cell *matCellDef="let row; let i = index" [style.max-width.px]="70">
         <mat-checkbox (click)="$event.stopPropagation()"
                       (change)="$event ? tableselectionCheckbox.toggle(row) : null"
                       [checked]="tableselectionCheckbox.isSelected(row)"
-                      [attr.data-cy]="'results-checkbox'">
+                      [attr.data-cy]="'results-checkbox' + i">
         </mat-checkbox>
       </mat-cell>
     </ng-container>

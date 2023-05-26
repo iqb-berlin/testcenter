@@ -18,7 +18,9 @@ export class CustomtextPipe implements PipeTransform {
           replacements
             .forEach(replacement => {
               // eslint-disable-next-line no-param-reassign
-              customText = customText.replace('%s', replacement);
+              customText = customText
+                .replace('%s', replacement)
+                .replace('%date', new Date(replacement).toLocaleString());
             });
           return customText;
         })

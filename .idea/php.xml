@@ -61,7 +61,8 @@
   </component>
   <component name="PhpProjectServersManager">
     <servers>
-      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" use_path_mappings="true">
+      <server host="localhost" id="adca86ab-feb0-4b8f-ab37-4238e82d075b" name="localhost" />
+      <server host="localhost" id="5a604f74-c1b8-436a-a682-5df39490488c" name="docker" port="81" use_path_mappings="true">
         <path_mappings>
           <mapping local-root="$PROJECT_DIR$/backend" remote-root="/var/www/backend" />
         </path_mappings>
@@ -134,7 +135,6 @@
       <extension name="pdo_ibm" enabled="false" />
       <extension name="pspell" enabled="false" />
       <extension name="pthreads" enabled="false" />
-      <extension name="radius" enabled="false" />
       <extension name="rar" enabled="false" />
       <extension name="recode" enabled="false" />
       <extension name="redis" enabled="false" />

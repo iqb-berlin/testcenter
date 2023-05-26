@@ -102,6 +102,8 @@ replacements:
 |gm_selection_info|Information gewählte Tests. Text-Substitutionen: (Alle/''), Anzahl, (''/s), Anzahl, (''/e)|%s %s Test%s mit %s Testheft%s ausgewählt.|
 |gm_selection_info_none|Information gewählte Tests: Keiner|Kein Test gewählt.|
 |gm_selection_text|Der Text im Button bei Auswahl der Testleitungskonsole|Überwachung starten|
+|gm_selection_text_expired|Der Text im Button bei Auswahl der Testleitungskonsole, wenn die Gruppe abgelaufen ist. $date wird gegen das Ablaufdatum ersetzt.|Gruppe abgelaufen seit %date.|
+|gm_selection_text_scheduled|Der Text im Button bei Auswahl der Testleitungskonsole, wenn die noch nicht freigegeben abgelaufen ist. $date wird gegen das Freigabedatum ersetzt.|Gruppe erst freigegeben ab %date.|
 |gm_settings_tooltip|Control: Ansicht|Ansicht|
 |gm_timeleft_tooltip|Tooltip: verbleibende Zeit|Verbleibende Zeit|
 |gm_view_full|Ansicht: Vollständig|Vollständig|

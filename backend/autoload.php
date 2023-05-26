@@ -14,7 +14,7 @@ spl_autoload_register(function($className) {
     ];
 
     foreach ($includeDirs as $includeDir) {
-        foreach (glob("$includeDir/{,*/,*/*/,*/*/*/}$className{.class.php,.php}", GLOB_BRACE) as $classFile) {
+        foreach (glob("$includeDir/{,*/,*/*/,*/*/*/}$className{.class.php,.php,.enum.php}", GLOB_BRACE) as $classFile) {
             require_once $classFile;
             return;
         }

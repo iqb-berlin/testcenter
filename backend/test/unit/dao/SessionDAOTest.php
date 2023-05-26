@@ -37,6 +37,8 @@ class SessionDAOTest extends TestCase {
     require_once "src/dao/DAO.class.php";
     require_once "src/dao/SessionDAO.class.php";
     require_once "test/unit/TestDB.class.php";
+    require_once "src/data-collection/ExpirationState.class.php";
+    require_once "src/data-collection/ExpirationStateType.enum.php";
   }
 
   function setUp(): void {
@@ -415,14 +417,20 @@ class SessionDAOTest extends TestCase {
     $this->dbc->getPersonSessionByToken('expired-person-token');
   }
 
-  function test_getLoginsByGroup() {
-    $result = $this->dbc->getLoginsByGroup('sample_group', 1);
+  function test_getLoginSessions_group() {
+    $result = $this->dbc->getLoginSessions([
+      'logins.group_name' => 'sample_group',
+      'logins.workspace_id' => 1
+    ]);
 
     $this->assertEquals($this->testDataLoginSessions, $result);
   }
 
-  function test_getLoginsByGroup_notExistingGroup() {
-    $result = $this->dbc->getLoginsByGroup('notExistingGroup', 1);
+  function test_getLoginSessions_notExistingGroup() {
+    $result = $this->dbc->getLoginSessions([
+      'logins.group_name' => 'notExistingGroup',
+      'logins.workspace_id' => 1
+    ]);
 
     $this->assertEquals([], $result);
   }

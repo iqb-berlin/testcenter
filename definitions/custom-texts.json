@@ -286,5 +286,13 @@
   "gm_selection_text": {
     "label" : "Der Text im Button bei Auswahl der Testleitungskonsole",
     "defaultvalue" : "Überwachung starten"
+  },
+  "gm_selection_text_expired": {
+    "label": "Der Text im Button bei Auswahl der Testleitungskonsole, wenn die Gruppe abgelaufen ist. $date wird gegen das Ablaufdatum ersetzt.",
+    "defaultvalue": "Gruppe abgelaufen seit %date."
+  },
+  "gm_selection_text_scheduled": {
+    "label": "Der Text im Button bei Auswahl der Testleitungskonsole, wenn die noch nicht freigegeben abgelaufen ist. $date wird gegen das Freigabedatum ersetzt.",
+    "defaultvalue": "Gruppe erst freigegeben ab %date."
   }
 }

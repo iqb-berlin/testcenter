@@ -10,6 +10,9 @@ require_once "src/data-collection/DataCollectionTypeSafe.class.php";
 require_once "src/data-collection/AccessObject.class.php";
 require_once "src/data-collection/TestData.class.php";
 require_once "src/data-collection/WorkspaceData.class.php";
+require_once "src/data-collection/Group.class.php";
+require_once "src/data-collection/ExpirationState.class.php";
+require_once "src/data-collection/ExpirationStateType.enum.php";
 require_once "src/controller/Controller.class.php";
 require_once "src/controller/SessionController.class.php";
 
@@ -97,7 +100,7 @@ final class SessionControllerTest extends TestCase {
     SessionControllerInjector::injectAdminDAO($daoStub);
   }
 
-  private function addMockFunctions(MockObject $mockObject, array $functionsAndResults, array $expectFunctionCalls = []) {
+  private function addMockFunctions(MockObject $mockObject, array $functionsAndResults, array $expectFunctionCalls = []): void {
     foreach ($functionsAndResults as $function => $result) {
       $method = $mockObject
         ->expects(isset($expectFunctionCalls[$function]) ? $this->exactly($expectFunctionCalls[$function]) : $this->any())
@@ -267,9 +270,12 @@ final class SessionControllerTest extends TestCase {
             new Person(-1, 'new_token', $code, $code)
           );
         },
-        'getLoginsByGroup' => [
+        'getDependantSessions' => [
           new LoginSession(2, '', $loginTesteeA),
           new LoginSession(3, '', $loginTesteeB)
+        ],
+        'getGroupMonitors' => [
+          new Group('sample_group', 'Sample Group')
         ],
         'getTestsOfPerson' => function(PersonSession $personSession): array {
           return array_map(
@@ -283,7 +289,8 @@ final class SessionControllerTest extends TestCase {
       [
         'getOrCreateLoginSession' => 1,
         'getOrCreatePersonSession' => 6, // 4 persons of loginTesteeA + 1 person of loginTesteeB + 1 monitor
-        'getLoginsByGroup' => 1, // 1
+        'getGroupMonitors' => 1,
+        'getDependantSessions' => 1
       ]
     );
 
@@ -418,6 +425,9 @@ final class SessionControllerTest extends TestCase {
       'getPersonSessionByToken' => $personSession,
       'getTestsOfPerson' => [
         new TestData('THE_BOOKLET', 'Label of THE_BOOKLET', 'Description', true, false)
+      ],
+      'getGroupMonitors' => [
+        new Group('sample_group', 'Sample Group')
       ]
     ]);
 

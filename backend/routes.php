@@ -25,6 +25,8 @@ $app->group('/monitor', function(RouteCollectorProxy $group) {
 
   $group->get('/test-sessions', [MonitorController::class, 'getTestSessions']);
 
+  $group->get('/group/{group_name}/test-sessions', [MonitorController::class, 'getTestSessions']);
+
   $group->put('/command', [MonitorController::class, 'putCommand']);
 
   $group->post('/group/{group_name}/tests/unlock', [MonitorController::class, 'postUnlock']);
