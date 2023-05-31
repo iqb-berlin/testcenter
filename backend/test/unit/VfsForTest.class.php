@@ -16,6 +16,7 @@ class VfsForTest {
 
     const globalIds = [
         '1' => [
+            '/name/' => 'sample_workspace',
             "SAMPLE_TESTTAKERS.XML" => [
                 "login" => [
                     "test",
@@ -60,6 +61,7 @@ class VfsForTest {
             ]
         ],
         '2' => [
+            '/name/' => 'other_sample_workspace',
             "testtakers-duplicate-login-name-cross-ws.xml" => [
                 "group" => ["another_group"],
                 "login" => ["another_login"]
