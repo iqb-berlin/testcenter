@@ -59,7 +59,6 @@
 
 <td class="test" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
   <ng-container *ngIf="!testSession.booklet['error']; else: noBookletReason">
-
     <div
       *ngIf="testSession.booklet.units as testlet"
       class="units-container"
@@ -103,20 +102,10 @@
   </ng-template>
 </td>
 
-
 <ng-template #testletFull let-testlet>
-
-  <span
-    *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
-    class="unit restriction"
-    matTooltip="{{'Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}: {{codeToEnter.code.toUpperCase()}}"
-    matTooltipPosition="above"
-  >
-    <mat-icon>{{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}</mat-icon>
-  </span>
+  <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testlet }"></ng-container>
 
   <ng-container *ngFor="let testletOrUnit of testlet.children; trackBy: trackUnits" [ngSwitch]="getTestletType(testletOrUnit)">
-
     <span
       *ngSwitchCase="'unit'"
       [class]="{
@@ -162,18 +151,14 @@
     >·
     </span>
 
-    <span *ngSwitchCase="'testlet'" class="testlet" matTooltip="{{testletOrUnit.label}}">
+    <span
+      *ngSwitchCase="'testlet'"
+      class="testlet"
+      matTooltip="{{testletOrUnit.label}}"
+      [class]="{ 'timeup' : testletOrUnit.restrictions.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession.timeLeft[testletOrUnit.id] === 0 }"
+    >
 
-      <span
-        *ngIf="testletOrUnit.restrictions && testletOrUnit.restrictions.codeToEnter as codeToEnter"
-        class="unit restriction"
-        matTooltip="{{'Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}: {{codeToEnter.code.toUpperCase()}}"
-        matTooltipPosition="above"
-      >
-        <mat-icon>
-          {{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testletOrUnit.id) > -1) ? 'lock_open' : 'lock'}}
-        </mat-icon>
-      </span>
+      <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testletOrUnit }"></ng-container>
 
       <ng-container *ngIf="testSession.current; else: unFeaturedTestlet">
         <span
@@ -230,6 +215,44 @@
       <span class="unit aggregated">{{testlet.descendantCount}}</span>
     </span>
   </ng-template>
+</ng-template>
+
+<ng-template #restrictions let-testlet="testlet">
+  <span
+    *ngIf="testlet.restrictions && testlet.restrictions.codeToEnter as codeToEnter"
+    class="unit restriction"
+    matTooltip="{{'Freigabewort' | customtext:'booklet_codeToEnterTitle' | async}}: {{codeToEnter.code.toUpperCase()}}"
+    matTooltipPosition="above"
+  >
+    <mat-icon>
+      {{testSession.clearedCodes && (testSession.clearedCodes.indexOf(testlet.id) > -1) ? 'lock_open' : 'lock'}}
+    </mat-icon>
+  </span>
+
+  <span
+    *ngIf="testlet.restrictions.timeMax as timeMax"
+    class="unit restriction"
+  >
+    <ng-container *ngIf="(testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testlet.id)); else: timerNotStarted">
+      <mat-icon
+        *ngIf="testSession.timeLeft[testlet.id] === 0"
+        [matTooltip]="'Zeit abgelaufen' | customtext:'gm_timeup_tooltip' | async"
+        matTooltipPosition="above"
+      >timer_off</mat-icon>
+      <mat-icon
+        *ngIf="testSession.timeLeft[testlet.id] > 0"
+        [matTooltip]="'Verbleibende Zeit: %s/%s' | customtext:'gm_timeleft_tooltip':testSession.timeLeft[testlet.id]:timeMax.minutes | async"
+        matTooltipPosition="above"
+        color="accent"
+      >timer</mat-icon>
+    </ng-container>
+    <ng-template #timerNotStarted>
+      <mat-icon
+        [matTooltip]="'Zeitgesteuerter Block: %s Minute(n)' | customtext:'gm_timemax_tooltip':timeMax.minutes | async"
+        matTooltipPosition="above"
+      >timer</mat-icon>
+    </ng-template>
+  </span>
 </ng-template>
 
 <td class="current-unit" (click)="deselect($event)" (contextmenu)="deselectForce($event)" *ngIf="displayOptions.unitColumn === 'show'">

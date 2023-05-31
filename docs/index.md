@@ -25,10 +25,10 @@ The IQB-Testcenter is a web application for technology based accessed and survey
 * [Changelog](https://pages.cms.hu-berlin.de/iqb/testcenter/CHANGELOG.html)
 
 #### Additional docs and settings
-* [Overview about super-states of running sessions and their icons](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/test-session-super-states.html)
+* [Overview about super-states of running sessions and their icons](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-session-super-states.html)
 * [List of modes of test-execution](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/test-mode.html)
 * [Parameters of booklet-configuration](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/booklet-config.html)
-* [Customizable Labels in the UI](https://pages.cms.hu-berlin.de/iqb/testcenter/dist/custom-texts.html)
+* [Customizable Labels in the UI](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/custom-texts.html)
 
 ### Install & Run
 * **[Installation and Update](https://pages.cms.hu-berlin.de/iqb/testcenter/pages/installation-prod.html)**
