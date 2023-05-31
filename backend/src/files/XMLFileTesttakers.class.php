@@ -71,7 +71,7 @@ class XMLFileTesttakers extends XMLFile {
           $source,
           $workspaceCache->getId(),
           $workspaceId,
-          $sources['/name/']
+          $sources['/name/'] ?? 'unknown'
         );
         $this->reportDuplicates(
           'group',
@@ -79,7 +79,7 @@ class XMLFileTesttakers extends XMLFile {
           $source,
           $workspaceCache->getId(),
           $workspaceId,
-          $sources['/name/']
+          $sources['/name/'] ?? 'unknown'
         );
       }
     }
