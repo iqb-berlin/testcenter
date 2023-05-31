@@ -12,6 +12,11 @@ layout: default
 ### Verbesserungen
 * Rückmeldung beim Hochladen von Testtakers-Dateien über bereits vorhandene Logins oder Gruppen verbessert. 
 
+### Sicherheit
+* Content-Security-Policy hinzugefügt.
+* Unischere Abhängihkeiten im Broadcasting Service entfernt
+
+
 ## 14.6.0
 ### Änderungen
 * Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
