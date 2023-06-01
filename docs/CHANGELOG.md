@@ -4,10 +4,18 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 14.7.0
 ### Neue Features
 * Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
   Gruppen-Monitor. Weitere Funktionen sind geplant. 
+
+### Verbesserungen
+* Rückmeldung beim Hochladen von Testtakers-Dateien über bereits vorhandene Logins oder Gruppen verbessert. 
+
+### Sicherheit
+* Content-Security-Policy hinzugefügt.
+* Unischere Abhängihkeiten im Broadcasting Service entfernt
+
 
 ## 14.6.0
 ### Änderungen

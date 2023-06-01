@@ -40,7 +40,8 @@ class WorkspaceDAOTest extends TestCase {
         'testdata.sql' => [
           'login' => ['future_user', 'monitor', 'sample_user', 'test', 'test-expired'],
           'group' => ['sample_group']
-        ]
+        ],
+        '/name/' => 'example_workspace'
       ]
     ];
     $result = $this->dbc->getGlobalIds();

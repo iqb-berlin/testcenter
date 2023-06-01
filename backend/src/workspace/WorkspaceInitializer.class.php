@@ -46,11 +46,9 @@ class WorkspaceInitializer {
     }
   }
 
-  public function importSampleFiles(int $workspaceId, array $sampleDataCategories = ['default']): void {
-    foreach ($sampleDataCategories as $sampleDataCategory) {
-      foreach (self::sampleDataPaths[$sampleDataCategory] as $source => $target) {
-        $this->importSampleFile($workspaceId, $source, $target);
-      }
+  public function importSampleFiles(int $workspaceId, string $sampleFileSet = 'default'): void {
+    foreach (self::sampleDataPaths[$sampleFileSet] as $source => $target) {
+      $this->importSampleFile($workspaceId, $source, $target);
     }
   }
 

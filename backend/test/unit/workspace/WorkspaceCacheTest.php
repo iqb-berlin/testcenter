@@ -146,8 +146,8 @@ class WorkspaceCacheTest extends TestCase {
       ],
       'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
         'error' => [
-          "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`",
-          "Duplicate group: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"
+          "Duplicate login: `another_login` - also on workspace `other_sample_workspace` in file `testtakers-duplicate-login-name-cross-ws.xml`",
+          "Duplicate group: `another_group` - also on workspace `other_sample_workspace` in file `testtakers-duplicate-login-name-cross-ws.xml`"
         ],
         'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],

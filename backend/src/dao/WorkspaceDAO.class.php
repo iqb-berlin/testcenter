@@ -28,17 +28,20 @@ class WorkspaceDAO extends DAO {
   }
 
   public function getGlobalIds(): array {
-    $globalIds = $this->_(
-      " select
-                id,
-                source,
-                workspace_id,
-                type
-            from (
-                     select name as id, source, workspace_id, 'login' as type from logins
-                     union
-                     select group_name as id, source, workspace_id, 'group' as type from logins group by group_name, source, workspace_id
-            ) as globalIds",
+    $globalIds = $this->_("
+      select
+        globalIds.id as id,
+        source,
+        workspace_id,
+        workspaces.name as workspace_name,
+        globalIds.type as type
+      from (
+        select name as id, source, workspace_id, 'login' as type from logins
+        union
+        select group_name as id, source, workspace_id, 'group' as type from logins group by group_name, source, workspace_id
+      ) as globalIds
+      left join workspaces on workspace_id
+      ",
       [],
       true
     );
@@ -56,6 +59,7 @@ class WorkspaceDAO extends DAO {
           $agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']] = [];
         }
         $agg[$globalId['workspace_id']][$globalId['source']][$globalId['type']][] = $globalId['id'];
+        $agg[$globalId['workspace_id']]['/name/'] = $globalId['workspace_name'];
         return $agg;
       },
       []

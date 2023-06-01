@@ -62,7 +62,6 @@ services:
       - "traefik.http.middlewares.testcenter-backend-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
       - "traefik.http.middlewares.security-headers.headers.customFrameOptionsValue=SAMEORIGIN"
-      - "traefik.http.middlewares.security-headers.headers.contentSecurityPolicy=frame-ancestors 'self'"
       - "traefik.http.routers.testcenter-backend.middlewares=testcenter-backend-stripprefix, security-headers"
     volumes:
       - testcenter_backend_vo_data:/var/www/data
@@ -78,7 +77,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-frontend.rule=HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)"
-      - "traefik.http.routers.testcenter-frontend.middlewares=security-headers"
     networks:
       testcenter:
 
