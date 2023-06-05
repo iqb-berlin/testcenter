@@ -23,6 +23,8 @@ import { BackendService } from './backend.service';
 import { BookletService } from './booklet/booklet.service';
 import { TestSessionComponent } from './test-session/test-session.component';
 import { TestSessionManager } from './test-session-manager/test-session-manager.service';
+import { GROUP_MONITOR_CONFIG } from './group-monitor.config';
+import { GroupMonitorConfig } from './group-monitor.interfaces';
 
 @NgModule({
   declarations: [
@@ -52,7 +54,13 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
   providers: [
     BackendService,
     BookletService,
-    TestSessionManager
+    TestSessionManager,
+    {
+      provide: GROUP_MONITOR_CONFIG,
+      useValue: <GroupMonitorConfig>{
+        checkForIdleInterval: 1000 * 60 * 3
+      }
+    }
   ]
 })
 export class GroupMonitorModule {
