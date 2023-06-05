@@ -126,7 +126,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
       dialogRef.afterClosed()
         .subscribe(result => {
-          if (result !== false) {
+          if (result === false) {
             return;
           }
           this.backendService.deleteResponses(this.workspaceDataService.workspaceID, selectedGroups)
