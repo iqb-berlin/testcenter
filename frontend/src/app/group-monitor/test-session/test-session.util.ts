@@ -24,7 +24,6 @@ export class TestSessionUtil {
 
   static analyzeTestSession(session: TestSessionData, booklet: Booklet | BookletError): TestSession {
     const current = isBooklet(booklet) ? TestSessionUtil.getCurrent(booklet.units, session.unitName) : null;
-    console.log(session);
     return {
       data: session,
       state: TestSessionUtil.getSuperState(session),
@@ -69,7 +68,7 @@ export class TestSessionUtil {
     if (this.hasState(state, 'FOCUS', 'HAS_NOT')) {
       return 'focus_lost';
     }
-    if (TestSessionUtil.idleSinceMinutes(session) > 0.5) {
+    if (TestSessionUtil.idleSinceMinutes(session) > 5) {
       return 'idle';
     }
     if (this.hasState(state, 'CONNECTION', 'WEBSOCKET')) {
@@ -82,7 +81,6 @@ export class TestSessionUtil {
   }
 
   private static idleSinceMinutes(testSession: TestSessionData): number {
-    console.log({ idle: (Date.now() - testSession.timestamp * 1000) / (1000 * 60) });
     return (Date.now() - testSession.timestamp * 1000) / (1000 * 60);
   }
 
