@@ -11,7 +11,6 @@ RUN npm install
 
 COPY frontend/angular.json .
 COPY frontend/tsconfig.json .
-COPY frontend/.browserslistrc .
 COPY frontend/src /app/src
 COPY common /common
 COPY definitions /definitions
