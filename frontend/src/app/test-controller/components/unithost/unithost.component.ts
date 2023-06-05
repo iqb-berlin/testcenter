@@ -21,7 +21,7 @@ import { MainDataService } from '../../../shared/shared.module';
 import {
   VeronaNavigationDeniedReason, VeronaNavigationTarget, VeronaPlayerConfig, VeronaProgress
 } from '../../interfaces/verona.interfaces';
-import { Testlet, UnitControllerData } from '../../classes/test-controller.classes';
+import { Testlet, UnitWithContext } from '../../classes/test-controller.classes';
 import { AppError } from '../../../app.interfaces';
 
 @Component({
@@ -45,7 +45,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
   unitsToLoadLabels: string[];
 
-  currentUnit: UnitControllerData;
+  currentUnit: UnitWithContext;
   currentPageIndex: number;
   unitNavigationTarget = UnitNavigationTarget;
 
@@ -286,7 +286,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.currentUnit.unitDef.locked) {
+    if (this.currentUnit.unitDef.lockedByTime) {
       return;
     }
 

@@ -8,6 +8,8 @@ services:
       - --log_error_verbosity=1
     volumes:
       - ../scripts/database/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+    ports:
+      - "9091:3306"
 
   testcenter-backend:
     image: iqbberlin/testcenter-backend:current-prod
@@ -16,7 +18,21 @@ services:
       dockerfile: docker/backend.Dockerfile
       target: prod
     volumes:
-      - ./data:/var/www/data
+      - ../backend/.htaccess:/var/www/backend/.htaccess
+      - ../backend/config/vhost.conf:/etc/apache2/sites-available/vhost.conf
+      - ../backend/autoload.php:/var/www/backend/autoload.php
+      - ../backend/index.php:/var/www/backend/index.php
+      - ../backend/initialize.php:/var/www/backend/initialize.php
+      - ../backend/routes.php:/var/www/backend/routes.php
+      - ../backend/src:/var/www/backend/src
+      - ../backend/test:/var/www/backend/test
+      - ../data:/var/www/data
+      - ../scripts/database:/var/www/scripts/database
+      - ../definitions:/var/www/definitions
+      - ../docs/dist:/docs/dist
+      - ../package.json:/var/www/package.json
+      - ../sampledata:/var/www/sampledata
+      - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
 
   testcenter-frontend:
     image: iqbberlin/testcenter-frontend:current-prod
@@ -24,6 +40,8 @@ services:
       context: ..
       dockerfile: docker/frontend.Dockerfile
       target: prod
+    volumes:
+      - ../frontend/config/nginx.conf:/etc/nginx/conf.d/default.conf
 
   testcenter-broadcasting-service:
     image: iqbberlin/testcenter-broadcasting-service:current-prod
@@ -31,3 +49,6 @@ services:
       context: ..
       dockerfile: docker/broadcasting-service.Dockerfile
       target: prod
+    volumes:
+      - ../common:/common
+      - ../broadcasting-service/src:/app/src

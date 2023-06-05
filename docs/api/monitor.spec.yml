@@ -11,7 +11,7 @@ paths:
       deprecated: true
       summary: get a group
       description: "Retrieves Information about a (testtakers-)group. It has to be in the same workspace as the
-       requesting user, who has to have in mode `monitor-group`."
+       requesting user, who has to have in mode `monitor-group` or `monitor-study`."
       tags:
         - run monitor
       parameters:
@@ -50,7 +50,7 @@ paths:
   /monitor/test-sessions:
     get:
       summary: get TestSessions of a group
-      description: "Retrieves all running test sessions from group of a group-monitor.
+      description: "Retrieves all running test sessions all available groups of a monitor.
         Returns also an URL to a websocket to subscribe to this information if available.
         Sessions for Persons of this group which are not created right now get created."
       tags:
@@ -58,7 +58,7 @@ paths:
       parameters:
         - in: header
           name: AuthToken
-          description: auth-token for group-monitor
+          description: auth-token for group-monitor or study-monitor
           example: "g:user000000000.0000000000"
 
       responses:
@@ -100,8 +100,79 @@ paths:
                 testState: []
                 unitState: []
                 timestamp: 1596455898
+        "401":
+          description: Not authenticated
+        "410":
+          description: Session Expired
+        "403":
+          description: Forbidden
+        "500":
+          description: Server Error
 
+  /monitor/group/{group_name}/test-sessions:
+    get:
+      summary: get TestSessions of a group
+      description: "Retrieves all running test sessions from specific group of a monitor.
+        Returns also an URL to a websocket to subscribe to this information if available.
+        Sessions for Persons of this group which are not created right now get created."
+      tags:
+        - run monitor
+      parameters:
+        - in: header
+          name: AuthToken
+          description: auth-token for group-monitor or study-monitor
+          examples:
+            group-monitor:
+              value: "g:user000000000.0000000000"
+            study-monitor:
+              value: "s:user000000000.0000000000"
+        - in: path
+          name: group_name
+          description: name (id) of a group
+          example: "sample_group"
+          required: true
+          schema:
+            type: string
 
+      responses:
+        "200":
+          description: return group data
+          content:
+            application/json:
+              example:
+                - personId: 1
+                  groupName: sample_group
+                  personLabel: test/xxx
+                  groupLabel: Sample group
+                  mode: run-hot-return
+                  testId: 1
+                  testState:
+                    "CURRENT_UNIT_ID": "1"
+                  bookletName: BOOKLET.SAMPLE-1
+                  unitName: UNIT.SAMPLE
+                  unitState:
+                    PRESENTATIONCOMPLETE: "yes"
+                  timestamp: 1596455898
+                - personId: 1
+                  groupName: "sample_group"
+                  personLabel: "test/xxx"
+                  groupLabel: "Sample group"
+                  mode: "run-hot-return"
+                  testId: 2,
+                  testState:
+                    status: "locked"
+                  bookletName: "BOOKLET.SAMPLE-2"
+                  unitState: []
+                  timestamp: 1606736826
+                - personId: 3
+                  groupName: sample_group
+                  personLabel: test-group-monitor
+                  groupLabel: Sample group
+                  mode: monitor-group
+                  testId: -1
+                  testState: []
+                  unitState: []
+                  timestamp: 1596455898
         "401":
           description: Not authenticated
         "410":

@@ -113,6 +113,10 @@
     },
     "defaultvalue": "OFF"
   },
+  "unit_time_left_warnings": {
+    "label": "Konfiguriert, bei wie vielen verbleibenden Minuten im zeitbeschränkten Block eine Warnung angezeigt werden soll. Beliebige Werte sind möglich. Der Wert \"10,5,1\" würde zum Beispiel bedeuten, dass bei zehn, fünf und bei einer verbleibenden Minute jeweils eine Warnung angezeigt wird. Wird der Parameter angegeben, aber leer gelassen oder enthält keine Zahlen, so werden keine Warnungen dieser Art angezeigt.",
+    "defaultvalue": "5,1"
+  },
   "show_end_button_in_player": {
     "label": "Manche Player können einen Test-Beenden anzeigen, wenn es es ihnen vom Testcenter erlaubt wird. Diese Einstellung legt fest, wann das der Fall ist.",
     "options": {

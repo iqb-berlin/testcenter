@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../shared/shared.module';
 import { WorkspaceDataService } from './workspacedata.service';
@@ -14,10 +14,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     public mainDataService: MainDataService,
-    public workspaceDataService: WorkspaceDataService,
-    private router: Router
+    public workspaceDataService: WorkspaceDataService
   ) {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   navLinks = [
@@ -34,6 +32,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         const workspace = this.mainDataService.getAccessObject('workspaceAdmin', params.ws);
         this.workspaceDataService.wsName = workspace.label;
         this.workspaceDataService.wsRole = workspace.flags.mode;
+        this.workspaceDataService.workspaceid$.next(params.ws);
         this.mainDataService.appSubTitle$.next(
           `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
         );

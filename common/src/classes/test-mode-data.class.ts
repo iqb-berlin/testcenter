@@ -34,6 +34,17 @@ export class TestModeData {
       showUnitMenu: false,
       receiveRemoteCommands: false
     },
+    'MONITOR-STUDY': {
+      alwaysNewSession: false,
+      canReview: false,
+      saveResponses: false,
+      forceTimeRestrictions: false,
+      forceNaviRestrictions: false,
+      presetCode: true,
+      showTimeLeft: true,
+      showUnitMenu: false,
+      receiveRemoteCommands: false
+    },
     'RUN-HOT-RETURN': {
       alwaysNewSession: false,
       canReview: false,
@@ -83,6 +94,7 @@ export class TestModeData {
   static labels = {
     'RUN-DEMO': 'Nur Ansicht (Demo)',
     'MONITOR-GROUP': 'Testgruppen-Monitor (Demo)',
+    'MONITOR-STUDY': 'Studien-Monitor (Demo)',
     'RUN-HOT-RETURN': 'Durchführung Test/Befragung',
     'RUN-HOT-RESTART': 'Durchführung Test/Befragung',
     'RUN-REVIEW': 'Prüfdurchgang ohne Speichern',

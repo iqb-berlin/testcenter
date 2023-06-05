@@ -1,2 +1,3 @@
-Header add Access-Control-Allow-Origin "*"
-Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type, content-length, responseType, options, observe, Access-Control-Allow-Headers, Authorization, X-Requested-With, Accept, authtoken"
+Header always add Access-Control-Allow-Origin *
+Header always add Access-Control-Allow-Headers *
+Header always add Access-Control-Allow-Methods *

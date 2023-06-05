@@ -16,7 +16,7 @@ try {
   require_once "autoload.php";
 
   if (isset($_SERVER['HTTP_TESTMODE'])) {
-    TestEnvironment::setup($_SERVER['HTTP_TESTMODE']);
+    TestEnvironment::setup($_SERVER['HTTP_TESTMODE'], $_SERVER['HTTP_TESTCLOCK']);
   } else { // productive
     /* @var $config SystemConfig */
     $config = SystemConfig::fromFile(ROOT_DIR . '/backend/config/system.json');

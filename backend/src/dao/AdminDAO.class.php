@@ -50,6 +50,9 @@ class AdminDAO extends DAO {
       }
     }
 
+    // obfuscate the time taken even more
+    usleep(rand(000000, 100000));
+
     // generic error message to not expose too much information to attackers
     $shortPW = preg_replace('/(^.).*(.$)/m', '$1***$2', $password);
     throw new HttpError("Invalid Password `$shortPW` or unknown user `$userName`.", 400);
@@ -303,25 +306,24 @@ class AdminDAO extends DAO {
 
     // TODO: use data class
     $data = $this->_(<<<EOT
-            select
-                login_sessions.group_name as groupname,
-                login_sessions.name as loginname,
-                person_sessions.name_suffix as code,
-                tests.name as bookletname,
-                units.name as unitname,
-                units.laststate,
-                units.id as unit_id
-            from
-                login_sessions
-                inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
-                inner join tests on person_sessions.id = tests.person_id
-                inner join units on tests.id = units.booklet_id
-            where
-                login_sessions.workspace_id = ?
-                and login_sessions.group_name in ($groupsPlaceholders)
-                and tests.id is not null
-
-            EOT,
+      select
+        login_sessions.group_name as groupname,
+        login_sessions.name as loginname,
+        person_sessions.name_suffix as code,
+        tests.name as bookletname,
+        units.name as unitname,
+        units.laststate,
+        units.id as unit_id
+      from
+        login_sessions
+          inner join person_sessions on login_sessions.id = person_sessions.login_sessions_id
+          inner join tests on person_sessions.id = tests.person_id
+          inner join units on tests.id = units.booklet_id
+      where
+        login_sessions.workspace_id = ?
+          and login_sessions.group_name in ($groupsPlaceholders)
+          and tests.id is not null
+      EOT,
       $bindParams,
       true
     );
@@ -360,7 +362,7 @@ class AdminDAO extends DAO {
     // TODO: use data class
     return $this->_("
         SELECT
-				    login_sessions.group_name as groupname,
+			login_sessions.group_name as groupname,
             login_sessions.name as loginname,
             person_sessions.name_suffix as code,
             tests.name as bookletname,
@@ -465,31 +467,38 @@ class AdminDAO extends DAO {
 
   public function getResultStats(int $workspaceId): array {
     // TODO add group label. Problem: when login is gone, label is gone
-
-    $resultStats = $this->_(
-      'select
-            group_name,
-            count(*)   as bookletsStarted,
-            min(num_units) as num_units_min,
-            max(num_units) as num_units_max,
-            sum(num_units) as num_units_total,
-            avg(num_units) as num_units_mean,
-            max(timestamp_server) as lastchange
-        from (
-                 select
-                      login_sessions.group_name,
-                      count(distinct units.id)    as num_units,
-                      max(tests.timestamp_server) as timestamp_server
-                 from tests
-                      left join person_sessions on person_sessions.id = tests.person_id
-                      inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
-                      left join units on units.booklet_id = tests.id
-                 where
-                      login_sessions.workspace_id = :workspaceId
-                      and tests.running = 1
-                 group by tests.name, person_sessions.id, login_sessions.group_name
-             ) as byGroup
-        group by group_name',
+    $resultStats = $this->_('
+      select
+        group_name,
+        count(*) as bookletsStarted,
+        min(num_units) as num_units_min,
+        max(num_units) as num_units_max,
+        sum(num_units) as num_units_total,
+        avg(num_units) as num_units_mean,
+        max(timestamp_server) as lastchange
+      from (
+        select
+          login_sessions.group_name,
+          count(distinct units.id) as num_units,
+          max(tests.timestamp_server) as timestamp_server
+        from
+          tests
+          left join person_sessions on person_sessions.id = tests.person_id
+          inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
+          left join units on units.booklet_id = tests.id
+          left join unit_reviews on units.id = unit_reviews.unit_id
+          left join test_reviews on tests.id = test_reviews.booklet_id
+        where
+          login_sessions.workspace_id = :workspaceId
+          and (
+            tests.laststate is not null
+              or unit_reviews.entry is not null
+              or test_reviews.entry is not null
+          )
+          and tests.running = 1
+          group by tests.name, person_sessions.id, login_sessions.group_name
+      ) as byGroup
+      group by group_name',
       [
         ':workspaceId' => $workspaceId
       ],
@@ -636,4 +645,8 @@ class AdminDAO extends DAO {
     }
     return $attachmentData;
   }
+
+    public function deleteAdminSession(AuthToken $authToken): void {
+      $this->_('delete from admin_sessions where token =:token',[':token' => $authToken->getToken()]);
+    }
 }

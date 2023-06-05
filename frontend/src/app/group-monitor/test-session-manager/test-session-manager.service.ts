@@ -98,7 +98,7 @@ export class TestSessionManager {
     this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._commandResponses$ = new Subject<CommandResponse>();
 
-    this.monitor$ = this.bs.observeSessionsMonitor()
+    this.monitor$ = this.bs.observeSessionsMonitor(groupName)
       .pipe(
         switchMap(sessions => zip(...sessions
           .map(session => this.bookletService.getBooklet(session.bookletName)
@@ -245,6 +245,7 @@ export class TestSessionManager {
   testCommandPause(): void {
     const testIds = this.checked
       .filter(session => !TestSessionUtil.isPaused(session))
+      .filter(session => !['pending', 'locked'].includes(session.state))
       .map(session => session.data.testId);
     if (!testIds.length) {
       this._commandResponses$.next({ commandType: 'pause', testIds });
@@ -257,6 +258,7 @@ export class TestSessionManager {
 
   testCommandResume(): void {
     const testIds = this.checked
+      .filter(session => !['pending', 'locked'].includes(session.state))
       .map(session => session.data.testId);
     if (!testIds.length) {
       this._commandResponses$.next({ commandType: 'resume', testIds });
@@ -318,14 +320,14 @@ export class TestSessionManager {
   // todo unit test
   commandFinishEverything(): Observable<CommandResponse> {
     const getUnlockedConnectedTestIds = () => Object.values(this._sessions$.getValue())
-      .filter(session => !TestSessionUtil.hasState(session.data.testState, 'status', 'locked') &&
+      .filter(session => !['pending', 'locked'].includes(session.state) &&
         !TestSessionUtil.hasState(session.data.testState, 'CONTROLLER', 'TERMINATED') &&
         (TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'POLLING') ||
           TestSessionUtil.hasState(session.data.testState, 'CONNECTION', 'WEBSOCKET')))
       .map(session => session.data.testId);
     const getUnlockedTestIds = () => Object.values(this._sessions$.getValue())
       .filter(session => session.data.testId > 0)
-      .filter(session => !TestSessionUtil.hasState(session.data.testState, 'status', 'locked'))
+      .filter(session => !['pending', 'locked'].includes(session.state))
       .map(session => session.data.testId);
 
     this.filters$.next([]);
@@ -351,6 +353,7 @@ export class TestSessionManager {
         toCheck = [...this.checked, selected.originSession];
       } else {
         toCheck = this._sessions$.getValue()
+          .filter(session => (!['pending', 'locked'].includes(session.state)))
           .filter(session => (session.booklet.species === selected.originSession.booklet.species))
           .filter(session => (selected.inversion ? !this.isChecked(session) : true));
       }
@@ -365,6 +368,7 @@ export class TestSessionManager {
     }
     const unChecked = this._sessions$.getValue()
       .filter(session => session.data.testId && session.data.testId > -1)
+      .filter(session => (!['pending', 'locked'].includes(session.state)))
       .filter(session => !this.isChecked(session));
     this.replaceCheckedSessions(unChecked);
   }
@@ -391,13 +395,12 @@ export class TestSessionManager {
     if (this.checkingOptions.autoCheckAll) {
       return;
     }
-    this.replaceCheckedSessions(this._sessions$.getValue());
+    const allSelectable = this._sessions$.getValue()
+      .filter(session => (!['pending', 'locked'].includes(session.state)));
+    this.replaceCheckedSessions(allSelectable);
   }
 
   checkNone(): void {
-    if (this.checkingOptions.autoCheckAll) {
-      return;
-    }
     this.replaceCheckedSessions([]);
   }
 

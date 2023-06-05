@@ -45,8 +45,8 @@ export class TestStatusComponent implements OnInit, OnDestroy {
     this.appErrorSubscription.unsubscribe();
   }
 
-  relaodPage(): void {
-    this.mainDataService.relaodPage();
+  reloadPage(): void {
+    this.mainDataService.reloadPage();
   }
 
   terminateTest(): void {

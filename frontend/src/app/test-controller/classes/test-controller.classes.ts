@@ -32,7 +32,7 @@ export class UnitDef extends TestletContentElement {
   readonly alias: string;
   readonly naviButtonLabel: string;
   playerId: string;
-  locked = false;
+  lockedByTime = false;
   readonly navigationLeaveRestrictions: NavigationLeaveRestrictions;
 
   constructor(
@@ -50,7 +50,7 @@ export class UnitDef extends TestletContentElement {
   }
 }
 
-export class UnitControllerData {
+export class UnitWithContext {
   unitDef: UnitDef = null;
   codeRequiringTestlets: Testlet[] = [];
   maxTimerRequiringTestlet: Testlet = null;
@@ -98,8 +98,8 @@ export class Testlet extends TestletContentElement {
   // first looking for the unit, then on the way back adding restrictions
   // TODO this very ineffective function is called quite often, so ...
   // ...instead of enrich the unit with the parental data, collect it beforehand
-  getUnitAt(sequenceId: number, isEntryPoint = true): UnitControllerData {
-    let myreturn: UnitControllerData = null;
+  getUnitAt(sequenceId: number, isEntryPoint = true): UnitWithContext | null {
+    let myreturn: UnitWithContext = null;
     for (let i = 0; i < this.children.length; i++) {
       const tce = this.children[i];
       if (tce instanceof Testlet) {
@@ -110,7 +110,7 @@ export class Testlet extends TestletContentElement {
         }
       } else if (tce instanceof UnitDef) {
         if (tce.sequenceId === sequenceId) {
-          myreturn = new UnitControllerData(tce);
+          myreturn = new UnitWithContext(tce);
           break;
         }
       }
@@ -230,7 +230,7 @@ export class Testlet extends TestletContentElement {
           localTestlet.lockAllChildren();
         } else {
           const localUnit = tce as UnitDef;
-          localUnit.locked = true;
+          localUnit.lockedByTime = true;
         }
       }
     }
@@ -246,19 +246,9 @@ export class Testlet extends TestletContentElement {
         localTestlet.lockUnitsIfTimeLeftNull(lock);
       } else if (lock) {
         const localUnit = tce as UnitDef;
-        localUnit.locked = true;
+        localUnit.lockedByTime = true;
       }
     }
-  }
-
-  getNextUnlockedUnitSequenceId(currentUnitSequenceId: number): number {
-    let nextUnitSequenceId = currentUnitSequenceId + 1;
-    let myUnit: UnitControllerData = this.getUnitAt(nextUnitSequenceId);
-    while (myUnit !== null && myUnit.unitDef.locked) {
-      nextUnitSequenceId += 1;
-      myUnit = this.getUnitAt(nextUnitSequenceId);
-    }
-    return myUnit ? nextUnitSequenceId : currentUnitSequenceId;
   }
 }
 

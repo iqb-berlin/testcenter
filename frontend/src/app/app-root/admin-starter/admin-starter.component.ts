@@ -42,8 +42,7 @@ export class AdminStarterComponent implements OnInit, OnDestroy {
   }
 
   resetLogin(): void {
-    this.mainDataService.setAuthData();
-    this.router.navigate(['/']);
+    this.mainDataService.logOut();
   }
 
   ngOnDestroy(): void {

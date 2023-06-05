@@ -11,9 +11,18 @@
 
         <button *ngFor="let accessObject of accessObjects.testGroupMonitor"
                 mat-raised-button color="primary"
+                [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
                 (click)="buttonGotoMonitor(accessObject)">
           <span class="booklet_title">{{accessObject.label}}</span>
-          <span class="booklet_status">{{'gm_selection_text' | customtext: 'gm_selection_text' | async}}</span>
+          <span class="booklet_status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
+            {{'Gruppen-Monitor Starten' | customtext: 'gm_selection_text' | async}}
+          </span>
+          <span class="booklet_status" *ngIf="(!!accessObject.flags.expired)">
+            {{'Gruppe abgelaufen seit %date.' | customtext: 'gm_selection_text_expired':accessObject.flags.expired | async}}
+          </span>
+          <span class="booklet_status" *ngIf="(!!accessObject.flags.scheduled)">
+            {{'Gruppe erst freigegeben ab %date.' | customtext: 'gm_selection_text_scheduled':accessObject.flags.scheduled | async}}
+          </span>
         </button>
 
         <ng-container *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">

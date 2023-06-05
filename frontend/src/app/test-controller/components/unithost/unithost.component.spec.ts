@@ -12,6 +12,7 @@ import { BackendService } from '../../services/backend.service';
 import { MainDataService, BookletConfig } from '../../../shared/shared.module';
 // eslint-disable-next-line import/extensions
 import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
+import { MatDividerModule } from '@angular/material/divider';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
@@ -53,7 +54,8 @@ describe('UnithostComponent', () => {
       ],
       imports: [
         CommonModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatDividerModule
       ],
       providers: [
         { provide: TestControllerService, useValue: MockTestControllerService },

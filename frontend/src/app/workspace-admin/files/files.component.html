@@ -16,7 +16,7 @@
           <mat-table [dataSource]="files[type]" matSort (matSortChange)="setTableSorting($event)">
             <ng-container matColumnDef="checked">
               <mat-header-cell *matHeaderCellDef class="checkboxcell">
-                <mat-checkbox (change)="checkAll($event.checked, type)"></mat-checkbox>
+                <mat-checkbox [attr.data-cy]="'files-checkAll-' + type" (change)="checkAll($event.checked, type)"></mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let element" class="checkboxcell" >
                 <mat-checkbox [attr.data-cy]="'files-checkbox-' + element.id" [checked]="element.isChecked" (change)="element.isChecked=$event.checked"></mat-checkbox>

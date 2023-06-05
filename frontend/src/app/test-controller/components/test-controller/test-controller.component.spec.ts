@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import {
   CustomtextService, ConnectionStatus, MainDataService, BookletConfig, TestMode
 } from '../../../shared/shared.module';
@@ -17,11 +17,12 @@ import { BackendService } from '../../services/backend.service';
 import { CommandService } from '../../services/command.service';
 import { TestControllerComponent } from './test-controller.component';
 import {
-  Command, TestControllerState, TestData, WindowFocusState
+  Command, TestControllerState, TestData, UnitNaviButtonData, WindowFocusState
 } from '../../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../../services/test-controller.service';
 import { AppError } from '../../../app.interfaces';
 import { MaxTimerData } from '../../classes/test-controller.classes';
+import { UnitMenuComponent } from '../unit-menu/unit-menu.component';
 
 const testData$ = new Subject<boolean | TestData>();
 const command$ = new Subject<Command>();
@@ -37,7 +38,9 @@ const currentUnitSequenceId$ = new Subject<number>();
   template: '',
   selector: 'unit-menu'
 })
-class MockUnitMenuComponent {}
+class MockUnitMenuComponent {
+  @Input() menu: Array<UnitNaviButtonData | string>;
+}
 
 const MockBackendService = {
   getTestData: () => testData$

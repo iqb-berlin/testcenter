@@ -27,6 +27,8 @@ $app->group('/monitor', function(RouteCollectorProxy $group) {
 
   $group->get('/test-sessions', [MonitorController::class, 'getTestSessions']);
 
+  $group->get('/group/{group_name}/test-sessions', [MonitorController::class, 'getTestSessions']);
+
   $group->put('/command', [MonitorController::class, 'putCommand']);
 
   $group->post('/group/{group_name}/tests/unlock', [MonitorController::class, 'postUnlock']);
@@ -45,6 +47,9 @@ $app->put('/session/login', [SessionController::class, 'putSessionLogin']);
 
 $app->put('/session/person', [SessionController::class, 'putSessionPerson'])
   ->add(new RequireToken('login'));
+
+$app->delete('/session', [SessionController::class, 'deleteSession'])
+  ->add(new RequireToken('person', 'login', 'admin'));
 
 $app->group('/speed-test', function(RouteCollectorProxy $group) {
   $group->get('/random-package/{size}', [SpeedtestController::class, 'getRandomPackage']);

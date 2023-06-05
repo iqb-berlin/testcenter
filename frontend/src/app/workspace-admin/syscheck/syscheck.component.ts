@@ -1,10 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  Component, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/shared.module';
+import { Subscription } from 'rxjs';
+import { ConfirmDialogComponent, ConfirmDialogData, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
@@ -13,13 +16,15 @@ import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
   templateUrl: './syscheck.component.html',
   styleUrls: ['./syscheck.component.css']
 })
-export class SyscheckComponent implements OnInit {
+export class SyscheckComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details-os', 'details-browser'];
   resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
   // prepared for selection if needed sometime
   tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+
+  private wsIdSubscription: Subscription;
 
   constructor(
     private bs: BackendService,
@@ -31,8 +36,18 @@ export class SyscheckComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.updateTable();
+      this.wsIdSubscription = this.wds.workspaceid$
+        .subscribe(() => {
+          this.updateTable();
+        });
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.wsIdSubscription) {
+      this.wsIdSubscription.unsubscribe();
+      this.wsIdSubscription = null;
+    }
   }
 
   updateTable(): void {
@@ -41,7 +56,8 @@ export class SyscheckComponent implements OnInit {
       .subscribe((resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
-      });
+      }
+    );
   }
 
   isAllSelected(): boolean {
@@ -98,17 +114,18 @@ export class SyscheckComponent implements OnInit {
           if (result === false) {
             return;
           }
-          this.bs.deleteSysCheckReports(this.wds.workspaceID, selectedReports).subscribe(fileDeletionReport => {
-            const message = [];
-            if (fileDeletionReport.deleted.length > 0) {
-              message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);
-            }
-            if (fileDeletionReport.not_allowed.length > 0) {
-              message.push(`${fileDeletionReport.not_allowed.length} Berichte konnten nicht gelöscht werden.`);
-            }
-            this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
-            this.updateTable();
-          });
+          this.bs.deleteSysCheckReports(this.wds.workspaceID, selectedReports)
+            .subscribe(fileDeletionReport => {
+              const message = [];
+              if (fileDeletionReport.deleted.length > 0) {
+                message.push(`${fileDeletionReport.deleted.length} Berichte erfolgreich gelöscht.`);
+              }
+              if (fileDeletionReport.not_allowed.length > 0) {
+                message.push(`${fileDeletionReport.not_allowed.length} Berichte konnten nicht gelöscht werden.`);
+              }
+              this.snackBar.open(message.join('<br>'), message.length > 1 ? 'Achtung' : '', { duration: 1000 });
+              this.updateTable();
+            });
         });
     }
   }

@@ -27,6 +27,8 @@ class WorkspaceCacheTest extends TestCase {
     require_once "src/data-collection/RequestedAttachment.class.php";
     require_once "src/data-collection/FileRelationshipType.class.php";
     require_once "src/data-collection/FileRelation.class.php";
+    require_once "src/data-collection/ExpirationState.class.php";
+    require_once "src/data-collection/ExpirationStateType.enum.php";
     require_once "src/helper/Version.class.php";
     require_once "src/helper/JSON.class.php";
     require_once "src/helper/XMLSchema.class.php";
@@ -144,8 +146,8 @@ class WorkspaceCacheTest extends TestCase {
       ],
       'Testtakers/testtakers-duplicate-login-name-cross-ws.xml' => [
         'error' => [
-          "Duplicate login: `another_login` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`",
-          "Duplicate group: `another_group` - also on workspace 2 in file `testtakers-duplicate-login-name-cross-ws.xml`"
+          "Duplicate login: `another_login` - also on workspace `other_sample_workspace` in file `testtakers-duplicate-login-name-cross-ws.xml`",
+          "Duplicate group: `another_group` - also on workspace `other_sample_workspace` in file `testtakers-duplicate-login-name-cross-ws.xml`"
         ],
         'warning' => ["File has no link to XSD-Schema. Current version (`$version`) will be used instead."]
       ],

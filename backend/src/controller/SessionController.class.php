@@ -28,8 +28,6 @@ class SessionController extends Controller {
     $workspaces = self::adminDAO()->getWorkspaces($token);
     $accessSet = AccessSet::createFromAdminToken($admin, ...$workspaces);
 
-    self::adminDAO()->refreshAdminToken($token);
-
     if (!$accessSet->hasAccessType('workspaceAdmin') and !$accessSet->hasAccessType('superAdmin')) {
       throw new HttpException($request, "You don't have any workspaces and are not allowed to create some.", 204);
     }
@@ -46,18 +44,17 @@ class SessionController extends Controller {
     $loginSession = self::sessionDAO()->getOrCreateLoginSession($body['name'], $body['password']);
 
     if (!$loginSession) {
-      $shortPw = Password::shorten($body['password']);
-      throw new HttpBadRequestException($request, "No Login for `{$body['name']}` with `$shortPw`.");
+      $userName = htmlspecialchars($body['name']);
+      throw new HttpBadRequestException($request, "No Login for `$userName` with this password.");
     }
 
     if (!$loginSession->getLogin()->isCodeRequired()) {
       $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
+      $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
 
-      if ($loginSession->getLogin()->getMode() == 'monitor-group') {
-        self::registerGroup($loginSession);
-      }
+      self::registerDependantSessions($loginSession);
 
     } else {
       $accessSet = AccessSet::createFromLoginSession($loginSession);
@@ -80,15 +77,11 @@ class SessionController extends Controller {
       return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
     }
 
-  private static function registerGroup(LoginSession $login): void {
-    if (!$login->getLogin()->getMode() == 'monitor-group') {
-      return;
-    }
+  private static function registerDependantSessions(LoginSession $login): void {
+    $members = self::sessionDAO()->getDependantSessions($login);
 
     $workspace = self::getWorkspace($login->getLogin()->getWorkspaceId());
     $bookletFiles = [];
-
-    $members = self::sessionDAO()->getLoginsByGroup($login->getLogin()->getGroupName(), $login->getLogin()->getWorkspaceId());
 
     foreach ($members as $member) {
       /* @var $member LoginSession */
@@ -146,7 +139,8 @@ class SessionController extends Controller {
     if ($authToken->getType() == "person") {
       $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson);
+      $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
+      $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
       return $response->withJson($accessSet);
     }
 
@@ -159,5 +153,20 @@ class SessionController extends Controller {
     }
 
     throw new HttpUnauthorizedException($request);
+  }
+
+  public static function deleteSession(Request $request, Response $response): Response {
+    $authToken = self::authToken($request);
+
+    if ($authToken->getType() == "person") {
+      self::sessionDAO()->deletePersonToken($authToken);
+    }
+
+    if ($authToken->getType() == "admin") {
+      self::adminDAO()->deleteAdminSession($authToken);
+    }
+
+    // nothing to do for login-sessions; they have constant token as they are only the first step of 2f-auth
+    return $response->withStatus(205);
   }
 }

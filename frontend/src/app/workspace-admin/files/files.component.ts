@@ -1,11 +1,12 @@
 import {
-  Component, OnInit, Inject, ViewChild
+  Component, OnInit, Inject, ViewChild, OnDestroy
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
   MessageDialogData, MessageType, MainDataService
@@ -34,7 +35,7 @@ interface FileStats {
   templateUrl: './files.component.html',
   styleUrls: ['./files.component.css']
 })
-export class FilesComponent implements OnInit {
+export class FilesComponent implements OnInit, OnDestroy {
   files: { [type in IQBFileType]?: MatTableDataSource<IQBFile> } = {};
   fileTypes = IQBFileTypes;
   displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
@@ -62,6 +63,8 @@ export class FilesComponent implements OnInit {
     testtakers: 0
   };
 
+  private wsIdSubscription: Subscription;
+
   @ViewChild('fileUploadQueue', { static: true }) uploadQueue: IqbFilesUploadQueueComponent;
 
   constructor(
@@ -75,10 +78,19 @@ export class FilesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // this.uploadUrl = `${this.serverUrl}workspace/${this.wds.wsId}/file`;
     setTimeout(() => {
-      this.updateFileList();
+      this.wsIdSubscription = this.wds.workspaceid$
+        .subscribe(() => {
+          this.updateFileList();
+        });
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.wsIdSubscription) {
+      this.wsIdSubscription.unsubscribe();
+      this.wsIdSubscription = null;
+    }
   }
 
   checkAll(isChecked: boolean, type: IQBFileType): void {

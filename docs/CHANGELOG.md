@@ -4,8 +4,65 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## 14.4.0
+## 14.7.0
+### Neue Features
+* Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
+  Gruppen-Monitor. Weitere Funktionen sind geplant. 
 
+### Verbesserungen
+* Rückmeldung beim Hochladen von Testtakers-Dateien über bereits vorhandene Logins oder Gruppen verbessert. 
+
+### Sicherheit
+* Content-Security-Policy hinzugefügt.
+* Unischere Abhängihkeiten im Broadcasting Service entfernt
+
+
+## 14.6.0
+### Änderungen
+* Im Gruppen-Monitor ("Testleitungskonsole") werden Tests, die noch nicht gestartet worden sind, nicht mehr 
+  mitgesteuert. Wenn vor dieser Änderung beispielsweise alle Teilnehmer in den zweiten Block geschoben worden sind,
+  starteten Teilnehmer, die die Studie später nachholten bei block zwei. Da dieses Verhalten bei Nachhol-Sitzungen
+  hinderlich war, wurde es nun geändert. Noch nicht gestartete Tests sind gar nicht anwählbar, gesperrte Tests sind es,
+  werden aber nicht automatisch mitselektiert, damit sie anwählen und wieder entsperren kann.
+
+### Neue Features
+* Es kann nun gesteuert werden, wann beim Bearbeiten von zeitbeschränkten Blocks Warnungen angezeigt werden sollen. 
+  Der Standart ist weiterhin bei noch 5 und bei noch einer verbleibenden Minute.
+  Hierfür gibt es nun den Booklet-Parameter `unit_time_left_warnings` und den Customtext-Token `booklet_msgTimerStarted`
+
+### Sicherheit
+* Sitzungen werden beim Log-Out auch serverseitig deaktiviert.
+* Kleine eventuell für XSS-Angriffe nutzbare Sicherheitsheitslücke behoben.  
+
+### Bugfixes
+* Abgelaufene und wieder freigegebene Sitzungen können ohne Leerung des Browser-Caches wieder verwendet werden
+* Hatte man in einer Instanz einmal die Workspace-Admin-Ansicht geladen, konnte danach kein test mehr gestartet werden,
+  ohne dass die Seite neu geladen wurde. Dies ist behoben.
+* Nachrichten im Seiten-panel des Gruppen-Monitors verschwinden wieder nach einiger Zeit.
+
+## 14.5.1
+### Bugfixes
+* Gruppen im Modus `run-review` werden in der Workspace-Übersicht "Ergebnisse/Antworten" wieder angezeigt, 
+  wenn es reviews gibt. 
+
+## 14.5.0
+### Sicherheit
+* Softwareupdate: Aktuelle Versionen von PHP und Apache
+* Information Disclosure: Backend-Calls liefern die Versionen von PHP Apache nicht mehr aus
+* Unzureichende Entropie bei Session-Tokens beseitigt
+* Enumerierung von Admin-Benutzernamen durch timing-attacks erschwert
+
+### Bugfixes
+* *Schwerer Fehler behoben*: Mehr als 15-20 Anmeldungen gleichzeitig mit einem Login im Modus `hot-run-restart` führten
+  in der Version 14.4.0 zu Fehlern.
+* Es werden *keine* Einträge in der Workspace-Übersicht "Ergebnisse/Antworten" mehr durch Testdurchgänge im Demomode erzeugt. 
+
+### Verbesserungen
+* Personen die sich mit ein und selben Login im Modus `hot-run-restart` angemeldet haben, erhalten nun keine 
+  fortlaufende Nummer mehr als Bezeichner (in den Ergebnisdaten), sondern einen Code. Ein Fortlaufender bezeichner hat
+  sich als technisch nicht verlässlich möglich erweisen, wenn Anmeldungen gleichzeitig vorn statten gehen.
+
+## 14.4.0
 ### Verbesserungen
 * Localstorage muss nach Update des Testcenters nicht mehr gelöscht werden
 

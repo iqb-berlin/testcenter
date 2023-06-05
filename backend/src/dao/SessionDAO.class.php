@@ -227,11 +227,18 @@ class SessionDAO extends DAO {
     );
   }
 
-  public function getLoginsByGroup(string $groupName, int $workspaceId): array {
+  public function getLoginSessions(array $filters = []): array {
     $logins = [];
 
-    $result = $this->_(
-      'select
+    $replacements = [];
+    $filterSQL = [];
+    foreach ($filters as $filter => $filterValue) {
+      $filterName = ':' . str_replace('.', '_', $filter);
+      $replacements[$filterName] = $filterValue;
+      $filterSQL[] = "$filter = $filterName";
+    }
+    $filterSQL = implode(' and ', $filterSQL);
+    $sql = "select
               logins.name,
               logins.mode,
               logins.group_name,
@@ -249,14 +256,10 @@ class SessionDAO extends DAO {
               logins
               left join login_sessions on (logins.name = login_sessions.name)
           where
-              logins.group_name = :group_name and logins.workspace_id = :workspace_id
-          order by id',
-      [
-        ':group_name' => $groupName,
-        ':workspace_id' => $workspaceId
-      ],
-      true
-    );
+              $filterSQL
+          order by id";
+
+    $result = $this->_($sql, $replacements,true);
 
     foreach ($result as $row) {
       $logins[] =
@@ -294,63 +297,68 @@ class SessionDAO extends DAO {
     }
 
     $newPersonToken = Token::generate('person', "{$login->getGroupName()}_{$login->getName()}_$code");
+
+    $suffix = [];
+    if ($code) {
+      $suffix[] = $code;
+    }
+    if (Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+      $suffix[] = Random::string(8, false);
+    }
+    $suffix = implode('/', $suffix);
+
+    if (!Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+      $personSession = $this->_('
+        select id, valid_until from person_sessions where login_sessions_id = :lsi and name_suffix = :suffix',
+        [
+          ':lsi' => $loginSession->getId(),
+          ':suffix' => $suffix
+        ]
+      );
+      if ($personSession) {
+        $this->_(
+          'update person_sessions set token=:token where login_sessions_id = :lsi and name_suffix = :suffix',
+          [
+            ':lsi' => $loginSession->getId(),
+            ':suffix' => $suffix,
+            ':token' => $newPersonToken
+          ]
+        );
+        return new PersonSession(
+          $loginSession,
+          new Person(
+            $personSession['id'],
+            $newPersonToken,
+            $code,
+            $suffix,
+            TimeStamp::fromSQLFormat($personSession['valid_until'])
+          )
+        );
+      }
+    }
+
     $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
     $this->_(
       "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
-            select
-              :token,
-              :code,
-              :login_id,
-              :valid_until,
-              (
-                select
-                  case
-                    when :multisession and :code != '' then :code || '/' || (count(*) + 1)
-                    when :multisession then (count(*) + 1)
-                    else :code
-                  end
-                  from
-                    person_sessions
-                  where
-                    login_sessions_id=:login_id and code=:code
-              )
-            on duplicate key update token=:token",
+            values (:token, :code, :login_id, :valid_until, :suffix)",
       [
         ':token' => $newPersonToken,
         ':code' => $code,
         ':login_id' => $loginSession->getId(),
         ':valid_until' => TimeStamp::toSQLFormat($validUntil),
-        ':multisession' => Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')
-      ]
-    );
-
-
-    // there is no way in mySQL to combine insert & select into one query and we need to get the id and the suffix
-    $person = $this->_(
-      'select
-              id,
-              token,
-              code,
-              valid_until,
-              name_suffix
-            from
-              person_sessions
-            where
-              token=:token',
-      [
-        ':token' => $newPersonToken
+        ':suffix' => $suffix
       ]
     );
 
     return new PersonSession(
       $loginSession,
       new Person(
-        $person['id'],
-        $person['token'],
-        $person['code'],
-        $person['name_suffix'],
-        TimeStamp::fromSQLFormat($person['valid_until'])
+        (int) $this->pdoDBhandle->lastInsertId(),
+        $newPersonToken,
+        $code,
+        $suffix,
+        $validUntil
       )
     );
   }
@@ -488,25 +496,29 @@ class SessionDAO extends DAO {
 
   public function getTestsOfPerson(PersonSession $personSession): array {
     $bookletIds = $personSession->getLoginSession()->getLogin()->getBooklets()[$personSession->getPerson()->getCode() ?? ''];
+    if (!count($bookletIds)) {
+      return [];
+    }
     $placeHolder = implode(', ', array_fill(0, count($bookletIds), '?'));
-    $tests = $this->_("
-                select
-                  tests.person_id,
-                  tests.id,
-                  tests.locked,
-                  tests.running,
-                  files.name,
-                  files.id as bookletId,
-                  files.label as testLabel,
-                  files.description
-                from files
-                  left outer join tests on files.id = tests.name and tests.person_id = ?
-                where
-                  files.workspace_id = ?
-                  and files.type = 'Booklet'
-                  and files.id in ($placeHolder)
-                order by
-                  files.label",
+    $sql = "select
+              tests.person_id,
+              tests.id,
+              tests.locked,
+              tests.running,
+              files.name,
+              files.id as bookletId,
+              files.label as testLabel,
+              files.description
+            from files
+              left outer join tests on files.id = tests.name and tests.person_id = ?
+            where
+              files.workspace_id = ?
+              and files.type = 'Booklet'
+              and files.id in ($placeHolder)
+            order by
+              files.label";
+    $tests = $this->_(
+      $sql,
       [
         $personSession->getLoginSession()->getId(),
         $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
@@ -526,5 +538,68 @@ class SessionDAO extends DAO {
       },
       $tests
     );
+  }
+
+  public function deletePersonToken(AuthToken $authToken): void {
+    // we can not delete the session entirely, because this would delete the whole response data.
+    $this->_("update person_sessions set token=null where token = :token", [':token' => $authToken->getToken()]);
+  }
+
+  public function getGroupMonitors(PersonSession $personSession): array {
+    switch ($personSession->getLoginSession()->getLogin()->getMode()) {
+      default: return [];
+      case 'monitor-group':
+        return [
+          new Group(
+            $personSession->getLoginSession()->getLogin()->getGroupName(),
+            $personSession->getLoginSession()->getLogin()->getGroupLabel()
+          )
+        ];
+      case 'monitor-study':
+        return $this->getGroups($personSession->getLoginSession()->getLogin()->getWorkspaceId());
+    }
+  }
+
+  public function getGroups(int $workspaceId): array {
+    $modeSelector = "mode in ('" . implode("', '", Mode::getByCapability('monitorable')) . "')";
+    $sql =
+      "select
+        group_name,
+        group_label,
+        valid_from,
+        valid_to
+      from
+        logins
+      where
+        workspace_id = :ws_id
+        and $modeSelector
+      group by group_name, group_label, valid_from, valid_to
+      order by group_label";
+
+    return array_reduce(
+      $this->_($sql, [':ws_id' => $workspaceId], true),
+      function(array $agg, array $row): array {
+        $expiration = TimeStamp::isExpired(
+          TimeStamp::fromSQLFormat($row['valid_from']),
+          TimeStamp::fromSQLFormat($row['valid_to'])
+        );
+        $agg[$row['group_name']] = new Group($row['group_name'], $row['group_label'], $expiration);
+        return $agg;
+      },
+      []
+    );
+  }
+
+  public function getDependantSessions(LoginSession $login): array {
+    return match ($login->getLogin()->getMode()) {
+      'monitor-group' => $this->getLoginSessions([
+        'logins.workspace_id' => $login->getLogin()->getWorkspaceId(),
+        'logins.group_name' => $login->getLogin()->getGroupName()
+      ]),
+      'monitor-study' => $this->getLoginSessions([
+        'logins.workspace_id' => $login->getLogin()->getWorkspaceId()
+      ]),
+      default => [],
+    };
   }
 }

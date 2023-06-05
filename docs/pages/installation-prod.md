@@ -66,9 +66,6 @@ allows you to update to it. You may also manually enter a release-tag, which wil
 
 Refer to the [release section on GitHub](https://github.com/iqb-berlin/testcenter/releases) for available versions.
 
-Alternatively you may manually edit the file `docker-compose.prod.yml`. Find the lines starting with **image** and
-edit the version tag.
-
 ### TLS
 
 To set up TLS (aka SSL aks https) run the _update.sh_ script and choose the appropriate option. This will also modify

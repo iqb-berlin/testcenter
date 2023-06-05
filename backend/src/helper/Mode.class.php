@@ -9,8 +9,10 @@ class Mode {
     'RO' => [],
     'monitor' => [
       'monitor-group',
+      'monitor-study'
     ],
     'monitor-group' => [],
+    'monitor-study' => [],
   ];
 
   // capabilities are defined in /definitions/, this is a digest on what concerns the backend TODO use the /definitions/ maybe
@@ -27,7 +29,8 @@ class Mode {
     ],
     'run-trial' => [],
     'run-review' => [],
-    'monitor-group' => []
+    'monitor-group' => [],
+    'monitor-study' => []
   ];
 
   static function withChildren(string $role): array {

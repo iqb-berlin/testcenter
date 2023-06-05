@@ -17,6 +17,7 @@ import { BytesPipe } from './pipes/bytes/bytes.pipe';
 import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
+import { BackendService } from './services/backend.service';
 
 @NgModule({
   imports: [
@@ -52,6 +53,9 @@ import { ErrorComponent } from './components/error/error.component';
     CustomtextPipe,
     AlertComponent,
     ErrorComponent
+  ],
+  providers: [
+    BackendService
   ]
 })
 export class SharedModule {}

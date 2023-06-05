@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
+import { Router } from '@angular/router';
 import { CustomtextService } from '../customtext/customtext.service';
 import {
   AccessObject, AppError, AuthAccessType, AuthData
 } from '../../../app.interfaces';
 import { AppConfig } from '../../classes/app.config';
-import { BackendService } from '../../../backend.service';
+import { BackendService } from '../backend.service';
 
 const localStorageAuthDataKey = 'iqb-tc-a';
 
@@ -21,6 +22,7 @@ export class MainDataService {
     return this._authData$.asObservable();
   }
 
+  isSpinnerOn$ = new BehaviorSubject<boolean>(false);
   progressVisualEnabled = true;
   appConfig: AppConfig = null;
   sysCheckAvailable = false;
@@ -48,22 +50,35 @@ export class MainDataService {
 
   constructor(
     private cts: CustomtextService,
-    private bs: BackendService
+    private bs: BackendService,
+    private router: Router
   ) {
-    this.appError$.subscribe(error => console.log({ error }));
   }
 
-  setAuthData(authData: AuthData = null): void {
+  showLoadingAnimation(): void {
+    this.isSpinnerOn$.next(true);
+  }
+
+  stopLoadingAnimation(): void {
+    this.isSpinnerOn$.next(false);
+  }
+
+  setAuthData(authData: AuthData): void {
     this._authData$.next(authData);
-    if (authData) {
-      if (authData.customTexts) {
-        this.cts.addCustomTexts(authData.customTexts);
-      }
-      localStorage.setItem(localStorageAuthDataKey, JSON.stringify(authData));
-    } else {
-      this.cts.restoreDefault(true);
-      localStorage.removeItem(localStorageAuthDataKey);
+    if (authData.customTexts) {
+      this.cts.addCustomTexts(authData.customTexts);
     }
+    localStorage.setItem(localStorageAuthDataKey, JSON.stringify(authData));
+  }
+
+  logOut(): void {
+    this.cts.restoreDefault(true);
+    this.bs.deleteSession()
+      .subscribe(() => {
+        this._authData$.next(null);
+        localStorage.removeItem(localStorageAuthDataKey);
+        this.router.navigate(['/']);
+      });
   }
 
   resetAuthData(): void {
@@ -73,17 +88,8 @@ export class MainDataService {
     }
     this._authData$.next(this.getAuthData());
   }
-  // TODO ! remove
-  // setTestConfig(testConfig: KeyValuePairs = null): void {
-  //   if (testConfig) {
-  //     localStorage.setItem(localStorageTestConfigKey, JSON.stringify(testConfig));
-  //   } else {
-  //     localStorage.removeItem(localStorageTestConfigKey);
-  //   }
-  //   this._authData$.next(MainDataService.getAuthData());
-  // }
 
-  relaodPage(): void {
+  reloadPage(): void {
     // this.mainDataService.resetAuthData();
     // eslint-disable-next-line no-restricted-globals
     this.bs.clearCache();

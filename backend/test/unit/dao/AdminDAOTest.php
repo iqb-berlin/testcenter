@@ -28,6 +28,8 @@ final class AdminDAOTest extends TestCase {
     require_once "src/data-collection/LoginSession.class.php";
     require_once "src/data-collection/Group.class.php";
     require_once "src/data-collection/WorkspaceData.class.php";
+    require_once "src/data-collection/ExpirationState.class.php";
+    require_once "src/data-collection/ExpirationStateType.enum.php";
     require_once "src/dao/DAO.class.php";
     require_once "src/dao/AdminDAO.class.php";
     require_once "src/helper/Mode.class.php";
@@ -108,6 +110,22 @@ final class AdminDAOTest extends TestCase {
         'loginname' => 'sample_user',
         'code' => 'xxx',
         'bookletname' => 'first sample test',
+        'unitname' => 'UNIT_1',
+        'laststate' => '{"SOME_STATE":"WHATEVER"}',
+        'responses' => [
+          [
+            'id' => "all",
+            'content' => "{\"name\":\"Sam Sample\",\"age\":34}",
+            'ts' => 1597903000,
+            'responseType' => 'the-response-type'
+          ]
+        ]
+      ],
+      [
+        'groupname' => 'sample_group',
+        'loginname' => 'sample_user',
+        'code' => 'xxx',
+        'bookletname' => 'first sample test',
         'unitname' => 'UNIT.SAMPLE',
         'laststate' => '{"PRESENTATIONCOMPLETE":"yes"}',
         'responses' => [
@@ -124,24 +142,7 @@ final class AdminDAOTest extends TestCase {
             'responseType' => 'the-response-type'
           ]
         ]
-      ],
-      [
-        'groupname' => 'sample_group',
-        'loginname' => 'sample_user',
-        'code' => 'xxx',
-        'bookletname' => 'first sample test',
-        'unitname' => 'UNIT_1',
-        'laststate' => '{"SOME_STATE":"WHATEVER"}',
-        'responses' => [
-          [
-            'id' => "all",
-            'content' => "{\"name\":\"Sam Sample\",\"age\":34}",
-            'ts' => 1597903000,
-            'responseType' => 'the-response-type'
-          ]
-        ]
       ]
-
     ];
 
     parent::assertSame($expectedResponseReportData, $actualResponseReportData);
@@ -182,7 +183,7 @@ final class AdminDAOTest extends TestCase {
   function testGetReviewReportData(): void {
     // Arrange
     $workspaceId = 1;
-    $groups = ['sample_group'];
+    $groups = ['review_group'];
 
     // Act
     $actualReviewReportData = $this->dbc->getReviewReportData($workspaceId, $groups);
@@ -190,20 +191,20 @@ final class AdminDAOTest extends TestCase {
     // Assert
     $expectedReviewReportData = [
       [
-        'groupname' => 'sample_group',
-        'loginname' => 'sample_user',
-        'code' => 'xxx',
-        'bookletname' => 'first sample test',
-        'unitname' => 'UNIT.SAMPLE',
+        'groupname' => 'review_group',
+        'loginname' => 'test-review',
+        'code' => '',
+        'bookletname' => 'BOOKLET.SAMPLE-1',
+        'unitname' => 'UNIT_1',
         'priority' => 1,
         'categories' => '',
         'reviewtime' => '2030-01-01 12:00:00',
         'entry' => 'this is a sample unit review'
       ], [
-        'groupname' => 'sample_group',
-        'loginname' => 'sample_user',
-        'code' => 'xxx',
-        'bookletname' => 'first sample test',
+        'groupname' => 'review_group',
+        'loginname' => 'test-review',
+        'code' => '',
+        'bookletname' =>  'BOOKLET.SAMPLE-1',
         'unitname' => '',
         'priority' => 1,
         'categories' => '',
@@ -251,8 +252,11 @@ final class AdminDAOTest extends TestCase {
     $this->assertGreaterThan(0, $this->countTableRows('units'));
     $this->assertGreaterThan(0, $this->countTableRows('unit_data'));
     $this->assertGreaterThan(0, $this->countTableRows('unit_logs'));
+    $this->assertGreaterThan(0, $this->countTableRows('unit_reviews'));
+    $this->assertGreaterThan(0, $this->countTableRows('test_reviews'));
 
     $this->dbc->deleteResultData(1, 'sample_group');
+    $this->dbc->deleteResultData(1, 'review_group');
     $this->assertEquals(0, $this->countTableRows('login_sessions'));
     $this->assertEquals(0, $this->countTableRows('person_sessions'));
     $this->assertEquals(0, $this->countTableRows('tests'));
@@ -260,25 +264,40 @@ final class AdminDAOTest extends TestCase {
     $this->assertEquals(0, $this->countTableRows('units'));
     $this->assertEquals(0, $this->countTableRows('unit_data'));
     $this->assertEquals(0, $this->countTableRows('unit_logs'));
+    $this->assertEquals(0, $this->countTableRows('unit_reviews'));
+    $this->assertEquals(0, $this->countTableRows('test_reviews'));
   }
 
   public function test_getResultStats() {
-    $expectation = [[
-      'groupName' => 'sample_group',
-      'bookletsStarted' => 2,
-      'numUnitsMin' => 0,
-      'numUnitsMax' => 2,
-      'numUnitsTotal' => 2,
-      'numUnitsAvg' => 1.0,
-      'lastChange' => 1643011260
-    ]];
+    $expectation = [
+      [
+        'groupName' => 'sample_group',
+        'bookletsStarted' => 2,
+        'numUnitsMin' => 0,
+        'numUnitsMax' => 2,
+        'numUnitsTotal' => 2,
+        'numUnitsAvg' => 1.0,
+        'lastChange' => 1643011260
+      ],
+      [
+        'groupName' => 'review_group',
+        'bookletsStarted' => 1,
+        'numUnitsMin' => 1,
+        'numUnitsMax' => 1,
+        'numUnitsTotal' => 1,
+        'numUnitsAvg' => 1.0,
+        'lastChange' => 1643011260
+      ]
+    ];
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
 
-    $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20')");
-    $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 3)");
+    $someTestState = '{"CONTROLLER":"TERMINATED","CONNECTION":"LOST","CURRENT_UNIT_ID":"UNIT.SAMPLE","FOCUS":"HAS","TESTLETS_TIMELEFT":"{\"a_testlet_with_restrictions\":0}"}';
+    $this->dbc->_("insert into tests (name, person_id, locked, running, timestamp_server, laststate) values ('BOOKLET.SAMPLE-2', 1,  0, 1, '2023-11-14 11:13:20', '$someTestState')");
+    $this->dbc->_("insert into units (name, booklet_id) values ('UNIT_1', 4)");
 
-    $expectation = [[
+    $expectation = [
+      [
       'groupName' => 'sample_group',
       'bookletsStarted' => 3,
       'numUnitsMin' => 0,
@@ -286,7 +305,30 @@ final class AdminDAOTest extends TestCase {
       'numUnitsTotal' => 3,
       'numUnitsAvg' => 1.0,
       'lastChange' => 1699956800
-    ]];
+      ],
+      [
+        'groupName' => 'review_group',
+        'bookletsStarted' => 1,
+        'numUnitsMin' => 1,
+        'numUnitsMax' => 1,
+        'numUnitsTotal' => 1,
+        'numUnitsAvg' => 1.0,
+        'lastChange' => 1643011260
+      ]
+    ];
+    $result = $this->dbc->getResultStats(1);
+    $this->assertSame($expectation, $result);
+
+    $this->dbc->_('delete from test_reviews');
+    $result = $this->dbc->getResultStats(1);
+    $this->assertSame($expectation, $result);
+
+    $this->dbc->_('delete from unit_reviews');
+    $result = $this->dbc->getResultStats(1);
+    $this->assertSame([$expectation[0]], $result);
+
+    $this->dbc->_("insert into test_reviews (booklet_id, reviewtime, priority, categories, entry)
+      values (3, '2030-01-01 12:00:00', 1, '', 'new booklet review')");
     $result = $this->dbc->getResultStats(1);
     $this->assertSame($expectation, $result);
   }

@@ -23,7 +23,8 @@
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId <= 1"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
-       matTooltip="Zurück">
+       matTooltip="Zurück"
+       data-cy="unit-navigation-backward">
       <i class="material-icons">chevron_left</i>
     </a>
     <a mat-flat-button
@@ -31,25 +32,31 @@
        [style.border-radius]="0"
        [disabled]="tcs.currentUnitSequenceId <= 1"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.PREVIOUS)"
-       matTooltip="Zurück">
+       matTooltip="Zurück"
+       data-cy="unit-navigation-backward">
       <i class="material-icons">chevron_left</i>
     </a>
 
     <ng-container *ngIf="tcs.bookletConfig.unit_navibuttons !== 'ARROWS_ONLY'">
-      <a *ngFor="let u of unitNavigationList"
-         mat-flat-button
-         class="unit-nav-item" [class.unit-nav-item-selected]="u.isCurrent"
-         [attr.aria-label]="u.longLabel" [attr.data-cy]="u.shortLabel"
-         (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())">
-        {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
-      </a>
+      <ng-container *ngFor="let u of unitNavigationList">
+        <a
+           *ngIf="u.sequenceId"
+           mat-flat-button
+           class="unit-nav-item" [class.unit-nav-item-selected]="u.isCurrent"
+           [attr.aria-label]="u.longLabel" [attr.data-cy]="u.shortLabel"
+           [disabled]="u.disabled"
+           (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())">
+          {{u.shortLabel ? u.shortLabel : '&nbsp;'}}
+        </a>
+      </ng-container>
     </ng-container>
 
     <a mat-fab
        *ngIf="tcs.bookletConfig.controller_design === '2018'"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
-       matTooltip="Weiter">
+       matTooltip="Weiter"
+       data-cy="unit-navigation-forward">
       <i class="material-icons">chevron_right</i>
     </a>
     <a mat-flat-button
@@ -57,7 +64,8 @@
        [style.border-radius]="0"
        [disabled]="tcs.currentUnitSequenceId >= tcs.allUnitIds.length"
        (click)="tcs.setUnitNavigationRequest(unitNavigationTarget.NEXT)"
-       matTooltip="Weiter">
+       matTooltip="Weiter"
+       data-cy="unit-navigation-forward">
       <i class="material-icons">chevron_right</i>
     </a>
   </div>
@@ -66,14 +74,16 @@
     mat-button
     (click)="showReviewDialog()"
     *ngIf="tcs.testMode.canReview"
-    matTooltip="Kommentar senden">
+    matTooltip="Kommentar senden"
+    data-cy="send-comments">
     <mat-icon>rate_review</mat-icon>
   </button>
   <button
     mat-button
     (click)="unitMenu.toggle(true)"
     *ngIf="(tcs.bookletConfig.unit_menu !== 'OFF') || tcs.testMode.showUnitMenu"
-    matTooltip="Zur Aufgabenliste">
+    matTooltip="Zur Aufgabenliste"
+    data-cy="unit-menu">
     <mat-icon>menu</mat-icon>
   </button>
 </div>
@@ -91,7 +101,7 @@
     fixedTopGap="55"
     position="end"
   >
-    <unit-menu></unit-menu>
+    <unit-menu [menu]="unitNavigationList"></unit-menu>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

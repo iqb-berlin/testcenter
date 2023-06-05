@@ -4,6 +4,7 @@
     (change)="check($event)"
     (contextmenu)="invertSelection()"
     [checked]="checked"
+    [disabled]="['pending'].includes(testSession.state)"
   >
   </mat-checkbox>
 </td>

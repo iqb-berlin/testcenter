@@ -7,7 +7,7 @@ import {
 } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { MaxTimerData, Testlet, UnitControllerData } from '../classes/test-controller.classes';
+import { MaxTimerData, Testlet, UnitWithContext } from '../classes/test-controller.classes';
 import {
   KeyValuePairNumber, KeyValuePairString, LoadingProgress,
   MaxTimerDataType, StateReportEntry,
@@ -29,6 +29,8 @@ export class TestControllerService {
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
 
+  testStructureChanges$ = new BehaviorSubject<void>(null);
+
   totalLoadingProgress = 0;
 
   clearCodeTestlets: string[] = [];
@@ -41,6 +43,7 @@ export class TestControllerService {
   currentMaxTimerTestletId = '';
   private maxTimeIntervalSubscription: Subscription = null;
   maxTimeTimers: KeyValuePairNumber = {};
+  timerWarningPoints: number[] = [];
 
   currentUnitDbKey = '';
   currentUnitTitle = '';
@@ -155,6 +158,7 @@ export class TestControllerService {
     this.unitPresentationProgressStates = {};
     this.unitDefinitionTypes = {};
     this.unitStateDataTypes = {};
+    this.timerWarningPoints = [];
   }
 
   // uppercase and add extension if not part
@@ -280,6 +284,7 @@ export class TestControllerService {
   addClearedCodeTestlet(testletId: string): void {
     if (this.clearCodeTestlets.indexOf(testletId) < 0) {
       this.clearCodeTestlets.push(testletId);
+      this.testStructureChanges$.next();
       if (this.testMode.saveResponses) {
         this.bs.updateTestState(
           this.testId,
@@ -293,9 +298,40 @@ export class TestControllerService {
     }
   }
 
-  getUnclearedTestlets(unit: UnitControllerData): Testlet[] {
+  getUnclearedTestlets(unit: UnitWithContext): Testlet[] {
     return unit.codeRequiringTestlets
       .filter(testlet => !this.clearCodeTestlets.includes(testlet.id));
+  }
+
+  getUnitIsLockedByCode(unit: UnitWithContext): boolean {
+    return this.getFirstSequenceIdOfLockedBlock(unit) !== unit.unitDef.sequenceId;
+  }
+
+  getFirstSequenceIdOfLockedBlock(fromUnit: UnitWithContext): number {
+    const unclearedTestlets = this.getUnclearedTestlets(fromUnit);
+    if (!unclearedTestlets.length) {
+      return fromUnit.unitDef.sequenceId;
+    }
+    return unclearedTestlets
+      .reduce((acc, item) => (acc.sequenceId < item.sequenceId ? acc : item))
+      .children
+      .filter(child => !!child.sequenceId)[0].sequenceId;
+  }
+
+  getUnitIsLocked(unit: UnitWithContext): boolean {
+    return this.getUnitIsLockedByCode(unit) || unit.unitDef.lockedByTime;
+  }
+
+  getNextUnlockedUnitSequenceId(currentUnitSequenceId: number, reverse: boolean = false): number | null {
+    const step = reverse ? -1 : 1;
+    let nextUnitSequenceId = currentUnitSequenceId + step;
+    let nextUnit: UnitWithContext = this.rootTestlet.getUnitAt(nextUnitSequenceId);
+
+    while (nextUnit !== null && this.getUnitIsLocked(nextUnit)) {
+      nextUnitSequenceId += step;
+      nextUnit = this.rootTestlet.getUnitAt(nextUnitSequenceId);
+    }
+    return nextUnit ? nextUnitSequenceId : null;
   }
 
   updateUnitStatePresentationProgress(unitDbKey: string, unitSeqId: number, presentationProgress: string): void {
@@ -438,10 +474,14 @@ export class TestControllerService {
           this.router.navigate([`/t/${this.testId}/status`], { skipLocationChange: true, state: { force } });
           break;
         case UnitNavigationTarget.NEXT:
-          this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId + 1}`], { state: { force } });
+          // eslint-disable-next-line no-case-declarations
+          const nextUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId);
+          this.router.navigate([`/t/${this.testId}/u/${nextUnlockedUnitSequenceId}`], { state: { force } });
           break;
         case UnitNavigationTarget.PREVIOUS:
-          this.router.navigate([`/t/${this.testId}/u/${this.currentUnitSequenceId - 1}`], { state: { force } });
+          // eslint-disable-next-line no-case-declarations
+          const previousUnlockedUnitSequenceId = this.getNextUnlockedUnitSequenceId(this.currentUnitSequenceId, true);
+          this.router.navigate([`/t/${this.testId}/u/${previousUnlockedUnitSequenceId}`], { state: { force } });
           break;
         case UnitNavigationTarget.FIRST:
           this.router.navigate([`/t/${this.testId}/u/1`], { state: { force } });

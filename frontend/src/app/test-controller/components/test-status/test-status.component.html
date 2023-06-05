@@ -32,7 +32,7 @@
 
   <error
     *ngSwitchCase="tcs.testStatusEnum.ERROR"
-    [onClose]="relaodPage.bind(this)"
+    [onClose]="reloadPage.bind(this)"
     [closeCaption]="'Neu Laden' | customtext:'booklet_reload' | async"
     [additionalReport]="{
       login: loginName,

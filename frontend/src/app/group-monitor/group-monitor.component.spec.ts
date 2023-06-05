@@ -14,6 +14,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Pipe } from '@angular/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AlertComponent, CustomtextPipe } from '../shared/shared.module';
 import { GroupMonitorComponent } from './group-monitor.component';
 import {
@@ -95,7 +96,8 @@ describe('GroupMonitorComponent', () => {
         MatRadioModule,
         MatCheckboxModule,
         MatTableModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        HttpClientTestingModule
       ],
       providers: [
         { provide: TestSessionManager, useValue: new MockTestSessionManagerService() },

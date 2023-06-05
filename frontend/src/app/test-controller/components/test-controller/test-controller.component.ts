@@ -3,9 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import {
-  Subscription
-} from 'rxjs';
+import { Subscription, merge, combineLatest } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';
@@ -47,7 +45,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   timerValue: MaxTimerData = null;
   unitNavigationTarget = UnitNavigationTarget;
-  unitNavigationList: UnitNaviButtonData[] = [];
+  unitNavigationList: Array<UnitNaviButtonData | string> = [];
   debugPane = false;
   unitScreenHeader: string = '';
 
@@ -110,8 +108,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       this.subscriptions.maxTimer = this.tcs.maxTimeTimer$
         .subscribe(maxTimerEvent => this.handleMaxTimer(maxTimerEvent));
 
-      this.subscriptions.currentUnit = this.tcs.currentUnitSequenceId$
-        .subscribe(() => {
+      this.subscriptions.currentUnit = combineLatest([this.tcs.currentUnitSequenceId$, this.tcs.testStructureChanges$])
+        .subscribe(c => {
           this.refreshUnitMenu();
           this.setUnitScreenHeader();
         });
@@ -275,6 +273,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private handleMaxTimer(maxTimerData: MaxTimerData): void {
+    const minute = maxTimerData.timeLeftSeconds / 60;
     switch (maxTimerData.type) {
       case MaxTimerDataType.STARTED:
         this.snackBar.open(this.cts.getCustomText('booklet_msgTimerStarted') +
@@ -297,8 +296,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.timerValue = null;
         if (this.tcs.testMode.forceTimeRestrictions) {
           this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
-          const nextUnlockedUSId = this.tcs.rootTestlet.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
-          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10), true);
+          const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
+          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10) ?? UnitNavigationTarget.END, true);
         }
         break;
       case MaxTimerDataType.CANCELLED:
@@ -336,10 +335,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             );
           }
         }
-        if ((maxTimerData.timeLeftSeconds / 60) === 5) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver5Minutes'), '', { duration: 5000 });
-        } else if ((maxTimerData.timeLeftSeconds / 60) === 1) {
-          this.snackBar.open(this.cts.getCustomText('booklet_msgSoonTimeOver1Minute'), '', { duration: 5000 });
+        if (this.tcs.timerWarningPoints.includes(minute)) {
+          const text = this.cts.getCustomText('booklet_msgSoonTimeOver').replace('%s', minute.toString(10));
+          this.snackBar.open(text, '', { duration: 5000 });
         }
         break;
       default:
@@ -351,23 +349,25 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (!this.tcs.rootTestlet) {
       return;
     }
+    let previousBlockLabel: string = null;
     const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
     for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
       const unitData = this.tcs.rootTestlet.getUnitAt(sequenceId);
+
+      const blockLabel = unitData.testletLabel || '';
+      if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
+        this.unitNavigationList.push(blockLabel);
+      }
+      previousBlockLabel = blockLabel;
+
       this.unitNavigationList.push({
         sequenceId,
         shortLabel: unitData.unitDef.naviButtonLabel,
         longLabel: unitData.unitDef.title,
         testletLabel: unitData.testletLabel,
-        disabled: unitData.unitDef.locked,
+        disabled: this.tcs.getUnitIsLocked(unitData),
         isCurrent: sequenceId === this.tcs.currentUnitSequenceId
       });
-    }
-    if (this.navButtons) {
-      setTimeout(() => {
-        this.navButtons.nativeElement.querySelector('.current-unit')
-          .scrollIntoView({ inline: 'center' });
-      }, 50);
     }
   }
 
@@ -405,6 +405,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   @HostListener('window:unload', ['$event'])
   unloadHandler(): void {
+    if (!this.tcs.testMode.saveResponses) {
+      return;
+    }
     if (this.cmd.connectionStatus$.getValue() !== 'ws-online') {
       this.bs.notifyDyingTest(this.tcs.testId);
     }

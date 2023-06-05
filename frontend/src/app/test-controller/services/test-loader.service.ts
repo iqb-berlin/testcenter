@@ -1,17 +1,15 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, from, Observable, of, Subject, Subscription
+  BehaviorSubject, from, Observable, of, Subject, Subscription, throwError
 } from 'rxjs';
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
-import {
-  CustomtextService, BookletConfig, TestMode
-} from '../../shared/shared.module';
+import { CustomtextService, BookletConfig, TestMode } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
-  TestControllerState, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
+  TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
 } from '../interfaces/test-controller.interfaces';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
@@ -46,6 +44,12 @@ export class TestLoaderService {
     this.tcs.testMode = new TestMode(testData.mode);
     this.restoreRestrictions(testData.laststate);
     this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
+
+    this.tcs.timerWarningPoints =
+      this.tcs.bookletConfig.unit_time_left_warnings
+        .split(',')
+        .map(x => parseInt(x, 10))
+        .filter(x => !Number.isNaN(x));
 
     await this.loadUnits();
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');

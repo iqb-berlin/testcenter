@@ -32,7 +32,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
         }
         const authData = authDataUntyped as AuthData;
         if (!authData || !authData.token) {
-          this.mds.setAuthData();
+          this.mds.logOut();
           this.mds.stopLoadingAnimation();
           return;
         }
@@ -66,8 +66,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
   }
 
   resetLogin(): void {
-    this.mds.setAuthData();
-    this.router.navigate(['/']);
+    this.mds.logOut();
   }
 
   ngOnDestroy(): void {

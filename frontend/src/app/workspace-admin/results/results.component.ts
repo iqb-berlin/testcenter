@@ -1,9 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  Component, OnDestroy, OnInit, ViewChild
+} from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
@@ -13,7 +16,7 @@ import { ReportType, ResultData } from '../workspace.interfaces';
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.css']
 })
-export class ResultsComponent implements OnInit {
+export class ResultsComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'selectCheckbox', 'groupName', 'bookletsStarted', 'numUnitsMin', 'numUnitsMax', 'numUnitsAvg', 'lastChange'
   ];
@@ -24,6 +27,8 @@ export class ResultsComponent implements OnInit {
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
+  private wsIdSubscription: Subscription;
+
   constructor(
     private backendService: BackendService,
     private deleteConfirmDialog: MatDialog,
@@ -33,8 +38,18 @@ export class ResultsComponent implements OnInit {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.updateTable();
+      this.wsIdSubscription = this.workspaceDataService.workspaceid$
+        .subscribe(() => {
+          this.updateTable();
+        });
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.wsIdSubscription) {
+      this.wsIdSubscription.unsubscribe();
+      this.wsIdSubscription = null;
+    }
   }
 
   updateTable(): void {

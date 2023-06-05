@@ -1,25 +1,25 @@
 <div class="sidebar-main">
   <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
-  <ng-container *ngFor="let blockLabelOrUnitList of menu; let i = index">
+  <ng-container *ngFor="let blockLabelOrUnit of menu; let i = index">
+
     <div
-      *ngIf="isArray(blockLabelOrUnitList); else testLetLabel"
+      *ngIf="blockLabelOrUnit.sequenceId; else testletLabel"
       style="width: 100%"
     >
       <a mat-raised-button
-        *ngFor="let u of blockLabelOrUnitList"
-        [class]="{'current': u.isCurrent}"
-        (click)="tcs.setUnitNavigationRequest(u.sequenceId.toString())"
-        [disabled]="u.disabled"
+        [class]="{'current': blockLabelOrUnit.isCurrent}"
+        (click)="tcs.setUnitNavigationRequest(blockLabelOrUnit.sequenceId.toString())"
+        [disabled]="blockLabelOrUnit.disabled"
       >
-        <mat-icon *ngIf="!tcs.isUnitContentLoaded(u.sequenceId)" matTooltip="wird geladen">
+        <mat-icon *ngIf="!tcs.isUnitContentLoaded(blockLabelOrUnit.sequenceId)" matTooltip="wird geladen">
           hourglass_empty
         </mat-icon>
-        {{u.longLabel}}
+        {{blockLabelOrUnit.longLabel}}
       </a>
     </div>
-    <ng-template #testLetLabel>
-      <h4 *ngIf="blockLabelOrUnitList || i > 0" class='testlet-label'>
-        {{blockLabelOrUnitList}}
+    <ng-template #testletLabel>
+      <h4 *ngIf="blockLabelOrUnit || i > 0" class='testlet-label'>
+        {{blockLabelOrUnit}}
       </h4>
     </ng-template>
   </ng-container>

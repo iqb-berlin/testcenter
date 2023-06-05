@@ -13,7 +13,8 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
   wsChannelName = 'test-sessions';
   initialData: TestSessionData[] = [];
 
-  observeSessionsMonitor(): Observable<TestSessionData[]> {
+  observeSessionsMonitor(groupName: string): Observable<TestSessionData[]> {
+    this.pollingEndpoint = `monitor/group/${groupName}/test-sessions`;
     return this.observeEndpointAndChannel();
   }
 

@@ -15,6 +15,8 @@ export interface AccessObject {
   flags: {
     locked?: boolean;
     running?: boolean;
+    scheduled?: number;
+    expired?: number;
     mode: 'RW' | 'RO'
   };
 }

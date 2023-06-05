@@ -72,6 +72,8 @@ END;
     require_once "src/helper/JSON.class.php";
     require_once "test/unit/mock-classes/PasswordMock.php";
     require_once "test/unit/mock-classes/ExternalFileMock.php";
+    require_once "src/data-collection/ExpirationState.class.php";
+    require_once "src/data-collection/ExpirationStateType.enum.php";
   }
 
   // crossValidate is implicitly tested by WorkspaceValidatorTest -> validate
@@ -100,7 +102,7 @@ END;
         13,
         0,
         1583053200,
-        45,
+        0,
         (object) ['somestr' => 'string']
       )
     );
@@ -208,6 +210,10 @@ END;
         'future_group',
         'An not yet active group'
       ),
+      'study_group' => new Group(
+        'study_group',
+        "A group for the study monitor"
+      )
     ];
 
     $result = $xmlFile->getGroups();
@@ -240,7 +246,7 @@ END;
         -1,
         0,
         1583053200,
-        45,
+        0,
         (object) ["somestr" => "string"]
       ),
       new Login(
@@ -259,7 +265,20 @@ END;
         -1,
         0,
         1583053200,
-        45,
+        0,
+        (object) ["somestr" => "string"],
+      ),
+      new Login (
+        'test-study-monitor',
+        'user123',
+        'monitor-study',
+        'study_group',
+        'A group for the study monitor',
+        ['' => []],
+        -1,
+        0,
+        0,
+        0,
         (object) ["somestr" => "string"],
       ),
       new Login(
@@ -285,7 +304,7 @@ END;
         -1,
         0,
         0,
-        0,
+        45,
         (object) ["somestr" => "string"]
       ),
       new Login(
@@ -298,7 +317,7 @@ END;
         -1,
         0,
         0,
-        0,
+        45,
         (object) ["somestr" => "string"]
       ),
       new Login(
@@ -347,6 +366,19 @@ END;
         'expired_group',
         'An already expired group',
         ['' => ['BOOKLET.SAMPLE-1']],
+        -1,
+        1583087400,
+        0,
+        0,
+        (object) ["somestr" => "string"]
+      ),
+      new Login(
+        'expired-study-monitor',
+        'user123',
+        'monitor-study',
+        'expired_group',
+        'An already expired group',
+        ['' => []],
         -1,
         1583087400,
         0,
