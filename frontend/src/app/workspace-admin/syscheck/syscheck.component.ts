@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { ConfirmDialogComponent, ConfirmDialogData, MainDataService } from '../../shared/shared.module';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { WorkspaceDataService } from '../workspacedata.service';
 import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
@@ -56,8 +56,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
       .subscribe((resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
-      }
-    );
+      });
   }
 
   isAllSelected(): boolean {

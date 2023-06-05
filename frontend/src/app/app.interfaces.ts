@@ -57,10 +57,6 @@ export class AppError extends Error implements AppErrorInterface {
   }
 }
 
-export function isAppError(arg: any): arg is AppError {
-  return 'label' in arg && 'description' in arg && 'type' in arg;
-}
-
 export interface SysCheckInfo {
   workspaceId: string;
   name: string;

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject, from, Observable, of, Subject, Subscription, throwError
+  BehaviorSubject, from, Observable, of, Subject, Subscription
 } from 'rxjs';
 import {
   concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
@@ -9,7 +9,7 @@ import {
 import { CustomtextService, BookletConfig, TestMode } from '../../shared/shared.module';
 import {
   isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
-  TestControllerState, TestData, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
+  TestControllerState, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
 } from '../interfaces/test-controller.interfaces';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef

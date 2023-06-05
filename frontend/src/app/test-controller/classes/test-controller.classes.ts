@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 
-import { MaxTimerDataType, NavigationLeaveRestrictionValue } from '../interfaces/test-controller.interfaces';
 import UAParser from 'ua-parser-js';
+import { MaxTimerDataType, NavigationLeaveRestrictionValue } from '../interfaces/test-controller.interfaces';
 
 export class TestletContentElement {
   readonly sequenceId: number;

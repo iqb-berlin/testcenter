@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
-import { Subscription, merge, combineLatest } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import {
   debounceTime, distinctUntilChanged, filter, map
 } from 'rxjs/operators';

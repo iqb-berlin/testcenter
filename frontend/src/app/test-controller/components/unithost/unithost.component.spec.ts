@@ -5,6 +5,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
 import { UnithostComponent } from './unithost.component';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';
 import { TestControllerService } from '../../services/test-controller.service';
@@ -12,7 +13,6 @@ import { BackendService } from '../../services/backend.service';
 import { MainDataService, BookletConfig } from '../../../shared/shared.module';
 // eslint-disable-next-line import/extensions
 import { VeronaNavigationDeniedReason } from '../../interfaces/verona.interfaces';
-import { MatDividerModule } from '@angular/material/divider';
 
 const bookletConfig = new BookletConfig();
 bookletConfig.setFromKeyValuePairs({
