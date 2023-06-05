@@ -258,7 +258,7 @@ class WorkspaceController extends Controller {
     /* @var XMLFileSysCheck $xmlFile */
     $xmlFile = $workspaceController->getFileById('SysCheck', $sysCheckName);
 
-    return $response->withJson(new SysCheck([
+    return $response->withJson([
       'name' => $xmlFile->getId(),
       'label' => $xmlFile->getLabel(),
       'canSave' => $xmlFile->hasSaveKey(),
@@ -269,7 +269,7 @@ class WorkspaceController extends Controller {
       'downloadSpeed' => $xmlFile->getSpeedtestDownloadParams(),
       'uploadSpeed' => $xmlFile->getSpeedtestUploadParams(),
       'workspaceId' => $workspaceId
-    ]));
+    ]);
   }
 
   public static function getSysCheckUnitAndPLayer(Request $request, Response $response): Response {
