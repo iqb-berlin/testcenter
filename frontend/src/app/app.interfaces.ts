@@ -33,7 +33,7 @@ export interface KeyValuePairs {
   [K: string]: string;
 }
 
-export type AppErrorType = 'session' | 'general' | 'backend' | 'network' | 'warning';
+export type AppErrorType = 'session' | 'general' | 'backend' | 'network' | 'warning' | 'fatal';
 
 interface AppErrorInterface {
   label: string;

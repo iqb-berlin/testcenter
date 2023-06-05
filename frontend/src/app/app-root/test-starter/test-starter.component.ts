@@ -44,13 +44,10 @@ export class TestStarterComponent implements OnInit, OnDestroy {
   }
 
   startTest(b: AccessObject): void {
-    this.bs.startTest(b.id).subscribe(testId => {
-      if (typeof testId === 'number') {
-        this.reloadTestList();
-      } else {
+    this.bs.startTest(b.id)
+      .subscribe(testId => {
         this.router.navigate(['/t', testId]);
-      }
-    });
+      });
   }
 
   resetLogin(): void {

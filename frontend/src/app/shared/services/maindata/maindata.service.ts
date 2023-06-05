@@ -75,10 +75,14 @@ export class MainDataService {
     this.cts.restoreDefault(true);
     this.bs.deleteSession()
       .subscribe(() => {
-        this._authData$.next(null);
-        localStorage.removeItem(localStorageAuthDataKey);
-        this.router.navigate(['/']);
+        this.quit();
       });
+  }
+
+  quit(): void {
+    this._authData$.next(null);
+    localStorage.removeItem(localStorageAuthDataKey);
+    this.router.navigate(['/']);
   }
 
   resetAuthData(): void {

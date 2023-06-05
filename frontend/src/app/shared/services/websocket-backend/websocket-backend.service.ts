@@ -54,14 +54,6 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
     this.http
       .get<T>(this.serverUrl + this.pollingEndpoint, { observe: 'response' })
-      .pipe(
-        // TODO interceptor should have interfered and moved to error-page
-        // https://github.com/iqb-berlin/testcenter-frontend/issues/53
-        catchError((err: AppError) => {
-          this.connectionStatus$.next('error');
-          return new Observable<T>();
-        })
-      )
       .subscribe((response: HttpResponse<T>) => {
         if (!this.data$) {
           return;

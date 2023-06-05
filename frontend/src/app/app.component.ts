@@ -36,6 +36,9 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.appErrorSubscription = this.mainDataService.appError$.subscribe(err => {
         console.log('appError$: ', err);
+        if (err.type === 'fatal') {
+          this.mainDataService.quit();
+        }
         const routeData = this.route.firstChild?.routeConfig?.data ?? {};
         // eslint-disable-next-line @typescript-eslint/dot-notation
         const disableGlobalErrorDisplay = 'disableGlobalErrorDisplay' in routeData; // some modules have their own error handling
@@ -65,14 +68,6 @@ export class AppComponent implements OnInit, OnDestroy {
       this.setupFocusListeners();
 
       this.backendService.getSysConfig().subscribe(sysConfig => {
-        if (!sysConfig) {
-          // this.mainDataService.({
-          //   label: 'Server-Problem: Konnte Konfiguration nicht laden',
-          //   description: 'getSysConfig ist fehlgeschlagen',
-          //   type: 'general'
-          // });
-          return;
-        }
         this.mainDataService.appConfig = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
         this.mainDataService.appTitle$.next(this.mainDataService.appConfig.appTitle);
         this.mainDataService.appConfig.applyBackgroundColors();
@@ -84,6 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
+      // TODO! don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
       this.backendService.getSysCheckInfo().subscribe(sysCheckConfigs => {
         this.mainDataService.sysCheckAvailable = !!sysCheckConfigs;
       });

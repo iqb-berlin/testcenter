@@ -36,7 +36,7 @@
     [closeCaption]="'Neu Laden' | customtext:'booklet_reload' | async"
     [additionalReport]="{
       login: loginName,
-      booklet: tcs.rootTestlet.title,
+      booklet: tcs.rootTestlet?.title,
       mode: tcs.testMode.modeLabel
     }"
   >

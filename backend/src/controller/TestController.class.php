@@ -380,7 +380,7 @@ class TestController extends Controller {
     return $response->withJson($commands);
   }
 
-  private static function updateTestState(int $testId, array $testSession, string $field, string $value) {
+  private static function updateTestState(int $testId, array $testSession, string $field, string $value): void {
     $newState = self::testDAO()->updateTestState($testId, [$field => $value]);
     self::testDAO()->addTestLog($testId, '"' . $field . '"', 0, $value);
 

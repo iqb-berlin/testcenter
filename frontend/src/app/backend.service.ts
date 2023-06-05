@@ -27,28 +27,24 @@ export class BackendService {
     return this.http.get<AuthData>(`${this.serverUrl}session`);
   }
 
-  startTest(bookletName: string): Observable<string | number> {
+  startTest(bookletName: string): Observable<number> {
     return this.http
-      .put<number>(`${this.serverUrl}test`, { bookletName })
-      .pipe(
-        map((testId: number) => String(testId)),
-        catchError((err: AppError) => of(err.code))
-      );
+      .put<number>(`${this.serverUrl}test`, { bookletName });
   }
 
   getSysConfig(): Observable<SysConfig | null> {
     return this.http
       .get<SysConfig>(`${this.serverUrl}system/config`)
       .pipe(
-        catchError(() => of(null))
+        catchError((error: AppError) => {
+          error.type = 'fatal';
+          throw error;
+        })
       );
   }
 
   getSysCheckInfo(): Observable<SysCheckInfo[]> {
     return this.http
-      .get<SysCheckInfo[]>(`${this.serverUrl}sys-checks`)
-      .pipe(
-        catchError(() => of([]))
-      );
+      .get<SysCheckInfo[]>(`${this.serverUrl}sys-checks`);
   }
 }
