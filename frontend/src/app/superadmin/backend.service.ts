@@ -39,7 +39,7 @@ export class BackendService {
           if (err.code === 403) {
             return of(false);
           }
-          throw AppError;
+          throw err;
         })
       );
   }
