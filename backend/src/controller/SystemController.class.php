@@ -21,7 +21,7 @@ class SystemController extends Controller {
   }
 
   public static function deleteWorkspaces(Request $request, Response $response): Response {
-    // TODO useful reaction of some workspaces could be deleted and some not
+    // TODO useful reaction if some workspaces could be deleted and some not
     $bodyData = JSON::decode($request->getBody()->getContents());
     $workspaceList = $bodyData->ws ?? [];
 
