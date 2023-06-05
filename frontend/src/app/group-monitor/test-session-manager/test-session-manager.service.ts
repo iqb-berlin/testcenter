@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
-  BehaviorSubject, combineLatest, interval, Observable, Subject, zip
+  BehaviorSubject, combineLatest, interval, Observable, of, Subject, zip
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import {
@@ -14,9 +14,10 @@ import {
   Selected, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates, CommandResponse, GotoCommandData
+  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
+import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
 
 @Injectable()
 export class TestSessionManager {
@@ -83,7 +84,8 @@ export class TestSessionManager {
 
   constructor(
     private bs: BackendService,
-    private bookletService: BookletService
+    private bookletService: BookletService,
+    @Inject(GROUP_MONITOR_CONFIG) private readonly groupMonitorConfig: GroupMonitorConfig
   ) {}
 
   connect(groupName: string): void {
@@ -98,7 +100,10 @@ export class TestSessionManager {
     this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._commandResponses$ = new Subject<CommandResponse>();
-    this._clock$ = interval(1000 * 60 * 3).pipe(startWith(0));
+    console.log(this.groupMonitorConfig.checkForIdleInterval);
+    this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
+      interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
+      of(0);
 
     this.monitor$ = this.bs.observeSessionsMonitor(groupName)
       .pipe(

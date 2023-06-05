@@ -155,7 +155,7 @@
       *ngSwitchCase="'testlet'"
       class="testlet"
       matTooltip="{{testletOrUnit.label}}"
-      [class]="{ 'timeup' : testletOrUnit.restrictions.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession.timeLeft[testletOrUnit.id] === 0 }"
+      [class]="{ 'timeup' : testletOrUnit.restrictions?.timeMax && testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testletOrUnit.id) && testSession.timeLeft[testletOrUnit.id] === 0 }"
     >
 
       <ng-container *ngTemplateOutlet="restrictions; context: { testlet: testletOrUnit }"></ng-container>
@@ -230,7 +230,7 @@
   </span>
 
   <span
-    *ngIf="testlet.restrictions.timeMax as timeMax"
+    *ngIf="testlet.restrictions?.timeMax as timeMax"
     class="unit restriction"
   >
     <ng-container *ngIf="(testSession.timeLeft && testSession.timeLeft.hasOwnProperty(testlet.id)); else: timerNotStarted">
