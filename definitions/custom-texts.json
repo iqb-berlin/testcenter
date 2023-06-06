@@ -285,7 +285,7 @@
   },
   "gm_booklet_error_general" : {
     "label" : "Fehleranzeige im Gruppen monitor: unbekannter Fehler",
-    "defaultvalue" : "Fehler beim Zugriff aus Testheft-Datei!"
+    "defaultvalue" : "Fehler beim Zugriff auf Testheft-Datei!"
   },
   "gm_control_goto_tooltip" : {
     "label" : "Tooltip über dem 'Springe zu'-Knopf, der erscheint, wenn kein Block gewählt ist",

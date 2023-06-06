@@ -15,7 +15,7 @@ will change the test definition again and then risk new errors.
 Our system allows multiple modes to run the test. Every login carries a token that declares
 this mode. You can first review only the design of the units and its arrangement,
 then switch on some restrictions and store responses, and finally evaluate the
-test like a testtaker.
+test like a testtaker.   
 
 * `RUN-DEMO` (default): Nur Ansicht (Demo)
 * `MONITOR-GROUP`: Testgruppen-Monitor (Demo)

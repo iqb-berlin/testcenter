@@ -27,13 +27,11 @@ export class BackendService extends WebsocketBackendService<TestSessionData[]> {
       .get(`${this.serverUrl}booklet/${bookletName}`, { headers, responseType: 'text' })
       .pipe(
         catchError((err: AppError) => {
+          // we don't rely on general error handler here, because this is to interwoven with subsequent requests
           if (err.code === 404) {
             // could potentially happen when booklet file was removed since test was started
-            // TODO interceptor be omitted
             return of(missingFileError);
           }
-          // TODO should interceptor should have interfered and moved to error-page ...
-          // https://github.com/iqb-berlin/testcenter-frontend/issues/53
           return of(generalError);
         })
       );

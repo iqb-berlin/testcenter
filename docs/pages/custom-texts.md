@@ -51,7 +51,19 @@ replacements:
 |app_title|Titel der Hauptanwendung|IQB-Testcenter|
 |booklet_codeToEnterPrompt|Aufforderung für die Eingabe eines Freigabewortes (Dialog-Box)|Bitte gib das Freigabewort ein, das angesagt wurde!|
 |booklet_codeToEnterTitle|Titel der Dialogbox für die Eingabe eines Freigabewortes|Aufgabenblock ist noch gesperrt|
-|booklet_errormessage|Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist|Es ist ein schwerer Fehler aufgetreten. Bitte rufe die Aufsichtsperson und beschreibe das Problem!|
+|booklet_console_warning|Warnung, die auf der Browserkonsole erscheinen soll|Du bist offenbar ein richtiger Experte und hast die Konsole geöffnet. Klasse! *sarcastic clapping*
+Gehe nun schnell zurück zum Test, du hast sonst nicht genug Zeit für die Aufgaben.|
+|booklet_errormessage|Nachricht an die Testperson, wenn ein schwerer Fehler aufgetreten ist|Leider gab es ein technisches Problem. Versuche Folgendes:
+
+1. Lade die Seite neu. Drücke dafür die Taste F5 oder am Tablet das Neu-Laden-Symbol oben rechts neben der Internetadresse.
+
+Funktioniert nicht? Dann...
+
+2. Melde dich mit deinen Zugangsdaten in einem anderen Browser neu an (Browser: Mozilla Firefox, Google Chrome, Apple Safari).
+
+Funktioniert auch nicht? Dann...
+
+3. Melde dich mit deinen Zugangsdaten an einem anderen Gerät neu an. Spreche das aber vorher mit der Lehrkraft bzw. Testleitung ab.|
 |booklet_loading|Test wird geladen|bitte warten|
 |booklet_loadingBlock|Meldung wenn ein Zeitgesteuerter Block betreten wurde, der noch nicht geladen wurde|Aufgabenblock wird geladen|
 |booklet_loadingUnit|Meldung wenn eine Unit betreten wird, die noch nicht geladen wurde|Aufgabe wird geladen|
@@ -71,7 +83,7 @@ replacements:
 |booklet_warningLeaveTimerBlockTextPrompt|Schalterbeschriftung für 'Zurück zum Test'|Du verlässt einen zeitbeschränkten Bereich und kannst nicht zurückkehren. Trotzdem weiterblättern?|
 |booklet_warningLeaveTimerBlockTitle|Titel für Warnung (Dialogbox) vor dem vorzeitigen Verlassen eines Abschnittes mit Timer|Aufgabenabschnitt verlassen?|
 |gm_auto_checkall|Der 'Immer alle Auswählen'-Schalter|Alle Tests gleichzeitig steuern|
-|gm_booklet_error_general|Fehleranzeige im Gruppen monitor: unbekannter Fehler|Fehler beim Zugriff aus Testheft-Datei!|
+|gm_booklet_error_general|Fehleranzeige im Gruppen monitor: unbekannter Fehler|Fehler beim Zugriff auf Testheft-Datei!|
 |gm_booklet_error_missing_file|Fehleranzeige im Gruppen monitor: Kein Zugriff auf Testheft-Datei!|Kein Zugriff auf Testheft-Datei!|
 |gm_booklet_error_missing_id|Fehleranzeige im Gruppen monitor: Kein Testheft zugeordnet|Kein Testheft zugeordnet!|
 |gm_booklet_error_xml|Fehleranzeige im Gruppen monitor: Invalides XML|Konnte Testheft-Datei nicht lesen!|
@@ -119,6 +131,7 @@ replacements:
 |login_pagesNaviPrompt|Aufforderungstext, weitere Seiten einer Unit auszuwählen, z. B. 'Wähle hier andere Seiten dieser Aufgabe:'|Weitere Seiten:|
 |login_testEndButtonLabel|Schalterbeschriftung für 'Test beenden'|Test beenden|
 |login_testResumeButtonLabel|Schalterbeschriftung für 'Test fortsetzen'|Test fortsetzen|
+|login_unsupportedBrowser|Warnung auf de Startseite, wenn nicht unterstützer Browser verwendet wird. Ersetzungen (%s): Browser-Name, Browser-Version.|Ihr Browser `%s %s` wird leider nicht offiziell unterstützt. Dies kann möglicherweise zu Fehlfunktionen führen! Bitte verwenden Sie eine aktuelle version fon <a href='https://www.getfirefox.org' target='_blank'>Firefox</a>, <a href='https://www.google.com/chrome/' target='_blank'>Google Chrome</a> oder <a href='https://support.apple.com/downloads/safari' target='_blank'>Safari.</a>|
 |syscheck_intro|Text auf der ersten Seite des System-Checks|Dieser Systemcheck soll gewährleisten, dass der von Ihnen verwendete Computer für eine bestimmte Befragung oder Testung geeignet ist.|
 |syscheck_questionsRequiredMessage|Nachricht an die Testperson, wenn einige Fragen, die als 'required' markiert sind, nicht beantwortet wurden|Bitte prüfen Sie die Eingaben (unvollständig):|
 |syscheck_questionsintro|Aufforderung, die Fragen (Questionnaire) zu beantworten|Bitte bearbeiten Sie die nachfolgenden Fragen.|
