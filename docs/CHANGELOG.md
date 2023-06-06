@@ -4,6 +4,12 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## [next]
+### Bugfixes
+* Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt. 
+  Zuvor wurde er unter bestimmten Umständen nicht korrekt angezeigt.
+
+
 ## 14.7.0
 ### Neue Features
 * Neue Rolle Studienmonitor (`monitor-study`). Der Studienmonitor hat Zugriff auf alle Gruppen per 
@@ -11,10 +17,12 @@ layout: default
 
 ### Verbesserungen
 * Rückmeldung beim Hochladen von Testtakers-Dateien über bereits vorhandene Logins oder Gruppen verbessert. 
+* Teilnehmer können auch mit dem Gruppen-Monitor ("Testleitungskonsole") nicht in zeitgesteuerte Blöcke verschoben
+  werden, wenn deren Zeit abgelaufen ist. Dies wird im Gruppen-Monitor nun auch visuell dargestellt.
 
 ### Sicherheit
 * Content-Security-Policy hinzugefügt.
-* Unischere Abhängihkeiten im Broadcasting Service entfernt
+* Unsichere Abhängigkeiten im Broadcasting Service entfernt
 
 
 ## 14.6.0

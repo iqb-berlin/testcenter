@@ -220,7 +220,7 @@ class AdminDAO extends DAO {
             WHERE
                 login_sessions.workspace_id = :workspaceId
                 AND tests.id is not null'
-      . ($groupSelector ? " AND login_sessions.group_name IN ($groupSelector)" : '')
+      . ($groupSelector ? " AND logins.group_name IN ($groupSelector)" : '')
       . " AND logins.mode IN ($modeSelector)";
 
     $testSessionsData = $this->_($sql, [':workspaceId' => $workspaceId], true);

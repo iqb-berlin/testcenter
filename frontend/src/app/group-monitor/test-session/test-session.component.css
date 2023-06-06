@@ -119,8 +119,10 @@ h2 {
 
 .unit.restriction mat-icon {
   font-size: 0.7em;
-  height: auto;
-  width: auto;
+  height: 1em;
+  width: 1em;
+  margin: 0;
+  padding: 0;
 }
 
 .unit.current {
@@ -182,6 +184,14 @@ h2 {
 .unit.marked.selected::before,
 .testlet.marked.selected::before {
   background: rgba(178, 200, 160, 0.9);
+}
+
+.testlet.timeup {
+  border-color: #333333;
+}
+
+.testlet.timeup .unit {
+  background: #333333;
 }
 
 .locked .testlet {
