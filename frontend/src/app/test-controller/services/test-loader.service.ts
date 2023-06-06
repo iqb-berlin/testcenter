@@ -307,7 +307,6 @@ export class TestLoaderService {
       const bookletConfigElements = oDOM.documentElement.getElementsByTagName('BookletConfig');
 
       this.tcs.bookletConfig = new BookletConfig();
-      // this.tcs.bookletConfig.setFromKeyValuePairs(MainDataService.getTestConfig()); // TODO ! ?
       if (bookletConfigElements.length > 0) {
         this.tcs.bookletConfig.setFromXml(bookletConfigElements[0]);
       }
