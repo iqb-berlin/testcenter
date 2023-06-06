@@ -107,10 +107,6 @@ export class ErrorInterceptor implements HttpInterceptor {
         errorType = 'session';
         // ignoreError = true;
         break;
-      case 422:
-        // apiError.info = ?? TODO - from request body
-        // statusMessage = 'Die übermittelten Objekte sind fehlerhaft!';
-        break;
       case 423:
         statusMessage = 'Test is gesperrt!';
         break;
