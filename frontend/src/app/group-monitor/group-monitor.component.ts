@@ -8,7 +8,7 @@ import { interval, Observable, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus,
   MainDataService
@@ -211,6 +211,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
       if (confirmed) {
         this.isClosing = true;
         this.tsm.commandFinishEverything()
+          .pipe(catchError(err => {
+            this.isClosing = false;
+            throw err;
+          }))
           .subscribe(() => {
             setTimeout(() => { this.router.navigateByUrl('/r/login'); }, 5000); // go away
           });
