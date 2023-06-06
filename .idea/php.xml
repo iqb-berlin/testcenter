@@ -81,7 +81,6 @@
       <extension name="ZendDebugger" enabled="false" />
       <extension name="ZendUtils" enabled="false" />
       <extension name="amqp" enabled="false" />
-      <extension name="apache" enabled="false" />
       <extension name="apcu" enabled="false" />
       <extension name="bcmath" enabled="false" />
       <extension name="bz2" enabled="false" />

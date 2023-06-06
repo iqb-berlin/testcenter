@@ -25,10 +25,10 @@
     "ext-pdo_mysql": "*",
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
-    "ext-zip": "*"
+    "ext-zip": "*",
+    "ext-apache": "*"
   },
   "suggest": {
-    "ext-apache": "*"
   },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
