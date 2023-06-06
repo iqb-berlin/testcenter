@@ -112,17 +112,9 @@ export class UsersComponent implements OnInit {
         !userObject.isSuperadmin,
         (<FormGroup>afterClosedResult).get('pw').value
       )
-        .subscribe(isOKay => {
-          if (isOKay) {
-            this.snackBar.open('Status geändert', '', { duration: 1000 });
-            this.updateObjectList();
-          } else {
-            this.snackBar.open(
-              'Konnte Status nicht ändern (falsches Kennwort?)',
-              'Fehler',
-              { duration: 5000 }
-            );
-          }
+        .subscribe(() => {
+          this.snackBar.open('Status geändert', '', { duration: 1000 });
+          this.updateObjectList();
         });
     });
   }

@@ -30,14 +30,16 @@ export class BackendService {
     return this.http.patch<boolean>(`${this.serverUrl}user/${userId}/password`, { p: password });
   }
 
-  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<boolean> {
+  setSuperUserStatus(userId: number, changeToSuperUser: boolean, password: string): Observable<void> {
     return this.http
-      .patch(`${this.serverUrl}user/${userId}/super-admin/${changeToSuperUser ? 'on' : 'off'}`, { p: password })
+      .patch<void>(`${this.serverUrl}user/${userId}/super-admin/${changeToSuperUser ? 'on' : 'off'}`, { p: password })
       .pipe(
-        map(() => true),
         catchError((err: AppError) => {
           if (err.code === 403) {
-            return of(false);
+            throw new AppError({
+              description: 'Bitte geben Sie zur Sicherheit *Ihr eigenes* Kennwort korrekt ein!',
+              label: 'Falsches Kennwort'
+            });
           }
           throw err;
         })
