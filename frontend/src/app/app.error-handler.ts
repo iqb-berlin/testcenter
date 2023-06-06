@@ -15,7 +15,6 @@ export class AppErrorHandler implements ErrorHandler {
 
       // unwrap error, if it comes from an "Uncaught (in promise)"-error
       if (error.promise && error.rejection) {
-        console.log('!!!! i am', error);
         // eslint-disable-next-line no-param-reassign
         error = error.rejection;
       }

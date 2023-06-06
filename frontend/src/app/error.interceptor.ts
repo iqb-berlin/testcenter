@@ -12,14 +12,6 @@ export class ErrorInterceptor implements HttpInterceptor {
   // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     console.log('## ErrorInterceptor', request.url);
-    // if (!this.mainDataService.appConfig) {
-    //   this.mainDataService.appError$.next({
-    //     label: 'Verbindung zum Server konnte nicht hergestellt werden!',
-    //     description: 'AppConfig konnte nicht geladen werden.',
-    //     category: 'ERROR'
-    //   });
-    //   return throwError(new ApiError(500, 'Verbindung zum Server konnte nicht hergestellt werden!'));
-    // }
 
     return next.handle(request).pipe(
       catchError(error => {
@@ -105,10 +97,9 @@ export class ErrorInterceptor implements HttpInterceptor {
       case 410:
         statusMessage = 'Anmeldung abgelaufen oder noch nicht gültig. Bitte erneut anmelden!';
         errorType = 'session';
-        // ignoreError = true;
         break;
       case 423:
-        statusMessage = 'Test is gesperrt!';
+        statusMessage = 'Test ist gesperrt!';
         break;
       case 500:
         statusMessage = 'Allgemeines Server-Problem.';

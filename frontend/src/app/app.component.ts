@@ -79,7 +79,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-      // TODO! don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
+      // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
       this.backendService.getSysCheckInfo().subscribe(sysCheckConfigs => {
         this.mainDataService.sysCheckAvailable = !!sysCheckConfigs;
       });
@@ -87,32 +87,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setupFocusListeners() {
-    // let hidden = '';
-    // let visibilityChange = '';
-    if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
+    if (typeof document.hidden !== 'undefined') {
       document.addEventListener('visibilitychange', () => {
         this.mainDataService.appWindowHasFocus$.next(!document.hidden);
       }, false);
-      // hidden = 'hidden';
-      // visibilityChange = 'visibilitychange';
-      // TODO can this be removed? seems like compat stuff for old browsers. commented out for now
-    // } else if (typeof document['msHidden'] !== 'undefined') {
-    //   hidden = 'msHidden';
-    //   visibilityChange = 'msvisibilitychange';
-    //   // eslint-disable-next-line @typescript-eslint/dot-notation
-    // } else if (typeof document['mozHidden'] !== 'undefined') {
-    //   hidden = 'mozHidden';
-    //   visibilityChange = 'mozHidden';
-    //   // eslint-disable-next-line @typescript-eslint/dot-notation
-    // } else if (typeof document['webkitHidden'] !== 'undefined') {
-    //   hidden = 'webkitHidden';
-    //   visibilityChange = 'webkitvisibilitychange';
     }
-    // if (hidden && visibilityChange) {
-    //   document.addEventListener(visibilityChange, () => {
-    //     this.mainDataService.appWindowHasFocus$.next(!document[hidden]);
-    //   }, false);
-    // }
     window.addEventListener('blur', () => {
       this.mainDataService.appWindowHasFocus$.next(document.hasFocus());
     });

@@ -84,8 +84,6 @@ export class MainDataService {
   }
 
   reloadPage(): void {
-    // this.mainDataService.resetAuthData();
-    // eslint-disable-next-line no-restricted-globals
     this.bs.clearCache();
     setTimeout(() => { window.location.href = '/'; }, 100);
   }
