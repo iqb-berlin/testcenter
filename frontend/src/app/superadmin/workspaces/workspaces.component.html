@@ -7,6 +7,7 @@
         matTooltip="Arbeitsbereich hinzufügen"
         matTooltipPosition="below"
         data-cy="add-workspace"
+        color="primary"
         >
           <mat-icon>add</mat-icon>
       </button>
@@ -16,6 +17,7 @@
         matTooltip="Markierte/n Arbeitsbereich/e löschen"
         matTooltipPosition="below"
         data-cy="delete-workspace"
+        color="primary"
       >
         <mat-icon>delete</mat-icon>
       </button>
@@ -25,10 +27,13 @@
         matTooltip="Arbeitsbereich umbenennen"
         matTooltipPosition="below"
         data-cy="rename-workspace"
+        color="primary"
       >
         <mat-icon>edit</mat-icon>
       </button>
     </div>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="!workspaces"></mat-progress-bar>
 
     <mat-table [dataSource]="workspaces" matSort>
       <ng-container matColumnDef="selectCheckbox">

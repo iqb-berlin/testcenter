@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -38,6 +37,7 @@ import { AppConfigComponent } from './settings/app-config.component';
 import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
 import { EditCustomTextComponent } from './settings/edit-custom-text.component';
 import { SharedModule } from '../shared/shared.module';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -66,7 +66,6 @@ import { SharedModule } from '../shared/shared.module';
     MatCardModule,
     MatExpansionModule,
     ReactiveFormsModule,
-    MatProgressSpinnerModule,
     MatDialogModule,
     MatButtonModule,
     MatTooltipModule,
@@ -80,7 +79,8 @@ import { SharedModule } from '../shared/shared.module';
     MatNativeDateModule,
     MatDatepickerModule,
     MatDividerModule,
-    SharedModule
+    SharedModule,
+    MatProgressBarModule
   ],
   exports: [
     SuperadminComponent

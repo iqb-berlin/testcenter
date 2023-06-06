@@ -27,13 +27,11 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
 
       this.bs.getSessionData().subscribe(authDataUntyped => {
         if (typeof authDataUntyped === 'number') {
-          this.mds.stopLoadingAnimation();
           return;
         }
         const authData = authDataUntyped as AuthData;
         if (!authData || !authData.token) {
           this.mds.logOut();
-          this.mds.stopLoadingAnimation();
           return;
         }
         this.accessObjects = authData.claims;

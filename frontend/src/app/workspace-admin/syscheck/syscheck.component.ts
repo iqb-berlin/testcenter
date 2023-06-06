@@ -18,9 +18,8 @@ import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
 })
 export class SyscheckComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details-os', 'details-browser'];
-  resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
-  // prepared for selection if needed sometime
-  tableselectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
+  resultDataSource: MatTableDataSource<SysCheckStatistics> | null = new MatTableDataSource<SysCheckStatistics>([]);
+  tableSelectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -51,7 +50,8 @@ export class SyscheckComponent implements OnInit, OnDestroy {
   }
 
   updateTable(): void {
-    this.tableselectionCheckbox.clear();
+    this.tableSelectionCheckbox.clear();
+    this.resultDataSource = null;
     this.bs.getSysCheckReportsOverview(this.wds.workspaceID)
       .subscribe((resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
@@ -60,34 +60,34 @@ export class SyscheckComponent implements OnInit, OnDestroy {
   }
 
   isAllSelected(): boolean {
-    const numSelected = this.tableselectionCheckbox.selected.length;
+    const numSelected = this.tableSelectionCheckbox.selected.length;
     const numRows = this.resultDataSource.data.length;
     return numSelected === numRows;
   }
 
   masterToggle(): void {
     this.isAllSelected() ?
-      this.tableselectionCheckbox.clear() :
-      this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableSelectionCheckbox.clear() :
+      this.resultDataSource.data.forEach(row => this.tableSelectionCheckbox.select(row));
   }
 
   downloadReportsCSV(): void {
-    if (this.tableselectionCheckbox.selected.length > 0) {
+    if (this.tableSelectionCheckbox.selected.length > 0) {
       const dataIds: string[] = [];
-      this.tableselectionCheckbox.selected.forEach(element => {
+      this.tableSelectionCheckbox.selected.forEach(element => {
         dataIds.push(element.id);
       });
 
       this.wds.downloadReport(dataIds, ReportType.SYSTEM_CHECK, 'iqb-testcenter-syscheckreports.csv');
 
-      this.tableselectionCheckbox.clear();
+      this.tableSelectionCheckbox.clear();
     }
   }
 
   deleteReports(): void {
-    if (this.tableselectionCheckbox.selected.length > 0) {
+    if (this.tableSelectionCheckbox.selected.length > 0) {
       const selectedReports: string[] = [];
-      this.tableselectionCheckbox.selected.forEach(element => {
+      this.tableSelectionCheckbox.selected.forEach(element => {
         selectedReports.push(element.id);
       });
 

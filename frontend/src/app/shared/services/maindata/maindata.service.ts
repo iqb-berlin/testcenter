@@ -22,8 +22,6 @@ export class MainDataService {
     return this._authData$.asObservable();
   }
 
-  isSpinnerOn$ = new BehaviorSubject<boolean>(false);
-  progressVisualEnabled = true;
   appConfig: AppConfig = null;
   sysCheckAvailable = false;
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
@@ -53,14 +51,6 @@ export class MainDataService {
     private bs: BackendService,
     private router: Router
   ) {
-  }
-
-  showLoadingAnimation(): void {
-    this.isSpinnerOn$.next(true);
-  }
-
-  stopLoadingAnimation(): void {
-    this.isSpinnerOn$.next(false);
   }
 
   setAuthData(authData: AuthData): void {

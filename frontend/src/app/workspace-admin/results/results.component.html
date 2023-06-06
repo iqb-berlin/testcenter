@@ -1,9 +1,10 @@
 <div class="columnhost flex-column">
   <div class="flex-row">
     <button
+      color="primary"
       mat-raised-button
       (click)="downloadResponsesCSV()"
-      [disabled]="!tableselectionCheckbox.hasValue()"
+      [disabled]="!tableSelectionCheckbox.hasValue()"
       matTooltip="Download markierte Gruppen als CSV für Excel"
       matTooltipPosition="below"
       data-cy="download-responses"
@@ -11,8 +12,9 @@
       <mat-icon>cloud_download</mat-icon>Antworten
     </button>
     <button
+      color="primary"
       mat-raised-button (click)="downloadLogsCSV()"
-      [disabled]="!tableselectionCheckbox.hasValue()"
+      [disabled]="!tableSelectionCheckbox.hasValue()"
       matTooltip="Download markierte Gruppen als CSV für Excel"
       matTooltipPosition="below"
       data-cy="download-logs"
@@ -20,9 +22,10 @@
       <mat-icon>cloud_download</mat-icon>Logs
     </button>
     <button
+      color="primary"
       mat-raised-button
       (click)="downloadReviewsCSV()"
-      [disabled]="!tableselectionCheckbox.hasValue()"
+      [disabled]="!tableSelectionCheckbox.hasValue()"
       matTooltip="Download markierte Gruppen als CSV für Excel"
       matTooltipPosition="below"
       data-cy="download-comments"
@@ -30,9 +33,10 @@
       <mat-icon>cloud_download</mat-icon>Kommentare
     </button>
     <button
+      color="primary"
       mat-raised-button
       (click)="deleteData()"
-      [disabled]="!tableselectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"
+      [disabled]="!tableSelectionCheckbox.hasValue() || (workspaceDataService.wsRole !== 'RW')"
       matTooltip="Löschen Ergebnisdaten aus der Datenbank für markierte Gruppen"
       matTooltipPosition="below"
       data-cy="delete-files"
@@ -41,18 +45,20 @@
     </button>
   </div>
 
+  <mat-progress-bar mode="indeterminate" *ngIf="!resultDataSource"></mat-progress-bar>
+
   <mat-table [dataSource]="resultDataSource" matSort>
     <ng-container matColumnDef="selectCheckbox">
       <mat-header-cell *matHeaderCellDef [style.max-width.px]="70">
         <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="tableselectionCheckbox.hasValue() && isAllSelected()"
-                      [indeterminate]="tableselectionCheckbox.hasValue() && !isAllSelected()">
+                      [checked]="tableSelectionCheckbox.hasValue() && isAllSelected()"
+                      [indeterminate]="tableSelectionCheckbox.hasValue() && !isAllSelected()">
         </mat-checkbox>
       </mat-header-cell>
       <mat-cell *matCellDef="let row; let i = index" [style.max-width.px]="70">
         <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? tableselectionCheckbox.toggle(row) : null"
-                      [checked]="tableselectionCheckbox.isSelected(row)"
+                      (change)="$event ? tableSelectionCheckbox.toggle(row) : null"
+                      [checked]="tableSelectionCheckbox.isSelected(row)"
                       [attr.data-cy]="'results-checkbox' + i">
         </mat-checkbox>
       </mat-cell>

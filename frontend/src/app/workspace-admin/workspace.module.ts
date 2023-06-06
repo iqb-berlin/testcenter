@@ -8,7 +8,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
@@ -46,7 +45,6 @@ import {
     MatCardModule,
     MatExpansionModule,
     ReactiveFormsModule,
-    MatProgressSpinnerModule,
     MatDialogModule,
     MatButtonModule,
     MatTooltipModule,

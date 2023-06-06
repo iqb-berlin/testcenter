@@ -36,7 +36,7 @@ interface FileStats {
   styleUrls: ['./files.component.css']
 })
 export class FilesComponent implements OnInit, OnDestroy {
-  files: { [type in IQBFileType]?: MatTableDataSource<IQBFile> } = {};
+  files: { [type in IQBFileType]?: MatTableDataSource<IQBFile> } | null = null;
   fileTypes = IQBFileTypes;
   displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
   fileNameAlias = 'fileforvo';
@@ -148,6 +148,7 @@ export class FilesComponent implements OnInit, OnDestroy {
         }
       });
     } else {
+      // TODO disable this button if nothing is selected instead of this
       this.messageDialog.open(MessageDialogComponent, {
         width: '400px',
         data: <MessageDialogData>{
@@ -161,7 +162,7 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   updateFileList(empty = false): void {
     if (empty) {
-      this.files = {};
+      this.files = null;
     } else {
       this.bs.getFiles(this.wds.workspaceID)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))

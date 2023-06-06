@@ -21,9 +21,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
     'selectCheckbox', 'groupName', 'bookletsStarted', 'numUnitsMin', 'numUnitsMax', 'numUnitsAvg', 'lastChange'
   ];
 
-  resultDataSource = new MatTableDataSource<ResultData>([]);
-  // prepared for selection if needed sometime
-  tableselectionCheckbox = new SelectionModel<ResultData>(true, []);
+  resultDataSource: MatTableDataSource<ResultData> | null = new MatTableDataSource<ResultData>([]);
+  tableSelectionCheckbox = new SelectionModel<ResultData>(true, []);
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -53,25 +52,25 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   updateTable(): void {
-    this.tableselectionCheckbox.clear();
-    this.backendService.getResults(this.workspaceDataService.workspaceID).subscribe(
-      (resultData: ResultData[]) => {
+    this.tableSelectionCheckbox.clear();
+    this.resultDataSource = null;
+    this.backendService.getResults(this.workspaceDataService.workspaceID)
+      .subscribe((resultData: ResultData[]) => {
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
         this.resultDataSource.sort = this.sort;
-      }
-    );
+      });
   }
 
   isAllSelected(): boolean {
-    const numSelected = this.tableselectionCheckbox.selected.length;
+    const numSelected = this.tableSelectionCheckbox.selected.length;
     const numRows = this.resultDataSource.data.length;
     return numSelected === numRows;
   }
 
   masterToggle(): void {
     this.isAllSelected() ?
-      this.tableselectionCheckbox.clear() :
-      this.resultDataSource.data.forEach(row => this.tableselectionCheckbox.select(row));
+      this.tableSelectionCheckbox.clear() :
+      this.resultDataSource.data.forEach(row => this.tableSelectionCheckbox.select(row));
   }
 
   downloadResponsesCSV(): void {
@@ -87,23 +86,23 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   downloadCSVReport(reportType: ReportType, filename: string): void {
-    if (this.tableselectionCheckbox.selected.length > 0) {
+    if (this.tableSelectionCheckbox.selected.length > 0) {
       const dataIds: string[] = [];
 
-      this.tableselectionCheckbox.selected.forEach(element => {
+      this.tableSelectionCheckbox.selected.forEach(element => {
         dataIds.push(element.groupName);
       });
 
       this.workspaceDataService.downloadReport(dataIds, reportType, filename);
 
-      this.tableselectionCheckbox.clear();
+      this.tableSelectionCheckbox.clear();
     }
   }
 
   deleteData(): void {
-    if (this.tableselectionCheckbox.selected.length > 0) {
+    if (this.tableSelectionCheckbox.selected.length > 0) {
       const selectedGroups: string[] = [];
-      this.tableselectionCheckbox.selected.forEach(element => {
+      this.tableSelectionCheckbox.selected.forEach(element => {
         selectedGroups.push(element.groupName);
       });
 
@@ -132,7 +131,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.backendService.deleteResponses(this.workspaceDataService.workspaceID, selectedGroups)
             .subscribe(() => {
               this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });
-              this.tableselectionCheckbox.clear();
+              this.tableSelectionCheckbox.clear();
               this.updateTable();
             });
         });

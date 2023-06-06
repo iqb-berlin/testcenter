@@ -181,12 +181,11 @@ export class WorkspacesComponent implements OnInit {
   updateUserList(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
+      this.userListDatasource = null;
       this.backendService.getUsersByWorkspace(this.selectedWorkspaceId)
         .subscribe(dataresponse => {
           this.userListDatasource = new MatTableDataSource(dataresponse);
         });
-    } else {
-      this.userListDatasource = null;
     }
   }
 

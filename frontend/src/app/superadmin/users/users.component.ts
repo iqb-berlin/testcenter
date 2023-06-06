@@ -208,12 +208,11 @@ export class UsersComponent implements OnInit {
   updateWorkspaceList(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
+      this.workspacelistDatasource = null;
       this.bs.getWorkspacesByUser(this.selectedUser)
         .subscribe(dataresponse => {
           this.workspacelistDatasource = new MatTableDataSource(dataresponse);
         });
-    } else {
-      this.workspacelistDatasource = null;
     }
   }
 

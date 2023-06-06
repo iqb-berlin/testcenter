@@ -67,8 +67,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.mainDataService.progressVisualEnabled = false;
-
       this.subscriptions.errorReporting = this.mainDataService.appError$
         .pipe(filter(e => !!e))
         .subscribe(() => this.tcs.errorOut());
@@ -399,8 +397,6 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         this.subscriptions[subscriptionKey] = null;
       });
     this.tls.reset();
-
-    this.mainDataService.progressVisualEnabled = true;
   }
 
   @HostListener('window:unload', ['$event'])

@@ -1,26 +1,48 @@
 <div class="flex-row" [style.justify-content]="'space-between'">
   <div class="flex-column" [style.width.%]="50">
     <div class="flex-row">
-      <button mat-raised-button matTooltip="Administrator:in hinzufügen" matTooltipPosition="below" data-cy="add-user"
-              (click)="addObject()">
+      <button
+        mat-raised-button
+        matTooltip="Administrator:in hinzufügen"
+        matTooltipPosition="below"
+        data-cy="add-user"
+        (click)="addObject()"
+        color="primary"
+      >
         <mat-icon>add</mat-icon>
       </button>
-      <button mat-raised-button data-cy="delete-user"
-              matTooltip="Markierte Administrator:in löschen" matTooltipPosition="below"
-              (click)="deleteObject()">
+      <button
+        mat-raised-button data-cy="delete-user"
+        matTooltip="Markierte Administrator:in löschen"
+        matTooltipPosition="below"
+        (click)="deleteObject()"
+        color="primary"
+      >
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-raised-button data-cy="change-password"
-              matTooltip="Kennwort ändern" matTooltipPosition="below"
-              (click)="changePassword()">
+      <button
+        mat-raised-button
+        data-cy="change-password"
+        matTooltip="Kennwort ändern"
+        matTooltipPosition="below"
+        (click)="changePassword()"
+        color="primary"
+      >
         <mat-icon>edit</mat-icon>
       </button>
-      <button mat-raised-button data-cy="change-superadmin"
-              matTooltip="Superadmin-Status ändern" matTooltipPosition="below"
-              (click)="changeSuperadminStatus()">
+      <button
+        mat-raised-button
+        data-cy="change-superadmin"
+        matTooltip="Superadmin-Status ändern"
+        matTooltipPosition="below"
+        (click)="changeSuperadminStatus()"
+        color="primary"
+      >
         <mat-icon>edit</mat-icon>
       </button>
     </div>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="!objectsDatasource"></mat-progress-bar>
 
     <mat-table [dataSource]="objectsDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
@@ -58,8 +80,15 @@
 
     <div *ngIf="selectedUser > 0" class="flex-row" [style.justify-content]="'space-between'">
       <div>Zugriffsrechte für {{ selectedUserName }}:</div>
-      <button mat-raised-button (click)="saveWorkspaces()" matTooltip="Speichern"
-              matTooltipPosition="above" [disabled]="!pendingWorkspaceChanges" data-cy="save">
+      <button
+        mat-raised-button
+        (click)="saveWorkspaces()"
+        matTooltip="Speichern"
+        matTooltipPosition="above"
+        [disabled]="!pendingWorkspaceChanges"
+        data-cy="save"
+        color="primary"
+      >
         <mat-icon>save</mat-icon>
       </button>
     </div>

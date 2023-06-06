@@ -49,12 +49,22 @@
   <div class="flex-row-wrap" [style.align-items]="'center'" [style.gap.px]="10">
     <img class="logo-img" [src]="logoImageBase64" />
     <input #hiddenimgfileinput type="file" (change)="imgFileChange($event)" [hidden]="true"/>
-    <button mat-raised-button (click)="hiddenimgfileinput.click()"
-            matTooltip="Logo hochladen/aktualisieren" matTooltipPosition="above">
+    <button
+      mat-raised-button
+      (click)="hiddenimgfileinput.click()"
+      matTooltip="Logo hochladen/aktualisieren"
+      matTooltipPosition="above"
+      color="primary"
+    >
       <mat-icon>cloud_upload</mat-icon>
     </button>
-    <button mat-raised-button (click)="removeLogoImg()"
-            matTooltip="Logo auf Standard setzen" matTooltipPosition="above">
+    <button
+      mat-raised-button
+      (click)="removeLogoImg()"
+      matTooltip="Logo auf Standard setzen"
+      matTooltipPosition="above"
+      color="primary"
+    >
       <mat-icon>delete</mat-icon>
     </button>
     <alert *ngIf="imageError" level="error" [text]="imageError"></alert>
@@ -63,7 +73,7 @@
   <h4>Hintergrundfarbe Anwendung</h4>
   <mat-form-field appearance="fill">
     <input matInput formControlName="backgroundBody" placeholder="Farbe" #backgroundInput>
-    <button mat-icon-button matSuffix (click)="backgroundColorInput.click()">
+    <button mat-icon-button matSuffix (click)="backgroundColorInput.click()" color="primary">
       <mat-icon>edit</mat-icon>
     </button>
   </mat-form-field>

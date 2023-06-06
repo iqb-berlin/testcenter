@@ -12,7 +12,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -69,7 +68,6 @@ import { ErrorInterceptor } from './error.interceptor';
     MatInputModule,
     MatMenuModule,
     MatProgressBarModule,
-    MatProgressSpinnerModule,
     MatRadioModule,
     MatTabsModule,
     MatToolbarModule,
