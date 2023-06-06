@@ -25,10 +25,20 @@ export class BackendService {
   }
 
   saveReport(workspaceId: number, sysCheckName: string, sysCheckReport: SysCheckReport): Observable<void> {
-    return this.http.put<void>(
-      `${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/report`,
-      { ...sysCheckReport }
-    );
+    const url = `${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckName}/report`;
+    return this.http
+      .put<void>(url, { ...sysCheckReport })
+      .pipe(
+        catchError((err: AppError) => {
+          if (err.code === 403) {
+            throw new AppError({
+              description: 'Bitte geben Sie unten das Kennwort ein, das Sie von der Projektleitung erhalten haben!',
+              label: 'Falsches Kennwort'
+            });
+          }
+          throw err;
+        })
+      );
   }
 
   getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer | boolean> {

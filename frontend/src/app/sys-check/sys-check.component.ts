@@ -11,7 +11,7 @@ import { UnitAndPlayerContainer } from './sys-check.interfaces';
 })
 
 export class SysCheckComponent implements OnInit {
-  checkLabel = 'Bitte warten';
+  checkLabel = '';
   constructor(
     private bs: BackendService,
     public ds: SysCheckDataService,
