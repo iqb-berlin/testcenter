@@ -79,7 +79,7 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.wsIdSubscription = this.wds.workspaceid$
+      this.wsIdSubscription = this.wds.workspaceId$
         .subscribe(() => {
           this.updateFileList();
         });
@@ -129,7 +129,7 @@ export class FilesComponent implements OnInit, OnDestroy {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          this.bs.deleteFiles(this.wds.workspaceID, filesToDelete)
+          this.bs.deleteFiles(this.wds.workspaceId, filesToDelete)
             .subscribe((fileDeletionReport: FileDeletionReport) => {
               const message = [];
               if (fileDeletionReport.deleted.length > 0) {
@@ -164,7 +164,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     if (empty) {
       this.files = null;
     } else {
-      this.bs.getFiles(this.wds.workspaceID)
+      this.bs.getFiles(this.wds.workspaceId)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
         .subscribe(fileList => {
           this.files = {};
@@ -234,7 +234,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   }
 
   download(file: IQBFile): void {
-    this.bs.getFile(this.wds.workspaceID, file.type, file.name)
+    this.bs.getFile(this.wds.workspaceId, file.type, file.name)
       .subscribe((fileData: Blob) => {
         FileService.saveBlobToFile(fileData as Blob, file.name);
       });

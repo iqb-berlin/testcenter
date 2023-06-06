@@ -35,7 +35,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.wsIdSubscription = this.wds.workspaceid$
+      this.wsIdSubscription = this.wds.workspaceId$
         .subscribe(() => {
           this.updateTable();
         });
@@ -52,7 +52,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
   updateTable(): void {
     this.tableSelectionCheckbox.clear();
     this.resultDataSource = null;
-    this.bs.getSysCheckReportsOverview(this.wds.workspaceID)
+    this.bs.getSysCheckReportsOverview(this.wds.workspaceId)
       .subscribe((resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);
         this.resultDataSource.sort = this.sort;
@@ -113,7 +113,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
           if (result === false) {
             return;
           }
-          this.bs.deleteSysCheckReports(this.wds.workspaceID, selectedReports)
+          this.bs.deleteSysCheckReports(this.wds.workspaceId, selectedReports)
             .subscribe(fileDeletionReport => {
               const message = [];
               if (fileDeletionReport.deleted.length > 0) {

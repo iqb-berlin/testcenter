@@ -28,11 +28,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.mainDataService.appSubTitle$.next('');
       this.routingSubscription = this.route.params.subscribe((params: Params) => {
-        this.workspaceDataService.workspaceID = params.ws;
+        this.workspaceDataService.workspaceId$.next(params.ws);
         const workspace = this.mainDataService.getAccessObject('workspaceAdmin', params.ws);
         this.workspaceDataService.wsName = workspace.label;
         this.workspaceDataService.wsRole = workspace.flags.mode;
-        this.workspaceDataService.workspaceid$.next(params.ws);
         this.mainDataService.appSubTitle$.next(
           `Verwaltung "${this.workspaceDataService.wsName}" (${this.workspaceDataService.wsRole})`
         );

@@ -37,7 +37,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.wsIdSubscription = this.workspaceDataService.workspaceid$
+      this.wsIdSubscription = this.workspaceDataService.workspaceId$
         .subscribe(() => {
           this.updateTable();
         });
@@ -54,7 +54,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   updateTable(): void {
     this.tableSelectionCheckbox.clear();
     this.resultDataSource = null;
-    this.backendService.getResults(this.workspaceDataService.workspaceID)
+    this.backendService.getResults(this.workspaceDataService.workspaceId)
       .subscribe((resultData: ResultData[]) => {
         this.resultDataSource = new MatTableDataSource<ResultData>(resultData);
         this.resultDataSource.sort = this.sort;
@@ -128,7 +128,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
           if (result === false) {
             return;
           }
-          this.backendService.deleteResponses(this.workspaceDataService.workspaceID, selectedGroups)
+          this.backendService.deleteResponses(this.workspaceDataService.workspaceId, selectedGroups)
             .subscribe(() => {
               this.snackBar.open('Löschen erfolgreich.', 'OK', { duration: 5000 });
               this.tableSelectionCheckbox.clear();

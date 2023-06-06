@@ -26,16 +26,11 @@ export class BackendService {
   ) {
   }
 
-  // TODO! can be removed?
-  // getWorkspace(workspaceId: string): Observable<WorkspaceData> {
-  //   return this.http.get<WorkspaceData>(`${this.serverUrl}workspace/${workspaceId}`);
-  // }
-
-  getFiles(workspaceId: string): Observable<GetFileResponseData> {
+  getFiles(workspaceId: number): Observable<GetFileResponseData> {
     return this.http.get<GetFileResponseData>(`${this.serverUrl}workspace/${workspaceId}/files`);
   }
 
-  deleteFiles(workspaceId: string, filesToDelete: Array<string>): Observable<FileDeletionReport> {
+  deleteFiles(workspaceId: number, filesToDelete: Array<string>): Observable<FileDeletionReport> {
     return this.http.request<FileDeletionReport>(
       'delete',
       `${this.serverUrl}workspace/${workspaceId}/files`,
@@ -43,20 +38,20 @@ export class BackendService {
     );
   }
 
-  getResults(workspaceId: string): Observable<ResultData[]> {
+  getResults(workspaceId: number): Observable<ResultData[]> {
     return this.http.get<ResultData[]>(`${this.serverUrl}workspace/${workspaceId}/results`, {});
   }
 
-  deleteResponses(workspaceId: string, groups: string[]): Observable<void> {
+  deleteResponses(workspaceId: number, groups: string[]): Observable<void> {
     return this.http
       .request<void>('delete', `${this.serverUrl}workspace/${workspaceId}/responses`, { body: { groups } });
   }
 
-  getSysCheckReportsOverview(workspaceId: string): Observable<SysCheckStatistics[]> {
+  getSysCheckReportsOverview(workspaceId: number): Observable<SysCheckStatistics[]> {
     return this.http.get<SysCheckStatistics[]>(`${this.serverUrl}workspace/${workspaceId}/sys-check/reports/overview`);
   }
 
-  deleteSysCheckReports(workspaceId: string, checkIds: string[]): Observable<FileDeletionReport> {
+  deleteSysCheckReports(workspaceId: number, checkIds: string[]): Observable<FileDeletionReport> {
     return this.http.request<FileDeletionReport>(
       'delete',
       `${this.serverUrl}workspace/${workspaceId}/sys-check/reports`,
@@ -64,7 +59,7 @@ export class BackendService {
     );
   }
 
-  getReport(workspaceId: string, reportType: ReportType, dataIds: string[]) : Observable<Blob> {
+  getReport(workspaceId: number, reportType: ReportType, dataIds: string[]) : Observable<Blob> {
     return this.http
       .get(
         `${this.serverUrl}workspace/${workspaceId}/report/${reportType}`,
@@ -80,12 +75,12 @@ export class BackendService {
       );
   }
 
-  getFile(workspaceId: string, fileType: string, fileName: string): Observable<Blob> {
+  getFile(workspaceId: number, fileType: string, fileName: string): Observable<Blob> {
     return this.http
       .get(`${this.serverUrl}workspace/${workspaceId}/file/${fileType}/${fileName}`, { responseType: 'blob' });
   }
 
-  postFile(workspaceId: string, formData: FormData): Observable<UploadResponse> {
+  postFile(workspaceId: number, formData: FormData): Observable<UploadResponse> {
     return this.http.post<UploadReport>(
       `${this.serverUrl}workspace/${workspaceId}/file`,
       formData,
