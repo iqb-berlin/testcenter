@@ -17,6 +17,10 @@ export class AttachmentTitlePipe implements PipeTransform {
   }
 
   transform(attachment: AttachmentData): string {
+    if (this.template == null) {
+      return '';
+    }
+
     // TODO make missing data available in FE
     return this.template
       // .replace('%GROUP%', attachment)

@@ -72,10 +72,10 @@ export class ErrorInterceptor implements HttpInterceptor {
         .then(text => {
           throw new AppError({
             code: httpError.status,
-            label: 'XYZg',
+            label: 'Download konnte nicht bereitgestellt werden!',
             description: text,
             type: 'network',
-            details: `details:${httpError.message}`,
+            details: httpError.message,
             errorId: httpError.headers.get('error-id')
           });
         });

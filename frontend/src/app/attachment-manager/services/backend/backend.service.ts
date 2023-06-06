@@ -48,7 +48,6 @@ export class BackendService {
       );
   }
 
-  // TODO error handling
   getAttachmentPage(attachmentId: string, labelTemplate: string | null): Observable<Blob> {
     return this.http.get(
       `${this.serverUrl}attachment/${attachmentId}/page`,
@@ -63,7 +62,6 @@ export class BackendService {
       );
   }
 
-  // TODO error handling
   getAttachmentPages(labelTemplate: string): Observable<Blob> {
     return this.http.get(
       `${this.serverUrl}attachments/pages`,
