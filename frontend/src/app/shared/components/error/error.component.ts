@@ -5,6 +5,7 @@ import { Router, RouterState } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppError } from '../../../app.interfaces';
 import { MainDataService } from '../../services/maindata/maindata.service';
+import UAParser from 'ua-parser-js';
 
 @Component({
   selector: 'error',
@@ -19,6 +20,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   error: AppError;
   errorDetailsOpen = false;
   defaultCloseCaption: string;
+  browser: UAParser.IResult;
   private appErrorSubscription: Subscription;
 
   constructor(
@@ -28,11 +30,13 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.browser = new UAParser().getResult();
     setTimeout(() => {
-      this.appErrorSubscription = this.mainDataService.appError$.subscribe(err => {
-        this.error = err;
-        this.setDefaultCloseCaption();
-      });
+      this.appErrorSubscription = this.mainDataService.appError$
+        .subscribe(err => {
+          this.error = err;
+          this.setDefaultCloseCaption();
+        });
     });
   }
 

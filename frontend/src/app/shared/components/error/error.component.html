@@ -22,6 +22,9 @@
         <p *ngFor="let item of additionalReport | keyvalue">
           <b>{{item.key}}:</b>{{item.value}}
         </p>
+        <p><b>Browser: </b>{{browser.browser.name}} {{browser.browser.version}}</p>
+        <p><b>Betriebssystem: </b>{{browser.os.name}} {{browser.os.version}}</p>
+        <p><b>Gerät: </b>{{browser.device.type}} {{browser.device.vendor}} {{browser.device.model}}</p>
       </div>
     </div>
   </mat-card-content>
@@ -29,6 +32,6 @@
     <button mat-raised-button color="primary" (click)="closeClick()">
       {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
     </button>
-    <button mat-raised-button color="none" (click)="toggleErrorDetails()">Fehlerdetails</button>
+    <button mat-raised-button (click)="toggleErrorDetails()">Fehlerdetails</button>
   </mat-card-actions>
 </mat-card>
