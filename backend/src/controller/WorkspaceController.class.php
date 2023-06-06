@@ -339,7 +339,7 @@ class WorkspaceController extends Controller {
     }
 
     if (strtoupper((string) $report->keyPhrase) !== strtoupper($sysCheck->getSaveKey())) {
-      throw new HttpError("Wrong key `$report->keyPhrase`", 400);
+      throw new HttpError("Wrong key `$report->keyPhrase`", 403);
     }
 
     $report->checkId = $sysCheckName;
