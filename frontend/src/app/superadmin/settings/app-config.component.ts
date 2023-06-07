@@ -8,7 +8,7 @@ import { BackendService } from '../backend.service';
 import { AppSettings, DEFAULT_LOGO } from '../../shared/interfaces/app-config.interfaces';
 
 @Component({
-  selector: 'app-app-config',
+  selector: 'tc-app-config',
   templateUrl: 'app-config.component.html',
   styleUrls: ['app-config.component.css']
 })

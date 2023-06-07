@@ -22,7 +22,7 @@ import { TestSessionManager } from './test-session-manager/test-session-manager.
 import { BookletUtil } from './booklet/booklet.util';
 
 @Component({
-  selector: 'app-group-monitor',
+  selector: 'tc-group-monitor',
   templateUrl: './group-monitor.component.html',
   styleUrls: [
     '../../monitor-layout.css',

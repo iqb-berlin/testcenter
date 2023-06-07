@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-add-attachment',
+  selector: 'tc-add-attachment',
   templateUrl: './add-attachment.component.html'
 })
 export class AddAttachmentComponent {

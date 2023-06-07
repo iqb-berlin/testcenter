@@ -5,7 +5,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-custom-text',
+  selector: 'tc-custom-text',
   template: `
     <div class="flex-row"  [style.align-items]="'center'" [style.margin-bottom.px]="10">
       <div class="flex-column" [style.width.%]="40">

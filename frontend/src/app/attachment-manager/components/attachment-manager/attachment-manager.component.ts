@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { MainDataService } from '../../../shared/services/maindata/maindata.service';
 
 @Component({
-  selector: 'app-attachment-manager',
+  selector: 'tc-attachment-manager',
   templateUrl: './attachment-manager.component.html',
   styleUrls: ['../../../../monitor-layout.css']
 })

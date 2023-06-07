@@ -20,7 +20,7 @@ export interface CustomTextDataGroup {
 }
 
 @Component({
-  selector: 'app-custom-texts',
+  selector: 'tc-custom-texts',
   template: `
     <form [formGroup]="customTextsForm">
       <mat-accordion>
@@ -30,14 +30,14 @@ export interface CustomTextDataGroup {
               <h4>{{ctGroup.value.label}}</h4>
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <app-custom-text *ngFor="let ct of ctGroup.value.texts"
+          <tc-custom-text *ngFor="let ct of ctGroup.value.texts"
                            [parentForm]="customTextsForm"
                            [ctKey]="ct.key"
                            [ctLabel]="ct.label"
                            [ctDefaultValue]="ct.defaultValue"
                            [ctInitialValue]="ct.value"
                            (valueChange)="valueChanged($event)">
-          </app-custom-text>
+          </tc-custom-text>
           <button mat-raised-button color="primary" [disabled]="!dataChanged" (click)="saveData()">
             Speichern
           </button>
