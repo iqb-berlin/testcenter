@@ -59,7 +59,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
   set files(files: File[]) {
     this._files = files;
-    this._filedates = files.map(file => file.lastModified)
+    this._filedates = files.map(file => file.lastModified);
   }
 
   @Input()
@@ -93,8 +93,8 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
     this.status = UploadStatus.busy;
     const formData = new FormData();
-    for (let file of this._files){
-      formData.append(this.fileAlias.concat('[]'), file, file.name)
+    for (const file of this._files) {
+      formData.append(this.fileAlias.concat('[]'), file, file.name);
     }
     if ((typeof this.folderName !== 'undefined') && (typeof this.folder !== 'undefined')) {
       if (this.folderName.length > 0) {
