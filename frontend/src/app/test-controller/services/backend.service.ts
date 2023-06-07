@@ -3,12 +3,11 @@ import { Injectable, Inject } from '@angular/core';
 import {
   HttpClient, HttpEvent, HttpEventType, HttpParams
 } from '@angular/common/http';
-import { Observable, of, Subscription } from 'rxjs';
-import { catchError, filter, map } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import {
   UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString
 } from '../interfaces/test-controller.interfaces';
-import { AppError } from '../../app.interfaces';
 
 @Injectable({
   providedIn: 'root'

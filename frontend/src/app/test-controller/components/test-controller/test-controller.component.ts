@@ -107,7 +107,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         .subscribe(maxTimerEvent => this.handleMaxTimer(maxTimerEvent));
 
       this.subscriptions.currentUnit = combineLatest([this.tcs.currentUnitSequenceId$, this.tcs.testStructureChanges$])
-        .subscribe(c => {
+        .subscribe(() => {
           this.refreshUnitMenu();
           this.setUnitScreenHeader();
         });
@@ -389,12 +389,18 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private addConsoleWarning(): void {
-    const consoleWarning = this.cts.getCustomText('booklet_console_warning');
-    console.log(consoleWarning);
-    if (!consoleWarning) {
-      return;
-    }
-    console.clear();
-    console.log(`%c${consoleWarning}`, 'font-size: 250%; background: yellow; color: red; display:block; border: 3px solid red; border-radius: 10px; padding: 0.5em;');
+    const style = `
+      font-size: 200%;
+      background: yellow;
+      color: red;
+      display:block;
+      border: 3px solid red;
+      border-radius: 10px;
+      padding: 0.5em;`;
+    this.cts.getCustomText$('booklet_console_warning')
+      .subscribe(text => {
+        console.clear();
+        console.log(`%c${text}`, style);
+      });
   }
 }
