@@ -24,19 +24,19 @@
         <p><b>{{error.label}}</b></p>
         <p>{{error.description}}</p>
         <p>{{error.details}}</p>
-        <p><b>Error-Id:</b> {{error.errorId}}</p>
+        <p *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</p>
         <p *ngFor="let item of additionalReport | keyvalue">
           <b>{{item.key}}:</b>{{item.value}}
         </p>
         <p><b>Browser: </b>{{browser.browser.name}} {{browser.browser.version}}</p>
         <p><b>Betriebssystem: </b>{{browser.os.name}} {{browser.os.version}}</p>
         <p><b>Gerät: </b>{{browser.device.type}} {{browser.device.vendor}} {{browser.device.model}}</p>
-        <br>
-        <p><b>Weitere Fehler:</b></p>
+        <br *ngIf="errorBuffer.length">
+        <p *ngIf="errorBuffer.length"><b>Weitere Fehler:</b></p>
         <div *ngFor="let err of errorBuffer">
           <p><b>{{err.label}}: </b>{{err.description}}</p>
           <p>{{err.details}}</p>
-          <p><b>Error-Id:</b> {{err.errorId}}</p>
+          <p *ngIf="err.errorId"><b>Error-Id:</b> {{err.errorId}}</p>
         </div>
       </div>
     </div>

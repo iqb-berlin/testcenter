@@ -32,7 +32,8 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.appErrorSubscription = this.mainDataService.appError$
         .subscribe(err => {
-          console.log('appError$ in appComponent: ', err);
+          console.log('appError$ in appComponent: ', err.label, err.type, err.message, err.name, err.description, err);
+
           if (err.type === 'fatal') {
             this.mainDataService.quit();
           }

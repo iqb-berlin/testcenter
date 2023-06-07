@@ -247,11 +247,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
           this.unitsLoading$.next(value);
         },
         error: err => {
-          this.mainDataService.appError$.next(new AppError({
+          this.mainDataService.appError = new AppError({
             label: `Unit konnte nicht geladen werden. ${err.info}`,
             description: (err.info) ? err.info : err,
             type: 'network'
-          }));
+          });
         },
         complete: () => this.prepareUnit()
       });
@@ -326,11 +326,11 @@ export class UnithostComponent implements OnInit, OnDestroy {
   private prepareIframe(): void {
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
-      this.mainDataService.appError$.next(new AppError({
+      this.mainDataService.appError = new AppError({
         label: 'Veralteter Browser',
         description: 'Ihr browser is veraltet oder inkompatibel mit dieser Anwendung!',
         type: 'general'
-      }));
+      });
       return;
     }
     this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');

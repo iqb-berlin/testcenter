@@ -3,6 +3,8 @@ import {
   BehaviorSubject, Observable, ReplaySubject, Subject
 } from 'rxjs';
 import { Router } from '@angular/router';
+import { distinct } from 'rxjs/internal/operators/distinct';
+import { shareReplay } from 'rxjs/internal/operators/shareReplay';
 import { CustomtextService } from '../customtext/customtext.service';
 import {
   AccessObject, AppError, AuthAccessType, AuthData
@@ -16,7 +18,19 @@ const localStorageAuthDataKey = 'iqb-tc-a';
   providedIn: 'root'
 })
 export class MainDataService {
-  appError$ = new ReplaySubject<AppError>(1);
+  private _appError$ = new ReplaySubject<AppError>(1);
+  get appError$(): Observable<AppError> {
+    return this._appError$
+      .pipe(
+        distinct(error => error.stack),
+        shareReplay(0)
+      );
+  }
+
+  set appError(error: AppError) {
+    this._appError$.next(error);
+  }
+
   private _authData$ = new BehaviorSubject<AuthData | null>(null);
   get authData$(): Observable<AuthData | null> {
     return this._authData$.asObservable();

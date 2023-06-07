@@ -20,16 +20,16 @@ export class AppErrorHandler implements ErrorHandler {
       }
 
       if (error instanceof AppError) {
-        this.mainDataService.appError$.next(error);
+        this.mainDataService.appError = error;
         return;
       }
 
-      this.mainDataService.appError$.next(new AppError({
-        type: 'general',
+      this.mainDataService.appError = new AppError({
+        type: 'script',
         label: `Programmfehler: ${error.name}`,
         description: error.message,
-        details: error.stack
-      }));
+        details: error.stack.split('\n').shift()
+      });
     });
   }
 }
