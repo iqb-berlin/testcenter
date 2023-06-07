@@ -181,40 +181,19 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       });
 
       dialogRef.afterClosed().subscribe(result => {
-        if (typeof result !== 'undefined') {
-          if (result !== false) {
-            const targetSelection = result.target;
-            ReviewDialogComponent.savedName = result.sender;
-            if (targetSelection === 'u') {
-              this.bs.saveUnitReview(
-                this.tcs.testId,
-                this.tcs.currentUnitDbKey,
-                result.priority,
-                dialogRef.componentInstance.getSelectedCategories(),
-                result.sender ? `${result.sender}: ${result.entry}` : result.entry
-              ).subscribe(ok => {
-                if (!ok) {
-                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 5000 });
-                } else {
-                  this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
-                }
-              });
-            } else {
-              this.bs.saveTestReview(
-                this.tcs.testId,
-                result.priority,
-                dialogRef.componentInstance.getSelectedCategories(),
-                result.sender ? `${result.sender}: ${result.entry}` : result.entry
-              ).subscribe(ok => {
-                if (!ok) {
-                  this.snackBar.open('Konnte Kommentar nicht speichern', '', { duration: 5000 });
-                } else {
-                  this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
-                }
-              });
-            }
-          }
+        if (!result) {
+          return;
         }
+        ReviewDialogComponent.savedName = result.sender;
+        this.bs.saveReview(
+          this.tcs.testId,
+          (result.target === 'u') ? this.tcs.currentUnitDbKey : null,
+          result.priority,
+          dialogRef.componentInstance.getSelectedCategories(),
+          result.sender ? `${result.sender}: ${result.entry}` : result.entry
+        ).subscribe(() => {
+          this.snackBar.open('Kommentar gespeichert', '', { duration: 5000 });
+        });
       });
     }
   }

@@ -20,31 +20,17 @@ export class BackendService {
   ) {
   }
 
-  saveUnitReview(testId: string, unitName: string, priority: number, categories: string, entry: string)
-    : Observable<boolean> {
-    return this.http
-      .put(`${this.serverUrl}test/${testId}/unit/${unitName}/review`, { priority, categories, entry })
-      .pipe(
-        map(() => true),
-        catchError((err: AppError) => {
-          // TODO use the default error handler as reaction instead of the snackbar
-          console.warn(`saveUnitReview Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
-      );
-  }
-
-  saveTestReview(testId: string, priority: number, categories: string, entry: string): Observable<boolean> {
-    return this.http
-      .put(`${this.serverUrl}test/${testId}/review`, { priority, categories, entry })
-      .pipe(
-        map(() => true),
-        catchError((err: AppError) => {
-          // TODO use the default error handler as reaction instead of the snackbar
-          console.warn(`saveTestReview Api-Error: ${err.code} ${err.description} `);
-          return of(false);
-        })
-      );
+  saveReview(
+    testId: string,
+    unitName: string | null,
+    priority: number,
+    categories: string,
+    entry: string
+  ) : Observable<void> {
+    return this.http.put<void>(
+      `${this.serverUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
+      { priority, categories, entry }
+    );
   }
 
   getTestData(testId: string): Observable<TestData> {
