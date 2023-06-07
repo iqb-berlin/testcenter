@@ -6,7 +6,7 @@ import {
   interval, Observable, Subscription, take
 } from 'rxjs';
 import UAParser from 'ua-parser-js';
-import { AppError, AppErrorType } from '../../../app.interfaces';
+import { AppError } from '../../../app.interfaces';
 import { MainDataService } from '../../services/maindata/maindata.service';
 
 @Component({
@@ -24,6 +24,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   errorDetailsOpen = false;
   defaultCloseCaption: string;
   browser: UAParser.IResult;
+  url: string;
   private appErrorSubscription: Subscription;
   private restartTimerSubscription: Subscription;
   restartTimer$: Observable<number>;
@@ -53,6 +54,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
           this.errorBuffer.push(this.error);
         }
         this.error = err;
+
+        this.url = window.location.href;
 
         this.setDefaultCloseCaption();
       });
