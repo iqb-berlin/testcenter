@@ -104,6 +104,10 @@ export class ErrorInterceptor implements HttpInterceptor {
       case 500:
         statusMessage = 'Allgemeines Server-Problem.';
         break;
+      case 503:
+        statusMessage = 'Der Server ist augenblicklich nicht erreichbar';
+        errorType = 'network_temporally';
+        break;
       default:
         statusMessage = 'Unbekanntes Verbindungsproblem';
         errorType = 'network';

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { SysCheckInfo, AuthData, AppError } from './app.interfaces';
 import { SysConfig } from './shared/shared.module';
 
@@ -37,7 +37,9 @@ export class BackendService {
       .get<SysConfig>(`${this.serverUrl}system/config`)
       .pipe(
         catchError((error: AppError) => {
-          error.type = 'fatal';
+          if (error.code !== 503) {
+            error.type = 'fatal';
+          }
           throw error;
         })
       );

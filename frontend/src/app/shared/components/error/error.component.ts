@@ -2,10 +2,12 @@ import {
   Component, Input, OnDestroy, OnInit
 } from '@angular/core';
 import { Router, RouterState } from '@angular/router';
-import { Subscription } from 'rxjs';
+import {
+  interval, Observable, Subscription, take
+} from 'rxjs';
+import UAParser from 'ua-parser-js';
 import { AppError } from '../../../app.interfaces';
 import { MainDataService } from '../../services/maindata/maindata.service';
-import UAParser from 'ua-parser-js';
 
 @Component({
   selector: 'error',
@@ -22,6 +24,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
   defaultCloseCaption: string;
   browser: UAParser.IResult;
   private appErrorSubscription: Subscription;
+  private restartTimerSubscription: Subscription;
+  restartTimer$: Observable<number>;
+  waitUnitAutomaticRestartSeconds: number = 120;
 
   constructor(
     private mainDataService: MainDataService,
@@ -36,11 +41,14 @@ export class ErrorComponent implements OnInit, OnDestroy {
         .subscribe(err => {
           this.error = err;
           this.setDefaultCloseCaption();
+          if (err.type === 'network_temporally') {
+            this.startRestartTimer();
+          }
         });
     });
   }
 
-  private setDefaultCloseCaption() {
+  private setDefaultCloseCaption(): void {
     if (this.error.type === 'session') {
       this.defaultCloseCaption = 'Neu Anmelden';
       return;
@@ -48,8 +56,25 @@ export class ErrorComponent implements OnInit, OnDestroy {
     this.defaultCloseCaption = undefined;
   }
 
+  private startRestartTimer(): void {
+    if (this.restartTimer$) {
+      return;
+    }
+    this.restartTimer$ = interval(1000)
+      .pipe(take(this.waitUnitAutomaticRestartSeconds));
+    this.restartTimerSubscription = this.restartTimer$
+      .subscribe({
+        complete: () => {
+          this.mainDataService.reloadPage();
+        }
+      });
+  }
+
   ngOnDestroy(): void {
     this.appErrorSubscription.unsubscribe();
+    if (this.restartTimerSubscription) {
+      this.restartTimerSubscription.unsubscribe();
+    }
   }
 
   toggleErrorDetails(): void {

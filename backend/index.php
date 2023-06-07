@@ -35,7 +35,7 @@ try {
   $errorMiddleware = $app->addErrorMiddleware(true, true, true);
   $errorMiddleware->setDefaultErrorHandler(new ErrorHandler());
 
-  if(file_exists(ROOT_DIR . '/backend/config/init.lock')) {
+  if (($_SERVER['REQUEST_METHOD'] !== 'OPTIONS') and file_exists(ROOT_DIR . '/backend/config/init.lock')) {
     http_response_code(503);
     header('Retry-After:30');
     echo "Service is restarting";

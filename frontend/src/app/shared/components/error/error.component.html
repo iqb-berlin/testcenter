@@ -12,6 +12,11 @@
   </mat-card-title>
   <mat-card-content>
     <ng-content></ng-content>
+    <div *ngIf="error.type === 'network_temporally'">
+      <h3 *ngIf="restartTimer$ | async as second">
+        Die Anwendung wird wird in {{ waitUnitAutomaticRestartSeconds - second }} Sekunden neu geladen.
+      </h3>
+    </div>
     <div id="errorDetailsWrapper" *ngIf="errorDetailsOpen">
       <b>Fehlerbericht</b>
       <div id="errorDetails">
