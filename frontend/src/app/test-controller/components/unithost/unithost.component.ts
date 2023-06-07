@@ -248,7 +248,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         },
         error: err => {
           this.mainDataService.appError$.next(new AppError({
-            label: `Unit konnte nicht geladen werden. ${err.info}`, // TODO which item failed? TODO
+            label: `Unit konnte nicht geladen werden. ${err.info}`,
             description: (err.info) ? err.info : err,
             type: 'network'
           }));

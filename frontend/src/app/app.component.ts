@@ -28,24 +28,19 @@ export class AppComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) { }
 
-  closeErrorBox(): void {
-    this.showError = false;
-  }
-
   ngOnInit(): void {
     setTimeout(() => {
-      this.appErrorSubscription = this.mainDataService.appError$.subscribe(err => {
-        console.log('appError$: ', err);
-        if (err.type === 'fatal') {
-          this.mainDataService.quit();
-        }
-        const routeData = this.route.firstChild?.routeConfig?.data ?? {};
-        // eslint-disable-next-line @typescript-eslint/dot-notation
-        const disableGlobalErrorDisplay = 'disableGlobalErrorDisplay' in routeData; // some modules have their own error handling
-        if (err && !disableGlobalErrorDisplay) {
-          this.showError = true;
-        }
-      });
+      this.appErrorSubscription = this.mainDataService.appError$
+        .subscribe(err => {
+          console.log('appError$ in appComponent: ', err);
+          if (err.type === 'fatal') {
+            this.mainDataService.quit();
+          }
+          if (!this.disableGlobalErrorDisplay()) {
+            this.showError = true;
+          }
+        });
+
       this.appTitleSubscription = combineLatest([this.mainDataService.appTitle$, this.mainDataService.appSubTitle$])
         .subscribe(titles => {
           if (titles[1]) {
@@ -67,23 +62,31 @@ export class AppComponent implements OnInit, OnDestroy {
 
       this.setupFocusListeners();
 
-      this.backendService.getSysConfig().subscribe(sysConfig => {
-        this.mainDataService.appConfig = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
-        this.mainDataService.appTitle$.next(this.mainDataService.appConfig.appTitle);
-        this.mainDataService.appConfig.applyBackgroundColors();
-        this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
-
-        const authData = this.mainDataService.getAuthData();
-        if (authData) {
-          this.customtextService.addCustomTexts(authData.customTexts);
-        }
-      });
+      this.backendService.getSysConfig()
+        .subscribe(sysConfig => {
+          this.mainDataService.appConfig = new AppConfig(sysConfig, this.customtextService, this.sanitizer);
+          this.mainDataService.appTitle$.next(this.mainDataService.appConfig.appTitle);
+          this.mainDataService.appConfig.applyBackgroundColors();
+          this.mainDataService.globalWarning = this.mainDataService.appConfig.warningMessage;
+          const authData = this.mainDataService.getAuthData();
+          if (authData) {
+            this.customtextService.addCustomTexts(authData.customTexts);
+          }
+        });
 
       // TODO don't ask for Syschecks on start, do it on SysCheck starter. Save calls.
-      this.backendService.getSysCheckInfo().subscribe(sysCheckConfigs => {
-        this.mainDataService.sysCheckAvailable = !!sysCheckConfigs;
-      });
+      this.backendService.getSysCheckInfo()
+        .subscribe(sysCheckConfigs => {
+          this.mainDataService.sysCheckAvailable = !!sysCheckConfigs;
+        });
     });
+  }
+
+  // some modules have their own error handling
+  private disableGlobalErrorDisplay(): boolean {
+    const routeData = this.route.firstChild?.routeConfig?.data ?? {};
+    // eslint-disable-next-line @typescript-eslint/dot-notation
+    return 'disableGlobalErrorDisplay' in routeData;
   }
 
   private setupFocusListeners() {
@@ -101,6 +104,10 @@ export class AppComponent implements OnInit, OnDestroy {
     window.addEventListener('unload', () => {
       this.mainDataService.appWindowHasFocus$.next(!document.hidden);
     });
+  }
+
+  closeErrorBox(): void {
+    this.showError = false;
   }
 
   ngOnDestroy(): void {

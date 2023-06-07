@@ -20,6 +20,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   @Input() closeCaption: string;
   @Input() additionalReport: { [key: string]: string };
   error: AppError;
+  errorBuffer: AppError[] = [];
   errorDetailsOpen = false;
   defaultCloseCaption: string;
   browser: UAParser.IResult;
@@ -27,7 +28,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   private restartTimerSubscription: Subscription;
   restartTimer$: Observable<number>;
   waitUnitAutomaticRestartSeconds: number = 120;
-  unclosableTypes: Array<AppErrorType> = ['fatal', 'network_temporally'];
+  uncloseable = false;
 
   constructor(
     private mainDataService: MainDataService,
@@ -37,16 +38,24 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.browser = new UAParser().getResult();
-    setTimeout(() => {
-      this.appErrorSubscription = this.mainDataService.appError$
-        .subscribe(err => {
-          this.error = err;
-          this.setDefaultCloseCaption();
-          if (err.type === 'network_temporally') {
-            this.startRestartTimer();
-          }
-        });
-    });
+    this.appErrorSubscription = this.mainDataService.appError$
+      .subscribe(err => {
+        if (err.type === 'fatal') {
+          this.uncloseable = true;
+        }
+
+        if (err.type === 'network_temporally') {
+          this.uncloseable = true;
+          this.startRestartTimer();
+        }
+
+        if (this.error) {
+          this.errorBuffer.push(this.error);
+        }
+        this.error = err;
+
+        this.setDefaultCloseCaption();
+      });
   }
 
   private setDefaultCloseCaption(): void {
