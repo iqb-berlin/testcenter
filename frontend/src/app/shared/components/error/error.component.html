@@ -2,6 +2,7 @@
   <mat-card-title>
     <alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
     <button
+      *ngIf="!unclosableTypes.includes(error.type)"
       mat-icon-button
       class="main-alert-close-button"
       (click)="closeClick()"
@@ -34,7 +35,12 @@
     </div>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="closeClick()">
+    <button
+      *ngIf="!unclosableTypes.includes(error.type)"
+      mat-raised-button
+      color="primary"
+      (click)="closeClick()"
+    >
       {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
     </button>
     <button mat-raised-button (click)="toggleErrorDetails()">Fehlerdetails</button>

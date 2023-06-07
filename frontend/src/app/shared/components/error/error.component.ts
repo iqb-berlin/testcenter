@@ -6,7 +6,7 @@ import {
   interval, Observable, Subscription, take
 } from 'rxjs';
 import UAParser from 'ua-parser-js';
-import { AppError } from '../../../app.interfaces';
+import { AppError, AppErrorType } from '../../../app.interfaces';
 import { MainDataService } from '../../services/maindata/maindata.service';
 
 @Component({
@@ -27,6 +27,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   private restartTimerSubscription: Subscription;
   restartTimer$: Observable<number>;
   waitUnitAutomaticRestartSeconds: number = 120;
+  unclosableTypes: Array<AppErrorType> = ['fatal', 'network_temporally'];
 
   constructor(
     private mainDataService: MainDataService,
