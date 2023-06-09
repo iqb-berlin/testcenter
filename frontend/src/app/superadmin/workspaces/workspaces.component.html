@@ -74,10 +74,14 @@
     <mat-table [dataSource]="UserlistDatasource" matSort>
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">RO | RW</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <mat-checkbox (change)="selectUser(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO" data-cy="workspace-role-ro">
+        <mat-cell *matCellDef="let row let i = index">
+          <mat-checkbox (change)="selectUser(row, 'RO')" 
+                        [checked]="row.role === 'RO'" matTooltip="RO" 
+                        [attr.data-cy]="'workspace-role-ro' + i">
           </mat-checkbox>
-          <mat-checkbox (change)="selectUser(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW" data-cy="workspace-role-rw">
+          <mat-checkbox (change)="selectUser(row, 'RW')" 
+                        [checked]="row.role === 'RW'" matTooltip="RW" 
+                        [attr.data-cy]="'workspace-role-rw' + i">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
