@@ -50,60 +50,60 @@ export const insertCredentials = (username: string, password = ''): void => {
   }
 };
 
-export const logout = (): Chainable => cy.url()
+export const logoutAdmin = (): Chainable => cy.url()
   .then(url => {
     if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
       cy.get('[data-cy="logo"]')
         .should('exist')
         .click();
+      cy.url()
+        .should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
       cy.get('[data-cy="logout"]')
-        .should('exist')
         .click();
       cy.url()
         .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
     }
   });
 
-export const logoutAdmin = (): void => {
+export const logoutTestTaker = (fileType: 'hot' | 'demo'): void => {
   cy.get('[data-cy="logo"]')
     .should('exist')
     .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/r/admin-starter`);
-  cy.get('[data-cy="workspace-1"]')
-    .should('exist'); // make sure call returned
-  cy.get('[data-cy="logout"]')
-    .click();
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
-};
-
-export const logoutTestTaker = (mode: string): void => {
-  cy.get('[data-cy="logo"]')
-    .should('exist')
-    .click();
-  if (mode === 'review' || mode === 'demo') {
-    cy.contains('Test beenden')
-      .should('not.exist');
-  } else {
-    cy.contains('Test beenden')
+  if (fileType === 'hot') {
+    cy.contains(/^Der Test ist aktiv.$/);
+    cy.get('[data-cy="resumeTest-1"]')
       .should('exist');
+    cy.get('[data-cy="endTest-1"]')
+      .should('exist')
+      .click();
+    cy.url()
+      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.get('[data-cy="logout"]')
+      .should('exist')
+      .click();
+  } else if (fileType === 'demo') {
+    cy.get('[data-cy="logout"]')
+      .should('exist')
+      .click();
   }
   cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-  cy.get('[data-cy="logout"]')
-    .should('exist')
-    .click();
-  cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
 };
 
-export const openSampleWorkspace = (): void => {
+export const openSampleWorkspace1 = (): void => {
   cy.get('[data-cy="workspace-1"]')
     .should('exist')
     .click();
   cy.url()
     .should('eq', `${Cypress.config().baseUrl}/#/admin/1/files`);
+};
+
+export const openSampleWorkspace2 = (): void => {
+  cy.get('[data-cy="workspace-2"]')
+    .should('exist')
+    .click();
+  cy.url()
+    .should('eq', `${Cypress.config().baseUrl}/#/admin/2/files`);
 };
 
 export const loginSuperAdmin = (): void => {
@@ -210,28 +210,62 @@ export const deleteFilesSampleWorkspace = (): void => {
     .should('not.exist');
 };
 
+export const deleteTesttakersFiles = (): void => {
+  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+    .click();
+  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
+    .should('have.class', 'mat-checkbox-checked');
+  cy.get('[data-cy="delete-files"]')
+    .click();
+  cy.get('[data-cy="dialog-confirm"]')
+    .click();
+  cy.contains('1 Dateien erfolgreich gelöscht.')
+    .should('exist');
+  cy.contains('1 Dateien erfolgreich gelöscht.', { timeout: 10000 })
+    .should('not.exist');
+  cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
+    .should('not.exist');
+};
+
 export const useTestDB = () : void => {
   cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/.*`), req => {
     req.headers.TestMode = 'integration';
   }).as('testMode');
 };
 
-export const readTestResultFiles = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
-  const splitCSV = str => str.split('\n')
+export const ConvertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+  const regex = /[\\]/g;
+
+  const splitCSVLogin = str => str.split('\n')
+    .map(row => row.replaceAll(regex, ''));
+
+  if (fileType === 'responses') {
+    return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
+      .should('exist')
+      .then(splitCSVLogin);
+  }
+  if (fileType === 'reviews') {
+    return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
+      .should('exist')
+      .then(splitCSVLogin);
+  }
+  return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
+    .should('exist')
+    .then(splitCSVLogin);
+};
+
+export const ConvertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+  const splitCsvID = str => str.split('\n')
     .map(row => row.split(';').map(cell => cell.replace(/^"/, '').replace(/"$/, '')));
 
   if (fileType === 'responses') {
     return cy.readFile('cypress/downloads/iqb-testcenter-responses.csv')
       .should('exist')
-      .then(splitCSV);
+      .then(splitCsvID);
   }
   if (fileType === 'reviews') {
     return cy.readFile('cypress/downloads/iqb-testcenter-reviews.csv')
       .should('exist')
-      .then(splitCSV);
+      .then(splitCsvID);
   }
-
-  return cy.readFile('cypress/downloads/iqb-testcenter-logs.csv')
-    .should('exist')
-    .then(splitCSV);
 };
