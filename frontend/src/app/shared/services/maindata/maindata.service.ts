@@ -22,7 +22,7 @@ export class MainDataService {
   get appError$(): Observable<AppError> {
     return this._appError$
       .pipe(
-        distinct(error => error.stack),
+        distinct(error => error.stack + error.errorId),
         shareReplay(0)
       );
   }
