@@ -406,6 +406,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       border-radius: 10px;
       padding: 0.5em;`;
     this.cts.getCustomText$('booklet_console_warning')
+      .pipe(filter(txt => !!txt))
       .subscribe(text => {
         console.clear();
         console.log(`%c${text}`, style);

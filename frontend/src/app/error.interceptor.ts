@@ -11,8 +11,6 @@ import { AppError, AppErrorType } from './app.interfaces';
 export class ErrorInterceptor implements HttpInterceptor {
   // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    console.log('## ErrorInterceptor', request.url);
-
     return next.handle(request).pipe(
       catchError(error => {
         console.log('intercept', error);
@@ -76,6 +74,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 
     let statusMessage: string;
     let errorType: AppErrorType = 'backend';
+    let description = '';
     switch (httpError.status) {
       case 202:
       case 204:
@@ -113,10 +112,23 @@ export class ErrorInterceptor implements HttpInterceptor {
         errorType = 'network';
     }
 
+    if (typeof httpError.error === 'string') {
+      description = httpError.error;
+    } else if (
+      httpError.error &&
+      (typeof httpError.error === 'object') &&
+      ('text' in httpError.error) &&
+      ('error' in httpError.error)
+    ) {
+      description = `${httpError.error.error}: ${httpError.error.text}`;
+    } else if (httpError.statusText) {
+      description = httpError.statusText;
+    }
+
     return new AppError({
       code: httpError.status,
       label: statusMessage,
-      description: httpError.error ?? httpError.statusText,
+      description: description,
       type: errorType,
       details: httpError.message,
       errorId: httpError.headers.get('error-id')

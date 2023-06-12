@@ -2,16 +2,21 @@
   display: contents;
 }
 
-#errorDetailsWrapper {
-  overflow: scroll;
-  border: 1px solid chocolate;
-  padding: 3px;
+#error-report {
+  overflow: auto;
+  border: 2px solid #821324;
+  background: #821324;
+  color: white;
+  border-radius: 4px;
+  padding: 4px;
+  margin-top: 0.5em;
   height: 300px; /* TODO use dynamic height for small screens */
+  font-family: monospace;
 }
 
-#errorDetails {
-  font-family: monospace;
-  white-space: pre;
+#error-report p {
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .mat-card-box {

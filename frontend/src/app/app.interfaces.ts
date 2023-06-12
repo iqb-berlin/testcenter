@@ -57,6 +57,11 @@ export class AppError extends Error implements AppErrorInterface {
   }
 }
 
+export class WrappedError extends Error {
+  promise: Promise<any>;
+  rejection: Error;
+}
+
 export interface SysCheckInfo {
   workspaceId: string;
   name: string;

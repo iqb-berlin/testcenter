@@ -15,7 +15,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
   // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    console.log('## AuthInterceptor', request.url);
     let tokenStr = '';
     const authData = this.mainDataService.getAuthData();
     if (authData && authData.token) {

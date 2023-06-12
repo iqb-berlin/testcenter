@@ -1,6 +1,7 @@
 <mat-card class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
   <mat-card-title>
     <alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
+    <div style="color:silver; font-size: small" *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</div>
     <button
       *ngIf="!uncloseable"
       mat-icon-button
@@ -12,45 +13,61 @@
     </button>
   </mat-card-title>
   <mat-card-content>
-    <ng-content></ng-content>
+    <div #ref><ng-content></ng-content></div>
+    <div *ngIf="!ref.children.length">
+      <ng-container [ngSwitch]="error.type">
+        <ng-container *ngSwitchCase="'network'">
+          Leider ist ein ein Verbindungsfehler aufgetreten.
+          Prüfen Sie Ihre Internetverbindung, laden Sie die Seite neu und probieren es noch einmal.
+        </ng-container>
+        <ng-container *ngSwitchCase="'session'">
+          Haben Sie sich eventuell auf einem anderen Gäret oder Browserfenster angemeldet?
+          Versuchen Sie, sich neu anzumelden.
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          Es ist ein Programmfehler aufgetreten.
+          Laden Sie die Seite neu und probieren es noch einmal. Sollte das Problem weiterhin bestehen bleiben,
+          melden Sie es dem zuständigen Systemadministrator.
+        </ng-container>
+      </ng-container>
+    </div>
     <div *ngIf="error.type === 'network_temporally'">
       <h3 *ngIf="restartTimer$ | async as second">
-        Die Anwendung wird wird in {{ waitUnitAutomaticRestartSeconds - second }} Sekunden neu geladen.
+        Die Anwendung wird in {{ waitUnitAutomaticRestartSeconds - second }} Sekunden automatisch neu geladen.
       </h3>
     </div>
-    <div id="errorDetailsWrapper" *ngIf="errorDetailsOpen">
-      <b>Fehlerbericht</b>
-      <div id="errorDetails">
-        <p><b>{{error.label}}</b></p>
-        <p>{{error.description}}</p>
-        <p>{{error.details}}</p>
-        <p *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</p>
-        <p *ngFor="let item of additionalReport | keyvalue">
-          <b>{{item.key}}:</b>{{item.value}}
-        </p>
-        <p><b>Url: </b>{{url}}</p>
-        <p><b>Browser: </b>{{browser.browser.name}} {{browser.browser.version}}</p>
-        <p><b>Betriebssystem: </b>{{browser.os.name}} {{browser.os.version}}</p>
-        <p><b>Gerät: </b>{{browser.device.type}} {{browser.device.vendor}} {{browser.device.model}}</p>
-        <br *ngIf="errorBuffer.length">
-        <p *ngIf="errorBuffer.length"><b>Weitere Fehler:</b></p>
-        <div *ngFor="let err of errorBuffer">
-          <p><b>{{err.label}}: </b>{{err.description}}</p>
-          <p>{{err.details}}</p>
-          <p *ngIf="err.errorId"><b>Error-Id:</b> {{err.errorId}}</p>
-        </div>
+
+    <div id="error-report" *ngIf="errorDetailsOpen">
+      <h3 style="margin-top: 0">Fehlerbericht: {{error.label}}</h3>
+      <p>{{error.description}}</p>
+
+      <br>
+      <p>{{error.details}}</p>
+
+      <br>
+      <p *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</p>
+      <p><b>Url: </b>{{url}}</p>
+      <p><b>Browser: </b>{{browser.browser.name}} {{browser.browser.version}}</p>
+      <p><b>Betriebssystem: </b>{{browser.os.name}} {{browser.os.version}}</p>
+      <p><b>Gerät: </b>{{browser.device.type}} {{browser.device.vendor}} {{browser.device.model}}</p>
+      <p *ngFor="let item of additionalReport | keyvalue">
+        <b>{{item.key}}: </b>{{item.value}}
+      </p>
+
+      <br *ngIf="errorBuffer.length">
+      <p *ngIf="errorBuffer.length"><b>Weitere Fehler:</b></p>
+      <div *ngFor="let err of errorBuffer">
+        <p><b>{{err.label}}: </b>{{err.description}}</p>
+        <p>{{err.details}}</p>
+        <p *ngIf="err.errorId"><b>Error-Id:</b> {{err.errorId}}</p>
       </div>
     </div>
+
   </mat-card-content>
   <mat-card-actions>
-    <button
-      *ngIf="!uncloseable"
-      mat-raised-button
-      color="primary"
-      (click)="closeClick()"
-    >
+    <button *ngIf="!uncloseable" mat-raised-button color="primary" (click)="closeClick()">
       {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
     </button>
-    <button mat-raised-button (click)="toggleErrorDetails()" *ngIf="errorDetailsOpen">Fehlerdetails</button>
+    <button *ngIf="allowErrorDetails" mat-raised-button (click)="toggleErrorDetails()">Fehlerdetails</button>
   </mat-card-actions>
 </mat-card>

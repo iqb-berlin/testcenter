@@ -30,7 +30,6 @@ export class RetryInterceptor implements HttpInterceptor {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const retryPolicyName = routeData['httpRetryPolicy'];
     const retryPolicy = retryPolicies[retryPolicyName] ?? retryPolicies.none;
-    console.log('## RetryInterceptor', request.url, retryPolicyName, retryPolicy);
     return next.handle(request)
       .pipe(
         retryWhen(

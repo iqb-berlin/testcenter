@@ -21,7 +21,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
   @Input() additionalReport: { [key: string]: string };
   error: AppError;
   errorBuffer: AppError[] = [];
-  errorDetailsOpen = false;
+  errorDetailsOpen = true;
+  allowErrorDetails = true;
   defaultCloseCaption: string;
   browser: UAParser.IResult;
   url: string;
@@ -30,7 +31,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
   restartTimer$: Observable<number>;
   waitUnitAutomaticRestartSeconds: number = 120;
   uncloseable = false;
-  showErrorDetails = true;
 
   constructor(
     private mainDataService: MainDataService,
@@ -52,7 +52,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         }
 
         if (err.type === 'session') {
-          this.showErrorDetails = false;
+          this.allowErrorDetails = false;
         }
 
         if (this.error) {
