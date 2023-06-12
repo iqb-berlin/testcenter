@@ -88,7 +88,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         errorType = 'session';
         break;
       case 403:
-        statusMessage = 'Keine Berechtigung.';
+        statusMessage = 'Sitzung nicht mehr gültig.';
         errorType = 'session';
         break;
       case 404:

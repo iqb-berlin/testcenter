@@ -30,6 +30,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   restartTimer$: Observable<number>;
   waitUnitAutomaticRestartSeconds: number = 120;
   uncloseable = false;
+  showErrorDetails = true;
 
   constructor(
     private mainDataService: MainDataService,
@@ -48,6 +49,10 @@ export class ErrorComponent implements OnInit, OnDestroy {
         if (err.type === 'network_temporally') {
           this.uncloseable = true;
           this.startRestartTimer();
+        }
+
+        if (err.type === 'session') {
+          this.showErrorDetails = false;
         }
 
         if (this.error) {

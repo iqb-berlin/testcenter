@@ -51,6 +51,6 @@
     >
       {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
     </button>
-    <button mat-raised-button (click)="toggleErrorDetails()">Fehlerdetails</button>
+    <button mat-raised-button (click)="toggleErrorDetails()" *ngIf="errorDetailsOpen">Fehlerdetails</button>
   </mat-card-actions>
 </mat-card>
