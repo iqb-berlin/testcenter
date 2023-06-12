@@ -75,7 +75,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
   }
 
   private checkCompleteness(direction: 'Next' | 'Prev'): VeronaNavigationDeniedReason[] {
-    const unit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    const unit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
     if (unit.unitDef.lockedByTime) {
       return [];
     }
@@ -152,7 +152,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
       return true;
     }
 
-    const currentUnit = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId);
+    const currentUnit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
     if (currentUnit && this.tcs.getUnclearedTestlets(currentUnit).length) {
       return true;
     }
@@ -160,7 +160,7 @@ export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
     let newUnit: UnitWithContext = null;
     if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
       const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
-      newUnit = this.tcs.rootTestlet.getUnitAt(targetUnitSequenceId);
+      newUnit = this.tcs.getUnitWithContext(targetUnitSequenceId);
     }
 
     const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;

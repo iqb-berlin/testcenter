@@ -26,6 +26,7 @@ import { ReviewDialogComponent } from '../review-dialog/review-dialog.component'
 import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { MaxTimerData } from '../../classes/test-controller.classes';
+import { MissingBookletError } from '../../classes/missing-booklet-error.class';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -94,8 +95,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           try {
             await this.tls.loadTest();
           } catch (err) {
-            console.log('!!', err);
-            Promise.reject(err);
+            if (err instanceof MissingBookletError) { // this happens when loading was aborted.
+              console.error(err); // don't swallow error entirely fpr the case, rootTestlet is missing in loading
+              // progress for any other reason than aborting
+              return;
+            }
+            await Promise.reject(err);
             return;
           }
           this.startAppFocusLogging();
@@ -206,6 +211,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
           console.log('select (focus) app window to see the debugPane');
         }
         break;
+      case 'destroy':
+        this.tcs.rootTestlet = null;
+        break;
       case 'pause':
         this.tcs.resumeTargetUnitSequenceId = this.tcs.currentUnitSequenceId;
         this.tcs.pause();
@@ -234,7 +242,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if (gotoTarget && gotoTarget !== '0') {
           this.tcs.resumeTargetUnitSequenceId = 0;
           this.tcs.cancelMaxTimer();
-          const targetUnit = this.tcs.rootTestlet.getUnitAt(parseInt(gotoTarget, 10));
+          const targetUnit = this.tcs.getUnitWithContext(parseInt(gotoTarget, 10));
           if (targetUnit) {
             targetUnit.codeRequiringTestlets
               .forEach(testlet => {
@@ -329,7 +337,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     let previousBlockLabel: string = null;
     const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
     for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
-      const unitData = this.tcs.rootTestlet.getUnitAt(sequenceId);
+      const unitData = this.tcs.getUnitWithContext(sequenceId);
 
       const blockLabel = unitData.testletLabel || '';
       if ((previousBlockLabel != null) && (blockLabel !== previousBlockLabel)) {
@@ -355,13 +363,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     }
     switch (this.tcs.bookletConfig.unit_screenheader) {
       case 'WITH_UNIT_TITLE':
-        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId).unitDef.title;
+        this.unitScreenHeader = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId).unitDef.title;
         break;
       case 'WITH_BOOKLET_TITLE':
         this.unitScreenHeader = this.tcs.rootTestlet.title;
         break;
       case 'WITH_BLOCK_TITLE':
-        this.unitScreenHeader = this.tcs.rootTestlet.getUnitAt(this.tcs.currentUnitSequenceId).testletLabel;
+        this.unitScreenHeader = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId).testletLabel;
         break;
       default:
         this.unitScreenHeader = '';

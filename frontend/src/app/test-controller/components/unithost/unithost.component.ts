@@ -223,7 +223,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.currentPageIndex = undefined;
     this.knownPages = [];
 
-    this.currentUnit = this.tcs.rootTestlet.getUnitAt(this.currentUnitSequenceId);
+    this.currentUnit = this.tcs.getUnitWithContext(this.currentUnitSequenceId);
 
     this.mainDataService.appSubTitle$.next(this.currentUnit.unitDef.title);
 
@@ -239,7 +239,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       .map(unitSequenceId => this.tcs.getUnitLoadProgress$(unitSequenceId));
 
     this.unitsToLoadLabels = unitsToLoadIds
-      .map(unitSequenceId => this.tcs.rootTestlet.getUnitAt(unitSequenceId).unitDef.title);
+      .map(unitSequenceId => this.tcs.getUnitWithContext(unitSequenceId).unitDef.title);
 
     this.subscriptions.loading = combineLatest<LoadingProgress[]>(unitsToLoad)
       .subscribe({

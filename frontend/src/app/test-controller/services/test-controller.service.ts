@@ -18,6 +18,7 @@ import {
 import { BackendService } from './backend.service';
 import { BookletConfig, TestMode } from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
+import { MissingBookletError } from '../classes/missing-booklet-error.class';
 
 @Injectable({
   providedIn: 'root'
@@ -322,14 +323,21 @@ export class TestControllerService {
     return this.getUnitIsLockedByCode(unit) || unit.unitDef.lockedByTime;
   }
 
+  getUnitWithContext(unitSequenceId: number): UnitWithContext {
+    if (!this.rootTestlet) { // when loading process was aborted
+      throw new MissingBookletError();
+    }
+    return this.rootTestlet.getUnitAt(unitSequenceId);
+  }
+
   getNextUnlockedUnitSequenceId(currentUnitSequenceId: number, reverse: boolean = false): number | null {
     const step = reverse ? -1 : 1;
     let nextUnitSequenceId = currentUnitSequenceId + step;
-    let nextUnit: UnitWithContext = this.rootTestlet.getUnitAt(nextUnitSequenceId);
+    let nextUnit: UnitWithContext = this.getUnitWithContext(nextUnitSequenceId);
 
     while (nextUnit !== null && this.getUnitIsLocked(nextUnit)) {
       nextUnitSequenceId += step;
-      nextUnit = this.rootTestlet.getUnitAt(nextUnitSequenceId);
+      nextUnit = this.getUnitWithContext(nextUnitSequenceId);
     }
     return nextUnit ? nextUnitSequenceId : null;
   }

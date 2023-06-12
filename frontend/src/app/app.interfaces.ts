@@ -35,7 +35,7 @@ export interface KeyValuePairs {
 
 export type AppErrorType = 'session' | 'general' | 'backend' | 'network' | 'script' | 'fatal' | 'network_temporally';
 
-interface AppErrorInterface {
+export interface AppErrorInterface {
   label: string;
   description: string;
   type?: AppErrorType;
