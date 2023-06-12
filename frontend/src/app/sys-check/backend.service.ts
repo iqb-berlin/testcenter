@@ -137,7 +137,6 @@ export class BackendService {
           testResult.error = 'bogus server response';
         }
 
-        // console.log({ 'c': currentTime, 's': startingTime });
         resolve(testResult);
       };
 

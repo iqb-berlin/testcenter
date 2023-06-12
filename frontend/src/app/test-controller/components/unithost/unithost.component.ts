@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
   BehaviorSubject, combineLatest, merge, Subscription
 } from 'rxjs';
@@ -207,6 +206,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
         break;
 
       default:
+        // eslint-disable-next-line no-console
         console.log(`processMessagePost ignored message: ${msgType}`);
         break;
     }

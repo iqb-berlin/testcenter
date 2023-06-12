@@ -86,7 +86,6 @@ describe('TestLoaderService', () => {
       const loadTestWatched = async (testId: keyof typeof TestBookletXmlVariants) => {
         service.tcs.testId = testId;
         watcher = new Watcher();
-        // watcher.log$.subscribe(console.log);
         watcher.watchObservable('tcs.testStatus$', service.tcs.testStatus$);
         watcher.watchMethod('tcs', service.tcs, 'setUnitLoadProgress$', { 1: null })
           .subscribe((args: [number, Observable<LoadingProgress>]) => {

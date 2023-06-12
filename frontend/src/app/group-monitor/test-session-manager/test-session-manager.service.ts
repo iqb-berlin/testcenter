@@ -100,7 +100,6 @@ export class TestSessionManager {
     this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._commandResponses$ = new Subject<CommandResponse>();
-    console.log(this.groupMonitorConfig.checkForIdleInterval);
     this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
       interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
       of(0);

@@ -13,7 +13,6 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError(error => {
-        console.log('intercept', error);
         if (error instanceof HttpErrorResponse) {
           return throwError(ErrorInterceptor.handleHttpError(error));
         }
@@ -33,7 +32,6 @@ export class ErrorInterceptor implements HttpInterceptor {
 
   private static handleHttpError(httpError: HttpErrorResponse): AppError {
     if (httpError.error instanceof ProgressEvent) {
-      console.log('httpError.error instanceof ProgressEvent');
       return new AppError({
         code: httpError.status,
         label: 'Netzwerkfehler',
@@ -45,7 +43,6 @@ export class ErrorInterceptor implements HttpInterceptor {
     }
 
     if (httpError.error instanceof ErrorEvent) {
-      console.log('httpError.error instanceof ErrorEvent');
       return new AppError({
         code: httpError.status,
         label: 'Fehler in der Netzwerkverbindung',
@@ -57,7 +54,6 @@ export class ErrorInterceptor implements HttpInterceptor {
     }
 
     if (httpError.error instanceof Blob) {
-      console.log('httpError.error instanceof Blob');
       httpError.error.text()
         .then(text => {
           throw new AppError({

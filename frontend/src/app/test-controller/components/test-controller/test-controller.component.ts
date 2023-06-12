@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
@@ -208,6 +207,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'debug':
         this.debugPane = params.length === 0 || params[0].toLowerCase() !== 'off';
         if (this.debugPane) {
+          // eslint-disable-next-line no-console
           console.log('select (focus) app window to see the debugPane');
         }
         break;
@@ -401,14 +401,16 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       font-size: 200%;
       background: yellow;
       color: red;
-      display:block;
+      display: block;
       border: 3px solid red;
       border-radius: 10px;
       padding: 0.5em;`;
     this.cts.getCustomText$('booklet_console_warning')
       .pipe(filter(txt => !!txt))
       .subscribe(text => {
+        // eslint-disable-next-line no-console
         console.clear();
+        // eslint-disable-next-line no-console
         console.log(`%c${text}`, style);
       });
   }

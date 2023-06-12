@@ -36,9 +36,13 @@ export class RetryInterceptor implements HttpInterceptor {
           (attempts: Observable<any>) => attempts.pipe(
             mergeMap((error, i) => {
               const retryAttempt = i + 1;
-              if (retryAttempt > retryPolicy.retryPattern.length || retryPolicy.excludedStatusCodes.find(e => e === error.status)) {
+              if (
+                retryAttempt > retryPolicy.retryPattern.length ||
+                retryPolicy.excludedStatusCodes.find(e => e === error.status)
+              ) {
                 return throwError(error);
               }
+              // eslint-disable-next-line no-console
               console.log(`Attempt ${retryAttempt}: retrying in ${retryPolicy.retryPattern[i]}ms`);
               return timer(retryPolicy.retryPattern[i]);
             })

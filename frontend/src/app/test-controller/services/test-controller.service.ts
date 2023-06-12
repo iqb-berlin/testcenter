@@ -407,7 +407,7 @@ export class TestControllerService {
         val => {
           this.maxTimeTimer$.next(new MaxTimerData(val / 60, testlet.id, MaxTimerDataType.STEP));
         },
-        e => console.log('maxTime onError: %s', e),
+        e => { throw e; },
         () => {
           this.maxTimeTimer$.next(new MaxTimerData(0, testlet.id, MaxTimerDataType.ENDED));
           this.currentMaxTimerTestletId = '';

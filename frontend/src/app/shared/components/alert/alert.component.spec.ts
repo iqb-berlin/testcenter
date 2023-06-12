@@ -101,8 +101,6 @@ describe('AlertComponent', () => {
 
     updateCustomText('customtext key', 'replacement in ticks: `%s`');
 
-    // returnedTexts.forEach(s => console.log(s));
-
     expect(returnedTexts).toEqual([
       'text value',
       'customtext value',
