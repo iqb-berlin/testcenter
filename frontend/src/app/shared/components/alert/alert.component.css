@@ -1,34 +1,35 @@
 .alert {
-    margin-bottom: 2px;
+  margin-bottom: 2px;
 }
 
 .vertical-align-middle {
-    display: inline-flex;
-    vertical-align: middle;
-    align-items: center;
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
 }
 
 .alert-error {
-    color: #821324;
+  color: #821324;
 }
 
 .alert-warning {
-    color: goldenrod;
+  color: goldenrod;
 }
 
 .alert-info {
-    color: blue;
+  color: blue;
 }
 
 .alert-success {
-    color: green;
+  color: green;
 }
 
 .highlight {
-    color: #003333;
-    font-style: italic;
+  color: #003333;
+  font-style: italic;
 }
 
 mat-icon {
-    margin-right: 0.2em
+  margin-right: 0.2em;
+  overflow: visible !important;
 }
