@@ -410,7 +410,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       .pipe(filter(txt => !!txt))
       .subscribe(text => {
         // eslint-disable-next-line no-console
-        console.clear();
+        // console.clear();
         // eslint-disable-next-line no-console
         console.log(`%c${text}`, style);
       });

@@ -71,19 +71,6 @@ const MockActivatedRoute = {
   params: routeParams$
 };
 
-// eslint-disable-next-line @typescript-eslint/dot-notation
-window['UAParser'] = () => ({
-  browser: {
-    version: 0,
-    name: 'unit-tests'
-  },
-  os: {
-    version: 0,
-    name: 'unit-tests'
-  },
-  device: ['karma']
-});
-
 describe('TestControllerComponent', () => {
   let component: TestControllerComponent;
   let fixture: ComponentFixture<TestControllerComponent>;

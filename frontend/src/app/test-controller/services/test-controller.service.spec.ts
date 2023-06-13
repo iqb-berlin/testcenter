@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientModule } from '@angular/common/http';
@@ -6,6 +7,7 @@ import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { KeyValuePairString, UnitDataParts } from '../interfaces/test-controller.interfaces';
 import { TestMode } from '../../shared/shared.module';
+import { MessageService } from '../../shared/services/message.service';
 
 const uploadedData: UnitDataParts[] = [];
 
@@ -21,6 +23,11 @@ class MockBackendService {
 
 let service: TestControllerService;
 
+class MockMessageService {
+  // eslint-disable-next-line class-methods-use-this
+  showError(text: string): void {}
+}
+
 describe('TestControllerService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -29,6 +36,10 @@ describe('TestControllerService', () => {
         {
           provide: BackendService,
           useValue: new MockBackendService()
+        },
+        {
+          provide: MessageService,
+          useValue: new MockMessageService()
         }
       ],
       imports: [

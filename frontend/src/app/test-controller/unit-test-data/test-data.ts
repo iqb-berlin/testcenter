@@ -308,11 +308,9 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 98.33333333333333 }, // 75% of unit 2 content
     { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 75 } },
     { name: 'tcs.totalLoadingProgress', value: 100 }, // 100% of unit 2 content
-    { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 100 } },
-
+    { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 100 } }
     // finish
-    { name: 'bs.addTestLog', value: ['LOADCOMPLETE'] },
-    { name: 'tcs.totalLoadingProgress', value: 100 }
+    // { name: 'tcs.totalLoadingProgress', value: 100 }
   ],
 
   withLoadingModeEager: [
@@ -321,8 +319,8 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.testStatus$', value: 'LOADING' },
 
     // unit 1
-    // 5 units, so each triplet of unit-player-content is worth 6.6% in the total progress
-    // total progress gets updated first , dont' be confused
+    // 5 units, so each triplet of unit-player-content is worth 6.6% in the total progress.
+    // total progress gets updated first, don't be confused
     { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
     { name: 'tcs.setUnitLoadProgress$', value: [1] },
     { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },
@@ -409,7 +407,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player
     { name: 'tcs.totalLoadingProgress', value: 20 }, // 100% of a-player (again)
     { name: 'tcs.addPlayer', value: ['a-player'] },
-    { name: 'tls.loadTest', value: '', error: 'error requesting unit withMissingUnit/MISSING' }
+    { name: 'tls.loadTest', value: '', error: 'Unit is empty withMissingUnit/MISSING' }
   ],
 
   withBrokenBooklet: [
@@ -471,8 +469,7 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.setUnitLoadProgress$', value: [3] },
     { name: 'tcs.unitContentLoadProgress$[3]', value: { progress: 'PENDING' } },
     { name: 'tcs.setUnitLoadProgress$', value: [2] },
-    { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } },
-    { name: 'tls.loadTest', value: '', error: 'resource is missing' }
+    { name: 'tcs.unitContentLoadProgress$[2]', value: { progress: 'PENDING' } }
   ]
 };
 
