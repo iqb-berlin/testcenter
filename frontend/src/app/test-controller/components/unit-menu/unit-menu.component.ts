@@ -4,7 +4,7 @@ import { UnitNaviButtonData } from '../../interfaces/test-controller.interfaces'
 import { CustomtextService } from '../../../shared/services/customtext/customtext.service';
 
 @Component({
-  selector: 'unit-menu',
+  selector: 'tc-unit-menu',
   templateUrl: './unit-menu.component.html',
   styleUrls: ['./unit-menu.component.css']
 })

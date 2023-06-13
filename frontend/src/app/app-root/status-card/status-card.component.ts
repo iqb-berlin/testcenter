@@ -3,7 +3,7 @@ import { MainDataService } from '../../shared/shared.module';
 import { AuthData } from '../../app.interfaces';
 
 @Component({
-  selector: 'status-card',
+  selector: 'tc-status-card',
   templateUrl: './status-card.component.html'
 })
 export class StatusCardComponent implements OnInit {

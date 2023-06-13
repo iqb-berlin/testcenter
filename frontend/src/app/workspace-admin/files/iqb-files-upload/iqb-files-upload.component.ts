@@ -7,7 +7,7 @@ import { UploadReport, UploadStatus } from '../files.interfaces';
 import { WorkspaceDataService } from '../../workspacedata.service';
 
 @Component({
-  selector: 'iqb-files-upload',
+  selector: 'tc-files-upload',
   templateUrl: './iqb-files-upload.component.html',
   styleUrls: ['../iqb-files.scss']
 })

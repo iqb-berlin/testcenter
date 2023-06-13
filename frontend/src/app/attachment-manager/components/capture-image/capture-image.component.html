@@ -67,11 +67,11 @@
 
     <div class="adminbackground hidden" [class.show]="state === 'capture'">
       <div id="toolbar">
-        <alert
+        <tc-alert
           level="info"
           customtext="am_capture_image_instructions"
           text="Halten Sie die Seite so in die Kamera, dass der aufgedruckte QR-Code in der oberen linken Ecke liegt"
-        ></alert>
+        ></tc-alert>
       </div>
 
       <div id="video-container">
@@ -97,7 +97,7 @@
     </div>
 
     <div class="adminbackground hidden" [class.show]="state === 'error'">
-      <alert level="error" [text]="error"></alert>
+      <tc-alert level="error" [text]="error"></tc-alert>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

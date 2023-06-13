@@ -3,7 +3,7 @@
     <mat-card-title>Upload-Report</mat-card-title>
   </mat-card-header>
 
-  <iqb-files-upload
+  <tc-files-upload
     *ngFor="let file of files; let i = index"
     [file]="file"
     [id]="i"
@@ -12,7 +12,7 @@
     [folder]="folder"
     (removeFileRequestEvent)="removeFile($event)"
     (statusChangedEvent)="analyseStatus()">
-  </iqb-files-upload>
+  </tc-files-upload>
 
 
   <mat-card-actions>

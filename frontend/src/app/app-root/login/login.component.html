@@ -16,11 +16,11 @@
             <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
           </button>
         </mat-form-field>
-        <alert level="error" *ngIf="problemText" [text]="problemText"></alert>
-        <alert *ngIf="mainDataService.globalWarning" level="warning" [text]="mainDataService.globalWarning"></alert>
+        <tc-alert level="error" *ngIf="problemText" [text]="problemText"></tc-alert>
+        <tc-alert *ngIf="mainDataService.globalWarning" level="warning" [text]="mainDataService.globalWarning"></tc-alert>
       </mat-card-content>
       <mat-card-content *ngIf="!mainDataService.appConfig">
-        <alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></alert>
+        <tc-alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></tc-alert>
       </mat-card-content>
       <mat-card-actions>
         <div class="flex-row login-buttons">
@@ -43,7 +43,7 @@
     <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>
       <div [innerHTML]="mainDataService.appConfig?.trustedIntroHtml"></div>
-      <status-card></status-card>
+      <tc-status-card></tc-status-card>
     </mat-card-content>
     <mat-card-actions>
       <a *ngIf="this.mainDataService.sysCheckAvailable" mat-raised-button color="primary"
