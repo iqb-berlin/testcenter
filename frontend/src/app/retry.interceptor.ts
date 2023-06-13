@@ -40,7 +40,7 @@ export class RetryInterceptor implements HttpInterceptor {
                 retryAttempt > retryPolicy.retryPattern.length ||
                 retryPolicy.excludedStatusCodes.find(e => e === error.status)
               ) {
-                return throwError(error);
+                return throwError(() => { throw error; });
               }
               // eslint-disable-next-line no-console
               console.log(`Attempt ${retryAttempt}: retrying in ${retryPolicy.retryPattern[i]}ms`);

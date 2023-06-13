@@ -14,17 +14,21 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(error => {
         if (error instanceof HttpErrorResponse) {
-          return throwError(ErrorInterceptor.handleHttpError(error));
+          return throwError(() => ErrorInterceptor.handleHttpError(error));
         }
         if (error instanceof DOMException) {
-          return throwError({
-            label: `Fehler: ${error.name}`,
-            description: error.message
+          return throwError(() => {
+            throw new AppError({
+              label: `Fehler: ${error.name}`,
+              description: error.message
+            });
           });
         }
-        return throwError({
-          label: 'Unbekannter Fehler',
-          description: ''
+        return throwError(() => {
+          throw new AppError({
+            label: 'Unbekannter Fehler',
+            description: error.prototype.name
+          });
         });
       })
     );

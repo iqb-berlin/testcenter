@@ -403,16 +403,18 @@ export class TestControllerService {
           timer(timeLeftMinutes * 60 * 1000)
         ),
         map(val => (timeLeftMinutes * 60) - val - 1)
-      ).subscribe(
-        val => {
+      ).subscribe({
+        next: val => {
           this.maxTimeTimer$.next(new MaxTimerData(val / 60, testlet.id, MaxTimerDataType.STEP));
         },
-        e => { throw e; },
-        () => {
+        error: e => {
+          throw e;
+        },
+        complete: () => {
           this.maxTimeTimer$.next(new MaxTimerData(0, testlet.id, MaxTimerDataType.ENDED));
           this.currentMaxTimerTestletId = '';
         }
-      );
+      });
   }
 
   cancelMaxTimer(): void {

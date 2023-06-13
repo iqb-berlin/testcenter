@@ -95,6 +95,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
             await this.tls.loadTest();
           } catch (err) {
             if (err instanceof MissingBookletError) { // this happens when loading was aborted.
+              // eslint-disable-next-line no-console
               console.error(err); // don't swallow error entirely fpr the case, rootTestlet is missing in loading
               // progress for any other reason than aborting
               return;
