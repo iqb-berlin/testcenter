@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Injectable, Inject } from '@angular/core';
 import {
   HttpClient, HttpEvent, HttpEventType, HttpParams

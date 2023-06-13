@@ -8,6 +8,6 @@ export class MessageService {
   constructor(private _snackBar: MatSnackBar) {}
 
   showError(text: string): void {
-    this._snackBar.open(text, 'Fehler', { duration: 3000 });
+    this._snackBar.open(text, 'Schließen', { duration: 5000 });
   }
 }

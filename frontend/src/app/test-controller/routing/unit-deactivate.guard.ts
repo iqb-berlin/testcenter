@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {

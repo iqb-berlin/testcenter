@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
 import { Injectable, Inject, SkipSelf } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import {
   CheckConfig,
   NetworkRequestTestResult,

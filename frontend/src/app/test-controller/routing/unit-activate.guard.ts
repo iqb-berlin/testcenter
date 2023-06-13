@@ -1,20 +1,18 @@
-/* eslint-disable no-console */
-
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot, CanActivate, Router
 } from '@angular/router';
 import { Observable } from 'rxjs';
-import { MainDataService } from '../../shared/shared.module';
 import { UnitWithContext } from '../classes/test-controller.classes';
 import { TestControllerService } from '../services/test-controller.service';
+import { MessageService } from '../../shared/services/message.service';
 
 @Injectable()
 export class UnitActivateGuard implements CanActivate {
   constructor(
     private tcs: TestControllerService,
-    private mds: MainDataService,
-    private router: Router
+    private router: Router,
+    private messageService: MessageService
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
@@ -33,7 +31,7 @@ export class UnitActivateGuard implements CanActivate {
     const newUnit: UnitWithContext = this.tcs.getUnitWithContext(targetUnitSequenceId);
     if (!newUnit) {
       // a unit-nr was entered in the URl which does not exist
-      console.warn(`target unit null (targetUnitSequenceId: ${targetUnitSequenceId.toString()})`);
+      this.messageService.showError(`Navigation zu Aufgabe ${targetUnitSequenceId} nicht möglich`);
       return false;
     }
     if (this.tcs.getUnitIsLocked(newUnit)) {

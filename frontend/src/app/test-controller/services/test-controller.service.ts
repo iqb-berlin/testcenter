@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
   bufferTime, concatMap, filter, map, takeUntil
 } from 'rxjs/operators';
@@ -19,6 +18,7 @@ import { BackendService } from './backend.service';
 import { BookletConfig, TestMode } from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
+import { MessageService } from '../../shared/services/message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -96,7 +96,8 @@ export class TestControllerService {
 
   constructor(
     private router: Router,
-    private bs: BackendService
+    private bs: BackendService,
+    private messageService: MessageService
   ) {
     this.setupUnitDataPartsBuffer();
   }
@@ -519,7 +520,7 @@ export class TestControllerService {
           )
             .then(navOk => {
               if (!navOk && !targetIsCurrent) {
-                console.log(`navigation failed ("${navString}")`);
+                this.messageService.showError(`Navigation zu ${navString} nicht möglich!`);
               }
             });
           break;
