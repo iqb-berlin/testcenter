@@ -475,8 +475,8 @@ final class WorkspaceControllerTest extends TestCase {
         );
 
         $this->workspaceMock
-            ->expects('importUnsortedFile')
-            ->times(3)
+            ->expects('importUnsortedFiles')
+            ->times(1)
             ->andReturn($files);
 
         $this->workspaceMock
