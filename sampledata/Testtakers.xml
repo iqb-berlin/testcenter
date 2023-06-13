@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/14.6.0/definitions/vo_Testtakers.xsd">
+<Testtakers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/iqb-berlin/testcenter/14.7.0/definitions/vo_Testtakers.xsd">
 
   <Metadata>
     <Description>This file contains some logins for testing and works a a sample for developers.</Description>
@@ -9,7 +9,7 @@
     <CustomText key="somestr">string</CustomText>
   </CustomTexts>
 
-  <Group id="sample_group" validFor="45" validFrom="1/3/2020 10:00" label="Primary Sample Group">
+  <Group id="sample_group" validFrom="1/3/2020 10:00" label="Primary Sample Group">
 
     <Login mode="run-hot-return" name="test" pw="user123">
       <Booklet codes="xxx yyy">BOOKLET.SAMPLE-1</Booklet>
@@ -31,7 +31,7 @@
     </Login>
   </Group>
 
-  <Group id="trial_group" label="A Group for Trials and Demos">
+  <Group id="trial_group" label="A Group for Trials and Demos" validFor="45">
     <Login mode="run-trial" name="test-trial" pw="user123">
       <Booklet>BOOKLET.SAMPLE-1</Booklet>
     </Login>
