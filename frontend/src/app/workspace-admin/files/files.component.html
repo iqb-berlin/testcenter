@@ -112,7 +112,7 @@
       </button>
     </div>
 
-    <input #hiddenfileinput type="file" name="fileforvo" multiple [iqbFilesUploadInputFor]="fileUploadQueue" [hidden]="true"/>
+    <input #hiddenfileinput type="file" name="fileforvo" multiple [iqbFilesUploadInputFor]="fileUploadQueue" [hidden]="true" data-cy="uplaod-file-select" />
 
     <iqb-files-upload-queue #fileUploadQueue
       [fileAlias]="fileNameAlias"
