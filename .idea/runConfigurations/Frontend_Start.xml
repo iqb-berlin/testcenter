@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Frontend/Start" type="js.build_tools.npm" folderName="Run Locally (NPM)">
+  <configuration default="false" name="Frontend/Start" type="js.build_tools.npm" folderName="Run Locally">
     <package-json value="$PROJECT_DIR$/frontend/package.json" />
     <command value="run" />
     <scripts>
