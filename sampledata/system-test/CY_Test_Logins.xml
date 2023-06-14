@@ -60,7 +60,7 @@
   </Group>
 
   <Group id="SM_ValidToLogin" validTo="1/6/2023 10:00" label="SessionManagement valid to login">
-    <Login mode="run-demo" name="validTo01" pw="123">
+    <Login mode="run-hot-return" name="validTo01" pw="123">
       <Booklet>rundemo</Booklet>
     </Login>
   </Group>

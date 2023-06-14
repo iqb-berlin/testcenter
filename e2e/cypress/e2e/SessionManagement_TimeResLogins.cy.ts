@@ -95,7 +95,7 @@ describe('Check logins with time restrictions', () => {
         .should('exist')
         .click();
       cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-      cy.contains('validTo01')
+      cy.get('[data-cy="booklet-RUNDEMO"]')
         .should('exist');
     });
 
@@ -121,7 +121,7 @@ describe('Check logins with time restrictions', () => {
         .should('exist')
         .click();
       cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-      cy.contains('validTo01')
+      cy.get('[data-cy="booklet-RUNDEMO"]')
         .should('exist');
     });
   });
