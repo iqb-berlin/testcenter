@@ -105,7 +105,7 @@
         (click)="hiddenfileinput.click()"
         matTooltip="Dateien hochladen/aktualisieren"
         matTooltipPosition="above"
-        [disabled]="(wds.wsRole !== 'RW')"
+        [disabled]="(wds.wsRole !== 'RW') || (!!uploadQueue.files?.length)"
         data-cy="upload-files"
       >
         <mat-icon>cloud_upload</mat-icon>
