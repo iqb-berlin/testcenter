@@ -4,7 +4,7 @@ import {
 } from '../utils';
 
 const waitMaxSnackBarDisplayed = 10000;
-// declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:RunDemo
+// declared in Sampledata/CY_Test_Logins.xml-->Group:RunDemo
 const TesttakerName = 'Test_Demo_Ctrl';
 const TesttakerPassword = '123';
 

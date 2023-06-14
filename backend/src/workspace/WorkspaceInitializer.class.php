@@ -22,7 +22,7 @@ class WorkspaceInitializer {
       "sampledata/system-test/CY_BKL_Mode_Demo.xml" => "Booklet/CY_BKL_Mode_Demo.xml",
       "sampledata/system-test/CY_BKL_Mode_Review.xml" => "Booklet/CY_BKL_Mode_Review.xml",
       "sampledata/system-test/CY_BKL_SessionManagement_HotModi.xml" => "Booklet/CY_BKL_SessionManagement_HotModi.xml",
-      "sampledata/system-test/CY_ControllerTest_Logins.xml" => "Testtakers/CY_ControllerTest_Logins.xml",
+      "sampledata/system-test/CY_Test_Logins.xml" => "Testtakers/CY_Test_Logins.xml",
       "sampledata/system-test/CY_Unit100.xml" => "Unit/CY_SAMPLE_UNIT100.XML",
       "sampledata/system-test/CY_Unit101.xml" => "Unit/CY_SAMPLE_UNIT101.XML",
       "sampledata/system-test/CY_Unit102.xml" => "Unit/CY_SAMPLE_UNIT102.XML",
