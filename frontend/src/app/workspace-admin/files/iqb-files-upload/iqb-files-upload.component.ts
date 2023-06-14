@@ -50,13 +50,13 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @Input() folder = '';
 
   @Input()
-  get file(): File {
-    return this._file;
+  get files(): File[] {
+    return this._files;
   }
 
-  set file(file: File) {
-    this._file = file;
-    this._filedate = this._file.lastModified;
+  set files(files: File[]) {
+    this._files = files;
+    this._filedates = files.map(file => file.lastModified);
   }
 
   @Input()
@@ -72,8 +72,8 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
   @Output() statusChangedEvent = new EventEmitter<IqbFilesUploadComponent>();
 
   progressPercentage = 0;
-  private _file: File;
-  private _filedate = 0;
+  private _files: File[];
+  private _filedates: number[] = [];
   private _id: number;
   private fileUploadSubscription: Subscription;
 
@@ -90,7 +90,9 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
     this.status = UploadStatus.busy;
     const formData = new FormData();
-    formData.set(this.fileAlias, this._file, this._file.name);
+    for (const file of this._files) {
+      formData.append(this.fileAlias.concat('[]'), file, file.name);
+    }
     if ((typeof this.folderName !== 'undefined') && (typeof this.folder !== 'undefined')) {
       if (this.folderName.length > 0) {
         formData.append(this.folderName, this.folder);
@@ -103,13 +105,6 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
         this.status = res.status;
         this.progressPercentage = res.progress;
       });
-  }
-
-  remove(): void {
-    if (this.fileUploadSubscription) {
-      this.fileUploadSubscription.unsubscribe();
-    }
-    this.removeFileRequestEvent.emit(this);
   }
 
   ngOnDestroy(): void {

@@ -121,11 +121,8 @@ class WorkspaceController extends Controller {
     $workspace = new Workspace($workspaceId);
 
     $uploadedFiles = UploadedFilesHandler::handleUploadedFiles($request, 'fileforvo', $workspace->getWorkspacePath());
-    $importedFiles = [];
 
-    foreach ($uploadedFiles as $uploadedFile) {
-      $importedFiles = array_merge($importedFiles, $workspace->importUnsortedFile($uploadedFile));
-    }
+    $importedFiles = $workspace->importUnsortedFiles($uploadedFiles);
 
     $reports = [];
     $loginsAffected = false;
