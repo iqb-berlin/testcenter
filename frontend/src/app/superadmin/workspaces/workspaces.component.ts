@@ -7,7 +7,7 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData,
-  MessageDialogComponent, MessageDialogData, MessageType, MainDataService
+  MessageDialogComponent, MessageDialogData, MessageType
 } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
@@ -125,7 +125,7 @@ export class WorkspacesComponent implements OnInit {
 
         this.backendService.renameWorkspace(selectedRows[0].id, newName)
           .subscribe(
-            respOk => {
+            () => {
               this.snackBar.open('Arbeitsbereich geändert', '', { duration: 1000 });
               this.updateWorkspaceList();
             }
@@ -171,7 +171,8 @@ export class WorkspacesComponent implements OnInit {
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
           this.backendService.deleteWorkspaces(workspacesToDelete)
             .subscribe(() => {
-              this.snackBar.open('Konnte Arbeitsbereich/e nicht löschen', 'Fehler', { duration: 1000 });
+              this.snackBar.open('Arbeitsbereich/e gelöscht', 'Fehler', { duration: 1000 });
+              this.updateWorkspaceList();
             });
         }
       });
