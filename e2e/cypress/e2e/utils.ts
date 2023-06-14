@@ -233,6 +233,12 @@ export const useTestDB = () : void => {
   }).as('testMode');
 };
 
+export const useTestDBSetDate = (timestamp: string) : void => {
+  cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/.*`), req => {
+    req.headers.TestClock = timestamp;
+  }).as('testClock');
+};
+
 export const ConvertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
   const regex = /[\\]/g;
 
