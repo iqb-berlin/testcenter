@@ -97,9 +97,19 @@
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">RO | RW</mat-header-cell>
         <mat-cell *matCellDef="let row">
-          <mat-checkbox (change)="selectWorkspace(row, 'RO')" [checked]="row.role === 'RO'" matTooltip="RO" data-cy="workspace-role-ro">
+          <mat-checkbox
+            (change)="selectWorkspace(row, 'RO')"
+            [checked]="row.role === 'RO'"
+            matTooltip="Nur Lesen"
+            [attr.data-cy]="'workspace-' + row.id + '-role-ro'"
+          >
           </mat-checkbox>
-          <mat-checkbox (change)="selectWorkspace(row, 'RW')" [checked]="row.role === 'RW'" matTooltip="RW" data-cy="workspace-role-rw">
+          <mat-checkbox
+            (change)="selectWorkspace(row, 'RW')"
+            [checked]="row.role === 'RW'"
+            matTooltip="Lesen und Schreiben"
+            [attr.data-cy]="'workspace-' + row.id + '-role-rw'"
+          >
           </mat-checkbox>
         </mat-cell>
       </ng-container>

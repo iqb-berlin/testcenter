@@ -46,31 +46,23 @@ describe('Usermanagement (user-tab)', () => {
       .click();
     cy.get('[data-cy="change-superadmin"]')
       .click()
-      .get('[data-cy="dialog-confirm"]')
-      .should('exist')
+      .get('[data-cy="dialog-change-superadmin"]')
+      .get('[formcontrolname="pw"]')
+      .type('invalidPassword');
+    cy.get('[data-cy="dialog-change-superadmin"] [type="submit"]')
       .click();
-    cy.get('[formcontrolname="pw"]')
-      .should('exist')
-      .type('unvalidPassword')
-      .get('[data-cy="confirm-password-form"] [type="submit"]')
+    cy.get('[data-cy="main-alert:warning"] [data-cy="close"]')
       .click();
-    cy.get('[data-cy="main-alert:WARNING"]')
-      .should('exist');
-    cy.reload();
   });
 
   it('should be possible to set admin rights for existing workspace admin with correct password', () => {
     cy.contains(userData.WorkspaceAdminName)
       .click();
     cy.get('[data-cy="change-superadmin"]')
-      .click()
-      .get('[data-cy="dialog-confirm"]')
-      .should('exist')
       .click();
     cy.get('[formcontrolname="pw"]')
-      .should('exist')
       .type(userData.SuperAdminPassword)
-      .get('[data-cy="confirm-password-form"] [type="submit"]')
+      .get('[data-cy="dialog-change-superadmin"] [type="submit"]')
       .click();
     cy.get('[formcontrolname="pw"]')
       .should('not.exist');
@@ -89,10 +81,8 @@ describe('Usermanagement (user-tab)', () => {
 
   it('should be possible change privileges of existing workspace_admin to read-only', () => {
     cy.contains(userData.WorkspaceAdminName)
-      .should('exist')
       .click()
-      .get('[data-cy="workspace-role-ro"]')
-      .should('exist')
+      .get('[data-cy="workspace-1-role-ro"]')
       .click()
       .get('[data-cy="save"]')
       .click();
@@ -113,7 +103,7 @@ describe('Usermanagement (user-tab)', () => {
     cy.contains(userData.WorkspaceAdminName)
       .should('exist')
       .click()
-      .get('[data-cy="workspace-role-rw"]')
+      .get('[data-cy="workspace-1-role-rw"]')
       .should('exist')
       .click()
       .get('[data-cy="save"]')
