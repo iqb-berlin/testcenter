@@ -21,7 +21,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   @Input() additionalReport: { [key: string]: string };
   error: AppError;
   errorBuffer: AppError[] = [];
-  errorDetailsOpen = true;
+  errorDetailsOpen = false;
   allowErrorDetails = true;
   defaultCloseCaption: string;
   browser: UAParser.IResult;
@@ -52,6 +52,10 @@ export class ErrorComponent implements OnInit, OnDestroy {
         }
 
         if (err.type === 'session') {
+          this.allowErrorDetails = false;
+        }
+
+        if (err.type === 'warning') {
           this.allowErrorDetails = false;
         }
 

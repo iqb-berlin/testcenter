@@ -36,8 +36,9 @@ export class BackendService {
         catchError((err: AppError) => {
           if (err.code === 403) {
             throw new AppError({
-              description: 'Bitte geben Sie zur Sicherheit *Ihr eigenes* Kennwort korrekt ein!',
-              label: 'Falsches Kennwort'
+              type: 'warning',
+              description: '',
+              label: 'Bitte geben Sie zur Sicherheit *Ihr eigenes* Kennwort korrekt ein!'
             });
           }
           throw err;

@@ -24,6 +24,8 @@
           Haben Sie sich eventuell auf einem anderen Gäret oder Browserfenster angemeldet?
           Versuchen Sie, sich neu anzumelden.
         </ng-container>
+        <ng-container *ngSwitchCase="'warning'">
+        </ng-container>
         <ng-container *ngSwitchDefault>
           Es ist ein Programmfehler aufgetreten.
           Laden Sie die Seite neu und probieren es noch einmal. Sollte das Problem weiterhin bestehen bleiben,
@@ -65,7 +67,7 @@
 
   </mat-card-content>
   <mat-card-actions>
-    <button *ngIf="!uncloseable" mat-raised-button color="primary" (click)="closeClick()">
+    <button *ngIf="!uncloseable" mat-raised-button color="primary" (click)="closeClick()" data-cy="close">
       {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
     </button>
     <button *ngIf="allowErrorDetails" mat-raised-button (click)="toggleErrorDetails()">Fehlerdetails</button>
