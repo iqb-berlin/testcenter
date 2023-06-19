@@ -6,8 +6,9 @@ layout: default
 
 ## [next]
 ### Bugfixes
-* Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt. 
-  Zuvor wurde er unter bestimmten Umständen nicht korrekt angezeigt.
+* Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem einzigen Request durchgeführt. Dies führt dazu, dass man z. B. eine Unit-xml und die dazugehörige 
+  voud-Datei gleichzeitig hochladen kann.
+* Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt. Zuvor wurde er unter bestimmten Umständen nicht korrekt angezeigt.
 
 
 ## 14.7.0
