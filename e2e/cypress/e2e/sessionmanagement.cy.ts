@@ -123,18 +123,29 @@ describe('Check Login Possibilities', () => {
   beforeEach(useTestDB);
   beforeEach(visitLoginPage);
 
-  afterEach(() => {
-    logoutTestTaker('demo');
-  });
+  // afterEach(() => {
+  //   logoutTestTaker('demo');
+  // });
 
-  it('should be possible to login with name and password', () => {
-    // try only with name: login must be not possible
+  it('should not be possible to log in with a name and without an existing password', () => {
     insertCredentials('with_pw', '');
     cy.get('[data-cy="login-user"]')
       .should('exist')
       .click();
     cy.contains(/^Anmeldedaten sind nicht gültig..*/)
       .should('exist');
+  });
+
+  it('should be not possible to login with name and wrong password', () => {
+    insertCredentials('with_pw', '123');
+    cy.get('[data-cy="login-user"]')
+      .should('exist')
+      .click();
+    cy.contains(/^Anmeldedaten sind nicht gültig..*/)
+      .should('exist');
+  });
+
+  it('should be possible to login with name and right password', () => {
     insertCredentials('with_pw', '101');
     cy.get('[data-cy="login-user"]')
       .should('exist')
@@ -144,6 +155,7 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
+    logoutTestTaker('demo');
   });
 
   it('should be possible to login only with a name', () => {
@@ -156,6 +168,7 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
+    logoutTestTaker('demo');
   });
 
   it('should be possible to login as link', () => {
@@ -164,15 +177,15 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
+    logoutTestTaker('demo');
   });
 
-  it('should be possible to login with code and password', () => {
+  it('should be not possible to login with wrong code', () => {
     insertCredentials('as_code1', '102');
     cy.get('[data-cy="login-user"]')
       .should('exist')
       .click();
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
-    // try firstly with a wrong code
     cy.get('[formcontrolname="code"]')
       .should('exist')
       .type('123');
@@ -181,9 +194,16 @@ describe('Check Login Possibilities', () => {
       .click();
     cy.contains(/^Der Code ist leider nicht gültig.*/)
       .should('exist');
+  });
+
+  it('should be possible to login with right code and password', () => {
+    insertCredentials('as_code1', '102');
+    cy.get('[data-cy="login-user"]')
+      .should('exist')
+      .click();
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/code-input`);
     cy.get('[formcontrolname="code"]')
       .should('exist')
-      .clear()
       .type('as_code01');
     cy.get('[data-cy="continue"]')
       .should('exist')
@@ -192,6 +212,7 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
+    logoutTestTaker('demo');
   });
 
   it('should be possible to login with code without password', () => {
@@ -211,6 +232,7 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
+    logoutTestTaker('demo');
   });
 
   it('should be possible to login with code without password', () => {
@@ -227,6 +249,7 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
+    logoutTestTaker('demo');
   });
 
   it('should be possible to start a group monitor', () => {
@@ -243,6 +266,7 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.contains('hret2')
       .should('exist');
+    logoutTestTaker('demo');
   });
 });
 
