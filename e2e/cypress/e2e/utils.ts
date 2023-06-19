@@ -65,30 +65,36 @@ export const logoutAdmin = (): Chainable => cy.url()
     }
   });
 
-export const logoutTestTaker = (fileType: 'hot' | 'demo'): void => {
-  cy.get('[data-cy="logo"]')
-    .should('exist')
-    .click();
-  if (fileType === 'hot') {
-    cy.contains(/^Der Test ist aktiv.$/);
-    cy.get('[data-cy="resumeTest-1"]')
-      .should('exist');
-    cy.get('[data-cy="endTest-1"]')
-      .should('exist')
-      .click();
-    cy.url()
-      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-    cy.get('[data-cy="logout"]')
-      .should('exist')
-      .click();
-  } else if (fileType === 'demo') {
-    cy.get('[data-cy="logout"]')
-      .should('exist')
-      .click();
-  }
-  cy.url()
-    .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
-};
+export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
+  .then(url => {
+    // if booklet is started
+    if (url !== `${Cypress.config().baseUrl}/#/r/test-starter`) {
+      cy.get('[data-cy="logo"]')
+        .should('exist')
+        .click();
+      if (fileType === 'hot') {
+        cy.contains(/^Der Test ist aktiv.$/);
+        cy.get('[data-cy="resumeTest-1"]')
+          .should('exist');
+        cy.get('[data-cy="endTest-1"]')
+          .should('exist')
+          .click();
+        cy.url()
+          .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+        cy.get('[data-cy="logout"]')
+          .should('exist')
+          .click();
+      } else if (fileType === 'demo') {
+        cy.get('[data-cy="logout"]')
+          .should('exist')
+          .click();
+      }
+    } else {
+      cy.get('[data-cy="logout"]')
+        .should('exist')
+        .click();
+    }
+  });
 
 export const openSampleWorkspace1 = (): void => {
   cy.get('[data-cy="workspace-1"]')
