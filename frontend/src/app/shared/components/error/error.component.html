@@ -39,7 +39,7 @@
       </h3>
     </div>
 
-    <div id="error-report" *ngIf="errorDetailsOpen">
+    <div id="error-report" *ngIf="errorDetailsOpen" #report>
       <h3 style="margin-top: 0">Fehlerbericht: {{error.label}}</h3>
       <p>{{error.description}}</p>
 
@@ -48,6 +48,7 @@
 
       <br>
       <p *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</p>
+      <p><b>Zeitpunkt:</b> {{timestamp | date:'medium'}}</p>
       <p><b>Url: </b>{{url}}</p>
       <p><b>Browser: </b>{{browser.browser.name}} {{browser.browser.version}}</p>
       <p><b>Betriebssystem: </b>{{browser.os.name}} {{browser.os.version}}</p>
@@ -65,11 +66,42 @@
       </div>
     </div>
 
+    <div *ngIf="errorDetailsOpen">
+      <small *ngIf="!sendingResult; else: sendingResultBox">
+        Durch den Click auf "Fehlerbericht senden" erkläre ich mich einverstanden, dass obiger Fehlerbericht
+        gesendet wird. Es kann dabei dazu kommen, dass die Daten auf Servern Dritter gespeichert werden.
+        Es werden nur die im roten Kästchen zu findenden Informationen gesendet.
+      </small>
+      <ng-template #sendingResultBox>
+        <alert [level]="sendingResult.success ? 'success' : 'warning'" text="{{sendingResult.message}}"></alert>
+        <a *ngIf='sendingResult.uri' target="_blank" href="{{sendingResult.uri}}">Ansehen</a>
+      </ng-template>
+    </div>
   </mat-card-content>
+
   <mat-card-actions>
-    <button *ngIf="!uncloseable" mat-raised-button color="primary" (click)="closeClick()" data-cy="close">
+    <button
+      *ngIf="!uncloseable"
+      mat-raised-button
+      color="primary"
+      (click)="closeClick()" data-cy="close"
+    >
       {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
     </button>
-    <button *ngIf="allowErrorDetails" mat-raised-button (click)="toggleErrorDetails()">Fehlerdetails</button>
+    <button
+      *ngIf="allowErrorDetails && !errorDetailsOpen"
+      mat-raised-button
+      (click)="toggleErrorDetails()"
+    >
+      Fehler Melden
+    </button>
+    <button
+      *ngIf="!sendingResult"
+      mat-raised-button
+      color="accent"
+      (click)="submitReport()"
+    >
+      Fehlerbericht Senden
+    </button>
   </mat-card-actions>
 </mat-card>

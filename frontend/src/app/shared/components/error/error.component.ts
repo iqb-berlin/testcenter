@@ -1,5 +1,5 @@
 import {
-  Component, Input, OnDestroy, OnInit
+  Component, ElementRef, Input, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { Router, RouterState } from '@angular/router';
 import {
@@ -8,6 +8,8 @@ import {
 import UAParser from 'ua-parser-js';
 import { AppError } from '../../../app.interfaces';
 import { MainDataService } from '../../services/maindata/maindata.service';
+import { BugReportService } from '../../services/bug-report.service';
+import { BugReportResult } from '../../interfaces/bug-report.interfaces';
 
 @Component({
   selector: 'error',
@@ -19,22 +21,26 @@ export class ErrorComponent implements OnInit, OnDestroy {
   @Input() onClose: () => void;
   @Input() closeCaption: string;
   @Input() additionalReport: { [key: string]: string };
+  @ViewChild('report') reportElem!: ElementRef;
   error: AppError;
   errorBuffer: AppError[] = [];
-  errorDetailsOpen = false;
+  errorDetailsOpen = true;
   allowErrorDetails = true;
   defaultCloseCaption: string;
   browser: UAParser.IResult;
   url: string;
-  private appErrorSubscription: Subscription;
-  private restartTimerSubscription: Subscription;
   restartTimer$: Observable<number>;
   waitUnitAutomaticRestartSeconds: number = 120;
   uncloseable = false;
+  sendingResult: BugReportResult;
+  timestamp: number;
+  private appErrorSubscription: Subscription;
+  private restartTimerSubscription: Subscription;
 
   constructor(
     private mainDataService: MainDataService,
-    private router: Router
+    private router: Router,
+    private bugReportService: BugReportService
   ) {
   }
 
@@ -65,6 +71,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         this.error = err;
 
         this.url = window.location.href;
+        this.timestamp = Date.now();
 
         this.setDefaultCloseCaption();
       });
@@ -122,5 +129,14 @@ export class ErrorComponent implements OnInit, OnDestroy {
       const snapshotUrl = (snapshot.url === '/r/login/') ? '' : snapshot.url;
       this.router.navigate(['/r/login', snapshotUrl]);
     }
+  }
+
+  submitReport() {
+    this.bugReportService.publishReportAtGithub(
+      `[${window.location.hostname}] ${this.error.label}`,
+      this.reportElem.nativeElement.innerText,
+      this.error.type
+    )
+      .subscribe(result => { this.sendingResult = result; });
   }
 }

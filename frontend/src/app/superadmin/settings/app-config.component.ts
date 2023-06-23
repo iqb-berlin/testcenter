@@ -20,6 +20,8 @@ export class AppConfigComponent implements OnInit, OnDestroy {
   warningIsExpired = false;
   imageError: string;
   logoImageBase64 = '';
+  bugReportTarget: string;
+  bugReportAuth: string;
   expiredHours = {
     '': '',
     '01': '01:00 Uhr',
@@ -47,10 +49,12 @@ export class AppConfigComponent implements OnInit, OnDestroy {
     23: '23:00 Uhr'
   };
 
-  constructor(private formBuilder: FormBuilder,
-              private snackBar: MatSnackBar,
-              private mainDataService: MainDataService,
-              private backendService: BackendService) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private snackBar: MatSnackBar,
+    private mainDataService: MainDataService,
+    private backendService: BackendService
+  ) {
     this.configForm = this.formBuilder.group({
       appTitle: this.formBuilder.control(''),
       introHtml: this.formBuilder.control(''),
@@ -59,7 +63,9 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       globalWarningExpiredDay: this.formBuilder.control(''),
       globalWarningExpiredHour: this.formBuilder.control(''),
       backgroundBody: this.formBuilder.control(''),
-      backgroundBox: this.formBuilder.control('')
+      backgroundBox: this.formBuilder.control(''),
+      bugReportAuth: this.formBuilder.control(''),
+      bugReportTarget: this.formBuilder.control('')
     });
   }
 
@@ -74,7 +80,9 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         globalWarningExpiredDay: appConfig.globalWarningExpiredDay,
         globalWarningExpiredHour: appConfig.globalWarningExpiredHour,
         backgroundBody: appConfig.backgroundBody,
-        backgroundBox: appConfig.backgroundBox
+        backgroundBox: appConfig.backgroundBox,
+        bugReportAuth: appConfig.bugReportAuth,
+        bugReportTarget: appConfig.bugReportTarget
       }, { emitEvent: false });
       this.warningIsExpired = AppConfig.isWarningExpired(
         appConfig.globalWarningExpiredDay,
@@ -101,13 +109,13 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour').value,
       backgroundBody: this.configForm.get('backgroundBody').value,
       backgroundBox: this.configForm.get('backgroundBox').value,
-      mainLogo: this.logoImageBase64
+      mainLogo: this.logoImageBase64,
+      bugReportTarget: this.configForm.get('bugReportTarget').value,
+      bugReportAuth: this.configForm.get('bugReportAuth').value
     };
     this.backendService.setAppConfig(appConfig)
       .subscribe(() => {
-        this.snackBar.open(
-          'Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 }
-        );
+        this.snackBar.open('Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 });
         this.dataChanged = false;
         this.mainDataService.appConfig.setAppConfig(appConfig);
         this.mainDataService.appConfig.applyBackgroundColors();

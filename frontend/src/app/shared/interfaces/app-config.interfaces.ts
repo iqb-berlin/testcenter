@@ -9,7 +9,9 @@ export interface AppSettingsObject {
   legalNoticeHtml: string,
   globalWarningText: string,
   globalWarningExpiredDay: string,
-  globalWarningExpiredHour: string
+  globalWarningExpiredHour: string,
+  bugReportTarget: string,
+  bugReportAuth: string
 }
 
 export type AppSettings = AppSettingsObject | Record<string, never>;

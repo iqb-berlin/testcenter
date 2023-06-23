@@ -88,6 +88,16 @@
       <mat-icon>edit</mat-icon>
     </button>
   </mat-form-field>
+
+  <h4>Einstellungen für Fehler-Report</h4>
+  <mat-form-field appearance="fill">
+    <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/testcenter-bugreports">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
+  </mat-form-field>
+
+
   <input matInput type="color" hidden #backgroundBoxColorInput
          formControlName="backgroundBox"
          (change)="backgroundBoxInput.value = $any($event.target).value">
