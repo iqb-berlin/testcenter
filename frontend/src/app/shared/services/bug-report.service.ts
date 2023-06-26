@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BugReportResult, BugReportTargetGitHub } from '../interfaces/bug-report.interfaces';
+import { BugReportResult } from '../interfaces/bug-report.interfaces';
 import { MainDataService } from './maindata/maindata.service';
 
 @Injectable({

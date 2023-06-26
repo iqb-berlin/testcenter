@@ -143,7 +143,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
   downloadReport(): void {
     FileService.saveBlobToFile(
-      new Blob([this.reportElem.nativeElement.innerText], { type: 'text/plain'}),
+      new Blob([this.reportElem.nativeElement.innerText], { type: 'text/plain' }),
       'bug-report.txt'
     );
   }
