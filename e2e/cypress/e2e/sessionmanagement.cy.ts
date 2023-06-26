@@ -7,7 +7,7 @@ import {
 let idHres1;
 let idHres2;
 
-describe('Check Testtakers Contens', () => {
+describe('Check Testtakers Content', () => {
   beforeEach(resetBackendData);
   beforeEach(useTestDB);
   beforeEach(visitLoginPage);
@@ -123,10 +123,6 @@ describe('Check Login Possibilities', () => {
   beforeEach(useTestDB);
   beforeEach(visitLoginPage);
 
-  // afterEach(() => {
-  //   logoutTestTaker('demo');
-  // });
-
   it('should not be possible to log in with a name and without an existing password', () => {
     insertCredentials('with_pw', '');
     cy.get('[data-cy="login-user"]')
@@ -145,17 +141,18 @@ describe('Check Login Possibilities', () => {
       .should('exist');
   });
 
-  it('should be possible to login with name and right password', () => {
+  it('should be possible to login with name and right password and start test immediately', () => {
     insertCredentials('with_pw', '101');
     cy.get('[data-cy="login-user"]')
       .should('exist')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+    cy.get('[data-cy="logo"]')
+      .click();
     cy.contains('with_pw')
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
-    logoutTestTaker('demo');
   });
 
   it('should be possible to login only with a name', () => {
@@ -163,24 +160,25 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="login-user"]')
       .should('exist')
       .click();
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+    cy.get('[data-cy="logo"]')
+      .click();
     cy.contains('without_pw')
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
-    logoutTestTaker('demo');
   });
 
   it('should be possible to login as link', () => {
+    cy.visit(`${Cypress.config().baseUrl}`);
     cy.visit(`${Cypress.config().baseUrl}/#/as_link`);
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
     cy.contains('as_link')
       .should('exist');
-    cy.get('[data-cy="booklet-RUNDEMO"]')
-      .should('exist');
-    logoutTestTaker('demo');
   });
 
   it('should be not possible to login with wrong code', () => {
+    cy.visit(`${Cypress.config().baseUrl}`);
     insertCredentials('as_code1', '102');
     cy.get('[data-cy="login-user"]')
       .should('exist')
@@ -208,11 +206,13 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="continue"]')
       .should('exist')
       .click();
+    cy.get('iframe.unitHost');
+    cy.get('[data-cy="logo"]')
+      .click();
     cy.contains('as_code01')
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
-    logoutTestTaker('demo');
   });
 
   it('should be possible to login with code without password', () => {
@@ -228,11 +228,13 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="continue"]')
       .should('exist')
       .click();
+    cy.get('iframe.unitHost');
+    cy.get('[data-cy="logo"]')
+      .click();
     cy.contains('as_code02')
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
-    logoutTestTaker('demo');
   });
 
   it('should be possible to login with code without password', () => {
@@ -245,11 +247,13 @@ describe('Check Login Possibilities', () => {
     cy.get('[data-cy="continue"]')
       .should('exist')
       .click();
+    cy.get('iframe.unitHost');
+    cy.get('[data-cy="logo"]')
+      .click();
     cy.contains('as_code02')
       .should('exist');
     cy.get('[data-cy="booklet-RUNDEMO"]')
       .should('exist');
-    logoutTestTaker('demo');
   });
 
   it('should be possible to start a group monitor', () => {
@@ -266,7 +270,6 @@ describe('Check Login Possibilities', () => {
       .should('exist');
     cy.contains('hret2')
       .should('exist');
-    logoutTestTaker('demo');
   });
 });
 
@@ -639,7 +642,7 @@ describe.skip('Check hot-restart-mode functions', () => {
 
 describe('Check logins with time restrictions', () => {
   // find the current time and dates restrictions in /sampledata/system-test/CY_Test_Logins.xml
-  describe('Check valid for restrictions', () => {
+  describe('Check valid from restrictions', () => {
     before(resetBackendData);
     beforeEach(useTestDB);
     beforeEach(visitLoginPage);
@@ -665,7 +668,9 @@ describe('Check logins with time restrictions', () => {
       cy.get('[data-cy="login-user"]')
         .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="logo"]')
+        .click();
       cy.get('[data-cy="booklet-RUNDEMO"]')
         .should('exist');
       logoutTestTaker('demo');
@@ -692,7 +697,9 @@ describe('Check logins with time restrictions', () => {
       cy.get('[data-cy="login-user"]')
         .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/4/u/1`);
+      cy.get('[data-cy="logo"]')
+        .click();
       cy.get('[data-cy="booklet-RUNDEMO"]')
         .should('exist');
       logoutTestTaker('demo');
@@ -725,7 +732,9 @@ describe('Check logins with time restrictions', () => {
       cy.get('[data-cy="login-user"]')
         .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="logo"]')
+        .click();
       cy.get('[data-cy="booklet-RUNDEMO"]')
         .should('exist');
       logoutTestTaker('demo');
@@ -752,7 +761,9 @@ describe('Check logins with time restrictions', () => {
       cy.get('[data-cy="login-user"]')
         .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/4/u/1`);
+      cy.get('[data-cy="logo"]')
+        .click();
       cy.get('[data-cy="booklet-RUNDEMO"]')
         .should('exist');
       logoutTestTaker('demo');
@@ -771,7 +782,9 @@ describe('Check logins with time restrictions', () => {
       cy.get('[data-cy="login-user"]')
         .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="logo"]')
+        .click();
       cy.get('[data-cy="booklet-RUNREVIEW"]')
         .should('exist');
       logoutTestTaker('demo');
@@ -784,7 +797,9 @@ describe('Check logins with time restrictions', () => {
       cy.get('[data-cy="login-user"]')
         .should('exist')
         .click();
-      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/t/3/u/1`);
+      cy.get('[data-cy="logo"]')
+        .click();
       cy.get('[data-cy="booklet-RUNREVIEW"]')
         .should('exist');
     });

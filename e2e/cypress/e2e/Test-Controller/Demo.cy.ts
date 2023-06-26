@@ -18,13 +18,10 @@ describe('Navigation-& Testlet-Restrictions', () => {
   before(() => {
     useTestDB();
     visitLoginPage();
-    loginTestTaker(TesttakerName, TesttakerPassword);
+    loginTestTaker(TesttakerName, TesttakerPassword, true);
   });
 
   it('should be possible to choose a demo-mode booklet', () => {
-    cy.get('[data-cy="booklet-RUNDEMO"]')
-      .should('exist')
-      .click();
     cy.contains(/^Startseite$/)
       .should('exist');
     cy.url()
