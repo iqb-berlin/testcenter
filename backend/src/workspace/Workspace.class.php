@@ -146,18 +146,21 @@ class Workspace {
     return substr_count($path, '..') == 0;
   }
 
-  // takes a file from the workspace-dir toplevel and puts it to the correct subdir if valid
-  public function importUnsortedFile(string $fileName): array {
-    if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
-      $relativeFilePaths = $this->unpackUnsortedZipArchive($fileName);
-      $toDelete = [$fileName, $this->getExtractionDirName($fileName)];
-
-    } else {
-      $relativeFilePaths = [$fileName];
-      $toDelete = $relativeFilePaths;
+  // takes files from the workspace-dir toplevel and puts it to the correct subdir if valid
+  public function importUnsortedFiles(array $fileNames): array {
+    $toDelete = [];
+    $toSortIn = [];
+    foreach ($fileNames as $fileName) {
+      if (FileExt::has($fileName, 'ZIP') and !FileExt::has($fileName, 'ITCR.ZIP')) {
+        array_push($toSortIn, ...$this->unpackUnsortedZipArchive($fileName));
+        array_push($toDelete, $fileName, $this->getExtractionDirName($fileName));
+      } else {
+        $toSortIn[] = $fileName;
+        $toDelete[] = $fileName;
+      }
     }
 
-    $files = $this->sortValidUnsortedFiles($relativeFilePaths);
+    $files = $this->sortValidUnsortedFiles($toSortIn);
     $this->deleteUnsorted($toDelete);
 
     return $files;

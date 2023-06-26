@@ -2,6 +2,10 @@ import { TestSessionChange } from 'testcenter-common/interfaces/test-session-cha
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../shared/shared.module';
 
+export interface GroupMonitorConfig {
+  checkForIdleInterval: number;
+}
+
 export type TestSessionData = Readonly<TestSessionChange>;
 
 export interface TestSession {
@@ -10,7 +14,7 @@ export interface TestSession {
   readonly current: UnitContext | null;
   readonly booklet: Booklet | BookletError;
   readonly clearedCodes: Record<string, unknown> | null;
-  readonly timeLeft: Record<string, unknown> | null;
+  readonly timeLeft: Record<string, string> | null;
 }
 
 export const TestSessionsSuperStates = ['monitor_group', 'demo', 'pending', 'locked', 'error',

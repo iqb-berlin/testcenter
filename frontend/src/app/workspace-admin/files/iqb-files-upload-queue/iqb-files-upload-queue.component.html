@@ -4,9 +4,7 @@
   </mat-card-header>
 
   <iqb-files-upload
-    *ngFor="let file of files; let i = index"
-    [file]="file"
-    [id]="i"
+    [files]="files"
     [fileAlias]="fileAlias"
     [folderName]="folderName"
     [folder]="folder"
@@ -16,6 +14,7 @@
 
 
   <mat-card-actions>
-    <button *ngIf="!disableClearButton" (click)="removeAll()" mat-raised-button color="primary" matTooltip="Löscht die gesamte Upload Queue">Ok</button>
+    <button
+      *ngIf="!disableClearButton" (click)="removeAll()" mat-raised-button color="primary" data-cy="close-upload-report">Ok</button>
   </mat-card-actions>
 </mat-card>

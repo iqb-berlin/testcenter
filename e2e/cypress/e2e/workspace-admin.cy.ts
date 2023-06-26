@@ -101,7 +101,7 @@ describe('Workspace-Admin', () => {
       .should('exist');
     cy.get('[data-cy="SAMPLE_SYSCHECK.XML"]')
       .should('not.exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SysCheck.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen')
       .should('exist');
@@ -113,106 +113,162 @@ describe('Workspace-Admin', () => {
 
   it('should only be possible to upload a unit file, if the player file is already exists', () => {
     deleteFilesSampleWorkspace();
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');
-    cy.contains('Ok')
+    cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('not.exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/verona-player-simple-4.0.0.html', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
+    cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
+      .should('exist');
+  });
+
+  it('should only be possible to upload a unit file and it\'s dependiencies at once', () => {
+    deleteFilesSampleWorkspace();
+    cy.get('[data-cy="uplaod-file-select"]')
+      .selectFile([
+        '../sampledata/Unit.xml',
+        '../sampledata/verona-player-simple-4.0.0.html',
+        '../sampledata/SAMPLE_UNITCONTENTS.HTM'
+      ],
+      { force: true }
+      );
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
+    cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
+      .should('exist');
+    cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
+      .should('exist');
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('exist');
   });
 
   it('should only be possible to upload a booklet file, if the declared unit files already exist', () => {
     deleteFilesSampleWorkspace();
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/verona-player-simple-4.0.0.html', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/sample_resource_package.itcr.zip', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .should('not.exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit2.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE-2"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .should('exist');
   });
 
   it('should only be possible to upload a testtaker file, if the declared booklet files already exist', () => {
     deleteFilesSampleWorkspace();
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/verona-player-simple-4.0.0.html', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-VERONA-PLAYER-SIMPLE-4.0"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/SAMPLE_UNITCONTENTS.HTM', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-SAMPLE_UNITCONTENTS.HTM"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/sample_resource_package.itcr.zip', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-SAMPLE_RESOURCE_PACKAGE.ITCR.ZIP"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit2.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-UNIT.SAMPLE-2"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Testtakers.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');
-    cy.contains('Ok')
+    cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
       .should('not.exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet2.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-2"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet3.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-3"]')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Testtakers.xml', { force: true });
+    cy.get('[data-cy="close-upload-report"]')
+      .click();
     cy.get('[data-cy="files-checkbox-TESTTAKERS.XML"]')
       .should('exist');
   });
@@ -230,13 +286,13 @@ describe('Workspace-Admin', () => {
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
     // load a prepared Booklet-File from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('cypress/fixtures/Booklet_sameTestlets.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');
     cy.contains('testletId')
-      .should('exist');
-    cy.contains('Ok')
+      .should('exist'); // TODO should be more precise
+    cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.contains('Booklet_sameTestlets.xml')
       .should('not.exist');
@@ -255,15 +311,13 @@ describe('Workspace-Admin', () => {
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
     // load a prepared Booklet-File from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('cypress/fixtures/Booklet_sameUnitIDs.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');
     cy.contains('Unit')
-      .should('exist');
-    cy.contains('Ok')
-      .click();
-    cy.contains('Booklet_sameUnitIDs.xml')
+      .should('exist'); // TODO should be more precise
+    cy.get('[data-cy="Booklet_sameUnitIDs.xml"]')
       .should('not.exist');
   });
 
@@ -280,12 +334,10 @@ describe('Workspace-Admin', () => {
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
     // load a prepared Booklet-File from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('cypress/fixtures/Booklet_sameUnitIDs_Alias.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen')
       .should('exist');
-    cy.contains('Ok')
-      .click();
     cy.contains('Booklet_sameUnitIDs_Alias.xml')
       .should('exist');
   });
@@ -302,18 +354,18 @@ describe('Workspace-Admin', () => {
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen')
       .should('exist');
-    cy.contains('Ok')
+    cy.get('[data-cy="close-upload-report"]')
       .click();
-    // load a the same booklet file again
-    cy.get('.sidebar > input:nth-child(2)')
+    // load the same booklet file again
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet.xml', { force: true });
     cy.contains('overwritten')
-      .should('exist');
-    cy.contains('Ok')
+      .should('exist'); // TODO should be more precise
+    cy.get('[data-cy="close-upload-report"]')
       .click();
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .should('exist');
@@ -331,14 +383,14 @@ describe('Workspace-Admin', () => {
       .click();
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Booklet.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen')
       .should('exist');
-    cy.contains('Ok')
+    cy.get('[data-cy="close-upload-report"]')
       .click();
     // load a prepared Booklet with same name, but different ID and Testletnames from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('cypress/fixtures/Booklet.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');
@@ -359,14 +411,14 @@ describe('Workspace-Admin', () => {
     cy.contains('2 Dateien erfolgreich gelöscht.')
       .should('exist');
     // load a prepared Booklet with different name and same Booklet-ID from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('cypress/fixtures/Booklet.xml', { force: true });
     cy.contains('Erfolgreich hochgeladen')
       .should('exist');
-    cy.contains('Ok')
+    cy.get('[data-cy="close-upload-report"]')
       .click();
     // load a prepared Booklet with different name and same Booklet-ID from folder cypress/fixtures
-    cy.get('.sidebar > input:nth-child(2)')
+    cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('cypress/fixtures/Booklet_sameBookletID.xml', { force: true });
     cy.contains('Abgelehnt')
       .should('exist');

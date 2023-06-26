@@ -255,7 +255,7 @@ class WorkspaceTest extends TestCase {
     $this->assertEquals($expectation, $result);
   }
 
-  function test_importUnsortedFile_() {
+  function test_importUnsortedFiles_singleFile() {
     $this->workspaceDaoMock
       ->expects('storeFile')
       ->twice();
@@ -271,19 +271,19 @@ class WorkspaceTest extends TestCase {
 
     file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile);
     file_put_contents(DATA_DIR . '/ws_1/Resource/P.HTML', "this would be a player");
-    $result = $workspace->importUnsortedFile('valid.xml');
+    $result = $workspace->importUnsortedFiles(['valid.xml']);
     $this->assertArrayNotHasKey('error', $result["valid.xml"]->getValidationReport(), 'valid file has no errors');
     $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid.xml'), 'valid file is imported');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
 
     file_put_contents(DATA_DIR . '/ws_1/invalid.xml', self::invalidFile);
-    $result = $workspace->importUnsortedFile('invalid.xml');
+    $result = $workspace->importUnsortedFiles(['invalid.xml']);
     $this->assertGreaterThan(0, count($result["invalid.xml"]->getValidationReport()['error']), 'invalid file has error report');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/invalid.xml'), 'invalid file is rejected');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/invalid.xml'), 'cleanup after import');
 
     file_put_contents(DATA_DIR . '/ws_1/valid3.xml', self::validFile2);
-    $result = $workspace->importUnsortedFile('valid3.xml');
+    $result = $workspace->importUnsortedFiles(['valid3.xml']);
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid3.xml'), 'reject on duplicate id if file names are not the same');
     $this->assertStringContainsString(
       '1st valid file',
@@ -294,7 +294,7 @@ class WorkspaceTest extends TestCase {
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid3.xml'), 'cleanup after import');
 
     file_put_contents(DATA_DIR . '/ws_1/valid.xml', self::validFile2);
-    $result = $workspace->importUnsortedFile('valid.xml');
+    $result = $workspace->importUnsortedFiles(['valid.xml']);
     $this->assertStringContainsString(
       '2nd valid file',
       file_get_contents(DATA_DIR . '/ws_1/Unit/valid.xml'),
@@ -304,7 +304,7 @@ class WorkspaceTest extends TestCase {
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid.xml'), 'cleanup after import');
   }
 
-  function test_importUnsortedFile_zipWithValidFilesWithDependencies() {
+  function test_importUnsortedFiles_multipleFilesWithDependencies() {
     $this->workspaceDaoMock
       ->expects('storeFile')
       ->times(4);
@@ -335,7 +335,95 @@ class WorkspaceTest extends TestCase {
       'valid_unit.xml' => self::validUnit
     ];
 
-    $result = $workspace->importUnsortedFile("archive.zip");
+    $result = $workspace->importUnsortedFiles(["archive.zip"]);
+    $errors = $this->getErrorsFromValidationResult($result);
+
+    $this->assertCount(0, $errors);
+
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_testtakers.xml'), 'clean after importing');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_booklet.xml'), 'clean after importing');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/P.html'), 'clean after importing');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_unit.xml'), 'clean after importing');
+
+    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
+    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
+    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Resource/P.html'), 'import resource');
+    $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
+  }
+
+  function test_importUnsortedFiles_multipleFilesWithMissingDependencies() {
+    $this->workspaceDaoMock
+      ->expects('storeFile')
+      ->never();
+    $this->workspaceDaoMock
+      ->expects('storeRelations')
+      ->never();
+    $this->workspaceDaoMock
+      ->expects('getFileById')
+      ->never();
+    $this->workspaceDaoMock
+      ->expects('updateUnitDefsAttachments')
+      ->never();
+    $this->workspaceDaoMock
+      ->expects('updateLoginSource')
+      ->never();
+    $this->workspaceDaoMock
+      ->expects('getRelatingFiles')
+      ->never();
+    $workspace = new Workspace(1);
+
+    ZIP::$mockArchive = [
+      'valid_testtakers.xml' => self::validTesttakers,
+      'valid_booklet.xml' => self::validBooklet,
+      'valid_unit.xml' => self::validUnit
+    ];
+
+    $result = $workspace->importUnsortedFiles(["archive.zip"]);
+    $errors = $this->getErrorsFromValidationResult($result);
+
+    $this->assertCount(3, $errors);
+
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_testtakers.xml'), 'clean after importing');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_booklet.xml'), 'clean after importing');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/valid_unit.xml'), 'clean after importing');
+
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Unit/valid_unit.xml'), 'import valid unit');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Booklet/valid_booklet.xml'), 'import valid booklet');
+    $this->assertFalse(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers');
+  }
+
+  function test_importUnsortedFiles_zipWithValidFilesWithDependencies() {
+    $this->workspaceDaoMock
+      ->expects('storeFile')
+      ->times(4);
+    $this->workspaceDaoMock
+      ->expects('storeRelations')
+      ->andReturn([[], []])
+      ->times(3);
+    $this->workspaceDaoMock
+      ->expects('getFileById')
+      ->andReturn(XMLFileUnit::fromString(self::validUnit))
+      ->once();
+    $this->workspaceDaoMock
+      ->expects('updateUnitDefsAttachments')
+      ->once();
+    $this->workspaceDaoMock
+      ->expects('updateLoginSource')
+      ->once();
+    $this->workspaceDaoMock
+      ->expects('getRelatingFiles')
+      ->andReturn([]) // TODO add realistic return!
+      ->times(4);
+    $workspace = new Workspace(1);
+
+    ZIP::$mockArchive = [
+      'valid_testtakers.xml' => self::validTesttakers,
+      'valid_booklet.xml' => self::validBooklet,
+      'P.html' => 'this would be a player',
+      'valid_unit.xml' => self::validUnit
+    ];
+
+    $result = $workspace->importUnsortedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
     $this->assertCount(0, $errors);
@@ -349,7 +437,7 @@ class WorkspaceTest extends TestCase {
     $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/valid_testtakers.xml'), 'import testtakers from ZIP');
   }
 
-  function test_importUnsortedFile_zip_rejectInvalidUnitAndDependantFiles() {
+  function test_importUnsortedFiles_zip_rejectInvalidUnitAndDependantFiles() {
     $this->workspaceDaoMock
       ->shouldReceive('storeFile')
       ->once();
@@ -369,7 +457,7 @@ class WorkspaceTest extends TestCase {
       'invalid_unit.xml' => 'INVALID'
     ];
 
-    $result = $workspace->importUnsortedFile("archive.zip");
+    $result = $workspace->importUnsortedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
     $this->assertCount(3, $errors);
@@ -394,7 +482,7 @@ class WorkspaceTest extends TestCase {
     );
   }
 
-  function test_importUnsortedFile_zip_rejectInvalidBookletAndDependantFiles() {
+  function test_importUnsortedFiles_zip_rejectInvalidBookletAndDependantFiles() {
     $this->workspaceDaoMock
       ->shouldReceive('storeFile')
       ->twice();
@@ -415,7 +503,7 @@ class WorkspaceTest extends TestCase {
       'valid_unit.xml' => self::validUnit
     ];
 
-    $result = $workspace->importUnsortedFile("archive.zip");
+    $result = $workspace->importUnsortedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
     $this->assertCount(2, $errors);
@@ -439,7 +527,7 @@ class WorkspaceTest extends TestCase {
     );
   }
 
-  function test_importUnsortedFile_zip_rejectOnDuplicateId() {
+  function test_importUnsortedFiles_zip_rejectOnDuplicateId() {
     $this->workspaceDaoMock
       ->shouldReceive('storeFile')
       ->never();
@@ -452,7 +540,7 @@ class WorkspaceTest extends TestCase {
       'file_with_used_id.xml' => '<Unit ><Metadata><Id>UNIT.SAMPLE</Id><Label>l</Label></Metadata><Definition player="p">d</Definition></Unit>',
     ];
 
-    $result = $workspace->importUnsortedFile("archive.zip");
+    $result = $workspace->importUnsortedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
 
     $this->assertCount(1, $errors);
@@ -464,7 +552,7 @@ class WorkspaceTest extends TestCase {
     );
   }
 
-  function test_importUnsortedFile_zip_handleSubFolders() {
+  function test_importUnsortedFiles_zip_handleSubFolders() {
     $this->workspaceDaoMock
       ->shouldReceive('storeFile')
       ->times(4);
@@ -504,7 +592,7 @@ class WorkspaceTest extends TestCase {
       ]
     ];
 
-    $result = $workspace->importUnsortedFile("archive.zip");
+    $result = $workspace->importUnsortedFiles(["archive.zip"]);
     $errors = $this->getErrorsFromValidationResult($result);
     $this->assertCount(1, $errors);
 
@@ -532,7 +620,7 @@ class WorkspaceTest extends TestCase {
   }
 
   // regression test for #235
-  function test_importUnsortedFile_multiMonitor() {
+  function test_importUnsortedFiles_multiMonitor() {
     $this->workspaceDaoMock
       ->expects('storeFile')
       ->once();
@@ -551,7 +639,7 @@ class WorkspaceTest extends TestCase {
     $workspace = new Workspace(1);
     file_put_contents(DATA_DIR . '/ws_1/testtakers.xml', self::dangerousTesttakers);
 
-    $result = $workspace->importUnsortedFile('testtakers.xml');
+    $result = $workspace->importUnsortedFiles(['testtakers.xml']);
     $this->assertArrayNotHasKey('error', $result["testtakers.xml"]->getValidationReport(), 'valid file has no errors');
     $this->assertTrue(file_exists(DATA_DIR . '/ws_1/Testtakers/testtakers.xml'), 'valid file is imported');
     $this->assertFalse(file_exists(DATA_DIR . '/ws_1/testtakers.xml'), 'cleanup after import');

@@ -4,7 +4,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { Pipe } from '@angular/core';
 import {
-  Booklet, BookletError, CommandResponse,
+  Booklet, BookletError, CommandResponse, GroupMonitorConfig,
   Selected, Testlet, TestSessionData, TestSessionFilter, TestSessionSetStats
 } from '../group-monitor.interfaces';
 import { BookletService } from '../booklet/booklet.service';
@@ -13,6 +13,7 @@ import { TestSessionManager } from './test-session-manager.service';
 import {
   unitTestExampleSessions, unitTestExampleBooklets, additionalUnitTestExampleSessions
 } from '../unit-test-example-data.spec';
+import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
 
 class MockBookletService {
   booklets: Observable<Booklet>[] = [of(unitTestExampleBooklets.example_booklet_1)];
@@ -61,7 +62,8 @@ describe('TestSessionManager', () => {
       providers: [
         TestSessionManager,
         { provide: BookletService, useValue: new MockBookletService() },
-        { provide: BackendService, useValue: new MockBackendService() }
+        { provide: BackendService, useValue: new MockBackendService() },
+        { provide: GROUP_MONITOR_CONFIG, useValue: <GroupMonitorConfig>{ checkForIdleInterval: 0 }}
       ]
     })
       .compileComponents();

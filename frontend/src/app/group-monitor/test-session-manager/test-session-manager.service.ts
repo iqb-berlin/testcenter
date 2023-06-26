@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
-  BehaviorSubject, combineLatest, Observable, Subject, zip
+  BehaviorSubject, combineLatest, interval, Observable, of, Subject, zip
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import {
-  delay, flatMap, map, switchMap, tap
+  delay, flatMap, map, startWith, switchMap, tap
 } from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import { BookletService } from '../booklet/booklet.service';
@@ -14,9 +14,10 @@ import {
   Selected, CheckingOptions,
   TestSession,
   TestSessionFilter, TestSessionSetStats,
-  TestSessionsSuperStates, CommandResponse, GotoCommandData
+  TestSessionsSuperStates, CommandResponse, GotoCommandData, GroupMonitorConfig
 } from '../group-monitor.interfaces';
 import { BookletUtil } from '../booklet/booklet.util';
+import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
 
 @Injectable()
 export class TestSessionManager {
@@ -56,6 +57,7 @@ export class TestSessionManager {
   private _checkedStats$: BehaviorSubject<TestSessionSetStats>;
   private _sessionsStats$: BehaviorSubject<TestSessionSetStats>;
   private _commandResponses$: Subject<CommandResponse>;
+  private _clock$: Observable<number>;
 
   // attention: this works the other way round than Array.filter:
   // it defines which sessions are to filter out, not which ones are to keep
@@ -82,7 +84,8 @@ export class TestSessionManager {
 
   constructor(
     private bs: BackendService,
-    private bookletService: BookletService
+    private bookletService: BookletService,
+    @Inject(GROUP_MONITOR_CONFIG) private readonly groupMonitorConfig: GroupMonitorConfig
   ) {}
 
   connect(groupName: string): void {
@@ -97,18 +100,26 @@ export class TestSessionManager {
     this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
     this._commandResponses$ = new Subject<CommandResponse>();
+    console.log(this.groupMonitorConfig.checkForIdleInterval);
+    this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
+      interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
+      of(0);
 
     this.monitor$ = this.bs.observeSessionsMonitor(groupName)
       .pipe(
-        switchMap(sessions => zip(...sessions
-          .map(session => this.bookletService.getBooklet(session.bookletName)
-            .pipe(
-              map(booklet => TestSessionUtil.analyzeTestSession(session, booklet))
-            ))))
+        switchMap(sessions => zip(
+          ...sessions
+            .map(session => combineLatest([this.bookletService.getBooklet(session.bookletName), this._clock$])
+              .pipe(
+                map(([booklet]) => TestSessionUtil.analyzeTestSession(session, booklet))
+              )
+            )
+        ))
       );
 
     this._sessions$ = new BehaviorSubject<TestSession[]>([]);
-    combineLatest<[Sort, TestSessionFilter[], TestSession[]]>([this.sortBy$, this.filters$, this.monitor$])
+
+    combineLatest([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
         // eslint-disable-next-line max-len
         map(([sortBy, filters, sessions]) => this.sortSessions(sortBy, TestSessionManager.filterSessions(sessions, filters))),
