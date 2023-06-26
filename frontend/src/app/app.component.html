@@ -10,7 +10,7 @@
   <mat-card-title>
     <tc-alert *ngIf="errorData?.category === 'ERROR'" text="Fehler: {{ errorData?.label }}" level="error"></tc-alert>
     <tc-alert *ngIf="errorData?.category === 'WARNING'" text="Warnung: {{ errorData?.label }}" level="warning"></tc-alert>
-    <button mat-icon-button class="main-alert-close-button"><mat-icon>close</mat-icon></button>
+    <button mat-icon-button class="main-alert-close-button" data-cy="close-alert"><mat-icon>close</mat-icon></button>
   </mat-card-title>
   <mat-card-content>
     {{ errorData?.description }}
