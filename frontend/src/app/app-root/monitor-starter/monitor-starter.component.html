@@ -12,6 +12,7 @@
         <button *ngFor="let accessObject of accessObjects.testGroupMonitor"
                 mat-raised-button color="primary"
                 [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
+                [attr.data-cy]="'GM-' + accessObject.id"
                 (click)="buttonGotoMonitor(accessObject)">
           <span class="booklet_title">{{accessObject.label}}</span>
           <span class="booklet_status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">

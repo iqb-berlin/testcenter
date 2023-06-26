@@ -1,6 +1,6 @@
 import {
-  deleteDownloadsFolder, loginSuperAdmin, useTestDB, openSampleWorkspace,
-  deleteFilesSampleWorkspace, resetBackendData, logoutAdmin, visitLoginPage, logout
+  deleteDownloadsFolder, loginSuperAdmin, useTestDB, openSampleWorkspace1,
+  deleteFilesSampleWorkspace, resetBackendData, logoutAdmin, visitLoginPage
 } from './utils';
 
 describe('Workspace-Admin', () => {
@@ -9,9 +9,9 @@ describe('Workspace-Admin', () => {
   beforeEach(useTestDB);
   beforeEach(visitLoginPage);
   beforeEach(loginSuperAdmin);
-  beforeEach(openSampleWorkspace);
+  beforeEach(openSampleWorkspace1);
 
-  afterEach(logout);
+  afterEach(logoutAdmin);
 
   it('should be possible to download files', () => {
     cy.get('[data-cy="SAMPLE_TESTTAKERS.XML"]')
@@ -470,9 +470,5 @@ describe('Workspace-Admin', () => {
       .click();
     cy.get('[data-cy="results-checkbox"]')
       .should('not.exist');
-  });
-
-  it('should be possible to logout the workspaceadmin', () => {
-    logoutAdmin();
   });
 });
