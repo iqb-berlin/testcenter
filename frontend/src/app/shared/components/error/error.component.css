@@ -42,3 +42,8 @@ mat-card-title {
   right: 3px;
   top: 3px;
 }
+
+mat-card-actions {
+  justify-content: space-between;
+  margin-left: -16px;
+}

@@ -10,6 +10,7 @@ import { AppError } from '../../../app.interfaces';
 import { MainDataService } from '../../services/maindata/maindata.service';
 import { BugReportService } from '../../services/bug-report.service';
 import { BugReportResult } from '../../interfaces/bug-report.interfaces';
+import { FileService } from '../../services/file.service';
 
 @Component({
   selector: 'error',
@@ -24,7 +25,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   @ViewChild('report') reportElem!: ElementRef;
   error: AppError;
   errorBuffer: AppError[] = [];
-  errorDetailsOpen = true;
+  errorDetailsOpen = false;
   allowErrorDetails = true;
   defaultCloseCaption: string;
   browser: UAParser.IResult;
@@ -131,12 +132,19 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
   }
 
-  submitReport() {
+  submitReport(): void {
     this.bugReportService.publishReportAtGithub(
       `[${window.location.hostname}] ${this.error.label}`,
       this.reportElem.nativeElement.innerText,
       this.error.type
     )
       .subscribe(result => { this.sendingResult = result; });
+  }
+
+  downloadReport(): void {
+    FileService.saveBlobToFile(
+      new Blob([this.reportElem.nativeElement.innerText], { type: 'text/plain'}),
+      'bug-report.txt'
+    );
   }
 }

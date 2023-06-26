@@ -69,8 +69,8 @@
     <div *ngIf="errorDetailsOpen">
       <small *ngIf="!sendingResult; else: sendingResultBox">
         Durch den Click auf "Fehlerbericht senden" erkläre ich mich einverstanden, dass obiger Fehlerbericht
-        gesendet wird. Es kann dabei dazu kommen, dass die Daten auf Servern Dritter gespeichert werden.
-        Es werden nur die im roten Kästchen zu findenden Informationen gesendet.
+        an den Hersteller gesendet wird. Es kann dabei dazu kommen, dass die Daten auf Servern Dritter gespeichert
+        werden. Es werden ausschließlich die im roten Kästchen zu findenden Informationen übertragen.
       </small>
       <ng-template #sendingResultBox>
         <alert [level]="sendingResult.success ? 'success' : 'warning'" text="{{sendingResult.message}}"></alert>
@@ -79,29 +79,44 @@
     </div>
   </mat-card-content>
 
-  <mat-card-actions>
-    <button
-      *ngIf="!uncloseable"
-      mat-raised-button
-      color="primary"
-      (click)="closeClick()" data-cy="close"
-    >
-      {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
-    </button>
+  <mat-card-actions align="end" class="flex-row">
+
     <button
       *ngIf="allowErrorDetails && !errorDetailsOpen"
       mat-raised-button
       (click)="toggleErrorDetails()"
     >
-      Fehler Melden
+      Fehlerbericht
     </button>
+
+    <div>
+      <button
+        *ngIf="!sendingResult && errorDetailsOpen"
+        mat-raised-button
+        color="accent"
+        (click)="submitReport()"
+      >
+        Fehlerbericht Senden
+      </button>
+
+      <button
+        *ngIf="errorDetailsOpen"
+        mat-raised-button
+        color="accent"
+        (click)="downloadReport()"
+      >
+        Fehlerbericht Herunterladen
+      </button>
+    </div>
+
     <button
-      *ngIf="!sendingResult"
+      *ngIf="!uncloseable"
       mat-raised-button
-      color="accent"
-      (click)="submitReport()"
+      color="primary"
+      (click)="closeClick()"
+      data-cy="close"
     >
-      Fehlerbericht Senden
+      {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
     </button>
   </mat-card-actions>
 </mat-card>

@@ -90,10 +90,13 @@
   </mat-form-field>
 
   <h4>Einstellungen für Fehler-Report</h4>
+  <p>Sie sollten hier ein GitHub-Token hinterlegen, damit Fehlerberichte im Fehlerfall gesendet werden können.</p>
   <mat-form-field appearance="fill">
-    <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/testcenter-bugreports">
+    <mat-label>Ziel-Repository</mat-label>
+    <input matInput formControlName="bugReportTarget" placeholder="iqb-berlin/bugreports">
   </mat-form-field>
   <mat-form-field appearance="fill">
+    <mat-label>GitHub-Token</mat-label>
     <input matInput formControlName="bugReportAuth" placeholder="GitHub-Token">
   </mat-form-field>
 

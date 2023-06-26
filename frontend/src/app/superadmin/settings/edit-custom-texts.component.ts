@@ -85,7 +85,7 @@ export class EditCustomTextsComponent {
           key: ctKey,
           label: allCustomTexts[ctKey].label,
           defaultValue: allCustomTexts[ctKey].defaultvalue,
-          value: this.mainDataService.appConfig.customTexts[ctKey]
+          value: this.mainDataService.appConfig?.customTexts[ctKey]
         });
       }
     });

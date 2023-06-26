@@ -35,7 +35,7 @@ export class BugReportService {
     const msgBody = {
       title,
       body,
-      labels: ['Bug-Report', tag]
+      labels: ['Tescenter', tag]
     };
     const headers = new HttpHeaders({
       Authorization: `Bearer ${appConfig.bugReportAuth}`
