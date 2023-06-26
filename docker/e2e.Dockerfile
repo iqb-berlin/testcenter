@@ -1,4 +1,4 @@
-FROM cypress/included:10.5.0
+FROM cypress/included:10.8.0
 WORKDIR /app
 
 # dependencies will be installed only if the package files change

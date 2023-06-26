@@ -303,6 +303,8 @@ class SessionDAO extends DAO {
       $suffix[] = $code;
     }
     if (Mode::hasCapability($loginSession->getLogin()->getMode(), 'alwaysNewSession')) {
+      // we use random strings to identify the persons, not subsequent numbers, because that caused trouble when
+      // two logged in in the very same moment
       $suffix[] = Random::string(8, false);
     }
     $suffix = implode('/', $suffix);
@@ -339,17 +341,26 @@ class SessionDAO extends DAO {
 
     $validUntil = TimeStamp::expirationFromNow($login->getValidTo(), $login->getValidForMinutes());
 
-    $this->_(
-      "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
+    try {
+      $this->_(
+        "insert into person_sessions (token, code, login_sessions_id, valid_until, name_suffix)
             values (:token, :code, :login_id, :valid_until, :suffix)",
-      [
-        ':token' => $newPersonToken,
-        ':code' => $code,
-        ':login_id' => $loginSession->getId(),
-        ':valid_until' => TimeStamp::toSQLFormat($validUntil),
-        ':suffix' => $suffix
-      ]
-    );
+        [
+          ':token' => $newPersonToken,
+          ':code' => $code,
+          ':login_id' => $loginSession->getId(),
+          ':valid_until' => TimeStamp::toSQLFormat($validUntil),
+          ':suffix' => $suffix
+        ]
+      );
+    } catch (Exception $ee) {
+      if ($ee->getPrevious() and ($ee->getPrevious()->getCode() == 23000)) {
+        error_log("Create person-session: retry on duplicate suffix ({$loginSession->getLogin()->getName()})");
+        // allow retry on duplicate suffix - extremely unlikely in prod, but happens in test environment
+        return $this->createOrUpdatePersonSession($loginSession, $code, $allowExpired);
+      }
+    }
+
 
     return new PersonSession(
       $loginSession,

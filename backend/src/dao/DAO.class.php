@@ -56,7 +56,7 @@ class DAO {
       $sqlStatement->execute($replacements);
     } catch (Exception $exception) {
       $caller = debug_backtrace(!DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'];
-      throw new Exception($exception->getMessage() . " ($caller)");
+      throw new Exception($exception->getMessage() . " ($caller)", 0, $exception);
     }
 
     $this->lastAffectedRows = $sqlStatement->rowCount();
