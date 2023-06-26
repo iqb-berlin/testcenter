@@ -35,7 +35,7 @@ export const resetBackendData = (): void => {
     .its('status').should('eq', 200);
   // sometimes DB isn't ready even after the endpoint returned 200
   // TODO replace this by something more meaningful
-  cy.wait(500);
+  cy.wait(800);
 };
 
 export const insertCredentials = (username: string, password = ''): void => {
@@ -138,14 +138,18 @@ export const loginWorkspaceAdmin = (): void => {
     .should('exist');
 };
 
-export const loginTestTaker = (name: string, password: string): void => {
+export const loginTestTaker = (name: string, password: string, singleTest: boolean = false): void => {
   insertCredentials(name, password);
   cy.get('[data-cy="login-user"]')
     .should('exist')
     .click();
-  cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-  cy.contains(name)
-    .should('exist');
+  if (singleTest) {
+    cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
+  } else {
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.contains(name)
+      .should('exist');
+  }
 };
 
 export const clickSuperadmin = (): void => {

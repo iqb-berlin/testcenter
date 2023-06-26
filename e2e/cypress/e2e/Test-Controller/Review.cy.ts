@@ -20,13 +20,10 @@ describe('Navigation-& Testlet-Restrictions', () => {
   before(() => {
     useTestDB();
     visitLoginPage();
-    loginTestTaker(TesttakerName, TesttakerPassword);
+    loginTestTaker(TesttakerName, TesttakerPassword, true);
   });
 
   it('should be possible to choose a review-mode booklet', () => {
-    cy.get('[data-cy="booklet-RUNREVIEW"]')
-      .should('exist')
-      .click();
     cy.contains(/^Startseite$/)
       .should('exist');
     cy.url()
