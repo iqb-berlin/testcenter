@@ -168,8 +168,11 @@ class SessionDAO extends DAO {
     // there is no way in mySQL to combine insert & select into one query
 
     $session = $this->_(
-      'select id, token from login_sessions where name = :name',
-      [':name' => $login->getName()]
+      'select id, token from login_sessions where name = :name and workspace_id = :ws_id',
+      [
+        ':name' => $login->getName(),
+        ':ws_id' => $login->getWorkspaceId()
+      ]
     );
 
     return new LoginSession((int) $session['id'], $session['token'], $login);
