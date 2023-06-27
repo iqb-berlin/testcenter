@@ -1,7 +1,7 @@
 import {
   loginSuperAdmin, openSampleWorkspace1, loginTestTaker, resetBackendData,
   useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder,
-  ConvertResultsSeperatedArrays
+  convertResultsSeperatedArrays
 } from '../utils';
 
 const waitMaxSnackBarDisplayed = 10000;
@@ -266,7 +266,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .should('exist')
       .click();
     // responses must be empty
-    ConvertResultsSeperatedArrays('responses')
+    convertResultsSeperatedArrays('responses')
       .then(sepArrays => {
         expect(sepArrays[1][5]).to.be.equal('[]');
       });
@@ -291,7 +291,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.get('[data-cy="download-comments"]')
       .should('exist')
       .click();
-    ConvertResultsSeperatedArrays('reviews')
+    convertResultsSeperatedArrays('reviews')
       .then(sepArrays => {
         expect(sepArrays[1][8]).to.be.equal('my name: its a new comment');
       });

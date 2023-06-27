@@ -1,7 +1,22 @@
 import {
-  ConvertResultsLoginRows, loginSuperAdmin, loginTestTaker, useTestDB, openSampleWorkspace1,
-  resetBackendData, logoutAdmin, visitLoginPage, deleteTesttakersFiles, deleteDownloadsFolder, insertCredentials,
-  logoutTestTaker, openSampleWorkspace2, ConvertResultsSeperatedArrays, useTestDBSetDate
+  convertResultsLoginRows,
+  loginSuperAdmin,
+  loginTestTaker,
+  useTestDB,
+  openSampleWorkspace1,
+  resetBackendData,
+  logoutAdmin,
+  visitLoginPage,
+  deleteTesttakersFiles,
+  deleteDownloadsFolder,
+  insertCredentials,
+  logoutTestTaker,
+  openSampleWorkspace2,
+  convertResultsSeperatedArrays,
+  useTestDBSetDate,
+  getFromIframe,
+  forwardTo,
+  backwardsTo
 } from './utils';
 
 let idHres1;
@@ -273,8 +288,7 @@ describe('Check Login Possibilities', () => {
   });
 });
 
-describe.skip('Check hot-return mode functions', () => {
-  // todo: waits beim Setzen der Checkboxen ersetzen
+describe('Check hot-return mode functions', () => {
   // abfangen der Calls schwierig, Test scheitert manchmal--> Optimierung nach Änderungen durch Philipp
   // Testfälle bzgl. Ticket #315 erstellen
   before(resetBackendData);
@@ -285,140 +299,70 @@ describe.skip('Check hot-return mode functions', () => {
   });
 
   it('should be possible to start a hot-return-mode study as login: hret1', () => {
-    loginTestTaker('hret1', '201');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/state`).as('testState');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-101/state`).as('unitState');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/log`).as('testLog');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/commands`).as('commands');
-    cy.get('[data-cy="booklet-SM_BKL"]')
-      .should('exist')
-      .click();
-    cy.wait(['@testState', '@unitState', '@unitState', '@testLog', '@commands']);
+    loginTestTaker('hret1', '201', true);
+
     cy.contains(/^Aufgabe1$/)
       .should('exist');
-    cy.wait(1000);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
-      .should('exist')
-      .click()
-      .should('be.checked');
-    cy.wait(1000);
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .should('exist')
+
+    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-101/response`).as('response-1');
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    cy.contains(/^Aufgabe2$/)
-      .should('exist');
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio2-Aufg2"]')
-      .should('exist')
-      .click()
-      .should('be.checked');
-    cy.wait(1000);
-    cy.get('[data-cy="unit-navigation-backward"]')
+    cy.wait('@response-1');
+
+    forwardTo('Aufgabe2');
+
+    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-102/response`).as('response-2');
+    getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .click();
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
-    cy.wait(1000);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
+    cy.wait('@response-2');
+
+    backwardsTo('Aufgabe1');
+
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .should('exist')
-      .click();
-    cy.contains(/^Aufgabe2$/)
-      .should('exist');
+
+    forwardTo('Aufgabe2');
+
     logoutTestTaker('hot');
   });
 
-  it('should be saved the last given replies from login: hret1', () => {
-    loginTestTaker('hret1', '201');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/state`).as('testState');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/unit/UNIT.SAMPLE-102/state`).as('unitState');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/log`).as('testLog');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/3/commands`).as('commands');
-    cy.contains('Sessionmanagement test hot modes')
-      .should('exist');
-    cy.contains(/^Fortsetzen$/)
-      .should('exist');
-    cy.get('[data-cy="booklet-SM_BKL"]')
-      .should('exist')
-      .click();
-    cy.wait(['@testState', '@unitState', '@unitState', '@testLog', '@commands']);
+  it('should restore the last given replies from login: hret1', () => {
+    loginTestTaker('hret1', '201', true);
+
     cy.contains(/^Aufgabe2$/)
       .should('exist');
-    cy.wait(1000);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio2-Aufg2"]')
+
+    getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .should('be.checked');
-    cy.wait(1000);
-    cy.get('[data-cy="unit-navigation-backward"]')
-      .should('exist')
-      .click();
-    cy.contains(/^Aufgabe1$/)
-      .should('exist');
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
+
+    backwardsTo('Aufgabe1');
+
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('be.checked');
+
     logoutTestTaker('hot');
   });
 
   it('should be possible to start a hot-return-mode study as login: hret2', () => {
-    loginTestTaker('hret2', '202');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/state`).as('testState');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-101/state`).as('unitState101');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/log`).as('testLog');
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/commands`).as('commands');
-    cy.contains('Sessionmanagement test hot modes')
-      .should('exist');
-    cy.contains(/^Starten$/)
-      .should('exist');
-    cy.get('[data-cy="booklet-SM_BKL"]')
-      .should('exist')
-      .click();
-    cy.wait(['@testState', '@unitState101', '@unitState101', '@testLog', '@commands']);
+    loginTestTaker('hret2', '202', true);
+
     cy.contains(/^Aufgabe1$/)
       .should('exist');
-    cy.wait(1000);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
-      .should('exist')
-      .click()
-      .should('be.checked');
-    cy.wait(1000);
-    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102');
-    cy.get('[data-cy="unit-navigation-forward"]')
-      .should('exist')
+
+    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-101/response`).as('response-1');
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .click();
-    cy.contains(/^Aufgabe2$/)
-      .should('exist');
+    cy.wait('@response-1');
+
+    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-102/state`).as('unitState102');
+    forwardTo('Aufgabe2');
     cy.wait(['@unitState102', '@unitState102']);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio2-Aufg2"]')
-      .should('exist')
-      .click()
-      .should('be.checked');
-    cy.wait(1000);
+
+    cy.intercept(`${Cypress.env('TC_API_URL')}/test/4/unit/UNIT.SAMPLE-102/response`).as('response-2');
+    getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
+      .click();
+    cy.wait('@response-2');
+
     logoutTestTaker('hot');
   });
 
@@ -439,7 +383,7 @@ describe.skip('Check hot-return mode functions', () => {
   });
 
   it('should be saved recent replies from login: hret1 in downloaded response file', () => {
-    ConvertResultsLoginRows('responses')
+    convertResultsLoginRows('responses')
       .then(responses => {
         expect(responses[1]).to.be.match(/\bhret1\b/);
         expect(responses[1]).to.be.match(/\bUNIT.SAMPLE-101\b/);
@@ -453,7 +397,7 @@ describe.skip('Check hot-return mode functions', () => {
   });
 
   it('should be saved recent replies from login: hret2 in downloaded response file', () => {
-    ConvertResultsLoginRows('responses')
+    convertResultsLoginRows('responses')
       .then(responses => {
         expect(responses[3]).to.be.match(/\bhret2\b/);
         expect(responses[3]).to.be.match(/\bUNIT.SAMPLE-101\b/);
@@ -494,11 +438,7 @@ describe.skip('Check hot-restart-mode functions', () => {
     cy.contains(/^Aufgabe1$/)
       .should('exist');
     cy.wait(1000);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('exist')
       .click()
       .should('be.checked');
@@ -511,11 +451,7 @@ describe.skip('Check hot-restart-mode functions', () => {
     cy.contains(/^Aufgabe2$/)
       .should('exist');
     cy.wait(['@unitState102', '@unitState102', '@unitState102', '@unitState102', '@unitResponse102']);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio2-Aufg2"]')
+    getFromIframe('[data-cy="TestController-radio2-Aufg2"]')
       .should('exist')
       .click()
       .should('be.checked');
@@ -540,7 +476,7 @@ describe.skip('Check hot-restart-mode functions', () => {
   });
 
   it('should be saved recent replies from first login: hres1 in downloaded response file', () => {
-    ConvertResultsLoginRows('responses')
+    convertResultsLoginRows('responses')
       .then(responses => {
         expect(responses[1]).to.be.match(/\bhres1\b/);
         expect(responses[1]).to.be.match(/\bUNIT.SAMPLE-101\b/);
@@ -568,11 +504,7 @@ describe.skip('Check hot-restart-mode functions', () => {
     cy.contains(/^Aufgabe1$/)
       .should('exist');
     cy.wait(1000);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg1"]')
+    getFromIframe('[data-cy="TestController-radio1-Aufg1"]')
       .should('exist')
       .should('not.be.checked')
       .click()
@@ -585,11 +517,7 @@ describe.skip('Check hot-restart-mode functions', () => {
     cy.contains(/^Aufgabe2$/)
       .should('exist');
     cy.wait(['@unitState102', '@unitState102']);
-    cy.get('iframe')
-      .its('0.contentDocument.body')
-      .should('be.visible')
-      .then(cy.wrap)
-      .find('[data-cy="TestController-radio1-Aufg2"]')
+    getFromIframe('[data-cy="TestController-radio1-Aufg2"]')
       .should('exist')
       .should('not.be.checked')
       .click()
@@ -613,7 +541,7 @@ describe.skip('Check hot-restart-mode functions', () => {
   });
 
   it('should be saved recent replies from second login: hres1 in downloaded response file', () => {
-    ConvertResultsLoginRows('responses')
+    convertResultsLoginRows('responses')
       .then(responses => {
         expect(responses[3]).to.be.match(/\bhres1\b/);
         expect(responses[3]).to.be.match(/\bUNIT.SAMPLE-101\b/);
@@ -626,12 +554,12 @@ describe.skip('Check hot-restart-mode functions', () => {
 
   it('should be generated a different ID for each hres-login', () => {
     // save the generated ID from first hres-login
-    ConvertResultsSeperatedArrays('responses')
+    convertResultsSeperatedArrays('responses')
       .then(LoginID => {
         idHres1 = LoginID[1][2];
       });
     // save the generated ID from second hres-login
-    ConvertResultsSeperatedArrays('responses')
+    convertResultsSeperatedArrays('responses')
       .then(LoginID => {
         idHres2 = LoginID[2][2];
       });
