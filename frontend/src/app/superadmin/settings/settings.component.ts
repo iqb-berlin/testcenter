@@ -8,13 +8,13 @@ import { Component } from '@angular/core';
         Text-Ersetzungen
       </h3>
       <div [style.grid-row]="'1 / 2'" [style.grid-column]="'2 / 3'">
-        <app-custom-texts></app-custom-texts>
+        <tc-custom-texts></tc-custom-texts>
       </div>
       <h3 [style.grid-row]="'2 / 3'" [style.grid-column]="'1 / 2'">
         Konfiguration der Anwendung
       </h3>
       <div [style.grid-row]="'2 / 3'" [style.grid-column]="'2 / 3'">
-        <app-app-config></app-app-config>
+        <tc-app-config></tc-app-config>
       </div>
     </div>
   `

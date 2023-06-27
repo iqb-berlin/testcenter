@@ -51,10 +51,10 @@
                       <mat-card-subtitle>{{element.info.description}}</mat-card-subtitle>
                     </mat-card-header>
                     <mat-card-content>
-                      <alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></alert>
+                      <tc-alert level="info" *ngIf="element.info.testtakers" text="{{element.info.testtakers}} Teilnehmer definiert"></tc-alert>
                       <ng-container *ngFor="let level of ['error', 'warning', 'info']">
                         <div *ngFor="let message of element.report[level]">
-                          <alert [level]="level" [text]="message"></alert>
+                          <tc-alert [level]="level" [text]="message"></tc-alert>
                         </div>
                       </ng-container>
                     </mat-card-content>
@@ -113,23 +113,23 @@
 
     <input #hiddenfileinput type="file" name="fileforvo" multiple [iqbFilesUploadInputFor]="fileUploadQueue" [hidden]="true" data-cy="uplaod-file-select" />
 
-    <iqb-files-upload-queue #fileUploadQueue
+    <tc-files-upload-queue #fileUploadQueue
       [fileAlias]="fileNameAlias"
       [folderName]="'ws'"
       [folder]="'workspace'"
       (uploadCompleteEvent)="updateFileList()">
-    </iqb-files-upload-queue>
+    </tc-files-upload-queue>
 
     <div *ngIf="!uploadQueue.files?.length" class="workspace-report">
-      <alert *ngIf="fileStats.total.invalid; else: workspaceValid" level="error" text="{{fileStats.total.invalid}}
+      <tc-alert *ngIf="fileStats.total.invalid; else: workspaceValid" level="error" text="{{fileStats.total.invalid}}
         Datei{{fileStats.total.invalid == 1 ? '' : 'en'}} von {{fileStats.total.count}}
         {{fileStats.total.invalid == 1 ? 'ist' : 'sind'}} nicht valide oder
         {{fileStats.total.invalid == 1 ? 'hat' : 'haben'}} fehlende Abhängigkeiten
         und {{fileStats.total.invalid == 1 ? 'wird' : 'werden'}} ignoriert!">
-      </alert>
+      </tc-alert>
       <ng-template #workspaceValid>
-        <alert level="success" *ngIf="fileStats.total.count" text="Alle
-          {{fileStats.total.count > 1 ? fileStats.total.count : ''}} Dateien im Workspace sind Valide."></alert>
+        <tc-alert level="success" *ngIf="fileStats.total.count" text="Alle
+          {{fileStats.total.count > 1 ? fileStats.total.count : ''}} Dateien im Workspace sind Valide."></tc-alert>
       </ng-template>
     </div>
 

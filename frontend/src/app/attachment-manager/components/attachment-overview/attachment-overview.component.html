@@ -19,7 +19,7 @@
     <ng-template #attachmentSelected let-selectedAttachment>
       <h3>{{selectedAttachment | AttachmentTitle }}</h3>
       <div class="toolbar-section" *ngIf="selectedAttachment.dataType === 'missing'">
-        <alert level="warning" text="Dieser Anhang muss noch hinzugefügt werden."></alert>
+        <tc-alert level="warning" text="Dieser Anhang muss noch hinzugefügt werden."></tc-alert>
       </div>
 
       <div class="toolbar-section">
@@ -97,7 +97,7 @@
 
     <ng-template #commonControls>
       <div class="toolbar-section">
-        <app-add-attachment></app-add-attachment>
+        <tc-add-attachment></tc-add-attachment>
       </div>
       <div class="toolbar-section" *ngIf="attachmentTypes.includes('capture-image')">
         <h3>{{'Werkzeuge' | customtext:'am_tools_headline' | async}}</h3>
@@ -172,8 +172,8 @@
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="status">Dateien</th>
           <td mat-cell *matCellDef="let element; let i = index" (click)="selectAttachment(i)">
-            <alert *ngIf="!element.attachmentFileIds.length" level="warning" text="0"></alert>
-            <alert *ngIf="element.attachmentFileIds.length" level="success" text="{{element.attachmentFileIds.length}}" ></alert>
+            <tc-alert *ngIf="!element.attachmentFileIds.length" level="warning" text="0"></tc-alert>
+            <tc-alert *ngIf="element.attachmentFileIds.length" level="success" text="{{element.attachmentFileIds.length}}" ></tc-alert>
           </td>
         </ng-container>
 

@@ -5,7 +5,7 @@ import { IqbFilesUploadComponent } from '../iqb-files-upload/iqb-files-upload.co
 import { UploadStatus } from '../files.interfaces';
 
 @Component({
-  selector: 'iqb-files-upload-queue',
+  selector: 'tc-files-upload-queue',
   templateUrl: 'iqb-files-upload-queue.component.html',
   styleUrls: ['../iqb-files.scss']
 })

@@ -101,7 +101,7 @@
       <div class="toolbar-section min-height-section">
         <ng-container *ngIf="displayOptions.manualChecking">
           <ng-container *ngIf="tsm.checkedStats$ | async as checkedStats">
-            <alert
+            <tc-alert
               *ngIf="checkedStats.number; else noCheckedSession"
               level="info"
               customtext="gm_selection_info"
@@ -113,9 +113,9 @@
                 checkedStats.differentBooklets.toString(10),
                 (checkedStats.differentBooklets !== 1 ? 'en' : '')
               ]"
-            ></alert>
+            ></tc-alert>
             <ng-template #noCheckedSession>
-              <alert level="info" customtext="gm_selection_info_none" text="Kein Test ausgewählt."></alert>
+              <tc-alert level="info" customtext="gm_selection_info_none" text="Kein Test ausgewählt."></tc-alert>
             </ng-template>
           </ng-container>
         </ng-container>
@@ -161,13 +161,13 @@
       </div>
 
       <div id="message-panel" class="toolbar-section">
-        <alert
+        <tc-alert
           *ngFor="let m of messages"
           [text]="m.text"
           [level]="m.level"
           customtext="m.customtext"
           [replacements]="m.replacements"
-        ></alert>
+        ></tc-alert>
       </div>
 
       <div class="toolbar-section-bottom">
