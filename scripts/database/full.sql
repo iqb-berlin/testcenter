@@ -24,7 +24,7 @@ CREATE TABLE `login_sessions` (
   `token` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_german2_ci NOT NULL,
   `group_name` varchar(100) COLLATE utf8mb3_german2_ci NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_login_session` (`name`),
+  UNIQUE KEY `unique_login_session` (`name`,`workspace_id`),
   KEY `index_fk_login_workspace` (`workspace_id`) USING BTREE,
   KEY `index_fk_logins` (`name`),
   KEY `index_fk_login_session_login` (`id`),

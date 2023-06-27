@@ -4,7 +4,7 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 14.8.0
 ### Bugfixes
 * Wiederherstellen gelöschter Logins auf anderem Workspace wird verhindert: Hatte man einen Login gelöscht, die damit
   erhobenen Daten jedoch nicht, und hatte man anschließend einen gleichlautenden login auf einem anderen workspace
