@@ -4,12 +4,18 @@ layout: default
 
 # Changelog & Upgrade Information
 
-## [next]
+## 14.8.0
 ### Bugfixes
+* Wiederherstellen gelöschter Logins auf anderem Workspace wird verhindert: Hatte man einen Login gelöscht, die damit
+  erhobenen Daten jedoch nicht, und hatte man anschließend einen gleichlautenden login auf einem anderen workspace
+  erstellt, so wurde dieser mit den Daten und Booklets des alten verbunden. Dies ist nun behoben. 
 * Das Hochladen mehrerer Dateien im Workspace-Adminbereich wird nun mit einem einzigen Request durchgeführt. Dies führt dazu, dass man z. B. eine Unit-xml und die dazugehörige 
   voud-Datei gleichzeitig hochladen kann.
 * Status "untätig" im Gruppen-Monitor ("Testleitungskonsole") wird verlässlich nach 5 bis 8 Minuten angezeigt. Zuvor wurde er unter bestimmten Umständen nicht korrekt angezeigt.
 
+### Änderungen
+* Wenn einem Testtaker nur ein Testheft zugeteilt ist, dann wird man nach erfolgreichem Login nicht mehr zur Testheft-Übersicht weitergeleitet. 
+  Stattdessen wird das Testheft direkt gestartet.
 
 ## 14.7.0
 ### Neue Features

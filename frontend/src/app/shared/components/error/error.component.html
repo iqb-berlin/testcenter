@@ -1,6 +1,6 @@
 <mat-card class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
   <mat-card-title>
-    <alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></alert>
+    <tc-alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></tc-alert>
     <div style="color:silver; font-size: small" *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</div>
     <button
       *ngIf="!uncloseable"
@@ -73,7 +73,7 @@
         werden. Es werden ausschließlich die im roten Kästchen zu findenden Informationen übertragen.
       </small>
       <ng-template #sendingResultBox>
-        <alert [level]="sendingResult.success ? 'success' : 'warning'" text="{{sendingResult.message}}"></alert>
+        <tc-alert [level]="sendingResult.success ? 'success' : 'warning'" text="{{sendingResult.message}}"></tc-alert>
         <a *ngIf='sendingResult.uri' target="_blank" href="{{sendingResult.uri}}">Ansehen</a>
       </ng-template>
     </div>

@@ -3,14 +3,14 @@
     <mat-card-title>Upload-Report</mat-card-title>
   </mat-card-header>
 
-  <iqb-files-upload
+  <tc-files-upload
     [files]="files"
     [fileAlias]="fileAlias"
     [folderName]="folderName"
     [folder]="folder"
     (removeFileRequestEvent)="removeFile($event)"
     (statusChangedEvent)="analyseStatus()">
-  </iqb-files-upload>
+  </tc-files-upload>
 
 
   <mat-card-actions>

@@ -15,7 +15,8 @@ import { BackendService } from './backend.service';
 export class RouteDispatcherActivateGuard implements CanActivate {
   constructor(
     private router: Router,
-    private mainDataService: MainDataService
+    private mainDataService: MainDataService,
+    private backendService: BackendService
   ) { }
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
@@ -29,7 +30,17 @@ export class RouteDispatcherActivateGuard implements CanActivate {
         } else if (authData.claims.testGroupMonitor) {
           this.router.navigate(['/r/monitor-starter']);
         } else if (authData.claims.test) {
-          this.router.navigate(['/r/test-starter'], this.router.getCurrentNavigation().extras);
+          if (
+            authData.claims.test.length === 1 &&
+            Object.keys(authData.claims).length === 1 &&
+            this.router.getCurrentNavigation().previousNavigation === null
+          ) {
+            this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
+              this.router.navigate(['/t', testId]);
+            });
+          } else {
+            this.router.navigate(['/r/test-starter'], this.router.getCurrentNavigation().extras);
+          }
         } else {
           this.router.navigate(['/r/login', '']);
         }

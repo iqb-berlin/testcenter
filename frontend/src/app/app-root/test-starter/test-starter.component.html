@@ -2,10 +2,10 @@
   <mat-card>
     <mat-card-title>Bitte wählen</mat-card-title>
     <mat-card-content class="flex-column" [style.gap.px]="10">
-      <alert *ngIf="!booklets.length"
+      <tc-alert *ngIf="!booklets.length"
              level="info"
              customtext="login_noBookletsAvailable"
-             text="Für diese Anmeldung wurde kein Test gefunden."></alert>
+             text="Für diese Anmeldung wurde kein Test gefunden."></tc-alert>
       <a *ngFor="let b of booklets"
          mat-raised-button color="primary"
          [disabled]="!!b.flags.locked"
@@ -27,7 +27,7 @@
       <p *ngIf="bookletCount === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>
       <p *ngIf="bookletCount === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>
       <p *ngIf="bookletCount > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany' | async}}</p>
-      <status-card></status-card>
+      <tc-status-card></tc-status-card>
     </mat-card-content>
   </mat-card>
 </div>

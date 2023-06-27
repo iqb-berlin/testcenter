@@ -1,13 +1,13 @@
 import {
-  loginSuperAdmin, openSampleWorkspace, loginTestTaker, resetBackendData, logoutTestTaker,
-  useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder, readTestResultFiles
+  loginSuperAdmin, openSampleWorkspace1, loginTestTaker, resetBackendData,
+  useTestDB, credentialsControllerTest, visitLoginPage, deleteDownloadsFolder,
+  ConvertResultsSeperatedArrays
 } from '../utils';
 
 const waitMaxSnackBarDisplayed = 10000;
-// declared in Sampledata/CY_ControllerTest_Logins.xml-->Group:RunReview
+// declared in Sampledata/CY_Test_Logins.xml-->Group:RunReview
 const TesttakerName = 'Test_Review_Ctrl';
 const TesttakerPassword = '123';
-const mode = 'review';
 
 let startTime: number;
 let endTime: number;
@@ -20,15 +20,14 @@ describe('Navigation-& Testlet-Restrictions', () => {
   before(() => {
     useTestDB();
     visitLoginPage();
-    loginTestTaker(TesttakerName, TesttakerPassword);
+    loginTestTaker(TesttakerName, TesttakerPassword, true);
   });
 
   it('should be possible to choose a review-mode booklet', () => {
-    cy.get('[data-cy="booklet-RUNREVIEW"]')
-      .should('exist')
-      .click();
     cy.contains(/^Startseite$/)
       .should('exist');
+    cy.url()
+      .should('include', '/u/1');
   });
 
   it('should be visible a unit menu', () => {
@@ -56,6 +55,8 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .click();
     cy.contains(/^Aufgabe1$/)
       .should('exist');
+    cy.url()
+      .should('include', '/u/2');
     cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
       .should('exist');
     // wait until the message is no longer displayed
@@ -108,6 +109,8 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .should('not.exist');
     cy.contains(/^Aufgabe2$/)
       .should('exist');
+    cy.url()
+      .should('include', '/u/3');
     cy.get('[data-cy="unit-navigation-backward"]')
       .should('exist')
       .click();
@@ -229,7 +232,18 @@ describe('Navigation-& Testlet-Restrictions', () => {
   });
 
   it('should be possible to go back to the booklet view and check out', () => {
-    logoutTestTaker(mode);
+    cy.get('[data-cy="logo"]')
+      .should('exist')
+      .click();
+    cy.url()
+      .should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+    cy.get('[data-cy="endTest-1"]')
+      .should('not.exist');
+    cy.get('[data-cy="logout"]')
+      .should('exist')
+      .click();
+    cy.url()
+      .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
     // wait until the message is no longer displayed
     cy.contains('Im Testmodus dürfte hier nicht weitergeblättert werden:')
       .should('exist');
@@ -239,7 +253,7 @@ describe('Navigation-& Testlet-Restrictions', () => {
 
   it('should be there an answer file, but without responses', () => {
     loginSuperAdmin();
-    openSampleWorkspace();
+    openSampleWorkspace1();
     cy.get('[data-cy="Ergebnisse/Antworten"]')
       .should('exist')
       .click();
@@ -252,9 +266,9 @@ describe('Navigation-& Testlet-Restrictions', () => {
       .should('exist')
       .click();
     // responses must be empty
-    readTestResultFiles('responses')
-      .then(responses => {
-        expect(responses[1][5]).to.be.equal('[]');
+    ConvertResultsSeperatedArrays('responses')
+      .then(sepArrays => {
+        expect(sepArrays[1][5]).to.be.equal('[]');
       });
   });
 
@@ -277,9 +291,9 @@ describe('Navigation-& Testlet-Restrictions', () => {
     cy.get('[data-cy="download-comments"]')
       .should('exist')
       .click();
-    readTestResultFiles('reviews')
-      .then(responses => {
-        expect(responses[1][8]).to.be.equal('my name: its a new comment');
+    ConvertResultsSeperatedArrays('reviews')
+      .then(sepArrays => {
+        expect(sepArrays[1][8]).to.be.equal('my name: its a new comment');
       });
   });
 });

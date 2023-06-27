@@ -1,7 +1,7 @@
 import {
   clickSuperadmin, insertCredentials, useTestDB, resetBackendData,
   loginSuperAdmin, logoutAdmin, addWorkspaceAdmin, visitLoginPage, loginWorkspaceAdmin,
-  userData, logout
+  userData
 } from './utils';
 
 describe('Usermanagement (user-tab)', () => {
@@ -11,7 +11,7 @@ describe('Usermanagement (user-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);
 
-  afterEach(logout);
+  afterEach(logoutAdmin);
 
   it('should be that all user buttons are present', () => {
     cy.get('[data-cy="superadmin-tabs:users"]')
@@ -81,8 +81,10 @@ describe('Usermanagement (user-tab)', () => {
 
   it('should be possible change privileges of existing workspace_admin to read-only', () => {
     cy.contains(userData.WorkspaceAdminName)
+      .should('exist')
       .click()
       .get('[data-cy="workspace-1-role-ro"]')
+      .should('exist')
       .click()
       .get('[data-cy="save"]')
       .click();
@@ -173,7 +175,7 @@ describe('Management Workspaces (workspace-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);
 
-  afterEach(logout);
+  afterEach(logoutAdmin);
 
   it('should be all buttons are visible and sample_workspace is installed in Tab:Workspaces', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
@@ -219,7 +221,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.contains('sample_workspace')
       .click();
-    cy.get('[data-cy="workspace-role-ro"]')
+    cy.get('[data-cy="workspace-2-role-ro"]')
       .eq(2)
       .should('exist')
       .click()
@@ -241,7 +243,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.contains('sample_workspace')
       .click();
-    cy.get('[data-cy="workspace-role-rw"]')
+    cy.get('[data-cy="workspace-2-role-rw"]')
       .eq(2)
       .should('exist')
       .click()
@@ -324,7 +326,7 @@ describe('Settings (setting-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);
 
-  afterEach(logout);
+  afterEach(logoutAdmin);
 
   it('should be all settings functions visible', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')

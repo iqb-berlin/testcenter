@@ -7,7 +7,7 @@ import { BackendService } from '../backend.service';
 import { SysCheckDataService } from '../sys-check-data.service';
 
 @Component({
-  selector: 'iqb-unit-check',
+  selector: 'tc-unit-check',
   templateUrl: './unit-check.component.html',
   styleUrls: ['./unit-check.component.css']
 })

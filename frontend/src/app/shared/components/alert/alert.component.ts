@@ -9,7 +9,7 @@ import { CustomtextPipe } from '../../pipes/customtext/customtext.pipe';
 import { CustomtextService } from '../../services/customtext/customtext.service';
 
 @Component({
-  selector: 'alert',
+  selector: 'tc-alert',
   templateUrl: 'alert.component.html',
   styleUrls: ['alert.component.css'],
   encapsulation: ViewEncapsulation.None
