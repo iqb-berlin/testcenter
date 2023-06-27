@@ -1,0 +1,4 @@
+[core]
+        fileMode = false
+[pull]
+        rebase = false
