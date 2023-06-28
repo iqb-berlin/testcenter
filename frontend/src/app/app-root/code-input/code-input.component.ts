@@ -62,11 +62,7 @@ export class CodeInputComponent implements OnInit {
           this.mds.setAuthData(authDataTyped);
           if (authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
             this.bs.startTest(authData.claims.test[0].id).subscribe(testId => {
-              if (typeof testId === 'number') {
-                this.router.navigate(['/r']);
-              } else {
-                this.router.navigate(['/t', testId]);
-              }
+              this.router.navigate(['/t', testId]);
             });
           } else {
             this.router.navigate(['/r']);
