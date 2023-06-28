@@ -2,6 +2,11 @@
 layout: default
 ---
 
+## [next]
+### Performance
+* Es wurde ein Puffer für wegzuspeichernde Unit-Staes eingeführt. Damit kann ein Testcenter-Server während der 
+  Durchführung entlastet werden.
+
 # Changelog & Upgrade Information
 
 ## 14.8.0

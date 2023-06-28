@@ -104,11 +104,17 @@ export class UnithostComponent implements OnInit, OnDestroy {
             currentPage: null
           };
         }
-        if (this.tcs.testMode.saveResponses) {
-          this.bs.updateUnitState(this.tcs.testId, this.currentUnit.unitDef.alias, [<StateReportEntry>{
-            key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.RUNNING
-          }]);
-        }
+        this.tcs.updateUnitState(
+          this.currentUnitSequenceId,
+          {
+            unitDbKey: this.currentUnit.unitDef.alias,
+            state: [<StateReportEntry>{
+              key: UnitStateKey.PLAYER,
+              timeStamp: Date.now(),
+              content: UnitPlayerState.RUNNING
+            }]
+          }
+        );
         this.postMessageTarget = messageEvent.source as Window;
 
         this.postMessageTarget.postMessage({
@@ -138,15 +144,19 @@ export class UnithostComponent implements OnInit, OnDestroy {
 
             if (typeof playerState.currentPage !== 'undefined') {
               const pageId = playerState.currentPage;
-              const pageNr = this.knownPages.indexOf(playerState.currentPage) + 1;
+              const pageNr = Object.keys(playerState.validPages).indexOf(playerState.currentPage) + 1;
               const pageCount = this.knownPages.length;
-              if (this.knownPages.length > 1 && this.knownPages.indexOf(playerState.currentPage) >= 0) {
-                this.tcs.newUnitStateCurrentPage(
-                  this.currentUnit.unitDef.alias,
+              if (this.knownPages.length > 1 && playerState.validPages[playerState.currentPage]) {
+                this.tcs.updateUnitState(
                   this.currentUnitSequenceId,
-                  pageNr,
-                  pageId,
-                  pageCount
+                  {
+                    unitDbKey: this.currentUnit.unitDef.alias,
+                    state: [
+                      { key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
+                      { key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
+                      { key: UnitStateKey.PAGE_COUNT, timeStamp: Date.now(), content: pageCount.toString() }
+                    ]
+                  }
                 );
               }
             }
@@ -154,15 +164,18 @@ export class UnithostComponent implements OnInit, OnDestroy {
           const unitDbKey = this.currentUnit.unitDef.alias;
           if (msgData.unitState) {
             const { unitState } = msgData;
-            const { presentationProgress, responseProgress } = unitState;
+            const timeStamp = Date.now();
 
-            if (presentationProgress) {
-              this.tcs.updateUnitStatePresentationProgress(unitDbKey, this.currentUnitSequenceId, presentationProgress);
-            }
-
-            if (responseProgress) {
-              this.tcs.newUnitStateResponseProgress(unitDbKey, this.currentUnitSequenceId, responseProgress);
-            }
+            this.tcs.updateUnitState(
+              this.currentUnitSequenceId,
+              {
+                unitDbKey,
+                state: [
+                  { key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp, content: unitState.presentationProgress },
+                  { key: UnitStateKey.RESPONSE_PROGRESS, timeStamp, content: unitState.responseProgress }
+                ]
+              }
+            );
 
             if (unitState?.dataParts) {
               // in pre-verona4-times it was not entirely clear if the stringification of the dataParts should be made
@@ -263,12 +276,16 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.tcs.currentUnitTitle = this.currentUnit.unitDef.title;
 
     if (this.tcs.testMode.saveResponses) {
-      this.bs.updateTestState(this.tcs.testId, [<StateReportEntry>{
+      this.bs.updateTestState(this.tcs.testId, [{
         key: TestStateKey.CURRENT_UNIT_ID, timeStamp: Date.now(), content: this.currentUnit.unitDef.alias
       }]);
-      this.bs.updateUnitState(this.tcs.testId, this.currentUnit.unitDef.alias, [<StateReportEntry>{
-        key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING
-      }]);
+      this.tcs.updateUnitState(
+        this.currentUnitSequenceId,
+        {
+          unitDbKey: this.currentUnit.unitDef.alias,
+          state: [{ key: UnitStateKey.PLAYER, timeStamp: Date.now(), content: UnitPlayerState.LOADING }]
+        }
+      );
     }
 
     if (this.tcs.testMode.presetCode) {

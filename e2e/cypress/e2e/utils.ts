@@ -150,7 +150,7 @@ export const loginTestTaker = (name: string, password: string, singleTest: boole
     .should('exist')
     .click();
   if (singleTest) {
-    cy.wait(['@testState', '@unitState', '@unitState', '@testLog', '@commands']);
+    cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
   } else {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
@@ -291,6 +291,7 @@ export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
       .should('exist')
       .then(splitCsvID);
   }
+  throw new Error(`Unknown filetype: ${fileType}`);
 };
 
 export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => {

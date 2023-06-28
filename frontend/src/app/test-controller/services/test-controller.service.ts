@@ -8,11 +8,17 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MaxTimerData, Testlet, UnitWithContext } from '../classes/test-controller.classes';
 import {
-  KeyValuePairNumber, KeyValuePairString, LoadingProgress,
-  MaxTimerDataType, StateReportEntry,
-  TestControllerState, TestStateKey,
+  KeyValuePairNumber,
+  KeyValuePairString,
+  LoadingProgress,
+  MaxTimerDataType,
+  StateReportEntry,
+  TestControllerState,
+  TestStateKey,
+  UnitDataParts,
   UnitNavigationTarget,
-  UnitDataParts, UnitStateKey, WindowFocusState
+  UnitStateUpdate,
+  WindowFocusState
 } from '../interfaces/test-controller.interfaces';
 import { BackendService } from './backend.service';
 import { BookletConfig, TestMode } from '../../shared/shared.module';
@@ -25,6 +31,7 @@ import { MessageService } from '../../shared/services/message.service';
 })
 export class TestControllerService {
   static readonly unitDataBufferMs = 1000;
+  static readonly unitStateBufferMs = 2500;
 
   testId = '';
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
@@ -94,16 +101,21 @@ export class TestControllerService {
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription;
 
+  private unitStateToSave$ = new Subject<UnitStateUpdate>();
+  private unitStateToSaveSubscription: Subscription;
+
   constructor(
     private router: Router,
     private bs: BackendService,
     private messageService: MessageService
   ) {
     this.setupUnitDataPartsBuffer();
+    this.setupUnitStateBuffer();
   }
 
   setupUnitDataPartsBuffer(): void {
     this.destroyUnitDataPartsBuffer(); // important when called from unit-test with fakeAsync
+    this.destroyUnitStateBuffer();
     // the last buffer when test gets terminated is lost. Seems not to be important, but noteworthy
     this.unitDataPartsToSaveSubscription = this.unitDataPartsToSave$
       .pipe(
@@ -138,8 +150,40 @@ export class TestControllerService {
       });
   }
 
+  setupUnitStateBuffer(): void {
+    this.unitStateToSaveSubscription = this.unitStateToSave$
+      .pipe(
+        bufferTime(TestControllerService.unitStateBufferMs),
+        filter(stateBuffer => !!stateBuffer.length),
+        concatMap(stateBuffer => Object.values(
+          stateBuffer
+            .reduce(
+              (agg, stateUpdate) => {
+                if (!agg[stateUpdate.unitDbKey]) {
+                  agg[stateUpdate.unitDbKey] = <UnitStateUpdate>{ unitDbKey: stateUpdate.unitDbKey, state: [] };
+                }
+                agg[stateUpdate.unitDbKey].state.push(...stateUpdate.state);
+                return agg;
+              },
+              <{ [unitId: string]: UnitStateUpdate }>{}
+            )
+        ))
+      )
+      .subscribe(aggregatedStateUpdate => {
+        this.bs.updateUnitState(
+          this.testId,
+          aggregatedStateUpdate.unitDbKey,
+          aggregatedStateUpdate.state
+        );
+      });
+  }
+
   destroyUnitDataPartsBuffer(): void {
     if (this.unitDataPartsToSaveSubscription) this.unitDataPartsToSaveSubscription.unsubscribe();
+  }
+
+  destroyUnitStateBuffer(): void {
+    if (this.unitStateToSaveSubscription) this.unitStateToSaveSubscription.unsubscribe();
   }
 
   resetDataStore(): void {
@@ -158,6 +202,8 @@ export class TestControllerService {
     this.currentMaxTimerTestletId = '';
     this.maxTimeTimers = {};
     this.unitPresentationProgressStates = {};
+    this.unitResponseProgressStates = {};
+    this.unitStateCurrentPages = {};
     this.unitDefinitionTypes = {};
     this.unitStateDataTypes = {};
     this.timerWarningPoints = [];
@@ -196,6 +242,49 @@ export class TestControllerService {
       });
     if (Object.keys(changedParts).length && this.testMode.saveResponses) {
       this.unitDataPartsToSave$.next({ unitDbKey, dataParts: changedParts, unitStateDataType });
+    }
+  }
+
+  // TODO remove parameter unitSequenceId. getUnitWithContext is kind of expensive, when this is fixed, we need only...
+  // ...unitSequenceId or unitStateUpdate.unitDbKey and can remove the other one
+  updateUnitState(unitSequenceId: number, unitStateUpdate: UnitStateUpdate): void {
+    unitStateUpdate.state = unitStateUpdate.state
+      .filter(state => !!state.content)
+      .filter(changedState => {
+        const oldState = this.getUnitState(unitSequenceId, changedState.key);
+        if (oldState) {
+          return oldState !== changedState.content;
+        }
+        return true;
+      });
+    unitStateUpdate.state
+      .forEach(changedState => this.setUnitState(unitSequenceId, changedState.key, changedState.content));
+    if (this.testMode.saveResponses && unitStateUpdate.state.length) {
+      this.unitStateToSave$.next(unitStateUpdate);
+    }
+  }
+
+  // TODO the following two functions are workarounds to the shitty structure of this service (see above)
+  private getUnitState(unitSequenceId: number, stateKey: string): string | number {
+    const collection = {
+      RESPONSE_PROGRESS: 'unitResponseProgressStates',
+      PRESENTATION_PROGRESS: 'unitPresentationProgressStates',
+      CURRENT_PAGE_ID: 'unitStateCurrentPages'
+    }[stateKey];
+    if (collection) {
+      return this[collection][unitSequenceId];
+    }
+    return null;
+  }
+
+  private setUnitState(unitSequenceId: number, stateKey: string, value: string | number): void {
+    const collection = {
+      RESPONSE_PROGRESS: 'unitResponseProgressStates',
+      PRESENTATION_PROGRESS: 'unitPresentationProgressStates',
+      CURRENT_PAGE_ID: 'unitStateCurrentPages'
+    }[stateKey];
+    if (collection) {
+      this[collection][unitSequenceId] = value;
     }
   }
 
@@ -255,7 +344,7 @@ export class TestControllerService {
     return this.unitStateCurrentPages[sequenceId] ?? null;
   }
 
-  setUnitDataCurrentPage(sequenceId: number, pageId: string): void {
+  setUnitStateCurrentPage(sequenceId: number, pageId: string): void {
     this.unitStateCurrentPages[sequenceId] = pageId;
   }
 
@@ -341,52 +430,6 @@ export class TestControllerService {
       nextUnit = this.getUnitWithContext(nextUnitSequenceId);
     }
     return nextUnit ? nextUnitSequenceId : null;
-  }
-
-  updateUnitStatePresentationProgress(unitDbKey: string, unitSeqId: number, presentationProgress: string): void {
-    let stateChanged = false;
-    if (!this.unitPresentationProgressStates[unitSeqId] || this.unitPresentationProgressStates[unitSeqId] === 'none') {
-      this.unitPresentationProgressStates[unitSeqId] = presentationProgress;
-      stateChanged = true;
-    } else if (this.unitPresentationProgressStates[unitSeqId] === 'some' && presentationProgress === 'complete') {
-      this.unitPresentationProgressStates[unitSeqId] = presentationProgress;
-      stateChanged = true;
-    }
-    if (stateChanged && this.testMode.saveResponses) {
-      this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
-        key: UnitStateKey.PRESENTATION_PROGRESS, timeStamp: Date.now(), content: presentationProgress
-      }]);
-    }
-  }
-
-  newUnitStateResponseProgress(unitDbKey: string, unitSeqId: number, responseProgress: string): void {
-    if (
-      !this.unitResponseProgressStates[unitSeqId] || this.unitResponseProgressStates[unitSeqId] !== responseProgress
-    ) {
-      this.unitResponseProgressStates[unitSeqId] = responseProgress;
-      if (this.testMode.saveResponses) {
-        this.bs.updateUnitState(this.testId, unitDbKey, [<StateReportEntry>{
-          key: UnitStateKey.RESPONSE_PROGRESS, timeStamp: Date.now(), content: responseProgress
-        }]);
-      }
-    }
-  }
-
-  newUnitStateCurrentPage(
-    unitDbKey: string,
-    unitSequenceId: number,
-    pageNr: number,
-    pageId: string,
-    pageCount: number
-  ): void {
-    this.unitStateCurrentPages[unitSequenceId] = pageId;
-    if (this.testMode.saveResponses) {
-      this.bs.updateUnitState(this.testId, unitDbKey, [
-          <StateReportEntry>{ key: UnitStateKey.CURRENT_PAGE_NR, timeStamp: Date.now(), content: pageNr.toString() },
-          <StateReportEntry>{ key: UnitStateKey.CURRENT_PAGE_ID, timeStamp: Date.now(), content: pageId },
-          <StateReportEntry>{ key: UnitStateKey.PAGE_COUNT, timeStamp: Date.now(), content: pageCount.toString() }
-      ]);
-    }
   }
 
   startMaxTimer(testlet: Testlet): void {
