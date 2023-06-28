@@ -140,10 +140,17 @@ export const loginWorkspaceAdmin = (): void => {
 
 export const loginTestTaker = (name: string, password: string, singleTest: boolean = false): void => {
   insertCredentials(name, password);
+  if (singleTest) {
+    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/state`)).as('testState');
+    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/unit/[^/]+/state`)).as('unitState');
+    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/log`)).as('testLog');
+    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/commands`)).as('commands');
+  }
   cy.get('[data-cy="login-user"]')
     .should('exist')
     .click();
   if (singleTest) {
+    cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
     cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
   } else {
     cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
@@ -249,7 +256,7 @@ export const useTestDBSetDate = (timestamp: string) : void => {
   }).as('testClock');
 };
 
-export const ConvertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+export const convertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
   const regex = /[\\]/g;
 
   const splitCSVLogin = str => str.split('\n')
@@ -270,7 +277,7 @@ export const ConvertResultsLoginRows = (fileType: 'responses' | 'reviews' | 'log
     .then(splitCSVLogin);
 };
 
-export const ConvertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
+export const convertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' | 'logs'): Chainable<Array<Array<string>>> => {
   const splitCsvID = str => str.split('\n')
     .map(row => row.split(';').map(cell => cell.replace(/^"/, '').replace(/"$/, '')));
 
@@ -284,4 +291,27 @@ export const ConvertResultsSeperatedArrays = (fileType: 'responses' | 'reviews' 
       .should('exist')
       .then(splitCsvID);
   }
+  throw new Error(`Unknown filetype: ${fileType}`);
+};
+
+export const getFromIframe = (selector: string): Chainable<JQuery<HTMLElement>> => {
+  return cy.get('iframe')
+    .its('0.contentDocument.body')
+    .should('be.visible')
+    .then(cy.wrap)
+    .find(selector);
+};
+
+export const forwardTo = (expectedLabel: string): void => {
+  cy.get('[data-cy="unit-navigation-forward"]')
+    .click();
+  cy.contains(new RegExp(`^${expectedLabel}$`))
+    .should('exist');
+};
+
+export const backwardsTo = (expectedLabel: string): void => {
+  cy.get('[data-cy="unit-navigation-backward"]')
+    .click();
+  cy.contains(new RegExp(`^${expectedLabel}$`))
+    .should('exist');
 };

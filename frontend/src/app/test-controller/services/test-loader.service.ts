@@ -133,7 +133,7 @@ export class TestLoaderService {
 
           this.tcs.setUnitPresentationProgress(sequenceId, unit.state[UnitStateKey.PRESENTATION_PROGRESS]);
           this.tcs.setUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
-          this.tcs.setUnitDataCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
+          this.tcs.setUnitStateCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
           this.tcs.setUnitStateDataParts(sequenceId, unit.dataParts);
           this.tcs.setUnitStateDataType(sequenceId, unit.unitStateDataType);
 

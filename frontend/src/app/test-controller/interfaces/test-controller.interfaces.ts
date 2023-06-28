@@ -107,11 +107,9 @@ export enum UnitStateKey {
   PLAYER = 'PLAYER'
 }
 
-export interface UnitLogData {
-  bookletDbId: number;
+export interface UnitStateUpdate {
   unitDbKey: string;
-  timestamp: number;
-  entry: string;
+  state: StateReportEntry[]
 }
 
 // for testcontroller service ++++++++++++++++++++++++++++++++++++++++
