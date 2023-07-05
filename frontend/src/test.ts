@@ -9,8 +9,6 @@ import {
 import { StaticProvider } from '@angular/core';
 import { environment } from './environments/environment';
 
-declare const require: any;
-
 // First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
@@ -25,7 +23,3 @@ getTestBed().initTestEnvironment(
     }
   ])
 );
-// Then we find all the tests.
-const context = require.context('./', true, /\.spec\.ts$/);
-// And load the modules.
-context.keys().map(context);

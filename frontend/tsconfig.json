@@ -12,11 +12,14 @@
     "outDir": "./dist/out-tsc",
     "resolveJsonModule": true,
     "sourceMap": true,
-    "target": "es2015",
+    "target": "ES2022",
     "typeRoots": [
       "node_modules/@types"
     ],
-    "types": ["cypress", "jasmine"],
+    "types": [
+      "cypress",
+      "jasmine"
+    ],
     "lib": [
       "es2017",
       "dom"
@@ -31,7 +34,8 @@
       "testcenter-common/*": [
         "../common/src/*"
       ]
-    }
+    },
+    "useDefineForClassFields": false
   },
   "exclude": [
     "node_modules",
