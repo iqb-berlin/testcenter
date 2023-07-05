@@ -66,7 +66,7 @@
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.11",
-    "@iqb/eslint-config": "^2.1.0",
+    "@iqb/eslint-config": "^2.1.1",
     "@types/jest": "~27.4.1",
     "browserlist": "^1.0.1",
     "dredd": "^14.0.0",
@@ -84,7 +84,7 @@
     "minimist": ">=0.2.1",
     "multi-part": "^3.0.0",
     "stream-to-string": "^1.2.0",
-    "typescript": "~4.3.4",
+    "typescript": "~5.1.6",
     "y18n": ">=3.2.2",
     "yamljs": "^0.3.0"
   }
