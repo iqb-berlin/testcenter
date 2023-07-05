@@ -1,8 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
 import { TestBed, inject } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
+import { MatLegacySnackBarModule as MatSnackBarModule } from '@angular/material/legacy-snack-bar';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { WorkspaceDataService } from './workspacedata.service';
 import { BackendService } from './backend.service';

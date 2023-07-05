@@ -4,7 +4,7 @@ import {
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatLegacySnackBarModule as MatSnackBarModule } from '@angular/material/legacy-snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { UnithostComponent } from './unithost.component';
 import { ReviewDialogComponent } from '../review-dialog/review-dialog.component';

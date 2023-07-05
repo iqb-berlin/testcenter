@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { MatCardModule } from '@angular/material/card';
+import { MatLegacyCardModule as MatCardModule } from '@angular/material/legacy-card';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NetworkCheckComponent } from './network-check.component';
 import { BackendService } from '../backend.service';

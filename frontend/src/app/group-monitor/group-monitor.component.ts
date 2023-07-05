@@ -5,9 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Sort } from '@angular/material/sort';
 import { MatSidenav } from '@angular/material/sidenav';
 import { interval, Observable, Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatLegacySlideToggleChange as MatSlideToggleChange } from '@angular/material/legacy-slide-toggle';
+import { MatLegacyCheckboxChange as MatCheckboxChange } from '@angular/material/legacy-checkbox';
 import { catchError, switchMap } from 'rxjs/operators';
 import {
   ConfirmDialogComponent, ConfirmDialogData, CustomtextService, ConnectionStatus,

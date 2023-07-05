@@ -1,4 +1,4 @@
-import { MatTableModule } from '@angular/material/table';
+import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
 import { MatIconModule } from '@angular/material/icon';
 import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
