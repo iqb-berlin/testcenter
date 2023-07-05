@@ -1,7 +1,9 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
   <form [formGroup]="loginForm" (ngSubmit)="login()" [style.display]="'flex'">
-    <mat-card>
-      <mat-card-title>Anmelden</mat-card-title>
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Anmelden</mat-card-title>
+      </mat-card-header>
       <mat-card-content *ngIf="mainDataService.appConfig">
         <mat-form-field appearance="outline">
           <mat-label>Anmeldename</mat-label>
@@ -29,33 +31,37 @@
           text="Sie verwenden einen Browser, der nicht offiziell unterstützt wird."
           [replacements]="browserWarning"
         ></tc-alert>
+        <tc-alert
+          *ngIf="!mainDataService.appConfig"
+          level="error"
+          text="Die Verbindung mit dem Server ist nicht möglich."
+        ></tc-alert>
       </mat-card-content>
-      <mat-card-content *ngIf="!mainDataService.appConfig">
-        <tc-alert level="error" text="Die Verbindung mit dem Server ist nicht möglich."></tc-alert>
-      </mat-card-content>
+
       <mat-card-actions>
-        <div class="flex-row login-buttons">
-          <button mat-raised-button type="submit" color="primary" data-cy="login-user"
-                  [disabled]="!loginForm.get('name').valid">
-            Weiter
-          </button>
-          <button mat-raised-button type="button" id="admin" data-cy="login-admin"
-                  [disabled]="loginForm.invalid"
-                  (click)="this.login('admin')">
-            Weiter als Admin
-          </button>
-        </div>
+        <button mat-raised-button type="submit" color="primary" data-cy="login-user"
+                [disabled]="!loginForm.get('name').valid">
+          Weiter
+        </button>
+        <button mat-raised-button type="button" id="admin" data-cy="login-admin"
+                [disabled]="loginForm.invalid"
+                (click)="this.login('admin')">
+          Weiter als Admin
+        </button>
       </mat-card-actions>
     </mat-card>
   </form>
 
-  <mat-card class="status-card">
-    <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
+  <mat-card appearance="outlined" class="status-card">
+    <mat-card-header>
+      <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
+      <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
       <div [innerHTML]="mainDataService.appConfig?.trustedIntroHtml"></div>
       <tc-status-card></tc-status-card>
     </mat-card-content>
+
     <mat-card-actions>
       <a *ngIf="this.mainDataService.sysCheckAvailable" mat-raised-button color="primary"
          [routerLink]="['/r/check-starter']">

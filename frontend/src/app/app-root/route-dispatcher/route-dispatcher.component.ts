@@ -4,7 +4,7 @@ import { Router, RouterState, RouterStateSnapshot } from '@angular/router';
 @Component({
   templateUrl: './route-dispatcher.component.html',
   styles: [
-    '.mat-card {width: 400px; margin-top: 80px;}'
+    '.mat-mdc-card {width: 400px; margin-top: 80px;}'
   ]
 })
 

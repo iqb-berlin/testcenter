@@ -1,13 +1,13 @@
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
 import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
 
 @Component({
   templateUrl: './review-dialog.component.html',
   styles: [
-    '.mat-radio-group {display: flex; flex-direction: column;}',
-    '.mat-radio-button {margin: 5px;}',
+    '.mat-mdc-radio-group {display: flex; flex-direction: column;}',
+    '.mat-mdc-radio-button {margin: 5px;}',
     'label {display: block; margin: 10px 0 5px 0; font-weight: bold;}',
     'ul {list-style-type: none; padding: 0;}'
   ]

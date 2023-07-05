@@ -1,6 +1,8 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card>
-    <mat-card-title>Bitte wählen</mat-card-title>
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Bitte wählen</mat-card-title>
+    </mat-card-header>
     <mat-card-content class="flex-column" [style.gap.px]="10">
       <tc-alert *ngIf="!booklets.length"
              level="info"
@@ -21,7 +23,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card class="status-card">
+  <mat-card appearance="raised" class="status-card">
     <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
     <mat-card-content>
       <p *ngIf="bookletCount === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>

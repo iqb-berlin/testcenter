@@ -13,9 +13,8 @@ import browsersJson from '../../../../../definitions/browsers.json';
   templateUrl: './login.component.html',
   styles: [
     '.status-card {background: var(--tc-box-background)}',
-    '.mat-form-field {display: block}',
-    '.mat-card {width: 400px;}',
-    '.login-buttons {justify-content: space-between; margin-left: 8px;}',
+    '.mat-mdc-form-field {display: block}',
+    '.mat-mdc-card {width: 400px;}',
     '.version-label {position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); padding: 1px 3px}'
   ]
 })

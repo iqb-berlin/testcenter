@@ -1,5 +1,5 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card>
+  <mat-card appearance="outlined">
     <mat-card-title>Testdurchführung überwachen</mat-card-title>
     <mat-card-content>
       <div class="flex-column" [style.gap.px]="10">
@@ -52,7 +52,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card class="status-card">
+  <mat-card appearance="outlined" class="status-card">
     <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>

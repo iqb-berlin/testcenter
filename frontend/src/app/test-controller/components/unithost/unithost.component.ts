@@ -5,7 +5,7 @@ import {
   Component, HostListener, OnInit, OnDestroy
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   TestStateKey,
   WindowFocusState,

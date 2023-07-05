@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
-  MatLegacyDialogClose as MatDialogClose,
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialog as MatDialog
-} from '@angular/material/legacy-dialog';
+  MatDialogClose,
+  MAT_DIALOG_DATA,
+  MatDialog
+} from '@angular/material/dialog';
 
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 

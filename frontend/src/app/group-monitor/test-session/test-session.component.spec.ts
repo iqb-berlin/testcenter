@@ -1,7 +1,7 @@
 import { MatIconModule } from '@angular/material/icon';
-import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { MatLegacyCheckboxModule as MatCheckboxModule } from '@angular/material/legacy-checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TestSessionComponent } from './test-session.component';
 import { TestViewDisplayOptions } from '../group-monitor.interfaces';
 import { unitTestExampleSessions } from '../unit-test-example-data.spec';

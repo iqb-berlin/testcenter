@@ -1,8 +1,10 @@
+
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card {
   margin: 10px;
 }
 
-.mat-card {
+.mat-mdc-card {
   background-color: var(--tc-box-background);
   width: 400px;
 }

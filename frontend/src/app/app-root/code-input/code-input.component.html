@@ -1,12 +1,14 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
   <form [formGroup]="codeinputform" (ngSubmit)="codeinput()">
-    <mat-card>
-      <mat-card-title>
-        {{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}
-      </mat-card-title>
-      <mat-card-subtitle>
-        {{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt' | async }}
-      </mat-card-subtitle>
+    <mat-card appearance="raised">
+      <mat-card-header>
+        <mat-card-title>
+          {{ 'login_codeInputTitle' | customtext:'login_codeInputTitle' | async }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{ 'login_codeInputPrompt' | customtext:'login_codeInputPrompt' | async }}
+        </mat-card-subtitle>
+      </mat-card-header>
       <mat-card-content>
         <mat-form-field appearance="outline">
           <input matInput formControlName="code"> <!-- no placeholder! -->
@@ -14,22 +16,22 @@
         <p style="color: chocolate"><b>{{ problemText }}</b></p>
       </mat-card-content>
       <mat-card-actions>
-        <div class="flex-row login-buttons">
-          <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"
-                  color="primary" data-cy="continue">
-            Weiter
-          </button>
-          <button type="button" mat-raised-button data-cy="logout" color="foreground" (click)="resetLogin()" style="margin-right: 0">
-            Neu anmelden
-          </button>
-        </div>
+        <button mat-raised-button type="submit" [disabled]="codeinputform.invalid"
+                color="primary" data-cy="continue">
+          Weiter
+        </button>
+        <button type="button" mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()" style="margin-right: 0">
+          Neu anmelden
+        </button>
       </mat-card-actions>
     </mat-card>
   </form>
 
-  <mat-card class="status-card">
-    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+  <mat-card appearance="outlined" class="status-card">
+    <mat-card-header>
+      <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+      <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
       <tc-status-card></tc-status-card>
     </mat-card-content>

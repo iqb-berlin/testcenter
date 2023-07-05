@@ -48,10 +48,12 @@ h1 {
 /* Workaround for non-Firefox Browsers, which don't support "safe" in align-items.
 This makes it so that long unit labels don't get cut off when overflowing and instead
 appear as if aligned with "start". */
+/*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
 :host ::ng-deep .unit-nav .unit-nav-item span.mat-button-wrapper {
   margin: auto;
 }
 
+/*TODO(mdc-migration): The following rule targets internal classes of button that may no longer apply for the MDC version.*/
 .unit-nav a.mat-button-disabled {
   background-color: darkgray;
 }

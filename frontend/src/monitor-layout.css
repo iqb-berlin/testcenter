@@ -76,7 +76,7 @@ mat-sidenav-container.mobile .adminbackground {
   font-size: 1.5em;
 }
 
-.toolbar .mat-radio-button ~ .mat-radio-button {
+.toolbar .mat-mdc-radio-button ~ .mat-radio-button {
   margin-left: 16px;
 }
 

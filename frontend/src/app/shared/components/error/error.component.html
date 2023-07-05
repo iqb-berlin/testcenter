@@ -1,4 +1,4 @@
-<mat-card class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
+<mat-card appearance="outlined" class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
   <mat-card-title>
     <tc-alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></tc-alert>
     <div style="color:silver; font-size: small" *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</div>

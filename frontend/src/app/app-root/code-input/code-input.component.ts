@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import {
   CustomtextService, MessageDialogComponent, MessageDialogData, MessageType,
   MainDataService
@@ -12,9 +12,8 @@ import { BackendService } from '../../backend.service';
 @Component({
   templateUrl: './code-input.component.html',
   styles: [
-    '.mat-card {width: 400px;}',
-    '.status-card {background-color: var(--tc-box-background)}',
-    '.login-buttons {justify-content: space-between; margin-left: 8px;}'
+    '.mat-mdc-card {width: 400px;}',
+    '.status-card {background-color: var(--tc-box-background)}'
   ]
 })
 export class CodeInputComponent implements OnInit {

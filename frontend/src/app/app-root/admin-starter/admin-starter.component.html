@@ -1,5 +1,5 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card class="flex-column" [style.flex-basis.px]="400">
+  <mat-card appearance="outlined" class="flex-column" [style.flex-basis.px]="400">
     <mat-card-title>Verwaltung</mat-card-title>
     <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>
     <mat-card-content>
@@ -28,7 +28,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card class="status-card" [style.flex-basis.px]="400">
+  <mat-card appearance="outlined" class="status-card" [style.flex-basis.px]="400">
     <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
     <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
     <mat-card-content>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CustomtextService, MainDataService } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';

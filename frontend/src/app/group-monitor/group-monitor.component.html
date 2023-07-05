@@ -2,9 +2,9 @@
   <p>{{mds.appTitle$ | async}} {{mds.appSubTitle$ | async}} - {{groupLabel}}</p>
   <span class="fill-remaining-space"></span>
   <p>
-    <mat-chip-list *ngIf="connectionStatus$ | async as connectionStatus">
+    <mat-chip-listbox *ngIf="connectionStatus$ | async as connectionStatus">
 
-      <mat-chip [class]="connectionStatus + ' connection-status'">
+      <mat-chip-option [class]="connectionStatus + ' connection-status'">
         <mat-icon>
           {{connectionStatus === 'error' ? 'error' : ''}}
           {{connectionStatus === 'polling-fetch' ? 'loop' : ''}}
@@ -17,8 +17,8 @@
         {{connectionStatus === 'polling-sleep' ? 'Online' : ''}}
         {{connectionStatus === 'ws-offline' ? 'Reconn.' : ''}}
         {{connectionStatus === 'ws-online' ? 'Live' : ''}}
-      </mat-chip>
-    </mat-chip-list>
+      </mat-chip-option>
+    </mat-chip-listbox>
   </p>
 </div>
 

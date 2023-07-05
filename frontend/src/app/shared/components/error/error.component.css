@@ -19,6 +19,7 @@
   margin-bottom: 2px;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 .mat-card-box {
   background-color: var(--tc-box-background)
 }
@@ -32,6 +33,7 @@
 }
 
 
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card-title {
   font-size: 24px;
   font-weight: 500;
@@ -43,6 +45,7 @@ mat-card-title {
   top: 3px;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card-actions {
   justify-content: space-between;
   margin-left: -16px;

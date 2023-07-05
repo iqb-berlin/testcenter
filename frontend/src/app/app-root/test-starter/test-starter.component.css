@@ -15,7 +15,7 @@ div.booklet_status {
   margin-bottom: 18px;
 }
 
-.mat-card {
+.mat-mdc-card {
   width: 400px;
 }
 
@@ -23,6 +23,6 @@ div.booklet_status {
   background-color: var(--tc-box-background)
 }
 
-.mat-card-content a {
+.mat-mdc-card-content a {
   display: block;
 }

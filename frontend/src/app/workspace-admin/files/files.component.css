@@ -29,7 +29,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
   flex: 3 3 60px;
 }
 
-.namecell.mat-header-cell {
+.namecell.mat-mdc-header-cell {
   padding-left: 16px;
 }
 
@@ -67,7 +67,7 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
   color: blue;
 }
 
-.mat-raised-button {
+.mat-mdc-raised-button {
   min-width: 100px;
   margin: 2px;
 }
@@ -90,8 +90,8 @@ mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-
   margin: 2px;
 }
 
-.full-file-report .mat-card-title,
-.full-file-report .mat-card-subtitle {
+.full-file-report .mat-mdc-card-title,
+.full-file-report .mat-mdc-card-subtitle {
   margin-left: -16px;
 }
 

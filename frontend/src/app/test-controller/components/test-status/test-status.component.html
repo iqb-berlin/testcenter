@@ -1,5 +1,5 @@
 <div [ngSwitch]="(tcs.testStatus$ | async)" class="flex-row-wrap" [style.justify-content]="'center'">
-  <mat-card class="mat-card-box" *ngSwitchDefault>
+  <mat-card appearance="outlined" class="mat-card-box" *ngSwitchDefault>
     <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
     <mat-card-content>
       <p><b>Angemeldet als "{{loginName}}"</b></p>
@@ -18,7 +18,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.PAUSED">
+  <mat-card appearance="outlined" class="mat-card-box" *ngSwitchCase="tcs.testStatusEnum.PAUSED">
     <mat-card-title>{{ tcs.rootTestlet?.title }}</mat-card-title>
     <mat-card-content>
       <p><b>Angemeldet als "{{loginName}}"</b></p>
@@ -44,7 +44,7 @@
   </error>
 
 
-  <mat-card *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
+  <mat-card appearance="outlined" *ngSwitchCase="tcs.testStatusEnum.LOADING" class="progress-bar">
     <mat-card-title>{{ tcs.rootTestlet?.title || 'Test' }}</mat-card-title>
     <mat-card-subtitle>{{'bitte warten' | customtext:'booklet_loading' | async }}</mat-card-subtitle>
     <mat-card-content>

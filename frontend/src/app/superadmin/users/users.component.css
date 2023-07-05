@@ -1,9 +1,9 @@
-.mat-raised-button {
+.mat-mdc-raised-button {
   min-width: 100px;
   margin: 2px;
 }
 
-.mat-checkbox {
+.mat-mdc-checkbox {
   margin: 0 9px;
 }
 
