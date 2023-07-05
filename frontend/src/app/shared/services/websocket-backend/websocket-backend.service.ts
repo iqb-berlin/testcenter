@@ -2,11 +2,8 @@ import {
   Inject, Injectable, OnDestroy, SkipSelf
 } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import {
-  catchError, map, skipWhile, tap
-} from 'rxjs/operators';
+import { map, skipWhile, tap } from 'rxjs/operators';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { AppError } from '../../../app.interfaces';
 import { WebsocketService } from '../websocket/websocket.service';
 import { ConnectionStatus } from '../../interfaces/websocket-backend.interfaces';
 

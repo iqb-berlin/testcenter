@@ -40,7 +40,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     available: false
   };
 
-  private humanReadableMilliseconds = (milliseconds: number): string => `${(milliseconds / 1000).toString()} sec`;
+  private static humanReadableMilliseconds =
+    (milliseconds: number): string => `${(milliseconds / 1000).toString()} sec`;
 
   private static calculateAverageSpeedBytePerSecond(testResults: Array<NetworkRequestTestResult>): number {
     return testResults.reduce((sum, result) => sum + (result.size / (result.duration / 1000)), 0) / testResults.length;
@@ -103,8 +104,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         lineWidth: 5,
         xProject: x => ((x === 0) ? 0 : Math.sign(x) * Math.log2(Math.abs(x))),
         yProject: y => ((y === 0) ? 0 : Math.sign(y) * Math.log(Math.abs(y))),
-        xAxisLabels: x => ((testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : ''),
-        yAxisLabels: (y, i) => ((i < 10) ? this.humanReadableMilliseconds(y) : ' ')
+        xAxisLabels: x => ((testSizes.indexOf(x) > -1) ? NetworkCheckComponent.humanReadableBytes(x, false, true) : ''),
+        yAxisLabels: (y, i) => ((i < 10) ? NetworkCheckComponent.humanReadableMilliseconds(y) : ' ')
       };
 
       if (isDownloadPart) {
@@ -183,7 +184,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
 
   private benchmark(isDownloadPart: boolean, requestSize: number): Promise<NetworkRequestTestResult> {
     const testRound = (isDownloadPart) ? (this.networkStatsDownload.length + 1) : (this.networkStatsUpload.length + 1);
-    const testPackage = this.humanReadableBytes(requestSize);
+    const testPackage = NetworkCheckComponent.humanReadableBytes(requestSize);
     if (isDownloadPart) {
       this.ds.networkCheckStatus.message =
         `Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`;
@@ -239,14 +240,14 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
       type: 'network',
       label: 'Downloadgeschwindigkeit',
       warning: false,
-      value: `${this.humanReadableBytes(downAvg, true)}/s`
+      value: `${NetworkCheckComponent.humanReadableBytes(downAvg, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-download-needed',
       type: 'network',
       label: 'Downloadgeschwindigkeit benötigt',
       warning: false,
-      value: `${this.humanReadableBytes(this.ds.checkConfig.downloadSpeed.min, true)}/s`
+      value: `${NetworkCheckComponent.humanReadableBytes(this.ds.checkConfig.downloadSpeed.min, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-download-evaluation',
@@ -260,14 +261,14 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
       type: 'network',
       label: 'Uploadgeschwindigkeit',
       warning: false,
-      value: `${this.humanReadableBytes(upAvg, true)}/s`
+      value: `${NetworkCheckComponent.humanReadableBytes(upAvg, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-upload-needed',
       type: 'network',
       label: 'Uploadgeschwindigkeit benötigt',
       warning: false,
-      value: `${this.humanReadableBytes(this.ds.checkConfig.uploadSpeed.min, true)}/s`
+      value: `${NetworkCheckComponent.humanReadableBytes(this.ds.checkConfig.uploadSpeed.min, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-upload-evaluation',
@@ -374,7 +375,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     this.networkRating = networkRating;
   }
 
-  humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
+  static humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
     const suffix = {
       B: {
         1000: ['B', 'kB', 'MB', 'GB', 'TB'],

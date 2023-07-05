@@ -117,7 +117,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   private defaultOnClose(): void {
-    console.log(this.error.type);
     if (this.error.type === 'session') {
       this.mainDataService.resetAuthData();
       const state: RouterState = this.router.routerState;

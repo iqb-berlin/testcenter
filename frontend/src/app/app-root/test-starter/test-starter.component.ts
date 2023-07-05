@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { BackendService } from '../../backend.service';
 import { MainDataService } from '../../shared/shared.module';
-import { AccessObject, AuthData } from '../../app.interfaces';
+import { AccessObject } from '../../app.interfaces';
 
 @Component({
   templateUrl: './test-starter.component.html',

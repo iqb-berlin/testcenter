@@ -19,10 +19,10 @@
             {{'Gruppen-Monitor Starten' | customtext: 'gm_selection_text' | async}}
           </span>
           <span class="booklet_status" *ngIf="(!!accessObject.flags.expired)">
-            {{'Gruppe abgelaufen seit %date.' | customtext: 'gm_selection_text_expired':accessObject.flags.expired | async}}
+            {{'Gruppe abgelaufen seit %date.' | customtext: 'gm_selection_text_expired':accessObject.flags.expired.toString(10) | async}}
           </span>
           <span class="booklet_status" *ngIf="(!!accessObject.flags.scheduled)">
-            {{'Gruppe erst freigegeben ab %date.' | customtext: 'gm_selection_text_scheduled':accessObject.flags.scheduled | async}}
+            {{'Gruppe erst freigegeben ab %date.' | customtext: 'gm_selection_text_scheduled':accessObject.flags.scheduled.toString(10) | async}}
           </span>
         </button>
 

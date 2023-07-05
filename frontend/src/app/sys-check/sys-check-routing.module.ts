@@ -1,6 +1,12 @@
 // eslint-disable-next-line max-classes-per-file
 import { Injectable, NgModule } from '@angular/core';
-import { Routes, RouterModule, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  Routes,
+  RouterModule,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot
+} from '@angular/router';
 import { Observable } from 'rxjs';
 import { SysCheckComponent } from './sys-check.component';
 import { WelcomeComponent } from './welcome/welcome.component';

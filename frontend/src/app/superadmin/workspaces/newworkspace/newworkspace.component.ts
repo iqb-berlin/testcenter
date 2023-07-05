@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {FormGroup, Validators, FormControl} from '@angular/forms';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 @Component({
   templateUrl: './newworkspace.component.html',

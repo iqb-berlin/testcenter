@@ -37,7 +37,9 @@ import { AppConfigComponent } from './settings/app-config.component';
 import { EditCustomTextsComponent } from './settings/edit-custom-texts.component';
 import { EditCustomTextComponent } from './settings/edit-custom-text.component';
 import { SharedModule } from '../shared/shared.module';
-import { MatLegacyProgressBarModule as MatProgressBarModule } from '@angular/material/legacy-progress-bar';
+import {
+  MatLegacyProgressBarModule as MatProgressBarModule
+} from '@angular/material/legacy-progress-bar';
 
 @NgModule({
   declarations: [

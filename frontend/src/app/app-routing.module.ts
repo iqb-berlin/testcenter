@@ -97,7 +97,8 @@ const routes: Routes = [
   },
   {
     path: 'am',
-    loadChildren: () => import('./attachment-manager/attachment-manager.module').then(module => module.AttachmentManagerModule)
+    loadChildren: () => import('./attachment-manager/attachment-manager.module')
+      .then(module => module.AttachmentManagerModule)
     // canActivate: [GroupMonitorActivateGuard]
   },
   {

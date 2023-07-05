@@ -30,7 +30,7 @@ export class AlertComponent implements OnChanges {
   get displayText$(): Observable<string> {
     return this._displayText$
       .pipe(
-        map(text => this.highlightTicks(text || ''))
+        map(text => AlertComponent.highlightTicks(text || ''))
       );
   }
 
@@ -69,7 +69,7 @@ export class AlertComponent implements OnChanges {
       .transform(this.text, this.customtext, ...(this.replacements || []));
   }
 
-  private highlightTicks = (text: string): string => text.replace(
+  private static highlightTicks = (text: string): string => text.replace(
     /\u0060([^\u0060]+)\u0060/g,
     (match, match2) => `<span class='highlight'>${match2}</span>`
   );

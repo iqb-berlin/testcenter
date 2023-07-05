@@ -29,5 +29,6 @@ export interface SysConfig {
 }
 
 export const DEFAULT_LOGO = 'assets/IQB-LogoA.png';
-export const DEFAULT_BACKGROUND_BODY = '#003333 linear-gradient(to bottom, #003333, #045659, #0d7b84, #1aa2b2, #2acae5)';
+export const DEFAULT_BACKGROUND_BODY =
+  '#003333 linear-gradient(to bottom, #003333, #045659, #0d7b84, #1aa2b2, #2acae5)';
 export const DEFAULT_BACKGROUND_BOX = 'lightgray';

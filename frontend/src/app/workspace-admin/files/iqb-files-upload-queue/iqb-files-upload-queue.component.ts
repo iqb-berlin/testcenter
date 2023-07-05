@@ -41,15 +41,12 @@ export class IqbFilesUploadQueueComponent implements OnDestroy {
   analyseStatus(): void {
     this.disableClearButton = true;
     let someoneisbusy = false;
-    let someoneisready = false;
     let countcomplete = 0;
     this.fileUploads.forEach(fileUpload => {
       if ((fileUpload.status === UploadStatus.ok) || (fileUpload.status === UploadStatus.error)) {
         countcomplete += 1;
       } else if (fileUpload.status === UploadStatus.busy) {
         someoneisbusy = true;
-      } else if (fileUpload.status === UploadStatus.ready) {
-        someoneisready = true;
       }
     });
 

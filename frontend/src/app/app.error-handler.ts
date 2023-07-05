@@ -24,6 +24,7 @@ export class AppErrorHandler implements ErrorHandler {
 
       // it's not possible to get the sourcemap'd stack trace, only to print it to console
       if ('stack' in error) {
+        // eslint-disable-next-line no-console
         console.warn(error.stack);
       }
 

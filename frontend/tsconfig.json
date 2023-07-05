@@ -7,7 +7,7 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "module": "es2020",
+    "module": "es2022",
     "moduleResolution": "node",
     "outDir": "./dist/out-tsc",
     "resolveJsonModule": true,
@@ -21,7 +21,7 @@
       "jasmine"
     ],
     "lib": [
-      "es2017",
+      "es2022",
       "dom"
     ],
     "paths": {

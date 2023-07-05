@@ -14,7 +14,7 @@ import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 
 @Injectable()
-export class UnitDeactivateGuard  {
+export class UnitDeactivateGuard {
   constructor(
     private tcs: TestControllerService,
     private cts: CustomtextService,

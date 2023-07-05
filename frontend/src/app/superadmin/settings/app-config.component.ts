@@ -124,21 +124,23 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       });
   }
 
-  imgFileChange(fileInput: any): void {
+  imgFileChange(fileInput: Event): void {
+    const target = fileInput.target as HTMLInputElement;
+    const files = target.files as FileList;
     this.imageError = null;
-    if (fileInput.target.files && fileInput.target.files[0]) {
+    if (files && files[0]) {
       // todo check max values
       const maxSize = 20971520;
       const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml'];
       const maxHeight = 15200;
       const maxWidth = 25600;
 
-      if (fileInput.target.files[0].size > maxSize) {
+      if (files[0].size > maxSize) {
         this.imageError = `Datei zu groß ( > ${maxSize / 1000} Mb)`;
         return;
       }
 
-      if (allowedTypes.indexOf(fileInput.target.files[0].type) < 0) {
+      if (allowedTypes.indexOf(files[0].type) < 0) {
         const allowedImageTypesTruncated: string[] = [];
         allowedTypes.forEach((imgType: string) => {
           allowedImageTypesTruncated.push(imgType.substr(5));
@@ -163,7 +165,7 @@ export class AppConfigComponent implements OnInit, OnDestroy {
           return true;
         };
       };
-      reader.readAsDataURL(fileInput.target.files[0]);
+      reader.readAsDataURL(files[0]);
     }
   }
 

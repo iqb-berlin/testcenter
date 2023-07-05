@@ -6,7 +6,7 @@ import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
 
 @Injectable()
-export class UnitActivateGuard  {
+export class UnitActivateGuard {
   constructor(
     private tcs: TestControllerService,
     private router: Router,

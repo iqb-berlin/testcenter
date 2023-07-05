@@ -1,4 +1,5 @@
 import { TestModeData } from 'testcenter-common/classes/test-mode-data.class';
+import { AppError } from '../../app.interfaces';
 
 export class TestMode extends TestModeData {
   modeId: keyof typeof TestModeData.modes = 'RUN-DEMO';
@@ -9,8 +10,11 @@ export class TestMode extends TestModeData {
     const mode = <keyof typeof TestModeData.modes>loginMode.toUpperCase();
 
     if (!mode || !TestModeData.modes[mode]) {
-      console.warn(`TestConfig: invalid loginMode ${mode} - take DEMO`);
-      return;
+      throw new AppError({
+        type: 'warning',
+        label: 'Unbekannte Nutzerrolle',
+        description: `Unbekannte Nutzerrolle: ${mode}.`
+      });
     }
 
     this.modeId = mode;

@@ -57,7 +57,7 @@ export class TcSpeedChartComponent {
     this.el = elem.nativeElement;
   }
 
-  public reset(config: TcSpeedChartSettings): void {
+  reset(config: TcSpeedChartSettings): void {
     this.canvas = this.el.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
 
@@ -84,12 +84,12 @@ export class TcSpeedChartComponent {
     this.context.lineWidth = this.config.lineWidth;
   }
 
-  public plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line'): void {
+  plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line'): void {
     if (!dataPoints.length) {
       return;
     }
     const coordinates = this.dataPointsToCoordinates(dataPoints);
-    const newColor = color || this.randomColor();
+    const newColor = color || TcSpeedChartComponent.randomColor();
     const oldStrokeColor = this.context.strokeStyle;
     const oldFillColor = this.context.fillStyle;
     this.context.strokeStyle = newColor;
@@ -187,5 +187,6 @@ export class TcSpeedChartComponent {
   }
 
   // eslint-disable-next-line max-len
-  private randomColor = (): string => `rgb(${(new Array(3).fill(0).map(() => Math.round(256 * Math.random())).join(', '))})`;
+  private static randomColor =
+    (): string => `rgb(${(new Array(3).fill(0).map(() => Math.round(256 * Math.random())).join(', '))})`;
 }

@@ -103,7 +103,7 @@ describe('TestLoaderService', () => {
           });
         const everythingLoaded = lastValueFrom(
           watcher.watchProperty('tcs', service.tcs, 'totalLoadingProgress')
-            .pipe(takeWhile(p => p < 100))
+            .pipe(takeWhile(p => <number>p < 100))
         );
         watcher.watchMethod('tcs', service.tcs, 'addPlayer', { 1: null });
         watcher.watchMethod('bs', service['bs'], 'addTestLog', { 0: null, 1: testLogEntries => testLogEntries[0].key });

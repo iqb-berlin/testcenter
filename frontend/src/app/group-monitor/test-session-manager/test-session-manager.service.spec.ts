@@ -63,7 +63,7 @@ describe('TestSessionManager', () => {
         TestSessionManager,
         { provide: BookletService, useValue: new MockBookletService() },
         { provide: BackendService, useValue: new MockBackendService() },
-        { provide: GROUP_MONITOR_CONFIG, useValue: <GroupMonitorConfig>{ checkForIdleInterval: 0 }}
+        { provide: GROUP_MONITOR_CONFIG, useValue: <GroupMonitorConfig>{ checkForIdleInterval: 0 } }
       ]
     })
       .compileComponents();

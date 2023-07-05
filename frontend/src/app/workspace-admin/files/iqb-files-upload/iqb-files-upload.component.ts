@@ -56,7 +56,6 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
   set files(files: File[]) {
     this._files = files;
-    this._filedates = files.map(file => file.lastModified);
   }
 
   @Input()
@@ -73,7 +72,6 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
   progressPercentage = 0;
   private _files: File[];
-  private _filedates: number[] = [];
   private _id: number;
   private fileUploadSubscription: Subscription;
 

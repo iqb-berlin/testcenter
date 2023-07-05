@@ -10,7 +10,7 @@ import { BackendService } from './backend.service';
 // TODO put classes in separate files and clean up absurd if-ceptions
 
 @Injectable()
-export class RouteDispatcherActivateGuard  {
+export class RouteDispatcherActivateGuard {
   constructor(
     private router: Router,
     private mainDataService: MainDataService,
@@ -54,7 +54,7 @@ export class RouteDispatcherActivateGuard  {
 }
 
 @Injectable()
-export class DirectLoginActivateGuard  {
+export class DirectLoginActivateGuard {
   constructor(
     private mds: MainDataService,
     private bs: BackendService,
@@ -84,7 +84,7 @@ export class DirectLoginActivateGuard  {
 @Injectable({
   providedIn: 'root'
 })
-export class CodeInputComponentActivateGuard  {
+export class CodeInputComponentActivateGuard {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -111,7 +111,7 @@ export class CodeInputComponentActivateGuard  {
 @Injectable({
   providedIn: 'root'
 })
-export class AdminComponentActivateGuard  {
+export class AdminComponentActivateGuard {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -138,7 +138,7 @@ export class AdminComponentActivateGuard  {
 @Injectable({
   providedIn: 'root'
 })
-export class AdminOrSuperAdminComponentActivateGuard  {
+export class AdminOrSuperAdminComponentActivateGuard {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -165,7 +165,7 @@ export class AdminOrSuperAdminComponentActivateGuard  {
 @Injectable({
   providedIn: 'root'
 })
-export class SuperAdminComponentActivateGuard  {
+export class SuperAdminComponentActivateGuard {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -192,7 +192,7 @@ export class SuperAdminComponentActivateGuard  {
 @Injectable({
   providedIn: 'root'
 })
-export class TestComponentActivateGuard  {
+export class TestComponentActivateGuard {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -219,7 +219,7 @@ export class TestComponentActivateGuard  {
 @Injectable({
   providedIn: 'root'
 })
-export class GroupMonitorActivateGuard  {
+export class GroupMonitorActivateGuard {
   constructor(
     private router: Router,
     private mainDataService: MainDataService

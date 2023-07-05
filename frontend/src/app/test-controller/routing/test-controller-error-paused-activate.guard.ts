@@ -4,7 +4,7 @@ import { TestControllerState } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../services/test-controller.service';
 
 @Injectable()
-export class TestControllerErrorPausedActivateGuard  {
+export class TestControllerErrorPausedActivateGuard {
   constructor(
     private tcs: TestControllerService
   ) {

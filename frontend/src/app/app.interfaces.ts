@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 export type AuthFlagType = 'codeRequired';
 
 export type AuthAccessType =
@@ -59,7 +60,7 @@ export class AppError extends Error implements AppErrorInterface {
 }
 
 export class WrappedError extends Error {
-  promise: Promise<any>;
+  promise: Promise<never>;
   rejection: Error;
 }
 

@@ -3,7 +3,7 @@ import {
 } from '../group-monitor.interfaces';
 
 export class BookletUtil {
-  static getFirstUnit(testletOrUnit: Testlet|Unit): Unit|null {
+  static getFirstUnit(testletOrUnit: Testlet | Unit): Unit | null {
     while (!isUnit(testletOrUnit)) {
       if (!testletOrUnit.children.length) {
         return null;
@@ -14,7 +14,7 @@ export class BookletUtil {
     return testletOrUnit;
   }
 
-  static getFirstUnitOfBlock(blockId: string, booklet: Booklet): Unit|null {
+  static getFirstUnitOfBlock(blockId: string, booklet: Booklet): Unit | null {
     for (let i = 0; i < booklet.units.children.length; i++) {
       const child = booklet.units.children[i];
       if (!isUnit(child) && (child.blockId === blockId)) {

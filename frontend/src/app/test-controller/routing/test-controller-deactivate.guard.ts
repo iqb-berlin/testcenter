@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-
-import { TestControllerComponent } from '../components/test-controller/test-controller.component';
 import { TestControllerState, UnitNavigationTarget } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../services/test-controller.service';
 
 @Injectable()
-export class TestControllerDeactivateGuard  {
+export class TestControllerDeactivateGuard {
   constructor(
     private tcs: TestControllerService
   ) {
