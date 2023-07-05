@@ -32,7 +32,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
   url: string;
   restartTimer$: Observable<number>;
   waitUnitAutomaticRestartSeconds: number = 120;
-  uncloseable = false;
   sendingResult: BugReportResult;
   timestamp: number;
   private appErrorSubscription: Subscription;
@@ -49,12 +48,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     this.browser = new UAParser().getResult();
     this.appErrorSubscription = this.mainDataService.appError$
       .subscribe(err => {
-        if (err.type === 'fatal') {
-          this.uncloseable = true;
-        }
-
         if (err.type === 'network_temporally') {
-          this.uncloseable = true;
           this.startRestartTimer();
         }
 
@@ -123,12 +117,19 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   private defaultOnClose(): void {
+    console.log(this.error.type);
     if (this.error.type === 'session') {
       this.mainDataService.resetAuthData();
       const state: RouterState = this.router.routerState;
       const { snapshot } = state;
       const snapshotUrl = (snapshot.url === '/r/login/') ? '' : snapshot.url;
       this.router.navigate(['/r/login', snapshotUrl]);
+    }
+    if (this.error.type === 'fatal') {
+      this.mainDataService.reloadPage();
+    }
+    if (this.error.type === 'network_temporally') {
+      this.mainDataService.reloadPage();
     }
   }
 
