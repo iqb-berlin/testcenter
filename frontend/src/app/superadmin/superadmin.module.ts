@@ -85,12 +85,6 @@ import { MatLegacyProgressBarModule as MatProgressBarModule } from '@angular/mat
   exports: [
     SuperadminComponent
   ],
-  entryComponents: [
-    NewPasswordComponent,
-    NewUserComponent,
-    NewworkspaceComponent,
-    EditworkspaceComponent
-  ],
   providers: [
     BackendService,
     [

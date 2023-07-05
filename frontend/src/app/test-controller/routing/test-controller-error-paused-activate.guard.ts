@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+
 import { TestControllerState } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from '../services/test-controller.service';
 
 @Injectable()
-export class TestControllerErrorPausedActivateGuard implements CanActivate {
+export class TestControllerErrorPausedActivateGuard  {
   constructor(
     private tcs: TestControllerService
   ) {

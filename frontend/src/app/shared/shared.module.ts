@@ -34,10 +34,6 @@ import { BackendService } from './services/backend.service';
     HttpClientModule,
     MatTooltipModule
   ],
-  entryComponents: [
-    ConfirmDialogComponent,
-    MessageDialogComponent
-  ],
   declarations: [
     ConfirmDialogComponent,
     MessageDialogComponent,

@@ -63,9 +63,6 @@ import { SysCheckDataService } from './sys-check-data.service';
     SaveReportComponent,
     TcSpeedChartComponent
   ],
-  entryComponents: [
-    SaveReportComponent
-  ],
   providers: [
     BackendService,
     SysCheckDataService,

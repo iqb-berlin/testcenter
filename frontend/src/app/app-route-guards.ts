@@ -1,8 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MainDataService } from './shared/shared.module';
@@ -12,7 +10,7 @@ import { BackendService } from './backend.service';
 // TODO put classes in separate files and clean up absurd if-ceptions
 
 @Injectable()
-export class RouteDispatcherActivateGuard implements CanActivate {
+export class RouteDispatcherActivateGuard  {
   constructor(
     private router: Router,
     private mainDataService: MainDataService,
@@ -56,7 +54,7 @@ export class RouteDispatcherActivateGuard implements CanActivate {
 }
 
 @Injectable()
-export class DirectLoginActivateGuard implements CanActivate {
+export class DirectLoginActivateGuard  {
   constructor(
     private mds: MainDataService,
     private bs: BackendService,
@@ -86,7 +84,7 @@ export class DirectLoginActivateGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
-export class CodeInputComponentActivateGuard implements CanActivate {
+export class CodeInputComponentActivateGuard  {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -113,7 +111,7 @@ export class CodeInputComponentActivateGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
-export class AdminComponentActivateGuard implements CanActivate {
+export class AdminComponentActivateGuard  {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -140,7 +138,7 @@ export class AdminComponentActivateGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
-export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
+export class AdminOrSuperAdminComponentActivateGuard  {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -167,7 +165,7 @@ export class AdminOrSuperAdminComponentActivateGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
-export class SuperAdminComponentActivateGuard implements CanActivate {
+export class SuperAdminComponentActivateGuard  {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -194,7 +192,7 @@ export class SuperAdminComponentActivateGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
-export class TestComponentActivateGuard implements CanActivate {
+export class TestComponentActivateGuard  {
   constructor(
     private router: Router,
     private mainDataService: MainDataService
@@ -221,7 +219,7 @@ export class TestComponentActivateGuard implements CanActivate {
 @Injectable({
   providedIn: 'root'
 })
-export class GroupMonitorActivateGuard implements CanActivate {
+export class GroupMonitorActivateGuard  {
   constructor(
     private router: Router,
     private mainDataService: MainDataService

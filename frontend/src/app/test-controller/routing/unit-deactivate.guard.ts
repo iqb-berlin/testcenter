@@ -1,8 +1,6 @@
 import { map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot, CanDeactivate, Router, RouterStateSnapshot
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
@@ -16,7 +14,7 @@ import { TestControllerService } from '../services/test-controller.service';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 
 @Injectable()
-export class UnitDeactivateGuard implements CanDeactivate<UnithostComponent> {
+export class UnitDeactivateGuard  {
   constructor(
     private tcs: TestControllerService,
     private cts: CustomtextService,

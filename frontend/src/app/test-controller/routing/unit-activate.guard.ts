@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot, CanActivate, Router
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UnitWithContext } from '../classes/test-controller.classes';
 import { TestControllerService } from '../services/test-controller.service';
 import { MessageService } from '../../shared/services/message.service';
 
 @Injectable()
-export class UnitActivateGuard implements CanActivate {
+export class UnitActivateGuard  {
   constructor(
     private tcs: TestControllerService,
     private router: Router,

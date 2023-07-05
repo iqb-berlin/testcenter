@@ -154,7 +154,6 @@
       }
     }
   },
-  "defaultProject": "testcenter-frontend",
   "cli": {
     "analytics": false
   }

@@ -66,9 +66,6 @@ export { TestControllerService } from './services/test-controller.service';
     TestStatusComponent,
     UnitMenuComponent
   ],
-  entryComponents: [
-    ReviewDialogComponent
-  ],
   providers: [
     UnitActivateGuard,
     UnitDeactivateGuard,

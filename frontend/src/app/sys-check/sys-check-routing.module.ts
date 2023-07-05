@@ -1,13 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Injectable, NgModule } from '@angular/core';
-import {
-  Routes,
-  RouterModule,
-  CanActivate,
-  Router,
-  ActivatedRouteSnapshot,
-  RouterStateSnapshot
-} from '@angular/router';
+import { Routes, RouterModule, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SysCheckComponent } from './sys-check.component';
 import { WelcomeComponent } from './welcome/welcome.component';
@@ -18,7 +11,7 @@ import { ReportComponent } from './report/report.component';
 import { UnitCheckComponent } from './unit-check/unit-check.component';
 
 @Injectable()
-export class SysCheckChildCanActivateGuard implements CanActivate {
+export class SysCheckChildCanActivateGuard  {
   constructor(
     private router: Router,
     private ds: SysCheckDataService
