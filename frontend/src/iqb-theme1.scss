@@ -22,7 +22,6 @@ $my-theme: mat.define-light-theme((
   --accent: #{mat.get-color-from-palette($iqb-accent)};
 }
 
-
 .mat-mdc-card {
   display: flex;
   justify-content: start;
@@ -30,18 +29,19 @@ $my-theme: mat.define-light-theme((
   flex-wrap: wrap;
 }
 
+.mat-mdc-card {
+  --mdc-outlined-card-container-color: var(--tc-box-background);
+}
+
 .mat-mdc-card-actions {
   margin: auto 0 0;
   justify-content: space-between;
 }
 
-.mat-mdc-card {
-  --mat-card-title-text-line-height: 32px;
-  --mat-card-title-text-size: 20px;
-  --mat-card-title-text-tracking: 0.0125em;
-  --mat-card-title-text-weight: 500;
-  --mat-card-subtitle-text-line-height: 22px;
-  --mat-card-subtitle-text-size: 14px;
-  --mat-card-subtitle-text-tracking: 0.0071428571em;
-  --mat-card-subtitle-text-weight: 500
+.mat-mdc-card-actions .mdc-button {
+  margin-right: 8px;
+}
+
+.mat-mdc-card-actions .mdc-button:last-child {
+  margin-right: 0;
 }

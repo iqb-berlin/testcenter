@@ -1,17 +1,19 @@
-<mat-card appearance="outlined" class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
-  <mat-card-title>
-    <tc-alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></tc-alert>
-    <div style="color:silver; font-size: small" *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</div>
+<mat-card appearance="raised" class="main-alert" attr.data-cy="main-alert:{{error.type}}" *ngIf="error">
+  <mat-card-header>
+    <mat-card-title>
+      <tc-alert text="{{ error.label }}" [level]="error.type =='warning' ? 'warning' : 'error'"></tc-alert>
+    </mat-card-title>
+    <mat-card-subtitle *ngIf="error.errorId"><b>Error-Id:</b> {{error.errorId}}</mat-card-subtitle>
     <button
-      *ngIf="!uncloseable"
       mat-icon-button
       class="main-alert-close-button"
       (click)="closeClick()"
       [matTooltip]="closeCaption ?? defaultCloseCaption ?? 'Schließen'"
     >
+      <!-- this button was an explicit requirement, because people couldn't finde the button with the text "close" -->
       <mat-icon>close</mat-icon>
     </button>
-  </mat-card-title>
+  </mat-card-header>
   <mat-card-content>
     <div #ref><ng-content></ng-content></div>
     <div *ngIf="!ref.children.length">
@@ -79,7 +81,7 @@
     </div>
   </mat-card-content>
 
-  <mat-card-actions align="end" class="flex-row">
+  <mat-card-actions>
 
     <button
       *ngIf="allowErrorDetails && !errorDetailsOpen"

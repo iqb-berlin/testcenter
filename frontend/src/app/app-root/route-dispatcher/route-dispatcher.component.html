@@ -1,6 +1,8 @@
 <div class="flex-row" [style.justify-content]="'center'">
   <mat-card appearance="outlined">
-    <mat-card-title>Diese Seite wurde nicht gefunden.</mat-card-title>
+    <mat-card-header>
+      <mat-card-title>Diese Seite wurde nicht gefunden.</mat-card-title>
+    </mat-card-header>
     <mat-card-content>{{url}}</mat-card-content>
     <mat-card-actions>
       <button [routerLink]="['/']" mat-raised-button color="primary">Zur Startseite</button>

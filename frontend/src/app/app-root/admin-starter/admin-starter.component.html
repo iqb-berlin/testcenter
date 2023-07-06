@@ -1,7 +1,9 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card appearance="outlined" class="flex-column" [style.flex-basis.px]="400">
-    <mat-card-title>Verwaltung</mat-card-title>
-    <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>
+  <mat-card appearance="raised" class="flex-column" [style.flex-basis.px]="400">
+    <mat-card-header>
+      <mat-card-title>Verwaltung</mat-card-title>
+      <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
       <div class="flex-column" [style.gap.px]="10">
         <p *ngIf="workspaces.length === 0">
@@ -29,8 +31,10 @@
   </mat-card>
 
   <mat-card appearance="outlined" class="status-card" [style.flex-basis.px]="400">
-    <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-header>
+      <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
+      <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
       <tc-status-card></tc-status-card>
     </mat-card-content>

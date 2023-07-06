@@ -12,8 +12,7 @@ import { BackendService } from '../../backend.service';
 @Component({
   templateUrl: './code-input.component.html',
   styles: [
-    '.mat-mdc-card {width: 400px;}',
-    '.status-card {background-color: var(--tc-box-background)}'
+    '.mat-mdc-card {width: 400px;}'
   ]
 })
 export class CodeInputComponent implements OnInit {

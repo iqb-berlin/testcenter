@@ -1,5 +1,5 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card appearance="outlined">
+  <mat-card appearance="raised">
     <mat-card-header>
       <mat-card-title>Bitte wählen</mat-card-title>
     </mat-card-header>
@@ -23,8 +23,10 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card appearance="raised" class="status-card">
-    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+  <mat-card appearance="outlined" class="status-card">
+    <mat-card-header>
+      <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+    </mat-card-header>
     <mat-card-content>
       <p *ngIf="bookletCount === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>
       <p *ngIf="bookletCount === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>

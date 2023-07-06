@@ -27,7 +27,9 @@
 </div>
 
 <mat-card appearance="outlined" *ngIf="errorText" [style.width.px]="700" [style.margin]="'auto'">
-  <mat-card-title>Fehler!</mat-card-title>
+  <mat-card-header>
+    <mat-card-title>Fehler!</mat-card-title>
+  </mat-card-header>
   <mat-card-content>
     <tc-alert level="error" [text]="errorText"></tc-alert>
   </mat-card-content>

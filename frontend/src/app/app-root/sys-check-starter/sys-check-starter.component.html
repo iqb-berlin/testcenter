@@ -1,7 +1,9 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'">
   <mat-card appearance="outlined">
-    <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-header>
+      <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
+      <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
       <p>Hier können Sie ermitteln, ob das Computersystem, das Sie gerade benutzen, für
         die hier vorgesehenen Testungen geeignet ist.</p>

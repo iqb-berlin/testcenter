@@ -1,6 +1,8 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card appearance="outlined">
-    <mat-card-title>Testdurchführung überwachen</mat-card-title>
+  <mat-card appearance="raised">
+    <mat-card-header>
+      <mat-card-title>Testdurchführung überwachen</mat-card-title>
+    </mat-card-header>
     <mat-card-content>
       <div class="flex-column" [style.gap.px]="10">
         <p *ngIf="problemText" style="color: chocolate"><b>{{ problemText }}</b></p>
@@ -53,8 +55,10 @@
   </mat-card>
 
   <mat-card appearance="outlined" class="status-card">
-    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    <mat-card-header>
+      <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+      <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
       <tc-status-card></tc-status-card>
     </mat-card-content>

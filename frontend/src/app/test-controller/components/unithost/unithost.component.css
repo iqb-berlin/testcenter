@@ -37,10 +37,6 @@
   max-width: 50%;
 }
 
-#waiting-room mat-card {
-  margin: 4em;
-}
-
 #waiting-room .progress-bar-sub-text {
   margin-top: 0.1em
 }
