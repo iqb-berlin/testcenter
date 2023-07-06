@@ -11,41 +11,50 @@
           Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
         </p>
 
-        <button *ngFor="let accessObject of accessObjects.testGroupMonitor"
-                mat-raised-button color="primary"
-                [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
-                [attr.data-cy]="'GM-' + accessObject.id"
-                (click)="buttonGotoMonitor(accessObject)">
-          <span class="booklet_title">{{accessObject.label}}</span>
-          <span class="booklet_status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
+        <button
+          class="starter"
+          *ngFor="let accessObject of accessObjects.testGroupMonitor"
+          mat-raised-button color="primary"
+          [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
+          [attr.data-cy]="'GM-' + accessObject.id"
+          (click)="buttonGotoMonitor(accessObject)"
+        >
+          <div class="booklet_title">{{accessObject.label}}</div>
+          <div class="booklet_status" *ngIf="(!accessObject.flags.scheduled) && (!accessObject.flags.expired)">
             {{'Gruppen-Monitor Starten' | customtext: 'gm_selection_text' | async}}
-          </span>
-          <span class="booklet_status" *ngIf="(!!accessObject.flags.expired)">
+          </div>
+          <div class="booklet_status" *ngIf="(!!accessObject.flags.expired)">
             {{'Gruppe abgelaufen seit %date.' | customtext: 'gm_selection_text_expired':accessObject.flags.expired.toString(10) | async}}
-          </span>
-          <span class="booklet_status" *ngIf="(!!accessObject.flags.scheduled)">
+          </div>
+          <div class="booklet_status" *ngIf="(!!accessObject.flags.scheduled)">
             {{'Gruppe erst freigegeben ab %date.' | customtext: 'gm_selection_text_scheduled':accessObject.flags.scheduled.toString(10) | async}}
-          </span>
+          </div>
         </button>
 
         <ng-container *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">
           <h4>Aufgaben-Anhänge Verwalten</h4>
-          <button *ngFor="let accessObject of accessObjects.attachmentManager"
-                  mat-raised-button color="primary"
-                  (click)="buttonGotoAttachmentManager(accessObject)">
-            <span class="booklet_title">{{accessObject.label}}</span>
-            <span class="booklet_status">Anhänge Verwalten</span>
+          <button
+            class="starter"
+            *ngFor="let accessObject of accessObjects.attachmentManager"
+            mat-raised-button color="primary"
+            (click)="buttonGotoAttachmentManager(accessObject)"
+          >
+            <div class="booklet_title">{{accessObject.label}}</div>
+            <div class="booklet_status">Anhänge Verwalten</div>
           </button>
         </ng-container>
 
         <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
 
-        <button *ngFor="let b of accessObjects.test"
-                mat-raised-button color="primary"
-                [disabled]="!!b.flags.locked"
-                (click)="startTest(b)">
-          <span class="booklet_title">{{b.label}}</span>
-          <span class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Ansehen')}}</span>
+        <button
+          class="starter"
+          *ngFor="let b of accessObjects.test"
+          mat-raised-button color="primary"
+          [disabled]="!!b.flags.locked"
+          (click)="startTest(b)"
+        >
+          <div class="booklet_title">{{b.label}}</div>
+          <div class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Ansehen')}}</div>
         </button>
       </div>
     </mat-card-content>

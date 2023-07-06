@@ -10,6 +10,7 @@
              text="Für diese Anmeldung wurde kein Test gefunden."></tc-alert>
       <a *ngFor="let b of booklets"
          mat-raised-button color="primary"
+         class="starter"
          [disabled]="!!b.flags.locked"
          [attr.aria-label]="'Starte Testheft ' + b.label"
          [attr.data-cy]="'booklet-' + b.id"

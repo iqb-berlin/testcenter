@@ -1,7 +1,6 @@
 div.booklet_title {
   font-size: 16pt;
-  margin-top: 4px;
-  margin-bottom: 0;
+  text-align: center;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 130%;
@@ -11,10 +10,17 @@ div.booklet_status {
   font-size: 8pt;
   margin-top: 0;
   color: mediumturquoise;
-  height: 24px;
-  margin-bottom: 18px;
+  text-align: center;
 }
 
 .mat-mdc-card {
   width: 400px;
+}
+
+.mat-mdc-raised-button.starter {
+  padding: 1em;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
