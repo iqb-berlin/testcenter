@@ -33,9 +33,10 @@ $my-theme: mat.define-light-theme((
   --mdc-outlined-card-container-color: var(--tc-box-background);
 }
 
+.mat-mdc-dialog-actions,
 .mat-mdc-card-actions {
-  margin: auto 0 0;
-  justify-content: space-between;
+  margin: auto 0 0 !important;
+  justify-content: space-between !important;
 }
 
 .mat-mdc-card-actions .mdc-button {

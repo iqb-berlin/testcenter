@@ -14,7 +14,7 @@
 
   <ng-container *ngIf="{ list: (unitsLoading$ | async) } as loadingUnits">
     <div id="waiting-room" *ngIf="loadingUnits.list.length || currentUnit?.unitDef?.locked || codeRequiringTestlets.length">
-      <mat-card appearance="outlined">
+      <mat-card appearance="raised">
         <mat-card-header>
           <mat-card-title>
             {{(loadingUnits.list.length > 1 || currentUnit.codeRequiringTestlets.length) ? currentUnit?.testletLabel : currentUnit?.unitDef?.title}}

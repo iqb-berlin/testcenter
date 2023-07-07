@@ -6,10 +6,7 @@ import { AccessObject } from '../../app.interfaces';
 import { MainDataService } from '../../shared/shared.module';
 
 @Component({
-  templateUrl: './admin-starter.component.html',
-  styles: [
-    '.status-card {}'
-  ]
+  templateUrl: './admin-starter.component.html'
 })
 
 export class AdminStarterComponent implements OnInit, OnDestroy {

@@ -14,7 +14,8 @@ import browsersJson from '../../../../../definitions/browsers.json';
   styles: [
     '.mat-mdc-form-field {display: block}',
     '.mat-mdc-card {width: 400px;}',
-    '.version-label {position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); padding: 1px 3px}'
+    '.version-label {position: fixed; bottom: 0; right: 0; background: rgba(255,255,255, 0.3); padding: 0.5em 1em}',
+    '.version-label a {color:black; text-decoration: none; font-size: large}'
   ]
 })
 

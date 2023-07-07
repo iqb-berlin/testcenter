@@ -1,22 +1,26 @@
-.check-title {
+div.booklet_title {
   font-size: 16pt;
-  margin-top: 4px;
-  margin-bottom: 0;
+  text-align: center;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 130%;
 }
 
-.check-description {
-  font-size: 9pt;
-  margin-top: 8px;
-  color: lightgray;
-  height: 24px;
-  margin-bottom: 18px;
-  white-space: normal;
-  line-height: 16px;
+div.booklet_status {
+  font-size: 8pt;
+  margin-top: 0;
+  color: mediumturquoise;
+  text-align: center;
 }
 
 .mat-mdc-card {
   width: 400px;
+}
+
+.mat-mdc-raised-button.starter {
+  padding: 1em;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

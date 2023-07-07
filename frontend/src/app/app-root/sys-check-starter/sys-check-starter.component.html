@@ -1,5 +1,5 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'">
-  <mat-card appearance="outlined">
+  <mat-card appearance="raised">
     <mat-card-header>
       <mat-card-title>{{mainDataService.appTitle$ | async}}</mat-card-title>
       <mat-card-subtitle>{{mainDataService.appSubTitle$ | async}}</mat-card-subtitle>
@@ -21,14 +21,10 @@
           Bitte klicken Sie auf den Schalter, um den Check zu starten!
         </p>
       </span>
-      <div *ngIf="checkConfigList?.length > 0" class="flex-column" [style.gap.px]="10">
-        <button *ngFor="let c of checkConfigList"
-                mat-raised-button color="primary"
-                (click)="buttonStartCheck(c)">
-          <div>
-            <p class="check-title">{{c.label}}</p>
-            <p class="check-description">{{c.description}}</p>
-          </div>
+      <div class="flex-column" [style.gap.px]="10">
+        <button *ngFor="let c of checkConfigList" mat-raised-button color="primary" (click)="buttonStartCheck(c)" class="starter">
+          <div class="booklet_title">{{c.label}}</div>
+          <div class="booklet_status">{{c.description}}</div>
         </button>
       </div>
     </mat-card-content>

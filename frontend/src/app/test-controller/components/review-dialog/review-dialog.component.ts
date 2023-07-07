@@ -7,8 +7,6 @@ import { ReviewDialogData } from '../../interfaces/test-controller.interfaces';
   templateUrl: './review-dialog.component.html',
   styles: [
     '.mat-mdc-radio-group {display: flex; flex-direction: column;}',
-    '.mat-mdc-radio-button {margin: 5px;}',
-    'label {display: block; margin: 10px 0 5px 0; font-weight: bold;}',
     'ul {list-style-type: none; padding: 0;}'
   ]
 })

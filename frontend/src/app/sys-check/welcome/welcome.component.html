@@ -1,6 +1,6 @@
 <div class="sys-check-body" *ngIf="ds.loadConfigComplete">
-  <div class="flex-row-wrap" [style.justify-content]="'center'">
-    <mat-card appearance="outlined" [style.flex-basis.px]="400">
+  <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
+    <mat-card appearance="raised" [style.flex-basis.px]="400">
       <mat-card-header>
         <mat-card-title>{{ds.checkConfig?.label}}</mat-card-title>
       </mat-card-header>
@@ -15,7 +15,7 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card appearance="outlined" [style.flex-basis.px]="400">
+    <mat-card appearance="raised" [style.flex-basis.px]="400">
       <mat-card-content>
         <table>
           <tbody>

@@ -70,5 +70,9 @@
       <a [routerLink]="['/legal-notice']" mat-raised-button color="primary">Impressum/Datenschutz</a>
     </mat-card-actions>
   </mat-card>
-  <div class="version-label">IQB-Testcenter Version {{mainDataService.appConfig?.version}}</div>
+  <div class="version-label">
+    <a href="{{'https://github.com/iqb-berlin/testcenter/releases/tag/' + mainDataService.appConfig?.version}}" target="_blank">
+      IQB-Testcenter Version {{mainDataService.appConfig?.version}}
+    </a>
+  </div>
 </div>

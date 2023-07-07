@@ -104,7 +104,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
         lineWidth: 5,
         xProject: x => ((x === 0) ? 0 : Math.sign(x) * Math.log2(Math.abs(x))),
         yProject: y => ((y === 0) ? 0 : Math.sign(y) * Math.log(Math.abs(y))),
-        xAxisLabels: x => ((testSizes.indexOf(x) > -1) ? NetworkCheckComponent.humanReadableBytes(x, false, true) : ''),
+        xAxisLabels: x => ((testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : ''),
         yAxisLabels: (y, i) => ((i < 10) ? NetworkCheckComponent.humanReadableMilliseconds(y) : ' ')
       };
 
@@ -184,7 +184,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
 
   private benchmark(isDownloadPart: boolean, requestSize: number): Promise<NetworkRequestTestResult> {
     const testRound = (isDownloadPart) ? (this.networkStatsDownload.length + 1) : (this.networkStatsUpload.length + 1);
-    const testPackage = NetworkCheckComponent.humanReadableBytes(requestSize);
+    const testPackage = this.humanReadableBytes(requestSize);
     if (isDownloadPart) {
       this.ds.networkCheckStatus.message =
         `Downloadgeschwindigkeit Testrunde ${testRound} - Testgröße: ${testPackage} bytes`;
@@ -240,14 +240,14 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
       type: 'network',
       label: 'Downloadgeschwindigkeit',
       warning: false,
-      value: `${NetworkCheckComponent.humanReadableBytes(downAvg, true)}/s`
+      value: `${this.humanReadableBytes(downAvg, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-download-needed',
       type: 'network',
       label: 'Downloadgeschwindigkeit benötigt',
       warning: false,
-      value: `${NetworkCheckComponent.humanReadableBytes(this.ds.checkConfig.downloadSpeed.min, true)}/s`
+      value: `${this.humanReadableBytes(this.ds.checkConfig.downloadSpeed.min, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-download-evaluation',
@@ -261,14 +261,14 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
       type: 'network',
       label: 'Uploadgeschwindigkeit',
       warning: false,
-      value: `${NetworkCheckComponent.humanReadableBytes(upAvg, true)}/s`
+      value: `${this.humanReadableBytes(upAvg, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-upload-needed',
       type: 'network',
       label: 'Uploadgeschwindigkeit benötigt',
       warning: false,
-      value: `${NetworkCheckComponent.humanReadableBytes(this.ds.checkConfig.uploadSpeed.min, true)}/s`
+      value: `${this.humanReadableBytes(this.ds.checkConfig.uploadSpeed.min, true)}/s`
     });
     this.ds.networkReport.push({
       id: 'nw-upload-evaluation',
@@ -375,7 +375,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     this.networkRating = networkRating;
   }
 
-  static humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
+  // eslint-disable-next-line class-methods-use-this
+  humanReadableBytes(bytes: number, useBits: boolean = false, base1024: boolean = false): string {
     const suffix = {
       B: {
         1000: ['B', 'kB', 'MB', 'GB', 'TB'],
@@ -395,6 +396,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     return !bytes && '0' || (bytes / Math.pow(base, i)).toFixed(2) + ' ' + suffix[!useBits ? 'B' : 'bit'][base][i];
   }
 
+  // eslint-disable-next-line class-methods-use-this
   ngOnDestroy(): void {
     // TODO: destroy network testing promises
   }
