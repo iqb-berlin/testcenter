@@ -1,12 +1,7 @@
-<h1 mat-dialog-title>
-  <mat-icon *ngIf="msgdata.type == 0">error</mat-icon>
-  <mat-icon *ngIf="msgdata.type == 1">warning</mat-icon>
-  <mat-icon *ngIf="msgdata.type == 2">info</mat-icon>
-  {{ msgdata.title }}
-</h1>
+<tc-alert mat-dialog-title [text]="msgdata.title" [level]="msgdata.type"></tc-alert>
 <mat-dialog-content>
     {{ msgdata.content }}
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-raised-button mat-dialog-close>{{ msgdata.closebuttonlabel }}</button>
+  <button mat-raised-button color="primary" mat-dialog-close>{{ msgdata.closebuttonlabel }}</button>
 </mat-dialog-actions>

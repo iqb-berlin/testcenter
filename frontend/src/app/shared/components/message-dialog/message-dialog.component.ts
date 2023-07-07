@@ -1,10 +1,12 @@
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
-import { MessageDialogData, MessageType } from '../../interfaces/message-dialog.interfaces';
+import { MessageDialogData } from '../../interfaces/message-dialog.interfaces';
 
 @Component({
   templateUrl: './message-dialog.component.html',
-  styleUrls: ['./message-dialog.component.css']
+  styles: [
+    '.mdc-dialog__title::before { height: auto; }'
+  ]
 })
 export class MessageDialogComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) public msgdata: MessageDialogData) { }
@@ -12,11 +14,11 @@ export class MessageDialogComponent implements OnInit {
   ngOnInit(): void {
     if ((typeof this.msgdata.title === 'undefined') || (this.msgdata.title.length === 0)) {
       switch (this.msgdata.type) {
-        case MessageType.error: {
+        case 'error': {
           this.msgdata.title = 'Achtung: Fehler';
           break;
         }
-        case MessageType.warning: {
+        case 'warning': {
           this.msgdata.title = 'Achtung: Warnung';
           break;
         }

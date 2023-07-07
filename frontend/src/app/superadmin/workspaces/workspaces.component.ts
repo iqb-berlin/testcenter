@@ -7,7 +7,7 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData,
-  MessageDialogComponent, MessageDialogData, MessageType
+  MessageDialogComponent, MessageDialogData
 } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { NewworkspaceComponent } from './newworkspace/newworkspace.component';
@@ -103,7 +103,7 @@ export class WorkspacesComponent implements OnInit {
         data: <MessageDialogData>{
           title: 'Arbeitsbereich ändern',
           content: 'Bitte markieren Sie erst einen Arbeitsbereich!',
-          type: MessageType.error
+          type: 'error'
         }
       });
     } else {
@@ -145,7 +145,7 @@ export class WorkspacesComponent implements OnInit {
         data: <MessageDialogData>{
           title: 'Löschen von Arbeitsbereichen',
           content: 'Bitte markieren Sie erst Arbeitsbereich/e!',
-          type: MessageType.error
+          type: 'error'
         }
       });
     } else {

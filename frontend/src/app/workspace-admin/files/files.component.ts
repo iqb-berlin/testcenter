@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType, MainDataService
+  MessageDialogData, MainDataService
 } from '../../shared/shared.module';
 import { WorkspaceDataService } from '../workspacedata.service';
 import {
@@ -154,7 +154,7 @@ export class FilesComponent implements OnInit, OnDestroy {
         data: <MessageDialogData>{
           title: 'Löschen von Dateien',
           content: 'Bitte markieren Sie erst Dateien!',
-          type: MessageType.error
+          type: 'error'
         }
       });
     }

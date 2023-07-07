@@ -7,7 +7,7 @@ import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
-  MessageDialogData, MessageType
+  MessageDialogData
 } from '../../shared/shared.module';
 import { IdRoleData, UserData } from '../superadmin.interfaces';
 import {
@@ -91,7 +91,7 @@ export class UsersComponent implements OnInit {
         data: <MessageDialogData>{
           title: 'Superadmin-Status ändern',
           content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: MessageType.error
+          type: 'error'
         }
       });
       return;
@@ -130,7 +130,7 @@ export class UsersComponent implements OnInit {
         data: <MessageDialogData>{
           title: 'Kennwort ändern',
           content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: MessageType.error
+          type: 'error'
         }
       });
     } else {
@@ -170,7 +170,7 @@ export class UsersComponent implements OnInit {
         data: <MessageDialogData>{
           title: 'Löschen von Administrator:innen',
           content: 'Bitte markieren Sie erst eine Administrator:in!',
-          type: MessageType.error
+          type: 'error'
         }
       });
     } else {

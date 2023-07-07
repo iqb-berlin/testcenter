@@ -1,11 +1,5 @@
-export enum MessageType {
-  error,
-  warning,
-  info
-}
-
 export interface MessageDialogData {
-  type: MessageType;
+  type: 'error' | 'warning' | 'info';
   title: string;
   content: string;
   closebuttonlabel: string;
