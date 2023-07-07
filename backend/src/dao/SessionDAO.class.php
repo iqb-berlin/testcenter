@@ -534,7 +534,7 @@ class SessionDAO extends DAO {
     $tests = $this->_(
       $sql,
       [
-        $personSession->getLoginSession()->getId(),
+        $personSession->getPerson()->getId(),
         $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
         ...$bookletIds
       ],
