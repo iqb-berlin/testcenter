@@ -4,10 +4,12 @@
       <mat-card-title>Bitte wählen</mat-card-title>
     </mat-card-header>
     <mat-card-content class="flex-column" [style.gap.px]="10">
-      <tc-alert *ngIf="!booklets.length"
-             level="info"
-             customtext="login_noBookletsAvailable"
-             text="Für diese Anmeldung wurde kein Test gefunden."></tc-alert>
+      <tc-alert
+        *ngIf="!booklets.length"
+        level="info"
+        customtext="login_noBookletsAvailable"
+        text="Für diese Anmeldung wurde kein Test gefunden."
+      ></tc-alert>
       <a *ngFor="let b of booklets"
          mat-raised-button color="primary"
          class="starter"
