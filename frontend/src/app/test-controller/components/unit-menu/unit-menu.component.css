@@ -41,6 +41,6 @@ a:last-of-type {
 }
 
 .current {
-  background: var(--accent);
+  background: var(--accent) !important;
 }
 

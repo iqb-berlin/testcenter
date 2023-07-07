@@ -2,10 +2,7 @@
   <h3>{{ 'Aufgaben' | customtext:'booklet_tasklisttitle' | async }}</h3>
   <ng-container *ngFor="let blockLabelOrUnit of menu; let i = index">
 
-    <div
-      *ngIf="blockLabelOrUnit.sequenceId; else testletLabel"
-      style="width: 100%"
-    >
+    <ng-container *ngIf="blockLabelOrUnit.sequenceId; else testletLabel">
       <a mat-raised-button
         [class]="{'current': blockLabelOrUnit.isCurrent}"
         (click)="tcs.setUnitNavigationRequest(blockLabelOrUnit.sequenceId.toString())"
@@ -16,7 +13,7 @@
         </mat-icon>
         {{blockLabelOrUnit.longLabel}}
       </a>
-    </div>
+    </ng-container>
     <ng-template #testletLabel>
       <h4 *ngIf="blockLabelOrUnit || i > 0" class='testlet-label'>
         {{blockLabelOrUnit}}
