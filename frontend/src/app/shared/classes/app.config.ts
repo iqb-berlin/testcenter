@@ -1,7 +1,7 @@
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CustomtextService } from '../services/customtext/customtext.service';
 // eslint-disable-next-line import/no-relative-packages
-import customTextsDefault from '../../../../../definitions/custom-texts.json';
+import customTextsDefaultJSON from '../../../../../definitions/custom-texts.json';
 import { KeyValuePairs } from '../../app.interfaces';
 import {
   AppSettings,
@@ -12,27 +12,34 @@ import {
   SysConfig
 } from '../interfaces/app-config.interfaces';
 
+const customTextsDefault = customTextsDefaultJSON as {
+  [k: string]: {
+    'label': string,
+    'defaultvalue': string
+  }
+};
+
 export class AppConfig {
   customTexts: KeyValuePairs = {};
   version = '';
-  veronaPlayerApiVersionMin: number;
-  veronaPlayerApiVersionMax: number;
+  veronaPlayerApiVersionMin: number = 0;
+  veronaPlayerApiVersionMax: number = 0;
   mainLogo = DEFAULT_LOGO;
   broadcastingService: BroadCastingServiceStatus = 'off';
   appTitle = 'IQB-Testcenter';
-  backgroundBody: string;
-  backgroundBox: string;
+  backgroundBody: string = '';
+  backgroundBox: string = '';
   introHtml = 'Einführungstext nicht definiert';
-  trustedIntroHtml: SafeUrl = null;
+  trustedIntroHtml: SafeUrl | null = null;
   legalNoticeHtml = 'Impressum/Datenschutz nicht definiert';
-  trustedLegalNoticeHtml: SafeUrl = null;
+  trustedLegalNoticeHtml: SafeUrl | null = null;
   globalWarningText = '';
   globalWarningExpiredDay = '';
   globalWarningExpiredHour = '';
-  sanitizer: DomSanitizer = null;
-  cts: CustomtextService = null;
-  bugReportAuth: string;
-  bugReportTarget: string;
+  sanitizer: DomSanitizer | null = null;
+  cts: CustomtextService | null = null;
+  bugReportAuth: string = '';
+  bugReportTarget: string = '';
 
   get warningMessage(): string {
     if (this.globalWarningExpiredDay) {
@@ -59,15 +66,15 @@ export class AppConfig {
       this.veronaPlayerApiVersionMin = sysConfig.veronaPlayerApiVersionMin;
       this.veronaPlayerApiVersionMax = sysConfig.veronaPlayerApiVersionMax;
     } else {
-      this.setCustomTexts(null);
-      this.setAppConfig(null);
+      this.setCustomTexts({});
+      this.setAppConfig({});
     }
 
     this.applyBackgroundColors();
   }
 
   setCustomTexts(customTexts: KeyValuePairs): void {
-    const ctSettings = {};
+    const ctSettings: { [k: string]: string } = {};
     Object.keys(customTextsDefault).forEach(k => {
       ctSettings[k] = customTextsDefault[k].defaultvalue;
     });
@@ -76,19 +83,14 @@ export class AppConfig {
         ctSettings[k] = customTexts[k];
       });
     }
-    this.cts.addCustomTexts(ctSettings);
+    this.cts?.addCustomTexts(ctSettings);
   }
 
   setAppConfig(appConfig: AppSettings): void {
-    this.appTitle = this.cts.getCustomText('app_title');
-    if (!this.appTitle) this.appTitle = 'IQB-Testcenter';
-    this.introHtml = this.cts.getCustomText('app_intro1');
-    if (this.introHtml) {
-      this.legalNoticeHtml = this.introHtml;
-    } else {
-      this.introHtml = 'Einführungstext nicht definiert';
-      this.legalNoticeHtml = 'Impressum/Datenschutz nicht definiert';
-    }
+    this.appTitle = this.cts?.getCustomText('app_title') ?? 'IQB-Testcenter';
+    this.introHtml = this.cts?.getCustomText('app_intro1') ?? 'Einführungstext nicht definiert';
+    this.legalNoticeHtml = this.cts?.getCustomText('app_intro1') ?? 'Impressum/Datenschutz nicht definiert';
+    // TODO does this makes sense
     this.mainLogo = DEFAULT_LOGO;
     this.backgroundBody = DEFAULT_BACKGROUND_BODY;
     this.backgroundBox = DEFAULT_BACKGROUND_BOX;
@@ -114,8 +116,8 @@ export class AppConfig {
       if (appConfig.bugReportAuth) this.bugReportAuth = appConfig.bugReportAuth;
       if (appConfig.bugReportTarget) this.bugReportTarget = appConfig.bugReportTarget;
     }
-    this.trustedIntroHtml = this.sanitizer.bypassSecurityTrustHtml(this.introHtml);
-    this.trustedLegalNoticeHtml = this.sanitizer.bypassSecurityTrustHtml(this.legalNoticeHtml);
+    this.trustedIntroHtml = this.sanitizer?.bypassSecurityTrustHtml(this.introHtml) ?? '';
+    this.trustedLegalNoticeHtml = this.sanitizer?.bypassSecurityTrustHtml(this.legalNoticeHtml) ?? '';
   }
 
   applyBackgroundColors(): void {

@@ -3,8 +3,8 @@ import { BookletUtil } from './booklet.util';
 
 describe('BookletUtil', () => {
   it('getFirstUnit() should get first unit if a testlet, regardless of nested sub-testlets', () => {
-    expect(BookletUtil.getFirstUnit(unitTestExampleBooklets.example_booklet_1.units).id).toEqual('unit-1');
-    expect(BookletUtil.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units).id).toEqual('unit-1');
+    expect(BookletUtil.getFirstUnit(unitTestExampleBooklets.example_booklet_1.units)?.id).toEqual('unit-1');
+    expect(BookletUtil.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units)?.id).toEqual('unit-1');
     expect(BookletUtil.getFirstUnit(unitTestExampleBooklets.example_booklet_2.units.children[2])).toBeNull();
   });
 

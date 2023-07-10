@@ -12,7 +12,7 @@ export class AppErrorHandler implements ErrorHandler {
   handleError(error: Error | DOMException | AppError | WrappedError) {
     this.zone.run(() => {
       // unwrap error, if it comes from an "Uncaught (in promise)"-error
-      if ('promise' in error && 'rejection' in error) {
+      if ('promise' in error && 'rejection' in error && error.rejection) {
         // eslint-disable-next-line no-param-reassign
         error = error.rejection;
       }

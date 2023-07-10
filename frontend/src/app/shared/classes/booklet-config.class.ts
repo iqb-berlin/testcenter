@@ -4,8 +4,8 @@ export class BookletConfig extends BookletConfigData {
   setFromKeyValuePairs(config: { [key: string]: string }): void {
     Object.keys(config)
       .forEach(key => {
-        if (this[key]) {
-          this[key] = config[key];
+        if (key in this) {
+          (this as any)[key] = config[key];
         }
       });
   }

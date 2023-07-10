@@ -36,7 +36,7 @@ interface FileStats {
   styleUrls: ['./files.component.css']
 })
 export class FilesComponent implements OnInit, OnDestroy {
-  files: { [type in IQBFileType]?: MatTableDataSource<IQBFile> } | null = null;
+  files: { [type in IQBFileType]: MatTableDataSource<IQBFile> };
   fileTypes = IQBFileTypes;
   displayedColumns = ['checked', 'name', 'size', 'modificationTime'];
   fileNameAlias = 'fileforvo';
@@ -63,9 +63,9 @@ export class FilesComponent implements OnInit, OnDestroy {
     testtakers: 0
   };
 
-  private wsIdSubscription: Subscription;
+  private wsIdSubscription: Subscription | null = null;
 
-  @ViewChild('fileUploadQueue', { static: true }) uploadQueue: IqbFilesUploadQueueComponent;
+  @ViewChild('fileUploadQueue', { static: true }) uploadQueue: IqbFilesUploadQueueComponent = {} as IqbFilesUploadQueueComponent;
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,
@@ -75,7 +75,12 @@ export class FilesComponent implements OnInit, OnDestroy {
     public messageDialog: MatDialog,
     private mds: MainDataService,
     public snackBar: MatSnackBar
-  ) { }
+  ) {
+    this.files = IQBFileTypes.reduce((acc, str) => {
+      acc[str] = new MatTableDataSource<IQBFile>();
+      return acc;
+    }, <{ [type in IQBFileType]: MatTableDataSource<IQBFile> }>{});
+  }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -105,8 +110,8 @@ export class FilesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const filesToDelete = [];
-    Object.keys(this.files).forEach(type => {
+    const filesToDelete: string[] = [];
+    IQBFileTypes.forEach(type => {
       this.files[type].data.forEach(file => {
         if (file.isChecked) {
           filesToDelete.push(`${file.type}/${file.name}`);
@@ -162,13 +167,15 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   updateFileList(empty = false): void {
     if (empty) {
-      this.files = null;
+      IQBFileTypes
+        .forEach(type => {
+          this.files[type] = new MatTableDataSource();
+        });
     } else {
       this.bs.getFiles(this.wds.workspaceId)
         .pipe(map(fileList => this.addFrontendChecksToFiles(fileList)))
         .subscribe(fileList => {
-          this.files = {};
-          Object.keys(fileList)
+          IQBFileTypes
             .forEach(type => {
               this.files[type] = new MatTableDataSource(fileList[type]);
             });
@@ -184,10 +191,10 @@ export class FilesComponent implements OnInit, OnDestroy {
         count: 0,
         invalid: 0
       },
-      invalid: {},
+      invalid: <{ [key in IQBFileType]: number }>{},
       testtakers: 0
     };
-    Object.keys(fileList)
+    IQBFileTypes
       .forEach(type => {
         fileList[type].forEach(file => {
           if (typeof stats.invalid[type] === 'undefined') {
@@ -195,7 +202,7 @@ export class FilesComponent implements OnInit, OnDestroy {
           }
           stats.total.count += 1;
           if (file.report.error && file.report.error.length) {
-            stats.invalid[type] += 1;
+            stats.invalid[type]! += 1;
             stats.total.invalid += 1;
           }
           stats.testtakers += (typeof file.info.testtakers === 'number') ? file.info.testtakers : 0;
@@ -205,8 +212,7 @@ export class FilesComponent implements OnInit, OnDestroy {
   }
 
   private addFrontendChecksToFiles(fileList: GetFileResponseData): GetFileResponseData {
-    Object.keys(fileList).forEach(type => {
-      // eslint-disable-next-line no-param-reassign
+    IQBFileTypes.forEach(type => {
       fileList[type] = fileList[type].map(files => this.addFrontendChecksToFile(files));
     });
     return fileList;
@@ -214,7 +220,7 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   private addFrontendChecksToFile(file: IQBFile): IQBFile {
     if (file.info.veronaVersion) {
-      const fileMayor = parseInt(file.info.veronaVersion.toString().split('.').shift(), 10);
+      const fileMayor = parseInt(file.info.veronaVersion.toString().split('.').shift() ?? '', 10);
       if (typeof file.report.error === 'undefined') {
         // eslint-disable-next-line no-param-reassign
         file.report.error = [];
@@ -242,15 +248,19 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   setTableSorting(sort: Sort): void {
     this.lastSort = sort;
-    function compare(a: number | string, b: number | string, isAsc: boolean) {
+    function compare(a: number | string | boolean, b: number | string | boolean, isAsc: boolean) {
       if ((typeof a === 'string') && (typeof b === 'string')) {
         return a.localeCompare(b) * (isAsc ? 1 : -1);
       }
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
-    Object.keys(this.files).forEach(type => {
-      this.files[type].data = this.files[type].data
-        .sort((a, b) => compare(a[sort.active], b[sort.active], (sort.direction === 'asc')));
-    });
+    IQBFileTypes
+      .forEach(type => {
+        this.files[type].data = this.files[type].data
+          .sort((a, b) => {
+            type IQBFileProperty = 'name' | 'size' | 'modificationTime' | 'type' | 'isChecked';
+            return compare(a[sort.active as IQBFileProperty], b[sort.active as IQBFileProperty], (sort.direction === 'asc'));
+          });
+      });
   }
 }

@@ -19,11 +19,11 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
   ]
 })
 export class AttachmentOverviewComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
+  @ViewChild(MatSort) sort: MatSort = {} as MatSort;
+  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav = {} as MatSidenav;
 
   selectedAttachmentIndex: number = -1;
-  selectedAttachmentImage: ArrayBuffer | string = '';
+  selectedAttachmentImage: ArrayBuffer | string | null = '';
   selectedAttachmentFileIndex = -1;
 
   displayedColumns: string[] = [
@@ -33,7 +33,7 @@ export class AttachmentOverviewComponent implements OnInit {
   attachments: MatTableDataSource<AttachmentData>;
   attachmentTypes: AttachmentType[] = [];
 
-  mobileView: boolean;
+  mobileView: boolean = false;
 
   constructor(
     private bs: BackendService,
@@ -41,11 +41,10 @@ export class AttachmentOverviewComponent implements OnInit {
     private breakpointObserver: BreakpointObserver,
     private customTextService: CustomtextService
   ) {
-
+    this.attachments = new MatTableDataSource<AttachmentData>([]);
   }
 
   ngOnInit(): void {
-    this.attachments = new MatTableDataSource<AttachmentData>([]);
     this.loadAttachmentList();
     this.breakpointObserver
       .observe([
@@ -131,7 +130,7 @@ export class AttachmentOverviewComponent implements OnInit {
       .subscribe(ok => {
         if (ok) {
           this.snackBar.open('Anhang gelöscht!', 'Ok.', { duration: 3000 });
-          this.selectedAttachmentIndex = null;
+          this.selectedAttachmentIndex = -1;
           this.selectedAttachmentImage = '';
           this.loadAttachmentList();
         } else {

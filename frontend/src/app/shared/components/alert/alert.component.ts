@@ -15,10 +15,10 @@ import { CustomtextService } from '../../services/customtext/customtext.service'
   encapsulation: ViewEncapsulation.None
 })
 export class AlertComponent implements OnChanges {
-  @Input() text: string;
-  @Input() customtext: string;
-  @Input() replacements: string[];
-  @Input() level: 'error' | 'warning' | 'info' | 'success';
+  @Input() text: string = '';
+  @Input() customtext: string = '';
+  @Input() replacements: string[] = [];
+  @Input() level: 'error' | 'warning' | 'info' | 'success' = 'info';
 
   icons = {
     error: 'error',
@@ -35,7 +35,7 @@ export class AlertComponent implements OnChanges {
   }
 
   private _displayText$: Subject<string>;
-  private customTextSubscription: Subscription;
+  private customTextSubscription: Subscription | null = null;
 
   constructor(
     private cts: CustomtextService

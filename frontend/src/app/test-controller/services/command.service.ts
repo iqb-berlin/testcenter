@@ -17,7 +17,7 @@ import {
 } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import {
-  Command, commandKeywords, isKnownCommand, TestControllerState
+  Command, CommandKeyword, commandKeywords, isKnownCommand, TestControllerState
 } from '../interfaces/test-controller.interfaces';
 import { TestControllerService } from './test-controller.service';
 import { WebsocketBackendService } from '../../shared/shared.module';
@@ -36,8 +36,8 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   protected wsChannelName = 'commands';
 
   private commandReceived$: Subject<Command> = new Subject<Command>();
-  private commandSubscription: Subscription;
-  private testStartedSubscription: Subscription;
+  private commandSubscription: Subscription | null = null;
+  private testStartedSubscription: Subscription | null = null;
   private executedCommandIds: number[] = [];
 
   constructor(
@@ -101,7 +101,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
 
   private subscribeTestStarted() {
     if (typeof this.testStartedSubscription !== 'undefined') {
-      this.testStartedSubscription.unsubscribe();
+      this.testStartedSubscription?.unsubscribe();
     }
 
     this.testStartedSubscription = this.tcs.testStatus$
@@ -124,12 +124,12 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   }
 
   private setUpGlobalCommandsForDebug() {
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    window['tc'] = {};
-    commandKeywords.forEach((keyword: string) => {
-      // eslint-disable-next-line @typescript-eslint/dot-notation
-      window['tc'][keyword] = args => { this.commandFromTerminal(keyword, args); };
-    });
+    (window as any).tc =
+      commandKeywords
+        .reduce((acc, keyword) => {
+          acc[keyword] = args => { this.commandFromTerminal(keyword, args); };
+          return acc;
+        }, <{ [key in CommandKeyword]: (arr: string[]) => void; } & object>{});
   }
 
   private commandFromTerminal(keyword: string, args: string[]): void {

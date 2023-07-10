@@ -104,7 +104,7 @@ export function isUnit(testletOrUnit: Testlet | Unit): testletOrUnit is Unit {
 }
 
 export function isTestlet(testletOrUnit: Testlet | Unit): testletOrUnit is Testlet {
-  return ('children' in testletOrUnit);
+  return !isUnit(testletOrUnit);
 }
 
 export interface UnitContext {

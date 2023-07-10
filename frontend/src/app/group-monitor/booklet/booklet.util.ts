@@ -1,5 +1,5 @@
 import {
-  Booklet, isUnit, Testlet, Unit
+  Booklet, isTestlet, isUnit, Testlet, Unit
 } from '../group-monitor.interfaces';
 
 export class BookletUtil {
@@ -26,7 +26,7 @@ export class BookletUtil {
 
   static getBlockById(blockId: string, booklet: Booklet): Testlet {
     return <Testlet>booklet.units.children
-      .filter(testletOrUnit => !isUnit(testletOrUnit))
-      .reduce((found: Testlet, block: Testlet) => ((block.blockId === blockId) ? block : found), null);
+      .filter(isTestlet)
+      .reduce((found: Testlet, block: Testlet) => ((block.blockId === blockId) ? block : found));
   }
 }

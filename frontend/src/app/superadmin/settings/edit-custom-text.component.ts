@@ -36,8 +36,8 @@ export class EditCustomTextComponent implements OnInit, OnDestroy {
   @Output() valueChange = new EventEmitter<EditCustomTextComponent>();
   inputControl = new FormControl();
   valueChanged = false;
-  value: string;
-  valueChangeSubscription: Subscription;
+  value: string = '';
+  valueChangeSubscription: Subscription | null = null;
 
   ngOnInit(): void {
     this.inputControl.setValue(this.ctInitialValue ? this.ctInitialValue : this.ctDefaultValue);
@@ -59,7 +59,7 @@ export class EditCustomTextComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.valueChangeSubscription.unsubscribe();
+    this.valueChangeSubscription?.unsubscribe();
     this.parentForm.removeControl(this.ctKey);
   }
 }

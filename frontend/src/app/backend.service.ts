@@ -31,7 +31,7 @@ export class BackendService {
       .put<number>(`${this.serverUrl}test`, { bookletName });
   }
 
-  getSysConfig(): Observable<SysConfig | null> {
+  getSysConfig(): Observable<SysConfig> {
     return this.http
       .get<SysConfig>(`${this.serverUrl}system/config`)
       .pipe(

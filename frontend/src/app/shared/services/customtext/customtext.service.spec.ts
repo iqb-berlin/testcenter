@@ -11,10 +11,10 @@ describe('CustomtextService', () => {
 
   it('returns on subscribeCustomText for each key an observable, wich gets updated on every key-update', async () => {
     const receivedCustomTexts = {
-      key: [],
-      later_subscribed_key: [],
-      unknown_key: [],
-      later_set_key: []
+      key: <(string | null)[]>[],
+      later_subscribed_key: <(string | null)[]>[],
+      unknown_key: <(string | null)[]>[],
+      later_set_key: <(string | null)[]>[]
     };
     customtextService.getCustomText$('key')
       .subscribe(customText => receivedCustomTexts.key.push(customText));
@@ -28,14 +28,16 @@ describe('CustomtextService', () => {
       later_subscribed_key: 'value-2-init'
     });
 
-    await new Promise<void>(resolve => setTimeout(() => {
-      customtextService.addCustomTexts({
-        key: 'value-1-1st-update',
-        later_subscribed_key: 'value-2-1st-update',
-        later_set_key: 'value-3-init'
-      });
-      resolve();
-    }, 1));
+    await new Promise<void>(resolve => {
+      setTimeout(() => {
+        customtextService.addCustomTexts({
+          key: 'value-1-1st-update',
+          later_subscribed_key: 'value-2-1st-update',
+          later_set_key: 'value-3-init'
+        });
+        resolve();
+      }, 1);
+    });
 
     customtextService.getCustomText$('later_subscribed_key')
       .subscribe(customText => receivedCustomTexts.later_subscribed_key.push(customText));
@@ -47,10 +49,10 @@ describe('CustomtextService', () => {
     });
 
     const expectedCustomTexts = {
-      key: [null, 'value-1-init', 'value-1-1st-update', 'value-1-2nd-update'],
-      later_subscribed_key: ['value-2-1st-update', 'value-2-2nd-update'],
-      unknown_key: [null],
-      later_set_key: [null, 'value-3-init', 'value-3-1st-update']
+      key: <(string | null)[]>[null, 'value-1-init', 'value-1-1st-update', 'value-1-2nd-update'],
+      later_subscribed_key: <(string | null)[]>['value-2-1st-update', 'value-2-2nd-update'],
+      unknown_key: <(string | null)[]>[null],
+      later_set_key: <(string | null)[]>[null, 'value-3-init', 'value-3-1st-update']
     };
 
     expect(expectedCustomTexts).toEqual(receivedCustomTexts);

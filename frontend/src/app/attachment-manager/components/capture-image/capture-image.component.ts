@@ -17,9 +17,9 @@ import { PageDesign } from '../../interfaces/page.interfaces';
   ]
 })
 export class CaptureImageComponent implements OnInit, OnDestroy {
-  @ViewChild('video') video: ElementRef;
-  @ViewChild('canvas') canvas: ElementRef;
-  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
+  @ViewChild('video') video: ElementRef = {} as ElementRef;
+  @ViewChild('canvas') canvas: ElementRef = {} as ElementRef;
+  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav = {} as MatSidenav;
 
   /**
    * This will *never* be customizable per variable because we don't know for wich one
@@ -36,30 +36,30 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     }
   };
 
-  videoSize: null | {
+  videoSize = {
     video: {
-      height: number,
-      width: number
+      height: 0,
+      width: 0
     },
     page: {
-      height: number,
-      width: number
+      height: 0,
+      width: 0
     }
   };
 
   private capturedImage: string = '';
-  private qrScanner: QrScanner;
+  private qrScanner: QrScanner | null = null;
 
   state: 'capture' | 'confirm' | 'error' | 'wait' = 'capture';
 
-  error: string;
+  error: string | null = null;
 
   cameras: { [id: string]: string } = {};
   hasFlash: boolean = false;
-  attachmentLabel: string = '';
-  attachmentId: string;
-  mobileView: boolean;
-  selectedCameraId: string;
+  attachmentLabel: string | null = null;
+  attachmentId: string | null = null;
+  mobileView: boolean = false;
+  selectedCameraId: string = '';
 
   constructor(
     private bs: BackendService,
@@ -93,8 +93,8 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.qrScanner.stop();
-    this.qrScanner.destroy();
+    this.qrScanner?.stop();
+    this.qrScanner?.destroy();
   }
 
   private runCamera(): void {
@@ -158,7 +158,16 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
     const videoScaledSize = this.video.nativeElement.getClientRects()[0];
 
     if (!videoScaledSize) { // when video-elem is not loaded yet. this will be retried anyway
-      this.videoSize = null;
+      this.videoSize = {
+        video: {
+          height: 0,
+          width: 0
+        },
+        page: {
+          height: 0,
+          width: 0
+        }
+      };
       return;
     }
 
@@ -182,14 +191,14 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   updateFlashAvailability(): void {
-    this.qrScanner.hasFlash().then(hasFlash => {
+    this.qrScanner?.hasFlash().then(hasFlash => {
       this.hasFlash = hasFlash;
     });
   }
 
   capture(code: string): void {
     this.state = 'wait';
-    this.qrScanner.stop();
+    this.qrScanner?.stop();
     this.drawImageToCanvas();
     this.capturedImage = this.canvas.nativeElement.toDataURL('image/png');
 
@@ -236,7 +245,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   selectCamera(camId: string): void {
-    this.qrScanner.setCamera(camId).then(
+    this.qrScanner?.setCamera(camId).then(
       () => {
         this.updateFlashAvailability();
         this.calculateSizes();
@@ -245,8 +254,11 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   reloadCamera(): void {
-    // eslint-disable-next-line
-    this.qrScanner['_onLoadedMetaData']();
+    // eslint-disable-next-line @typescript-eslint/dot-notation
+    const reloadCamFn = this.qrScanner ? this.qrScanner['_onLoadedMetaData'] : null;
+    if (reloadCamFn) {
+      reloadCamFn();
+    }
   }
 
   private static isMirrored(videoStream: MediaStream | null): boolean {
@@ -271,6 +283,9 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
   }
 
   uploadImage(): void {
+    if (!this.attachmentId) {
+      return;
+    }
     this.bs.postAttachment(this.attachmentId, CaptureImageComponent.dataURItoFile(this.capturedImage))
       .subscribe(ok => {
         if (!ok) {
@@ -313,9 +328,9 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
 
   toggleFlash(checked: boolean) {
     if (checked) {
-      this.qrScanner.turnFlashOn();
+      this.qrScanner?.turnFlashOn();
     } else {
-      this.qrScanner.turnFlashOff();
+      this.qrScanner?.turnFlashOff();
     }
   }
 }

@@ -17,8 +17,8 @@ export class BackendService {
     return this.http
       .delete<void>(`${this.serverUrl}session`)
       .pipe(
-        timeoutWith<void, void>(1000, of(<void>null)),
-        catchError(() => of(<void>null))
+        timeoutWith<void, void>(1000, of<void>()),
+        catchError(() => of<void>())
       );
   }
 

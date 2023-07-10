@@ -34,7 +34,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     );
   }
 
-  private static handleHttpError(httpError: HttpErrorResponse): AppError {
+  private static handleHttpError(httpError: HttpErrorResponse): AppError | null {
     if (httpError.error instanceof ProgressEvent) {
       return new AppError({
         code: httpError.status,

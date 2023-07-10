@@ -31,13 +31,13 @@ export class RouteDispatcherActivateGuard {
           if (
             authData.claims.test.length === 1 &&
             Object.keys(authData.claims).length === 1 &&
-            this.router.getCurrentNavigation().previousNavigation === null
+            this.router.getCurrentNavigation()?.previousNavigation === null
           ) {
             this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
               this.router.navigate(['/t', testId]);
             });
           } else {
-            this.router.navigate(['/r/test-starter'], this.router.getCurrentNavigation().extras);
+            this.router.navigate(['/r/test-starter'], this.router.getCurrentNavigation()?.extras);
           }
         } else {
           this.router.navigate(['/r/login', '']);

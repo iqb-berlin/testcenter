@@ -18,10 +18,10 @@ export class AppConfigComponent implements OnInit, OnDestroy {
   dataChanged = false;
   private configDataChangedSubscription: Subscription | null = null;
   warningIsExpired = false;
-  imageError: string;
+  imageError: string | null = '';
   logoImageBase64 = '';
-  bugReportTarget: string;
-  bugReportAuth: string;
+  bugReportTarget: string = '';
+  bugReportAuth: string = '';
   expiredHours = {
     '': '',
     '01': '01:00 Uhr',
@@ -91,8 +91,8 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       this.logoImageBase64 = appConfig.mainLogo;
       this.configDataChangedSubscription = this.configForm.valueChanges.subscribe(() => {
         this.warningIsExpired = AppConfig.isWarningExpired(
-          this.configForm.get('globalWarningExpiredDay').value,
-          this.configForm.get('globalWarningExpiredHour').value
+          this.configForm.get('globalWarningExpiredDay')?.value,
+          this.configForm.get('globalWarningExpiredHour')?.value
         );
         this.dataChanged = true;
       });
@@ -101,17 +101,17 @@ export class AppConfigComponent implements OnInit, OnDestroy {
 
   saveData(): void {
     const appConfig: AppSettings = {
-      appTitle: this.configForm.get('appTitle').value,
-      introHtml: this.configForm.get('introHtml').value,
-      legalNoticeHtml: this.configForm.get('legalNoticeHtml').value,
-      globalWarningText: this.configForm.get('globalWarningText').value,
-      globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay').value,
-      globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour').value,
-      backgroundBody: this.configForm.get('backgroundBody').value,
-      backgroundBox: this.configForm.get('backgroundBox').value,
+      appTitle: this.configForm.get('appTitle')?.value,
+      introHtml: this.configForm.get('introHtml')?.value,
+      legalNoticeHtml: this.configForm.get('legalNoticeHtml')?.value,
+      globalWarningText: this.configForm.get('globalWarningText')?.value,
+      globalWarningExpiredDay: this.configForm.get('globalWarningExpiredDay')?.value,
+      globalWarningExpiredHour: this.configForm.get('globalWarningExpiredHour')?.value,
+      backgroundBody: this.configForm.get('backgroundBody')?.value,
+      backgroundBox: this.configForm.get('backgroundBox')?.value,
       mainLogo: this.logoImageBase64,
-      bugReportTarget: this.configForm.get('bugReportTarget').value,
-      bugReportAuth: this.configForm.get('bugReportAuth').value
+      bugReportTarget: this.configForm.get('bugReportTarget')?.value,
+      bugReportAuth: this.configForm.get('bugReportAuth')?.value
     };
     this.backendService.setAppConfig(appConfig)
       .subscribe(() => {

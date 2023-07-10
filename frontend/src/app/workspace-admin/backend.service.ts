@@ -98,13 +98,13 @@ export class BackendService {
           status: UploadStatus.error,
           report: { Upload: { error: [err.description] } }
         })),
-        map((event: HttpEvent<UploadReport> | UploadResponse) => {
+        map((event: HttpEvent<UploadReport> | UploadResponse): UploadResponse | null => {
           if ('progress' in event) {
             return event;
           }
           if (event.type === HttpEventType.UploadProgress) {
             return {
-              progress: Math.floor((event.loaded * 100) / event.total),
+              progress: event.total ? Math.floor((event.loaded * 100) / event.total) : 0,
               status: UploadStatus.busy,
               report: {}
             };
@@ -113,12 +113,13 @@ export class BackendService {
             return {
               progress: 100,
               status: UploadStatus.ok,
-              report: event.body
+              report: event.body ?? {}
             };
           }
           return null;
         }),
-        filter((response: UploadResponse | null) => !!response)
+        filter((response: UploadResponse | null): response is UploadResponse => (response !== null)
+        )
       );
   }
 }

@@ -11,7 +11,7 @@ import { MainDataService } from '../../../shared/services/maindata/maindata.serv
   styleUrls: ['../../../../monitor-layout.css']
 })
 export class AttachmentManagerComponent implements OnInit, OnDestroy {
-  groupLabel: string;
+  groupLabel: string = '';
 
   private subscriptions: Subscription[] = [];
 

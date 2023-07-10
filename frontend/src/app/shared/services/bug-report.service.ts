@@ -42,27 +42,21 @@ export class BugReportService {
     });
     const errorText = `Error when reporting issue to GitHub (${appConfig.bugReportTarget}).`;
 
-    return this.http.post(url, msgBody, { headers })
-      .pipe(map((data: { html_url: string } | Error): BugReportResult => {
-        if (data instanceof Error) {
-          return {
-            message: 'Konnte Bericht nicht senden.',
-            success: false
-          };
-        }
-        return {
+    return this.http.post<{ html_url: string }>(url, msgBody, { headers })
+      .pipe(
+        map((data: { html_url: string }): BugReportResult => ({
           uri: data.html_url,
           message: 'Bericht gesendet, vielen Dank!',
           success: true
-        };
-      }))
-      .pipe(catchError((error: HttpErrorResponse): Observable<BugReportResult> => {
-        // eslint-disable-next-line no-console
-        console.error(errorText, error);
-        return of({
-          message: 'Konnte Bericht nicht senden.',
-          success: false
-        });
-      }));
+        })),
+        catchError((error: HttpErrorResponse): Observable<BugReportResult> => {
+          // eslint-disable-next-line no-console
+          console.error(errorText, error);
+          return of({
+            message: 'Konnte Bericht nicht senden.',
+            success: false
+          });
+        })
+      );
   }
 }

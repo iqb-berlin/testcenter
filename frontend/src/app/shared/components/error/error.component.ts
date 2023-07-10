@@ -18,24 +18,24 @@ import { FileService } from '../../services/file.service';
   styleUrls: ['error.component.css']
 })
 export class ErrorComponent implements OnInit, OnDestroy {
-  @Input() onBeforeClose: () => void;
-  @Input() onClose: () => void;
-  @Input() closeCaption: string;
-  @Input() additionalReport: { [key: string]: string };
+  @Input() onBeforeClose: (() => void) | null = null;
+  @Input() onClose: (() => void) | null = null;
+  @Input() closeCaption: string = '';
+  @Input() additionalReport: { [key: string]: string } = {};
   @ViewChild('report') reportElem!: ElementRef;
-  error: AppError;
+  error: AppError | null = null;
   errorBuffer: AppError[] = [];
   errorDetailsOpen = false;
   allowErrorDetails = true;
-  defaultCloseCaption: string;
-  browser: UAParser.IResult;
-  url: string;
-  restartTimer$: Observable<number>;
+  defaultCloseCaption: string | null = null;
+  browser: UAParser.IResult | null = null;
+  url: string = '';
+  restartTimer$: Observable<number> | null = null;
   waitUnitAutomaticRestartSeconds: number = 120;
-  sendingResult: BugReportResult;
-  timestamp: number;
-  private appErrorSubscription: Subscription;
-  private restartTimerSubscription: Subscription;
+  sendingResult: BugReportResult | null = null;
+  timestamp: number = -1;
+  private appErrorSubscription: Subscription | null = null;
+  private restartTimerSubscription: Subscription | null = null;
 
   constructor(
     private mainDataService: MainDataService,
@@ -73,11 +73,11 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   private setDefaultCloseCaption(): void {
-    if (this.error.type === 'session') {
+    if (this.error?.type === 'session') {
       this.defaultCloseCaption = 'Neu Anmelden';
       return;
     }
-    this.defaultCloseCaption = undefined;
+    this.defaultCloseCaption = null;
   }
 
   private startRestartTimer(): void {
@@ -95,7 +95,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.appErrorSubscription.unsubscribe();
+    this.appErrorSubscription?.unsubscribe();
     if (this.restartTimerSubscription) {
       this.restartTimerSubscription.unsubscribe();
     }
@@ -117,26 +117,26 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   private defaultOnClose(): void {
-    if (this.error.type === 'session') {
+    if (this.error?.type === 'session') {
       this.mainDataService.resetAuthData();
       const state: RouterState = this.router.routerState;
       const { snapshot } = state;
       const snapshotUrl = (snapshot.url === '/r/login/') ? '' : snapshot.url;
       this.router.navigate(['/r/login', snapshotUrl]);
     }
-    if (this.error.type === 'fatal') {
+    if (this.error?.type === 'fatal') {
       this.mainDataService.reloadPage();
     }
-    if (this.error.type === 'network_temporally') {
+    if (this.error?.type === 'network_temporally') {
       this.mainDataService.reloadPage();
     }
   }
 
   submitReport(): void {
     this.bugReportService.publishReportAtGithub(
-      `[${window.location.hostname}] ${this.error.label}`,
+      `[${window.location.hostname}] ${this.error?.label}`,
       this.reportElem.nativeElement.innerText,
-      this.error.type
+      this.error?.type ?? ''
     )
       .subscribe(result => { this.sendingResult = result; });
   }

@@ -13,7 +13,7 @@ import { BackendService } from '../../backend.service';
   ]
 })
 export class CodeInputComponent implements OnInit {
-  @ViewChild('codeInputControl') codeInputControl: FormControl;
+  @ViewChild('codeInputControl') codeInputControl: FormControl = {} as FormControl;
   problemText = '';
 
   codeinputform = new FormGroup({
@@ -41,7 +41,7 @@ export class CodeInputComponent implements OnInit {
   codeinput(): void {
     const codeData = this.codeinputform.value;
     this.problemText = '';
-    this.bs.codeLogin(codeData.code).subscribe({
+    this.bs.codeLogin(codeData.code ?? '').subscribe({
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mds.setAuthData(authDataTyped);

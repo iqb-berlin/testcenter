@@ -30,13 +30,13 @@ import { BookletUtil } from './booklet/booklet.util';
   ]
 })
 export class GroupMonitorComponent implements OnInit, OnDestroy {
-  connectionStatus$: Observable<ConnectionStatus>;
+  connectionStatus$: Observable<ConnectionStatus> | null = null;
 
   private ownGroupName = '';
   groupLabel = '';
 
-  selectedElement: Selected;
-  markedElement: Selected;
+  selectedElement: Selected | null = null;
+  markedElement: Selected | null = null;
 
   displayOptions: TestViewDisplayOptions = {
     view: 'medium',
@@ -55,8 +55,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  @ViewChild('adminbackground') mainElem: ElementRef;
-  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav;
+  @ViewChild('adminbackground') mainElem: ElementRef = {} as ElementRef;
+  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav = {} as MatSidenav;
 
   constructor(
     public dialog: MatDialog,
@@ -90,7 +90,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     ];
 
     this.connectionStatus$ = this.bs.connectionStatus$;
-    this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline'));
+    this.mds.appSubTitle$.next(this.cts.getCustomText('gm_headline') ?? '');
   }
 
   private commandResponseToMessage(commandResponse: CommandResponse): UIMessage {
@@ -146,7 +146,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
-    this.displayOptions[option] = value;
+    this.displayOptions[option as (keyof this.displayOptions)] = value;
   }
 
   scrollDown(): void {
@@ -160,8 +160,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   getSessionColor(session: TestSession): string {
-    const stripes = (c1, c2) => `repeating-linear-gradient(45deg, ${c1}, ${c1} 10px, ${c2} 10px, ${c2} 20px)`;
-    const hsl = (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`;
+    const stripes = (c1: string, c2: string) => `repeating-linear-gradient(45deg, ${c1}, ${c1} 10px, ${c2} 10px, ${c2} 20px)`;
+    const hsl = (h: number, s: number, l: number) => `hsl(${h}, ${s}%, ${l}%)`;
     const colorful = this.displayOptions.highlightSpecies && session.booklet.species;
     const h = colorful ? (
       session.booklet.species.length *
@@ -236,11 +236,14 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
   }
 
   private selectNextBlock(): void {
+    if (!this.selectedElement) {
+      return;
+    }
     if (!isBooklet(this.selectedElement.originSession.booklet)) {
       return;
     }
     this.selectedElement = {
-      element: this.selectedElement.element.nextBlockId ?
+      element: this.selectedElement.element?.nextBlockId ?
         BookletUtil.getBlockById(
           this.selectedElement.element.nextBlockId,
           this.selectedElement.originSession.booklet

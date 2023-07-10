@@ -35,7 +35,7 @@ export interface KeyValuePairs {
 }
 
 export type AppErrorType =
-  'session' | 'general' | 'backend' | 'network' | 'script' | 'warning' | 'fatal' | 'network_temporally';
+  'session' | 'general' | 'backend' | 'network' | 'script' | 'warning' | 'fatal' | 'network_temporally' | 'xml';
 
 export interface AppErrorInterface {
   label: string;
@@ -43,12 +43,12 @@ export interface AppErrorInterface {
   type?: AppErrorType;
   code?: number;
   details?: string;
-  errorId?: string;
+  errorId?: string | null;
 }
 
 export class AppError extends Error implements AppErrorInterface {
-  label: string;
-  description: string;
+  label: string = '';
+  description: string = '';
   type: AppErrorType = 'general';
   code?: number;
   details?: string;
@@ -60,8 +60,8 @@ export class AppError extends Error implements AppErrorInterface {
 }
 
 export class WrappedError extends Error {
-  promise: Promise<never>;
-  rejection: Error;
+  promise: Promise<never> | null = null;
+  rejection: Error | null = null;
 }
 
 export interface SysCheckInfo {

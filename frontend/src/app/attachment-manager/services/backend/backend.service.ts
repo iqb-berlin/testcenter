@@ -58,7 +58,7 @@ export class BackendService {
       }
     )
       .pipe(
-        map((response: HttpResponse<Blob>) => new Blob([response.body], { type: response.headers['Content-Type'] }))
+        map((response: HttpResponse<Blob>) => new Blob([response.body ?? ''], { type: response.headers.get('Content-Type') ?? '' }))
       );
   }
 
@@ -72,7 +72,7 @@ export class BackendService {
       }
     )
       .pipe(
-        map((response: HttpResponse<Blob>) => new Blob([response.body], { type: response.headers['Content-Type'] }))
+        map((response: HttpResponse<Blob>) => new Blob([response.body ?? ''], { type: response.headers.get('Content-Type') ?? '' }))
       );
   }
 }

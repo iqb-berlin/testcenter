@@ -73,7 +73,7 @@ export class BackendService {
               return null;
           }
         }),
-        filter(progressOfContent => progressOfContent != null)
+        filter((progressOfContent): progressOfContent is LoadingFile => progressOfContent != null)
       );
   }
 

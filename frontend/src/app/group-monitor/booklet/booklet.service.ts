@@ -1,18 +1,15 @@
-// noinspection CssInvalidHtmlTagReference
-
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import {
-  Booklet, BookletError, BookletMetadata, isUnit, Restrictions, Testlet, Unit
+  Booklet, BookletError, BookletMetadata, isTestlet, isUnit, Restrictions, Testlet, Unit
 } from '../group-monitor.interfaces';
 import { BookletConfig } from '../../shared/classes/booklet-config.class';
-// eslint-disable-next-line import/extensions
 
 @Injectable()
 export class BookletService {
-  booklets: Observable<Booklet | BookletError>[] = [];
+  booklets: { [k: string]: Observable<Booklet | BookletError> } = {};
 
   constructor(
     private bs: BackendService
@@ -46,9 +43,19 @@ export class BookletService {
         return { error: 'xml', species: null };
       }
 
+      const units = BookletService.xmlGetChildIfExists(bookletElement, 'Units');
+      if (units == null) {
+        return { error: 'xml', species: null };
+      }
+
+      const metadata = BookletService.parseMetadata(bookletElement);
+      if (metadata == null) {
+        return { error: 'xml', species: null };
+      }
+
       const parsedBooklet: Booklet = {
-        units: BookletService.parseTestlet(BookletService.xmlGetChildIfExists(bookletElement, 'Units')),
-        metadata: BookletService.parseMetadata(bookletElement),
+        units: BookletService.parseTestlet(units),
+        metadata: metadata,
         config: BookletService.parseBookletConfig(bookletElement),
         species: ''
       };
@@ -63,7 +70,7 @@ export class BookletService {
   private static addBookletStructureInformation(booklet: Booklet): void {
     booklet.species = BookletService.getBookletSpecies(booklet);
     booklet.units.children
-      .filter(testletOrUnit => !isUnit(testletOrUnit))
+      .filter(isTestlet)
       .forEach((block: Testlet, index, blocks) => {
         block.blockId = `block ${index + 1}`;
         if (index < blocks.length - 1) {
@@ -85,8 +92,11 @@ export class BookletService {
     return bookletConfig;
   }
 
-  private static parseMetadata(bookletElement: Element): BookletMetadata {
+  private static parseMetadata(bookletElement: Element): BookletMetadata | null {
     const metadataElement = BookletService.xmlGetChildIfExists(bookletElement, 'Metadata');
+    if (!metadataElement) {
+      return null;
+    }
     return {
       id: BookletService.xmlGetChildTextIfExists(metadataElement, 'Id'),
       label: BookletService.xmlGetChildTextIfExists(metadataElement, 'Label'),
@@ -96,7 +106,7 @@ export class BookletService {
 
   private static parseTestlet(testletElement: Element): Testlet {
     return {
-      id: testletElement.getAttribute('id'),
+      id: testletElement.getAttribute('id') || '',
       label: testletElement.getAttribute('label') || '',
       restrictions: BookletService.parseRestrictions(testletElement),
       children: BookletService.xmlGetDirectChildrenByTagName(testletElement, ['Unit', 'Testlet'])
@@ -108,9 +118,9 @@ export class BookletService {
   private static parseUnitOrTestlet(unitOrTestletElement: Element): (Unit | Testlet) {
     if (unitOrTestletElement.tagName === 'Unit') {
       return {
-        id: unitOrTestletElement.getAttribute('alias') || unitOrTestletElement.getAttribute('id'),
-        label: unitOrTestletElement.getAttribute('label'),
-        labelShort: unitOrTestletElement.getAttribute('labelshort')
+        id: unitOrTestletElement.getAttribute('alias') || unitOrTestletElement.getAttribute('id') || '',
+        label: unitOrTestletElement.getAttribute('label') || '',
+        labelShort: unitOrTestletElement.getAttribute('labelshort') || ''
       };
     }
     return BookletService.parseTestlet(unitOrTestletElement);
@@ -125,20 +135,20 @@ export class BookletService {
     const codeToEnterElement = restrictionsElement.querySelector('CodeToEnter');
     if (codeToEnterElement) {
       restrictions.codeToEnter = {
-        code: codeToEnterElement.getAttribute('code'),
-        message: codeToEnterElement.textContent
+        code: codeToEnterElement.getAttribute('code') || '',
+        message: codeToEnterElement.textContent || ''
       };
     }
     const timeMaxElement = restrictionsElement.querySelector('TimeMax');
     if (timeMaxElement) {
       restrictions.timeMax = {
-        minutes: parseFloat(timeMaxElement.getAttribute('minutes'))
+        minutes: parseFloat(timeMaxElement.getAttribute('minutes') || '')
       };
     }
     return restrictions;
   }
 
-  private static xmlGetChildIfExists(element: Element, childName: string, isOptional = false): Element {
+  private static xmlGetChildIfExists(element: Element, childName: string, isOptional = false): Element | null {
     const elements = BookletService.xmlGetDirectChildrenByTagName(element, [childName]);
     if (!elements.length && !isOptional) {
       throw new Error(`Missing field: '${childName}'`);
@@ -148,7 +158,7 @@ export class BookletService {
 
   private static xmlGetChildTextIfExists(element: Element, childName: string, isOptional = false): string {
     const childElement = BookletService.xmlGetChildIfExists(element, childName, isOptional);
-    return childElement ? childElement.textContent : '';
+    return (childElement && childElement.textContent) ? childElement.textContent : '';
   }
 
   private static xmlGetDirectChildrenByTagName(element: Element, tagNames: string[]): Element[] {
