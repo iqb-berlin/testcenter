@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   returnTo = '';
   problemText = '';
   showPassword = false;
-  browserWarning: string[];
+  browserWarning: string[] = [];
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
@@ -48,46 +48,47 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   login(loginType: 'admin' | 'login' = 'login'): void {
     const loginData = this.loginForm.value;
-    LoginComponent.oldLoginName = loginData.name;
+    LoginComponent.oldLoginName = loginData.name ?? '';
     this.problemText = '';
-    this.backendService.login(loginType, loginData.name, loginData.pw).subscribe({
-      next: authData => {
-        const authDataTyped = authData as AuthData;
-        this.mainDataService.setAuthData(authDataTyped);
-        if (this.returnTo) {
-          this.router.navigateByUrl(this.returnTo).then(navOk => {
-            if (!navOk) {
+    this.backendService.login(loginType, loginData.name ?? '', loginData.pw ?? '')
+      .subscribe({
+        next: authData => {
+          const authDataTyped = authData as AuthData;
+          this.mainDataService.setAuthData(authDataTyped);
+          if (this.returnTo) {
+            this.router.navigateByUrl(this.returnTo).then(navOk => {
+              if (!navOk) {
+                this.router.navigate(['/r']);
+              }
+            });
+          } else if (!authData.flags.includes('codeRequired') && loginType === 'login') {
+            if (authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
+              this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
+                this.router.navigate(['/t', testId]);
+              });
+            } else {
               this.router.navigate(['/r']);
             }
-          });
-        } else if (!authData.flags.includes('codeRequired') && loginType === 'login') {
-          if (authData.claims.test.length === 1 && Object.keys(authData.claims).length === 1) {
-            this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
-              this.router.navigate(['/t', testId]);
-            });
           } else {
             this.router.navigate(['/r']);
           }
-        } else {
-          this.router.navigate(['/r']);
+        },
+        error: error => {
+          if (error.code === 400) {
+            this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
+          } else if (error.code === 401) {
+            this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
+          } else if (error.code === 204) {
+            this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
+          } else if (error.code === 410) {
+            this.problemText = 'Anmeldedaten sind abgelaufen';
+          } else {
+            this.problemText = 'Problem bei der Anmeldung.';
+            throw error;
+          }
+          this.loginForm.reset();
         }
-      },
-      error: error => {
-        if (error.code === 400) {
-          this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
-        } else if (error.code === 401) {
-          this.problemText = 'Anmeldung abgelehnt. Anmeldedaten sind noch nicht freigeben.';
-        } else if (error.code === 204) {
-          this.problemText = 'Anmeldedaten sind gültig, aber es sind keine Arbeitsbereiche oder Tests freigegeben.';
-        } else if (error.code === 410) {
-          this.problemText = 'Anmeldedaten sind abgelaufen';
-        } else {
-          this.problemText = 'Problem bei der Anmeldung.';
-          throw error;
-        }
-        this.loginForm.reset();
-      }
-    });
+      });
   }
 
   clearWarning(): void {
@@ -101,8 +102,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         window.navigator.userAgent,
         { path: 'dontleavemeemtpy!', browsers: browsersJson.browsers }
       ) ?
-        undefined :
-        [browser.name, browser.version];
+        [] :
+        [browser.name ?? '--', browser.version ?? '--'];
   }
 
   ngOnDestroy(): void {

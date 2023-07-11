@@ -145,8 +145,10 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     this.tsm.sortBy$.next(sort);
   }
 
-  setDisplayOption(option: string, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
-    this.displayOptions[option as (keyof this.displayOptions)] = value;
+  setDisplayOption(option: TestViewDisplayOptionKey, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {
+    if (Object.keys(option).includes(option)) {
+      (this.displayOptions as { [option in TestViewDisplayOptionKey]: TestViewDisplayOptions[TestViewDisplayOptionKey] })[option] = value;
+    }
   }
 
   scrollDown(): void {

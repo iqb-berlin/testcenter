@@ -7,7 +7,7 @@ import { IqbFilesUploadQueueComponent } from '../iqb-files-upload-queue/iqb-file
   selector: 'input[iqbFilesUploadInputFor], div[iqbFilesUploadInputFor]'
 })
 export class IqbFilesUploadInputForDirective {
-  private _queue: IqbFilesUploadQueueComponent = null;
+  private queue: IqbFilesUploadQueueComponent | null = null;
   private _element: HTMLElement;
 
   constructor(private element: ElementRef) {
@@ -17,7 +17,7 @@ export class IqbFilesUploadInputForDirective {
   @Input('iqbFilesUploadInputFor')
   set filesUploadQueue(value: IqbFilesUploadQueueComponent) {
     if (value) {
-      this._queue = value;
+      this.queue = value;
     }
   }
 
@@ -27,7 +27,7 @@ export class IqbFilesUploadInputForDirective {
     // this.onFileSelected.emit(files);
 
     for (let i = 0; i < files.length; i++) {
-      this._queue.add(files[i]);
+      this.queue?.add(files[i]);
     }
     this.element.nativeElement.value = '';
   }

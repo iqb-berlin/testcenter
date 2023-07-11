@@ -19,7 +19,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
     public wds: WorkspaceDataService
   ) { }
 
-  private _status: UploadStatus;
+  private _status: UploadStatus = UploadStatus.ready;
   get status(): UploadStatus {
     return this._status;
   }
@@ -29,7 +29,7 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
     this.statusChangedEvent.emit(this);
   }
 
-  private requestResponse: UploadReport;
+  private requestResponse: UploadReport = {};
   get uploadResponse(): UploadReport {
     switch (this._status) {
       case UploadStatus.busy:
@@ -49,14 +49,15 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
   @Input() folder = '';
 
-  @Input()
-  get files(): File[] {
+  @Input() get files(): File[] {
     return this._files;
   }
 
   set files(files: File[]) {
     this._files = files;
   }
+
+  private _files: File[] = [];
 
   @Input()
   set id(id: number) {
@@ -67,13 +68,14 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
     return this._id;
   }
 
+  private _id: number = 0;
+
   @Output() removeFileRequestEvent = new EventEmitter<IqbFilesUploadComponent>();
   @Output() statusChangedEvent = new EventEmitter<IqbFilesUploadComponent>();
 
   progressPercentage = 0;
-  private _files: File[];
-  private _id: number;
-  private fileUploadSubscription: Subscription;
+
+  private fileUploadSubscription: Subscription | null = null;
 
   ngOnInit(): void {
     this._status = UploadStatus.ready;
@@ -88,9 +90,9 @@ export class IqbFilesUploadComponent implements OnInit, OnDestroy {
 
     this.status = UploadStatus.busy;
     const formData = new FormData();
-    for (const file of this._files) {
+    this._files.forEach(file => {
       formData.append(this.fileAlias.concat('[]'), file, file.name);
-    }
+    });
     if ((typeof this.folderName !== 'undefined') && (typeof this.folder !== 'undefined')) {
       if (this.folderName.length > 0) {
         formData.append(this.folderName, this.folder);

@@ -75,7 +75,7 @@ export interface Restrictions {
   };
 }
 
-export type TestViewDisplayOptionKey = 'view' | 'groupColumn';
+export type TestViewDisplayOptionKey = keyof TestViewDisplayOptions;
 
 export interface TestSessionFilter {
   type: 'groupName' | 'bookletName' | 'testState' | 'mode' | 'state' | 'bookletSpecies';

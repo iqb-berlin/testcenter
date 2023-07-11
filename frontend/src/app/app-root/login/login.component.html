@@ -25,7 +25,7 @@
           [text]="mainDataService.globalWarning"
         ></tc-alert>
         <tc-alert
-          *ngIf="browserWarning"
+          *ngIf="browserWarning.length"
           level="warning"
           customtext="login_unsupportedBrowser"
           text="Sie verwenden einen Browser, der nicht offiziell unterstützt wird."
