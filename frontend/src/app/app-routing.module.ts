@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { AppRootComponent } from './app-root/app-root.component';
 import { LoginComponent } from './app-root/login/login.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
-import { AdminStarterComponent } from './app-root/admin-starter/admin-starter.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import {
   AdminComponentActivateGuard, AdminOrSuperAdminComponentActivateGuard,
@@ -11,11 +10,10 @@ import {
   DirectLoginActivateGuard, GroupMonitorActivateGuard,
   RouteDispatcherActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
 } from './app-route-guards';
-import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
-import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 import { AppModuleSettings } from './app.interfaces';
+import { StarterComponent } from './starter/starter.component';
 
 const routes: Routes = [
   {
@@ -47,12 +45,12 @@ const routes: Routes = [
       },
       {
         path: 'test-starter',
-        component: TestStarterComponent,
+        component: StarterComponent,
         canActivate: [TestComponentActivateGuard]
       },
       {
         path: 'admin-starter',
-        component: AdminStarterComponent,
+        component: StarterComponent,
         canActivate: [AdminOrSuperAdminComponentActivateGuard]
       },
       {
@@ -67,7 +65,7 @@ const routes: Routes = [
       },
       {
         path: 'monitor-starter',
-        component: MonitorStarterComponent,
+        component: StarterComponent,
         canActivate: [GroupMonitorActivateGuard]
       }
     ]

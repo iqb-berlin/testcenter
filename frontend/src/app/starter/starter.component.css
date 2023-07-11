@@ -26,3 +26,22 @@ div.booklet_status {
 .mat-card-content a {
   display: block;
 }
+
+.booklet_title {
+  display: block;
+  font-size: 16pt;
+  margin-top: 4px;
+  margin-bottom: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 130%;
+}
+
+.booklet_status {
+  display: block;
+  font-size: 8pt;
+  margin-top: 0;
+  color: mediumturquoise;
+  height: 24px;
+  margin-bottom: 18px;
+}
