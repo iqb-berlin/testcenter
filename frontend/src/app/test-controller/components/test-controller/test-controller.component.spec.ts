@@ -38,7 +38,7 @@ const currentUnitSequenceId$ = new Subject<number>();
   selector: 'unit-menu'
 })
 class MockUnitMenuComponent {
-  @Input() menu: Array<UnitNaviButtonData | string>;
+  @Input() menu: Array<UnitNaviButtonData | string> = [];
 }
 
 const MockBackendService = {

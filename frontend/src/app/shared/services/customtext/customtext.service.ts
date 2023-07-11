@@ -52,10 +52,10 @@ export class CustomtextService {
     });
   }
 
-  getCustomText(key: string): string | null {
+  getCustomText(key: string): string {
     if (typeof this.customTexts[key] === 'undefined') {
-      return null;
+      return '';
     }
-    return this.customTexts[key].getValue();
+    return this.customTexts[key].getValue() ?? '';
   }
 }

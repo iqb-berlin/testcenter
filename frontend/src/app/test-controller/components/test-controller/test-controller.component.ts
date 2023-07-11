@@ -26,6 +26,7 @@ import { CommandService } from '../../services/command.service';
 import { TestLoaderService } from '../../services/test-loader.service';
 import { MaxTimerData } from '../../classes/test-controller.classes';
 import { MissingBookletError } from '../../classes/missing-booklet-error.class';
+import { AppError } from '../../../app.interfaces';
 
 @Component({
   templateUrl: './test-controller.component.html',
@@ -43,13 +44,13 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     connectionStatus: null
   };
 
-  timerValue: MaxTimerData = null;
+  timerValue: MaxTimerData | null = null;
   unitNavigationTarget = UnitNavigationTarget;
   unitNavigationList: Array<UnitNaviButtonData | string> = [];
   debugPane = false;
   unitScreenHeader: string = '';
 
-  @ViewChild('navButtons') navButtons: ElementRef;
+  @ViewChild('navButtons') navButtons: ElementRef = {} as ElementRef;
 
   constructor(
     public mainDataService: MainDataService,
@@ -172,10 +173,12 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   showReviewDialog(): void {
+    const authData = this.mainDataService.getAuthData();
     if (this.tcs.rootTestlet === null) {
       this.snackBar.open('Kein Testheft verfügbar.', '', { duration: 5000 });
+    } else if (!authData) {
+      throw new AppError({ description: '', label: 'Nicht Angemeldet!' });
     } else {
-      const authData = this.mainDataService.getAuthData();
       const dialogRef = this.reviewDialog.open(ReviewDialogComponent, {
         data: <ReviewDialogData>{
           loginname: authData.displayName,
@@ -234,7 +237,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       case 'goto':
         this.tcs.testStatus$.next(TestControllerState.RUNNING);
         // eslint-disable-next-line no-case-declarations
-        let gotoTarget: string;
+        let gotoTarget: string = '';
         if ((params.length === 2) && (params[0] === 'id')) {
           gotoTarget = (this.tcs.allUnitIds.indexOf(params[1]) + 1).toString(10);
         } else if (params.length === 1) {
@@ -259,6 +262,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private handleMaxTimer(maxTimerData: MaxTimerData): void {
+    if (!this.tcs.rootTestlet) {
+      throw new AppError({ description: '', label: 'Roottestlet used to early' });
+    }
     const minute = maxTimerData.timeLeftSeconds / 60;
     switch (maxTimerData.type) {
       case MaxTimerDataType.STARTED:
@@ -283,7 +289,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
         if (this.tcs.testMode.forceTimeRestrictions) {
           this.tcs.rootTestlet.setTimeLeft(maxTimerData.testletId, 0);
           const nextUnlockedUSId = this.tcs.getNextUnlockedUnitSequenceId(this.tcs.currentUnitSequenceId);
-          this.tcs.setUnitNavigationRequest(nextUnlockedUSId.toString(10) ?? UnitNavigationTarget.END, true);
+          this.tcs.setUnitNavigationRequest(nextUnlockedUSId?.toString(10) ?? UnitNavigationTarget.END, true);
         }
         break;
       case MaxTimerDataType.CANCELLED:
@@ -335,7 +341,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     if (!this.tcs.rootTestlet) {
       return;
     }
-    let previousBlockLabel: string = null;
+    let previousBlockLabel: string | null = null;
     const unitCount = this.tcs.rootTestlet.getMaxSequenceId() - 1;
     for (let sequenceId = 1; sequenceId <= unitCount; sequenceId++) {
       const unitData = this.tcs.getUnitWithContext(sequenceId);
@@ -381,7 +387,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     Object.keys(this.subscriptions)
       .filter(subscriptionKey => this.subscriptions[subscriptionKey])
       .forEach(subscriptionKey => {
-        this.subscriptions[subscriptionKey].unsubscribe();
+        this.subscriptions[subscriptionKey]?.unsubscribe();
         this.subscriptions[subscriptionKey] = null;
       });
     this.tls.reset();

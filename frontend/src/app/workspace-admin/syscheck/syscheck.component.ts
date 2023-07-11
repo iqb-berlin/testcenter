@@ -18,12 +18,12 @@ import { ReportType, SysCheckStatistics } from '../workspace.interfaces';
 })
 export class SyscheckComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['selectCheckbox', 'syscheckLabel', 'number', 'details-os', 'details-browser'];
-  resultDataSource: MatTableDataSource<SysCheckStatistics> | null = new MatTableDataSource<SysCheckStatistics>([]);
+  resultDataSource: MatTableDataSource<SysCheckStatistics> = new MatTableDataSource<SysCheckStatistics>([]);
   tableSelectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort = {} as MatSort;
 
-  private wsIdSubscription: Subscription;
+  private wsIdSubscription: Subscription | null = null;
 
   constructor(
     private bs: BackendService,
@@ -51,7 +51,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
 
   updateTable(): void {
     this.tableSelectionCheckbox.clear();
-    this.resultDataSource = null;
+    this.resultDataSource = new MatTableDataSource<SysCheckStatistics>([]);
     this.bs.getSysCheckReportsOverview(this.wds.workspaceId)
       .subscribe((resultData: SysCheckStatistics[]) => {
         this.resultDataSource = new MatTableDataSource<SysCheckStatistics>(resultData);

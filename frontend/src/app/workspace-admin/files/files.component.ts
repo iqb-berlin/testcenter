@@ -226,8 +226,10 @@ export class FilesComponent implements OnInit, OnDestroy {
         file.report.error = [];
       }
       if (
-        fileMayor < this.mds.appConfig?.veronaPlayerApiVersionMin ||
-        fileMayor > this.mds.appConfig?.veronaPlayerApiVersionMax
+        this.mds.appConfig && (
+          fileMayor < this.mds.appConfig?.veronaPlayerApiVersionMin ||
+          fileMayor > this.mds.appConfig?.veronaPlayerApiVersionMax
+        )
       ) {
         file.report.error.push(
           `Verona Version \`${fileMayor}\` is not supported

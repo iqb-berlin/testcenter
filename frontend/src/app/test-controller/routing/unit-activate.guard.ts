@@ -17,7 +17,7 @@ export class UnitActivateGuard {
     const targetUnitSequenceId: number = Number(route.params.u);
     if (this.tcs.rootTestlet === null) {
       // unit-route got called before test is loaded. This happens on page-reload (F5).
-      const testId = Number(route.parent.params.t);
+      const testId = Number(route.parent?.params.t);
       if (!testId) {
         this.router.navigate(['/']);
         return false;

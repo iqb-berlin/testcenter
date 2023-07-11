@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   CheckConfig,
   NetworkCheckStatus,
-  ReportEntry,
+  ReportEntry, SpeedParameters,
   StepDef,
   UnitAndPlayerContainer
 } from './sys-check.interfaces';
@@ -39,9 +39,21 @@ export class SysCheckDataService {
     }
   ];
 
-  checkConfig: CheckConfig = null;
+  checkConfig: CheckConfig = {
+    canSave: false,
+    customTexts: [],
+    downloadSpeed: <SpeedParameters>{},
+    hasUnit: false,
+    label: '',
+    name: '',
+    questions: [],
+    skipNetwork: true,
+    uploadSpeed: <SpeedParameters>{},
+    workspaceId: -1
+  };
+
   loadConfigComplete = false;
-  unitAndPlayerContainer: UnitAndPlayerContainer = null;
+  unitAndPlayerContainer: UnitAndPlayerContainer | null = null;
   environmentReport: ReportEntry[] = [];
   networkReport: ReportEntry[] = [];
   questionnaireReport: ReportEntry[] = [];

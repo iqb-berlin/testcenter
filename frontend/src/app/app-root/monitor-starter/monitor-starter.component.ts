@@ -12,7 +12,7 @@ import { AccessObject, AuthData } from '../../app.interfaces';
 export class MonitorStarterComponent implements OnInit, OnDestroy {
   accessObjects: { [accessType: string]: AccessObject[] } = {};
   private getMonitorDataSubscription: Subscription | null = null;
-  problemText: string;
+  problemText: string = '';
 
   constructor(
     private router: Router,
@@ -59,7 +59,7 @@ export class MonitorStarterComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(`/gm/${accessObject.id.toString()}`);
   }
 
-  buttonGotoAttachmentManager(accessObject) {
+  buttonGotoAttachmentManager(accessObject: AccessObject) {
     this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
   }
 

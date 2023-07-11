@@ -7,7 +7,7 @@ export class TestMode extends TestModeData {
 
   constructor(loginMode: string = 'RUN-DEMO') {
     super();
-    const mode = <keyof typeof TestModeData.modes>loginMode.toUpperCase();
+    const mode: keyof typeof TestModeData.modes = <keyof typeof TestModeData.modes>loginMode.toUpperCase();
 
     if (!mode || !TestModeData.modes[mode]) {
       throw new AppError({
@@ -20,9 +20,11 @@ export class TestMode extends TestModeData {
     this.modeId = mode;
     this.modeLabel = TestModeData.labels[mode];
 
-    Object.keys(TestModeData.modes[mode])
-      .forEach(key => {
-        this[key] = TestModeData.modes[mode][key];
+    (Object.keys(TestModeData) as Array<keyof typeof TestModeData.modes[typeof mode]>)
+      .forEach((key: keyof typeof TestModeData.modes[typeof mode]) => {
+        if (key in this) {
+          this[key] = TestModeData.modes[mode][key];
+        }
       });
   }
 }

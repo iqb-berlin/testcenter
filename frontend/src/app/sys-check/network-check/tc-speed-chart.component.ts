@@ -1,4 +1,5 @@
 import { Component, ElementRef } from '@angular/core';
+import { AppError } from '../../app.interfaces';
 
 export interface TcSpeedChartSettings {
   lineWidth: number;
@@ -27,10 +28,10 @@ export interface TcSpeedChartSettings {
 })
 export class TcSpeedChartComponent {
   private canvas: HTMLCanvasElement;
-  private context;
+  private context: CanvasRenderingContext2D;
   private el;
-  private xScale;
-  private yScale;
+  private xScale: number = -1;
+  private yScale: number = -1;
 
   private config: TcSpeedChartSettings = {
     css: 'border: 1px solid black',
@@ -55,12 +56,17 @@ export class TcSpeedChartComponent {
 
   constructor(elem: ElementRef) {
     this.el = elem.nativeElement;
+    this.canvas = this.el.querySelector('canvas');
+    const context = this.canvas.getContext('2d');
+    if (!context) {
+      throw new AppError({
+        description: '', label: 'Geschwindigkeitschart konnte nicht gerendert werden', type: 'script'
+      });
+    }
+    this.context = context;
   }
 
   reset(config: TcSpeedChartSettings): void {
-    this.canvas = this.el.querySelector('canvas');
-    this.context = this.canvas.getContext('2d');
-
     this.config = { ...this.config, ...config };
     this.canvas.setAttribute('style', this.config.css);
     this.canvas.setAttribute('height', `${this.config.height.toString()}px`);
@@ -84,7 +90,7 @@ export class TcSpeedChartComponent {
     this.context.lineWidth = this.config.lineWidth;
   }
 
-  plotData(dataPoints: Array<[number, number]>, color: string = null, style: 'line' | 'dots' = 'line'): void {
+  plotData(dataPoints: [number, number][], color: string | null = null, style: 'line' | 'dots' = 'line'): void {
     if (!dataPoints.length) {
       return;
     }

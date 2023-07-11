@@ -40,7 +40,7 @@ export class BackendService {
       );
   }
 
-  getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer | boolean> {
+  getUnitAndPlayer(workspaceId: number, sysCheckId: string): Observable<UnitAndPlayerContainer> {
     return this.http
       .get<UnitAndPlayerContainer>(`${this.serverUrl}workspace/${workspaceId}/sys-check/${sysCheckId}/unit-and-player`);
   }

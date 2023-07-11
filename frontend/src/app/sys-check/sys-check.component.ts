@@ -4,6 +4,7 @@ import { CustomtextService, MainDataService } from '../shared/shared.module';
 import { BackendService } from './backend.service';
 import { SysCheckDataService } from './sys-check-data.service';
 import { UnitAndPlayerContainer } from './sys-check.interfaces';
+import { AppError } from '../app.interfaces';
 
 @Component({
   templateUrl: './sys-check.component.html',
@@ -25,9 +26,14 @@ export class SysCheckComponent implements OnInit {
     setTimeout(() => this.mds.appSubTitle$.next('System-Check'));
     this.route.paramMap.subscribe((params: ParamMap) => {
       const sysCheckId = params.get('sys-check-name');
-      const workspaceId = parseInt(params.get('workspace-id'), 10);
+      const workspaceId = params.get('workspace-id');
+      if (!sysCheckId || !workspaceId) {
+        throw new AppError({
+          description: '', label: 'Invalid Route Parameters', type: 'script'
+        });
+      }
       setTimeout(() => {
-        this.bs.getCheckConfigData(workspaceId, sysCheckId).subscribe(checkConfig => {
+        this.bs.getCheckConfigData(parseInt(workspaceId, 10), sysCheckId).subscribe(checkConfig => {
           this.ds.checkConfig = checkConfig;
           if (checkConfig) {
             this.checkLabel = checkConfig.label;
@@ -41,8 +47,8 @@ export class SysCheckComponent implements OnInit {
             }
             if (checkConfig.hasUnit) {
               this.bs.getUnitAndPlayer(this.ds.checkConfig.workspaceId, this.ds.checkConfig.name)
-                .subscribe((unitAndPlayer: UnitAndPlayerContainer) => {
-                  this.ds.unitAndPlayerContainer = unitAndPlayer as UnitAndPlayerContainer;
+                .subscribe(unitAndPlayer => {
+                  this.ds.unitAndPlayerContainer = unitAndPlayer;
                   this.completeConfig();
                 });
             } else {

@@ -24,9 +24,9 @@ export class ResultsComponent implements OnInit, OnDestroy {
   resultDataSource: MatTableDataSource<ResultData> | null = new MatTableDataSource<ResultData>([]);
   tableSelectionCheckbox = new SelectionModel<ResultData>(true, []);
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: true }) sort: MatSort = {} as MatSort;
 
-  private wsIdSubscription: Subscription;
+  private wsIdSubscription: Subscription | null = null;
 
   constructor(
     private backendService: BackendService,
@@ -63,14 +63,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   isAllSelected(): boolean {
     const numSelected = this.tableSelectionCheckbox.selected.length;
-    const numRows = this.resultDataSource.data.length;
+    const numRows = this.resultDataSource?.data.length || 0;
     return numSelected === numRows;
   }
 
   masterToggle(): void {
     this.isAllSelected() ?
       this.tableSelectionCheckbox.clear() :
-      this.resultDataSource.data.forEach(row => this.tableSelectionCheckbox.select(row));
+      this.resultDataSource?.data.forEach(row => this.tableSelectionCheckbox.select(row));
   }
 
   downloadResponsesCSV(): void {

@@ -22,11 +22,11 @@ interface IconData {
   styleUrls: ['./test-session.component.css']
 })
 export class TestSessionComponent {
-  @Input() testSession: TestSession;
-  @Input() displayOptions: TestViewDisplayOptions;
-  @Input() marked: Selected;
-  @Input() selected: Selected;
-  @Input() checked: boolean;
+  @Input() testSession: TestSession = {} as TestSession;
+  @Input() displayOptions: TestViewDisplayOptions = {} as TestViewDisplayOptions;
+  @Input() marked: Selected | null = null;
+  @Input() selected: Selected | null = null;
+  @Input() checked: boolean = false;
 
   @Output() markedElement$ = new EventEmitter<Selected>();
   @Output() selectedElement$ = new EventEmitter<Selected>();
@@ -56,17 +56,18 @@ export class TestSessionComponent {
   }
 
   isSelected(testletOrNull: Testlet | null = null): boolean {
-    return testletOrNull &&
-      (this.selected?.element?.blockId === testletOrNull.blockId) &&
+    return !!testletOrNull &&
+      (this.selected?.element?.blockId === testletOrNull?.blockId) &&
       (this.selected?.originSession.booklet.species === this.testSession.booklet.species);
   }
 
   isSelectedHere(testletOrNull: Testlet | null = null): boolean {
-    return this.isSelected(testletOrNull) && (this.selected.originSession.data.testId === this.testSession.data.testId);
+    return this.isSelected(testletOrNull) &&
+      (this.selected?.originSession.data.testId === this.testSession.data.testId);
   }
 
   isMarked(testletOrNull: Testlet | null = null): boolean {
-    return testletOrNull &&
+    return !!testletOrNull &&
       (!['pending', 'locked'].includes(this.testSession.state)) &&
       (this.marked?.element?.blockId === testletOrNull.blockId) &&
       (this.marked?.originSession.booklet.species === this.testSession.booklet.species);

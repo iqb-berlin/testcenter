@@ -21,11 +21,11 @@ export class MockBackendService {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getResource(testId: keyof typeof TestBookletXmlVariants, resId: string): Observable<LoadingFile> {
+  getResource(testId: keyof typeof TestBookletXmlVariants, resId: keyof typeof TestResources): Observable<LoadingFile> {
     if (testId === 'withMissingPlayer' && resId === 'A-PLAYER.HTML') {
       throw new Error('player is missing');
     }
-    if (testId === 'withMissingUnitContent' && resId === 'test-unit-content-u3') {
+    if (testId === 'withMissingUnitContent') {
       throw new Error('resource is missing');
     }
 

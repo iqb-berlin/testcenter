@@ -3,7 +3,6 @@ import { ViewChild, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData, MessageDialogComponent,
@@ -22,7 +21,7 @@ import { NewPasswordComponent } from './newpassword/new-password.component';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-  objectsDatasource: MatTableDataSource<UserData>;
+  objectsDatasource: MatTableDataSource<UserData> = new MatTableDataSource<UserData>;
   displayedColumns = ['selectCheckbox', 'name'];
   tableselectionCheckbox = new SelectionModel<UserData>(true, []);
   tableselectionRow = new SelectionModel<UserData>(false, []);
@@ -30,10 +29,10 @@ export class UsersComponent implements OnInit {
   selectedUserName = '';
 
   pendingWorkspaceChanges = false;
-  workspacelistDatasource: MatTableDataSource<IdRoleData>;
+  workspacelistDatasource: MatTableDataSource<IdRoleData> = new MatTableDataSource<IdRoleData>();
   displayedWorkspaceColumns = ['selectCheckbox', 'label'];
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort = new MatSort();
 
   constructor(
     private bs: BackendService,
@@ -73,8 +72,8 @@ export class UsersComponent implements OnInit {
       if (typeof result !== 'undefined') {
         if (result !== false) {
           this.bs
-            .addUser((<FormGroup>result).get('name').value, (<FormGroup>result).get('pw').value)
-            .subscribe(() => this.updateObjectList());
+            .addUser(result.get('name').value, result.get('pw').value)
+            .subscribe(() => { this.updateObjectList(); });
         }
       }
     });
@@ -110,7 +109,7 @@ export class UsersComponent implements OnInit {
       this.bs.setSuperUserStatus(
         selectedRows[0].id,
         !userObject.isSuperadmin,
-        (<FormGroup>afterClosedResult).get('pw').value
+        afterClosedResult.get('pw').value
       )
         .subscribe(() => {
           this.snackBar.open('Status geändert', '', { duration: 1000 });
@@ -145,11 +144,11 @@ export class UsersComponent implements OnInit {
         }
         this.bs.changePassword(
           selectedRows[0].id,
-          (<FormGroup>result).get('pw').value
+          result.get('pw').value
         )
           .subscribe(
             respOk => {
-              if (respOk !== false) {
+              if (respOk) {
                 this.snackBar.open('Kennwort geändert', '', { duration: 1000 });
               }
             }
@@ -192,8 +191,8 @@ export class UsersComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          const usersToDelete = [];
-          selectedRows.forEach((r: UserData) => usersToDelete.push(r.id));
+          const usersToDelete: string[] = [];
+          selectedRows.forEach((r: UserData) => usersToDelete.push(r.id.toString(10)));
           this.bs.deleteUsers(usersToDelete).subscribe(
             () => {
               this.snackBar.open('Administrator:in gelöscht', '', { duration: 1000 });
@@ -208,7 +207,7 @@ export class UsersComponent implements OnInit {
   updateWorkspaceList(): void {
     this.pendingWorkspaceChanges = false;
     if (this.selectedUser > -1) {
-      this.workspacelistDatasource = null;
+      this.workspacelistDatasource = new MatTableDataSource<IdRoleData>();
       this.bs.getWorkspacesByUser(this.selectedUser)
         .subscribe(dataresponse => {
           this.workspacelistDatasource = new MatTableDataSource(dataresponse);
@@ -233,7 +232,7 @@ export class UsersComponent implements OnInit {
           this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
         });
     } else {
-      this.workspacelistDatasource = null;
+      this.workspacelistDatasource = new MatTableDataSource<IdRoleData>();
     }
   }
 
@@ -259,7 +258,7 @@ export class UsersComponent implements OnInit {
       this.objectsDatasource.data.forEach(row => this.tableselectionCheckbox.select(row));
   }
 
-  selectRow(row): void {
+  selectRow(row: UserData): void {
     this.tableselectionRow.select(row);
   }
 }

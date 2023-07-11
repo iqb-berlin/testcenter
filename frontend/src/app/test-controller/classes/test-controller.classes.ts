@@ -31,7 +31,7 @@ export class TestletContentElement {
 export class UnitDef extends TestletContentElement {
   readonly alias: string;
   readonly naviButtonLabel: string;
-  playerId: string;
+  playerId: string = '';
   lockedByTime = false;
   readonly navigationLeaveRestrictions: NavigationLeaveRestrictions;
 
@@ -51,9 +51,9 @@ export class UnitDef extends TestletContentElement {
 }
 
 export class UnitWithContext {
-  unitDef: UnitDef = null;
+  unitDef: UnitDef;
   codeRequiringTestlets: Testlet[] = [];
-  maxTimerRequiringTestlet: Testlet = null;
+  maxTimerRequiringTestlet: Testlet | null = null;
   testletLabel = '';
   constructor(unitDef: UnitDef) {
     this.unitDef = unitDef;
@@ -99,7 +99,7 @@ export class Testlet extends TestletContentElement {
   // TODO this very ineffective function is called quite often, so ...
   // ...instead of enrich the unit with the parental data, collect it beforehand
   getUnitAt(sequenceId: number, isEntryPoint = true): UnitWithContext | null {
-    let myreturn: UnitWithContext = null;
+    let myreturn: UnitWithContext | null = null;
     for (let i = 0; i < this.children.length; i++) {
       const tce = this.children[i];
       if (tce instanceof Testlet) {
@@ -150,9 +150,10 @@ export class Testlet extends TestletContentElement {
     return 0;
   }
 
-  getTestlet(testletId: string): Testlet {
-    let myreturn = null;
+  getTestlet(testletId: string): Testlet | null {
+    let myreturn: Testlet | null = null;
     if (this.id === testletId) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       myreturn = this;
     } else {
       for (let i = 0; i < this.children.length; i++) {
@@ -170,7 +171,7 @@ export class Testlet extends TestletContentElement {
   }
 
   getAllUnitSequenceIds(testletId = ''): number[] {
-    let myreturn = [];
+    let myreturn: number[] = [];
 
     if (testletId) {
       // find testlet
@@ -272,8 +273,8 @@ export class EnvironmentData {
   constructor() {
     const UserAgentParser = new UAParser();
 
-    this.browserVersion = UserAgentParser.getBrowser().version;
-    this.browserName = UserAgentParser.getBrowser().name;
+    this.browserVersion = UserAgentParser.getBrowser().version ?? '--';
+    this.browserName = UserAgentParser.getBrowser().name ?? '--';
     this.osName = `${UserAgentParser.getOS().name} ${UserAgentParser.getOS().version}`;
     this.device = Object.values(UserAgentParser.getDevice())
       .filter(elem => elem)

@@ -105,7 +105,7 @@ export const TestPlayers = {
   'A-PLAYER-BUT-VERSION-2.HTML': 'a player, but version 2'
 };
 
-export const TestExternalUnitContents = {
+export const TestExternalUnitContents: { [unitid : string] : string } = {
   'test-unit-content-u2': 'the unit (2) definition',
   'test-unit-content-u3': 'the unit (3) definition'
 };
@@ -116,7 +116,7 @@ export const TestResources = {
 };
 
 export const TestUnitDefinitionsPerSequenceId = Object.values(TestUnits)
-  .map(unitDef => (unitDef.definitionRef ? TestExternalUnitContents[unitDef.definitionRef] : unitDef.definition))
+  .map(unitDef => (('definitionRef' in unitDef) ? TestExternalUnitContents[unitDef.definitionRef] : unitDef.definition))
   .reduce(perSequenceId, {});
 
 export const TestUnitStateDataParts = Object.values(TestUnits)
@@ -154,7 +154,7 @@ export const TestBooklet = testlet({
       children: [],
       lockedByTime: false,
       alias: 'u1',
-      naviButtonLabel: null,
+      naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
       playerId: 'a-player'
     }),
@@ -173,7 +173,7 @@ export const TestBooklet = testlet({
           children: [],
           lockedByTime: false,
           alias: 'u2',
-          naviButtonLabel: null,
+          naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
           playerId: 'another-player'
         }),
@@ -192,7 +192,7 @@ export const TestBooklet = testlet({
               children: [],
               lockedByTime: false,
               alias: 'u3',
-              naviButtonLabel: null,
+              naviButtonLabel: '',
               navigationLeaveRestrictions: new NavigationLeaveRestrictions('ON', 'OFF'),
               playerId: 'a-player-but-version-2'
             })
@@ -205,7 +205,7 @@ export const TestBooklet = testlet({
           children: [],
           lockedByTime: false,
           alias: 'u4',
-          naviButtonLabel: null,
+          naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
           playerId: 'a-player'
         })
@@ -218,7 +218,7 @@ export const TestBooklet = testlet({
       children: [],
       lockedByTime: false,
       alias: 'u5',
-      naviButtonLabel: null,
+      naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
       playerId: 'a-player'
     })
@@ -488,7 +488,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       children: [],
       lockedByTime: false,
       alias: 'u1',
-      naviButtonLabel: null,
+      naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
       playerId: 'a-player'
     }),
@@ -507,7 +507,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
           children: [],
           lockedByTime: false,
           alias: 'u2',
-          naviButtonLabel: null,
+          naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
           playerId: 'a-player'
         }),
@@ -526,7 +526,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
               children: [],
               lockedByTime: false,
               alias: 'u3',
-              naviButtonLabel: null,
+              naviButtonLabel: '',
               navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
               playerId: 'a-player'
             })
@@ -549,7 +549,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
           children: [],
           lockedByTime: false,
           alias: 'u4',
-          naviButtonLabel: null,
+          naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
           playerId: 'a-player'
         })
@@ -562,7 +562,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       children: [],
       lockedByTime: false,
       alias: 'u5',
-      naviButtonLabel: null,
+      naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
       playerId: 'a-player'
     })

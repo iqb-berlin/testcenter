@@ -22,7 +22,7 @@ export class MainDataService {
   get appError$(): Observable<AppError> {
     return this._appError$
       .pipe(
-        distinct(error => error.stack + error.errorId),
+        distinct(error => (error.stack ?? '') + (error.errorId ?? '')),
         shareReplay(0)
       );
   }
@@ -36,7 +36,7 @@ export class MainDataService {
     return this._authData$.asObservable();
   }
 
-  appConfig: AppConfig = null;
+  appConfig: AppConfig | null = null;
   sysCheckAvailable = false;
   appTitle$ = new BehaviorSubject<string>('IQB-Testcenter');
   appSubTitle$ = new BehaviorSubject<string>('');
@@ -45,19 +45,31 @@ export class MainDataService {
   postMessage$ = new Subject<MessageEvent>();
   appWindowHasFocus$ = new Subject<boolean>();
 
-  getAuthData(): AuthData {
+  getAuthData(): AuthData | null {
     if (this._authData$.getValue()) {
       return this._authData$.getValue();
     }
     try {
-      return JSON.parse(localStorage.getItem(localStorageAuthDataKey));
+      const entry = localStorage.getItem(localStorageAuthDataKey);
+      if (!entry) {
+        return null;
+      }
+      return JSON.parse(entry);
     } catch (e) {
       return null;
     }
   }
 
   getAccessObject(type: AuthAccessType, id: string): AccessObject {
-    return this.getAuthData().claims[type].find(accessObject => accessObject.id === id);
+    const authData = this.getAuthData();
+    if (!authData) {
+      throw new AppError({ type: 'session', description: '', label: 'Nicht angemeldet' });
+    }
+    const claim = authData.claims[type].find(accessObject => accessObject.id === id);
+    if (!claim) {
+      throw new AppError({ type: 'session', description: '', label: `${type} ${id} nicht freigegeben.` });
+    }
+    return claim;
   }
 
   constructor(

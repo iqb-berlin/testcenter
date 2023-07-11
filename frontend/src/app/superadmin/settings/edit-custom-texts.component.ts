@@ -4,7 +4,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { CustomtextService, MainDataService, customTexts } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { EditCustomTextComponent } from './edit-custom-text.component';
-import { KeyValuePairs } from '../../app.interfaces';
+import { AppError, KeyValuePairs } from '../../app.interfaces';
+import { AppConfig } from '../../shared/classes/app.config';
 
 export interface CustomTextData {
   key: string,
@@ -93,7 +94,7 @@ export class EditCustomTextsComponent {
             key: ctKey,
             label: customTexts[ctKey].label,
             defaultValue: customTexts[ctKey].defaultvalue,
-            value: this.mainDataService.appConfig?.customTexts[ctKey]
+            value: this.mainDataService.appConfig?.customTexts[ctKey] ?? ''
           });
         }
       });
@@ -117,12 +118,19 @@ export class EditCustomTextsComponent {
   saveData():void {
     this.backendService.setCustomTexts(this.changedData)
       .subscribe(() => {
+        if (!this.mainDataService.appConfig) {
+          throw new AppError({
+            description: '',
+            label: 'appConfig not yet loaded',
+            type: 'script'
+          });
+        }
         this.snackBar.open(
           'Textersetzungen gespeichert', 'Info', { duration: 3000 }
         );
         this.dataChanged = false;
         Object.keys(this.changedData).forEach(ctKey => {
-          this.mainDataService.appConfig.customTexts[ctKey] = this.changedData[ctKey];
+          (this.mainDataService.appConfig as AppConfig).customTexts[ctKey] = this.changedData[ctKey];
         });
         this.customtextService.addCustomTexts(this.changedData);
       });

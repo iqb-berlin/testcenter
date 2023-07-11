@@ -16,15 +16,36 @@ export enum WindowFocusState {
   UNKNOWN = 'UNKNOWN'
 }
 
-// for backend ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export type UnitData = {
   dataParts: KeyValuePairString;
-  unitStateDataType: string,
+  unitStateDataType: string;
   state: { [k in UnitStateKey]?: string };
   playerId: string;
-  definitionRef?: string;
-  definition?: string;
+  definitionRef : string;
+} | {
+  dataParts: KeyValuePairString;
+  unitStateDataType: string;
+  state: { [k in UnitStateKey]?: string };
+  playerId: string;
+  definition : string;
 };
+
+export type XXX = {
+  a: string;
+  b: string;
+} | {
+  a: string;
+  c: string;
+};
+
+const fnn = (x: XXX): void => {
+  if ('c' in x) {
+    // do a
+  } else {
+    // do b
+  }
+}
+
 
 export interface TestData {
   xml: string;
@@ -39,6 +60,9 @@ export enum TestStateKey {
   FOCUS = 'FOCUS',
   CONTROLLER = 'CONTROLLER',
   CONNECTION = 'CONNECTION'
+}
+const fn = (lastState: { [k in TestStateKey]: string }): void => {
+  const x = lastState[TestStateKey.CURRENT_UNIT_ID];
 }
 
 /**

@@ -49,8 +49,7 @@ import { customTexts } from './objects/customtexts';
     BytesPipe,
     CustomtextPipe,
     AlertComponent,
-    ErrorComponent,
-    customTexts
+    ErrorComponent
   ],
   providers: [
     BackendService

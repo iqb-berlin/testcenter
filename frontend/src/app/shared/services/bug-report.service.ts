@@ -22,8 +22,8 @@ export class BugReportService {
   }
 
   publishReportAtGithub(title: string, body: string, tag: string): Observable<BugReportResult> {
-    const appConfig = this.mainDataService.appConfig.getAppConfig();
-    if (!appConfig.bugReportTarget || !appConfig.bugReportAuth) {
+    const appConfig = this.mainDataService.appConfig?.getAppConfig();
+    if (!appConfig || !appConfig.bugReportTarget || !appConfig.bugReportAuth) {
       return of({
         message: 'Fehler-Melden-Funktion nicht konfiguriert!',
         success: false

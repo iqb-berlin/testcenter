@@ -27,9 +27,8 @@ export class RetryInterceptor implements HttpInterceptor {
   // eslint-disable-next-line class-methods-use-this
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const routeData = this.route.firstChild?.routeConfig?.data ?? { httpRetryPolicy: 'none' };
-    // eslint-disable-next-line @typescript-eslint/dot-notation
-    const retryPolicyName = routeData['httpRetryPolicy'];
-    const retryPolicy = retryPolicies[retryPolicyName] ?? retryPolicies.none;
+    const retryPolicyName = routeData.httpRetryPolicy;
+    const retryPolicy = retryPolicies[retryPolicyName as HttpRetryPolicyNames] ?? retryPolicies.none;
     return next.handle(request)
       .pipe(
         retryWhen(

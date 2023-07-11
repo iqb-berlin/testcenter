@@ -27,13 +27,13 @@ export class ReviewDialogComponent {
 
   getSelectedCategories(): string { // TODO wtf is this a string
     let selectedCategories = '';
-    if (this.reviewForm.get('tech').value === true) {
+    if (this.reviewForm.get('tech')?.value === true) {
       selectedCategories = 'tech';
     }
-    if (this.reviewForm.get('design').value === true) {
+    if (this.reviewForm.get('design')?.value === true) {
       selectedCategories += ' design';
     }
-    if (this.reviewForm.get('content').value === true) {
+    if (this.reviewForm.get('content')?.value === true) {
       selectedCategories += ' content';
     }
     return selectedCategories;

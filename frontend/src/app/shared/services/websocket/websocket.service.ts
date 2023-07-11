@@ -11,9 +11,9 @@ interface WsMessage {
 
 export class WebsocketService {
   protected wsUrl = '';
-  private wsSubject$: WebSocketSubject<any>;
-  wsConnected$ = new BehaviorSubject<boolean>(null);
-  private wsSubscription: Subscription;
+  private wsSubject$: WebSocketSubject<any> | null = null;
+  wsConnected$ = new BehaviorSubject<boolean>(false);
+  private wsSubscription: Subscription | null = null;
 
   connect(): void {
     if (!this.wsSubject$) {
@@ -60,20 +60,22 @@ export class WebsocketService {
       this.connect();
     }
 
-    this.wsSubject$.next({ event, data });
+    this.wsSubject$?.next({ event, data });
   }
 
   getChannel<T>(channelName: string): Observable<T> {
     if (!this.wsSubject$) {
       this.connect();
     }
+    if (!this.wsSubject$) {
+      throw new Error('Oh shit');
+    }
 
-    return this.wsSubject$
-      .multiplex(
-        () => ({ event: `subscribe:${channelName}` }),
-        () => ({ event: `unsubscribe:${channelName}` }),
-        message => (message.event === channelName)
-      )
+    return this.wsSubject$?.multiplex(
+      () => ({ event: `subscribe:${channelName}` }),
+      () => ({ event: `unsubscribe:${channelName}` }),
+      message => (message.event === channelName)
+    )
       .pipe(map((event: WsMessage): T => event.data))
       .pipe(share());
   }

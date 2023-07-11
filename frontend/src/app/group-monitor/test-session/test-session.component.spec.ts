@@ -23,11 +23,11 @@ describe('TestViewComponent', () => {
     component = fixture.componentInstance;
     component.testSession = unitTestExampleSessions[0];
     component.displayOptions = <TestViewDisplayOptions>{
-      bookletColumn: undefined,
-      groupColumn: undefined,
-      blockColumn: undefined,
-      unitColumn: undefined,
-      view: undefined,
+      bookletColumn: 'hide',
+      groupColumn: 'hide',
+      blockColumn: 'hide',
+      unitColumn: 'hide',
+      view: 'medium',
       highlightSpecies: false
     };
     fixture.detectChanges();

@@ -142,7 +142,7 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
     if (!sort.active || sort.direction === '') {
       return;
     }
-    this.tsm.sortBy$.next(sort);
+    this.tsm.sortBy$?.next(sort);
   }
 
   setDisplayOption(option: TestViewDisplayOptionKey, value: TestViewDisplayOptions[TestViewDisplayOptionKey]): void {

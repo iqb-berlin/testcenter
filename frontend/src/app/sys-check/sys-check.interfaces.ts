@@ -81,10 +81,10 @@ export interface NetworkRating {
 
 export interface DetectedNetworkInformation {
   available: boolean;
-  downlinkMegabitPerSecond: number;
-  effectiveNetworkType: string;
-  roundTripTimeMs: number;
-  networkType: string;
+  downlinkMegabitPerSecond: number | null;
+  effectiveNetworkType: string | null;
+  roundTripTimeMs: number | null;
+  networkType: string | null;
 }
 
 export interface SysCheckReport {

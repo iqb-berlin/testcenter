@@ -71,7 +71,10 @@ export class AppConfigComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      const appConfig = this.mainDataService.appConfig.getAppConfig();
+      const appConfig = this.mainDataService.appConfig?.getAppConfig();
+      if (!appConfig) {
+        return;
+      }
       this.configForm.setValue({
         appTitle: appConfig.appTitle,
         introHtml: appConfig.introHtml,
@@ -117,6 +120,9 @@ export class AppConfigComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.snackBar.open('Konfigurationsdaten der Anwendung gespeichert', 'Info', { duration: 3000 });
         this.dataChanged = false;
+        if (!this.mainDataService.appConfig) {
+          return;
+        }
         this.mainDataService.appConfig.setAppConfig(appConfig);
         this.mainDataService.appConfig.applyBackgroundColors();
         this.mainDataService.appTitle$.next(appConfig.appTitle);

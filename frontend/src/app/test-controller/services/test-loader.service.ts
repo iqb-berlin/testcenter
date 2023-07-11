@@ -4,25 +4,36 @@ import {
   BehaviorSubject, from, Observable, of, Subject, Subscription
 } from 'rxjs';
 import {
-  concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
+  concatMap, distinctUntilChanged, filter, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
 import { CustomtextService, BookletConfig, TestMode } from '../../shared/shared.module';
 import {
-  isLoadingFileLoaded, isNavigationLeaveRestrictionValue, LoadedFile, LoadingProgress, StateReportEntry, TaggedString,
-  TestControllerState, TestLogEntryKey, TestStateKey, UnitNavigationTarget, UnitStateKey
+  isLoadingFileLoaded,
+  isNavigationLeaveRestrictionValue,
+  LoadedFile,
+  LoadingProgress,
+  StateReportEntry,
+  TaggedString,
+  TestControllerState,
+  TestLogEntryKey,
+  TestStateKey,
+  UnitData,
+  UnitNavigationTarget,
+  UnitStateKey
 } from '../interfaces/test-controller.interfaces';
 import {
   EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
 } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
+import { AppError } from '../../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TestLoaderService {
   private loadStartTimeStamp = 0;
-  private unitContentLoadSubscription: Subscription = null;
+  private unitContentLoadSubscription: Subscription | null = null;
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
   private lastUnitSequenceId = 0;
   private unitContentLoadingQueue: TaggedString[] = [];
@@ -33,6 +44,7 @@ export class TestLoaderService {
     private bs: BackendService,
     private cts: CustomtextService
   ) {
+    this.environment = new EnvironmentData();
   }
 
   async loadTest(): Promise<void> {
@@ -41,6 +53,9 @@ export class TestLoaderService {
     this.tcs.testStatus$.next(TestControllerState.LOADING);
 
     const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
+    if (!testData) {
+      return; // error is allready thrown
+    }
     this.tcs.testMode = new TestMode(testData.mode);
     this.restoreRestrictions(testData.laststate);
     this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
@@ -55,7 +70,7 @@ export class TestLoaderService {
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
 
-    return this.loadUnitContents()
+    this.loadUnitContents()
       .then(() => {
         this.resumeTest(testData.laststate);
       });
@@ -78,8 +93,13 @@ export class TestLoaderService {
   }
 
   private resumeTest(lastState: { [k in TestStateKey]?: string }): void {
-    this.tcs.resumeTargetUnitSequenceId =
-      this.tcs.rootTestlet.getSequenceIdByUnitAlias(lastState[TestStateKey.CURRENT_UNIT_ID]) || 1;
+    if (!this.tcs.rootTestlet) {
+      throw new AppError({ description: '', label: 'Booklet not loaded yet.', type: 'script' });
+    }
+    const currentUnitId = lastState[TestStateKey.CURRENT_UNIT_ID];
+    this.tcs.resumeTargetUnitSequenceId = currentUnitId ?
+      this.tcs.rootTestlet.getSequenceIdByUnitAlias(currentUnitId) :
+      1;
     if (
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.TERMINATED_PAUSED) ||
       (lastState[TestStateKey.CONTROLLER] === TestControllerState.PAUSED)
@@ -93,20 +113,15 @@ export class TestLoaderService {
   }
 
   private restoreRestrictions(lastState: { [k in TestStateKey]?: string }): void {
-    Object.keys(lastState).forEach(stateKey => {
-      switch (stateKey) {
-        case (TestStateKey.TESTLETS_TIMELEFT):
-          this.tcs.maxTimeTimers = JSON.parse(lastState[stateKey]);
-          break;
-        case (TestStateKey.TESTLETS_CLEARED_CODE):
-          this.tcs.clearCodeTestlets = JSON.parse(lastState[stateKey]);
-          break;
-        default:
-      }
-    });
+    if (lastState[TestStateKey.TESTLETS_TIMELEFT]) {
+      this.tcs.maxTimeTimers = JSON.parse(lastState[TestStateKey.TESTLETS_TIMELEFT]);
+    }
+    if (lastState[TestStateKey.TESTLETS_CLEARED_CODE]) {
+      this.tcs.clearCodeTestlets = JSON.parse(lastState[TestStateKey.TESTLETS_CLEARED_CODE]);
+    }
   }
 
-  private loadUnits(): Promise<number> {
+  private loadUnits(): Promise<number | undefined> {
     const sequence = [];
     for (let i = 1; i < this.lastUnitSequenceId; i++) {
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
@@ -116,7 +131,7 @@ export class TestLoaderService {
     }
     return from(sequence)
       .pipe(
-        concatMap(nr => this.loadUnit(this.tcs.rootTestlet.getUnitAt(nr).unitDef, nr))
+        concatMap(nr => this.loadUnit(this.tcs.getUnitWithContext(nr).unitDef, nr))
       )
       .toPromise();
   }
@@ -124,7 +139,7 @@ export class TestLoaderService {
   private loadUnit(unitDef: UnitDef, sequenceId: number): Observable<number> {
     return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
       .pipe(
-        switchMap(unit => {
+        switchMap((unit: UnitData) => {
           if (!unit) {
             throw new Error(`Unit is empty ${this.tcs.testId}/${unitDef.id}`);
           }
@@ -138,7 +153,7 @@ export class TestLoaderService {
           this.tcs.setUnitStateDataType(sequenceId, unit.unitStateDataType);
 
           unitDef.playerId = unit.playerId;
-          if (unit.definitionRef) {
+          if ('definitionRef' in unit) {
             this.unitContentLoadingQueue.push(<TaggedString>{
               tag: sequenceId.toString(),
               value: unit.definitionRef
@@ -176,6 +191,11 @@ export class TestLoaderService {
   }
 
   private prepareUnitContentLoadingQueueOrder(currentUnitId: string = '1'): void {
+    if (!this.tcs.rootTestlet) {
+      throw new AppError({
+        description: '', label: 'Testheft noch nicht verfügbar', type: 'script'
+      });
+    }
     const currentUnitSequenceId = this.tcs.rootTestlet.getSequenceIdByUnitAlias(currentUnitId);
     const queue = this.unitContentLoadingQueue;
     let firstToLoadQueuePosition;
@@ -271,7 +291,6 @@ export class TestLoaderService {
   }
 
   private getBookletFromXml(xmlString: string): Testlet {
-    let rootTestlet: Testlet = null;
     const oParser = new DOMParser();
     const xmlStringWithOutBom = xmlString.replace(/^\uFEFF/gm, '');
     const oDOM = oParser.parseFromString(xmlStringWithOutBom, 'text/xml');
@@ -286,18 +305,18 @@ export class TestLoaderService {
     const metadataElement = metadataElements[0];
     const IdElement = metadataElement.getElementsByTagName('Id')[0];
     const LabelElement = metadataElement.getElementsByTagName('Label')[0];
-    rootTestlet = new Testlet(0, IdElement.textContent, LabelElement.textContent);
+    const rootTestlet = new Testlet(0, IdElement.textContent || '', LabelElement.textContent || '');
     const unitsElements = oDOM.documentElement.getElementsByTagName('Units');
     if (unitsElements.length > 0) {
       const customTextsElements = oDOM.documentElement.getElementsByTagName('CustomTexts');
       if (customTextsElements.length > 0) {
         const customTexts = TestLoaderService.getChildElements(customTextsElements[0]);
-        const customTextsForBooklet = {};
+        const customTextsForBooklet: { [key: string] : string } = {};
         for (let childIndex = 0; childIndex < customTexts.length; childIndex++) {
           if (customTexts[childIndex].nodeName === 'CustomText') {
             const customTextKey = customTexts[childIndex].getAttribute('key');
-            if ((typeof customTextKey !== 'undefined') && (customTextKey !== null)) {
-              customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent;
+            if (customTextKey) {
+              customTextsForBooklet[customTextKey] = customTexts[childIndex].textContent || '';
             }
           }
         }
@@ -339,7 +358,7 @@ export class TestLoaderService {
       let forcePresentationComplete = navigationLeaveRestrictions.presentationComplete;
       let forceResponseComplete = navigationLeaveRestrictions.responseComplete;
 
-      let restrictionElement: Element = null;
+      let restrictionElement: Element | null = null;
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Restrictions') {
           restrictionElement = childElements[childIndex];
@@ -353,7 +372,7 @@ export class TestLoaderService {
             const restrictionParameter = restrictionElements[childIndex].getAttribute('code');
             if ((typeof restrictionParameter !== 'undefined') && (restrictionParameter !== null)) {
               codeToEnter = restrictionParameter.toUpperCase();
-              codePrompt = restrictionElements[childIndex].textContent;
+              codePrompt = restrictionElements[childIndex].textContent || '';
             }
           }
           if (restrictionElements[childIndex].nodeName === 'TimeMax') {
@@ -367,11 +386,11 @@ export class TestLoaderService {
           }
           if (restrictionElements[childIndex].nodeName === 'DenyNavigationOnIncomplete') {
             const presentationComplete = restrictionElements[childIndex].getAttribute('presentation');
-            if (isNavigationLeaveRestrictionValue(presentationComplete)) {
+            if (presentationComplete && isNavigationLeaveRestrictionValue(presentationComplete)) {
               forcePresentationComplete = presentationComplete;
             }
             const responseComplete = restrictionElements[childIndex].getAttribute('response');
-            if (isNavigationLeaveRestrictionValue(responseComplete)) {
+            if (responseComplete && isNavigationLeaveRestrictionValue(responseComplete)) {
               forceResponseComplete = responseComplete;
             }
           }
@@ -394,6 +413,11 @@ export class TestLoaderService {
       for (let childIndex = 0; childIndex < childElements.length; childIndex++) {
         if (childElements[childIndex].nodeName === 'Unit') {
           const unitId = childElements[childIndex].getAttribute('id');
+          if (!unitId) {
+            throw new AppError({
+              description: '', label: `Unit-Id Fehlt in unit nr ${childIndex} von ${targetTestlet.id}`, type: 'xml'
+            });
+          }
           let unitAlias = childElements[childIndex].getAttribute('alias');
           if (!unitAlias) {
             unitAlias = unitId;
@@ -409,16 +433,20 @@ export class TestLoaderService {
           targetTestlet.addUnit(
             this.lastUnitSequenceId,
             unitId,
-            childElements[childIndex].getAttribute('label'),
+            childElements[childIndex].getAttribute('label') ?? '',
             unitAliasClear,
-            childElements[childIndex].getAttribute('labelshort'),
+            childElements[childIndex].getAttribute('labelshort') ?? '',
             newNavigationLeaveRestrictions
           );
           this.lastUnitSequenceId += 1;
         } else if (childElements[childIndex].nodeName === 'Testlet') {
-          const testletId: string = childElements[childIndex].getAttribute('id');
-          let testletLabel: string = childElements[childIndex].getAttribute('label');
-          testletLabel = testletLabel ? testletLabel.trim() : '';
+          const testletId = childElements[childIndex].getAttribute('id');
+          if (!testletId) {
+            throw new AppError({
+              description: '', label: `Testlet-Id fehlt in unit nr ${childIndex} von ${targetTestlet.id}`, type: 'xml'
+            });
+          }
+          const testletLabel: string = childElements[childIndex].getAttribute('label')?.trim() ?? '';
 
           this.addTestletContentFromBookletXml(
             targetTestlet.addTestlet(testletId, testletLabel),

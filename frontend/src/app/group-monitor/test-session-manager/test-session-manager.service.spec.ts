@@ -134,22 +134,22 @@ describe('TestSessionManager', () => {
 
     it('should sort by currentBlock', () => {
       const sorted = service.sortSessions({ active: '_currentBlock', direction: 'asc' }, [...unitTestExampleSessions]);
-      expect(sorted.map(s => (s.current ? s.current.ancestor.blockId : '--'))).toEqual(['block-1', 'block-3', '--']);
+      expect(sorted.map(s => (s.current ? s.current.ancestor?.blockId : '--'))).toEqual(['block-1', 'block-3', '--']);
     });
 
     it('should sort by currentBlock reverse', () => {
       const sorted = service.sortSessions({ active: '_currentBlock', direction: 'desc' }, [...unitTestExampleSessions]);
-      expect(sorted.map(s => (s.current ? s.current.ancestor.blockId : '--'))).toEqual(['--', 'block-3', 'block-1']);
+      expect(sorted.map(s => (s.current ? s.current.ancestor?.blockId : '--'))).toEqual(['--', 'block-3', 'block-1']);
     });
 
     it('should sort by currentUnit label alphabetically', () => {
       const sorted = service.sortSessions({ active: '_currentUnit', direction: 'asc' }, [...unitTestExampleSessions]);
-      expect(sorted.map(s => (s.current ? s.current.unit.id : '--'))).toEqual(['unit-1', 'unit-10', '--']);
+      expect(sorted.map(s => (s.current ? s.current.unit?.id : '--'))).toEqual(['unit-1', 'unit-10', '--']);
     });
 
     it('should sort by currentUnit label alphabetically reverse', () => {
       const sorted = service.sortSessions({ active: '_currentUnit', direction: 'desc' }, [...unitTestExampleSessions]);
-      expect(sorted.map(s => (s.current ? s.current.unit.id : '--'))).toEqual(['--', 'unit-10', 'unit-1']);
+      expect(sorted.map(s => (s.current ? s.current.unit?.id : '--'))).toEqual(['--', 'unit-10', 'unit-1']);
     });
   });
 

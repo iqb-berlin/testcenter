@@ -21,11 +21,14 @@ import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
 
 @Injectable()
 export class TestSessionManager {
-  sortBy$: Subject<Sort>;
-  filters$: Subject<TestSessionFilter[]>;
-  checkingOptions: CheckingOptions;
+  sortBy$: Subject<Sort> | null = null;
+  filters$: Subject<TestSessionFilter[]> | null = null;
+  checkingOptions: CheckingOptions = {
+    enableAutoCheckAll: false,
+    autoCheckAll: false
+  };
 
-  private groupName: string;
+  private groupName: string = '';
 
   get sessions$(): Observable<TestSession[]> {
     return this._sessions$.asObservable();
@@ -51,7 +54,7 @@ export class TestSessionManager {
     return this._commandResponses$.asObservable();
   }
 
-  private monitor$: Observable<TestSession[]>;
+  private monitor$: Observable<TestSession[]> = new Observable<TestSession[]>();
   private _sessions$: BehaviorSubject<TestSession[]>;
   private _checked: { [sessionTestSessionId: number]: TestSession } = {};
   private _checkedStats$: BehaviorSubject<TestSessionSetStats>;

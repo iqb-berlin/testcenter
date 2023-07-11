@@ -8,8 +8,8 @@ import { SysCheckDataService } from '../sys-check-data.service';
   styleUrls: ['./questionnaire.component.css', '../sys-check.component.css']
 })
 export class QuestionnaireComponent implements OnInit, OnDestroy {
-  form: FormGroup;
-  private valueChangesSubscription: Subscription = null;
+  form: FormGroup = {} as FormGroup;
+  private valueChangesSubscription: Subscription | null = null;
 
   constructor(
     public ds: SysCheckDataService
@@ -19,7 +19,7 @@ export class QuestionnaireComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.ds.setNewCurrentStep('q');
-      const group = {};
+      const group: { [key: string] : FormControl } = {};
       if (this.ds.checkConfig) {
         this.ds.checkConfig.questions.forEach(question => {
           group[question.id] = new FormControl('');

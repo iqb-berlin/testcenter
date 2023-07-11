@@ -1,12 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { MessageDialogComponent } from './message-dialog.component';
 
 describe('MessageDialogComponent', () => {
-  let fixture;
-  let component;
+  let fixture: ComponentFixture<MessageDialogComponent>;
+  let component: MessageDialogComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

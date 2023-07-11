@@ -14,12 +14,12 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   protected abstract wsChannelName: string;
   protected abstract initialData: T;
 
-  data$: BehaviorSubject<T>;
+  data$: BehaviorSubject<T> | null = null;
   connectionStatus$: BehaviorSubject<ConnectionStatus> = new BehaviorSubject<ConnectionStatus>('initial');
 
-  private wsConnectionStatusSubscription: Subscription = null;
-  private wsDataSubscription: Subscription = null;
-  private pollingTimeoutId: number = null;
+  private wsConnectionStatusSubscription: Subscription | null = null;
+  private wsDataSubscription: Subscription | null = null;
+  private pollingTimeoutId: number | null = null;
 
   protected connectionClosed = true;
 
@@ -55,9 +55,12 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
         if (!this.data$) {
           return;
         }
+        if (!response.body) {
+          return;
+        }
         this.data$.next(response.body);
         if (response.headers.has('SubscribeURI')) {
-          this.wsUrl = response.headers.get('SubscribeURI');
+          this.wsUrl = response.headers.get('SubscribeURI') as string;
           this.subScribeToWsChannel();
         } else {
           this.connectionStatus$.next('polling-sleep');
@@ -103,7 +106,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
 
   private subScribeToWsChannel() {
     this.wsDataSubscription = this.getChannel<T>(this.wsChannelName)
-      .subscribe((dataObject: T) => this.data$.next(dataObject)); // subscribe only next, not complete!
+      .subscribe((dataObject: T) => this.data$?.next(dataObject)); // subscribe only next, not complete!
 
     this.wsConnectionStatusSubscription = this.wsConnected$
       .pipe(

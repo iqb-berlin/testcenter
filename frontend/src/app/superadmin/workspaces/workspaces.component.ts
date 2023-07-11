@@ -19,17 +19,17 @@ import { IdAndName, IdRoleData } from '../superadmin.interfaces';
   styleUrls: ['./workspaces.component.css']
 })
 export class WorkspacesComponent implements OnInit {
-  workspaces: MatTableDataSource<IdAndName>;
+  workspaces: MatTableDataSource<IdAndName> = new MatTableDataSource<IdAndName>();
   displayedColumns = ['selectCheckbox', 'name'];
-  tableSelectionCheckbox = new SelectionModel <IdAndName>(true, []);
-  tableSelectionRow = new SelectionModel <IdAndName>(false, []);
+  tableSelectionCheckbox = new SelectionModel<IdAndName>(true, []);
+  tableSelectionRow = new SelectionModel<IdAndName>(false, []);
   selectedWorkspaceId = 0;
   selectedWorkspaceName = '';
   pendingUserChanges = false;
-  userListDatasource: MatTableDataSource<IdRoleData>;
+  userListDatasource: MatTableDataSource<IdRoleData> = new MatTableDataSource<IdRoleData>();
   displayedUserColumns = ['selectCheckbox', 'name'];
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort = {} as MatSort;
 
   constructor(
     private backendService: BackendService,
@@ -72,7 +72,7 @@ export class WorkspacesComponent implements OnInit {
         return;
       }
 
-      const newName = (<FormGroup>result).get('name').value;
+      const newName = result.get('name').value;
       if (this.workspaceNameExists(newName)) {
         this.snackBar.open('Arbeitsbereich mit diesem namen bereits vorhanden!', 'Fehler', { duration: 1000 });
         return;
@@ -117,7 +117,7 @@ export class WorkspacesComponent implements OnInit {
           return;
         }
 
-        const newName = (<FormGroup>result).get('name').value;
+        const newName = result.get('name').value;
         if (this.workspaceNameExists(newName)) {
           this.snackBar.open('Arbeitsbereich mit diesem namen bereits vorhanden!', 'Fehler', { duration: 1000 });
           return;
@@ -167,7 +167,7 @@ export class WorkspacesComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result !== false) {
-          const workspacesToDelete = [];
+          const workspacesToDelete: number[] = [];
           selectedRows.forEach((r: IdAndName) => workspacesToDelete.push(r.id));
           this.backendService.deleteWorkspaces(workspacesToDelete)
             .subscribe(() => {
@@ -182,7 +182,7 @@ export class WorkspacesComponent implements OnInit {
   updateUserList(): void {
     this.pendingUserChanges = false;
     if (this.selectedWorkspaceId > 0) {
-      this.userListDatasource = null;
+      this.userListDatasource = new MatTableDataSource();
       this.backendService.getUsersByWorkspace(this.selectedWorkspaceId)
         .subscribe(dataresponse => {
           this.userListDatasource = new MatTableDataSource(dataresponse);
@@ -207,7 +207,7 @@ export class WorkspacesComponent implements OnInit {
           this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
         });
     } else {
-      this.userListDatasource = null;
+      this.userListDatasource = new MatTableDataSource<IdRoleData>();
     }
   }
 

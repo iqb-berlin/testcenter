@@ -7,6 +7,7 @@ import {
   DetectedNetworkInformation,
   NetworkRating, NetworkRequestTestResult
 } from '../sys-check.interfaces';
+import { TcSpeedChartComponent, TcSpeedChartSettings } from './tc-speed-chart.component';
 
 @Component({
   styleUrls: ['../sys-check.component.css'],
@@ -19,10 +20,10 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     private bs: BackendService
   ) {}
 
-  @ViewChild('downloadChart', { static: true }) downloadPlotter;
-  @ViewChild('uploadChart', { static: true }) uploadPlotter;
+  @ViewChild('downloadChart', { static: true }) downloadPlotter: TcSpeedChartComponent = {} as TcSpeedChartComponent;
+  @ViewChild('uploadChart', { static: true }) uploadPlotter: TcSpeedChartComponent = {} as TcSpeedChartComponent;
 
-  @Input() measureNetwork: boolean;
+  @Input() measureNetwork: boolean = false;
   private networkStatsDownload: number[] = [];
   private networkStatsUpload: number[] = [];
 
@@ -50,21 +51,40 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     setTimeout(() => {
       this.ds.setNewCurrentStep('n');
-      // eslint-disable-next-line @typescript-eslint/dot-notation
-      const connection = navigator['connection'] || navigator['mozConnection'] || navigator['webkitConnection'];
-      if (connection) {
-        this.detectedNetworkInformation = {
-          available: true,
-          downlinkMegabitPerSecond: connection.downlink || null,
-          effectiveNetworkType: connection.effectiveType || null,
-          roundTripTimeMs: connection.rtt || null,
-          networkType: connection.type || null
-        };
-      }
       if (this.ds.checkConfig && this.ds.networkReport.length === 0) {
         this.startCheck();
       }
+      this.readExperimentalNetworkInfosIfAvailable();
     });
+  }
+
+  private readExperimentalNetworkInfosIfAvailable(): void {
+    //  lib.dom.d.ts doesn't not have those types atm
+    interface NetworkInformation {
+      downlink?: number;
+      effectiveType?: string;
+      rtt?: number
+      saveData?: boolean;
+      type?: string;
+    }
+    type ExtendedNavigator = Navigator & {
+      connection?: NetworkInformation;
+      mozConnection?: NetworkInformation;
+      webkitConnection?: NetworkInformation;
+    };
+    const connection =
+      (navigator as ExtendedNavigator).connection ||
+      (navigator as ExtendedNavigator).mozConnection ||
+      (navigator as ExtendedNavigator).webkitConnection;
+    if (connection) {
+      this.detectedNetworkInformation = {
+        available: true,
+        downlinkMegabitPerSecond: connection.downlink || null,
+        effectiveNetworkType: connection.effectiveType || null,
+        roundTripTimeMs: connection.rtt || null,
+        networkType: connection.type || null
+      };
+    }
   }
 
   startCheck(): void {
@@ -86,33 +106,36 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   private plotPrepare(isDownloadPart: boolean) {
-    if (this.ds.checkConfig) {
-      const testSizes = (isDownloadPart) ?
-        this.ds.checkConfig.downloadSpeed.sequenceSizes :
-        this.ds.checkConfig.uploadSpeed.sequenceSizes;
-      const plotterSettings = {
-        css: 'border: 1px solid silver; margin: 2px; width: 100%;',
-        width: 800,
-        height: 240,
-        labelPadding: 4,
-        xAxisMaxValue: 16 + Math.max(...testSizes),
-        xAxisMinValue: Math.min(...testSizes),
-        yAxisMaxValue: (isDownloadPart) ? 1200 : 5000,
-        yAxisMinValue: (isDownloadPart) ? 20 : 0,
-        xAxisStepSize: 4,
-        yAxisStepSize: (isDownloadPart) ? 50 : 100,
-        lineWidth: 5,
-        xProject: x => ((x === 0) ? 0 : Math.sign(x) * Math.log2(Math.abs(x))),
-        yProject: y => ((y === 0) ? 0 : Math.sign(y) * Math.log(Math.abs(y))),
-        xAxisLabels: x => ((testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : ''),
-        yAxisLabels: (y, i) => ((i < 10) ? NetworkCheckComponent.humanReadableMilliseconds(y) : ' ')
-      };
-
-      if (isDownloadPart) {
-        this.downloadPlotter.reset(plotterSettings);
-      } else {
-        this.uploadPlotter.reset(plotterSettings);
-      }
+    if (!this.ds.checkConfig) {
+      return;
+    }
+    const testSizes = (isDownloadPart) ?
+      this.ds.checkConfig.downloadSpeed.sequenceSizes :
+      this.ds.checkConfig.uploadSpeed.sequenceSizes;
+    const plotterSettings: TcSpeedChartSettings = {
+      axisColor: '',
+      gridColor: '',
+      labelFont: '',
+      css: 'border: 1px solid silver; margin: 2px; width: 100%;',
+      width: 800,
+      height: 240,
+      labelPadding: 4,
+      xAxisMaxValue: 16 + Math.max(...testSizes),
+      xAxisMinValue: Math.min(...testSizes),
+      yAxisMaxValue: (isDownloadPart) ? 1200 : 5000,
+      yAxisMinValue: (isDownloadPart) ? 20 : 0,
+      xAxisStepSize: 4,
+      yAxisStepSize: (isDownloadPart) ? 50 : 100,
+      lineWidth: 5,
+      xProject: (x: number) => ((x === 0) ? 0 : Math.sign(x) * Math.log2(Math.abs(x))),
+      yProject: (y: number) => ((y === 0) ? 0 : Math.sign(y) * Math.log(Math.abs(y))),
+      xAxisLabels: (x: number) => ((testSizes.indexOf(x) > -1) ? this.humanReadableBytes(x, false, true) : ''),
+      yAxisLabels: (y: number, i: number) => ((i < 10) ? NetworkCheckComponent.humanReadableMilliseconds(y) : ' ')
+    };
+    if (isDownloadPart) {
+      this.downloadPlotter.reset(plotterSettings);
+    } else {
+      this.uploadPlotter.reset(plotterSettings);
     }
   }
 
@@ -206,7 +229,7 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
   }
 
   private plotStatistics(isDownloadPart: boolean, benchmarkSequenceResults: Array<NetworkRequestTestResult>) {
-    const datapoints = benchmarkSequenceResults
+    const datapoints: Array<[number, number]> = benchmarkSequenceResults
       .filter(measurement => (measurement.error === null))
       .map(measurement => ([measurement.size, measurement.duration]));
 
