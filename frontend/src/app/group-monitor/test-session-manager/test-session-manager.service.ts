@@ -4,7 +4,7 @@ import {
 } from 'rxjs';
 import { Sort } from '@angular/material/sort';
 import {
-  delay, flatMap, map, startWith, switchMap, tap
+  delay, filter, flatMap, map, startWith, switchMap, tap
 } from 'rxjs/operators';
 import { BackendService } from '../backend.service';
 import { BookletService } from '../booklet/booklet.service';
@@ -21,8 +21,8 @@ import { GROUP_MONITOR_CONFIG } from '../group-monitor.config';
 
 @Injectable()
 export class TestSessionManager {
-  sortBy$: Subject<Sort> | null = null;
-  filters$: Subject<TestSessionFilter[]> | null = null;
+  sortBy$: Subject<Sort>;
+  filters$: Subject<TestSessionFilter[]>;
   checkingOptions: CheckingOptions = {
     enableAutoCheckAll: false,
     autoCheckAll: false
@@ -50,16 +50,19 @@ export class TestSessionManager {
     return this._checkedStats$.asObservable();
   }
 
-  get commandResponses$(): Observable<CommandResponse> {
-    return this._commandResponses$.asObservable();
+  get commandResponses$(): Observable<CommandResponse | void> {
+    return this._commandResponses$
+      .pipe(
+        filter(c => !!c)
+      );
   }
 
   private monitor$: Observable<TestSession[]> = new Observable<TestSession[]>();
-  private _sessions$: BehaviorSubject<TestSession[]>;
+  private _sessions$: BehaviorSubject<TestSession[]> = new BehaviorSubject<TestSession[]>([]);
   private _checked: { [sessionTestSessionId: number]: TestSession } = {};
   private _checkedStats$: BehaviorSubject<TestSessionSetStats>;
   private _sessionsStats$: BehaviorSubject<TestSessionSetStats>;
-  private _commandResponses$: Subject<CommandResponse>;
+  private _commandResponses$: Subject<CommandResponse | void> = new Subject<CommandResponse | void>();
   private _clock$: Observable<number>;
 
   // attention: this works the other way round than Array.filter:
@@ -89,23 +92,28 @@ export class TestSessionManager {
     private bs: BackendService,
     private bookletService: BookletService,
     @Inject(GROUP_MONITOR_CONFIG) private readonly groupMonitorConfig: GroupMonitorConfig
-  ) {}
+  ) {
+    this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
+    this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
+    this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
+    this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
+    this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
+      interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
+      of(0);
+  }
 
   connect(groupName: string): void {
     this.groupName = groupName;
-    this.sortBy$ = new BehaviorSubject<Sort>({ direction: 'asc', active: 'personLabel' });
-    this.filters$ = new BehaviorSubject<TestSessionFilter[]>([]);
+    this.sortBy$.next({ direction: 'asc', active: 'personLabel' });
+    this.filters$.next([]);
     this.checkingOptions = {
       enableAutoCheckAll: true,
       autoCheckAll: true
     };
 
-    this._checkedStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
-    this._sessionsStats$ = new BehaviorSubject<TestSessionSetStats>(TestSessionManager.getEmptyStats());
-    this._commandResponses$ = new Subject<CommandResponse>();
-    this._clock$ = this.groupMonitorConfig.checkForIdleInterval ?
-      interval(this.groupMonitorConfig.checkForIdleInterval).pipe(startWith(0)) :
-      of(0);
+    this._checkedStats$.next(TestSessionManager.getEmptyStats());
+    this._sessionsStats$.next(TestSessionManager.getEmptyStats());
+    this._commandResponses$.next();
 
     this.monitor$ = this.bs.observeSessionsMonitor(groupName)
       .pipe(
@@ -119,7 +127,7 @@ export class TestSessionManager {
         ))
       );
 
-    this._sessions$ = new BehaviorSubject<TestSession[]>([]);
+    this._sessions$.next([]);
 
     combineLatest([this.sortBy$, this.filters$, this.monitor$])
       .pipe(
@@ -131,7 +139,7 @@ export class TestSessionManager {
   }
 
   disconnect(): void {
-    this.groupName = undefined;
+    this.groupName = '';
     this.bs.cutConnection();
   }
 
@@ -152,29 +160,29 @@ export class TestSessionManager {
   }
 
   private static applyFilters(session: TestSession, filters: TestSessionFilter[]): boolean {
-    const applyNot = (isMatching, not: boolean): boolean => (not ? !isMatching : isMatching);
+    const applyNot = (isMatching: boolean, not: boolean): boolean => (not ? !isMatching : isMatching);
     return filters.reduce((keep: boolean, nextFilter: TestSessionFilter) => {
       switch (nextFilter.type) {
         case 'groupName': {
-          return keep && applyNot(session.data.groupName !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.data.groupName !== nextFilter.value, !!nextFilter.not);
         }
         case 'bookletName': {
-          return keep && applyNot(session.data.bookletName !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.data.bookletName !== nextFilter.value, !!nextFilter.not);
         }
         case 'testState': {
           const keyExists = (typeof session.data.testState[nextFilter.value] !== 'undefined');
           const valueMatches = keyExists && (session.data.testState[nextFilter.value] === nextFilter.subValue);
           const keepIn = (typeof nextFilter.subValue !== 'undefined') ? !valueMatches : !keyExists;
-          return keep && applyNot(keepIn, nextFilter.not);
+          return keep && applyNot(keepIn, !!nextFilter.not);
         }
         case 'state': {
-          return keep && applyNot(session.state !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.state !== nextFilter.value, !!nextFilter.not);
         }
         case 'bookletSpecies': {
-          return keep && applyNot(session.booklet.species !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.booklet.species !== nextFilter.value, !!nextFilter.not);
         }
         case 'mode': {
-          return keep && applyNot(session.data.mode !== nextFilter.value, nextFilter.not);
+          return keep && applyNot(session.data.mode !== nextFilter.value, !!nextFilter.not);
         }
         default:
           return false;
@@ -240,18 +248,27 @@ export class TestSessionManager {
             TestSessionsSuperStates.indexOf(session2.state)) * sortDirectionFactor;
         }
         if (sort.active === '_currentBlock') {
-          const s1curBlock = session1.current?.ancestor?.blockId || 'zzzzzzzzzz';
-          const s2curBlock = session2.current?.ancestor?.blockId || 'zzzzzzzzzz';
+          const s1curBlock = session1.current?.ancestor?.blockId ?? 'zzzzzzzzzz';
+          const s2curBlock = session2.current?.ancestor?.blockId ?? 'zzzzzzzzzz';
           return s1curBlock.localeCompare(s2curBlock) * sortDirectionFactor;
         }
         if (sort.active === '_currentUnit') {
-          const s1currentUnit = session1.current ? session1.current.unit.label : 'zzzzzzzzzz';
-          const s2currentUnit = session2.current ? session2.current.unit.label : 'zzzzzzzzzz';
+          const s1currentUnit = session1.current?.unit?.label ?? 'zzzzzzzzzz';
+          const s2currentUnit = session2.current?.unit?.label ?? 'zzzzzzzzzz';
           return s1currentUnit.localeCompare(s2currentUnit) * sortDirectionFactor;
         }
-        const stringA = (session1.data[sort.active] || 'zzzzzzzzzz');
-        const stringB = (session2.data[sort.active] || 'zzzzzzzzzz');
-        return stringA.localeCompare(stringB) * sortDirectionFactor;
+        let valA = session1.data[sort.active as keyof typeof session1.data] ?? 'zzzzzzzzzz';
+        let valB = session2.data[sort.active as keyof typeof session2.data] ?? 'zzzzzzzzzz';
+        if (typeof valA === 'number') {
+          valA = valA.toString(10);
+        }
+        if (typeof valB === 'number') {
+          valB = valB.toString(10);
+        }
+        if ((typeof valA === 'object') || (typeof valB === 'object')) {
+          return 0;
+        }
+        return valA.localeCompare(valB) * sortDirectionFactor;
       });
   }
 
@@ -301,8 +318,14 @@ export class TestSessionManager {
   private static groupForGoto(sessionsSet: TestSession[], selection: Selected): GotoCommandData {
     const groupedByBooklet: GotoCommandData = {};
     sessionsSet.forEach(session => {
-      if (!groupedByBooklet[session.data.bookletName] && isBooklet(session.booklet)) {
-        const firstUnit = BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet);
+      if (
+        session.data.bookletName &&
+        !Object.keys(groupedByBooklet).includes(session.data.bookletName) &&
+        isBooklet(session.booklet)
+      ) {
+        const firstUnit = selection.element?.blockId ?
+          BookletUtil.getFirstUnitOfBlock(selection.element.blockId, session.booklet) :
+          null;
         if (firstUnit) {
           groupedByBooklet[session.data.bookletName] = {
             testIds: [],
@@ -310,7 +333,7 @@ export class TestSessionManager {
           };
         }
       }
-      if (groupedByBooklet[session.data.bookletName]) {
+      if (session.data.bookletName && Object.keys(groupedByBooklet).includes(session.data.bookletName)) {
         groupedByBooklet[session.data.bookletName].testIds.push(session.data.testId);
       }
     });
@@ -379,6 +402,9 @@ export class TestSessionManager {
     if (this.checkingOptions.autoCheckAll) {
       return;
     }
+    if (!this._sessions$) {
+      return;
+    }
     const unChecked = this._sessions$.getValue()
       .filter(session => session.data.testId && session.data.testId > -1)
       .filter(session => (!['pending', 'locked'].includes(session.state)))
@@ -418,7 +444,7 @@ export class TestSessionManager {
   }
 
   private replaceCheckedSessions(sessionsToCheck: TestSession[]): void {
-    const newCheckedSessions = {};
+    const newCheckedSessions: { [testId: string]: TestSession } = {};
     sessionsToCheck
       .forEach(session => { newCheckedSessions[session.data.testId] = session; });
     this._checked = newCheckedSessions;

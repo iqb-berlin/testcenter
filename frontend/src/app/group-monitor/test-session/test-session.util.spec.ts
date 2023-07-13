@@ -98,15 +98,15 @@ describe('TestSessionUtil', () => {
         expect(result.indexLocal)
           .withContext(`local index of unit-${i}`)
           .toEqual(expectation.indexLocal);
-        expect(result.unit.id)
+        expect(result.unit?.id)
           .withContext(`current unit of unit-${i}`)
           .toEqual(`unit-${i}`);
-        expect(result.parent.id)
+        expect(result.parent?.id)
           .withContext(`parent of unit-${i}`)
-          .toEqual(expectation.parent.id);
-        expect(result.ancestor.id)
+          .toEqual(expectation.parent?.id);
+        expect(result.ancestor?.id)
           .withContext(`ancestor of unit-${i}`)
-          .toEqual(expectation.ancestor.id);
+          .toEqual(expectation.ancestor?.id);
       }
     });
 

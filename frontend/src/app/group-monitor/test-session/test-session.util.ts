@@ -10,7 +10,7 @@ import {
 } from '../group-monitor.interfaces';
 
 export class TestSessionUtil {
-  static hasState(state: Record<string, unknown>, key: string, value = null): boolean {
+  static hasState(state: Record<string, unknown>, key: string, value: string | null = null): boolean {
     return ((typeof state[key] !== 'undefined') && ((value !== null) ? (state[key] === value) : true));
   }
 
@@ -23,7 +23,9 @@ export class TestSessionUtil {
   }
 
   static analyzeTestSession(session: TestSessionData, booklet: Booklet | BookletError): TestSession {
-    const current = isBooklet(booklet) ? TestSessionUtil.getCurrent(booklet.units, session.unitName) : null;
+    const current = (isBooklet(booklet) && session.unitName) ?
+      TestSessionUtil.getCurrent(booklet.units, session.unitName) :
+      null;
     return {
       data: session,
       state: TestSessionUtil.getSuperState(session),
@@ -37,7 +39,7 @@ export class TestSessionUtil {
   static stateString(state: Record<string, string>, keys: string[], glue = ''): string {
     return keys
       .map((key: string) => (TestSessionUtil.hasState(state, key) ? state[key] : null))
-      .filter((value: string) => value !== null)
+      .filter(value => value !== null)
       .join(glue);
   }
 
@@ -103,10 +105,10 @@ export class TestSessionUtil {
     testlet: Testlet,
     searchUnitId: string,
     level = 0,
-    context: UnitContext = null
+    context: UnitContext | null = null
   ): UnitContext {
-    const result: UnitContext = context || {
-      unit: null,
+    const result: UnitContext = context ?? {
+      unit: undefined,
       parent: testlet,
       ancestor: testlet,
       indexGlobal: -1,
@@ -127,7 +129,7 @@ export class TestSessionUtil {
         }
       } else {
         const subResult = TestSessionUtil.getCurrent(child, searchUnitId, level + 1, {
-          unit: null,
+          unit: undefined,
           parent: child,
           ancestor: level < 1 ? child : result.ancestor,
           indexGlobal: result.indexGlobal,

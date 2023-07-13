@@ -155,8 +155,13 @@ export class AppConfigComponent implements OnInit, OnDestroy {
         return;
       }
       const reader = new FileReader();
-      reader.onload = (e: any) => {
+      reader.onload = e => {
+        if (!e || !e.target || !e.target.result || (typeof e.target.result !== 'string')) {
+          this.imageError = 'Konnte Bild nicht lesen';
+          return;
+        }
         const image = new Image();
+
         image.src = e.target.result;
         image.onload = rs => {
           const imgTargetElement = rs.currentTarget as HTMLImageElement;
@@ -164,6 +169,10 @@ export class AppConfigComponent implements OnInit, OnDestroy {
           const imgWidth = imgTargetElement.width;
           if (imgHeight > maxHeight && imgWidth > maxWidth) {
             this.imageError = `Unzulässige Größe (maximal erlaubt: ${maxHeight}*${maxWidth}px)`;
+            return false;
+          }
+          if (!e || !e.target || !e.target.result || (typeof e.target.result !== 'string')) {
+            this.imageError = 'Konnte Bild nicht lesen';
             return false;
           }
           this.logoImageBase64 = e.target.result;
