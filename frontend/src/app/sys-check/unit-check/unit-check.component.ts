@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, HostListener, OnDestroy
+  Component, OnInit, HostListener, OnDestroy, ViewChild, ElementRef
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MainDataService } from '../../shared/shared.module';
@@ -13,13 +13,13 @@ import { SysCheckDataService } from '../sys-check-data.service';
 })
 export class UnitCheckComponent implements OnInit, OnDestroy {
   pageList: PageData[] = [];
-  currentPage: number;
+  currentPage: number = -1;
   errorText = '';
-  private iFrameHostElement: HTMLElement;
-  private iFrameItemplayer: HTMLIFrameElement = null;
-  private postMessageSubscription: Subscription = null;
-  private taskSubscription: Subscription = null;
-  private postMessageTarget: Window = null;
+  @ViewChild('#iFrameHost') private iFrameHostElement: ElementRef = {} as ElementRef;
+  private iFrameItemplayer: HTMLIFrameElement | null = null;
+  private postMessageSubscription: Subscription | null = null;
+  private taskSubscription: Subscription | null = null;
+  private postMessageTarget: Window | null = null;
   private itemplayerSessionId = '';
   private pendingUnitDef = '';
 
@@ -32,8 +32,8 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize')
   onResize() {
-    if (this.iFrameItemplayer && this.iFrameHostElement) {
-      const divHeight = this.iFrameHostElement.clientHeight;
+    if (this.iFrameItemplayer) {
+      const divHeight = this.iFrameHostElement.nativeElement.clientHeight;
       this.iFrameItemplayer.setAttribute('height', String(divHeight - 5));
       // TODO: Why minus 5px?
     }
@@ -43,7 +43,6 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.ds.setNewCurrentStep('u');
       if (this.ds.unitAndPlayerContainer) {
-        this.iFrameHostElement = <HTMLElement>document.querySelector('#iFrameHost');
         this.postMessageSubscription = this.mds.postMessage$.subscribe((m: MessageEvent) => {
           const msgData = m.data;
           const msgType = msgData.type;
@@ -51,7 +50,10 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           if ((msgType !== undefined) && (msgType !== null)) {
             switch (msgType) {
               case 'vopReadyNotification':
-                this.iFrameItemplayer.setAttribute('height', String(Math.trunc(this.iFrameHostElement.clientHeight)));
+                this.iFrameItemplayer?.setAttribute(
+                  'height',
+                  String(Math.trunc(this.iFrameHostElement.nativeElement.clientHeight))
+                );
                 this.postMessageTarget = m.source as Window;
                 this.itemplayerSessionId = Math.floor(Math.random() * 20000000 + 10000000).toString();
                 this.postMessageTarget.postMessage({
@@ -81,8 +83,8 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
           }
         });
 
-        while (this.iFrameHostElement.hasChildNodes()) {
-          this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+        while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
+          this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
         }
         this.pendingUnitDef = this.ds.unitAndPlayerContainer.def;
 
@@ -97,69 +99,47 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
         }
 
         this.iFrameItemplayer.setAttribute('class', 'unitHost');
-        this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+        this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
         this.iFrameItemplayer.setAttribute('srcdoc', this.ds.unitAndPlayerContainer.player);
       }
     });
   }
 
-  setPageList(validPages: string[], currentPage: string) {
-    if ((validPages instanceof Array)) {
-      const newPageList: PageData[] = [];
-      if (validPages.length > 1) {
-        for (let i = 0; i < validPages.length; i++) {
-          if (i === 0) {
-            newPageList.push({
-              index: -1,
-              id: '#previous',
-              disabled: validPages[i] === currentPage,
-              type: '#previous'
-            });
-          }
-
+  setPageList(validPages: string[], currentPage: string): void {
+    const newPageList: PageData[] = [];
+    if (validPages.length > 1) {
+      for (let i = 0; i < validPages.length; i++) {
+        if (i === 0) {
           newPageList.push({
-            index: i + 1,
-            id: validPages[i],
+            index: -1,
+            id: '#previous',
             disabled: validPages[i] === currentPage,
-            type: '#goto'
+            type: '#previous'
           });
+        }
 
-          if (i === validPages.length - 1) {
-            newPageList.push({
-              index: -1,
-              id: '#next',
-              disabled: validPages[i] === currentPage,
-              type: '#next'
-            });
-          }
+        newPageList.push({
+          index: i + 1,
+          id: validPages[i],
+          disabled: validPages[i] === currentPage,
+          type: '#goto'
+        });
+
+        if (i === validPages.length - 1) {
+          newPageList.push({
+            index: -1,
+            id: '#next',
+            disabled: validPages[i] === currentPage,
+            type: '#next'
+          });
         }
-      }
-      this.pageList = newPageList;
-    } else if ((this.pageList.length > 1) && (currentPage !== undefined)) {
-      let currentPageIndex = 0;
-      for (let i = 0; i < this.pageList.length; i++) {
-        if (this.pageList[i].type === '#goto') {
-          if (this.pageList[i].id === currentPage) {
-            this.pageList[i].disabled = true;
-            currentPageIndex = i;
-          } else {
-            this.pageList[i].disabled = false;
-          }
-        }
-      }
-      if (currentPageIndex === 1) {
-        this.pageList[0].disabled = true;
-        this.pageList[this.pageList.length - 1].disabled = false;
-      } else {
-        this.pageList[0].disabled = false;
-        this.pageList[this.pageList.length - 1].disabled = currentPageIndex === this.pageList.length - 2;
       }
     }
+    this.pageList = newPageList;
   }
 
   gotoPage(action: string, index = 0): void {
     let nextPageId = '';
-    // currentpage is detected by disabled-attribute of page
     if (action === '#next') {
       let currentPageIndex = 0;
       for (let i = 0; i < this.pageList.length; i++) {
@@ -192,13 +172,11 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
     }
 
     if (nextPageId.length > 0) {
-      if (typeof this.postMessageTarget !== 'undefined') {
-        this.postMessageTarget.postMessage({
-          type: 'vopPageNavigationCommand',
-          sessionId: this.itemplayerSessionId,
-          target: nextPageId
-        }, '*');
-      }
+      this.postMessageTarget?.postMessage({
+        type: 'vopPageNavigationCommand',
+        sessionId: this.itemplayerSessionId,
+        target: nextPageId
+      }, '*');
     }
   }
 

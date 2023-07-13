@@ -2,12 +2,14 @@ import {
   Booklet, CommandResponse, TestSession, TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { TestSessionUtil } from './test-session/test-session.util';
+import { BookletConfig } from '../shared/classes/booklet-config.class';
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 
 // labels are: {global index}-{ancestor index}-{local index}
 export const unitTestExampleBooklets: { [name: string]: Booklet } = {
   example_booklet_1: {
     species: 'example-species-1',
-    config: undefined,
+    config: new BookletConfig(),
     metadata: {
       id: '1',
       label: 'Label 1',
@@ -83,7 +85,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
   },
   example_booklet_2: {
     species: 'example-species-2',
-    config: undefined,
+    config: new BookletConfig(),
     metadata: {
       id: 'Booklet-2',
       label: 'Label 2',
@@ -130,7 +132,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
   },
   example_booklet_3: {
     species: 'example-species-1',
-    config: undefined,
+    config: new BookletConfig(),
     metadata: {
       id: '3',
       label: 'Label 3',
@@ -163,7 +165,7 @@ export const unitTestExampleBooklets: { [name: string]: Booklet } = {
 };
 
 export const unitTestExampleSessions: TestSession[] = [
-  <TestSessionData>{
+  {
     personId: 1,
     personLabel: 'Person 1',
     groupName: 'group-1',
@@ -179,7 +181,7 @@ export const unitTestExampleSessions: TestSession[] = [
     unitState: {},
     timestamp: 10000500
   },
-  <TestSessionData>{
+  {
     personId: 1,
     personLabel: 'Person 1',
     groupName: 'group-1',
@@ -195,7 +197,7 @@ export const unitTestExampleSessions: TestSession[] = [
     unitState: {},
     timestamp: 10000300
   },
-  <TestSessionData>{
+  {
     personId: 2,
     personLabel: 'Person 2',
     groupName: 'group-1',

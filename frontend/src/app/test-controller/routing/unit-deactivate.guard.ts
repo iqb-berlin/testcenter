@@ -1,7 +1,7 @@
 import { map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -87,13 +87,11 @@ export class UnitDeactivateGuard {
     ) {
       reasons.push('presentationIncomplete');
     }
+    const currentUnitResponseProgress = this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId);
     if (
       (checkOnValue[direction].indexOf(unit.unitDef.navigationLeaveRestrictions.responseComplete) > -1) &&
-      this.tcs.hasUnitResponseProgress(this.tcs.currentUnitSequenceId) &&
-      (
-        ['complete', 'complete-and-valid']
-          .indexOf(this.tcs.getUnitResponseProgress(this.tcs.currentUnitSequenceId)) === -1
-      )
+      currentUnitResponseProgress &&
+      (['complete', 'complete-and-valid'].indexOf(currentUnitResponseProgress) === -1)
     ) {
       reasons.push('responsesIncomplete');
     }
@@ -144,7 +142,7 @@ export class UnitDeactivateGuard {
     }
 
     const target = nextState.url.split('/').pop();
-    if (['route-dispatcher'].indexOf(target) > -1) { // clicking on the IQB-Logo
+    if (target && (['route-dispatcher'].indexOf(target) > -1)) { // clicking on the IQB-Logo
       return true;
     }
 
@@ -153,22 +151,26 @@ export class UnitDeactivateGuard {
       return true;
     }
 
-    let newUnit: UnitWithContext = null;
-    if (/t\/\d+\/u\/\d+$/.test(nextState.url)) {
-      const targetUnitSequenceId = Number(nextState.url.match(/\d+$/)[0]);
+    let newUnit: UnitWithContext | null = null;
+    const match = nextState.url.match(/\d+$/);
+    if (/t\/\d+\/u\/\d+$/.test(nextState.url) && match) {
+      const targetUnitSequenceId = Number(match[0]);
       newUnit = this.tcs.getUnitWithContext(targetUnitSequenceId);
     }
+    if (!newUnit) {
+      return false;
+    }
 
-    const forceNavigation = this.router.getCurrentNavigation().extras?.state?.force ?? false;
+    const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
 
     if (forceNavigation) {
       this.tcs.interruptMaxTimer();
-      return of(true);
+      return true;
     }
 
     return this.checkAndSolveCompleteness(newUnit)
       .pipe(
-        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveMaxTime(newUnit)))
+        switchMap(cAsC => (!cAsC ? of(false) : this.checkAndSolveMaxTime(newUnit as UnitWithContext)))
       );
   }
 }
