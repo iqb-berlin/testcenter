@@ -1,17 +1,18 @@
-<mat-card appearance="outlined" *ngIf="files.length > 0">
+<mat-card appearance="raised" *ngIf="files.length > 0">
   <mat-card-header>
     <mat-card-title>Upload-Report</mat-card-title>
   </mat-card-header>
 
-  <tc-files-upload
-    [files]="files"
-    [fileAlias]="fileAlias"
-    [folderName]="folderName"
-    [folder]="folder"
-    (removeFileRequestEvent)="removeFile($event)"
-    (statusChangedEvent)="analyseStatus()">
-  </tc-files-upload>
-
+  <mat-card-content>
+    <tc-files-upload
+      [files]="files"
+      [fileAlias]="fileAlias"
+      [folderName]="folderName"
+      [folder]="folder"
+      (removeFileRequestEvent)="removeFile($event)"
+      (statusChangedEvent)="analyseStatus()">
+    </tc-files-upload>
+  </mat-card-content>
 
   <mat-card-actions>
     <button
