@@ -3,10 +3,6 @@
   margin: 2px;
 }
 
-.mat-mdc-checkbox {
-  margin: 0 9px;
-}
-
 .mat-column-selectCheckbox {
-  max-width: 90px !important;
+  max-width: 100px !important;
 }
