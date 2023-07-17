@@ -1,5 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
-import { AppError } from '../../app.interfaces';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 
 export interface TcSpeedChartSettings {
   lineWidth: number;
@@ -24,12 +23,11 @@ export interface TcSpeedChartSettings {
 
 @Component({
   selector: 'tc-speed-chart',
-  template: '<canvas></canvas>'
+  template: '<canvas #speedChart></canvas>'
 })
 export class TcSpeedChartComponent {
-  private canvas: HTMLCanvasElement;
-  private context: CanvasRenderingContext2D;
-  private el;
+  @ViewChild('speedChart') private canvas: ElementRef = {} as ElementRef;
+  private context: CanvasRenderingContext2D | null = null;
   private xScale: number = -1;
   private yScale: number = -1;
 
@@ -54,26 +52,18 @@ export class TcSpeedChartComponent {
     yProject: y => y
   };
 
-  constructor(elem: ElementRef) {
-    this.el = elem.nativeElement;
-    this.canvas = this.el.querySelector('canvas');
-    const context = this.canvas.getContext('2d');
-    if (!context) {
-      throw new AppError({
-        description: '', label: 'Geschwindigkeitschart konnte nicht gerendert werden', type: 'script'
-      });
-    }
-    this.context = context;
-  }
-
   reset(config: TcSpeedChartSettings): void {
+    this.context = this.canvas.nativeElement.getContext('2d');
     this.config = { ...this.config, ...config };
-    this.canvas.setAttribute('style', this.config.css);
-    this.canvas.setAttribute('height', `${this.config.height.toString()}px`);
+    this.canvas.nativeElement.setAttribute('style', this.config.css);
+    this.canvas.nativeElement.setAttribute('height', `${this.config.height.toString()}px`);
     // this.canvas.setAttribute('width', this.config.width);
 
+    if (!this.context) {
+      throw new Error('context not found');
+    }
     this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     this.context.font = this.config.labelFont;
 
     const xAxisMinValue = this.config.xProject(this.config.xAxisMinValue);
@@ -81,8 +71,8 @@ export class TcSpeedChartComponent {
     const yAxisMinValue = this.config.yProject(this.config.yAxisMinValue);
     const yAxisMaxValue = this.config.yProject(this.config.yAxisMaxValue);
 
-    this.xScale = this.canvas.width / (xAxisMaxValue - xAxisMinValue);
-    this.yScale = this.canvas.height / (yAxisMaxValue - yAxisMinValue);
+    this.xScale = this.canvas.nativeElement.width / (xAxisMaxValue - xAxisMinValue);
+    this.yScale = this.canvas.nativeElement.height / (yAxisMaxValue - yAxisMinValue);
 
     this.drawGridColumns();
     this.drawGridRows();
@@ -93,6 +83,9 @@ export class TcSpeedChartComponent {
   plotData(dataPoints: [number, number][], color: string | null = null, style: 'line' | 'dots' = 'line'): void {
     if (!dataPoints.length) {
       return;
+    }
+    if (!this.context) {
+      throw new Error('context not found');
     }
     const coordinates = this.dataPointsToCoordinates(dataPoints);
     const newColor = color || TcSpeedChartComponent.randomColor();
@@ -122,24 +115,24 @@ export class TcSpeedChartComponent {
       ])
       .map((xy): [number, number] => [ // scale to image size
         xy[0] * this.xScale,
-        this.canvas.height - xy[1] * this.yScale
+        this.canvas.nativeElement.height - xy[1] * this.yScale
       ]);
   }
 
   private paintLine(plotCoordinates: Array<[number, number]>) {
-    this.context.beginPath();
-    this.context.moveTo(plotCoordinates[0][0], plotCoordinates[0][1]);
+    this.context?.beginPath();
+    this.context?.moveTo(plotCoordinates[0][0], plotCoordinates[0][1]);
     plotCoordinates.forEach(xy => {
-      this.context.lineTo(xy[0], xy[1]);
+      this.context?.lineTo(xy[0], xy[1]);
     });
-    this.context.stroke();
+    this.context?.stroke();
   }
 
   private paintDots(plotCoordinates: Array<[number, number]>) {
     plotCoordinates.forEach(xy => {
-      this.context.beginPath();
-      this.context.arc(xy[0], xy[1], this.config.lineWidth, 0, 2 * Math.PI);
-      this.context.fill();
+      this.context?.beginPath();
+      this.context?.arc(xy[0], xy[1], this.config.lineWidth, 0, 2 * Math.PI);
+      this.context?.fill();
     });
   }
 
@@ -158,12 +151,14 @@ export class TcSpeedChartComponent {
         // eslint-disable-next-line no-continue
         continue;
       }
-      this.context.fillText(label, scaledX, this.canvas.height - this.config.labelPadding);
-      this.context.strokeStyle = (x === 0) ? this.config.axisColor : this.config.gridColor;
-      this.context.beginPath();
-      this.context.moveTo(scaledX, 0);
-      this.context.lineTo(scaledX, this.canvas.height);
-      this.context.stroke();
+      if (this.context) {
+        this.context.fillText(label, scaledX, this.canvas.nativeElement.height - this.config.labelPadding);
+        this.context.strokeStyle = (x === 0) ? this.config.axisColor : this.config.gridColor;
+        this.context.beginPath();
+        this.context.moveTo(scaledX, 0);
+        this.context.lineTo(scaledX, this.canvas.nativeElement.height);
+        this.context.stroke();
+      }
     }
   }
 
@@ -177,18 +172,20 @@ export class TcSpeedChartComponent {
     ) {
       const transformedY = this.config.yProject(y);
       const scaledY =
-        this.canvas.height - this.yScale * (transformedY - this.config.yProject(this.config.yAxisMinValue));
+        this.canvas.nativeElement.height - this.yScale * (transformedY - this.config.yProject(this.config.yAxisMinValue));
       const label = this.config.yAxisLabels(y, count);
       if (label === '') {
         // eslint-disable-next-line no-continue
         continue;
       }
-      this.context.fillText(label, this.config.labelPadding, scaledY);
-      this.context.strokeStyle = (y === 0) ? this.config.axisColor : this.config.gridColor;
-      this.context.beginPath();
-      this.context.moveTo(0, scaledY);
-      this.context.lineTo(this.canvas.width, scaledY);
-      this.context.stroke();
+      if (this.context) {
+        this.context.fillText(label, this.config.labelPadding, scaledY);
+        this.context.strokeStyle = (y === 0) ? this.config.axisColor : this.config.gridColor;
+        this.context.beginPath();
+        this.context.moveTo(0, scaledY);
+        this.context.lineTo(this.canvas.nativeElement.width, scaledY);
+        this.context.stroke();
+      }
     }
   }
 
