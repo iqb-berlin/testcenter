@@ -58,7 +58,7 @@
 </td>
 
 <td class="test" (click)="deselect($event)" (contextmenu)="deselectForce($event)">
-  <ng-container *ngIf="!testSession.booklet['error']; else: noBookletReason">
+  <ng-container *ngIf="!testSession?.booklet?.error; else: noBookletReason">
     <div
       *ngIf="testSession.booklet.units as testlet"
       class="units-container"

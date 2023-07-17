@@ -25,7 +25,7 @@ import { BookletConfig, TestMode } from '../../shared/shared.module';
 import { VeronaNavigationDeniedReason } from '../interfaces/verona.interfaces';
 import { MissingBookletError } from '../classes/missing-booklet-error.class';
 import { MessageService } from '../../shared/services/message.service';
-import { AppError, AppErrorType } from '../../app.interfaces';
+import { AppError } from '../../app.interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -279,7 +279,7 @@ export class TestControllerService {
       return this.unitStateCurrentPages[unitSequenceId];
     }
 
-    throw new Error(`unknown key: ${stateKey}`);
+    return undefined;
   }
 
   private setUnitState(unitSequenceId: number, stateKey: string, value: string): void {
@@ -294,8 +294,6 @@ export class TestControllerService {
     if (stateKey === 'CURRENT_PAGE_ID') {
       this.unitStateCurrentPages[unitSequenceId] = value;
     }
-
-    throw new Error(`unknown key: ${stateKey}`);
   }
 
   addPlayer(id: string, player: string): void {
