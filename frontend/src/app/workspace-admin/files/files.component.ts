@@ -196,7 +196,7 @@ export class FilesComponent implements OnInit, OnDestroy {
     };
     IQBFileTypes
       .forEach(type => {
-        fileList[type].forEach(file => {
+        fileList[type]?.forEach(file => {
           if (typeof stats.invalid[type] === 'undefined') {
             stats.invalid[type] = 0;
           }
@@ -213,7 +213,7 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   private addFrontendChecksToFiles(fileList: GetFileResponseData): GetFileResponseData {
     IQBFileTypes.forEach(type => {
-      fileList[type] = fileList[type].map(files => this.addFrontendChecksToFile(files));
+      fileList[type] = fileList[type]?.map(files => this.addFrontendChecksToFile(files));
     });
     return fileList;
   }
