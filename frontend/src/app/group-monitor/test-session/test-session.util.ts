@@ -1,3 +1,4 @@
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import {
   Booklet,
   BookletError, isBooklet,
@@ -8,7 +9,6 @@ import {
   TestSessionSuperState,
   UnitContext
 } from '../group-monitor.interfaces';
-import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 
 export class TestSessionUtil {
   static hasState(state: Record<string, unknown>, key: string, value: string | null = null): boolean {

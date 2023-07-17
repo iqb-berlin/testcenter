@@ -4,7 +4,7 @@ import {
   BehaviorSubject, from, Observable, of, Subject, Subscription
 } from 'rxjs';
 import {
-  concatMap, distinctUntilChanged, filter, last, map, shareReplay, switchMap, tap
+  concatMap, distinctUntilChanged, last, map, shareReplay, switchMap, tap
 } from 'rxjs/operators';
 import { CustomtextService, BookletConfig, TestMode } from '../../shared/shared.module';
 import {

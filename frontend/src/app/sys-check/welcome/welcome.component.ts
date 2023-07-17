@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import UAParser, { IResult } from 'ua-parser-js';
+import UAParser from 'ua-parser-js';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
 import { BackendService } from '../backend.service';
