@@ -141,28 +141,24 @@ export class UnitDeactivateGuard {
       return true;
     }
 
-    const target = nextState.url.split('/').pop();
-    if (target && (['route-dispatcher'].indexOf(target) > -1)) { // clicking on the IQB-Logo
-      return true;
-    }
-
     const currentUnit = this.tcs.getUnitWithContext(this.tcs.currentUnitSequenceId);
     if (currentUnit && this.tcs.getUnclearedTestlets(currentUnit).length) {
       return true;
     }
 
     let newUnit: UnitWithContext | null = null;
-    const match = nextState.url.match(/\d+$/);
-    if (/t\/\d+\/u\/\d+$/.test(nextState.url) && match) {
-      const targetUnitSequenceId = Number(match[0]);
+    const match = nextState.url.match(/t\/(\d+)\/u\/(\d+)$/);
+    if (match) {
+      const targetUnitSequenceId = Number(match[2]);
       newUnit = this.tcs.getUnitWithContext(targetUnitSequenceId);
     }
+
     if (!newUnit) {
-      return false;
+      this.tcs.interruptMaxTimer();
+      return true;
     }
 
     const forceNavigation = this.router.getCurrentNavigation()?.extras?.state?.force ?? false;
-
     if (forceNavigation) {
       this.tcs.interruptMaxTimer();
       return true;
