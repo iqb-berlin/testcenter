@@ -20,7 +20,7 @@ export class TestMode extends TestModeData {
     this.modeId = mode;
     this.modeLabel = TestModeData.labels[mode];
 
-    (Object.keys(TestModeData) as Array<keyof typeof TestModeData.modes[typeof mode]>)
+    (Object.keys(this) as Array<keyof typeof TestModeData.modes[typeof mode]>)
       .forEach((key: keyof typeof TestModeData.modes[typeof mode]) => {
         if (key in this) {
           this[key] = TestModeData.modes[mode][key];
