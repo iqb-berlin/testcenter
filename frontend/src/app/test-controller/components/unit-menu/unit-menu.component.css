@@ -44,3 +44,9 @@ a:last-of-type {
   background: var(--accent) !important;
 }
 
+.mat-mdc-button-base {
+  height: auto !important;
+  min-height: 36px;
+  text-align: center;
+  padding: 0.3em;
+}
