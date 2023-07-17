@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import UAParser from 'ua-parser-js';
+import UAParser, { IResult } from 'ua-parser-js';
 import { SysCheckDataService } from '../sys-check-data.service';
 import { ReportEntry } from '../sys-check.interfaces';
 import { BackendService } from '../backend.service';
@@ -14,17 +14,7 @@ export class WelcomeComponent implements OnInit {
   private report: Map<string, ReportEntry> = new Map<string, ReportEntry>();
 
   // TODO discuss if sysCheck should show a warning.
-  // if yes: replace this with browserlist-stuff like in login-component
-  // if not: remove it
   private rating = {
-    browser: {
-      Chrome: 79,
-      Safari: 13,
-      Edge: 79,
-      Firefox: 72,
-      'Internet Explorer': 11,
-      Opera: 64
-    },
     screen: {
       width: 800,
       height: 600
@@ -43,7 +33,6 @@ export class WelcomeComponent implements OnInit {
       this.getFromUAParser();
       this.getNavigatorInfo();
       this.getBrowserPluginInfo();
-      this.getBrowserRating();
       this.ds.questionnaireReport.length = 0;
       this.getTime()
         .subscribe(() => {
@@ -66,28 +55,21 @@ export class WelcomeComponent implements OnInit {
       ['browser', 'major', 'Browser-Version'],
       ['os', 'name', 'Betriebsystem'],
       ['os', 'version', 'Betriebsystem-Version']
-    ].forEach((item: Array<string>) => {
-      if ((typeof uaInfos[item[0]] !== 'undefined') && (typeof uaInfos[item[0]][item[1]] !== 'undefined')) {
+    ].forEach((item: string[]) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if ((uaInfos[item[0]]) && (uaInfos[item[0]][item[1]])) {
         this.report.set(item[2], {
           id: item[2],
           type: 'environment',
           label: item[2],
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           value: uaInfos[item[0]][item[1]],
           warning: false
         });
       }
     });
-  }
-
-  private getBrowserRating() {
-    const browser = this.report.get('Browser').value;
-    const browserVersion = this.report.get('Browser-Version').value;
-    if ((typeof this.rating.browser[browser] !== 'undefined') && (browserVersion < this.rating.browser[browser])) {
-      this.report.get('Browser-Version').warning = true;
-    }
-    if (browser === 'Internet Explorer') {
-      this.report.get('Browser').warning = true;
-    }
   }
 
   private getNavigatorInfo() {
@@ -96,12 +78,12 @@ export class WelcomeComponent implements OnInit {
       ['cookieEnabled', 'Browser-Cookies aktiviert'],
       ['language', 'Browser-Sprache']
     ].forEach((item: string[]) => {
-      if (typeof navigator[item[0]] !== 'undefined') {
+      if (typeof navigator[item[0] as keyof Navigator] !== 'undefined') {
         this.report.set(item[1], {
           id: item[0],
           type: 'environment',
           label: item[1],
-          value: navigator[item[0]],
+          value: navigator[item[0] as keyof Navigator] as string,
           warning: false
         });
       }

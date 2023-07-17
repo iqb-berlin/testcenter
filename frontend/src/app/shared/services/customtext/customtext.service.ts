@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CustomTextDefs } from '../../interfaces/customtext.interfaces';
-import { customTexts } from '../../objects/customtexts';
+import { customTextDefaults } from '../../objects/customTextDefaults';
 
 @Injectable({
   providedIn: 'root'
@@ -41,11 +41,11 @@ export class CustomtextService {
     }
 
     Object.keys(this.customTexts).forEach(k => {
-      if (this.customTexts[k] && customTexts[k]) {
-        this.customTexts[k].next(customTexts[k].defaultvalue);
+      if (this.customTexts[k] && customTextDefaults[k]) {
+        this.customTexts[k].next(customTextDefaults[k].defaultvalue);
       }
       if (all) {
-        if (!(k in customTexts) && this.customTexts[k]) {
+        if (!(k in customTextDefaults) && this.customTexts[k]) {
           this.customTexts[k] = new BehaviorSubject<string | null>(null);
         }
       }

@@ -1,6 +1,6 @@
 export interface CustomTextData {
   defaultvalue: string;
-  description: string;
+  label: string;
 }
 
 export interface CustomTextDefs {[key: string]: CustomTextData; }

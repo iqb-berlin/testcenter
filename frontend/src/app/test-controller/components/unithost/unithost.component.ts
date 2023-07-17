@@ -2,7 +2,7 @@ import {
   BehaviorSubject, combineLatest, merge, Subscription
 } from 'rxjs';
 import {
-  Component, HostListener, OnInit, OnDestroy
+  Component, HostListener, OnInit, OnDestroy, ViewChild, ElementRef
 } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -29,26 +29,26 @@ import { AppError } from '../../../app.interfaces';
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {
-  private iFrameHostElement: HTMLElement;
-  private iFrameItemplayer: HTMLIFrameElement;
+  @ViewChild('iframe-host') private iFrameHostElement: ElementRef = {} as ElementRef;
+  private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;
 
   currentUnitSequenceId = -1;
 
   private itemplayerSessionId = '';
-  private postMessageTarget: Window = null;
-  private pendingUnitData: PendingUnitData = null; // TODO this is redundant, get rid of it
+  private postMessageTarget: Window = window;
+  private pendingUnitData: PendingUnitData | null = null; // TODO this is redundant, get rid of it
 
-  knownPages: { id: string; label: string }[];
+  knownPages: { id: string; label: string }[] = [];
   unitsLoading$: BehaviorSubject<LoadingProgress[]> = new BehaviorSubject<LoadingProgress[]>([]);
-  unitsToLoadLabels: string[];
+  unitsToLoadLabels: string[] = [];
 
-  currentUnit: UnitWithContext;
-  currentPageIndex: number;
+  currentUnit: UnitWithContext | null = null;
+  currentPageIndex: number = -1;
   unitNavigationTarget = UnitNavigationTarget;
 
-  clearCodes = {};
+  clearCodes: { [testletId: string]: string } = {};
   codeRequiringTestlets: Testlet[] = [];
 
   constructor(
@@ -60,7 +60,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.iFrameHostElement = <HTMLElement>document.querySelector('#iframe-host');
     this.iFrameItemplayer = null;
     this.leaveWarning = false;
     setTimeout(() => {
@@ -78,6 +77,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private handleIncomingMessage(messageEvent: MessageEvent): void {
+    if (!this.currentUnit) {
+      return;
+    }
     const msgData = messageEvent.data;
     const msgType = msgData.type;
     let msgPlayerId = msgData.sessionId;
@@ -85,7 +87,6 @@ export class UnithostComponent implements OnInit, OnDestroy {
       msgPlayerId = this.itemplayerSessionId;
     }
 
-    // todo: remove 'player'
     switch (msgType) {
       case 'vopReadyNotification':
       case 'player':
@@ -226,14 +227,17 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private open(currentUnitSequenceId: number): void {
+    if (!this.tcs.rootTestlet) {
+      throw new Error('Booklet not loaded');
+    }
     this.currentUnitSequenceId = currentUnitSequenceId;
     this.tcs.currentUnitSequenceId = this.currentUnitSequenceId;
 
-    while (this.iFrameHostElement.hasChildNodes()) {
-      this.iFrameHostElement.removeChild(this.iFrameHostElement.lastChild);
+    while (this.iFrameHostElement.nativeElement.hasChildNodes()) {
+      this.iFrameHostElement.nativeElement.removeChild(this.iFrameHostElement.nativeElement.lastChild);
     }
 
-    this.currentPageIndex = undefined;
+    this.currentPageIndex = -1;
     this.knownPages = [];
 
     this.currentUnit = this.tcs.getUnitWithContext(this.currentUnitSequenceId);
@@ -245,7 +249,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     }
 
     const unitsToLoadIds = this.currentUnit.maxTimerRequiringTestlet ?
-      this.tcs.rootTestlet.getAllUnitSequenceIds(this.currentUnit.maxTimerRequiringTestlet?.id) :
+      this.tcs.rootTestlet.getAllUnitSequenceIds(this.currentUnit.maxTimerRequiringTestlet.id) :
       [currentUnitSequenceId];
 
     const unitsToLoad = unitsToLoadIds
@@ -271,6 +275,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private prepareUnit(): void {
+    if (!this.currentUnit) {
+      throw new Error('Unit not loaded');
+    }
     this.unitsLoading$.next([]);
     this.tcs.currentUnitDbKey = this.currentUnit.unitDef.alias;
     this.tcs.currentUnitTitle = this.currentUnit.unitDef.title;
@@ -297,6 +304,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private runUnit(): void {
+    if (!this.currentUnit) {
+      throw new Error('Unit not loaded');
+    }
     this.codeRequiringTestlets = this.tcs.getUnclearedTestlets(this.currentUnit);
 
     if (this.codeRequiringTestlets.length) {
@@ -329,7 +339,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private startTimerIfNecessary(): void {
-    if (this.currentUnit.maxTimerRequiringTestlet === null) {
+    if (!this.currentUnit?.maxTimerRequiringTestlet) {
       return;
     }
     if (this.tcs.currentMaxTimerTestletId &&
@@ -341,6 +351,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private prepareIframe(): void {
+    if (!this.currentUnit) {
+      return;
+    }
     this.iFrameItemplayer = <HTMLIFrameElement>document.createElement('iframe');
     if (!('srcdoc' in this.iFrameItemplayer)) {
       this.mainDataService.appError = new AppError({
@@ -353,12 +366,12 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer.setAttribute('sandbox', 'allow-forms allow-scripts allow-popups allow-same-origin');
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
-    this.iFrameHostElement.appendChild(this.iFrameItemplayer);
+    this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
     this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
   }
 
   private adjustIframeSize(): void {
-    this.iFrameItemplayer.setAttribute('height', String(this.iFrameHostElement.clientHeight));
+    this.iFrameItemplayer?.setAttribute('height', String(this.iFrameHostElement.nativeElement.clientHeight));
   }
 
   private reload(): void {
@@ -376,6 +389,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   private getPlayerConfig(): VeronaPlayerConfig {
+    if (!this.currentUnit) {
+      throw new Error('Unit not loaded');
+    }
     const playerConfig: VeronaPlayerConfig = {
       enabledNavigationTargets: UnithostComponent.getEnabledNavigationTargets(
         this.currentUnitSequenceId,
@@ -392,7 +408,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitId: this.currentUnit.unitDef.alias,
       directDownloadUrl: `${this.bs.serverUrl}${this.mainDataService.getAuthData()?.token}/resource`
     };
-    if (this.pendingUnitData.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
+    if (this.pendingUnitData?.currentPage && (this.tcs.bookletConfig.restore_current_page_on_return === 'ON')) {
       playerConfig.startPage = this.pendingUnitData.currentPage;
     }
     return playerConfig;
@@ -404,7 +420,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     max: number,
     terminationAllowed: 'ON' | 'OFF' | 'LAST_UNIT' = 'ON'
   ): VeronaNavigationTarget[] {
-    const navigationTargets = [];
+    const navigationTargets: VeronaNavigationTarget[] = [];
     if (nr < max) {
       navigationTargets.push('next');
     }
@@ -452,6 +468,9 @@ export class UnithostComponent implements OnInit, OnDestroy {
   }
 
   verifyCodes(): void {
+    if (!this.currentUnit) {
+      throw new Error('Unit not loaded');
+    }
     this.currentUnit.codeRequiringTestlets
       .forEach(
         testlet => {

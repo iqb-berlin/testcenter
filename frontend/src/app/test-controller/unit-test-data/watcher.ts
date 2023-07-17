@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Observable, Subject } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 
@@ -46,16 +47,18 @@ export class Watcher {
       });
   }
 
-  watchProperty<T>(objectName: string, object: T, propertyName: keyof T): Observable<object> {
+  watchProperty<T extends { [key: string]: any }, K extends keyof T>(
+    objectName: string,
+    object: T,
+    propertyName: K
+  ): Observable<T[K]> {
     const watcherName = `${String(objectName)}.${String(propertyName)}`.toString();
     this.registerWatcher(watcherName);
-    const watch$ = new Subject<object>();
+    const watch$ = new Subject<T[K]>();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const propertyShadow = `__________${String(propertyName)}`;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    object[propertyShadow] = object[propertyName];
+    object[propertyShadow as keyof T] = object[propertyName];
     Object.defineProperty(object, propertyName, {
       set(value) {
         self.addLog({ name: watcherName, value });
@@ -69,26 +72,25 @@ export class Watcher {
     return watch$;
   }
 
-  watchMethod<T>(
+  watchMethod<T extends { [key: string]: any }, K extends keyof T>(
     objectName: string,
     object: T,
-    methodName: keyof T,
-    argumentsMapForLogger: { [argNr: number]: null | ((arg: unknown) => unknown) } = {}
-  ): Observable<unknown> {
+    methodName: K,
+    argumentsMapForLogger: { [argNr: number]: null | ((arg: any) => any) } = {}
+  ): Observable<any> {
     const watcherName = `${String(objectName)}.${String(methodName)}`;
     this.registerWatcher(watcherName);
     const watch$ = new Subject();
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const methodShadow = `__________${String(methodName)}`;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    object[methodShadow] = object[methodName];
+    object[methodShadow as keyof T] = object[methodName];
+    // type MethodType<Q, K extends keyof Q> = Q[K] extends (...args: infer P) => any ? P : never;
     Object.defineProperty(object, methodName, {
       get() {
-        return (...args) => {
+        return (...args: Parameters<T[K]>) => {
           const mappedArguments = args
-            .map((arg, argNr) => (argumentsMapForLogger[argNr] ? argumentsMapForLogger[argNr](arg) : arg))
+            .map((arg, argNr) => (argumentsMapForLogger[argNr] ? argumentsMapForLogger[argNr]?.(arg) : arg))
             .filter((_, argNr) => argumentsMapForLogger[argNr] !== null);
           self.addLog({
             name: watcherName,

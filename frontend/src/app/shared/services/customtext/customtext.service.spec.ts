@@ -43,9 +43,9 @@ describe('CustomtextService', () => {
       .subscribe(customText => receivedCustomTexts.later_subscribed_key.push(customText));
 
     customtextService.addCustomTextsFromDefs({
-      key: { defaultvalue: 'value-1-2nd-update', description: '' },
-      later_subscribed_key: { defaultvalue: 'value-2-2nd-update', description: '' },
-      later_set_key: { defaultvalue: 'value-3-1st-update', description: '' }
+      key: { defaultvalue: 'value-1-2nd-update', label: '' },
+      later_subscribed_key: { defaultvalue: 'value-2-2nd-update', label: '' },
+      later_set_key: { defaultvalue: 'value-3-1st-update', label: '' }
     });
 
     const expectedCustomTexts = {

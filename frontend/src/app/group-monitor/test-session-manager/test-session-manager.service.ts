@@ -50,7 +50,7 @@ export class TestSessionManager {
     return this._checkedStats$.asObservable();
   }
 
-  get commandResponses$(): Observable<CommandResponse | void> {
+  get commandResponses$(): Observable<CommandResponse> {
     return this._commandResponses$
       .pipe(
         filter(c => !!c)
@@ -62,7 +62,7 @@ export class TestSessionManager {
   private _checked: { [sessionTestSessionId: number]: TestSession } = {};
   private _checkedStats$: BehaviorSubject<TestSessionSetStats>;
   private _sessionsStats$: BehaviorSubject<TestSessionSetStats>;
-  private _commandResponses$: Subject<CommandResponse | void> = new Subject<CommandResponse | void>();
+  private _commandResponses$: Subject<CommandResponse> = new Subject<CommandResponse>();
   private _clock$: Observable<number>;
 
   // attention: this works the other way round than Array.filter:
@@ -113,7 +113,7 @@ export class TestSessionManager {
 
     this._checkedStats$.next(TestSessionManager.getEmptyStats());
     this._sessionsStats$.next(TestSessionManager.getEmptyStats());
-    this._commandResponses$.next();
+    // this._commandResponses$.next();
 
     this.monitor$ = this.bs.observeSessionsMonitor(groupName)
       .pipe(

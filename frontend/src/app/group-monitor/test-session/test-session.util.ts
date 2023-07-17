@@ -8,6 +8,7 @@ import {
   TestSessionSuperState,
   UnitContext
 } from '../group-monitor.interfaces';
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 
 export class TestSessionUtil {
   static hasState(state: Record<string, unknown>, key: string, value: string | null = null): boolean {
@@ -22,7 +23,7 @@ export class TestSessionUtil {
     return TestSessionUtil.hasState(session.data.testState, 'status', 'locked');
   }
 
-  static analyzeTestSession(session: TestSessionData, booklet: Booklet | BookletError): TestSession {
+  static analyzeTestSession(session: TestSessionChange, booklet: Booklet | BookletError): TestSession {
     const current = (isBooklet(booklet) && session.unitName) ?
       TestSessionUtil.getCurrent(booklet.units, session.unitName) :
       null;

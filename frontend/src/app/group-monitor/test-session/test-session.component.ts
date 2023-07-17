@@ -7,6 +7,8 @@ import {
   isUnit, Selected, TestSession, TestSessionSuperState
 } from '../group-monitor.interfaces';
 import { TestSessionUtil } from './test-session.util';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { superStates } from './super-states';
 
 interface IconData {

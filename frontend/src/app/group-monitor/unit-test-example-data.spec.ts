@@ -1,9 +1,9 @@
+import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 import {
   Booklet, CommandResponse, TestSession, TestSessionData, TestSessionSetStats
 } from './group-monitor.interfaces';
 import { TestSessionUtil } from './test-session/test-session.util';
 import { BookletConfig } from '../shared/classes/booklet-config.class';
-import { TestSessionChange } from 'testcenter-common/interfaces/test-session-change.interface';
 
 // labels are: {global index}-{ancestor index}-{local index}
 export const unitTestExampleBooklets: { [name: string]: Booklet } = {
@@ -197,7 +197,7 @@ export const unitTestExampleSessions: TestSession[] = [
     unitState: {},
     timestamp: 10000300
   },
-  {
+  <TestSessionChange>{
     personId: 2,
     personLabel: 'Person 2',
     groupName: 'group-1',
@@ -208,13 +208,13 @@ export const unitTestExampleSessions: TestSession[] = [
     testState: {
       status: 'pending'
     },
-    unitName: null,
+    unitName: 'unit',
     unitState: {},
     timestamp: 10000000
   }
 ]
   .map(session => TestSessionUtil.analyzeTestSession(
-    session, unitTestExampleBooklets[session.bookletName] || { error: 'missing-file', species: null }
+    session, unitTestExampleBooklets[session.bookletName ?? ''] || { error: 'missing-file', species: null }
   ));
 
 export const additionalUnitTestExampleSessions: TestSession[] = [
@@ -252,7 +252,7 @@ export const additionalUnitTestExampleSessions: TestSession[] = [
   }
 ]
   .map(session => TestSessionUtil.analyzeTestSession(
-    session, unitTestExampleBooklets[session.bookletName] || { error: 'missing-file', species: null }
+    session, unitTestExampleBooklets[session.bookletName ?? ''] || { error: 'missing-file', species: null }
   ));
 
 export const unitTestSessionsStats: TestSessionSetStats = {

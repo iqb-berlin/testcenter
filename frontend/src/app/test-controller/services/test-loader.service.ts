@@ -181,7 +181,10 @@ export class TestLoaderService {
                 );
               }),
               last(),
-              map((player: LoadedFile) => {
+              map((player: LoadedFile | LoadingProgress) => {
+                if (!isLoadingFileLoaded(player)) {
+                  throw new Error('File Loading Error');
+                }
                 this.tcs.addPlayer(unit.playerId, player.content);
                 return sequenceId;
               })

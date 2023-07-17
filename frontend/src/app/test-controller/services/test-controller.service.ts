@@ -314,16 +314,16 @@ export class TestControllerService {
     this.unitDefinitions[sequenceId] = uDef;
   }
 
-  getUnitDefinition(sequenceId: number): string | null {
-    return this.unitDefinitions[sequenceId] ?? null;
+  getUnitDefinition(sequenceId: number): string {
+    return this.unitDefinitions[sequenceId];
   }
 
   setUnitStateDataParts(unitSequenceId: number, dataParts: KeyValuePairString): void {
     this.unitStateDataParts[unitSequenceId] = dataParts;
   }
 
-  getUnitStateDataParts(sequenceId: number): KeyValuePairString | null {
-    return this.unitStateDataParts[sequenceId] ?? null;
+  getUnitStateDataParts(sequenceId: number): KeyValuePairString {
+    return this.unitStateDataParts[sequenceId];
   }
 
   setUnitPresentationProgress(sequenceId: number, state: string | undefined): void {

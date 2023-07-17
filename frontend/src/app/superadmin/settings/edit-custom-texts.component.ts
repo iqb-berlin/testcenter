@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CustomtextService, MainDataService, customTexts } from '../../shared/shared.module';
+import { CustomtextService, MainDataService, customTextDefaults } from '../../shared/shared.module';
 import { BackendService } from '../backend.service';
 import { EditCustomTextComponent } from './edit-custom-text.component';
 import { AppError, KeyValuePairs } from '../../app.interfaces';
@@ -82,7 +82,7 @@ export class EditCustomTextsComponent {
   ) {
     this.customTextsForm = new FormGroup({});
 
-    Object.keys(customTexts)
+    Object.keys(customTextDefaults)
       .forEach(ctKey => {
         const keySplits = ctKey.split('_');
         if (!keySplits.length) {
@@ -92,8 +92,8 @@ export class EditCustomTextsComponent {
         if (Object.keys(this.customTextGroups).includes(groupKey)) {
           this.customTextGroups[groupKey as 'booklet' | 'login' | 'syscheck' | 'gm'].texts.push({
             key: ctKey,
-            label: customTexts[ctKey].label,
-            defaultValue: customTexts[ctKey].defaultvalue,
+            label: customTextDefaults[ctKey].label,
+            defaultValue: customTextDefaults[ctKey].defaultvalue,
             value: this.mainDataService.appConfig?.customTexts[ctKey] ?? ''
           });
         }

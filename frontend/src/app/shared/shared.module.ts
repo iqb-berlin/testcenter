@@ -18,7 +18,7 @@ import { CustomtextPipe } from './pipes/customtext/customtext.pipe';
 import { AlertComponent } from './components/alert/alert.component';
 import { ErrorComponent } from './components/error/error.component';
 import { BackendService } from './services/backend.service';
-import { customTexts } from './objects/customtexts';
+import { customTextDefaults } from './objects/customTextDefaults';
 
 @NgModule({
   imports: [
@@ -70,4 +70,4 @@ export { BugReportService } from './services/bug-report.service';
 export { SysConfig, AppSettings } from './interfaces/app-config.interfaces';
 export { BookletConfig } from './classes/booklet-config.class';
 export { TestMode } from './classes/test-mode.class';
-export { customTexts } from './objects/customtexts';
+export { customTextDefaults } from './objects/customTextDefaults';
