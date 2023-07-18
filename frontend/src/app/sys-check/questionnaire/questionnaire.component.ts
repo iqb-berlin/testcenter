@@ -8,31 +8,28 @@ import { SysCheckDataService } from '../sys-check-data.service';
   styleUrls: ['./questionnaire.component.css', '../sys-check.component.css']
 })
 export class QuestionnaireComponent implements OnInit, OnDestroy {
-  form: FormGroup = {} as FormGroup;
-  private valueChangesSubscription: Subscription | null = null;
+  form: FormGroup = new FormGroup([]);
+  private readonly valueChangesSubscription: Subscription | null = null;
 
   constructor(
     public ds: SysCheckDataService
   ) {
+    const group: { [key: string] : FormControl } = {};
+    this.ds.checkConfig.questions
+      .forEach(question => {
+        group[question.id] = new FormControl('');
+      });
+    this.form = new FormGroup(group);
+    this.ds.questionnaireReport
+      .forEach(reportEntry => {
+        this.form.controls[reportEntry.id].setValue(reportEntry.value);
+      });
+    this.valueChangesSubscription = this.form.valueChanges.subscribe(() => { this.updateReport(); });
   }
 
   ngOnInit(): void {
     setTimeout(() => {
       this.ds.setNewCurrentStep('q');
-      const group: { [key: string] : FormControl } = {};
-      if (this.ds.checkConfig) {
-        this.ds.checkConfig.questions.forEach(question => {
-          group[question.id] = new FormControl('');
-        });
-        this.form = new FormGroup(group);
-        this.ds.questionnaireReport.forEach(reportEntry => {
-          const formControl = this.form.controls[reportEntry.id];
-          if (formControl) {
-            formControl.setValue(reportEntry.value);
-          }
-        });
-        this.valueChangesSubscription = this.form.valueChanges.subscribe(() => { this.updateReport(); });
-      }
     });
   }
 

@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'tc-save-report',
-  templateUrl: './save-report.component.html',
-  styleUrls: ['./save-report.component.css']
+  templateUrl: './save-report.component.html'
 })
 
 export class SaveReportComponent {

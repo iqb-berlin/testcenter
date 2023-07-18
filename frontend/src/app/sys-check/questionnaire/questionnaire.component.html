@@ -12,17 +12,17 @@
         <div *ngFor="let q of ds.checkConfig?.questions">
           <div [ngSwitch]="q.type" class="formEntry">
             <h3 *ngSwitchCase="'header'">{{ q.options.length > 0 ? q.options : q.prompt }}</h3>
-            <mat-form-field *ngSwitchCase="'text'">
-              <p>{{q.prompt}}</p>
+            <mat-form-field *ngSwitchCase="'text'" appearance="outline">
+              <mat-label>{{q.prompt}}</mat-label>
               <textarea matInput data-cy="textarea" [formControlName]="q.id" [id]="q.id"
                         cdkTextareaAutosize cdkAutosizeMinRows="2" class="formEntry"></textarea>
             </mat-form-field>
-            <mat-form-field *ngSwitchCase="'string'">
-              <p>{{q.prompt}}</p>
+            <mat-form-field *ngSwitchCase="'string'" appearance="outline">
+              <mat-label>{{q.prompt}}</mat-label>
               <input matInput data-cy="input-name" [formControlName]="q.id" [id]="q.id" class="formEntry">
             </mat-form-field>
-            <mat-form-field *ngSwitchCase="'select'">
-              <p>{{q.prompt}}</p>
+            <mat-form-field *ngSwitchCase="'select'" appearance="outline">
+              <mat-label>{{q.prompt}}</mat-label>
               <mat-select data-cy="selectfield" [id]="q.id" [formControlName]="q.id" class="formEntry">
                 <mat-option [attr.data-cy]="opt" *ngFor="let opt of q.options" [value]="opt">
                   {{opt}}
@@ -30,7 +30,7 @@
               </mat-select>
             </mat-form-field>
             <div *ngSwitchCase="'check'">
-              <p *ngIf="q.prompt.length > 0">{{q.prompt}}</p>
+              <mat-label *ngIf="q.prompt.length > 0">{{q.prompt}}</mat-label>
               <mat-checkbox data-cy="checkbox" *ngSwitchCase="'check'" [formControlName]="q.id" [id]="q.id">{{q.value}}</mat-checkbox>
             </div>
             <div *ngSwitchCase="'radio'">

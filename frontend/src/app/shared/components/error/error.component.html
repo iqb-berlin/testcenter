@@ -117,7 +117,7 @@
       (click)="closeClick()"
       data-cy="close"
     >
-      {{closeCaption ?? defaultCloseCaption ?? 'Schließen'}}
+      {{closeCaption || defaultCloseCaption || 'Schließen'}}
     </button>
   </mat-card-actions>
 </mat-card>
