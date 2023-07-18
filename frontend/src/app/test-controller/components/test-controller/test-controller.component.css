@@ -41,8 +41,7 @@ h1 {
   display: flex;
   align-items: safe center;
   justify-content: center;
-  overflow-x: clip;
-  overflow-y: auto;
+  overflow: clip;
 }
 
 .unit-nav a:not(:last-child) {
