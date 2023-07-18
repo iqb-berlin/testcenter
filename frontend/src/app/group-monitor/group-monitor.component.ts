@@ -55,8 +55,8 @@ export class GroupMonitorComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  @ViewChild('adminbackground') mainElem: ElementRef = {} as ElementRef;
-  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav = {} as MatSidenav;
+  @ViewChild('adminbackground') mainElem!: ElementRef;
+  @ViewChild('sidenav', { static: true }) sidenav!: MatSidenav;
 
   constructor(
     public dialog: MatDialog,

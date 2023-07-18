@@ -24,7 +24,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   resultDataSource: MatTableDataSource<ResultData> | null = new MatTableDataSource<ResultData>([]);
   tableSelectionCheckbox = new SelectionModel<ResultData>(true, []);
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort = {} as MatSort;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   private wsIdSubscription: Subscription | null = null;
 

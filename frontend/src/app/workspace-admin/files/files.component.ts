@@ -65,7 +65,7 @@ export class FilesComponent implements OnInit, OnDestroy {
 
   private wsIdSubscription: Subscription | null = null;
 
-  @ViewChild('fileUploadQueue', { static: true }) uploadQueue: IqbFilesUploadQueueComponent = {} as IqbFilesUploadQueueComponent;
+  @ViewChild('fileUploadQueue', { static: true }) uploadQueue!: IqbFilesUploadQueueComponent;
 
   constructor(
     @Inject('SERVER_URL') private serverUrl: string,

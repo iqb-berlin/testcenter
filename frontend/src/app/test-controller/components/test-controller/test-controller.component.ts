@@ -50,7 +50,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   debugPane = false;
   unitScreenHeader: string = '';
 
-  @ViewChild('navButtons') navButtons: ElementRef = {} as ElementRef;
+  @ViewChild('navButtons') navButtons!: ElementRef;
 
   constructor(
     public mainDataService: MainDataService,

@@ -29,7 +29,7 @@ import { AppError } from '../../../app.interfaces';
 })
 
 export class UnithostComponent implements OnInit, OnDestroy {
-  @ViewChild('iframeHost') private iFrameHostElement: ElementRef = {} as ElementRef;
+  @ViewChild('iframeHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private subscriptions: { [tag: string ]: Subscription } = {};
   leaveWarning = false;

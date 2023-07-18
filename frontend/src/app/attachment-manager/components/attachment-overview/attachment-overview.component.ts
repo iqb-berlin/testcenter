@@ -19,8 +19,8 @@ import { CustomtextService } from '../../../shared/services/customtext/customtex
   ]
 })
 export class AttachmentOverviewComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort = {} as MatSort;
-  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav = {} as MatSidenav;
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('sidenav', { static: true }) sidenav!: MatSidenav;
 
   selectedAttachmentIndex: number = -1;
   selectedAttachmentImage: ArrayBuffer | string | null = '';

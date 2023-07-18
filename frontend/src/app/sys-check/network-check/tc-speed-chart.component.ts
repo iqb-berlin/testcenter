@@ -26,7 +26,7 @@ export interface TcSpeedChartSettings {
   template: '<canvas #speedChart></canvas>'
 })
 export class TcSpeedChartComponent {
-  @ViewChild('speedChart') private canvas: ElementRef = {} as ElementRef;
+  @ViewChild('speedChart') private canvas!: ElementRef;
   private context: CanvasRenderingContext2D | null = null;
   private xScale: number = -1;
   private yScale: number = -1;

@@ -17,9 +17,9 @@ import { PageDesign } from '../../interfaces/page.interfaces';
   ]
 })
 export class CaptureImageComponent implements OnInit, OnDestroy {
-  @ViewChild('video') video: ElementRef = {} as ElementRef;
-  @ViewChild('canvas') canvas: ElementRef = {} as ElementRef;
-  @ViewChild('sidenav', { static: true }) sidenav: MatSidenav = {} as MatSidenav;
+  @ViewChild('video') video!: ElementRef;
+  @ViewChild('canvas') canvas!: ElementRef;
+  @ViewChild('sidenav', { static: true }) sidenav!: MatSidenav;
 
   /**
    * This will *never* be customizable per variable because we don't know for wich one
@@ -52,7 +52,7 @@ export class CaptureImageComponent implements OnInit, OnDestroy {
 
   state: 'capture' | 'confirm' | 'error' | 'wait' = 'capture';
 
-  error: string | null = null;
+  error: string = '';
 
   cameras: { [id: string]: string } = {};
   hasFlash: boolean = false;

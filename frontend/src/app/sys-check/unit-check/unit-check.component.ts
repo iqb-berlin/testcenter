@@ -15,7 +15,7 @@ export class UnitCheckComponent implements OnInit, OnDestroy {
   pageList: PageData[] = [];
   currentPage: number = -1;
   errorText = '';
-  @ViewChild('iFrameHost') private iFrameHostElement: ElementRef = {} as ElementRef;
+  @ViewChild('iFrameHost') private iFrameHostElement!: ElementRef;
   private iFrameItemplayer: HTMLIFrameElement | null = null;
   private postMessageSubscription: Subscription | null = null;
   private taskSubscription: Subscription | null = null;

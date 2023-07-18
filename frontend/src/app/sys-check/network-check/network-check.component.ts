@@ -20,8 +20,8 @@ export class NetworkCheckComponent implements OnInit, OnDestroy {
     private bs: BackendService
   ) {}
 
-  @ViewChild('downloadChart', { static: true }) downloadPlotter: TcSpeedChartComponent = {} as TcSpeedChartComponent;
-  @ViewChild('uploadChart', { static: true }) uploadPlotter: TcSpeedChartComponent = {} as TcSpeedChartComponent;
+  @ViewChild('downloadChart', { static: true }) downloadPlotter!: TcSpeedChartComponent;
+  @ViewChild('uploadChart', { static: true }) uploadPlotter!: TcSpeedChartComponent;
 
   @Input() measureNetwork: boolean = false;
   private networkStatsDownload: number[] = [];

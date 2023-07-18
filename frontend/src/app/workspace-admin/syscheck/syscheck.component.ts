@@ -21,7 +21,7 @@ export class SyscheckComponent implements OnInit, OnDestroy {
   resultDataSource: MatTableDataSource<SysCheckStatistics> = new MatTableDataSource<SysCheckStatistics>([]);
   tableSelectionCheckbox = new SelectionModel<SysCheckStatistics>(true, []);
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort = {} as MatSort;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   private wsIdSubscription: Subscription | null = null;
 

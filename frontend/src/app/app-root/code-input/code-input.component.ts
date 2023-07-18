@@ -13,7 +13,7 @@ import { BackendService } from '../../backend.service';
   ]
 })
 export class CodeInputComponent implements OnInit {
-  @ViewChild('codeInputControl') codeInputControl: FormControl = {} as FormControl;
+  @ViewChild('codeInputControl') codeInputControl!: FormControl;
   problemText = '';
 
   codeinputform = new FormGroup({
