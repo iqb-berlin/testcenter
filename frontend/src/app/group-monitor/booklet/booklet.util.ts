@@ -27,6 +27,6 @@ export class BookletUtil {
   static getBlockById(blockId: string, booklet: Booklet): Testlet {
     return <Testlet>booklet.units.children
       .filter(isTestlet)
-      .reduce((found: Testlet, block: Testlet) => ((block.blockId === blockId) ? block : found));
+      .reduce((found: Testlet | null, block: Testlet) => ((block.blockId === blockId) ? block : found), null);
   }
 }

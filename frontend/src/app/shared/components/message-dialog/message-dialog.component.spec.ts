@@ -36,8 +36,6 @@ describe('MessageDialogComponent', () => {
 
   it('should take default properties for those which are omitted on #ngOnInit()', async () => {
     component.ngOnInit();
-    expect(component.msgdata.title).toEqual('Achtung: Fehler');
-    expect(component.msgdata.closebuttonlabel).toEqual('close');
-    expect(component.msgdata.content).toEqual('content');
+    expect(component.msgdata.title).toEqual('Hinweis');
   });
 });

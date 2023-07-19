@@ -7,6 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable, of } from 'rxjs';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from '../../shared/shared.module';
 import { FilesComponent } from './files.component';
 import { BackendService } from '../backend.service';
@@ -47,7 +48,8 @@ describe('FilesComponent', () => {
         MatTableModule,
         MatIconModule,
         MatCheckboxModule,
-        SharedModule
+        SharedModule,
+        NoopAnimationsModule
       ],
       providers: [
         {

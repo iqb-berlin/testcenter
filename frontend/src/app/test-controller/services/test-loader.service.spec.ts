@@ -14,7 +14,7 @@ import {
 } from '../unit-test-data/test-data';
 import { LoadingProgress } from '../interfaces/test-controller.interfaces';
 import { json } from '../unit-test-data/unit-test.util';
-import { Watcher } from '../unit-test-data/watcher';
+import { Watcher } from '../unit-test-data/watcher.util';
 import { MockBackendService } from '../unit-test-data/mock-backend.service';
 import { MessageService } from '../../shared/services/message.service';
 
@@ -129,7 +129,7 @@ describe('TestLoaderService', () => {
         expect(watcher.log).toEqual(TestLoadingProtocols.withMissingUnit);
       });
 
-      it('even with broken booklet', async () => {
+      it('and abort on broken booklet', async () => {
         try {
           await loadTestWatched('withBrokenBooklet');
           // eslint-disable-next-line no-empty
@@ -138,7 +138,7 @@ describe('TestLoaderService', () => {
         expect(watcher.log).toEqual(TestLoadingProtocols.withBrokenBooklet);
       });
 
-      it('even with missing player', async () => {
+      it('and abort on missing player', async () => {
         try {
           await loadTestWatched('withMissingPlayer');
           // eslint-disable-next-line no-empty
@@ -147,7 +147,7 @@ describe('TestLoaderService', () => {
         expect(watcher.log).toEqual(TestLoadingProtocols.withMissingPlayer);
       });
 
-      it('even with missing unit-content', done => {
+      it('and abort on missing unit-content', done => {
         // we have to set up the global error handler here, because what is thrown from inside loadUnit
         // can not be caught otherwise
         window.onerror = message => {

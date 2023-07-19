@@ -12,11 +12,11 @@ export interface WatcherLogEntry {
  * A helper to watch property-changes, functions calls, observables etc. on different object to test the correct order
  * of those events.
  *
- * Writing my's own watcher class might be a little bit naïve approach, but I did not find a way to test the correct
- * order of different types of events like property changes, observable events and promise resolving wie the
+ * Writing my's own watcher class might be a little naïve approach, but I did not find a way to test the correct
+ * order of different types of events like property changes, observable events and promise resolving with the
  * SpyOn-technique. This surely reflects the incoherence of the coding style in the whole test-controller module, which
- * I could not entirely wipe out by now. The module might one day be more slimlined and therefore more straightforward
- * to test.
+ * I could not entirely wipe out by now. The module might one day be more slimlined and therefore be more
+ * straightforward to test.
  */
 export class Watcher {
   readonly log$: Subject<WatcherLogEntry> = new Subject<WatcherLogEntry>();

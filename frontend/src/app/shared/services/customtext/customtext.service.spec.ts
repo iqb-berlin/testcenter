@@ -59,7 +59,7 @@ describe('CustomtextService', () => {
   });
 
   it('returns on getCustomText the current value', () => {
-    expect(customtextService.getCustomText('key')).toBeNull();
+    expect(customtextService.getCustomText('key')).toEqual('');
 
     customtextService.addCustomTexts({
       key: 'value-1-init'

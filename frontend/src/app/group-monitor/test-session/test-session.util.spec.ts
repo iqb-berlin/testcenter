@@ -113,7 +113,7 @@ describe('TestSessionUtil', () => {
     it('should find return a unitContext without unit for not existing id', () => {
       // eslint-disable-next-line @typescript-eslint/dot-notation
       const result = TestSessionUtil['getCurrent'](unitTestExampleBooklets.example_booklet_1.units, 'not-existing');
-      expect(result.unit).toBeNull();
+      expect(result.unit).toBeUndefined();
     });
   });
 

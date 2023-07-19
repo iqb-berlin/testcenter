@@ -54,7 +54,7 @@ export class TestLoaderService {
 
     const testData = await this.bs.getTestData(this.tcs.testId).toPromise();
     if (!testData) {
-      return; // error is allready thrown
+      return; // error is already thrown
     }
     this.tcs.testMode = new TestMode(testData.mode);
     this.restoreRestrictions(testData.laststate);
@@ -70,7 +70,8 @@ export class TestLoaderService {
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
 
-    this.loadUnitContents()
+    // eslint-disable-next-line consistent-return
+    return this.loadUnitContents()
       .then(() => {
         this.resumeTest(testData.laststate);
       });

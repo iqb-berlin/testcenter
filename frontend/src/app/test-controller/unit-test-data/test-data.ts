@@ -2,7 +2,7 @@ import { NavigationLeaveRestrictions, Testlet } from '../classes/test-controller
 import { TestStateKey, UnitData } from '../interfaces/test-controller.interfaces';
 // eslint-disable-next-line import/extensions
 import { BookletConfig } from '../../shared/shared.module';
-import { WatcherLogEntry } from './watcher';
+import { WatcherLogEntry } from './watcher.util';
 import { perSequenceId } from './unit-test.util';
 import { testlet, unit } from './test-data-constructors';
 
@@ -105,7 +105,7 @@ export const TestPlayers = {
   'A-PLAYER-BUT-VERSION-2.HTML': 'a player, but version 2'
 };
 
-export const TestExternalUnitContents: { [unitid : string] : string } = {
+export const TestExternalUnitContents = {
   'test-unit-content-u2': 'the unit (2) definition',
   'test-unit-content-u3': 'the unit (3) definition'
 };
@@ -116,7 +116,8 @@ export const TestResources = {
 };
 
 export const TestUnitDefinitionsPerSequenceId = Object.values(TestUnits)
-  .map(unitDef => (('definitionRef' in unitDef) ? TestExternalUnitContents[unitDef.definitionRef] : unitDef.definition))
+  .map(unitDef => (('definitionRef' in unitDef) ? TestExternalUnitContents[unitDef.definitionRef as keyof typeof TestExternalUnitContents] : unitDef.definition)
+  )
   .reduce(perSequenceId, {});
 
 export const TestUnitStateDataParts = Object.values(TestUnits)
@@ -237,8 +238,8 @@ export const TestLoadingProtocols: { [testId in keyof typeof TestBookletXmlVaria
     { name: 'tcs.testStatus$', value: 'LOADING' },
 
     // unit 1
-    // 5 units, so each triplet of unit-player-content is worth 6.6% in the total progress
-    // total progress gets updated first , dont' be confused
+    // 5 units, so each triplet of unit-player-content is worth 6.6% in the total progress.
+    // total progress gets updated first , don't be confused
     { name: 'tcs.totalLoadingProgress', value: 6.666666666666667 }, // unit 1
     { name: 'tcs.setUnitLoadProgress$', value: [1] },
     { name: 'tcs.unitContentLoadProgress$[1]', value: { progress: 100 } },

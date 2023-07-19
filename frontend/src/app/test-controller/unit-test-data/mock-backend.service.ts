@@ -25,7 +25,7 @@ export class MockBackendService {
     if (testId === 'withMissingPlayer' && resId === 'A-PLAYER.HTML') {
       throw new Error('player is missing');
     }
-    if (testId === 'withMissingUnitContent') {
+    if (testId === 'withMissingUnitContent' && resId === 'test-unit-content-u3') {
       throw new Error('resource is missing');
     }
 
