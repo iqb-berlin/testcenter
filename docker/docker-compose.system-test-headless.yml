@@ -50,7 +50,6 @@ services:
       - ../definitions:/var/www/definitions
       - ../docs/dist:/docs/dist
       - ../package.json:/var/www/package.json
-      - ../package-lock.json:/var/www/package-lock.json
       - ../sampledata:/var/www/sampledata
       - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
       - /dev/null:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini # disable xdebug
@@ -74,13 +73,12 @@ services:
 
   e2e:
     container_name: testcenter-cypress
-    image: cypress
     build:
       context: ..
       dockerfile: docker/e2e.Dockerfile
     environment:
       - CYPRESS_baseUrl=http://testcenter-system-test-frontend:4200
-    entrypoint: sh -c "npx wait-on http://testcenter-system-test-frontend:4200 && cypress run"
+    entrypoint: sh -c "npx wait-on http://testcenter-system-test-frontend:4200 && cypress run --browser chrome"
     volumes:
       - ../e2e/cypress:/app/cypress
       - ../e2e/cypress.e2e.config.js:/app/cypress.config.js

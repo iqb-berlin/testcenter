@@ -11,8 +11,6 @@ describe('Usermanagement (user-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);
 
-  afterEach(logoutAdmin);
-
   it('should be that all user buttons are present', () => {
     cy.get('[data-cy="superadmin-tabs:users"]')
       .should('exist')
@@ -183,8 +181,6 @@ describe('Management Workspaces (workspace-tab)', () => {
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);
 
-  afterEach(logoutAdmin);
-
   it('should be all buttons are visible and sample_workspace is installed in Tab:Workspaces', () => {
     cy.get('[data-cy="superadmin-tabs:workspaces"]')
       .should('exist')
@@ -317,9 +313,7 @@ describe('Management Workspaces (workspace-tab)', () => {
       .click();
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
-    insertCredentials(userData.SuperAdminName, userData.SuperAdminPassword);
-    cy.get('[data-cy="login-admin"]')
-      .click();
+    loginSuperAdmin();
     cy.contains('sample_workspace')
       .should('not.exist');
   });
@@ -331,8 +325,6 @@ describe('Settings (setting-tab)', () => {
   beforeEach(useTestDB);
   beforeEach(loginSuperAdmin);
   beforeEach(clickSuperadmin);
-
-  afterEach(logoutAdmin);
 
   it('should be all settings functions visible', () => {
     cy.get('[data-cy="superadmin-tabs:settings"]')
