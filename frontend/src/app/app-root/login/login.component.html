@@ -18,7 +18,7 @@
             <mat-icon>{{showPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
           </button>
         </mat-form-field>
-        <tc-alert level="error" *ngIf="problemText" [text]="problemText"></tc-alert>
+        <tc-alert [attr.data-cy]="'login-problem:' + problemCode" level="error" *ngIf="problemText" [text]="problemText"></tc-alert>
         <tc-alert
           *ngIf="mainDataService.globalWarning"
           level="warning"

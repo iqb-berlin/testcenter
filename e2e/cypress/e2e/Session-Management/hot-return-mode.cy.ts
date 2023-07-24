@@ -8,11 +8,14 @@ import {
   visitLoginPage
 } from '../utils';
 
-describe('Check hot-return mode functions', () => {
-  // abfangen der Calls schwierig, Test scheitert manchmal--> Optimierung nach Änderungen durch Philipp
-  // Testfälle bzgl. Ticket #315 erstellen
-  before(resetBackendData);
-  before(deleteDownloadsFolder);
+describe('Check hot-return mode functions', { testIsolation: false }, () => {
+  // TODO Testfälle bzgl. Ticket #315 erstellen
+  before(() => {
+    cy.clearLocalStorage();
+    cy.clearCookies();
+    resetBackendData();
+    deleteDownloadsFolder();
+  });
   beforeEach(() => {
     useTestDB();
     visitLoginPage();
@@ -102,6 +105,7 @@ describe('Check hot-return mode functions', () => {
     cy.get('[data-cy="download-responses"]')
       .should('exist')
       .click();
+    logoutAdmin();
   });
 
   it('should be saved recent replies from login: hret1 in downloaded response file', () => {

@@ -218,8 +218,6 @@ describe('Management Workspaces (workspace-tab)', () => {
     cy.contains('sample_workspace')
       .click();
     cy.get('[data-cy="workspace-2-role-ro"]')
-      .eq(2)
-      .should('exist')
       .click()
       .get('[data-cy="save"]')
       .click();

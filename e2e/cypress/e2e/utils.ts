@@ -21,7 +21,7 @@ export const visitLoginPage = (): Chainable => cy.url()
   .then(url => {
     if (url !== `${Cypress.config().baseUrl}/#/r/login/`) {
       cy.intercept({ url: new RegExp(`${Cypress.env('TC_API_URL')}/(system/config|sys-checks)`) }).as('waitForConfig');
-      cy.visit(`${Cypress.config().baseUrl}/#/r/login/`);
+      cy.visit(url.endsWith('starter') ? Cypress.config().baseUrl : `${Cypress.config().baseUrl}/#/r/login/`);
       cy.wait('@waitForConfig');
     }
   });
@@ -90,10 +90,12 @@ export const logoutTestTaker = (fileType: 'hot' | 'demo'): Chainable => cy.url()
           .click();
       }
     } else {
+      console.log("OK");
       cy.get('[data-cy="logout"]')
         .should('exist')
         .click();
     }
+    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
   });
 
 export const openSampleWorkspace1 = (): void => {
@@ -230,8 +232,6 @@ export const deleteFilesSampleWorkspace = (): void => {
 export const deleteTesttakersFiles = (): void => {
   cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
     .click();
-  cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
-    .should('have.class', 'mat-checkbox-checked');
   cy.get('[data-cy="delete-files"]')
     .click();
   cy.get('[data-cy="dialog-confirm"]')

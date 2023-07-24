@@ -91,6 +91,7 @@ export class MainDataService {
     this.cts.restoreDefault(true);
     this.bs.deleteSession()
       .subscribe(() => {
+        console.log("RAGE QUIT");
         this.quit();
       });
   }

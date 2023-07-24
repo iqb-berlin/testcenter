@@ -24,6 +24,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   private routingSubscription: Subscription | null = null;
   returnTo = '';
   problemText = '';
+  problemCode = 0;
   showPassword = false;
   browserWarning: string[] = [];
 
@@ -50,6 +51,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     const loginData = this.loginForm.value;
     LoginComponent.oldLoginName = loginData.name ?? '';
     this.problemText = '';
+    this.problemCode = 0;
     this.backendService.login(loginType, loginData.name ?? '', loginData.pw ?? '')
       .subscribe({
         next: authData => {
@@ -74,6 +76,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           }
         },
         error: error => {
+          this.problemCode = error.code;
           if (error.code === 400) {
             this.problemText = 'Anmeldedaten sind nicht gültig. Bitte noch einmal versuchen!';
           } else if (error.code === 401) {
@@ -93,6 +96,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   clearWarning(): void {
     this.problemText = '';
+    this.problemCode = 0;
   }
 
   private checkBrowser() {

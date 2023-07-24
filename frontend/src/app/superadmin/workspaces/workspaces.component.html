@@ -82,11 +82,11 @@
         <mat-cell *matCellDef="let row let i = index">
           <mat-checkbox (change)="selectUser(row, 'RO')"
                         [checked]="row.role === 'RO'" matTooltip="RO"
-                        [attr.data-cy]="'workspace-role-ro' + i">
+                        [attr.data-cy]="'workspace-' + i + '-role-ro'">
           </mat-checkbox>
           <mat-checkbox (change)="selectUser(row, 'RW')"
                         [checked]="row.role === 'RW'" matTooltip="RW"
-                        [attr.data-cy]="'workspace-role-rw' + i">
+                        [attr.data-cy]="'workspace-' + i + '-role-rw'">
           </mat-checkbox>
         </mat-cell>
       </ng-container>

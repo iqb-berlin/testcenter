@@ -11,11 +11,15 @@ import {
 let idHres1;
 let idHres2;
 
-describe.skip('Check hot-restart-mode functions', () => {
+describe.skip('Check hot-restart-mode functions', { testIsolation: false }, () => {
   // todo: waits beim Setzen der Checkboxen ersetzen
   // abfangen der Calls schwierig, Test scheitert manchmal--> Optimierung nach Änderungen durch Philipp
-  before(resetBackendData);
-  before(deleteDownloadsFolder);
+  before(() => {
+    cy.clearLocalStorage();
+    cy.clearCookies();
+    resetBackendData();
+    deleteDownloadsFolder();
+  });
   beforeEach(() => {
     useTestDB();
     visitLoginPage();
