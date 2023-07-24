@@ -321,6 +321,7 @@ class SessionDAO extends DAO {
         ]
       );
       if ($personSession) {
+        TimeStamp::checkExpiration(0, TimeStamp::fromSQLFormat($personSession['valid_until']));
         $this->_(
           'update person_sessions set token=:token where login_sessions_id = :lsi and name_suffix = :suffix',
           [

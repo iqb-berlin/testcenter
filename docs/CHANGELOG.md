@@ -5,6 +5,7 @@ layout: default
 ## [next]
 ### Bugfixes
 * Die Anzeige in der Testübersicht, ob ein Test fortgesetzt, neu gestartet oder gesperrt ist wurde repariert. 
+* Die Überprüfung von ablaufenden Logins (validFor) wurde repariert. 
 
 ### Performance
 * Es wurde ein Puffer für wegzuspeichernde Unit-Staes eingeführt. Damit kann ein Testcenter-Server während der 
