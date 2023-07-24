@@ -14,7 +14,8 @@ module.exports = defineConfig({
     baseUrl: 'http://localhost',
     env: {
       TC_API_URL: 'http://localhost/api'
-    }
+    },
+    testIsolation: true
   }
 });
 

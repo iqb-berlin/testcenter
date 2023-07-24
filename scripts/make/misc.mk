@@ -43,8 +43,8 @@ create-interfaces:
 init-env:
 	cp docker/.env-default docker/.env
 
-composer-install: # TODO 13 - is this necessary? or automatically done with building the container
-	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+composer-install:
+	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
 		-v $(CURDIR)/backend/composer.json:/composer.json \
 		-v $(CURDIR)/backend/composer.lock:/composer.lock \
@@ -53,7 +53,7 @@ composer-install: # TODO 13 - is this necessary? or automatically done with buil
 		composer install --no-interaction --no-ansi
 
 composer-update:
-	docker build -f backend/Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
+	docker build -f docker/backend.Dockerfile --target backend-composer -t testcenter-backend-composer:latest .
 	docker run \
 		-v $(CURDIR)/backend/composer.json:/composer.json \
 		-v $(CURDIR)/backend/composer.lock:/composer.lock \

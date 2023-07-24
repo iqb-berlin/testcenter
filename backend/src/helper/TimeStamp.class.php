@@ -47,15 +47,13 @@ class TimeStamp {
         $validTo = self::asDateTime($validToTimestamp);
         throw new HttpError(
           "Testing Period for this login is over since {$validTo->format(self::$format)}",
-          410,
-          "test period expired"
+          410
         );
       case ExpirationStateType::Scheduled:
         $validFrom = self::asDateTime($validFromTimestamp);
         throw new HttpError(
           "Testing Period for this login has not yet started and will begin at {$validFrom->format(self::$format)}",
-          401,
-          "test period not started"
+          401
         );
     }
   }
