@@ -22,7 +22,8 @@ module.exports = defineConfig({
     },
     env: {
       TC_API_URL: backendURL
-    }
+    },
+    testIsolation: true
   }
 });
 

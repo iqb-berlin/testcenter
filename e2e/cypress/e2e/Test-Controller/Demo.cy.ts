@@ -12,14 +12,16 @@ let startTime: number;
 let endTime: number;
 let elapsed: number;
 
-describe('Navigation-& Testlet-Restrictions', () => {
-  before(resetBackendData);
-  beforeEach(useTestDB);
+describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
   before(() => {
+    resetBackendData();
+    cy.clearLocalStorage();
+    cy.clearCookies();
     useTestDB();
     visitLoginPage();
     loginTestTaker(TesttakerName, TesttakerPassword, true);
   });
+  beforeEach(useTestDB);
 
   it('should be possible to choose a demo-mode booklet', () => {
     cy.contains(/^Startseite$/)
