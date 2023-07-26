@@ -13,9 +13,6 @@
     "resolveJsonModule" : true,
     "sourceMap" : false,
     "target" : "es2015",
-    "typeRoots" : [
-      "node_modules/@types"
-    ],
     "types" : [
       "cypress",
       "node"
