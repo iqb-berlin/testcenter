@@ -3,7 +3,7 @@
     <mat-progress-bar mode="indeterminate" *ngIf="!files"></mat-progress-bar>
     <mat-accordion class="example-headers-align" multi="true">
       <ng-container *ngFor="let type of fileTypes">
-        <mat-expansion-panel [expanded]="true" *ngIf="files && files[type]">
+        <mat-expansion-panel [expanded]="true" *ngIf="files && files[type].data.length">
           <mat-expansion-panel-header>
             <mat-panel-title class="table-header">{{typeLabels[type]}}</mat-panel-title>
             <mat-panel-description>
@@ -123,18 +123,17 @@
       (uploadCompleteEvent)="updateFileList()">
     </tc-files-upload-queue>
 
-    <div *ngIf="uploadQueue && !uploadQueue.files?.length" class="workspace-report">
-      <tc-alert *ngIf="fileStats.total.invalid; else: workspaceValid" level="error" text="{{fileStats.total.invalid}}
-        Datei{{fileStats.total.invalid == 1 ? '' : 'en'}} von {{fileStats.total.count}}
-        {{fileStats.total.invalid == 1 ? 'ist' : 'sind'}} nicht valide oder
-        {{fileStats.total.invalid == 1 ? 'hat' : 'haben'}} fehlende Abhängigkeiten
-        und {{fileStats.total.invalid == 1 ? 'wird' : 'werden'}} ignoriert!">
-      </tc-alert>
-      <ng-template #workspaceValid>
-        <tc-alert level="success" *ngIf="fileStats.total.count" text="Alle
-          {{fileStats.total.count > 1 ? fileStats.total.count : ''}} Dateien im Workspace sind Valide."></tc-alert>
-      </ng-template>
-    </div>
+    <tc-alert *ngIf="fileStats.total.invalid; else: workspaceValid" level="error" text="{{fileStats.total.invalid}}
+      Datei{{fileStats.total.invalid == 1 ? '' : 'en'}} von {{fileStats.total.count}}
+      {{fileStats.total.invalid == 1 ? 'ist' : 'sind'}} nicht valide oder
+      {{fileStats.total.invalid == 1 ? 'hat' : 'haben'}} fehlende Abhängigkeiten
+      und {{fileStats.total.invalid == 1 ? 'wird' : 'werden'}} ignoriert!">
+    </tc-alert>
+    <ng-template #workspaceValid>
+      <tc-alert level="success" *ngIf="fileStats.total.count" text="Alle
+        {{fileStats.total.count > 1 ? fileStats.total.count : ''}} Dateien im Arbeitsbereich sind Valide."></tc-alert>
+      <tc-alert level="info" *ngIf="!fileStats.total.count" text="Dieser Arbeitsbereich enthält noch keine Dateien!"></tc-alert>
+    </ng-template>
 
   </div>
 </div>
