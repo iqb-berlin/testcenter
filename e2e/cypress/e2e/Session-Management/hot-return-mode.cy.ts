@@ -22,7 +22,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
   });
 
   it('should be possible to start a hot-return-mode study as login: hret1', () => {
-    loginTestTaker('hret1', '201', true);
+    loginTestTaker('hret1', '201', 'test-hot');
 
     cy.contains(/^Aufgabe1$/)
       .should('exist');
@@ -52,7 +52,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
   });
 
   it('should restore the last given replies from login: hret1', () => {
-    loginTestTaker('hret1', '201', true);
+    loginTestTaker('hret1', '201', 'test-hot');
 
     cy.contains(/^Aufgabe2$/)
       .should('exist');
@@ -69,7 +69,7 @@ describe('Check hot-return mode functions', { testIsolation: false }, () => {
   });
 
   it('should be possible to start a hot-return-mode study as login: hret2', () => {
-    loginTestTaker('hret2', '202', true);
+    loginTestTaker('hret2', '202', 'test-hot');
 
     cy.contains(/^Aufgabe1$/)
       .should('exist');

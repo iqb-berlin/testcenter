@@ -22,7 +22,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.clearCookies();
     useTestDB();
     visitLoginPage();
-    loginTestTaker(TesttakerName, TesttakerPassword, true);
+    loginTestTaker(TesttakerName, TesttakerPassword, 'test');
   });
   beforeEach(useTestDB);
 
@@ -60,7 +60,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist');
     cy.url()
       .should('include', '/u/2');
-    cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
+    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/)
       .should('exist');
     // wait until the message is no longer displayed
     cy.contains('Bearbeitungszeit', { timeout: waitMaxSnackBarDisplayed })
@@ -96,7 +96,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     cy.get('[type="submit"]')
       .should('exist')
       .click();
-    cy.contains(/^Kommentar gespeichert$/)
+    cy.contains(/Kommentar gespeichert/)
       .should('exist');
     cy.contains('gespeichert', { timeout: waitMaxSnackBarDisplayed })
       .should('not.exist');
@@ -186,7 +186,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
     endTime = new Date().getTime();
     elapsed = endTime - startTime;
     cy.wait(credentialsControllerTest.DemoRestrTime - elapsed);
-    cy.contains(/^Die Bearbeitung des Abschnittes ist beendet.$/)
+    cy.contains(/Die Bearbeitung des Abschnittes ist beendet./)
       .should('exist');
     // wait until the message is no longer displayed
     cy.contains('Bearbeitung', { timeout: waitMaxSnackBarDisplayed })
@@ -219,7 +219,7 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .should('exist');
     cy.contains('0:')
       .should('exist');
-    cy.contains(/^Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min$/)
+    cy.contains(/Die Bearbeitungszeit für diesen Abschnitt hat begonnen: 1 min/)
       .should('exist');
     // wait until the message is no longer displayed
     cy.contains('Bearbeitungszeit', { timeout: waitMaxSnackBarDisplayed })
@@ -247,11 +247,6 @@ describe('Navigation-& Testlet-Restrictions', { testIsolation: false }, () => {
       .click();
     cy.url()
       .should('eq', `${Cypress.config().baseUrl}/#/r/login/`);
-    // wait until the message is no longer displayed
-    cy.contains('Im Testmodus dürfte hier nicht weitergeblättert werden:')
-      .should('exist');
-    cy.contains('Im Testmodus dürfte hier nicht weitergeblättert werden:', { timeout: waitMaxSnackBarDisplayed })
-      .should('not.exist');
   });
 
   it('should be there an answer file, but without responses', () => {

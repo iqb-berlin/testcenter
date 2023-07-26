@@ -140,25 +140,28 @@ export const loginWorkspaceAdmin = (): void => {
     .should('exist');
 };
 
-export const loginTestTaker = (name: string, password: string, singleTest: boolean = false): void => {
-  insertCredentials(name, password);
-  if (singleTest) {
-    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/state`)).as('testState');
-    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/unit/[^/]+/state`)).as('unitState');
-    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/log`)).as('testLog');
-    cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/commands`)).as('commands');
-  }
-  cy.get('[data-cy="login-user"]')
-    .should('exist')
-    .click();
-  if (singleTest) {
-    cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
-    cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
-  } else {
-    cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
-    cy.contains(name)
-      .should('exist');
-  }
+export const loginTestTaker =
+  (name: string, password: string, expectedView: 'test' | 'test-hot' | 'test-starter' = 'test-starter'): void => {
+    insertCredentials(name, password);
+    if (expectedView === 'test-hot') {
+      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/state`)).as('testState');
+      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/unit/[^/]+/state`)).as('unitState');
+      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/log`)).as('testLog');
+      cy.intercept(new RegExp(`${Cypress.env('TC_API_URL')}/test/\\d+/commands`)).as('commands');
+    }
+    cy.get('[data-cy="login-user"]')
+      .should('exist')
+      .click();
+    if (expectedView === 'test-hot') {
+      cy.wait(['@testState', '@unitState', '@testLog', '@commands']);
+    }
+    if (expectedView !== 'test-starter') {
+      cy.url().should('contain', `${Cypress.config().baseUrl}/#/t/`);
+    } else {
+      cy.url().should('eq', `${Cypress.config().baseUrl}/#/r/test-starter`);
+      cy.contains(name)
+        .should('exist');
+    }
 };
 
 export const clickSuperadmin = (): void => {

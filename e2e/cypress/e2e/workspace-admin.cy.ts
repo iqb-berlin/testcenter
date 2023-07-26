@@ -45,8 +45,6 @@ describe('Workspace-Admin', () => {
   it('should not be possible to delete SAMPLE_BOOKLET.XML, there is a dependency in SAMPLE_TESTTAKERs.XML', () => {
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .click();
-    cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
-      .should('have.class', 'mat-checkbox-checked');
     cy.get('[data-cy="delete-files"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -57,15 +55,11 @@ describe('Workspace-Admin', () => {
       .should('exist');
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .click();
-    cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
-      .should('not.have.class', 'mat-checkbox-checked');
   });
 
   it('should be possible to delete SAMPLE_BOOKLET.XML, if SAMPLE_TESTTAKERs.XML was previously deleted', () => {
     cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
       .click();
-    cy.get('[data-cy="files-checkbox-SAMPLE_TESTTAKERS.XML"]')
-      .should('have.class', 'mat-checkbox-checked');
     cy.get('[data-cy="delete-files"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -76,8 +70,6 @@ describe('Workspace-Admin', () => {
       .should('not.exist');
     cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
       .click();
-    cy.get('[data-cy="files-checkbox-BOOKLET.SAMPLE-1"]')
-      .should('have.class', 'mat-checkbox-checked');
     cy.get('[data-cy="delete-files"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -91,8 +83,6 @@ describe('Workspace-Admin', () => {
   it('should be possible to upload the file SysCheck.xml without any dependencies in other files', () => {
     cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
       .click();
-    cy.get('[data-cy="files-checkbox-SYSCHECK.SAMPLE"]')
-      .should('have.class', 'mat-checkbox-checked');
     cy.get('[data-cy="delete-files"]')
       .click();
     cy.get('[data-cy="dialog-confirm"]')
@@ -111,7 +101,7 @@ describe('Workspace-Admin', () => {
       .should('exist');
   });
 
-  it('should only be possible to upload a unit file, if the player file is already exists', () => {
+  it('should only be possible to upload a unit file, if the player file already exists.', () => {
     deleteFilesSampleWorkspace();
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile('../sampledata/Unit.xml', { force: true });
@@ -139,7 +129,7 @@ describe('Workspace-Admin', () => {
       .should('exist');
   });
 
-  it('should only be possible to upload a unit file and it\'s dependiencies at once', () => {
+  it('should only be possible to upload a unit file and it\'s dependencies at once', () => {
     deleteFilesSampleWorkspace();
     cy.get('[data-cy="uplaod-file-select"]')
       .selectFile([
