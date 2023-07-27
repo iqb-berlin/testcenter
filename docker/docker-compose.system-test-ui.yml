@@ -61,8 +61,8 @@ services:
       - ../definitions:/var/www/definitions
       - ../docs/dist:/docs/dist
       - ../package.json:/var/www/package.json
-      - ../scripts:/var/www/scripts
       - ../sampledata:/var/www/sampledata
+      - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-backend.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/api`)"
