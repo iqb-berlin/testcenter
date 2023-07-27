@@ -17,8 +17,6 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getWorkspaceDataSubscription: Subscription | null = null;
   problemText: string;
   isSuperAdmin = false;
-  booklets: AccessObject[] = [];
-  bookletCount = 0;
   constructor(
     private router: Router,
     private bs: BackendService,
@@ -99,8 +97,6 @@ export class StarterComponent implements OnInit, OnDestroy {
       if (!authData || !authData.token) {
         this.mds.logOut();
       }
-      this.booklets = authData.claims.test;
-      this.bookletCount = authData.claims.test.length;
       this.mds.setAuthData(authData);
     });
   }

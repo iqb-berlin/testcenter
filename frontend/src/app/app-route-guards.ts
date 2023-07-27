@@ -21,37 +21,30 @@ export class RouteDispatcherActivateGuard implements CanActivate {
 
   canActivate(): Observable<boolean> | Promise<boolean> | boolean {
     const authData = this.mainDataService.getAuthData();
-    if (authData) {
-      if (authData.claims) {
-        if (authData.claims.workspaceAdmin || authData.claims.superAdmin) {
-          this.router.navigate(['/r/admin-starter']);
-        } else if (authData.flags.indexOf('codeRequired') >= 0) {
-          this.router.navigate(['/r/code-input']);
-        } else if (authData.claims.testGroupMonitor) {
-          this.router.navigate(['/r/monitor-starter']);
-        } else if (authData.claims.test) {
-          if (
-            authData.claims.test.length === 1 &&
-            Object.keys(authData.claims).length === 1 &&
-            this.router.getCurrentNavigation().previousNavigation === null
-          ) {
-            this.backendService.startTest(authData.claims.test[0].id).subscribe(testId => {
-              this.router.navigate(['/t', testId]);
-            });
-          } else {
-            this.router.navigate(['/r/test-starter'], this.router.getCurrentNavigation().extras);
-          }
-        } else {
-          this.router.navigate(['/r/login', '']);
-        }
-      } else {
-        this.router.navigate(['/r/login', '']);
-      }
-    } else {
+    if (!authData) {
       this.router.navigate(['/r/login', '']);
+      return false;
     }
-
-    return false;
+    if (authData.flags.indexOf('codeRequired') >= 0) {
+      this.router.navigate(['/r/code-input']);
+      return false;
+    }
+    if (
+      authData.claims &&
+      Object.keys(authData.claims).length === 1 &&
+      authData.claims.test &&
+      authData.claims.test.length === 1 &&
+      this.router.getCurrentNavigation().previousNavigation === null
+    ) {
+      this.backendService.startTest(authData.claims.test[0].id)
+        .subscribe(testId => {
+          this.router.navigate(['/t', testId]);
+        });
+    } else {
+      this.router.navigate(['/r/starter'], this.router.getCurrentNavigation().extras);
+      return false;
+    }
+    return true;
   }
 }
 
@@ -231,6 +224,26 @@ export class GroupMonitorActivateGuard implements CanActivate {
     const authData = this.mainDataService.getAuthData();
 
     if (authData && authData.claims && authData.claims.testGroupMonitor) {
+      return true;
+    }
+    this.router.navigate(['/r']);
+    return false;
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class StarterActivateGuard implements CanActivate {
+  constructor(
+    private router: Router,
+    private mainDataService: MainDataService
+  ) {}
+
+  canActivate(): boolean {
+    const authData = this.mainDataService.getAuthData();
+
+    if (authData) {
       return true;
     }
     this.router.navigate(['/r']);

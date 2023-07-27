@@ -37,6 +37,10 @@ div.booklet_status {
   line-height: 130%;
 }
 
+h4 {
+  margin-bottom: 0.2em;
+}
+
 .booklet_status {
   display: block;
   font-size: 8pt;

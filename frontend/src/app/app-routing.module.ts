@@ -8,7 +8,7 @@ import {
   AdminComponentActivateGuard, AdminOrSuperAdminComponentActivateGuard,
   CodeInputComponentActivateGuard,
   DirectLoginActivateGuard, GroupMonitorActivateGuard,
-  RouteDispatcherActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
+  RouteDispatcherActivateGuard, StarterActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
 } from './app-route-guards';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
@@ -44,16 +44,6 @@ const routes: Routes = [
         component: SysCheckStarterComponent
       },
       {
-        path: 'test-starter',
-        component: StarterComponent,
-        canActivate: [TestComponentActivateGuard]
-      },
-      {
-        path: 'admin-starter',
-        component: StarterComponent,
-        canActivate: [AdminOrSuperAdminComponentActivateGuard]
-      },
-      {
         path: 'route-dispatcher',
         component: RouteDispatcherComponent,
         canActivate: [RouteDispatcherActivateGuard]
@@ -64,9 +54,9 @@ const routes: Routes = [
         canActivate: [CodeInputComponentActivateGuard]
       },
       {
-        path: 'monitor-starter',
+        path: 'starter',
         component: StarterComponent,
-        canActivate: [GroupMonitorActivateGuard]
+        canActivate: [StarterActivateGuard]
       }
     ]
   },

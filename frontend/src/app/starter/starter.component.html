@@ -1,14 +1,28 @@
 <div class="flex-row-wrap" [style.justify-content]="'center'" [style.gap.px]="10">
-  <mat-card *ngIf="accessObjects.testGroupMonitor || accessObjects.attachmentManager || accessObjects.workspaceMonitor">
-    <mat-card-title>Testdurchführung überwachen</mat-card-title>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
+      <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+    </mat-card-header>
     <mat-card-content>
       <div class="flex-column" [style.gap.px]="10">
         <p *ngIf="problemText" style="color: chocolate"><b>{{ problemText }}</b></p>
 
-        <p *ngIf="!accessObjects.testGroupMonitor || accessObjects.testGroupMonitor.length === 0">
-          Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben.
-        </p>
+        <h4 *ngIf="accessObjects.workspaceAdmin">Studien</h4>
+        <button *ngFor="let workspace of workspaces"
+                mat-raised-button color="primary"
+                [attr.data-cy]="'workspace-' + workspace.id"
+                (click)="buttonGotoWorkspaceAdmin(workspace)">
+          {{workspace.label}}
+        </button>
+        <tc-alert
+          *ngIf="accessObjects.workspaceAdmin && !workspaces.length"
+          level="info"
+          text="Aktuell sind keine Studien für Sie freigegeben."
+        >
+        </tc-alert>
 
+        <h4 *ngIf="accessObjects.testGroupMonitor">Test-Gruppen Überwachung</h4>
         <button *ngFor="let accessObject of accessObjects.testGroupMonitor"
                 mat-raised-button color="primary"
                 [disabled]="(!!accessObject.flags.scheduled) || (!!accessObject.flags.expired)"
@@ -25,106 +39,60 @@
             {{'Gruppe erst freigegeben ab %date.' | customtext: 'gm_selection_text_scheduled':accessObject.flags.scheduled | async}}
           </span>
         </button>
+        <tc-alert
+          *ngIf="accessObjects.testGroupMonitor && accessObjects.testGroupMonitor.length === 0"
+          level="info"
+          text="Sie sind angemeldet. Aktuell sind keine Testgruppen zur Überwachung für Sie freigegeben."
+        >
+        </tc-alert>
 
-        <ng-container *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">
-          <h4>Aufgaben-Anhänge Verwalten</h4>
-          <button *ngFor="let accessObject of accessObjects.attachmentManager"
-                  mat-raised-button color="primary"
-                  (click)="buttonGotoAttachmentManager(accessObject)">
-            <span class="booklet_title">{{accessObject.label}}</span>
-            <span class="booklet_status">Anhänge Verwalten</span>
-          </button>
-        </ng-container>
-
-        <h4>Folgende Testhefte stehen für Sie zur Ansicht bereit:</h4>
-
-        <button *ngFor="let b of accessObjects.test"
+        <h4 *ngIf="accessObjects.attachmentManager && accessObjects.attachmentManager.length">Aufgaben-Anhänge Verwalten</h4>
+        <button *ngFor="let accessObject of accessObjects.attachmentManager"
                 mat-raised-button color="primary"
-                [disabled]="!!b.flags.locked"
-                (click)="startTest(b)">
-          <span class="booklet_title">{{b.label}}</span>
-          <span class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Ansehen')}}</span>
+                (click)="buttonGotoAttachmentManager(accessObject)">
+          <span class="booklet_title">{{accessObject.label}}</span>
+          <span class="booklet_status">Anhänge Verwalten</span>
         </button>
+
+        <h4 *ngIf="accessObjects.testGroupMonitor && accessObjects.test">
+          Folgende Testhefte stehen für Sie zur Ansicht bereit:
+        </h4>
+        <div *ngIf="accessObjects.test">
+          <a *ngFor="let b of accessObjects.test"
+             mat-raised-button color="primary"
+             [disabled]="!!b.flags.locked"
+             [attr.aria-label]="'Starte Testheft ' + b.label"
+             [attr.data-cy]="'booklet-' + b.id"
+             (click)="startTest(b)">
+            <div class="booklet_title">{{b.label}}</div>
+            <div class="booklet_status">
+              {{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : (accessObjects.testGroupMonitor ? 'Ansehen' : 'Starten'))}}
+            </div>
+          </a>
+        </div>
+        <tc-alert
+          *ngIf="(accessObjects.test && !accessObjects.test.length) || !(accessObjects | keyvalue).length"
+          level="info"
+          customtext="login_noBookletsAvailable"
+          text="Für diese Anmeldung wurde kein Test gefunden."
+        ></tc-alert>
       </div>
     </mat-card-content>
     <mat-card-actions>
+      <button *ngIf="isSuperAdmin" mat-raised-button color="primary" [routerLink]="['/superadmin']" data-cy='goto-superadmin'>
+        Systemverwaltung
+      </button>
       <button mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</button>
     </mat-card-actions>
   </mat-card>
 
-  <mat-card class="status-card" *ngIf="accessObjects.testGroupMonitor || accessObjects.attachmentManager || accessObjects.workspaceMonitor">
-    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
+  <mat-card class="status-card">
     <mat-card-content>
-      <tc-status-card></tc-status-card>
-    </mat-card-content>
-  </mat-card>
-
-  <mat-card class="flex-column" [style.flex-basis.px]="400" *ngIf="accessObjects.workspaceAdmin || accessObjects.superAdmin">
-    <mat-card-title>Verwaltung</mat-card-title>
-    <mat-card-subtitle>Bitte Arbeitsbereich wählen</mat-card-subtitle>
-    <mat-card-content>
-      <div class="flex-column" [style.gap.px]="10">
-        <p *ngIf="workspaces.length === 0">
-          Sie sind mit Administrator-Funktionen angemeldet. Aktuell sind keine Studien für Sie freigegeben.
-        </p>
-        <button *ngFor="let workspace of workspaces"
-                mat-raised-button color="primary"
-                [attr.data-cy]="'workspace-' + workspace.id"
-                (click)="buttonGotoWorkspaceAdmin(workspace)">
-          {{workspace.label}}
-        </button>
+      <div *ngIf="accessObjects.test && !accessObjects.testGroupMonitor">
+        <p *ngIf="accessObjects.test.length === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>
+        <p *ngIf="accessObjects.test.length === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>
+        <p *ngIf="accessObjects.test.length > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany' | async}}</p>
       </div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button *ngIf="isSuperAdmin"
-              mat-raised-button color="primary"
-              [routerLink]="['/superadmin']"
-              data-cy='goto-superadmin'>
-        Systemverwaltung
-      </button>
-      <button mat-raised-button data-cy="logout" (click)="resetLogin()">
-        Neu anmelden
-      </button>
-    </mat-card-actions>
-  </mat-card>
-
-  <mat-card class="status-card" [style.flex-basis.px]="400" *ngIf="accessObjects.workspaceAdmin || accessObjects.superAdmin">
-    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-    <mat-card-subtitle>{{mds.appSubTitle$ | async}}</mat-card-subtitle>
-    <mat-card-content>
-      <tc-status-card></tc-status-card>
-    </mat-card-content>
-  </mat-card>
-
-  <mat-card *ngIf="accessObjects.test && !accessObjects.testGroupMonitor && !accessObjects.attachmentManager && !accessObjects.workspaceMonitor"  >
-    <mat-card-title>Bitte wählen</mat-card-title>
-    <mat-card-content class="flex-column" [style.gap.px]="10">
-      <tc-alert *ngIf="!booklets.length"
-             level="info"
-             customtext="login_noBookletsAvailable"
-             text="Für diese Anmeldung wurde kein Test gefunden."></tc-alert>
-      <a *ngFor="let b of booklets"
-         mat-raised-button color="primary"
-         [disabled]="!!b.flags.locked"
-         [attr.aria-label]="'Starte Testheft ' + b.label"
-         [attr.data-cy]="'booklet-' + b.id"
-         (click)="startTest(b)">
-        <div class="booklet_title">{{b.label}}</div>
-        <div class="booklet_status">{{b.flags.locked ? 'gesperrt' : (b.flags.running ? 'Fortsetzen' : 'Starten')}}</div>
-      </a>
-    </mat-card-content>
-    <mat-card-actions>
-      <a mat-raised-button data-cy="logout" color="primary" (click)="resetLogin()">Neu anmelden</a>
-    </mat-card-actions>
-  </mat-card>
-
-  <mat-card class="status-card" *ngIf="accessObjects.test && !accessObjects.testGroupMonitor && !accessObjects.attachmentManager && !accessObjects.workspaceMonitor">
-    <mat-card-title>{{mds.appTitle$ | async}}</mat-card-title>
-    <mat-card-content>
-      <p *ngIf="bookletCount === 0">{{ 'login_bookletSelectPromptNull' | customtext: 'login_bookletSelectPromptNull' | async}}</p>
-      <p *ngIf="bookletCount === 1">{{ 'login_bookletSelectPromptOne' | customtext: 'login_bookletSelectPromptOne' | async}}</p>
-      <p *ngIf="bookletCount > 1">{{ 'login_bookletSelectPromptMany' | customtext: 'login_bookletSelectPromptMany' | async}}</p>
       <tc-status-card></tc-status-card>
     </mat-card-content>
   </mat-card>
