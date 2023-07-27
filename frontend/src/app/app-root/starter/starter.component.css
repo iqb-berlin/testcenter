@@ -1,4 +1,4 @@
-div.booklet_title {
+div.starter-title {
   font-size: 16pt;
   text-align: center;
   white-space: pre-wrap;
@@ -6,7 +6,7 @@ div.booklet_title {
   line-height: 130%;
 }
 
-div.booklet_status {
+div.starter-status {
   font-size: 8pt;
   margin-top: 0;
   color: mediumturquoise;

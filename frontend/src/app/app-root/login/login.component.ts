@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm = new FormGroup({
     name: new FormControl(LoginComponent.oldLoginName, [Validators.required, Validators.minLength(3)]),
-    pw: new FormControl('', [Validators.required, Validators.minLength(7)])
+    pw: new FormControl('')
   });
 
   constructor(
@@ -49,10 +49,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   login(loginType: 'admin' | 'login' = 'login'): void {
     const loginData = this.loginForm.value;
+    if (!loginData.name) {
+      return;
+    }
     LoginComponent.oldLoginName = loginData.name;
     this.problemText = '';
     this.problemCode = 0;
-    this.backendService.login(loginType, loginData.name, loginData.pw).subscribe({
+    this.backendService.login(loginType, loginData.name, loginData.pw ?? '').subscribe({
       next: authData => {
         const authDataTyped = authData as AuthData;
         this.mainDataService.setAuthData(authDataTyped);

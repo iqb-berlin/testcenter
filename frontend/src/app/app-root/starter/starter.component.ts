@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { CustomtextService, MainDataService } from '../shared/shared.module';
-import { BackendService } from '../backend.service';
-import { AccessObject, AuthData } from '../app.interfaces';
+import { CustomtextService, MainDataService } from '../../shared/shared.module';
+import { BackendService } from '../../backend.service';
+import { AccessObject } from '../../app.interfaces';
 
 @Component({
   templateUrl: './starter.component.html',
@@ -15,7 +15,7 @@ export class StarterComponent implements OnInit, OnDestroy {
   private getMonitorDataSubscription: Subscription | null = null;
   private getBookletDataSubscription: Subscription | null = null;
   private getWorkspaceDataSubscription: Subscription | null = null;
-  problemText: string;
+  problemText: string = '';
   isSuperAdmin = false;
   constructor(
     private router: Router,
@@ -26,11 +26,7 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.bs.getSessionData().subscribe(authDataUntyped => {
-        if (typeof authDataUntyped === 'number') {
-          return;
-        }
-        const authData = authDataUntyped as AuthData;
+      this.bs.getSessionData().subscribe(authData => {
         if (!authData || !authData.token) {
           this.mds.logOut();
           return;
@@ -38,7 +34,8 @@ export class StarterComponent implements OnInit, OnDestroy {
         this.accessObjects = authData.claims;
         this.mds.setAuthData(authData);
 
-        if ('attachmentManager' in this.accessObjects ||
+        if (
+          'attachmentManager' in this.accessObjects ||
           'workspaceMonitor' in this.accessObjects ||
           'testGroupMonitor' in this.accessObjects
         ) {
@@ -48,8 +45,8 @@ export class StarterComponent implements OnInit, OnDestroy {
           if (this.getWorkspaceDataSubscription !== null) {
             this.getWorkspaceDataSubscription.unsubscribe();
           }
-          this.workspaces = authDataUntyped.claims.workspaceAdmin;
-          this.isSuperAdmin = typeof authDataUntyped.claims.superAdmin !== 'undefined';
+          this.workspaces = authData.claims.workspaceAdmin;
+          this.isSuperAdmin = typeof authData.claims.superAdmin !== 'undefined';
         } else {
           this.reloadTestList();
         }
@@ -59,15 +56,14 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   startTest(test: AccessObject): void {
     this.bs.startTest(test.id).subscribe(testId => {
-      if (typeof testId === 'number' &&
-        ('workspaceMonitor' in test || 'testGroupMonitor' in test || 'attachmentManager' in test)) {
+      if ('workspaceMonitor' in test || 'testGroupMonitor' in test || 'attachmentManager' in test) {
         const errCode = testId as number;
         if (errCode === 423) {
           this.problemText = 'Dieser Test ist gesperrt';
         } else {
           this.problemText = `Problem beim Start (${errCode})`;
         }
-      } else if (typeof testId === 'number' && 'test' in test) {
+      } else if ('test' in test) {
         this.reloadTestList();
       } else {
         this.router.navigate(['/t', testId]);
@@ -79,7 +75,7 @@ export class StarterComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(`/gm/${accessObject.id.toString()}`);
   }
 
-  buttonGotoAttachmentManager(accessObject) {
+  buttonGotoAttachmentManager(accessObject: AccessObject) {
     this.router.navigateByUrl(`/am/${accessObject.id.toString()}`);
   }
 
@@ -89,11 +85,7 @@ export class StarterComponent implements OnInit, OnDestroy {
 
   private reloadTestList(): void {
     this.mds.appSubTitle$.next('Testauswahl');
-    this.bs.getSessionData().subscribe(authDataUntyped => {
-      if (typeof authDataUntyped === 'number') {
-        return;
-      }
-      const authData = authDataUntyped as AuthData;
+    this.bs.getSessionData().subscribe(authData => {
       if (!authData || !authData.token) {
         this.mds.logOut();
       }

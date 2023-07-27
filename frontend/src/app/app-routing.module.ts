@@ -13,7 +13,7 @@ import {
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
 import { AppModuleSettings } from './app.interfaces';
-import { StarterComponent } from './starter/starter.component';
+import { StarterComponent } from './app-root/starter/starter.component';
 
 const routes: Routes = [
   {

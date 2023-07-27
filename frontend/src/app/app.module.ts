@@ -37,7 +37,7 @@ import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.compo
 import { RetryInterceptor } from './retry.interceptor';
 import { AppErrorHandler } from './app.error-handler';
 import { ErrorInterceptor } from './error.interceptor';
-import { StarterComponent } from './starter/starter.component';
+import { StarterComponent } from './app-root/starter/starter.component';
 
 @NgModule({
   declarations: [
