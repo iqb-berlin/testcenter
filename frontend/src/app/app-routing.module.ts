@@ -3,19 +3,17 @@ import { Routes, RouterModule } from '@angular/router';
 import { AppRootComponent } from './app-root/app-root.component';
 import { LoginComponent } from './app-root/login/login.component';
 import { SysCheckStarterComponent } from './app-root/sys-check-starter/sys-check-starter.component';
-import { AdminStarterComponent } from './app-root/admin-starter/admin-starter.component';
 import { CodeInputComponent } from './app-root/code-input/code-input.component';
 import {
   AdminComponentActivateGuard, AdminOrSuperAdminComponentActivateGuard,
   CodeInputComponentActivateGuard,
   DirectLoginActivateGuard, GroupMonitorActivateGuard,
-  RouteDispatcherActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
+  RouteDispatcherActivateGuard, StarterActivateGuard, SuperAdminComponentActivateGuard, TestComponentActivateGuard
 } from './app-route-guards';
-import { TestStarterComponent } from './app-root/test-starter/test-starter.component';
 import { RouteDispatcherComponent } from './app-root/route-dispatcher/route-dispatcher.component';
 import { LegalNoticeComponent } from './app-root/legal-notice/legal-notice.component';
-import { MonitorStarterComponent } from './app-root/monitor-starter/monitor-starter.component';
 import { AppModuleSettings } from './app.interfaces';
+import { StarterComponent } from './starter/starter.component';
 
 const routes: Routes = [
   {
@@ -46,16 +44,6 @@ const routes: Routes = [
         component: SysCheckStarterComponent
       },
       {
-        path: 'test-starter',
-        component: TestStarterComponent,
-        canActivate: [TestComponentActivateGuard]
-      },
-      {
-        path: 'admin-starter',
-        component: AdminStarterComponent,
-        canActivate: [AdminOrSuperAdminComponentActivateGuard]
-      },
-      {
         path: 'route-dispatcher',
         component: RouteDispatcherComponent,
         canActivate: [RouteDispatcherActivateGuard]
@@ -66,9 +54,9 @@ const routes: Routes = [
         canActivate: [CodeInputComponentActivateGuard]
       },
       {
-        path: 'monitor-starter',
-        component: MonitorStarterComponent,
-        canActivate: [GroupMonitorActivateGuard]
+        path: 'starter',
+        component: StarterComponent,
+        canActivate: [StarterActivateGuard]
       }
     ]
   },

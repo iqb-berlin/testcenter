@@ -24,3 +24,7 @@ div.booklet_status {
   justify-content: center;
   align-items: center;
 }
+
+h4 {
+  margin-bottom: 0.2em;
+}
