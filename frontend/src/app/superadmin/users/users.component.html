@@ -53,7 +53,7 @@
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" data-cy="check-user">
-          <mat-checkbox (click)="$event.stopPropagation()"
+          <mat-checkbox (click)="$event.stopPropagation(); selectRow(row)"
                         (change)="$event ? tableselectionCheckbox.toggle(row) : null"
                         [checked]="tableselectionCheckbox.isSelected(row)"
                         [attr.data-cy]="'checkbox'">
@@ -67,8 +67,7 @@
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"
-               [style.background]="tableselectionRow.isSelected(row) ? 'lightblue' : ''"></mat-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
   </div>
 

@@ -25,6 +25,7 @@ export class WorkspacesComponent implements OnInit {
   tableSelectionRow = new SelectionModel<IdAndName>(false, []);
   selectedWorkspaceId = 0;
   selectedWorkspaceName = '';
+  selectedWorkspaceIds: number[] = [];
   pendingUserChanges = false;
   userListDatasource: MatTableDataSource<IdRoleData> = new MatTableDataSource<IdRoleData>();
   displayedUserColumns = ['selectCheckbox', 'name'];
@@ -42,9 +43,14 @@ export class WorkspacesComponent implements OnInit {
     this.tableSelectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
+          console.log('case 1');
           this.selectedWorkspaceId = r.added[0].id;
+          if(!this.selectedWorkspaceIds.includes(r.added[0].id)){
+            this.selectedWorkspaceIds.push(r.added[0].id);
+          }
           this.selectedWorkspaceName = r.added[0].name;
         } else {
+          console.log('case 2');
           this.selectedWorkspaceId = 0;
           this.selectedWorkspaceName = '';
         }
@@ -201,14 +207,17 @@ export class WorkspacesComponent implements OnInit {
 
   saveUsers():void {
     this.pendingUserChanges = false;
-    if (this.selectedWorkspaceId > 0) {
-      this.backendService.setUsersByWorkspace(this.selectedWorkspaceId, this.userListDatasource.data)
-        .subscribe(() => {
-          this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
-        });
-    } else {
-      this.userListDatasource = new MatTableDataSource<IdRoleData>();
-    }
+    this.selectedWorkspaceIds.forEach(number => {
+      this.selectedWorkspaceId = number;
+      if (this.selectedWorkspaceId > 0) {
+        this.backendService.setUsersByWorkspace(this.selectedWorkspaceId, this.userListDatasource.data)
+          .subscribe(() => {
+            this.snackBar.open('Zugriffsrechte geändert', '', { duration: 1000 });
+          });
+      } else {
+        this.userListDatasource = new MatTableDataSource<IdRoleData>();
+      }
+    });
   }
 
   updateWorkspaceList(): void {
