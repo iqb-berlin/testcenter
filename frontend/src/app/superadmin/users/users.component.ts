@@ -27,7 +27,9 @@ export class UsersComponent implements OnInit {
   tableselectionRow = new SelectionModel<UserData>(false, []);
   selectedUser = -1;
   selectedUserName = '';
-  selectedUsers: number[] = [];
+  selectedUsersId: number[] = [];
+  selectedUsers: UserData[] = [];
+
   pendingWorkspaceChanges = false;
   workspacelistDatasource: MatTableDataSource<IdRoleData> = new MatTableDataSource<IdRoleData>();
   displayedWorkspaceColumns = ['selectCheckbox', 'label'];
@@ -47,9 +49,6 @@ export class UsersComponent implements OnInit {
       r => {
         if (r.added.length > 0) {
           this.selectedUser = r.added[0].id;
-          if(!this.selectedUsers.includes(r.added[0].id)){
-            this.selectedUsers.push(r.added[0].id);
-          }
           this.selectedUserName = r.added[0].name;
         } else {
           this.selectedUser = -1;
@@ -229,7 +228,7 @@ export class UsersComponent implements OnInit {
 
   saveWorkspaces(): void {
     this.pendingWorkspaceChanges = false;
-    this.selectedUsers.forEach(id => {
+    this.selectedUsersId.forEach(id => {
       this.selectedUser = id;
       if (this.selectedUser > -1) {
         this.bs.setWorkspacesByUser(this.selectedUser, this.workspacelistDatasource.data)
@@ -267,5 +266,17 @@ export class UsersComponent implements OnInit {
 
   selectRow(row: UserData): void {
     this.tableselectionRow.select(row);
+
+    if(!this.selectedUsers.includes(row)) {
+      this.selectedUsers.push(row);
+      this.selectedUsersId.push(row.id);
+    } else {
+      let indexRow = this.selectedUsers.indexOf(row,0);
+      let indexID = this.selectedUsersId.indexOf(row.id,0)
+      if (indexRow > -1 && indexID > -1){
+        this.selectedUsers.splice(indexRow,1);
+        this.selectedUsersId.splice(indexID,1);
+      }
+    }
   }
 }

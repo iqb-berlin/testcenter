@@ -6,3 +6,11 @@
 .mat-column-selectCheckbox {
   max-width: 100px !important;
 }
+
+.mat-button-toggle-group {
+  width: 80px;
+}
+
+.mat-button-toggle {
+  width: 40px;
+}

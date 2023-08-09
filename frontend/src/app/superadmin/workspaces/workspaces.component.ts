@@ -3,7 +3,6 @@ import { ViewChild, Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { FormGroup } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   ConfirmDialogComponent, ConfirmDialogData,
@@ -26,6 +25,7 @@ export class WorkspacesComponent implements OnInit {
   selectedWorkspaceId = 0;
   selectedWorkspaceName = '';
   selectedWorkspaceIds: number[] = [];
+  selectedRows: IdAndName[] = [];
   pendingUserChanges = false;
   userListDatasource: MatTableDataSource<IdRoleData> = new MatTableDataSource<IdRoleData>();
   displayedUserColumns = ['selectCheckbox', 'name'];
@@ -43,14 +43,9 @@ export class WorkspacesComponent implements OnInit {
     this.tableSelectionRow.changed.subscribe(
       r => {
         if (r.added.length > 0) {
-          console.log('case 1');
           this.selectedWorkspaceId = r.added[0].id;
-          if(!this.selectedWorkspaceIds.includes(r.added[0].id)){
-            this.selectedWorkspaceIds.push(r.added[0].id);
-          }
           this.selectedWorkspaceName = r.added[0].name;
         } else {
-          console.log('case 2');
           this.selectedWorkspaceId = 0;
           this.selectedWorkspaceName = '';
         }
@@ -245,5 +240,16 @@ export class WorkspacesComponent implements OnInit {
 
   selectRow(row: IdAndName): void {
     this.tableSelectionRow.select(row);
+    if(!this.selectedRows.includes(row)) {
+      this.selectedRows.push(row);
+      this.selectedWorkspaceIds.push(row.id);
+    } else {
+      let indexRow = this.selectedRows.indexOf(row,0);
+      let indexID = this.selectedWorkspaceIds.indexOf(row.id,0)
+      if (indexRow > -1 && indexID > -1){
+        this.selectedRows.splice(indexRow,1);
+        this.selectedWorkspaceIds.splice(indexID,1);
+      }
+    }
   }
 }

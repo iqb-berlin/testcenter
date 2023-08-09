@@ -44,8 +44,8 @@
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation();selectRow(row)"
-                        (change)="$event ? tableSelectionCheckbox.toggle(row) : null"
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? tableSelectionCheckbox.toggle(row) : null; selectRow(row)"
                         [checked]="tableSelectionCheckbox.isSelected(row)">
           </mat-checkbox>
         </mat-cell>
@@ -79,14 +79,10 @@
       <ng-container matColumnDef="selectCheckbox">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header" style="white-space: nowrap;">RO | RW</mat-header-cell>
         <mat-cell *matCellDef="let row let i = index">
-          <mat-checkbox (change)="selectUser(row, 'RO')"
-                        [checked]="row.role === 'RO'" matTooltip="RO"
-                        [attr.data-cy]="'workspace-' + i + '-role-ro'">
-          </mat-checkbox>
-          <mat-checkbox (change)="selectUser(row, 'RW')"
-                        [checked]="row.role === 'RW'" matTooltip="RW"
-                        [attr.data-cy]="'workspace-' + i + '-role-rw'">
-          </mat-checkbox>
+          <mat-button-toggle-group name="accessRights" aria-label="Access Rights">
+            <mat-button-toggle (change)="selectUser(row, 'RO')" [checked]="row.role === 'RO'" value="RO">RO</mat-button-toggle>
+            <mat-button-toggle (change)="selectUser(row, 'RW')" [checked]="row.role === 'RW'" value="RW">RW</mat-button-toggle>
+          </mat-button-toggle-group>
         </mat-cell>
       </ng-container>
 

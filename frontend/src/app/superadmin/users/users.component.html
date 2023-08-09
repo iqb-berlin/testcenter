@@ -53,8 +53,8 @@
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row" data-cy="check-user">
-          <mat-checkbox (click)="$event.stopPropagation(); selectRow(row)"
-                        (change)="$event ? tableselectionCheckbox.toggle(row) : null"
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? tableselectionCheckbox.toggle(row) : null;selectRow(row)"
                         [checked]="tableselectionCheckbox.isSelected(row)"
                         [attr.data-cy]="'checkbox'">
           </mat-checkbox>

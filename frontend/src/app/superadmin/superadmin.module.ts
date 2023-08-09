@@ -40,6 +40,7 @@ import { SharedModule } from '../shared/shared.module';
 import {
   MatProgressBarModule
 } from '@angular/material/progress-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,8 @@ import {
     MatDatepickerModule,
     MatDividerModule,
     SharedModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatButtonToggleModule
   ],
   exports: [
     SuperadminComponent
