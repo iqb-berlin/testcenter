@@ -30,6 +30,11 @@
   },
   "suggest": {
   },
+  "autoload": {
+      "classmap": [
+        "/var/www/backend/src"
+      ]
+  },
   "require-dev": {
     "mikey179/vfsstream": "^1.6",
     "phpunit/phpunit":  "^10",

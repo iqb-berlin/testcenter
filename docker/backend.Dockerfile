@@ -14,6 +14,7 @@ COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
 COPY backend/composer.json .
 COPY backend/composer.lock .
+COPY backend/src /var/www/backend/src
 
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 RUN composer install
