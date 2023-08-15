@@ -125,6 +125,8 @@
               <xs:element name="Id" type="xs:ID" />
               <xs:element name="Label" type="xs:string" />
               <xs:element name="Description" type="xs:string" minOccurs="0" />
+              <xs:element name="Transcript" type="xs:string" minOccurs="0" />
+              <xs:element name="Reference" type="xs:string" minOccurs="0" />
               <xs:element name="Lastchange" type="xs:dateTime" minOccurs="0">
                 <xs:annotation>
                   <xs:documentation>Deprecated. Use @lastChange</xs:documentation>
