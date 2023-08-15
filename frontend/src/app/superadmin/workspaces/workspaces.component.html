@@ -50,10 +50,14 @@
           </mat-checkbox>
         </mat-cell>
       </ng-container>
-
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Name</mat-header-cell>
         <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="modification_timestamp">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header">Letztes Änderungsdatum</mat-header-cell>
+        <mat-cell *matCellDef="let element">{{element.latest_modification_ts}}</mat-cell>
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
