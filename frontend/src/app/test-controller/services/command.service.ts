@@ -43,7 +43,7 @@ export class CommandService extends WebsocketBackendService<Command[]> implement
   constructor(
     @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean,
     private tcs: TestControllerService,
-    @Inject('SERVER_URL') serverUrl: string,
+    @Inject('BACKEND_URL') serverUrl: string,
     protected http: HttpClient
   ) {
     super(serverUrl, http);

@@ -13,7 +13,8 @@ import {
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') public serverUrl: string,
+    @Inject('BACKEND_URL') public backendUrl: string,
+    @Inject('FASTLOAD_URL') public fastLoadUrl: string,
     private http: HttpClient
   ) {
   }
@@ -26,23 +27,23 @@ export class BackendService {
     entry: string
   ) : Observable<void> {
     return this.http.put<void>(
-      `${this.serverUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
+      `${this.backendUrl}test/${testId}${unitName ? `/unit/${unitName}` : ''}/review`,
       { priority, categories, entry }
     );
   }
 
   getTestData(testId: string): Observable<TestData> {
-    return this.http.get<TestData>(`${this.serverUrl}test/${testId}`);
+    return this.http.get<TestData>(`${this.backendUrl}test/${testId}`);
   }
 
   getUnitData(testId: string, unitid: string, unitalias: string): Observable<UnitData> {
-    return this.http.get<UnitData>(`${this.serverUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
+    return this.http.get<UnitData>(`${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
   }
 
   getResource(testId: string, resId: string, versionning = false): Observable<LoadingFile> {
     return this.http
       .get(
-        `${this.serverUrl}test/${testId}/resource/${resId}`,
+        `${this.backendUrl}test/${testId}/resource/${resId}`,
         {
           params: new HttpParams().set('v', versionning ? '1' : 'f'),
           responseType: 'text',
@@ -78,26 +79,26 @@ export class BackendService {
   }
 
   updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
-    return this.http.patch(`${this.serverUrl}test/${testId}/state`, newState).subscribe();
+    return this.http.patch(`${this.backendUrl}test/${testId}/state`, newState).subscribe();
   }
 
   addTestLog(testId: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http.put(`${this.serverUrl}test/${testId}/log`, logEntries).subscribe();
+    return this.http.put(`${this.backendUrl}test/${testId}/log`, logEntries).subscribe();
   }
 
   updateUnitState(testId: string, unitName: string, newState: StateReportEntry[]): Subscription {
-    return this.http.patch(`${this.serverUrl}test/${testId}/unit/${unitName}/state`, newState).subscribe();
+    return this.http.patch(`${this.backendUrl}test/${testId}/unit/${unitName}/state`, newState).subscribe();
   }
 
   addUnitLog(testId: string, unitName: string, logEntries: StateReportEntry[]): Subscription {
-    return this.http.put(`${this.serverUrl}test/${testId}/unit/${unitName}/log`, logEntries).subscribe();
+    return this.http.put(`${this.backendUrl}test/${testId}/unit/${unitName}/log`, logEntries).subscribe();
   }
 
   notifyDyingTest(testId: string): void {
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(`${this.serverUrl}test/${testId}/connection-lost`);
+      navigator.sendBeacon(`${this.backendUrl}test/${testId}/connection-lost`);
     } else {
-      fetch(`${this.serverUrl}test/${testId}/connection-lost`, {
+      fetch(`${this.backendUrl}test/${testId}/connection-lost`, {
         keepalive: true,
         method: 'POST'
       });
@@ -107,22 +108,20 @@ export class BackendService {
   updateDataParts(testId: string, unitId: string, dataParts: KeyValuePairString, responseType: string): Subscription {
     const timeStamp = Date.now();
     return this.http
-      .put(`${this.serverUrl}test/${testId}/unit/${unitId}/response`, { timeStamp, dataParts, responseType })
+      .put(`${this.backendUrl}test/${testId}/unit/${unitId}/response`, { timeStamp, dataParts, responseType })
       .subscribe();
   }
 
   lockTest(testId: string, timeStamp: number, message: string): Subscription {
     return this.http
-      .patch<boolean>(`${this.serverUrl}test/${testId}/lock`, { timeStamp, message })
+      .patch<boolean>(`${this.backendUrl}test/${testId}/lock`, { timeStamp, message })
       .subscribe();
   }
 
   getResourceFast(path: string): Observable<LoadingFile> {
-    const fsURl = this.serverUrl.replace('/api', '/fs');
-    console.log('fastload', path);
     return this.http
       .get(
-        `${fsURl}${path}`,
+        `${this.fastLoadUrl}${path}`,
         {
           responseType: 'text',
           reportProgress: true,
@@ -152,7 +151,7 @@ export class BackendService {
               return null;
           }
         }),
-        filter(progressOfContent => progressOfContent != null)
+        filter((progressOfContent): progressOfContent is LoadingFile => progressOfContent != null)
       );
   }
 }

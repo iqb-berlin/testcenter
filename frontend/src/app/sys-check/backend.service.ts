@@ -15,7 +15,7 @@ import { AppError } from '../app.interfaces';
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') readonly serverUrl: string,
+    @Inject('BACKEND_URL') readonly serverUrl: string,
     @SkipSelf() private http: HttpClient
   ) {}
 

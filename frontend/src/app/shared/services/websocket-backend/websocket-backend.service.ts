@@ -24,7 +24,7 @@ export abstract class WebsocketBackendService<T> extends WebsocketService implem
   protected connectionClosed = true;
 
   constructor(
-    @Inject('SERVER_URL') protected serverUrl: string,
+    @Inject('BACKEND_URL') protected serverUrl: string,
     @SkipSelf() protected http: HttpClient
   ) {
     super();

@@ -10,7 +10,7 @@ import { SysConfig } from './shared/shared.module';
 })
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private readonly serverUrl: string,
+    @Inject('BACKEND_URL') private readonly serverUrl: string,
     private http: HttpClient
   ) {}
 

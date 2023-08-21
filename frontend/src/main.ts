@@ -10,8 +10,12 @@ if (environment.production) {
 
 platformBrowserDynamic(<StaticProvider[]>[
   {
-    provide: 'SERVER_URL',
+    provide: 'BACKEND_URL',
     useValue: environment.testcenterUrl
+  },
+  {
+    provide: 'FASTLOAD_URL',
+    useValue: environment.fastLoadUrl
   },
   {
     provide: 'IS_PRODUCTION_MODE',

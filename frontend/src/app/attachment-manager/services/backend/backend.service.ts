@@ -7,7 +7,7 @@ import { AttachmentData } from '../../interfaces/users.interfaces';
 @Injectable()
 export class BackendService {
   constructor(
-    @Inject('SERVER_URL') private readonly serverUrl: string,
+    @Inject('BACKEND_URL') private readonly serverUrl: string,
     @SkipSelf() private http: HttpClient
   ) {
   }
