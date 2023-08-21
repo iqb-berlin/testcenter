@@ -4,6 +4,12 @@ layout: default
 
 # Changelog & Upgrade Information
 
+## 14.9.0
+### XML-Austausch-Formate
+* Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
+  Dies sind vorübergehende Felder füt die Verarbeitung im IQB-Studio, die nach der Einführung des geplanten Metadaten-
+  standards wieder entfernt werden. 
+
 ## 14.8.0
 ### Bugfixes
 * Wiederherstellen gelöschter Logins auf anderem Workspace wird verhindert: Hatte man einen Login gelöscht, die damit
