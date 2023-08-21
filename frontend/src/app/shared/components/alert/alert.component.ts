@@ -11,8 +11,7 @@ import { CustomtextService } from '../../services/customtext/customtext.service'
 @Component({
   selector: 'tc-alert',
   templateUrl: 'alert.component.html',
-  styleUrls: ['alert.component.css'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['alert.component.css']
 })
 export class AlertComponent implements OnChanges {
   @Input() text: string = '';
