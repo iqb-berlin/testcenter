@@ -472,6 +472,24 @@ class SessionDAO extends DAO {
     return $newGroupToken;
   }
 
+
+  public function groupTokenExists(int $workspaceId, string $groupTokenString): bool {
+    return !!$this->_(
+      'select
+            count(token)
+          from
+            login_session_groups
+            left join logins on login_session_groups.group_name = logins.group_name
+          where
+            token = ? and workspace_id = ?',
+      [
+        $groupTokenString,
+        $workspaceId
+      ]
+    );
+  }
+
+
   public function getTestStatus(string $personToken, string $bookletName): array {
     $testStatus = $this->_(
       'select

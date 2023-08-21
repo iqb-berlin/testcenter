@@ -125,7 +125,8 @@ export class BackendService {
         {
           responseType: 'text',
           reportProgress: true,
-          observe: 'events'
+          observe: 'events',
+          headers: { usesGroupToken: 'yes' }
         }
       )
       .pipe(

@@ -5,6 +5,8 @@ declare(strict_types=1);
 // TODO unit tests !
 
 use Slim\Exception\HttpException;
+use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 use Slim\Psr7\Stream;
@@ -157,25 +159,41 @@ class TestController extends Controller {
   }
 
   public static function getResourceFromPackage(Request $request, Response $response, $args): Response {
-    /* @var $authToken AuthToken */
-    $authToken = $request->getAttribute('AuthToken');
-
-    if (!$authToken) {
-      $tokenString = $request->getAttribute('auth_token');
-      $authToken = self::sessionDAO()->getToken($tokenString, ['person']);
-    }
-
+    $tokenStringFromUrl = $request->getAttribute('auth_token');
     $packageName = $request->getAttribute('package_name');
     $resourceName = $args['path'];
 
-    $workspaceController = new Workspace($authToken->getWorkspaceId());
-    $resourceFile = $workspaceController->getPackageFilePath($packageName, $resourceName);
+    $authToken = self::sessionDAO()->getToken($tokenStringFromUrl, ['person']);
+    $workspace = new Workspace($authToken->getWorkspaceId());
+    $resourceFile = $workspace->getPackageFilePath($packageName, $resourceName);
 
     return $response
       ->withBody(new Stream(fopen($resourceFile, 'rb')))
       ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
       ->withHeader('Content-length', filesize($resourceFile));
   }
+
+  public static function getResourceFromPath(Request $request, Response $response, $args): Response {
+    $tokenStrFromHeader = $request->getHeaderLine('AuthToken');
+    $resourceName = $args['path'];
+    $workspaceId = (int) $request->getAttribute('ws_id');
+
+    if (!$tokenStrFromHeader) {
+      throw new HttpUnauthorizedException($request, 'No Token given');
+    }
+    if (!self::sessionDAO()->groupTokenExists($workspaceId, $tokenStrFromHeader)) {
+      throw new HttpForbiddenException($request, 'Group-Token not valid');
+    }
+
+    $workspace = new Workspace($workspaceId);
+    $resourceFile = $workspace->getWorkspacePath() . '/' . $resourceName;
+
+    return $response
+      ->withBody(new Stream(fopen($resourceFile, 'rb')))
+      ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
+      ->withHeader('Content-length', filesize($resourceFile));
+  }
+
 
   public static function putUnitReview(Request $request, Response $response): Response {
     $testId = (int) $request->getAttribute('test_id');

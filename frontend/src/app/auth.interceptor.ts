@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   HttpInterceptor, HttpRequest,
   HttpHandler, HttpEvent
@@ -9,8 +9,7 @@ import { MainDataService } from './shared/shared.module';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
-    private mainDataService: MainDataService,
-    @Inject('FASTLOAD_URL') public fastLoadUrl: string
+    private mainDataService: MainDataService
   ) {
   }
 
@@ -22,9 +21,8 @@ export class AuthInterceptor implements HttpInterceptor {
       tokenStr = authData.token;
     }
 
-    const groupToken = authData?.groupToken ?? '';
-    if (groupToken && request.url.startsWith(this.fastLoadUrl)) {
-      tokenStr = groupToken;
+    if (request.headers.has('usesGroupToken')) {
+      tokenStr = authData?.groupToken ?? '';
     }
 
     const requestA = request.clone({
