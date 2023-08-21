@@ -1,6 +1,6 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild
+  Component, ElementRef, HostListener, Inject, OnDestroy, OnInit, ViewChild
 } from '@angular/core';
 import { Subscription, combineLatest } from 'rxjs';
 import {
@@ -62,7 +62,8 @@ export class TestControllerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private cts: CustomtextService,
     public cmd: CommandService,
-    private tls: TestLoaderService
+    private tls: TestLoaderService,
+    @Inject('IS_PRODUCTION_MODE') public isProductionMode: boolean
   ) {
   }
 
@@ -404,6 +405,9 @@ export class TestControllerComponent implements OnInit, OnDestroy {
   }
 
   private addConsoleWarning(): void {
+    if (!this.isProductionMode) {
+      return;
+    }
     const style = `
       font-size: 200%;
       background: yellow;
@@ -416,7 +420,7 @@ export class TestControllerComponent implements OnInit, OnDestroy {
       .pipe(filter(txt => !!txt))
       .subscribe(text => {
         // eslint-disable-next-line no-console
-        // console.clear();
+        console.clear();
         // eslint-disable-next-line no-console
         console.log(`%c${text}`, style);
       });
