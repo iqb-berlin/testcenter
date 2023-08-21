@@ -5,16 +5,19 @@ class LoginSession extends DataCollectionTypeSafe {
 
     private int $id;
     private ?string $token;
+    private ?string $groupToken;
     private Login $login;
 
-    function __construct(
+  function __construct(
         int $id,
         ?string $token,
+        ?string $groupToken,
         Login $login
     ) {
 
         $this->id = $id;
         $this->token = $token;
+        $this->groupToken = $groupToken;
         $this->login = $login;
     }
 
@@ -35,4 +38,8 @@ class LoginSession extends DataCollectionTypeSafe {
 
         return $this->login;
     }
+
+  public function getGroupToken(): ?string {
+      return $this->groupToken;
+  }
 }

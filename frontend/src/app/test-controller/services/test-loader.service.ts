@@ -66,12 +66,12 @@ export class TestLoaderService {
         .map(x => parseInt(x, 10))
         .filter(x => !Number.isNaN(x));
 
-    await this.loadUnits();
+    await this.loadUnits(testData.resources);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
 
     // eslint-disable-next-line consistent-return
-    return this.loadUnitContents()
+    return this.loadUnitContents(testData.resources)
       .then(() => {
         this.resumeTest(testData.laststate);
       });
@@ -122,7 +122,7 @@ export class TestLoaderService {
     }
   }
 
-  private loadUnits(): Promise<number | undefined> {
+  private loadUnits(filesMap: { [id: string]: string }): Promise<number | undefined> {
     const sequence = [];
     for (let i = 1; i < this.lastUnitSequenceId; i++) {
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
@@ -212,7 +212,7 @@ export class TestLoaderService {
     this.unitContentLoadingQueue = queue.slice(offset).concat(queue.slice(0, offset));
   }
 
-  private loadUnitContents(): Promise<void> {
+  private loadUnitContents(filesMap: { [id: string]: string }): Promise<void> {
     // we don't load files in parallel since it made problems, when a whole class tried it at once
     const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
     this.unitContentLoadingQueue
@@ -235,7 +235,7 @@ export class TestLoaderService {
           concatMap(queueEntry => {
             const unitSequenceID = Number(queueEntry.tag);
 
-            const unitContentLoading$ = this.bs.getResource(this.tcs.testId, queueEntry.value)
+            const unitContentLoading$ = this.bs.getResourceFast(filesMap[queueEntry.value.toUpperCase()])
               .pipe(shareReplay());
 
             unitContentLoading$

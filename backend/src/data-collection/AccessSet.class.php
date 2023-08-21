@@ -18,6 +18,7 @@ class AccessSet extends DataCollectionTypeSafe {
   protected object $customTexts;
   protected array $flags;
   protected object $claims;
+  protected ?string $groupToken;
 
   static function createFromPersonSession(PersonSession $loginWithPerson, TestData | Group ...$accessItems): AccessSet {
     $login = $loginWithPerson->getLoginSession()->getLogin();
@@ -34,6 +35,8 @@ class AccessSet extends DataCollectionTypeSafe {
       [],
       $login->getCustomTexts() ?? new stdClass()
     );
+
+    $accessSet->groupToken = $loginWithPerson->getLoginSession()->getGroupToken();
 
     foreach ($accessItems as $accessItem) {
       switch (get_class($accessItem)) {
@@ -88,15 +91,17 @@ class AccessSet extends DataCollectionTypeSafe {
       $loginSession->getToken(),
       "{$loginSession->getLogin()->getGroupLabel()}/{$loginSession->getLogin()->getName()}",
       $loginSession->getLogin()->isCodeRequired() ? ['codeRequired'] : [],
-      $loginSession->getLogin()->getCustomTexts()
+      $loginSession->getLogin()->getCustomTexts(),
+      $loginSession->getGroupToken()
     );
   }
 
   public function __construct(
-    string   $token,
-    string   $displayName,
-    array    $flags = [],
-    stdClass $customTexts = null
+    string $token,
+    string $displayName,
+    array $flags = [],
+    stdClass $customTexts = null,
+    ?string $groupToken = null
   ) {
     $this->token = $token;
     $this->displayName = $displayName;
@@ -107,6 +112,8 @@ class AccessSet extends DataCollectionTypeSafe {
     $this->claims = (object) [];
 
     $this->customTexts = $customTexts ?? (object) [];
+
+    $this->groupToken = $groupToken;
   }
 
   function jsonSerialize(): mixed {

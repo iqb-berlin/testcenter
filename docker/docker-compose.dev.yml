@@ -46,6 +46,7 @@ services:
       - ../backend/config/no-cors.htaccess/:/var/www/.htaccess
       # Uncomment the following lines to enable xdebug
       - ../backend/config/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ../backend/config/local.php.ini:/usr/local/etc/php/conf.d/local.ini
     ports:
       - 9005:9003
     extra_hosts:
@@ -77,6 +78,24 @@ services:
       - ../broadcasting-service/src:/app/src
     networks:
       - testcenter
+
+  testcenter-files-service:
+    build:
+      context: ..
+      dockerfile: docker/files-service.Dockerfile
+      args:
+        ENABLED_MODULES: lua
+    volumes:
+      - ../data:/var/www/html/
+      - ../scripts/files-service/nginx.conf:/etc/nginx/nginx.conf # customized conf mainly because of logging
+      - ../scripts/files-service/site.conf:/etc/nginx/sites-enabled/default # overwrite default!
+      - ../scripts/files-service/auth.lua:/auth.lua
+    networks:
+      - testcenter
+
+  testcenter-fastauth-service:
+    ports:
+      - "6379:6379"
 
   testcenter-task-runner:
     container_name: testcenter-runner

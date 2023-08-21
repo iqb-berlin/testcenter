@@ -94,6 +94,7 @@ class SessionDAO extends DAO {
               logins.mode,
               logins.group_name,
               logins.group_label,
+              login_session_groups.token as group_token,
               logins.codes_to_booklets,
               logins.workspace_id,
               logins.valid_to,
@@ -103,6 +104,8 @@ class SessionDAO extends DAO {
               logins.password
             from 
               logins
+              left join login_sessions on (logins.name = login_sessions.name)
+              left join login_session_groups on (logins.group_name = login_session_groups.group_name)
             where 
               logins.name = :name',
       [
@@ -142,6 +145,7 @@ class SessionDAO extends DAO {
 
   public function createLoginSession(Login $login): LoginSession {
     $loginToken = Token::generate('login', $login->getName());
+    $groupToken = $this->getOrCreateGroupToken($login);
 
     // We don't check for existence of the sessions before inserting it because timing issues occurred: If the same
     // login was requested two times at the same moment it could happen that it was created twice.
@@ -161,6 +165,7 @@ class SessionDAO extends DAO {
       return new LoginSession(
         (int) $this->pdoDBhandle->lastInsertId(),
         $loginToken,
+        $groupToken,
         $login
       );
     }
@@ -175,30 +180,32 @@ class SessionDAO extends DAO {
       ]
     );
 
-    return new LoginSession((int) $session['id'], $session['token'], $login);
+    return new LoginSession((int) $session['id'], $session['token'], $groupToken, $login);
   }
 
   public function getLoginSessionByToken(string $loginToken): LoginSession {
     $loginSession = $this->_(
-      'select
-              login_sessions.id,
-              logins.name,
-              login_sessions.token,
-              logins.mode,
-              logins.group_name,
-              logins.group_label,
-              logins.codes_to_booklets,
-              login_sessions.workspace_id,
-              logins.custom_texts,
-              logins.password,
-              logins.valid_for,
-              logins.valid_to,
-              logins.valid_from
-            from
-              logins
-              left join login_sessions on (logins.name = login_sessions.name)
-            where
-              login_sessions.token=:token',
+      'select 
+                    login_sessions.id, 
+                    logins.name,
+                    login_sessions.token,
+                    logins.mode,
+                    logins.group_name,
+                    logins.group_label,
+                    login_session_groups.token as group_token,
+                    logins.codes_to_booklets,
+                    login_sessions.workspace_id,
+                    logins.custom_texts,
+                    logins.password,
+                    logins.valid_for,
+                    logins.valid_to,
+                    logins.valid_from
+                from
+                    logins
+                    left join login_sessions on (logins.name = login_sessions.name)
+                    left join login_session_groups on (logins.group_name = login_session_groups.group_name)
+                where
+                    login_sessions.token=:token',
       [':token' => $loginToken]
     );
 
@@ -214,6 +221,7 @@ class SessionDAO extends DAO {
     return new LoginSession(
       (int) $loginSession["id"],
       $loginSession["token"],
+      $loginSession["group_token"],
       new Login(
         $loginSession['name'],
         '',
@@ -230,45 +238,44 @@ class SessionDAO extends DAO {
     );
   }
 
-  public function getLoginSessions(array $filters = []): array {
+  public function getLoginsByGroup(string $groupName, int $workspaceId): array {
     $logins = [];
 
-    $replacements = [];
-    $filterSQL = [];
-    foreach ($filters as $filter => $filterValue) {
-      $filterName = ':' . str_replace('.', '_', $filter);
-      $replacements[$filterName] = $filterValue;
-      $filterSQL[] = "$filter = $filterName";
-    }
-    $filterSQL = implode(' and ', $filterSQL);
-    $sql = "select
-              logins.name,
-              logins.mode,
-              logins.group_name,
-              logins.group_label,
-              logins.codes_to_booklets,
-              logins.custom_texts,
-              logins.password,
-              logins.valid_for,
-              logins.valid_to,
-              logins.valid_from,
-              logins.workspace_id,
-              login_sessions.id,
-              login_sessions.token
-          from
-              logins
-              left join login_sessions on (logins.name = login_sessions.name)
-          where
-              $filterSQL
-          order by id";
-
-    $result = $this->_($sql, $replacements,true);
+    $result = $this->_(
+      'select 
+                    logins.name,
+                    logins.mode,
+                    logins.group_name,
+                    logins.group_label,
+                    login_session_groups.token as group_token,
+                    logins.codes_to_booklets,
+                    logins.custom_texts,
+                    logins.password,
+                    logins.valid_for,
+                    logins.valid_to,
+                    logins.valid_from,
+                    logins.workspace_id,
+                    login_sessions.id,
+                    login_sessions.token
+                from
+                    logins
+                    left join login_sessions on (logins.name = login_sessions.name)
+                    left join login_session_groups on (logins.group_name = login_session_groups.group_name)
+                where
+                    logins.group_name = :group_name and logins.workspace_id = :workspace_id',
+      [
+        ':group_name' => $groupName,
+        ':workspace_id' => $workspaceId
+      ],
+      true
+    );
 
     foreach ($result as $row) {
       $logins[] =
         new LoginSession(
           (int) $row["id"],
           $row["token"],
+          $row["group_token"],
           new Login(
             $row['name'],
             '',
@@ -388,6 +395,7 @@ class SessionDAO extends DAO {
                 logins.password,
                 logins.group_name,
                 logins.group_label,
+                login_session_groups.token as group_token,
                 login_sessions.token,
                 login_sessions.name,
                 logins.custom_texts,
@@ -401,6 +409,7 @@ class SessionDAO extends DAO {
             from person_sessions
                 inner join login_sessions on login_sessions.id = person_sessions.login_sessions_id
                 inner join logins on logins.name = login_sessions.name
+                left join login_session_groups on (logins.group_name = login_session_groups.group_name)
             where person_sessions.token = :token',
       [':token' => $personToken]
     );
@@ -419,6 +428,7 @@ class SessionDAO extends DAO {
       new LoginSession(
         (int) $personSession['id'],
         $personSession['token'],
+        $personSession['group_token'],
         new Login(
           $personSession['name'],
           '',
@@ -441,6 +451,25 @@ class SessionDAO extends DAO {
         TimeStamp::fromSQLFormat($personSession['valid_until'])
       )
     );
+  }
+
+  public function getOrCreateGroupToken(Login $login): string {
+    $res = $this->_('select token from login_session_groups where group_name = ?', [$login->getGroupName()]);
+
+    if ($res['token']) {
+      return $res['token'];
+    }
+
+    $newGroupToken = Token::generate('group', $login->getGroupName());
+    $this->_(
+      'insert into login_session_groups (group_name, group_label, token) values (?, ?, ?)',
+      [
+        $login->getGroupName(),
+        $login->getGroupLabel(),
+        $newGroupToken
+      ]
+    );
+    return $newGroupToken;
   }
 
   public function getTestStatus(string $personToken, string $bookletName): array {

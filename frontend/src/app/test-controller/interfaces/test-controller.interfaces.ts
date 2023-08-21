@@ -34,6 +34,7 @@ export interface TestData {
   xml: string;
   mode: string;
   laststate: { [k in TestStateKey]?: string };
+  resources: { [id: string]: string };
 }
 
 export enum TestStateKey {
