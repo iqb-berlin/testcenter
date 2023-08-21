@@ -40,44 +40,6 @@ export class BackendService {
     return this.http.get<UnitData>(`${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
   }
 
-  getResource(testId: string, resId: string, versionning = false): Observable<LoadingFile> {
-    return this.http
-      .get(
-        `${this.backendUrl}test/${testId}/resource/${resId}`,
-        {
-          params: new HttpParams().set('v', versionning ? '1' : 'f'),
-          responseType: 'text',
-          reportProgress: true,
-          observe: 'events'
-        }
-      )
-      .pipe(
-        map((event: HttpEvent<any>) => {
-          switch (event.type) {
-            case HttpEventType.ResponseHeader:
-              return { progress: 0 };
-
-            case HttpEventType.DownloadProgress:
-              if (!event.total) { // happens if file is huge because browser switches to chunked loading
-                return <LoadingFile>{ progress: 'UNKNOWN' };
-              }
-              return { progress: Math.round(100 * (event.loaded / event.total)) };
-
-            case HttpEventType.Response:
-              if (!event.body.length) {
-                // this might happen when file is so large, that memory size get exhausted
-                throw new Error(`Empty response for  '${resId}'. Most likely the browsers memory was exhausted.`);
-              }
-              return { content: event.body };
-
-            default:
-              return null;
-          }
-        }),
-        filter((progressOfContent): progressOfContent is LoadingFile => progressOfContent != null)
-      );
-  }
-
   updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
     return this.http.patch(`${this.backendUrl}test/${testId}/state`, newState).subscribe();
   }

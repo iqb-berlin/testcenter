@@ -132,12 +132,13 @@ export class TestLoaderService {
     }
     return from(sequence)
       .pipe(
-        concatMap(nr => this.loadUnit(this.tcs.getUnitWithContext(nr).unitDef, nr))
+        concatMap((sequenceId: number) => this.loadUnit(sequenceId, filesMap))
       )
       .toPromise();
   }
 
-  private loadUnit(unitDef: UnitDef, sequenceId: number): Observable<number> {
+  private loadUnit(sequenceId: number, filesMap: { [id: string]: string }): Observable<number> {
+    const unitDef = this.tcs.getUnitWithContext(sequenceId).unitDef;
     return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
       .pipe(
         switchMap((unit: UnitData) => {
@@ -172,8 +173,8 @@ export class TestLoaderService {
           }
 
           // this.tcs.addPlayer(unit.playerId, '');
-          const playerFileId = TestControllerService.normaliseId(unit.playerId, 'html');
-          return this.bs.getResource(this.tcs.testId, playerFileId, true)
+          console.log(unit.playerId, filesMap);
+          return this.bs.getResourceFast(filesMap[unit.playerId])
             .pipe(
               tap((progress: LoadedFile | LoadingProgress) => {
                 this.incrementTotalProgress(
