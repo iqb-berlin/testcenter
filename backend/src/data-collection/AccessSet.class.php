@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 class AccessSet extends DataCollectionTypeSafe {
 
-  static $accessObjectTypes = [
+  static array $accessObjectTypes = [
     'test',
     'superAdmin',
     'workspaceAdmin',
@@ -157,12 +157,12 @@ class AccessSet extends DataCollectionTypeSafe {
     $bookletsData = array_map(
       function(TestData $testData): AccessObject {
         return new AccessObject(
-          $testData->getBookletId(),
+          $testData->bookletId,
           'test',
-          $testData->getLabel(),
+          $testData->label,
           [
-            'locked' => $testData->isLocked(),
-            'running' => $testData->isRunning()
+            'locked' => $testData->locked,
+            'running' => $testData->running
           ]
         );
       },

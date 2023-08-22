@@ -238,63 +238,6 @@ class SessionDAO extends DAO {
     );
   }
 
-  public function getLoginsByGroup(string $groupName, int $workspaceId): array {
-    $logins = [];
-
-    $result = $this->_(
-      'select 
-                    logins.name,
-                    logins.mode,
-                    logins.group_name,
-                    logins.group_label,
-                    login_session_groups.token as group_token,
-                    logins.codes_to_booklets,
-                    logins.custom_texts,
-                    logins.password,
-                    logins.valid_for,
-                    logins.valid_to,
-                    logins.valid_from,
-                    logins.workspace_id,
-                    login_sessions.id,
-                    login_sessions.token
-                from
-                    logins
-                    left join login_sessions on (logins.name = login_sessions.name)
-                    left join login_session_groups on (logins.group_name = login_session_groups.group_name)
-                where
-                    logins.group_name = :group_name and logins.workspace_id = :workspace_id',
-      [
-        ':group_name' => $groupName,
-        ':workspace_id' => $workspaceId
-      ],
-      true
-    );
-
-    foreach ($result as $row) {
-      $logins[] =
-        new LoginSession(
-          (int) $row["id"],
-          $row["token"],
-          $row["group_token"],
-          new Login(
-            $row['name'],
-            '',
-            $row['mode'],
-            $row['group_name'],
-            $row['group_label'],
-            JSON::decode($row['codes_to_booklets'], true),
-            (int) $row['workspace_id'],
-            TimeStamp::fromSQLFormat($row['valid_to']),
-            TimeStamp::fromSQLFormat($row['valid_from']),
-            (int) $row['valid_for'],
-            JSON::decode($row['custom_texts'])
-          )
-        );
-    }
-
-    return $logins;
-  }
-
   public function createOrUpdatePersonSession(LoginSession $loginSession, string $code, bool $allowExpired = false): PersonSession {
     $login = $loginSession->getLogin();
 
@@ -591,11 +534,13 @@ class SessionDAO extends DAO {
     return array_map(
       function(array $res): TestData {
         return new TestData(
+          (int) $res['id'],
           $res['bookletId'],
           $res['testLabel'],
           $res['description'],
           (bool) $res['locked'],
-          (bool) $res['running']
+          (bool) $res['running'],
+          (object) []
         );
       },
       $tests
@@ -663,5 +608,67 @@ class SessionDAO extends DAO {
       ]),
       default => [],
     };
+  }
+
+  private function getLoginSessions(array $filters = []): array {
+    $logins = [];
+
+    $replacements = [];
+    $filterSQL = [];
+    foreach ($filters as $filter => $filterValue) {
+      $filterName = ':' . str_replace('.', '_', $filter);
+      $replacements[$filterName] = $filterValue;
+      $filterSQL[] = "$filter = $filterName";
+    }
+    $filterSQL = implode(' and ', $filterSQL);
+
+    $sql = "select
+      logins.name,
+      logins.mode,
+      logins.group_name,
+      logins.group_label,
+      logins.codes_to_booklets,
+      logins.custom_texts,
+      logins.password,
+      logins.valid_for,
+      logins.valid_to,
+      logins.valid_from,
+      logins.workspace_id,
+      login_sessions.id,
+      login_sessions.token,
+      login_session_groups.token as group_token 
+    from
+      logins
+      left join login_sessions on (logins.name = login_sessions.name)
+      left join login_session_groups on (logins.group_name = login_session_groups.group_name)
+    where
+      $filterSQL
+    order by id";
+
+    $result = $this->_($sql, $replacements,true);
+
+    foreach ($result as $row) {
+      $logins[] =
+        new LoginSession(
+          (int) $row["id"],
+          $row["token"],
+          $row["group_token"],
+          new Login(
+            $row['name'],
+            '',
+            $row['mode'],
+            $row['group_name'],
+            $row['group_label'],
+            JSON::decode($row['codes_to_booklets'], true),
+            (int) $row['workspace_id'],
+            TimeStamp::fromSQLFormat($row['valid_to']),
+            TimeStamp::fromSQLFormat($row['valid_from']),
+            (int) $row['valid_for'],
+            JSON::decode($row['custom_texts'])
+          )
+        );
+    }
+
+    return $logins;
   }
 }

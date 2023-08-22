@@ -41,7 +41,7 @@ class InitDAO extends SessionDAO {
     $loginSession = $sessionDAO->createLoginSession($testLogin);
 
     $personSession = $sessionDAO->createOrUpdatePersonSession($loginSession, 'xxx');
-    $test = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
+    $test = $testDAO->getTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-1', "sample_booklet_label");
     $testDAO->setTestRunning((int) $test['id']);
     $testDAO->addTestReview((int) $test['id'], 1, "", "sample booklet review");
     $testDAO->addUnitReview((int) $test['id'], "UNIT.SAMPLE", 1, "", "this is a sample unit review");
@@ -50,7 +50,7 @@ class InitDAO extends SessionDAO {
     $testDAO->updateDataParts((int) $test['id'], 'UNIT.SAMPLE', ["all" => "{\"name\":\"Sam Sample\",\"age\":34}"], "example-data-format", $timestamp);
     $testDAO->updateUnitState((int) $test['id'], "UNIT.SAMPLE", ["PRESENTATIONCOMPLETE" => "yes"]);
     $testDAO->updateTestState((int) $test['id'], ["CURRENT_UNIT_ID" => "UNIT.SAMPLE"]);
-    $test2 = $testDAO->getOrCreateTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-2', "a locked test");
+    $test2 = $testDAO->getTest($personSession->getPerson()->getId(), 'BOOKLET.SAMPLE-2', "a locked test");
     $testDAO->lockTest((int) $test2['id']);
     $testDAO->setTestRunning((int) $test2['id']);
   }

@@ -3,79 +3,81 @@
 declare(strict_types=1);
 
 class TestDAO extends DAO {
-  public function getBookletName(int $testId): string { // TODO add unit test.
-    $booklet = $this->_(
-      'SELECT tests.name FROM tests
-            WHERE tests.id=:bookletId',
-      [':bookletId' => $testId]
-    );
-
-    if ($booklet === null) {
-      throw new HttpError("No test with id `{$testId}` found in db.", 404);
-    }
-
-    return $booklet['name'];
-  }
-
   // TODO unit test
-  public function getOrCreateTest(int $personId, string $bookletName, string $bookletLabel): array {
+  public function getTestByPerson(int $personId, string $bookletName): TestData | null {
     $test = $this->_(
-      'SELECT tests.locked, tests.id, tests.laststate, tests.label FROM tests
-            WHERE tests.person_id=:personId and tests.name=:bookletname',
+      'select tests.locked, tests.name, tests.id, tests.laststate, tests.label, tests.running from tests
+            where tests.person_id=:personId and tests.name=:bookletname',
       [
         ':personId' => $personId,
         ':bookletname' => $bookletName
       ]
     );
 
-    if ($test !== null) {
-      $test['_newlyCreated'] = false;
-      return $test;
+    if (!$test) {
+      return null;
     }
+    return new TestData(
+      $test['id'],
+      $test['name'],
+      $test['label'],
+      '',
+      (bool) $test['locked'],
+      (bool) $test['running'],
+      JSON::decode($test['laststate'])
+    );
+  }
 
+  // TODO unit test
+  public function createTest(int $personId, string $bookletId, string $bookletLabel): TestData {
     $this->_(
-      'INSERT INTO tests (person_id, name, label) VALUES(:person_id, :name, :label)',
+      'insert into tests (person_id, name, label) values (:person_id, :name, :label)',
       [
         ':person_id' => $personId,
-        ':name' => $bookletName,
+        ':name' => $bookletId,
         ':label' => $bookletLabel
       ]
     );
 
-    return [
-      'id' => (int) $this->pdoDBhandle->lastInsertId(),
-      'label' => $bookletLabel,
-      'name' => $bookletName,
-      'person_id' => $personId,
-      'locked' => '0',
-      'running' => '0',
-      'lastState' => '',
-      '_newlyCreated' => true
-    ];
+    return new TestData(
+      (int) $this->pdoDBhandle->lastInsertId(),
+      $bookletId,
+      $bookletLabel,
+      '',
+      false,
+      false,
+      (object) []
+    );
   }
 
   // TODO unit test
-  public function isTestLocked(int $testId) {
+  public function getTestById(int $testId): TestData | null {
     $test = $this->_(
-      'SELECT tests.locked FROM tests
-                WHERE tests.id=:bookletId',
+      'select tests.locked, tests.name, tests.id, tests.laststate, tests.label, tests.running from tests where id = :id',
       [
-        ':bookletId' => $testId
+        ':id' => $testId
       ]
     );
 
-    if ($test == null) {
-      return false;
+    if (!$test) {
+      return null;
     }
 
-    return !$test or ($test['locked'] == '1');
+    return new TestData(
+      $test['id'],
+      $test['name'],
+      $test['label'],
+      '',
+      (bool) $test['locked'],
+      (bool) $test['running'],
+      JSON::decode($test['laststate'])
+    );
   }
 
   // TODO unit test
   public function addTestReview(int $testId, int $priority, string $categories, string $entry): void {
     $this->_(
-      'INSERT INTO test_reviews (booklet_id, reviewtime, priority, categories, entry) 
-            VALUES(:b, :t, :p, :c, :e)',
+      'insert into test_reviews (booklet_id, reviewtime, priority, categories, entry) values(:b, :t, :p, :c, :e)',
       [
         ':b' => $testId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
@@ -90,8 +92,7 @@ class TestDAO extends DAO {
   public function addUnitReview(int $testId, string $unit, int $priority, string $categories, string $entry): void {
     $unitDbId = $this->getOrCreateUnitId($testId, $unit);
     $this->_(
-      'INSERT INTO unit_reviews (unit_id, reviewtime, priority, categories, entry) 
-            VALUES(:u, :t, :p, :c, :e)',
+      'insert into unit_reviews (unit_id, reviewtime, priority, categories, entry) values(:u, :t, :p, :c, :e)',
       [
         ':u' => $unitDbId,
         ':t' => TimeStamp::toSQLFormat(TimeStamp::now()),
@@ -104,7 +105,7 @@ class TestDAO extends DAO {
 
   public function getTestState(int $testId): array {
     $test = $this->_(
-      'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
+      'select tests.laststate from tests where tests.id=:testId',
       [
         ':testId' => $testId
       ]
@@ -115,27 +116,27 @@ class TestDAO extends DAO {
 
   public function getTestSession(int $testId): array {
     $testSession = $this->_(
-                'SELECT
-                    login_sessions.id as login_id,
-                    logins.mode,
-                    login_sessions.workspace_id,
-                    logins.group_name as group_name,
-                    login_sessions.token as login_token,
-                    person_sessions.code,
-                    person_sessions.token as person_token,
-                    tests.person_id, 
-                    tests.laststate as testState,
-                    tests.id,
-                    tests.locked,
-                    tests.running,
-                    tests.label
-                FROM 
-                    tests 
-                    LEFT JOIN person_sessions on person_sessions.id = tests.person_id
-                    LEFT JOIN login_sessions on person_sessions.login_sessions_id = login_sessions.id
-                    LEFT JOIN logins on logins.name = login_sessions.name
-                WHERE 
-                    tests.id=:testId',
+    'select
+        login_sessions.id as login_id,
+        logins.mode,
+        login_sessions.workspace_id,
+        logins.group_name as group_name,
+        login_sessions.token as login_token,
+        person_sessions.code,
+        person_sessions.token as person_token,
+        tests.person_id, 
+        tests.laststate as testState,
+        tests.id,
+        tests.locked,
+        tests.running,
+        tests.label
+      from 
+        tests 
+        left join person_sessions on person_sessions.id = tests.person_id
+        left join login_sessions on person_sessions.login_sessions_id = login_sessions.id
+        left join logins on logins.name = login_sessions.name
+      where 
+        tests.id=:testId',
       [
         ':testId' => $testId
       ]
@@ -153,7 +154,7 @@ class TestDAO extends DAO {
   // TODO use data-collection class for $statePatch (key-vale pairs)
   public function updateTestState(int $testId, array $statePatch): array {
     $testData = $this->_(
-      'SELECT tests.laststate FROM tests WHERE tests.id=:testId',
+      'select tests.laststate from tests where tests.id=:testId',
       [
         ':testId' => $testId
       ]
@@ -167,7 +168,7 @@ class TestDAO extends DAO {
     $newState = array_merge($oldState, $statePatch);
 
     $this->_(
-      'UPDATE tests SET laststate = :laststate, timestamp_server = :timestamp WHERE id = :id',
+      'update tests set laststate = :laststate, timestamp_server = :timestamp where id = :id',
       [
         ':laststate' => json_encode($newState),
         ':id' => $testId,
@@ -180,8 +181,7 @@ class TestDAO extends DAO {
 
   public function getUnitState(int $testId, string $unitName): array {
     $unitData = $this->_(
-      'SELECT units.laststate FROM units
-            WHERE units.name = :unitname and units.booklet_id = :testId',
+      'select units.laststate from units where units.name = :unitname and units.booklet_id = :testId',
       [
         ':unitname' => $unitName,
         ':testId' => $testId
@@ -196,7 +196,7 @@ class TestDAO extends DAO {
     $unitDbId = $this->getOrCreateUnitId($testId, $unitName);
 
     $unitData = $this->_(
-      'SELECT units.laststate FROM units WHERE units.id=:unitId',
+      'select units.laststate from units where units.id=:unitId',
       [
         ':unitId' => $unitDbId
       ]
@@ -207,7 +207,7 @@ class TestDAO extends DAO {
 
     // todo save states in separate key-value table instead of JSON blob
     $this->_(
-      'UPDATE units SET laststate = :laststate WHERE id = :id',
+      'update units set laststate = :laststate where id = :id',
       [
         ':laststate' => json_encode($newState),
         ':id' => $unitDbId
@@ -219,7 +219,7 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function lockTest(int $testId): void {
-    $this->_('UPDATE tests SET locked = :locked , timestamp_server = :timestamp WHERE id = :id',
+    $this->_('update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
       [
         ':locked' => '1',
         ':id' => $testId,
@@ -230,7 +230,7 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function changeTestLockStatus(int $testId, bool $unlock = true): void {
-    $this->_('UPDATE tests SET locked = :locked , timestamp_server = :timestamp WHERE id = :id',
+    $this->_('update tests set locked = :locked , timestamp_server = :timestamp where id = :id',
       [
         ':locked' => $unlock ? '0' : '1',
         ':id' => $testId,
@@ -244,8 +244,7 @@ class TestDAO extends DAO {
   // todo reduce nr of queries by using replace...into syntax
   private function getOrCreateUnitId(int $testId, string $unitName): string {
     $unit = $this->_(
-      'SELECT units.id FROM units
-            WHERE units.name = :unitname and units.booklet_id = :testId',
+      'select units.id from units where units.name = :unitname and units.booklet_id = :testId',
       [
         ':unitname' => $unitName,
         ':testId' => $testId
@@ -254,8 +253,7 @@ class TestDAO extends DAO {
 
     if (!$unit) {
       $this->_(
-        'INSERT INTO units (booklet_id, name) 
-                VALUES(:testId, :name)',
+        'insert into units (booklet_id, name) values(:testId, :name)',
         [
           ':testId' => $testId,
           ':name' => $unitName
@@ -270,17 +268,17 @@ class TestDAO extends DAO {
 
   public function getDataParts(int $testId, string $unitName): array {
     $result = $this->_(
-              'SELECT
-                    unit_data.part_id,
-                    unit_data.content,
-                    unit_data.response_type
-                FROM
-                    unit_data
-                    left join units on units.id = unit_data.unit_id
-                WHERE
-                    units.name = :unitname
-                    and units.booklet_id = :testId
-                ',
+      'select
+          unit_data.part_id,
+          unit_data.content,
+          unit_data.response_type
+        from
+          unit_data
+          left join units on units.id = unit_data.unit_id
+        where
+          units.name = :unitname
+          and units.booklet_id = :testId
+        ',
       [
         ':unitname' => $unitName,
         ':testId' => $testId
@@ -328,12 +326,7 @@ class TestDAO extends DAO {
     $unitId = $this->getOrCreateUnitId($testId, $unitName);
 
     $this->_(
-      'INSERT INTO unit_logs (unit_id, logentry, timestamp) 
-            VALUES(
-                :unitId,
-                :logentry, 
-                :ts
-            )',
+      'insert into unit_logs (unit_id, logentry, timestamp) values (:unitId, :logentry, :ts)',
       [
         ':unitId' => $unitId,
         ':logentry' => $logKey . ($logContent ? ' = ' . $logContent : ''),
@@ -344,7 +337,7 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function addTestLog(int $testId, string $logKey, int $timestamp, string $logContent = ""): void {
-    $this->_('INSERT INTO test_logs (booklet_id, logentry, timestamp) VALUES (:bookletId, :logentry, :timestamp)',
+    $this->_('insert into test_logs (booklet_id, logentry, timestamp) values (:bookletId, :logentry, :timestamp)',
       [
         ':bookletId' => $testId,
         ':logentry' => $logKey . ($logContent ? ' : ' . $logContent : ''), // TODO add value-column to log-tables instead of this shit
@@ -355,7 +348,7 @@ class TestDAO extends DAO {
 
   // TODO unit test
   public function setTestRunning(int $testId) {
-    $this->_('UPDATE tests SET running = :running , timestamp_server = :timestamp WHERE id = :id',
+    $this->_('update tests set running = :running , timestamp_server = :timestamp where id = :id',
       [
         ':running' => '1',
         ':id' => $testId,

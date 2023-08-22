@@ -108,17 +108,20 @@ class SessionController extends Controller {
         $memberPersonSession = SessionController::sessionDAO()->createOrUpdatePersonSession($member, $code);
 
         foreach ($booklets as $bookletId) {
-          if (!isset($bookletLabels[$bookletId])) {
+          if (!isset($bookletFiles[$bookletId])) {
             $bookletFile = $workspace->getFileById('Booklet', $bookletId);
-            /* @var $bookletFile XMLFileBooklet */
             $bookletFiles[$bookletId] = $bookletFile;
+          } else {
+            $bookletFile = $bookletFiles[$bookletId];
           }
-          $test = self::testDAO()->getOrCreateTest(
-            $memberPersonSession->getPerson()->getId(),
-            $bookletId,
-            $bookletFiles[$bookletId]->getLabel()
-          );
-          $sessionMessage = SessionChangeMessage::session((int) $test['id'], $memberPersonSession);
+          /* @var $bookletFile XMLFileBooklet */
+
+          $test = self::testDAO()->getTestByPerson($memberPersonSession->getPerson()->getId(), $bookletId);
+          if (!$test) {
+            $test = self::testDAO()->createTest($memberPersonSession->getPerson()->getId(), $bookletId, $bookletFile->getLabel());
+          }
+
+          $sessionMessage = SessionChangeMessage::session($test->id, $memberPersonSession);
           $sessionMessage->setTestState([], $bookletId);
           BroadcastService::sessionChange($sessionMessage);
         }

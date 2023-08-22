@@ -6,3 +6,4 @@ create table login_session_groups (
   constraint login_session_groups_unique_token
     unique (token)
 );
+-- TODO X foreign key

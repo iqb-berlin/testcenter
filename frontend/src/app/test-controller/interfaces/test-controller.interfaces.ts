@@ -35,6 +35,7 @@ export interface TestData {
   mode: string;
   laststate: { [k in TestStateKey]?: string };
   resources: { [id: string]: string };
+  firstStart: boolean;
 }
 
 export enum TestStateKey {

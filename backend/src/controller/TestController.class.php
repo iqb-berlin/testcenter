@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
@@ -15,61 +16,68 @@ class TestController extends Controller {
   public static function put(Request $request, Response $response): Response {
     /* @var $authToken AuthToken */
     $authToken = $request->getAttribute('AuthToken');
-
     $body = RequestBodyParser::getElements($request, [
       'bookletName' => null
     ]);
 
-    $Workspace = new Workspace($authToken->getWorkspaceId());
-    $bookletLabel = $Workspace->getFileById('Booklet', $body['bookletName'])->getLabel();
+    $test = self::testDAO()->getTestByPerson($authToken->getId(), $body['bookletName']);
 
-    $test = self::testDAO()->getOrCreateTest($authToken->getId(), $body['bookletName'], $bookletLabel);
-
-    if ($test['locked'] == '1') {
-      throw new HttpException($request, "Test #{$test['id']} `{$test['label']}` is locked.", 423);
+    if (!$test) {
+      $workspace = new Workspace($authToken->getWorkspaceId());
+      $bookletLabel = $workspace->getFileById('Booklet', $body['bookletName'])->getLabel();
+      $test = self::testDAO()->createTest($authToken->getId(), $body['bookletName'], $bookletLabel);
     }
 
-    self::testDAO()->setTestRunning((int) $test['id']);
-
-    // TODO check for Mode::hasCapability('monitorable'))
-    $testState = isset($test['lastState']) && $test['lastState'] ? json_decode($test['lastState']) : ['status' => 'running'];
-    if ($test['_newlyCreated']) {
-      $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
-      $message = SessionChangeMessage::session((int) $test['id'], $personSession);
-      $message->setTestState($testState, $body['bookletName']);
-    } else {
-      $message = SessionChangeMessage::testState(
-        $authToken->getGroup(),
-        $authToken->getId(),
-        (int) $test['id'],
-        $testState,
-        $body['bookletName']
-      );
+    if ($test->locked) {
+      throw new HttpException($request, "Test #$test->id `$test->label` is locked.", 423);
     }
-    BroadcastService::sessionChange($message);
 
-    $response->getBody()->write((string) $test['id']);
+    $response->getBody()->write((string) $test->id);
     return $response->withStatus(201);
   }
 
   public static function get(Request $request, Response $response): Response {
     /* @var $authToken AuthToken */
-    $authToken = $request->getAttribute('AuthToken');
+    $authToken = $request->getAttribute('AuthToken');     // auth 1
     $testId = (int) $request->getAttribute('test_id');
 
-    $bookletName = self::testDAO()->getBookletName($testId);
-    $workspace = new Workspace($authToken->getWorkspaceId());
-    $bookletFile = $workspace->getFileById('Booklet', $bookletName);
+    $test = self::testDAO()->getTestById($testId);
 
-    if (self::testDAO()->isTestLocked($testId)) {
-      throw new HttpException($request, "Test #$testId `{$bookletFile->getLabel()}` is locked.", 423);
+    if (!$test) {
+      throw new HttpNotFoundException($request, "Test #$testId not found");
     }
 
-    return $response->withJson([ // TODO include running, use only one query
+    if ($test->locked) {
+      throw new HttpException($request, "Test #$testId `$test->label` is locked.", 423);
+    }
+
+    $workspace = new Workspace($authToken->getWorkspaceId());
+    $bookletFile = $workspace->getFileById('Booklet', $test->bookletId); // 3
+
+    // TODO check for Mode::hasCapability('monitorable'))
+
+    if (!$test->running) {
+      $personSession = self::sessionDAO()->getPersonSessionByToken($authToken->getToken());
+      $message = SessionChangeMessage::session($test->id, $personSession);
+      $message->setTestState((array) $test->state, $test->bookletId);
+      self::testDAO()->setTestRunning($test->id);
+    } else {
+      $message = SessionChangeMessage::testState(
+        $authToken->getGroup(),
+        $authToken->getId(),
+        $test->id,
+        (array) $test->state,
+        $test->bookletId
+      );
+    }
+    BroadcastService::sessionChange($message);
+
+    return $response->withJson([
       'mode' => $authToken->getMode(),
-      'laststate' => self::testDAO()->getTestState($testId),
+      'laststate' => (array) $test->state,
       'xml' => $bookletFile->getContent(),
-      'resources' => $workspace->getBookletResources($bookletFile->getName())
+      'resources' => $workspace->getBookletResources($bookletFile->getName()), // 6
+      'firstStart' => !$test->running
     ]);
   }
 
