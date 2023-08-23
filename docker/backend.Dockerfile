@@ -43,7 +43,6 @@ COPY backend/config/local.php.ini /usr/local/etc/php/conf.d/local.ini
 
 COPY --from=backend-composer /vendor /var/www/backend/vendor/
 COPY backend/.htaccess /var/www/backend/
-COPY backend/autoload.php /var/www/backend/
 COPY backend/index.php /var/www/backend/
 COPY backend/initialize.php /var/www/backend/
 COPY backend/routes.php /var/www/backend/
