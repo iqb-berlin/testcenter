@@ -31,7 +31,7 @@ export class TestletContentElement {
 export class UnitDef extends TestletContentElement {
   readonly alias: string;
   readonly naviButtonLabel: string;
-  playerId: string = '';
+  playerFileName: string = '';
   lockedByTime = false;
   readonly navigationLeaveRestrictions: NavigationLeaveRestrictions;
 

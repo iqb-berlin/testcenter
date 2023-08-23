@@ -328,7 +328,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
       unitDefinitionType: this.tcs.getUnitDefinitionType(this.currentUnitSequenceId),
       unitState: {
         dataParts: this.tcs.getUnitStateDataParts(this.currentUnitSequenceId),
-        unitStateDataType: this.tcs.getUnitStateDataType(this.currentUnitSequenceId),
+        unitStateDataType: this.tcs.getUnitResponseType(this.currentUnitSequenceId),
         presentationProgress: <VeronaProgress> this.tcs.getUnitPresentationProgress(this.currentUnitSequenceId),
         responseProgress: <VeronaProgress> this.tcs.getUnitResponseProgress(this.currentUnitSequenceId)
       }
@@ -367,7 +367,7 @@ export class UnithostComponent implements OnInit, OnDestroy {
     this.iFrameItemplayer.setAttribute('class', 'unitHost');
     this.adjustIframeSize();
     this.iFrameHostElement.nativeElement.appendChild(this.iFrameItemplayer);
-    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.unitDef.playerId));
+    this.iFrameItemplayer.setAttribute('srcdoc', this.tcs.getPlayer(this.currentUnit.unitDef.playerFileName));
   }
 
   private adjustIframeSize(): void {

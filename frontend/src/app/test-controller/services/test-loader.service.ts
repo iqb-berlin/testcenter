@@ -13,7 +13,7 @@ import {
   LoadedFile,
   LoadingProgress,
   StateReportEntry,
-  TaggedString,
+  LoadingQueueEntry,
   TestControllerState,
   TestData,
   TestLogEntryKey,
@@ -35,7 +35,7 @@ export class TestLoaderService {
   private unitContentLoadSubscription: Subscription | null = null;
   private environment: EnvironmentData; // TODO (possible refactoring) outsource to a service or what
   private lastUnitSequenceId = 0;
-  private unitContentLoadingQueue: TaggedString[] = [];
+  private unitContentLoadingQueue: LoadingQueueEntry[] = [];
   private totalLoadingProgressParts: { [loadingId: string]: number } = {};
 
   constructor(
@@ -142,11 +142,29 @@ export class TestLoaderService {
 
   private loadUnit(sequenceId: number, testData: TestData): Observable<number> {
     const unitDef = this.tcs.getUnitWithContext(sequenceId).unitDef;
-    return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias, testData.firstStart)
+    const resources = testData.resources[unitDef.id.toUpperCase()];
+    if (!resources) {
+      throw new Error(`No resources for unitId: \`${unitDef.id}\`.`);
+    }
+    if (!(resources.usesPlayer && resources.usesPlayer.length)) {
+      throw new Error(`Unit has no player: \`${unitDef.id}\`)`);
+    }
+    unitDef.playerFileName = resources.usesPlayer[0];
+
+    const definitionFile = (resources.isDefinedBy && resources.isDefinedBy.length) ? resources.isDefinedBy[0] : null;
+
+    if (testData.firstStart && definitionFile) {
+      // we don't need to call `[GET] /test/{testID}/unit` when this is the first test and no inline definition
+      this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
+      this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
+      return this.getPlayer(testData, sequenceId, unitDef.playerFileName);
+    }
+
+    return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
       .pipe(
         switchMap((unit: UnitData) => {
           if (!unit) {
-            throw new Error(`Unit is empty ${this.tcs.testId}/${unitDef.id}`);
+            throw new Error(`Unit is empty ${this.tcs.testId}/${unitDef.id}.`);
           }
 
           this.incrementTotalProgress({ progress: 100 }, `unit-${sequenceId}`);
@@ -155,44 +173,43 @@ export class TestLoaderService {
           this.tcs.setUnitResponseProgress(sequenceId, unit.state[UnitStateKey.RESPONSE_PROGRESS]);
           this.tcs.setUnitStateCurrentPage(sequenceId, unit.state[UnitStateKey.CURRENT_PAGE_ID]);
           this.tcs.setUnitStateDataParts(sequenceId, unit.dataParts);
-          this.tcs.setUnitStateDataType(sequenceId, unit.unitStateDataType);
+          this.tcs.setUnitResponseType(sequenceId, unit.unitResponseType);
 
-          unitDef.playerId = unit.playerId;
-          if ('definitionRef' in unit) {
-            this.unitContentLoadingQueue.push(<TaggedString>{
-              tag: sequenceId.toString(),
-              value: unit.definitionRef
-            });
+          if (definitionFile) {
+            this.unitContentLoadingQueue.push({ sequenceId, definitionFile });
           } else {
-            this.tcs.setUnitDefinitionType(sequenceId, unit.playerId);
+            // inline unit definition
+            this.tcs.setUnitPlayerFilename(sequenceId, unitDef.playerFileName);
             this.tcs.setUnitDefinition(sequenceId, unit.definition);
             this.tcs.setUnitLoadProgress$(sequenceId, of({ progress: 100 }));
             this.incrementTotalProgress({ progress: 100 }, `content-${sequenceId}`);
           }
 
-          if (this.tcs.hasPlayer(unit.playerId)) {
-            this.incrementTotalProgress({ progress: 100 }, `player-${sequenceId}`);
-            return of(sequenceId);
-          }
+          return this.getPlayer(testData, sequenceId, unitDef.playerFileName);
+        })
+      );
+  }
 
-          console.log(unit.playerId, testData.resources);
-          return this.bs.getResourceFast(testData.workspaceId, testData.resources[unit.playerId])
-            .pipe(
-              tap((progress: LoadedFile | LoadingProgress) => {
-                this.incrementTotalProgress(
-                  isLoadingFileLoaded(progress) ? { progress: 100 } : progress,
-                  `player-${sequenceId}`
-                );
-              }),
-              last(),
-              map((player: LoadedFile | LoadingProgress) => {
-                if (!isLoadingFileLoaded(player)) {
-                  throw new Error('File Loading Error');
-                }
-                this.tcs.addPlayer(unit.playerId, player.content);
-                return sequenceId;
-              })
-            );
+  private getPlayer(testData: TestData, sequenceId: number, playerFileName: string) {
+    if (this.tcs.hasPlayer(playerFileName)) {
+      this.incrementTotalProgress({ progress: 100 }, `player-${sequenceId}`);
+      return of(sequenceId);
+    }
+    return this.bs.getResourceFast(testData.workspaceId, playerFileName)
+      .pipe(
+        tap((progress: LoadedFile | LoadingProgress) => {
+          this.incrementTotalProgress(
+            isLoadingFileLoaded(progress) ? { progress: 100 } : progress,
+            `player-${sequenceId}`
+          );
+        }),
+        last(),
+        map((player: LoadedFile | LoadingProgress) => {
+          if (!isLoadingFileLoaded(player)) {
+            throw new Error('File Loading Error');
+          }
+          this.tcs.addPlayer(playerFileName, player.content);
+          return sequenceId;
         })
       );
   }
@@ -207,7 +224,7 @@ export class TestLoaderService {
     const queue = this.unitContentLoadingQueue;
     let firstToLoadQueuePosition;
     for (firstToLoadQueuePosition = 0; firstToLoadQueuePosition < queue.length; firstToLoadQueuePosition++) {
-      if (Number(queue[firstToLoadQueuePosition % queue.length].tag) >= currentUnitSequenceId) {
+      if (Number(queue[firstToLoadQueuePosition % queue.length].sequenceId) >= currentUnitSequenceId) {
         break;
       }
     }
@@ -220,11 +237,11 @@ export class TestLoaderService {
     const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
     this.unitContentLoadingQueue
       .forEach(unitToLoad => {
-        unitContentLoadingProgresses$[Number(unitToLoad.tag)] =
+        unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)] =
           new BehaviorSubject<LoadingProgress>({ progress: 'PENDING' });
         this.tcs.setUnitLoadProgress$(
-          Number(unitToLoad.tag),
-          unitContentLoadingProgresses$[Number(unitToLoad.tag)].asObservable()
+          Number(unitToLoad.sequenceId),
+          unitContentLoadingProgresses$[Number(unitToLoad.sequenceId)].asObservable()
         );
       });
 
@@ -236,13 +253,8 @@ export class TestLoaderService {
       this.unitContentLoadSubscription = from(this.unitContentLoadingQueue)
         .pipe(
           concatMap(queueEntry => {
-            const unitSequenceID = Number(queueEntry.tag);
-
             const unitContentLoading$ =
-              this.bs.getResourceFast(
-                testData.workspaceId,
-                testData.resources[queueEntry.value.toUpperCase()]
-              )
+              this.bs.getResourceFast(testData.workspaceId, queueEntry.definitionFile)
                 .pipe(shareReplay());
 
             unitContentLoading$
@@ -251,13 +263,13 @@ export class TestLoaderService {
                   if (!isLoadingFileLoaded(loadingFile)) {
                     return loadingFile;
                   }
-                  this.tcs.setUnitDefinition(unitSequenceID, loadingFile.content);
+                  this.tcs.setUnitDefinition(queueEntry.sequenceId, loadingFile.content);
                   return { progress: 100 };
                 }),
                 distinctUntilChanged((v1, v2) => v1.progress === v2.progress),
-                tap(progress => this.incrementTotalProgress(progress, `content-${unitSequenceID}`))
+                tap(progress => this.incrementTotalProgress(progress, `content-${queueEntry.sequenceId}`))
               )
-              .subscribe(unitContentLoadingProgresses$[unitSequenceID]);
+              .subscribe(unitContentLoadingProgresses$[queueEntry.sequenceId]);
 
             return unitContentLoading$;
           })

@@ -88,7 +88,6 @@ class TestController extends Controller {
     $unitName = $request->getAttribute('unit_name');
     $unitAlias = $request->getAttribute('alias');
     $testId = (int) $request->getAttribute('test_id');
-    $skipData = (bool) $request->getQueryParam('skipData');
 
     $workspace = new Workspace($authToken->getWorkspaceId());
     /* @var $unitFile XMLFileUnit */
@@ -100,57 +99,16 @@ class TestController extends Controller {
 
     // TODO check if unit is (still) valid
 
-    $unitState = [];
-    $unitData = [
-      'dataParts' => [],
-      'dataType' => ''
-    ];
+    // TODO each part could have a different type
+    $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
+    $unitState = (object) self::testDAO()->getUnitState($testId, $unitAlias);
 
-    if ($skipData) {
-      // TODO each part could have a different type
-      $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
-      $unitState = (object) self::testDAO()->getUnitState($testId, $unitAlias);
-    }
-
-    $res = [
+    return $response->withJson([
       'state' => $unitState,
       'dataParts' => (object) $unitData['dataParts'],
-      'unitStateDataType' => $unitData['dataType'],
-      'dependencies' => []
-    ];
-
-    $unitRelations = $workspace->getFileRelations($unitFile); // $unitFile->getRelations is empty bc file not validated
-
-    foreach ($unitRelations as $unitRelation) {
-      /* @var FileRelation $unitRelation */
-
-      switch ($unitRelation->getRelationshipType()) {
-        case FileRelationshipType::isDefinedBy:
-          $res['definitionRef'] = $unitRelation->getTargetName();
-          break;
-
-        case FileRelationshipType::usesPlayer:
-          $res['dependencies'][] = [
-            'name' => $unitRelation->getTargetName(),
-            'type' => 'player'
-          ];
-          $res['playerId'] = $unitRelation->getTargetId();
-          break;
-
-        case FileRelationshipType::usesPlayerResource:
-          $res['dependencies'][] = [
-            'name' => $unitRelation->getTargetName(),
-            'type' => 'package' // TODO naming is very bad. can be a single file as well. should be: 'player-dependency'
-          ];
-          break;
-      }
-    }
-
-    if (!isset($res['definitionRef'])) {
-      $res['definition'] = $unitFile->getDefinition();
-    }
-
-    return $response->withJson($res);
+      'unitResponseType' => $unitData['dataType'],
+      'definition' => $unitFile->getDefinition()
+    ]);
   }
 
   public static function getResourceFromPath(Request $request, Response $response, $args): Response {

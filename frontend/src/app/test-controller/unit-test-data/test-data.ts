@@ -59,7 +59,7 @@ export const TestUnits: { [unitId: string]: UnitData } = {
     state: {},
     playerId: 'a-player',
     definition: 'the unit (1) definition itself',
-    unitStateDataType: 'the-data-type'
+    unitResponseType: 'the-data-type'
   },
   u2: {
     dataParts: { all: 'data from a previous session' },
@@ -70,7 +70,7 @@ export const TestUnits: { [unitId: string]: UnitData } = {
     },
     playerId: 'another-player',
     definitionRef: 'test-unit-content-u2',
-    unitStateDataType: 'the-data-type'
+    unitResponseType: 'the-data-type'
   },
   u3: {
     dataParts: { all: 'data from a previous session' },
@@ -79,7 +79,7 @@ export const TestUnits: { [unitId: string]: UnitData } = {
     },
     playerId: 'a-player-but-version-2',
     definitionRef: 'test-unit-content-u3',
-    unitStateDataType: 'the-data-type'
+    unitResponseType: 'the-data-type'
   },
   u4: {
     dataParts: { all: 'data from a previous session' },
@@ -88,14 +88,14 @@ export const TestUnits: { [unitId: string]: UnitData } = {
     },
     playerId: 'a-player',
     definition: 'the unit (4) definition itself',
-    unitStateDataType: 'the-data-type'
+    unitResponseType: 'the-data-type'
   },
   u5: {
     dataParts: { all: 'data from a previous session' },
     state: {},
     playerId: 'a-player',
     definition: 'the unit (5) definition itself',
-    unitStateDataType: 'the-data-type'
+    unitResponseType: 'the-data-type'
   }
 };
 
@@ -157,7 +157,7 @@ export const TestBooklet = testlet({
       alias: 'u1',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerId: 'a-player'
+      playerFileName: 'a-player'
     }),
     testlet({
       sequenceId: 0,
@@ -176,7 +176,7 @@ export const TestBooklet = testlet({
           alias: 'u2',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerId: 'another-player'
+          playerFileName: 'another-player'
         }),
         testlet({
           sequenceId: 0,
@@ -195,7 +195,7 @@ export const TestBooklet = testlet({
               alias: 'u3',
               naviButtonLabel: '',
               navigationLeaveRestrictions: new NavigationLeaveRestrictions('ON', 'OFF'),
-              playerId: 'a-player-but-version-2'
+              playerFileName: 'a-player-but-version-2'
             })
           ]
         }),
@@ -208,7 +208,7 @@ export const TestBooklet = testlet({
           alias: 'u4',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerId: 'a-player'
+          playerFileName: 'a-player'
         })
       ]
     }),
@@ -221,7 +221,7 @@ export const TestBooklet = testlet({
       alias: 'u5',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerId: 'a-player'
+      playerFileName: 'a-player'
     })
   ]
 });
@@ -491,7 +491,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       alias: 'u1',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerId: 'a-player'
+      playerFileName: 'a-player'
     }),
     testlet({
       codePrompt: 'please enter something',
@@ -510,7 +510,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
           alias: 'u2',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerId: 'a-player'
+          playerFileName: 'a-player'
         }),
         testlet({
           codePrompt: '',
@@ -529,7 +529,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
               alias: 'u3',
               naviButtonLabel: '',
               navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-              playerId: 'a-player'
+              playerFileName: 'a-player'
             })
           ]
         })
@@ -552,7 +552,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
           alias: 'u4',
           naviButtonLabel: '',
           navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-          playerId: 'a-player'
+          playerFileName: 'a-player'
         })
       ]
     }),
@@ -565,7 +565,7 @@ export const getBookletWithTwoBlocks = (): Testlet => testlet({
       alias: 'u5',
       naviButtonLabel: '',
       navigationLeaveRestrictions: new NavigationLeaveRestrictions('OFF', 'ON'),
-      playerId: 'a-player'
+      playerFileName: 'a-player'
     })
   ]
 });

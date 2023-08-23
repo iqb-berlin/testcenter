@@ -99,7 +99,7 @@ export class TestControllerService {
   private unitStateCurrentPages: { [sequenceId: number]: string | undefined } = {};
   private unitContentLoadProgress$: { [sequenceId: number]: Observable<LoadingProgress> } = {};
   private unitDefinitionTypes: { [sequenceId: number]: string } = {};
-  private unitStateDataTypes: { [sequenceId: number]: string } = {};
+  private unitResponseTypes: { [sequenceId: number]: string } = {};
 
   private unitDataPartsToSave$ = new Subject<UnitDataParts>();
   private unitDataPartsToSaveSubscription: Subscription | null = null;
@@ -208,7 +208,7 @@ export class TestControllerService {
     this.unitResponseProgressStates = {};
     this.unitStateCurrentPages = {};
     this.unitDefinitionTypes = {};
-    this.unitStateDataTypes = {};
+    this.unitResponseTypes = {};
     this.timerWarningPoints = [];
     this.workspaceId = 0;
   }
@@ -367,7 +367,7 @@ export class TestControllerService {
     return this.unitContentLoadProgress$[sequenceId];
   }
 
-  setUnitDefinitionType(sequenceId: number, unitDefinitionType: string): void {
+  setUnitPlayerFilename(sequenceId: number, unitDefinitionType: string): void {
     this.unitDefinitionTypes[sequenceId] = unitDefinitionType;
   }
 
@@ -375,12 +375,12 @@ export class TestControllerService {
     return this.unitDefinitionTypes[sequenceId];
   }
 
-  setUnitStateDataType(sequenceId: number, unitStateDataType: string): void {
-    this.unitStateDataTypes[sequenceId] = unitStateDataType;
+  setUnitResponseType(sequenceId: number, unitResponseType: string): void {
+    this.unitResponseTypes[sequenceId] = unitResponseType;
   }
 
-  getUnitStateDataType(sequenceId: number): string {
-    return this.unitStateDataTypes[sequenceId];
+  getUnitResponseType(sequenceId: number): string {
+    return this.unitResponseTypes[sequenceId];
   }
 
   addClearedCodeTestlet(testletId: string): void {

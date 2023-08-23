@@ -1,9 +1,9 @@
 // used everywhere
 import { VeronaProgress } from './verona.interfaces';
 
-export interface TaggedString {
-  tag: string;
-  value: string;
+export interface LoadingQueueEntry {
+  sequenceId: number;
+  definitionFile: string;
 }
 
 export interface KeyValuePairString {
@@ -18,23 +18,22 @@ export enum WindowFocusState {
 
 export type UnitData = {
   dataParts: KeyValuePairString;
-  unitStateDataType: string;
+  unitResponseType: string;
   state: { [k in UnitStateKey]?: string };
-  playerId: string;
-  definitionRef : string;
-} | {
-  dataParts: KeyValuePairString;
-  unitStateDataType: string;
-  state: { [k in UnitStateKey]?: string };
-  playerId: string;
   definition : string;
 };
+
+export type TestFileRelationshipType = 'usesPlayerResource' | 'isDefinedBy' | 'usesPlayer';
 
 export interface TestData {
   xml: string;
   mode: string;
   laststate: { [k in TestStateKey]?: string };
-  resources: { [id: string]: string };
+  resources: {
+    [unitId: string]: {
+      [relationshipType in TestFileRelationshipType]? : string[]
+    }
+  };
   firstStart: boolean;
   workspaceId: number;
 }

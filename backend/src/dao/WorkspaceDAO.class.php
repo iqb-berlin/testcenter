@@ -482,31 +482,31 @@ class WorkspaceDAO extends DAO {
     // TODO make recursive: a player may affect a unit, that a booklet, and that a testtakers file
 
     $sql = "select
-                    files.name,
-                    files.type,
-                    files.id,
-                    files.label,
-                    files.description,
-                    files.is_valid,
-                    files.validation_report,
-                    files.size,
-                    files.modification_ts,
-                    files.version_mayor,
-                    files.version_minor,
-                    files.version_patch,
-                    files.version_label,
-                    files.verona_module_id,
-                    files.verona_module_type,
-                    files.verona_version,
-                    files.context_data
-                from file_relations
-                     left join files
-                        on file_relations.workspace_id = files.workspace_id
-                            and file_relations.subject_name = files.name
-                            and file_relations.subject_type = files.type
-                where
-                        files.workspace_id = :ws_id
-                        and object_type = :file_type and object_name= :file_name ";
+      files.name,
+      files.type,
+      files.id,
+      files.label,
+      files.description,
+      files.is_valid,
+      files.validation_report,
+      files.size,
+      files.modification_ts,
+      files.version_mayor,
+      files.version_minor,
+      files.version_patch,
+      files.version_label,
+      files.verona_module_id,
+      files.verona_module_type,
+      files.verona_version,
+      files.context_data
+    from file_relations
+      left join files
+        on file_relations.workspace_id = files.workspace_id
+          and file_relations.subject_name = files.name
+          and file_relations.subject_type = files.type
+    where
+          files.workspace_id = :ws_id
+          and object_type = :file_type and object_name= :file_name ";
 
     $replacements = [
       ':ws_id' => $this->workspaceId,
@@ -521,24 +521,30 @@ class WorkspaceDAO extends DAO {
       return array_reduce(
         $this->_(
           "select distinct
-            files.id,
-            files.type,
-            files.name
+            unitFiles.id,
+            resourceFiles.type,
+            resourceFiles.name,
+            unitNeedsResource.relationship_type
           from file_relations as bookletContainsUnit
             left join file_relations as unitNeedsResource
               on bookletContainsUnit.workspace_id = unitNeedsResource.workspace_id
                 and bookletContainsUnit.object_name = unitNeedsResource.subject_name
                 and bookletContainsUnit.object_type = unitNeedsResource.subject_type
-                and unitNeedsResource.relationship_type in('isDefinedBy', 'usesPlayer')
+--                and unitNeedsResource.relationship_type in('isDefinedBy', 'usesPlayer')
+                and unitNeedsResource.object_type = 'Resource'
                 and bookletContainsUnit.relationship_type = 'containsUnit'
-            left join files
-              on files.type = unitNeedsResource.object_type
-                and files.name = unitNeedsResource.object_name
-                and files.workspace_id = unitNeedsResource.workspace_id
+            left join files as resourceFiles
+              on resourceFiles.type = unitNeedsResource.object_type
+                and resourceFiles.name = unitNeedsResource.object_name
+                and resourceFiles.workspace_id = unitNeedsResource.workspace_id
+            left join files as unitFiles
+              on unitFiles.type = unitNeedsResource.subject_type
+                and unitFiles.name = unitNeedsResource.subject_name
+                and unitFiles.workspace_id = unitNeedsResource.workspace_id
             where
               bookletContainsUnit.subject_name = :booklet_file_name
-              and files.workspace_id = :ws_id
-              and files.is_valid = 1",
+              and resourceFiles.workspace_id = :ws_id
+              and resourceFiles.is_valid = 1",
             [
               ':ws_id' => $this->workspaceId,
               ':booklet_file_name' => $bookletFileName
@@ -546,7 +552,7 @@ class WorkspaceDAO extends DAO {
           true
         ),
         function(array $agg, array $item): array {
-          $agg[$item['id']] = "{$item['type']}/{$item['name']}";
+          $agg[$item['id']][$item['relationship_type']][] = "{$item['type']}/{$item['name']}";
           return $agg;
         },
         []
