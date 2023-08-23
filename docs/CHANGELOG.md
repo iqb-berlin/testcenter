@@ -4,12 +4,25 @@ layout: default
 
 ## [next]
 ### Bugfixes
-* Die Anzeige in der Testübersicht, ob ein Test fortgesetzt, neu gestartet oder gesperrt ist wurde repariert. 
+* Die Anzeige in der Testübersicht, ob ein Test fortgesetzt, neu gestartet oder gesperrt ist, wurde repariert. 
 * Die Überprüfung von ablaufenden Logins (validFor) wurde repariert. 
 
 ### Performance
-* Es wurde ein Puffer für wegzuspeichernde Unit-Staes eingeführt. Damit kann ein Testcenter-Server während der 
+* Die Dateiauslieferung beim Laden von Tests läuft nun mittels einem gesonderten Service. Damit kann die 
+  Auslieferungszeit mindestens verdoppelt werden und der Server wird deutlich entlastet.
+* Es wurde ein Puffer für wegzuspeichernde Unit-States eingeführt. Damit kann ein Testcenter-Server während der 
   Durchführung entlastet werden.
+
+### Sicherheit
+* Komponenten Aktualisiert: PHP, Angular, Angular-Material, Typescript
+
+### Verbesserungen
+* Das Verhalten im Fehlerfall wurde komplett überarbeitet, um im Fehlerfall sinnvollere Nachrichten und Optionen
+  anzubieten.
+
+### Neue Features
+* Error-Reports: Es kann nun im Administrationsbereich ein GitHub-Repositorium angegeben werden, an das Fehlerberichte
+  im Fehlerfall gesendet werden können, damit Bugs in Zukunft besser repariert werden können.
 
 # Changelog & Upgrade Information
 
