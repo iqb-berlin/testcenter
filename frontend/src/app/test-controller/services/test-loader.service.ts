@@ -142,7 +142,7 @@ export class TestLoaderService {
 
   private loadUnit(sequenceId: number, testData: TestData): Observable<number> {
     const unitDef = this.tcs.getUnitWithContext(sequenceId).unitDef;
-    return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
+    return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias, testData.firstStart)
       .pipe(
         switchMap((unit: UnitData) => {
           if (!unit) {

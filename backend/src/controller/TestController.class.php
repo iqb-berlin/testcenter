@@ -88,6 +88,7 @@ class TestController extends Controller {
     $unitName = $request->getAttribute('unit_name');
     $unitAlias = $request->getAttribute('alias');
     $testId = (int) $request->getAttribute('test_id');
+    $skipData = (bool) $request->getQueryParam('skipData');
 
     $workspace = new Workspace($authToken->getWorkspaceId());
     /* @var $unitFile XMLFileUnit */
@@ -99,17 +100,26 @@ class TestController extends Controller {
 
     // TODO check if unit is (still) valid
 
-    // TODO each part could have a different type
-    $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
+    $unitState = [];
+    $unitData = [
+      'dataParts' => [],
+      'dataType' => ''
+    ];
+
+    if ($skipData) {
+      // TODO each part could have a different type
+      $unitData = self::testDAO()->getDataParts($testId, $unitAlias);
+      $unitState = (object) self::testDAO()->getUnitState($testId, $unitAlias);
+    }
 
     $res = [
-      'state' => (object) self::testDAO()->getUnitState($testId, $unitAlias),
+      'state' => $unitState,
       'dataParts' => (object) $unitData['dataParts'],
       'unitStateDataType' => $unitData['dataType'],
       'dependencies' => []
     ];
 
-    $unitRelations = $workspace->getFileRelations($unitFile);
+    $unitRelations = $workspace->getFileRelations($unitFile); // $unitFile->getRelations is empty bc file not validated
 
     foreach ($unitRelations as $unitRelation) {
       /* @var FileRelation $unitRelation */

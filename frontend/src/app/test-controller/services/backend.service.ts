@@ -36,8 +36,10 @@ export class BackendService {
     return this.http.get<TestData>(`${this.backendUrl}test/${testId}`);
   }
 
-  getUnitData(testId: string, unitid: string, unitalias: string): Observable<UnitData> {
-    return this.http.get<UnitData>(`${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}`);
+  getUnitData(testId: string, unitid: string, unitalias: string, skipData: boolean): Observable<UnitData> {
+    return this.http.get<UnitData>(
+      `${this.backendUrl}test/${testId}/unit/${unitid}/alias/${unitalias}?skipData=${skipData}`
+    );
   }
 
   updateTestState(testId: string, newState: StateReportEntry[]): Subscription {
