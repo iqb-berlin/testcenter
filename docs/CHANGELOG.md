@@ -3,15 +3,16 @@ layout: default
 ---
 
 ## [next]
-### Bugfixes
-* Die Anzeige in der Testübersicht, ob ein Test fortgesetzt, neu gestartet oder gesperrt ist wurde repariert. 
-* Die Überprüfung von ablaufenden Logins (validFor) wurde repariert. 
-
-### Performance
-* Es wurde ein Puffer für wegzuspeichernde Unit-Staes eingeführt. Damit kann ein Testcenter-Server während der 
-  Durchführung entlastet werden.
+### Backend
+* Der selbst implementierte Autoloader wurde entfernt, stattdessen wird vendor/autoload verwendet.
 
 # Changelog & Upgrade Information
+
+## 14.9.0
+### XML-Austausch-Formate
+* Das `<Metadata>`-Element der Unit-XML wurde erweitert um die möglichen Kindelemente `<Transcript>` und `<Reference>`.
+  Dies sind vorübergehende Felder füt die Verarbeitung im IQB-Studio, die nach der Einführung des geplanten Metadaten-
+  standards wieder entfernt werden.
 
 ## 14.8.0
 ### Bugfixes
