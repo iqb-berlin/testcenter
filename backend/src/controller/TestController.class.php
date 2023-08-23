@@ -76,8 +76,9 @@ class TestController extends Controller {
       'mode' => $authToken->getMode(),
       'laststate' => (array) $test->state,
       'xml' => $bookletFile->getContent(),
-      'resources' => $workspace->getBookletResources($bookletFile->getName()), // 6
-      'firstStart' => !$test->running
+      'resources' => $workspace->getBookletResourcePaths($bookletFile->getName()), // 6
+      'firstStart' => !$test->running,
+      'workspaceId' =>  $workspace->getId()
     ]);
   }
 
@@ -142,62 +143,32 @@ class TestController extends Controller {
     return $response->withJson($res);
   }
 
-  public static function getResource(Request $request, Response $response): Response {
-    /* @var $authToken AuthToken */
-    $authToken = $request->getAttribute('AuthToken');
-
-    if (!$authToken) {
-      $tokenString = $request->getAttribute('auth_token');
-      $authToken = self::sessionDAO()->getToken($tokenString, ['person']);
-    }
-
-    $resourceName = $request->getAttribute('resource_name');
-    $allowSimilarVersion = $request->getQueryParam('v', 'f') != 'f';
-
-    $workspace = new Workspace($authToken->getWorkspaceId());
-
-    $fileId = $allowSimilarVersion ? FileID::normalize($resourceName) : strtoupper($resourceName);
-
-    $resourceFile = $workspace->getFileById('Resource', $fileId);
-
-    return $response
-      ->withBody(new Stream(fopen($resourceFile->getPath(), 'rb')))
-      ->withHeader('Content-type', 'application/octet-stream') // use octet-stream to make progress trackable
-      ->withHeader('Content-length', $resourceFile->getSize());
-  }
-
-  public static function getResourceFromPackage(Request $request, Response $response, $args): Response {
-    $tokenStringFromUrl = $request->getAttribute('auth_token');
-    $packageName = $request->getAttribute('package_name');
-    $resourceName = $args['path'];
-
-    $authToken = self::sessionDAO()->getToken($tokenStringFromUrl, ['person']);
-    $workspace = new Workspace($authToken->getWorkspaceId());
-    $resourceFile = $workspace->getPackageFilePath($packageName, $resourceName);
-
-    return $response
-      ->withBody(new Stream(fopen($resourceFile, 'rb')))
-      ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
-      ->withHeader('Content-length', filesize($resourceFile));
-  }
-
   public static function getResourceFromPath(Request $request, Response $response, $args): Response {
-    $tokenStrFromHeader = $request->getHeaderLine('AuthToken');
-    $resourceName = $args['path'];
+    $groupTokenString = $request->getAttribute('group_token');
+    $path = $args['path'];
     $workspaceId = (int) $request->getAttribute('ws_id');
 
-    if (!$tokenStrFromHeader) {
+    if (!$groupTokenString) {
       throw new HttpUnauthorizedException($request, 'No Token given');
     }
-    if (!self::sessionDAO()->groupTokenExists($workspaceId, $tokenStrFromHeader)) {
+    if (!self::sessionDAO()->groupTokenExists($workspaceId, $groupTokenString)) {
       throw new HttpForbiddenException($request, 'Group-Token not valid');
+    }
+    if (!str_starts_with($path, 'Resource/')) {
+      throw new HttpForbiddenException($request, "Access to file `$path` not allowed with group-token.");
     }
 
     $workspace = new Workspace($workspaceId);
-    $resourceFile = $workspace->getWorkspacePath() . '/' . $resourceName;
+    $resourceFile = $workspace->getWorkspacePath() . '/' . $path;
+
+    $res = fopen($resourceFile, 'rb');
+
+    if (!$res) {
+      throw new HttpNotFoundException($request, "File not found: `$path`");
+    }
 
     return $response
-      ->withBody(new Stream(fopen($resourceFile, 'rb')))
+      ->withBody(new Stream($res))
       ->withHeader('Content-type', FileExt::getMimeType($resourceFile))
       ->withHeader('Content-length', filesize($resourceFile));
   }

@@ -1,12 +1,11 @@
 import { Injectable, Inject } from '@angular/core';
-import {
-  HttpClient, HttpEvent, HttpEventType, HttpParams
-} from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import {
   UnitData, TestData, StateReportEntry, LoadingFile, KeyValuePairString
 } from '../interfaces/test-controller.interfaces';
+import { MainDataService } from '../../shared/services/maindata/maindata.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,8 @@ export class BackendService {
   constructor(
     @Inject('BACKEND_URL') public backendUrl: string,
     @Inject('FASTLOAD_URL') public fastLoadUrl: string,
-    private http: HttpClient
+    private http: HttpClient,
+    private mds: MainDataService
   ) {
   }
 
@@ -80,15 +80,14 @@ export class BackendService {
       .subscribe();
   }
 
-  getResourceFast(path: string): Observable<LoadingFile> {
+  getResourceFast(workspaceId: number, path: string): Observable<LoadingFile> {
     return this.http
       .get(
-        `${this.fastLoadUrl}${path}`,
+        `${this.fastLoadUrl}resource/${this.mds.getAuthData()?.groupToken}/ws_${workspaceId}/${path}`,
         {
           responseType: 'text',
           reportProgress: true,
-          observe: 'events',
-          headers: { usesGroupToken: 'yes' }
+          observe: 'events'
         }
       )
       .pipe(

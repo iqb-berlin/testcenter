@@ -79,8 +79,6 @@ $app->group('/test', function(RouteCollectorProxy $group) {
 
   $group->get('/{test_id}/unit/{unit_name}[/alias/{alias}]', [TestController::class, 'getUnit']);
 
-  $group->get('/{test_id}/resource/{resource_name}', [TestController::class, 'getResource']);
-
   $group->put('/{test_id}/unit/{unit_name}/review', [TestController::class, 'putUnitReview'])
     ->add(new IsTestWritable());
 
@@ -224,9 +222,5 @@ $app->delete('/workspaces', [SystemController::class, 'deleteWorkspaces'])
   ->add(new IsSuperAdmin())
   ->add(new RequireToken('admin'));
 
-$app->get('/{auth_token}/resource/{resource_name}', [TestController::class, 'getResource']);
 
-$app->get('/{auth_token}/resource/{package_name}/[{path:.*}]', [TestController::class, 'getResourceFromPackage']);
-
-// this endpoint is used, when backend is used as fileService.
-$app->get('/ws_{ws_id}/{path:.*}', [TestController::class, 'getResourceFromPath']);
+$app->get('/resource/{group_token}/ws_{ws_id}/{path:.*}', [TestController::class, 'getResourceFromPath']);

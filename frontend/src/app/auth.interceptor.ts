@@ -20,11 +20,6 @@ export class AuthInterceptor implements HttpInterceptor {
     if (authData && authData.token) {
       tokenStr = authData.token;
     }
-
-    if (request.headers.has('usesGroupToken')) {
-      tokenStr = authData?.groupToken ?? '';
-    }
-
     const requestA = request.clone({
       setHeaders: {
         AuthToken: tokenStr

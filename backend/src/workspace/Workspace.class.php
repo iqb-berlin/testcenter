@@ -437,14 +437,6 @@ class Workspace {
     return $stats;
   }
 
-  public function getPackageFilePath($packageName, $resourceName): string {
-    $path = $this->getWorkspacePath() . "/Resource/$packageName/$resourceName";
-    if (!file_exists($path)) {
-      throw new HttpError("File of package `$packageName` not found: `$resourceName` ($path)");
-    }
-    return $path;
-  }
-
   public function getRequestedAttachments(XMLFileBooklet $booklet): array {
     if (!$booklet->isValid()) {
       return [];
@@ -475,7 +467,7 @@ class Workspace {
     }
   }
 
-  public function getBookletResources(string $bookletId): array {
+  public function getBookletResourcePaths(string $bookletId): array {
     return $this->workspaceDAO->getBookletResourcePaths($bookletId);
   }
 }

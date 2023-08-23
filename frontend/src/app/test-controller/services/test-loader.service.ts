@@ -15,15 +15,14 @@ import {
   StateReportEntry,
   TaggedString,
   TestControllerState,
+  TestData,
   TestLogEntryKey,
   TestStateKey,
   UnitData,
   UnitNavigationTarget,
   UnitStateKey
 } from '../interfaces/test-controller.interfaces';
-import {
-  EnvironmentData, NavigationLeaveRestrictions, Testlet, UnitDef
-} from '../classes/test-controller.classes';
+import { EnvironmentData, NavigationLeaveRestrictions, Testlet } from '../classes/test-controller.classes';
 import { TestControllerService } from './test-controller.service';
 import { BackendService } from './backend.service';
 import { AppError } from '../../app.interfaces';
@@ -49,6 +48,7 @@ export class TestLoaderService {
 
   async loadTest(): Promise<void> {
     this.reset();
+    const ts = Date.now();
 
     this.tcs.testStatus$.next(TestControllerState.LOADING);
 
@@ -56,6 +56,8 @@ export class TestLoaderService {
     if (!testData) {
       return; // error is already thrown
     }
+
+    this.tcs.workspaceId = testData.workspaceId;
     this.tcs.testMode = new TestMode(testData.mode);
     this.restoreRestrictions(testData.laststate);
     this.tcs.rootTestlet = this.getBookletFromXml(testData.xml);
@@ -66,13 +68,14 @@ export class TestLoaderService {
         .map(x => parseInt(x, 10))
         .filter(x => !Number.isNaN(x));
 
-    await this.loadUnits(testData.resources);
+    await this.loadUnits(testData);
     this.prepareUnitContentLoadingQueueOrder(testData.laststate.CURRENT_UNIT_ID || '1');
     this.tcs.rootTestlet.lockUnitsIfTimeLeftNull();
 
     // eslint-disable-next-line consistent-return
-    return this.loadUnitContents(testData.resources)
+    return this.loadUnitContents(testData)
       .then(() => {
+        console.log({ loaded: (Date.now() - ts) });
         this.resumeTest(testData.laststate);
       });
   }
@@ -122,7 +125,7 @@ export class TestLoaderService {
     }
   }
 
-  private loadUnits(filesMap: { [id: string]: string }): Promise<number | undefined> {
+  private loadUnits(testData: TestData): Promise<number | undefined> {
     const sequence = [];
     for (let i = 1; i < this.lastUnitSequenceId; i++) {
       this.totalLoadingProgressParts[`unit-${i}`] = 0;
@@ -132,12 +135,12 @@ export class TestLoaderService {
     }
     return from(sequence)
       .pipe(
-        concatMap((sequenceId: number) => this.loadUnit(sequenceId, filesMap))
+        concatMap((sequenceId: number) => this.loadUnit(sequenceId, testData))
       )
       .toPromise();
   }
 
-  private loadUnit(sequenceId: number, filesMap: { [id: string]: string }): Observable<number> {
+  private loadUnit(sequenceId: number, testData: TestData): Observable<number> {
     const unitDef = this.tcs.getUnitWithContext(sequenceId).unitDef;
     return this.bs.getUnitData(this.tcs.testId, unitDef.id, unitDef.alias)
       .pipe(
@@ -172,9 +175,8 @@ export class TestLoaderService {
             return of(sequenceId);
           }
 
-          // this.tcs.addPlayer(unit.playerId, '');
-          console.log(unit.playerId, filesMap);
-          return this.bs.getResourceFast(filesMap[unit.playerId])
+          console.log(unit.playerId, testData.resources);
+          return this.bs.getResourceFast(testData.workspaceId, testData.resources[unit.playerId])
             .pipe(
               tap((progress: LoadedFile | LoadingProgress) => {
                 this.incrementTotalProgress(
@@ -213,7 +215,7 @@ export class TestLoaderService {
     this.unitContentLoadingQueue = queue.slice(offset).concat(queue.slice(0, offset));
   }
 
-  private loadUnitContents(filesMap: { [id: string]: string }): Promise<void> {
+  private loadUnitContents(testData: TestData): Promise<void> {
     // we don't load files in parallel since it made problems, when a whole class tried it at once
     const unitContentLoadingProgresses$: { [unitSequenceID: number] : Subject<LoadingProgress> } = {};
     this.unitContentLoadingQueue
@@ -236,8 +238,12 @@ export class TestLoaderService {
           concatMap(queueEntry => {
             const unitSequenceID = Number(queueEntry.tag);
 
-            const unitContentLoading$ = this.bs.getResourceFast(filesMap[queueEntry.value.toUpperCase()])
-              .pipe(shareReplay());
+            const unitContentLoading$ =
+              this.bs.getResourceFast(
+                testData.workspaceId,
+                testData.resources[queueEntry.value.toUpperCase()]
+              )
+                .pipe(shareReplay());
 
             unitContentLoading$
               .pipe(

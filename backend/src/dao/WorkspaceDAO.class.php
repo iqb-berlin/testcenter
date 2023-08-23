@@ -546,7 +546,7 @@ class WorkspaceDAO extends DAO {
           true
         ),
         function(array $agg, array $item): array {
-          $agg[$item['id']] = "ws_$this->workspaceId/{$item['type']}/{$item['name']}";
+          $agg[$item['id']] = "{$item['type']}/{$item['name']}";
           return $agg;
         },
         []

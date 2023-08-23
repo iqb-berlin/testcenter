@@ -38,6 +38,8 @@ export class TestControllerService {
   testStatus$ = new BehaviorSubject<TestControllerState>(TestControllerState.INIT);
   testStatusEnum = TestControllerState;
 
+  workspaceId = 0;
+
   testStructureChanges$ = new BehaviorSubject<void>(undefined);
 
   totalLoadingProgress = 0;
@@ -208,6 +210,7 @@ export class TestControllerService {
     this.unitDefinitionTypes = {};
     this.unitStateDataTypes = {};
     this.timerWarningPoints = [];
+    this.workspaceId = 0;
   }
 
   // uppercase and add extension if not part

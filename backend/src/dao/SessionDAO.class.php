@@ -417,9 +417,9 @@ class SessionDAO extends DAO {
 
 
   public function groupTokenExists(int $workspaceId, string $groupTokenString): bool {
-    return !!$this->_(
+    $res = $this->_(
       'select
-            count(token)
+            count(token) as count
           from
             login_session_groups
             left join logins on login_session_groups.group_name = logins.group_name
@@ -430,8 +430,8 @@ class SessionDAO extends DAO {
         $workspaceId
       ]
     );
+    return !!$res['count'];
   }
-
 
   public function getTestStatus(string $personToken, string $bookletName): array {
     $testStatus = $this->_(
