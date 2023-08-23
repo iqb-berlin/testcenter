@@ -29,7 +29,7 @@ end
 
 ngx.log(ngx.INFO, "Requested ws: ", wsRequested)
 
-local response, err = redis:get(token)
+local response, err = redis:get('group-token:' .. token)
 local workspaceAllowed = tonumber(response)
 
 if workspaceAllowed ~= nil then
@@ -47,7 +47,7 @@ elseif err ~= nil then
   return ngx.exit(ngx.status)
 else
   ngx.status = ngx.HTTP_FORBIDDEN
-  ngx.say('Invalid Token')
+  ngx.say('Invalid Token: ' .. token)
   return ngx.exit(ngx.status)
 end
 

@@ -1,15 +1,15 @@
 <?php
 
-class FastAuthService {
+class CacheService {
   private static Redis $redis;
 
   private static function connect(): void {
     if (!isset(self::$redis)) {
       try {
         self::$redis = new Redis();
-        self::$redis->connect('testcenter-fastauth-service');
+        self::$redis->connect('testcenter-cache-service');
       } catch (Exception $exception) {
-        throw new Exception("Could not reach FastAuthService: " . $exception->getMessage());
+        throw new Exception("Could not reach Cache-Service: " . $exception->getMessage());
       }
     }
   }
@@ -17,7 +17,7 @@ class FastAuthService {
   static function storeAuthentication(PersonSession $personSession): void {
     self::connect();
     self::$redis->set(
-      $personSession->getLoginSession()->getGroupToken(),
+      'group-token:' . $personSession->getLoginSession()->getGroupToken(),
       $personSession->getLoginSession()->getLogin()->getWorkspaceId(),
       $personSession->getLoginSession()->getLogin()->getValidTo()
         ? $personSession->getLoginSession()->getLogin()->getValidTo() - time()
@@ -27,6 +27,6 @@ class FastAuthService {
 
   public static function removeAuthentication(PersonSession $personSession): void {
     self::connect();
-    self::$redis->del($personSession->getPerson()->getToken());
+    self::$redis->del('group-token:' . $personSession->getPerson()->getToken());
   }
 }

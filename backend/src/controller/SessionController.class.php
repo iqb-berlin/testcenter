@@ -51,14 +51,14 @@ class SessionController extends Controller {
     if (!$loginSession->getLogin()->isCodeRequired()) {
       $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, '');
 
-      FastAuthService::removeAuthentication($personSession);
+      CacheService::removeAuthentication($personSession);
 
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
       $groupMonitors = self::sessionDAO()->getGroupMonitors($personSession);
       $accessSet = AccessSet::createFromPersonSession($personSession, ...$testsOfPerson, ...$groupMonitors);
 
       self::registerDependantSessions($loginSession);
-      FastAuthService::storeAuthentication($personSession);
+      CacheService::storeAuthentication($personSession);
 
     } else {
       $accessSet = AccessSet::createFromLoginSession($loginSession);
@@ -77,9 +77,9 @@ class SessionController extends Controller {
       ]);
       $loginSession = self::sessionDAO()->getLoginSessionByToken(self::authToken($request)->getToken());
       $personSession = self::sessionDAO()->createOrUpdatePersonSession($loginSession, $body['code']);
-      FastAuthService::removeAuthentication($personSession); // TODO X correct?!
+      CacheService::removeAuthentication($personSession); // TODO X correct?!
       $testsOfPerson = self::sessionDAO()->getTestsOfPerson($personSession);
-      FastAuthService::storeAuthentication($personSession);
+      CacheService::storeAuthentication($personSession);
       return $response->withJson(AccessSet::createFromPersonSession($personSession, ...$testsOfPerson));
     }
 

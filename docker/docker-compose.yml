@@ -83,7 +83,7 @@ services:
     depends_on:
       - traefik
       - testcenter-backend
-      - testcenter-fastauth-service
+      - testcenter-cache-service
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.testcenter-files-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fs`)"
@@ -92,14 +92,14 @@ services:
     networks:
       testcenter:
 
-  testcenter-fastauth-service:
-    container_name: testcenter-fastauth-service
+  testcenter-cache-service:
+    container_name: testcenter-cache-service
     image: redis:7.0-bullseye
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.testcenter-fastauth-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/fas`)"
-      - "traefik.http.middlewares.testcenter-fastauth-service-stripprefix.stripprefix.prefixes=/fas"
-      - "traefik.http.routers.testcenter-fastauth-service.middlewares=testcenter-files-service-stripprefix, security-headers"
+      - "traefik.http.routers.testcenter-cache-service.rule=(HostRegexp(`{[a-z]*}.${HOSTNAME}`) || Host(`${HOSTNAME}`)) && PathPrefix(`/cs`)"
+      - "traefik.http.middlewares.testcenter-cache-service-stripprefix.stripprefix.prefixes=/cs"
+      - "traefik.http.routers.testcenter-cache-service.middlewares=testcenter-files-service-stripprefix, security-headers"
     networks:
       testcenter:
 

@@ -4,7 +4,7 @@ function redis_connector.connect()
 
   -- resolve host name
 
-  local ip = ngx.shared.dns_cache:get("testcenter-fastauth-service");
+  local ip = ngx.shared.dns_cache:get("testcenter-cache-service");
 
   if (not ip) then
     local dns = require "resty.dns.resolver"
@@ -15,7 +15,7 @@ function redis_connector.connect()
       timeout = 500,
     })
 
-    local ips, err = resolver:query("testcenter-fastauth-service")
+    local ips, err = resolver:query("testcenter-cache-service")
     ip = ips[1]["address"];
     if (#ips == 0) or (not ip) then
       ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
@@ -25,7 +25,7 @@ function redis_connector.connect()
     end
 
     ngx.log(ngx.ERR, "Looked up fast-auth-service IP: " .. ip);
-    ngx.shared.dns_cache:set("testcenter-fastauth-service", ip)
+    ngx.shared.dns_cache:set("testcenter-cache-service", ip)
   end
 
   -- connect to redis
@@ -35,7 +35,7 @@ function redis_connector.connect()
   local ok, err = red:connect(ip, 6379)
   if not ok then
     ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
-    ngx.say("FastAuth-Service not reachable")
+    ngx.say("Cache-Service not reachable")
     ngx.log(ngx.ERR, "Failed to connect to Redis")
     return ngx.exit(ngx.status)
   end

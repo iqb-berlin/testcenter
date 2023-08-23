@@ -93,7 +93,7 @@ services:
     networks:
       - testcenter
 
-  testcenter-fastauth-service:
+  testcenter-cache-service:
     ports:
       - "6379:6379"
 
